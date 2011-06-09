@@ -1,5 +1,26 @@
 M
 dir
+/branches/research/Deltares/20110201-BwN-mud_dynamics/utils_lgpl
+
+
+
+
+M
+dir
+/branches/research/Deltares/20110201-BwN-mud_dynamics/m4
+
+
+
+
+M
+dir
+/branches/research/Deltares/20110201-BwN-mud_dynamics/tools_gpl
+
+
+
+
+M
+dir
 /branches/research/Deltares/20110201-BwN-mud_dynamics/scripts_lgpl
 
 
@@ -14,72 +35,9 @@ dir
 
 M
 dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/utils_lgpl
+/branches/research/Deltares/20110201-BwN-mud_dynamics
 
 
-
-
-M
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/m4
-
-
-
-
-R
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses/zlib
-/trunk/src/third_party_open/subversion/bin/win32/licenses/zlib
-580
-
-
-R
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses/apr-util
-/trunk/src/third_party_open/subversion/bin/win32/licenses/apr-util
-580
-
-
-R
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses/bdb
-/trunk/src/third_party_open/subversion/bin/win32/licenses/bdb
-580
-
-
-R
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses/serf
-/trunk/src/third_party_open/subversion/bin/win32/licenses/serf
-580
-
-
-A
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses
-/trunk/src/third_party_open/subversion/bin/win32/licenses
-580
-
-
-R
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses/cyrussasl
-/trunk/src/third_party_open/subversion/bin/win32/licenses/cyrussasl
-580
-
-
-R
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses/OPENSSL
-/trunk/src/third_party_open/subversion/bin/win32/licenses/OPENSSL
-580
-
-
-R
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses/apr-iconv
-/trunk/src/third_party_open/subversion/bin/win32/licenses/apr-iconv
-580
 
 
 M
@@ -89,46 +47,11 @@ dir
 
 
 
-A
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/doc
-/trunk/src/third_party_open/subversion/bin/win32/doc
-580
-
-
-M
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/tools_gpl
-
-
-
-
-R
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses/apr
-/trunk/src/third_party_open/subversion/bin/win32/licenses/apr
-580
-
-
-R
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses/neon
-/trunk/src/third_party_open/subversion/bin/win32/licenses/neon
-580
-
-
 M
 dir
 /branches/research/Deltares/20110201-BwN-mud_dynamics/engines_gpl
 
 
-
-
-R
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open/subversion/bin/win32/licenses/SVN
-/trunk/src/third_party_open/subversion/bin/win32/licenses/SVN
-580
 
 
 
