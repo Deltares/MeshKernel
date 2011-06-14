@@ -1,57 +1,92 @@
+R
+dir
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses/apr-util
+/trunk/src/third_party_open/subversion/bin/win32/licenses/apr-util
+592
+
+
+R
+dir
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses/bdb
+/trunk/src/third_party_open/subversion/bin/win32/licenses/bdb
+592
+
+
+R
+dir
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses/OPENSSL
+/trunk/src/third_party_open/subversion/bin/win32/licenses/OPENSSL
+592
+
+
+R
+dir
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses/apr-iconv
+/trunk/src/third_party_open/subversion/bin/win32/licenses/apr-iconv
+592
+
+
+A
+dir
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses
+/trunk/src/third_party_open/subversion/bin/win32/licenses
+592
+
+
+R
+dir
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses/neon
+/trunk/src/third_party_open/subversion/bin/win32/licenses/neon
+592
+
+
+R
+dir
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses/apr
+/trunk/src/third_party_open/subversion/bin/win32/licenses/apr
+592
+
+
+R
+dir
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses/SVN
+/trunk/src/third_party_open/subversion/bin/win32/licenses/SVN
+592
+
+
 M
 dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/m4
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers
 
 
 
 
-M
+R
 dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/tools_gpl
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses/zlib
+/trunk/src/third_party_open/subversion/bin/win32/licenses/zlib
+592
 
 
-
-
-M
+A
 dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/plugins_lgpl
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/doc
+/trunk/src/third_party_open/subversion/bin/win32/doc
+592
 
 
-
-
-M
+R
 dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses/serf
+/trunk/src/third_party_open/subversion/bin/win32/licenses/serf
+592
 
 
-
-
-M
+R
 dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/engines_gpl
-
-
-
-
-M
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/utils_lgpl
-
-
-
-
-M
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/scripts_lgpl
-
-
-
-
-M
-dir
-/branches/research/Deltares/20110201-BwN-mud_dynamics/third_party_open
-
-
+/branches/research/Deltares/20110512-Rivermorphology-semi_fixed_layers/third_party_open/subversion/bin/win32/licenses/cyrussasl
+/trunk/src/third_party_open/subversion/bin/win32/licenses/cyrussasl
+592
 
 
 
