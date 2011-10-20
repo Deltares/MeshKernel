@@ -1,13 +1,6 @@
-D
+A
 dir
-/trunk/src/third_party_open/subversion/bin/win32/licenses
-
-
-
-
-D
-dir
-/trunk/src/third_party_open/subversion/bin/win32/sasl-plugins
+/trunk/src/third_party_open/subversion/bin/win32/license
 
 
 
