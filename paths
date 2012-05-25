@@ -1,25 +1,4 @@
-A
-dir
-/trunk/src/utils_lgpl/delftonline/src/dolcli
-
-
-
-
-A
-dir
-/trunk/src/utils_lgpl/delftonline/src/delftonline
-
-
-
-
-A
-dir
-/trunk/src/utils_lgpl/delftonline
-
-
-
-
-A
+D
 dir
 /trunk/src/utils_lgpl/delftonline/src/printcontents
 
@@ -28,14 +7,7 @@ dir
 
 A
 dir
-/trunk/src/utils_lgpl/delftonline/src
-
-
-
-
-A
-dir
-/trunk/src/utils_lgpl/delftonline/include
+/trunk/src/utils_lgpl/delftonline/src/dolprint
 
 
 
