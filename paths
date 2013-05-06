@@ -1,6 +1,34 @@
 A
 dir
-/trunk/src/third_party_open/pthreads/bin/x64
+/trunk/src/third_party_open/mpich2/x64/lib
+
+
+
+
+A
+dir
+/trunk/src/third_party_open/mpich2/x64/bin
+
+
+
+
+A
+dir
+/trunk/src/third_party_open/mpich2/x64/examples
+
+
+
+
+A
+dir
+/trunk/src/third_party_open/mpich2/x64
+
+
+
+
+A
+dir
+/trunk/src/third_party_open/mpich2/x64/include
 
 
 
