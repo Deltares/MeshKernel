@@ -1,6 +1,34 @@
 M
 dir
-/trunk/src/scripts_lgpl/linux
+/trunk/src/third_party_open/version_number/packages/version_number
+
+
+
+
+M
+dir
+/trunk/src/third_party_open/version_number/packages/version_number/src
+
+
+
+
+M
+dir
+/trunk/src/third_party_open/version_number/bin/linux
+
+
+
+
+M
+dir
+/trunk/src/third_party_open/version_number/packages
+
+
+
+
+M
+dir
+/trunk/src/third_party_open/version_number
 
 
 
