@@ -1,6 +1,34 @@
 M
 dir
-/trunk/src/tools_lgpl/matlab/quickplot/SplashScreen/include
+/trunk/src/tools_lgpl/matlab/quickplot/progsrc
+
+
+
+
+M
+dir
+/trunk/src/tools_lgpl/matlab/quickplot/progsrc/@qp_data/private
+
+
+
+
+M
+dir
+/trunk/src/tools_lgpl/matlab/quickplot
+
+
+
+
+M
+dir
+/trunk/src/tools_lgpl/matlab/quickplot/progsrc/grib
+
+
+
+
+M
+dir
+/trunk/src/tools_lgpl/matlab/quickplot/progsrc/@qp_data_resource/private
 
 
 
@@ -21,42 +49,7 @@ dir
 
 M
 dir
-/trunk/src/tools_lgpl/matlab/quickplot/progsrc
-
-
-
-
-M
-dir
-/trunk/src/tools_lgpl/matlab/quickplot/SplashScreen/resource
-
-
-
-
-M
-dir
 /trunk/src/tools_lgpl/matlab/quickplot/progsrc/compileonly
-
-
-
-
-M
-dir
-/trunk/src/tools_lgpl/matlab/quickplot/progsrc/@qp_data/private
-
-
-
-
-M
-dir
-/trunk/src/tools_lgpl/matlab/quickplot/SplashScreen
-
-
-
-
-M
-dir
-/trunk/src/tools_lgpl/matlab/quickplot/progsrc/@qp_data_resource
 
 
 
@@ -70,35 +63,7 @@ dir
 
 M
 dir
-/trunk/src/tools_lgpl/matlab/quickplot
-
-
-
-
-M
-dir
-/trunk/src/tools_lgpl/matlab/quickplot/SplashScreen/finish
-
-
-
-
-M
-dir
-/trunk/src/tools_lgpl/matlab/quickplot/SplashScreen/src
-
-
-
-
-M
-dir
-/trunk/src/tools_lgpl/matlab/quickplot/progsrc/grib
-
-
-
-
-M
-dir
-/trunk/src/tools_lgpl/matlab/quickplot/progsrc/@qp_data_resource/private
+/trunk/src/tools_lgpl/matlab/quickplot/progsrc/@qp_data_resource
 
 
 
