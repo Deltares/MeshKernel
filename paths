@@ -1,27 +1,6 @@
 A
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32/include
-
-
-
-
-A
-dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32/bin
-
-
-
-
-A
-dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32/scripts
-
-
-
-
-A
-dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32_ifort10/bin/NetCDF3
 
 
 
