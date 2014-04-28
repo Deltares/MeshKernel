@@ -1,20 +1,6 @@
-A
-dir
-/branches/research/Deltares/20130603-DAD_uniform_graded/third_party_open/vcredist/x64/Microsoft.VC110.CRT
-/trunk/src/third_party_open/vcredist/x64/Microsoft.VC110.CRT
-3058
-
-
-A
-dir
-/branches/research/Deltares/20130603-DAD_uniform_graded/third_party_open/vcredist/x86/Microsoft.VC110.CRT
-/trunk/src/third_party_open/vcredist/x86/Microsoft.VC110.CRT
-3058
-
-
 M
 dir
-/branches/research/Deltares/20130603-DAD_uniform_graded
+/trunk/src/utils_lgpl/deltares_common
 
 
 
