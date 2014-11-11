@@ -1,67 +1,25 @@
-A
+D
 dir
 /trunk/hooks
 
 
 
 
-A
-dir
-/trunk/db/txn-protorevs
-
-
-
-
-A
-dir
-/trunk/conf
-
-
-
-
-A
-dir
-/trunk/db/revprops/0
-
-
-
-
-A
-dir
-/trunk/db/revs/0
-
-
-
-
-A
-dir
-/trunk/db/transactions
-
-
-
-
-A
+D
 dir
 /trunk/db
 
 
 
 
-A
+D
 dir
-/trunk/db/revprops
+/trunk/conf
 
 
 
 
-A
-dir
-/trunk/db/revs
-
-
-
-
-A
+D
 dir
 /trunk/locks
 
