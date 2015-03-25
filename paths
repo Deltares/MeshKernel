@@ -1,134 +1,92 @@
-M
+D
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win64_ifort12_debug
 
 
 
 
 A
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/examples/09_part-oil
-/trunk/examples/09_part-oil
-4859
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/lib
+/trunk/src/third_party_open/netcdf/lib
+4861
 
 
 D
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/engines
-
-
-
-
-A
-dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/examples/08_part-tracer
-/trunk/examples/08_part-tracer
-4859
-
-
-A
-dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/examples/10_delwaq-part-tracer
-/trunk/examples/10_delwaq-part-tracer
-4859
-
-
-M
-dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/utils_lgpl/deltares_common
-
-
-
-
-M
-dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/utils_lgpl/delftonline
-
-
-
-
-A
-dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/tools_lgpl/matlab/delftio
-/trunk/src/tools_lgpl/matlab/delftio
-4859
-
-
-M
-dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/utils_lgpl/d_hydro_lib
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32_ifort12_debug
 
 
 
 
 D
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/utils_lgpl/delftio/packages/diostates
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win64_ifort13_debug
+
+
+
+
+D
+dir
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32_ifort13_debug
 
 
 
 
 A
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/engines_gpl/waq/packages/waq_kernel/src/waq_process/solvesaphe
-/trunk/src/engines_gpl/waq/packages/waq_kernel/src/waq_process/solvesaphe
-4859
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/bin
+/trunk/src/third_party_open/netcdf/bin
+4861
 
 
-A
+D
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/tools_lgpl/matlab/rtc
-/trunk/src/tools_lgpl/matlab/rtc
-4859
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32_ifort10
 
 
-M
+
+
+D
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win64_ifort12
 
 
 
 
-A
+D
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/utils_lgpl/delftio/packages/his2csv
-/trunk/src/utils_lgpl/delftio/packages/his2csv
-4859
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32_ifort12
 
 
-A
+
+
+D
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/utils_lgpl/deltares_common/packages/deltares_common_nompi
-/trunk/src/utils_lgpl/deltares_common/packages/deltares_common_nompi
-4859
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win64_ifort13
 
 
-A
+
+
+D
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/tools_gpl/duprol2delwaq
-/trunk/src/tools_gpl/duprol2delwaq
-4859
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32_ifort13
 
 
-A
+
+
+D
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/engines_gpl/part
-/trunk/src/engines_gpl/part
-4859
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/lnx32
 
 
-A
+
+
+D
 dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/lnx64
-/trunk/src/third_party_open/netcdf/lnx64
-4859
+/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/src/third_party_open/netcdf/win32
 
 
-A
-dir
-/branches/research/Deltares/20131129_UNST-389_D-FLOWFM_WAVE/examples/11_standard_netcdf
-/trunk/examples/11_standard_netcdf
-4859
 
 
 
