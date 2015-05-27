@@ -1,13 +1,13 @@
-D
+A
 dir
-/trunk/src/utils_lgpl/lib/Debug
+/trunk/src/utils_lgpl/lib/win32/Debug
 
 
 
 
-D
+A
 dir
-/trunk/src/utils_lgpl/lib/Release
+/trunk/src/utils_lgpl/lib/win32
 
 
 
