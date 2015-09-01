@@ -1,85 +1,22 @@
-A
+D
 dir
-/trunk/src/third_party_open/netcdf/lib/x64/Release/ifort12
+/trunk/src/engines_gpl/waq/packages/delwaq_test
 
 
 
 
-A
+D
 dir
-/trunk/src/third_party_open/netcdf/lib/x64/Release/ifort13
-
-
-
-
-A
-dir
-/trunk/src/third_party_open/netcdf/lib/x64/Release/ifort14
+/trunk/src/engines_gpl/waq/packages/waq_utils_f/opl_utils_f
 
 
 
 
 A
 dir
-/trunk/src/third_party_open/netcdf/lib/x64/Release/ifort15
-
-
-
-
-A
-dir
-/trunk/src/third_party_open/netcdf/lib/x64/Debug
-
-
-
-
-A
-dir
-/trunk/src/third_party_open/netcdf/lib/x64/Debug/ifort12
-
-
-
-
-A
-dir
-/trunk/src/third_party_open/netcdf/lib/x64/Debug/ifort13
-
-
-
-
-A
-dir
-/trunk/src/third_party_open/netcdf/lib/x64/Debug/ifort14
-
-
-
-
-A
-dir
-/trunk/src/third_party_open/netcdf/lib/x64/Debug/ifort15
-
-
-
-
-A
-dir
-/trunk/src/third_party_open/netcdf/lib/win32/Debug/ifort12
-
-
-
-
-A
-dir
-/trunk/src/third_party_open/netcdf/lib/x64
-
-
-
-
-A
-dir
-/trunk/src/third_party_open/netcdf/lib/x64/Release
-
-
+/trunk/src/engines_gpl/waq/packages/delwaq_lib_examples
+/trunk/src/engines_gpl/waq/packages/delwaq_test
+5374
 
 
 
