@@ -1,27 +1,20 @@
 A
 dir
-/trunk/src/csharp/utils/utils.Tests
+/trunk/src/utils_lgpl/io_netcdf/packages/tests/UGrid.tests/Properties
 
 
 
 
 A
 dir
-/trunk/src/csharp
+/trunk/src/utils_lgpl/io_netcdf/packages/tests/UGrid.tests
 
 
 
 
 A
 dir
-/trunk/src/csharp/utils
-
-
-
-
-A
-dir
-/trunk/src/csharp/utils/utils.Tests/Properties
+/trunk/src/utils_lgpl/io_netcdf/packages/tests
 
 
 
