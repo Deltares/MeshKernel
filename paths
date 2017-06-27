@@ -1,10 +1,3 @@
-A
-dir
-/branches/research/Deltares/20160126_PLIC_VOF_bankEROSION/src/engines_gpl/waq/packages/waq_utils_f/src/dlwq_netcdf
-/trunk/src/engines_gpl/waq/packages/waq_utils_f/src/dlwq_netcdf
-6225
-
-
 M
 dir
 /branches/research/Deltares/20160126_PLIC_VOF_bankEROSION
@@ -26,11 +19,39 @@ dir
 
 
 
+M
+dir
+/branches/research/Deltares/20160126_PLIC_VOF_bankEROSION/src/scripts_lgpl
+
+
+
+
+M
+dir
+/branches/research/Deltares/20160126_PLIC_VOF_bankEROSION/src/utils_lgpl/d_hydro_lib
+
+
+
+
+M
+dir
+/branches/research/Deltares/20160126_PLIC_VOF_bankEROSION/src/engines_gpl/flow2d3d/packages/kernel/src/inichk
+
+
+
+
 A
 dir
-/branches/research/Deltares/20160126_PLIC_VOF_bankEROSION/src/utils_lgpl/io_netcdf
-/trunk/src/utils_lgpl/io_netcdf
-6225
+/branches/research/Deltares/20160126_PLIC_VOF_bankEROSION/src/engines_gpl/dimr
+/trunk/src/engines_gpl/dimr
+6512
+
+
+A
+dir
+/branches/research/Deltares/20160126_PLIC_VOF_bankEROSION/src/utils_lgpl/hyd_to_waq_part_lib
+/trunk/src/utils_lgpl/hyd_to_waq_part_lib
+6512
 
 
 M
