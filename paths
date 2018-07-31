@@ -1,5 +1,19 @@
 M
 dir
+/trunk/src/utils_gpl/trachytopes
+
+
+
+
+M
+dir
+/trunk/src/scripts_lgpl
+
+
+
+
+M
+dir
 /trunk
 
 
@@ -7,7 +21,42 @@ dir
 
 M
 dir
+/trunk/src/utils_lgpl/d_hydro_lib
+
+
+
+
+M
+dir
+/trunk/src/engines_gpl/dimr
+
+
+
+
+M
+dir
 /trunk/src
+
+
+
+
+M
+dir
+/trunk/src/engines_gpl/flow2d3d/packages/kernel/src/inichk
+
+
+
+
+M
+dir
+/trunk/src/utils_lgpl/deltares_common
+
+
+
+
+M
+dir
+/trunk/src/engines_gpl/flow2d3d/packages/kernel/src/compute
 
 
 
