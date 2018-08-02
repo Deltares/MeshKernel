@@ -1,13 +1,6 @@
 D
 dir
-/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/tests
-
-
-
-
-D
-dir
-/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/test_data
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/Sobek3-tests
 
 
 
