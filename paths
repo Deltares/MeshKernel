@@ -1,6 +1,13 @@
-D
+A
 dir
-/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/Sobek3-tests
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f18_boundar_conditions_3d/c020_uxuyadvectionvelocitybnd3d_bc
+
+
+
+
+A
+dir
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f18_boundar_conditions_3d
 
 
 
