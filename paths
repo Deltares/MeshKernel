@@ -1,3 +1,10 @@
+A
+dir
+/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c026_astronomic_bc_cmp_corr_tim
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c026_astronomic_bc_cmp_corr_tim
+59780
+
+
 M
 dir
 /branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl
@@ -5,11 +12,32 @@ dir
 
 
 
-D
+A
 dir
-/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/Sobek3-tests
+/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c084_qhbnd_bc
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c084_qhbnd_bc
+59780
 
 
+A
+dir
+/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c021_astronomic_cmp_mismatchstart
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c021_astronomic_cmp_mismatchstart
+59780
+
+
+A
+dir
+/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c140_waterlevel_bc_julian
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c140_waterlevel_bc_julian
+59780
+
+
+A
+dir
+/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c024_astronomic_bc_cmp_corr
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c024_astronomic_bc_cmp_corr
+59780
 
 
 M
@@ -21,16 +49,37 @@ dir
 
 A
 dir
-/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f18_boundar_conditions_3d
-/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f18_boundar_conditions_3d
-59735
+/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c023_astronomic_bc_cmp_mismatchstart
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c023_astronomic_bc_cmp_mismatchstart
+59780
 
 
 A
 dir
-/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f11_wind
-/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f11_wind
-59742
+/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c080_qhbnd
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c080_qhbnd
+59780
+
+
+M
+dir
+/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module
+
+
+
+
+A
+dir
+/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c025_astronomic_bc_cmp_tim
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c025_astronomic_bc_cmp_tim
+59780
+
+
+A
+dir
+/branches/research/Deltares/20180220-EC-module-merge-20180816/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c022_astronomic_bc_cmp_standard
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module_test/tests/FMtests/f05_boundary_conditions/c022_astronomic_bc_cmp_standard
+59780
 
 
 M
