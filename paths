@@ -14,7 +14,14 @@ dir
 
 M
 dir
-/branches/research/Deltares/20180220-EC-module-merge/src/utils_gpl
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module
+
+
+
+
+M
+dir
+/branches/research/Deltares/20180220-EC-module-merge/src/utils_lgpl/ec_module/packages/ec_module
 
 
 
