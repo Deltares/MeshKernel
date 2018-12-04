@@ -1,12 +1,5 @@
 M
 dir
-/branches/research/Deltares/20181015_EC_Module_merge
-
-
-
-
-M
-dir
 /branches/research/Deltares/20181015_EC_Module_merge/src/engines_gpl/dflowfm/packages/dflowfm_kernel/src
 
 
@@ -15,6 +8,34 @@ dir
 M
 dir
 /branches/research/Deltares/20181015_EC_Module_merge/src
+
+
+
+
+M
+dir
+/branches/research/Deltares/20181015_EC_Module_merge/src/utils_lgpl/ec_module
+
+
+
+
+M
+dir
+/branches/research/Deltares/20181015_EC_Module_merge/src/utils_lgpl
+
+
+
+
+M
+dir
+/branches/research/Deltares/20181015_EC_Module_merge/src/utils_lgpl/ec_module/packages/ec_module
+
+
+
+
+M
+dir
+/branches/research/Deltares/20181015_EC_Module_merge
 
 
 
