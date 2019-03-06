@@ -1,4 +1,4 @@
-A
+D
 dir
 /trunk/src/test/engines_gpl/dflowfm/packages/tet_dflowfm
 
@@ -7,23 +7,9 @@ dir
 
 A
 dir
-/trunk/src/test/engines_gpl/dflowfm/packages
-
-
-
-
-A
-dir
-/trunk/src/test/engines_gpl/dflowfm
-
-
-
-
-A
-dir
-/trunk/src/test/engines_gpl/dflowfm/packages/tet_dflowfm/test_data
-
-
+/trunk/src/test/engines_gpl/dflowfm/packages/test_dflowfm
+/trunk/src/test/engines_gpl/dflowfm/packages/tet_dflowfm
+63339
 
 
 
