@@ -1,4 +1,7 @@
 // Surface mesh part
+// TODO: Use CGAL kernel points to easy switch between cartesian and spherical basic computations (e.g. triangle circumcenters or distances)
+// Spherical coordinate kernel https://doc.cgal.org/latest/Circular_kernel_3/index.html (ja spheric)
+
 #define _USE_MATH_DEFINES
 #include <vector>
 #include <cmath>
@@ -7,17 +10,13 @@
 
 // cGAL surface mesh
 #include <CGAL/Simple_cartesian.h>
-#include <CGAL/Surface_mesh.h>
 
 class Mesh
 {
 public:
 
-    typedef CGAL::Simple_cartesian<double> surface_mesh_kernel;
-    typedef CGAL::Surface_mesh<surface_mesh_kernel::Point_2> surface_mesh;
-    typedef surface_mesh_kernel::Point_2 surface_mesh_point;
-    typedef surface_mesh::Vertex_index surface_mesh_vertex_descriptor;
-    typedef surface_mesh::Face_index surface_mesh_face_descriptor;
+    typedef CGAL::Simple_cartesian<double> cartesian_kernel;
+    typedef cartesian_kernel::Point_2 cartesian_point;
 
     typedef std::pair<size_t, size_t> Edge;
     typedef std::pair<double, double> Point;
@@ -42,6 +41,15 @@ public:
         findFaces(6);
     };
 
+    const std::vector<std::vector<size_t>>& getFaces() const
+    {
+        return _facesNodes;
+    }
+
+
+    
+private:
+
     // Set node admin
     void NodeAdministration()
     {
@@ -65,7 +73,7 @@ public:
 
     void SortEdgesInCounterClockWiseOrder()
     {
-        
+
         for (size_t node = 0; node < _nodes.size(); node++)
         {
             double phi0 = 0.0;
@@ -130,7 +138,7 @@ public:
     // find cells
     void findFaces(const int& numEdges)
     {
-        
+
         std::vector<size_t> foundEdges(numEdges);
         std::vector<size_t> foundNodes(numEdges);
 
@@ -253,26 +261,128 @@ public:
                     }
 
                     // store the result
-                    _faces.push_back(foundNodes);
+                    _facesNodes.push_back(foundNodes);
+                    _facesEdges.push_back(foundEdges);
+                }
+            }
+        }
+    }
+    
+    void facePolygon(const int faceIndex, std::vector<Point>& localPolygon, std::vector<size_t>& localEdges, std::vector<size_t>& localEdgeNumber)
+    {
+        localPolygon.resize(_facesNodes[faceIndex].size());
+        localEdgeNumber.resize(_facesNodes[faceIndex].size());
+        for(int n=0;n<_facesNodes[faceIndex].size();n++)
+        {
+            localPolygon[n] = _nodes[_facesNodes[faceIndex][n]];
+            localEdges[n] = _numFacesForEachEdge[_facesEdges[faceIndex][n]];
+            localEdgeNumber[n] = n;
+        }
+    }
+
+    void faceCircumcenters()
+    {
+        _facesCircumcenters.resize(_facesNodes.size());
+        for (int f = 0; f < _facesNodes.size(); f++)
+        {
+            // for triangles, for now assume cartesian kernel
+            if(_facesNodes[f].size()==3)
+            {
+                cartesian_point node0{ _nodes[_facesNodes[f][0]].first,_nodes[_facesNodes[f][0]].second };
+                cartesian_point node1{ _nodes[_facesNodes[f][1]].first,_nodes[_facesNodes[f][1]].second };
+                cartesian_point node2{ _nodes[_facesNodes[f][2]].first,_nodes[_facesNodes[f][2]].second };
+                auto circumCenter = CGAL::circumcenter(node0, node1, node2);
+                _facesCircumcenters[f] = { circumCenter.x(),circumCenter.y() };
+            }
+            else
+            {
+                double xCenter = 0.0;
+                double yCenter = 0.0;
+
+                std::vector<Point> localPolygon;
+                std::vector<size_t> localEdges;
+                std::vector<size_t> localEdgeNumber;
+
+                facePolygon(f, localPolygon, localEdges, localEdgeNumber);
+
+                int numberOfInteriorEdges = 0;
+                for (int n = 0; n < localPolygon.size(); n++)
+                {
+                    xCenter += localPolygon[n].first;
+                    yCenter += localPolygon[n].second;
+                    if (localEdges[n]==2)
+                    {
+                        numberOfInteriorEdges += 1;
+                    }
+                }
+
+                if( numberOfInteriorEdges == 0 )
+                {
+                    _facesCircumcenters[f] = { xCenter, yCenter };
+                }
+                else
+                {
+
+                    double xEstimatedCircumCenter = xCenter;
+                    double yEstimatedCircumCenter = yCenter;
+                    double xTempCircumCenter;
+                    double yTempCircumCenter;
+                    double xFirst;
+                    double yFirst;
+                    int nextNode;
+                    double xSecond;
+                    double ySecond;
+                    double xDelta;
+                    double yDelta;
+                    double xMiddle;
+                    double yMiddle;
+
+                    for (int iter = 0; iter < 100; iter++)
+                    {
+                        xTempCircumCenter = xEstimatedCircumCenter;
+                        yTempCircumCenter = yEstimatedCircumCenter;
+
+                        for (int n = 0; n < localPolygon.size(); n++)
+                        {
+                            if (localEdges[n] == 2 || localPolygon.size() == 3)
+                            {
+                                xFirst = localPolygon[n].first;
+                                yFirst = localPolygon[n].second;
+                                nextNode =  n + 1; 
+                                if (nextNode == localPolygon.size()) nextNode = 0;
+                                xSecond = localPolygon[n].first;
+                                ySecond = localPolygon[n].second;
+                                double xMiddle = 0.5*(xFirst + xSecond);
+                                double yMiddle = 0.5*(yFirst + ySecond);
+
+                                // calculate normalin
+
+                                xDelta = xTempCircumCenter - xMiddle;
+                                yDelta = yTempCircumCenter - yMiddle;
+
+
+                            }
+
+                        }
+                        
+
+                    }
+                    
                 }
             }
         }
     }
 
-    
-    const std::vector<std::vector<size_t>>& getFaces() const
-    {
-        return _faces;
-    }
 
-private:
-    std::vector<Edge> _edges;                    //KN
-    std::vector<Point> _nodes;                   //KN
-    std::vector<std::vector<size_t>> _nodeEdges; //NOD
-    std::vector<size_t> _numEdgesPeNode;         //NMK
-    std::vector<std::vector<size_t>> _faces;     //netcell
-    std::vector<size_t> _numFacesForEachEdge;    //LNN
-    size_t _faceIndex;                           //NUMP
+    std::vector<Edge> _edges;                                  //KN
+    std::vector<Point> _nodes;                                 //KN
+    std::vector<std::vector<size_t>> _nodeEdges;               //NOD
+    std::vector<size_t> _numEdgesPeNode;                       //NMK
+    std::vector<std::vector<size_t>> _facesNodes;              //netcell%Nod
+    std::vector<std::vector<size_t>> _facesEdges;              //netcell%lin
+    std::vector<Point>   _facesCircumcenters;                  //xw
+    std::vector<size_t> _numFacesForEachEdge;                  //LNN
+    size_t _faceIndex;                                         //NUMP
     std::vector<std::vector<size_t>> _faceIndexsesForEachEdge; //LNE
 
     //constants
