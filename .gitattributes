@@ -1,5 +1,4 @@
 * text=auto !eol
 /CMakeLists.txt -text
 src/Mesh.cpp -text
-src/Mesh.h -text
 src/main.cpp -text
