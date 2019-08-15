@@ -1,1 +1,3 @@
 * text=auto !eol
+/CMakeLists.txt -text
+/nodeAdministration.cpp -text
