@@ -17,9 +17,10 @@ public:
 
     typedef CGAL::Simple_cartesian<double> cartesian_kernel;
     typedef cartesian_kernel::Point_2 cartesian_point;
-
-    typedef std::pair<size_t, size_t> Edge;
-    typedef std::pair<double, double> Point;
+    
+    typedef std::pair<size_t, size_t>        Edge;
+    typedef std::pair<double, double>        Point;
+    typedef CGAL::Vector_2<cartesian_kernel> Vector;
 
     Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes) :
         _edges(edges), _nodes(nodes)
@@ -316,6 +317,10 @@ private:
                     }
                 }
 
+                // average centers
+                xCenter = xCenter / localPolygon.size();
+                yCenter = yCenter / localPolygon.size();
+                
                 if( numberOfInteriorEdges == 0 )
                 {
                     _facesCircumcenters[f] = { xCenter, yCenter };
@@ -356,6 +361,8 @@ private:
                                 double yMiddle = 0.5*(yFirst + ySecond);
 
                                 // calculate normalin
+                                //CGAL::Direction_2<cartesian_kernel>( { xFirst , yFirst }, { xSecond, ySecond });
+                                
 
                                 xDelta = xTempCircumCenter - xMiddle;
                                 yDelta = yTempCircumCenter - yMiddle;
