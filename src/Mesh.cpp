@@ -8,22 +8,17 @@
 #include <numeric>
 #include <algorithm>
 
-// cGAL surface mesh
-#include <CGAL/Simple_cartesian.h>
-
+template<typename Point>
 class Mesh
 {
 public:
 
-    typedef CGAL::Simple_cartesian<double> cartesian_kernel;
-    typedef cartesian_kernel::Point_2 cartesian_point;
-    
     typedef std::pair<size_t, size_t>        Edge;
-    typedef std::pair<double, double>        Point;
-    typedef CGAL::Vector_2<cartesian_kernel> Vector;
+  
 
-    Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes) :
-        _edges(edges), _nodes(nodes)
+
+    Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, const bool isSpheric) :
+        _edges(edges), _nodes(nodes), _isSpheric(isSpheric)
     {
         //allocate
         _numEdgesPeNode.resize(_nodes.size());
@@ -91,9 +86,8 @@ private:
                     firstNode = node;
                 }
 
-                double deltaX = _nodes[secondNode].first - _nodes[firstNode].first;
-                double deltaY = _nodes[secondNode].second - _nodes[firstNode].second;
-
+                double deltaX = Point::getDx(_nodes[secondNode], _nodes[firstNode]);
+                double deltaY = Point::getDy(_nodes[secondNode], _nodes[firstNode]);
                 if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
                 {
                     if (deltaY < 0.0)
@@ -281,18 +275,17 @@ private:
         }
     }
 
-    void faceCircumcenters()
+    void faceCircumcenters(const double & weightCircumCenter)
     {
+        using namespace AlgebraicOperations;
+
         _facesCircumcenters.resize(_facesNodes.size());
         for (int f = 0; f < _facesNodes.size(); f++)
         {
             // for triangles, for now assume cartesian kernel
             if(_facesNodes[f].size()==3)
             {
-                cartesian_point node0{ _nodes[_facesNodes[f][0]].first,_nodes[_facesNodes[f][0]].second };
-                cartesian_point node1{ _nodes[_facesNodes[f][1]].first,_nodes[_facesNodes[f][1]].second };
-                cartesian_point node2{ _nodes[_facesNodes[f][2]].first,_nodes[_facesNodes[f][2]].second };
-                auto circumCenter = CGAL::circumcenter(node0, node1, node2);
+                auto circumCenter = CGAL::circumcenter(_nodes[_facesNodes[f][0]], _nodes[_facesNodes[f][1]], _nodes[_facesNodes[f][2]]);
                 _facesCircumcenters[f] = { circumCenter.x(),circumCenter.y() };
             }
             else
@@ -309,8 +302,8 @@ private:
                 int numberOfInteriorEdges = 0;
                 for (int n = 0; n < localPolygon.size(); n++)
                 {
-                    xCenter += localPolygon[n].first;
-                    yCenter += localPolygon[n].second;
+                    xCenter += localPolygon[n].x;
+                    yCenter += localPolygon[n].y;
                     if (localEdges[n]==2)
                     {
                         numberOfInteriorEdges += 1;
@@ -327,59 +320,59 @@ private:
                 }
                 else
                 {
-
-                    double xEstimatedCircumCenter = xCenter;
-                    double yEstimatedCircumCenter = yCenter;
-                    double xTempCircumCenter;
-                    double yTempCircumCenter;
-                    double xFirst;
-                    double yFirst;
-                    int nextNode;
-                    double xSecond;
-                    double ySecond;
-                    double xDelta;
-                    double yDelta;
-                    double xMiddle;
-                    double yMiddle;
+                    Point estimatedCircumCenter{ xCenter, yCenter };
+                    const double eps = 1e-3;
+                    
+                    std::vector<Point> middlePoints(localPolygon.size());
+                    std::vector<Point> normals(localPolygon.size());
+                    for (int n = 0; n < localPolygon.size(); n++)
+                    {
+                        int nextNode = n + 1;
+                        if (nextNode == localPolygon.size()) nextNode = 0;
+                        middlePoints[n] = { 0.5 * (localPolygon[n].x + localPolygon[nextNode].x),  0.5 * (localPolygon[n].y + localPolygon[nextNode].y) };
+                        normals[n] = Point::normalVector(localPolygon[n], localPolygon[nextNode], middlePoints[n]);
+                    }
 
                     for (int iter = 0; iter < 100; iter++)
                     {
-                        xTempCircumCenter = xEstimatedCircumCenter;
-                        yTempCircumCenter = yEstimatedCircumCenter;
+                        Point previousCircumCenter = estimatedCircumCenter;
+                        // compute quantities
 
                         for (int n = 0; n < localPolygon.size(); n++)
                         {
                             if (localEdges[n] == 2 || localPolygon.size() == 3)
                             {
-                                xFirst = localPolygon[n].first;
-                                yFirst = localPolygon[n].second;
-                                nextNode =  n + 1; 
+                                int nextNode =  n + 1; 
                                 if (nextNode == localPolygon.size()) nextNode = 0;
-                                xSecond = localPolygon[n].first;
-                                ySecond = localPolygon[n].second;
-                                double xMiddle = 0.5*(xFirst + xSecond);
-                                double yMiddle = 0.5*(yFirst + ySecond);
-
-                                // calculate normalin
-                                //CGAL::Direction_2<cartesian_kernel>( { xFirst , yFirst }, { xSecond, ySecond });
-                                
-
-                                xDelta = xTempCircumCenter - xMiddle;
-                                yDelta = yTempCircumCenter - yMiddle;
-
-
+                                double dx = Point::getDx(middlePoint[n], estimatedCircumCenter);
+                                double dy = Point::getDy(middlePoint[n], estimatedCircumCenter);
+                                double increment = - 0.1 * dotProduct(dx, dy, normals[n].x, normals[n].y);
+                                Point::add(estimatedCircumCenter, normals[n], increment);
                             }
-
                         }
-                        
-
+                        if (iter > 0 && 
+                            abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps && 
+                            abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
+                        {
+                            _facesCircumcenters[f] = estimatedCircumCenter;
+                            break;
+                        }
                     }
-                    
                 }
             }
         }
-    }
 
+        if (weightCircumCenter <= 1.0 && weightCircumCenter >=0.0)
+        {
+            double localWeightCircumCenter = 1.0;
+            if( localPolygon.size()>3 )
+            {
+                localWeightCircumCenter = weightCircumCenter;
+            }
+            // to finish
+        }
+
+    }
 
     std::vector<Edge> _edges;                                  //KN
     std::vector<Point> _nodes;                                 //KN
@@ -391,8 +384,11 @@ private:
     std::vector<size_t> _numFacesForEachEdge;                  //LNN
     size_t _faceIndex;                                         //NUMP
     std::vector<std::vector<size_t>> _faceIndexsesForEachEdge; //LNE
+    bool _isSpheric;                                           //jsferic      
 
     //constants
     const double minimumDeltaCoordinate = 1e-14;
     const size_t maximumNumberOfEdgesPerNode = 8;
+    const double dcenterinside = 1.0;                          //Force cell center inside cell with factor dcenterinside, 1: confined by cell edges, 0 : at mass center
+
 };

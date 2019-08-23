@@ -2,6 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include "Mesh.cpp"
+#include "CartesianPoint.cpp"
 
 int main()
 {
@@ -48,19 +49,21 @@ int main()
         std::cout << "start adding edges " << std::endl;
         auto start(std::chrono::steady_clock::now());
 
+        // inject the point type (cartesian or spherical)
+        using Mesh = Mesh<CartesianPoint>;
+
         std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-        std::vector<Mesh::Point> nodes(n*m);
+        std::vector<CartesianPoint> nodes(n*m);
         size_t nodeIndex = 0;
         for (int j = 0; j < m; ++j)
         {
             for (int i = 0; i < n; ++i)
             {
                 indexesValues[i][j] = i + j * n;
-                nodes[nodeIndex] = { i, j };
+                nodes[nodeIndex] = { (double)i, (double)j };
                 nodeIndex++;
             }
         }
-
 
         std::vector<Mesh::Edge> edges((n - 1) * m + (m - 1) * n);
         size_t edgeIndex = 0;
@@ -87,7 +90,7 @@ int main()
         std::cout << "start finding cells " << std::endl;
         start = std::chrono::steady_clock::now();
         // now build node-edge mapping
-        Mesh mesh(edges,nodes);
+        Mesh mesh(edges,nodes, false);
 
         end = std::chrono::steady_clock::now();
         std::cout << "Elapsed time " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << std::endl;
