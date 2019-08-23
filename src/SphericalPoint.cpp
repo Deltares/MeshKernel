@@ -1,24 +1,24 @@
 #include <cmath> 
 #include <utility>
 
-struct CartesianPoint
+struct SphericalPoint
 {
 
 
     // constructor
-    CartesianPoint(double x, double y)
+    SphericalPoint(double x, double y)
         : x(x), y(y)
     {
     };
 
     // default point
-    CartesianPoint()
+    SphericalPoint()
         : x(999.0), y(999.0)
     {
     };
 
     //Normalized vector in direction orientation
-    static CartesianPoint normalVector(const CartesianPoint& firstPoint, const CartesianPoint& secondPoint, const CartesianPoint& orientation)
+    static SphericalPoint normalVector(const SphericalPoint& firstPoint, const SphericalPoint& secondPoint, const SphericalPoint& orientation)
     {
         double dx = getDx(firstPoint, secondPoint);
         double dy = getDy(firstPoint, secondPoint);
@@ -26,22 +26,22 @@ struct CartesianPoint
         if (squaredDistance != 0.0)
         {
             const double distance = sqrt(squaredDistance);
-            CartesianPoint point{ dx / distance , dy / distance };
+            SphericalPoint point{ dx / distance , dy / distance };
             return std::move(point);
         }
     }
 
-    static double getDx(const CartesianPoint& firstPoint, const CartesianPoint& secondPoint)
+    static double getDx(const SphericalPoint& firstPoint, const SphericalPoint& secondPoint)
     {
         return firstPoint.x - secondPoint.x;
     }
 
-    static double getDy(const CartesianPoint& firstPoint, const CartesianPoint& secondPoint)
+    static double getDy(const SphericalPoint& firstPoint, const SphericalPoint& secondPoint)
     {
         return firstPoint.y - secondPoint.y;
     }
 
-    static void add(CartesianPoint& point, const CartesianPoint& normal, const double increment)
+    static void add(SphericalPoint& point, const SphericalPoint& normal, const double increment)
     {
         point.x = point.x + normal.x * increment;
         point.y = point.y + normal.y * increment;
