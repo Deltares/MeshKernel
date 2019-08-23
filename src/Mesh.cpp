@@ -14,8 +14,6 @@ class Mesh
 public:
 
     typedef std::pair<size_t, size_t>        Edge;
-  
-
 
     Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, const bool isSpheric) :
         _edges(edges), _nodes(nodes), _isSpheric(isSpheric)
