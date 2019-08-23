@@ -2,7 +2,7 @@ project( GridGeom )
 cmake_minimum_required(VERSION 3.1)
 
 FIND_PACKAGE( Boost )
-FIND_PACKAGE( Cgal )
+FIND_PACKAGE( Cgal REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 FILE( GLOB all_headers src/*.h )
