@@ -4,5 +4,8 @@ doc/BudgetEstimateGridGeomInC++.xlsx -text
 doc/ProjectplanGridGeomInC++_v00.docx -text
 doc/gridgeomInC++.ppt -text
 doc/gridgeomStructure.tif -text
+src/CartesianPoint.cpp -text
 src/Mesh.cpp -text
+src/SphericalPoint.cpp -text
+src/UnitTests.cpp -text
 src/main.cpp -text
