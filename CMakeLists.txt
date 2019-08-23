@@ -46,5 +46,5 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 
 # Add tests
 add_executable( GridGeomTest src/tests/GridGeomTest.cpp)
-target_link_libraries(GridGeomTest gtest_main)
+target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main ${Boost_LIBRARIES} CGAL::CGAL)
 add_test( NAME GridGeomTest COMMAND GridGeomTest )
