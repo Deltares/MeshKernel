@@ -7,6 +7,9 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
+#include <CGAL/Kernel/global_functions.h>
+
+#include"AlgebraicOperations.cpp"
 
 template<typename Point>
 class Mesh
@@ -33,6 +36,9 @@ public:
         findFaces(4);
         findFaces(5);
         findFaces(6);
+        
+        // find mesh circumcenters
+        //faceCircumcenters(1.0);
     };
 
     const std::vector<std::vector<size_t>>& getFaces() const
@@ -40,7 +46,10 @@ public:
         return _facesNodes;
     }
 
-
+    const std::vector<Point>& getFacesCircumcenters() const
+    {
+        return _facesCircumcenters;
+    }
     
 private:
 
@@ -265,6 +274,7 @@ private:
     {
         localPolygon.resize(_facesNodes[faceIndex].size());
         localEdgeNumber.resize(_facesNodes[faceIndex].size());
+        localEdges.resize(_facesNodes[faceIndex].size());
         for(int n=0;n<_facesNodes[faceIndex].size();n++)
         {
             localPolygon[n] = _nodes[_facesNodes[faceIndex][n]];
@@ -275,25 +285,26 @@ private:
 
     void faceCircumcenters(const double & weightCircumCenter)
     {
-        using namespace AlgebraicOperations;
-
         _facesCircumcenters.resize(_facesNodes.size());
+        std::vector<Point> localPolygon;
+        std::vector<size_t> localEdges;
+        std::vector<size_t> localEdgeNumber;
         for (int f = 0; f < _facesNodes.size(); f++)
         {
             // for triangles, for now assume cartesian kernel
             if(_facesNodes[f].size()==3)
             {
-                auto circumCenter = CGAL::circumcenter(_nodes[_facesNodes[f][0]], _nodes[_facesNodes[f][1]], _nodes[_facesNodes[f][2]]);
-                _facesCircumcenters[f] = { circumCenter.x(),circumCenter.y() };
+                //_nodes[_facesNodes[f][0]] 
+                //_nodes[_facesNodes[f][1]]
+                //_nodes[_facesNodes[f][2]]
+                //auto circumCenter = CGAL::circumcenter(_nodes[_facesNodes[f][0]], _nodes[_facesNodes[f][1]], _nodes[_facesNodes[f][2]]);
+                //_facesCircumcenters[f] = { circumCenter.x(),circumCenter.y() };
+                _facesCircumcenters[f] = { 0.0,0.0 };
             }
             else
             {
                 double xCenter = 0.0;
                 double yCenter = 0.0;
-
-                std::vector<Point> localPolygon;
-                std::vector<size_t> localEdges;
-                std::vector<size_t> localEdgeNumber;
 
                 facePolygon(f, localPolygon, localEdges, localEdgeNumber);
 
@@ -314,7 +325,9 @@ private:
                 
                 if( numberOfInteriorEdges == 0 )
                 {
-                    _facesCircumcenters[f] = { xCenter, yCenter };
+                    _facesCircumcenters[f].x=  xCenter;
+                    _facesCircumcenters[f].y = yCenter;
+
                 }
                 else
                 {
@@ -342,9 +355,9 @@ private:
                             {
                                 int nextNode =  n + 1; 
                                 if (nextNode == localPolygon.size()) nextNode = 0;
-                                double dx = Point::getDx(middlePoint[n], estimatedCircumCenter);
-                                double dy = Point::getDy(middlePoint[n], estimatedCircumCenter);
-                                double increment = - 0.1 * dotProduct(dx, dy, normals[n].x, normals[n].y);
+                                double dx = Point::getDx(middlePoints[n], estimatedCircumCenter);
+                                double dy = Point::getDy(middlePoints[n], estimatedCircumCenter);
+                                double increment = - 0.1 * AlgebraicOperations::dotProduct(dx, dy, normals[n].x, normals[n].y);
                                 Point::add(estimatedCircumCenter, normals[n], increment);
                             }
                         }
@@ -362,11 +375,11 @@ private:
 
         if (weightCircumCenter <= 1.0 && weightCircumCenter >=0.0)
         {
-            double localWeightCircumCenter = 1.0;
-            if( localPolygon.size()>3 )
-            {
-                localWeightCircumCenter = weightCircumCenter;
-            }
+            //double localWeightCircumCenter = 1.0;
+            //if( localPolygon.size()>3 )
+            //{
+            //    localWeightCircumCenter = weightCircumCenter;
+            //}
             // to finish
         }
 
