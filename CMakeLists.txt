@@ -1,5 +1,6 @@
 project( GridGeom )
 cmake_minimum_required(VERSION 3.1)
+set(CMAKE_CXX_STANDARD 17)
 
 FIND_PACKAGE( Boost )
 FIND_PACKAGE( Cgal REQUIRED )
@@ -16,9 +17,11 @@ add_executable( GridGeom
   ${all_headers}
 )
 
+set(CMAKE_CXX_FLAGS_RELEASE "/Ot")
 target_link_libraries(GridGeom LINK_PUBLIC ${Boost_LIBRARIES} CGAL::CGAL)
 
 # Google tests 
+# https://crascit.com/2015/07/25/cmake-gtest/
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .

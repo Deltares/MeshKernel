@@ -2,21 +2,23 @@
 // TODO: Use CGAL kernel points to easy switch between cartesian and spherical basic computations (e.g. triangle circumcenters or distances)
 // Spherical coordinate kernel https://doc.cgal.org/latest/Circular_kernel_3/index.html (ja spheric)
 
+#ifndef MESH_CPP
+#define MESH_CPP
+
 #define _USE_MATH_DEFINES
 #include <vector>
 #include <cmath>
 #include <numeric>
 #include <algorithm>
 #include <CGAL/Kernel/global_functions.h>
+#include "Operations.cpp"
 
-#include"AlgebraicOperations.cpp"
+using namespace GridGeom;
 
-template<typename Point>
+template<CoordinateSystems CoordinateSystem>
 class Mesh
 {
 public:
-
-    typedef std::pair<size_t, size_t>        Edge;
 
     Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, const bool isSpheric) :
         _edges(edges), _nodes(nodes), _isSpheric(isSpheric)
@@ -38,7 +40,7 @@ public:
         findFaces(6);
         
         // find mesh circumcenters
-        //faceCircumcenters(1.0);
+        faceCircumcenters(1.0);
     };
 
     const std::vector<std::vector<size_t>>& getFaces() const
@@ -93,8 +95,8 @@ private:
                     firstNode = node;
                 }
 
-                double deltaX = Point::getDx(_nodes[secondNode], _nodes[firstNode]);
-                double deltaY = Point::getDy(_nodes[secondNode], _nodes[firstNode]);
+                double deltaX = Operations<CoordinateSystem>::getDx(_nodes[secondNode], _nodes[firstNode]);
+                double deltaY = Operations<CoordinateSystem>::getDy(_nodes[secondNode], _nodes[firstNode]);
                 if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
                 {
                     if (deltaY < 0.0)
@@ -210,7 +212,6 @@ private:
                 //indexFoundNodes++;
                 //foundNodes[indexFoundNodes] = currentNode;
 
-
                 if (currentNode == foundNodes[0])
                 {
                     // a cell has been found
@@ -270,29 +271,17 @@ private:
         }
     }
     
-    void facePolygon(const int faceIndex, std::vector<Point>& localPolygon, std::vector<size_t>& localEdges, std::vector<size_t>& localEdgeNumber)
-    {
-        localPolygon.resize(_facesNodes[faceIndex].size());
-        localEdgeNumber.resize(_facesNodes[faceIndex].size());
-        localEdges.resize(_facesNodes[faceIndex].size());
-        for(int n=0;n<_facesNodes[faceIndex].size();n++)
-        {
-            localPolygon[n] = _nodes[_facesNodes[faceIndex][n]];
-            localEdges[n] = _numFacesForEachEdge[_facesEdges[faceIndex][n]];
-            localEdgeNumber[n] = n;
-        }
-    }
-
     void faceCircumcenters(const double & weightCircumCenter)
     {
         _facesCircumcenters.resize(_facesNodes.size());
-        std::vector<Point> localPolygon;
-        std::vector<size_t> localEdges;
-        std::vector<size_t> localEdgeNumber;
+        std::vector<Point> middlePoints(maximumNumberOfNodesPerFace);
+        std::vector<Point> normals(maximumNumberOfNodesPerFace);
+        const int maximumNumberCircumcenterIterations = 100;
         for (int f = 0; f < _facesNodes.size(); f++)
         {
             // for triangles, for now assume cartesian kernel
-            if(_facesNodes[f].size()==3)
+            size_t numberOfFaceNodes = _facesNodes[f].size();
+            if(numberOfFaceNodes == 3)
             {
                 //_nodes[_facesNodes[f][0]] 
                 //_nodes[_facesNodes[f][1]]
@@ -305,60 +294,54 @@ private:
             {
                 double xCenter = 0.0;
                 double yCenter = 0.0;
-
-                facePolygon(f, localPolygon, localEdges, localEdgeNumber);
-
-                int numberOfInteriorEdges = 0;
-                for (int n = 0; n < localPolygon.size(); n++)
+                size_t numberOfInteriorEdges = 0;
+                for (int n = 0; n < numberOfFaceNodes; n++)
                 {
-                    xCenter += localPolygon[n].x;
-                    yCenter += localPolygon[n].y;
-                    if (localEdges[n]==2)
+                    xCenter += _nodes[_facesNodes[f][n]].x;
+                    yCenter += _nodes[_facesNodes[f][n]].y;
+                    if (_numFacesForEachEdge[_facesEdges[f][n]]==2)
                     {
                         numberOfInteriorEdges += 1;
                     }
                 }
 
                 // average centers
-                xCenter = xCenter / localPolygon.size();
-                yCenter = yCenter / localPolygon.size();
+                xCenter = xCenter / numberOfFaceNodes;
+                yCenter = yCenter / numberOfFaceNodes;
                 
                 if( numberOfInteriorEdges == 0 )
                 {
                     _facesCircumcenters[f].x=  xCenter;
                     _facesCircumcenters[f].y = yCenter;
-
                 }
                 else
                 {
                     Point estimatedCircumCenter{ xCenter, yCenter };
                     const double eps = 1e-3;
-                    
-                    std::vector<Point> middlePoints(localPolygon.size());
-                    std::vector<Point> normals(localPolygon.size());
-                    for (int n = 0; n < localPolygon.size(); n++)
+                   
+                    for (int n = 0; n < numberOfFaceNodes; n++)
                     {
                         int nextNode = n + 1;
-                        if (nextNode == localPolygon.size()) nextNode = 0;
-                        middlePoints[n] = { 0.5 * (localPolygon[n].x + localPolygon[nextNode].x),  0.5 * (localPolygon[n].y + localPolygon[nextNode].y) };
-                        normals[n] = Point::normalVector(localPolygon[n], localPolygon[nextNode], middlePoints[n]);
+                        if (nextNode == numberOfFaceNodes) nextNode = 0;
+                        middlePoints[n].x = 0.5 * (_nodes[_facesNodes[f][n]].x + _nodes[_facesNodes[f][nextNode]].x);
+                        middlePoints[n].y = 0.5 * (_nodes[_facesNodes[f][n]].y + _nodes[_facesNodes[f][nextNode]].y);
+                        Operations<CoordinateSystem>::normalVector(_nodes[_facesNodes[f][n]], _nodes[_facesNodes[f][nextNode]], middlePoints[n], normals[n]);
                     }
 
-                    for (int iter = 0; iter < 100; iter++)
+                    Point previousCircumCenter = estimatedCircumCenter;
+                    for (int iter = 0; iter < maximumNumberCircumcenterIterations; iter++)
                     {
-                        Point previousCircumCenter = estimatedCircumCenter;
-                        // compute quantities
-
-                        for (int n = 0; n < localPolygon.size(); n++)
+                        previousCircumCenter = estimatedCircumCenter;
+                        for (int n = 0; n < numberOfFaceNodes; n++)
                         {
-                            if (localEdges[n] == 2 || localPolygon.size() == 3)
+                            if (_numFacesForEachEdge[_facesEdges[f][n]] == 2 || numberOfFaceNodes == 3)
                             {
                                 int nextNode =  n + 1; 
-                                if (nextNode == localPolygon.size()) nextNode = 0;
-                                double dx = Point::getDx(middlePoints[n], estimatedCircumCenter);
-                                double dy = Point::getDy(middlePoints[n], estimatedCircumCenter);
-                                double increment = - 0.1 * AlgebraicOperations::dotProduct(dx, dy, normals[n].x, normals[n].y);
-                                Point::add(estimatedCircumCenter, normals[n], increment);
+                                if (nextNode == numberOfFaceNodes) nextNode = 0;
+                                double dx = Operations<CoordinateSystem>::getDx(middlePoints[n], estimatedCircumCenter);
+                                double dy = Operations<CoordinateSystem>::getDy(middlePoints[n], estimatedCircumCenter);
+                                double increment = - 0.1 * dotProduct(dx, dy, normals[n].x, normals[n].y);
+                                Operations<CoordinateSystem>::add(estimatedCircumCenter, normals[n], increment);
                             }
                         }
                         if (iter > 0 && 
@@ -376,7 +359,7 @@ private:
         if (weightCircumCenter <= 1.0 && weightCircumCenter >=0.0)
         {
             //double localWeightCircumCenter = 1.0;
-            //if( localPolygon.size()>3 )
+            //if( numberOfFaceNodes>3 )
             //{
             //    localWeightCircumCenter = weightCircumCenter;
             //}
@@ -400,6 +383,9 @@ private:
     //constants
     const double minimumDeltaCoordinate = 1e-14;
     const size_t maximumNumberOfEdgesPerNode = 8;
+    const size_t maximumNumberOfNodesPerFace = 10;
     const double dcenterinside = 1.0;                          //Force cell center inside cell with factor dcenterinside, 1: confined by cell edges, 0 : at mass center
 
 };
+
+#endif
