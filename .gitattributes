@@ -7,7 +7,9 @@ doc/gridgeomInC++.ppt -text
 doc/gridgeomStructure.tif -text
 src/CartesianPoint.cpp -text
 src/Constants.cpp -text
+src/Entities.cpp -text
 src/Mesh.cpp -text
+src/Operations.cpp -text
 src/UnitTests.cpp -text
 src/main.cpp -text
 src/tests/GridGeomTest.cpp -text
