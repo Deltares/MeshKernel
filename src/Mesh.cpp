@@ -40,7 +40,7 @@ public:
         findFaces(6);
         
         // find mesh circumcenters
-        faceCircumcenters(1.0);
+        //faceCircumcenters(1.0);
     };
 
     const std::vector<std::vector<size_t>>& getFaces() const
