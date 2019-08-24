@@ -17,7 +17,6 @@ add_executable( GridGeom
   ${all_headers}
 )
 
-set(CMAKE_CXX_FLAGS_RELEASE "/Ot")
 target_link_libraries(GridGeom LINK_PUBLIC ${Boost_LIBRARIES} CGAL::CGAL)
 
 # Google tests 
