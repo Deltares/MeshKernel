@@ -1,8 +1,14 @@
 project( GridGeom )
 cmake_minimum_required(VERSION 3.1)
-set(CMAKE_CXX_STANDARD 17)
 
+#Boost
 FIND_PACKAGE( Boost )
+
+#Vc SIMD classes
+#set(Vc_DIR "thirdParty/Vc/installIntel/lib/cmake/Vc")
+#FIND_PACKAGE( Vc )
+
+#CGAL geometric libraries
 FIND_PACKAGE( Cgal REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
