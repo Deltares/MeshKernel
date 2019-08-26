@@ -1,8 +1,9 @@
-#include <corecrt_math_defines.h>
 #ifndef CONSTANTS_CPP
 #define CONSTANTS_CPP
 
-#define _USE_MATH_DEFINES
+#ifndef M_PI
+#define M_PI (3.14159265358979323846)
+#endif
 
 namespace GridGeom
 {

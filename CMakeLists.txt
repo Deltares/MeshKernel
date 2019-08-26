@@ -9,8 +9,8 @@ FIND_PACKAGE( Boost )
 #FIND_PACKAGE( Vc )
 
 #CGAL geometric libraries
-FIND_PACKAGE( Cgal REQUIRED )
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+#FIND_PACKAGE( Cgal REQUIRED )
+#INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 FILE( GLOB all_headers src/*.h )
 source_group(include FILES ${all_headers})
@@ -23,7 +23,22 @@ add_executable( GridGeom
   ${all_headers}
 )
 
-target_link_libraries(GridGeom LINK_PUBLIC ${Boost_LIBRARIES} CGAL::CGAL)
+if (UNIX)
+	set(cxxVersion "-std=c++11")
+	MESSAGE(STATUS "CXX version is set to ${cxxVersion}")
+	
+	#Release
+    set(CMAKE_C_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C compiler flags for a Release build")
+    set(CMAKE_CXX_FLAGS_RELEASE "-g -O2 ${cxxVersion}" CACHE STRING "List of C++ compiler flags for a Release build")
+	MESSAGE(STATUS "CMAKE_CXX_FLAGS_RELEASE is set to ${CMAKE_CXX_FLAGS_RELEASE}")
+
+    #Debug
+    set(CMAKE_C_FLAGS_DEBUG"-g -O0 ${preciseFpModel}" CACHE STRING "List of C compiler flags for a Debug build")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0  ${preciseFpModel} ${cxxVersion}" CACHE STRING "List of C++ compiler flags for a Debug build")
+
+endif()
+
+target_link_libraries(GridGeom LINK_PUBLIC ) #  ${Boost_LIBRARIES} CGAL::CGAL
 
 # Google tests 
 # https://crascit.com/2015/07/25/cmake-gtest/
@@ -54,5 +69,5 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 
 # Add tests
 add_executable( GridGeomTest src/tests/GridGeomTest.cpp)
-target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main ${Boost_LIBRARIES} CGAL::CGAL)
+target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main ) # ${Boost_LIBRARIES} CGAL::CGAL
 add_test( NAME GridGeomTest COMMAND GridGeomTest )

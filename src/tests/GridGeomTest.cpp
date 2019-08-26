@@ -1,6 +1,6 @@
 #include "GridGeomTest.hpp"
 #include <chrono>
-#include <Vc/Vc>
+//#include <Vc/Vc>
 
 TEST(TestMesh, OneQuad) 
 {
@@ -106,7 +106,7 @@ TEST(PerformanceTest, ArrayAccess)
     const int arraySize = 10e6;
 
     double result = 0.0;
-    std::vector<Point, Vc::Allocator<Point>> nodesAoS(arraySize,{1.0,1.0});
+    std::vector<Point> nodesAoS(arraySize,{1.0,1.0}); //Vc::Allocator<Point>
     auto start(std::chrono::steady_clock::now());
     for(int i=0;i< arraySize;i++)
     {
@@ -118,8 +118,8 @@ TEST(PerformanceTest, ArrayAccess)
     
     struct StructOfArrays
     {
-        std::vector< double, Vc::Allocator<double>> x;
-        std::vector<double, Vc::Allocator<double>> y;
+        std::vector< double> x; //Vc::Allocator<double>
+        std::vector<double> y; //Vc::Allocator<double>
     };
 
     StructOfArrays nodesSoA;
