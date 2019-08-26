@@ -1,5 +1,6 @@
 #include "GridGeomTest.hpp"
 #include <chrono>
+#include <Vc/Vc>
 
 TEST(TestMesh, OneQuad) 
 {
@@ -102,15 +103,10 @@ TEST(PerformanceTest, MillionQuads)
 TEST(PerformanceTest, ArrayAccess)
 {
 
-    const int arraySize = 1e6;
-    struct StructOfArrays
-    {
-        std::vector<double> x;
-        std::vector<double> y;
-    };
+    const int arraySize = 10e6;
 
     double result = 0.0;
-    std::vector<Point> nodesAoS(arraySize,{1.0,1.0});
+    std::vector<Point, Vc::Allocator<Point>> nodesAoS(arraySize,{1.0,1.0});
     auto start(std::chrono::steady_clock::now());
     for(int i=0;i< arraySize;i++)
     {
@@ -119,16 +115,26 @@ TEST(PerformanceTest, ArrayAccess)
     auto end(std::chrono::steady_clock::now());
     std::cout << "Elapsed time for array of structures " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << result <<std::endl;
 
-    result = 0.0;
+    
+    struct StructOfArrays
+    {
+        std::vector< double, Vc::Allocator<double>> x;
+        std::vector<double, Vc::Allocator<double>> y;
+    };
+
     StructOfArrays nodesSoA;
-    nodesSoA.x = nodesSoA.y = std::vector<double>(arraySize, 1.0);
+    double result2 = 0.0;
+    nodesSoA.x.resize(arraySize);
+    nodesSoA.y.resize(arraySize);
+    std::fill(nodesSoA.x.begin(), nodesSoA.x.end(), 2.0);
+    std::fill(nodesSoA.y.begin(), nodesSoA.y.end(), 2.0);
     start = std::chrono::steady_clock::now();
     for (int i = 0; i < arraySize; i++)
     {
-        result += nodesSoA.x[i] + nodesSoA.y[i];
+        result2 += nodesSoA.x[i] + nodesSoA.y[i];
     }
     end = std::chrono::steady_clock::now();
-    std::cout << "Elapsed time for structures of arrays " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << result << std::endl;
+    std::cout << "Elapsed time for structures of arrays " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << result2 << std::endl;
 
 
    

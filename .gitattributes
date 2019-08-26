@@ -1,6 +1,7 @@
 * text=auto !eol
 /CMakeLists.txt -text
 /CMakeLists.txt.in -text
+build/bootstrap.bat -text
 doc/BudgetEstimateGridGeomInC++.xlsx -text
 doc/ProjectplanGridGeomInC++_v00.docx -text
 doc/gridgeomInC++.ppt -text
