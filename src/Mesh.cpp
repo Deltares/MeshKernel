@@ -10,7 +10,7 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
-#include <CGAL/Kernel/global_functions.h>
+//#include <CGAL/Kernel/global_functions.h>
 #include "Operations.cpp"
 
 using namespace GridGeom;
