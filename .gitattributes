@@ -7,6 +7,7 @@ doc/BudgetEstimateGridGeomInC++.xlsx -text
 doc/ProjectplanGridGeomInC++_v00.docx -text
 doc/gridgeomInC++.ppt -text
 doc/gridgeomStructure.tif -text
+doc/sent/ProjectPlanGridGeom_Phase1.docx -text
 src/CartesianPoint.cpp -text
 src/Constants.cpp -text
 src/Entities.cpp -text
