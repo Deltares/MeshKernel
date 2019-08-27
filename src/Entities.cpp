@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <vector>
+#include <Eigen/Dense>
 #define _USE_MATH_DEFINES
 
 namespace GridGeom
@@ -27,6 +28,9 @@ namespace GridGeom
     };
 
     typedef std::pair<size_t, size_t> Edge;
+
+    typedef Eigen::Matrix<double, Eigen::Dynamic, 1> VectorED;
+    typedef Eigen::Matrix<int, Eigen::Dynamic, 1> VectorEI;
 }
 
 #endif
