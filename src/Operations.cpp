@@ -99,6 +99,11 @@ namespace GridGeom
             double phi = orientation.y * degrad_hp;
             double elambda[3] = { -sin(lambda), cos(lambda), 0.0 };
             double ephi[3] = { -sin(lambda), cos(lambda), 0.0 };
+
+            //VectorED elambda={ -sin(lambda), cos(lambda), 0.0 };
+            //VectorED ephi = { -sin(lambda), cos(lambda), 0.0 };
+            //double dx = (elambda * ephi).sum();
+
             double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
                          (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
                          (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2]; 

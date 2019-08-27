@@ -12,7 +12,10 @@ FIND_PACKAGE( Boost )
 #FIND_PACKAGE( Cgal REQUIRED )
 #INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
-FILE( GLOB all_headers src/*.h )
+SET( EIGEN3_INCLUDE_DIR thirdParty/eigen )
+INCLUDE_DIRECTORIES ( "${EIGEN3_INCLUDE_DIR}" )
+
+FILE( GLOB all_headers src/*.hpp )
 source_group(include FILES ${all_headers})
 
 FILE( GLOB all_srcs src/*.cpp)
@@ -38,7 +41,7 @@ if (UNIX)
 
 endif()
 
-target_link_libraries(GridGeom LINK_PUBLIC ) #  ${Boost_LIBRARIES} CGAL::CGAL
+target_link_libraries(GridGeom LINK_PUBLIC) #  ${Boost_LIBRARIES} CGAL::CGAL
 
 # Google tests 
 # https://crascit.com/2015/07/25/cmake-gtest/
