@@ -8,19 +8,19 @@
 
 namespace GridGeom
 {
-    struct Point
+    struct Node
     {
         double x;
         double y;
     };
 
-    struct Points
+    struct Nodes
     {
         std::vector<double> x;
         std::vector<double> y;
     };
 
-    struct Point3D
+    struct Node3D
     {
         double x;
         double y;
