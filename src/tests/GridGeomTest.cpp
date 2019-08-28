@@ -7,11 +7,11 @@ TEST(TestMesh, OneQuad)
     using Mesh = Mesh<CoordinateSystems::cartesian>;
 
     //One gets the edges
-    std::vector<Point> nodes;
-    nodes.push_back(Point{ 0.0,0.0 });
-    nodes.push_back(Point{ 0.0,10.0 });
-    nodes.push_back(Point{ 10.0,0.0 });
-    nodes.push_back(Point{ 10.0,10.0 });
+    std::vector<Node> nodes;
+    nodes.push_back(Node{ 0.0,0.0 });
+    nodes.push_back(Node{ 0.0,10.0 });
+    nodes.push_back(Node{ 10.0,0.0 });
+    nodes.push_back(Node{ 10.0,10.0 });
 
     std::vector<Edge> edges;
     // Local edges
@@ -26,11 +26,61 @@ TEST(TestMesh, OneQuad)
     // now build node-edge mapping
     Mesh mesh(edges, nodes);
 
-	//check values
-    EXPECT_EQ(1, mesh.getFaces().size());
-    auto circumcenters = mesh.getFacesCircumcenters();
-	EXPECT_DOUBLE_EQ(5.0, circumcenters[0].x);
-    EXPECT_DOUBLE_EQ(5.0, circumcenters[0].y);
+
+    auto nodesEdges = mesh.getNodesEdges();
+    auto nodesNumEdges = mesh.getNodesNumEdges();
+    auto facesNodes = mesh.getFacesNodes();
+    auto facesEdges = mesh.getFacesEdges();
+    auto facesCircumcenters = mesh.getFacesCircumcenters();
+    auto edgesNumFaces = mesh.getEdgesNumFaces();
+    auto edgesFaces = mesh.getEdgesFaces();
+
+    // expect nodesEdges to be sorted ccw
+    EXPECT_EQ(0, nodesEdges[0][0]);
+    EXPECT_EQ(2, nodesEdges[0][1]);
+
+    EXPECT_EQ(1, nodesEdges[1][0]);
+    EXPECT_EQ(2, nodesEdges[1][1]);
+
+    EXPECT_EQ(0, nodesEdges[2][0]);
+    EXPECT_EQ(3, nodesEdges[2][1]);
+
+    EXPECT_EQ(1, nodesEdges[3][0]);
+    EXPECT_EQ(3, nodesEdges[3][1]);
+
+    // each node has two edges int this case
+    EXPECT_EQ(2, nodesNumEdges[0]);
+    EXPECT_EQ(2, nodesNumEdges[1]);
+    EXPECT_EQ(2, nodesNumEdges[2]);
+    EXPECT_EQ(2, nodesNumEdges[3]);
+
+    // the nodes composing the face, in ccw order
+    EXPECT_EQ(0, facesNodes[0][0]);
+    EXPECT_EQ(2, facesNodes[0][1]);
+    EXPECT_EQ(3, facesNodes[0][2]);
+    EXPECT_EQ(1, facesNodes[0][3]);
+
+    // the edges composing the face, in ccw order
+    EXPECT_EQ(0, facesEdges[0][0]);
+    EXPECT_EQ(3, facesEdges[0][1]);
+    EXPECT_EQ(1, facesEdges[0][2]);
+    EXPECT_EQ(2, facesEdges[0][3]);
+
+    // the found circumcenter for the face
+    EXPECT_DOUBLE_EQ(5.0, facesCircumcenters[0].x);
+    EXPECT_DOUBLE_EQ(5.0, facesCircumcenters[0].y);
+
+    // each edge has only one face in this case
+    EXPECT_EQ(1, edgesNumFaces[0]);
+    EXPECT_EQ(1, edgesNumFaces[1]);
+    EXPECT_EQ(1, edgesNumFaces[2]);
+    EXPECT_EQ(1, edgesNumFaces[3]);
+
+    //each edge is a boundary edge, so the second entry of edgesFaces zero
+    EXPECT_EQ(0, edgesFaces[0][1]);
+    EXPECT_EQ(0, edgesFaces[1][1]);
+    EXPECT_EQ(0, edgesFaces[2][1]);
+    EXPECT_EQ(0, edgesFaces[3][1]);
 }
 
 
@@ -43,7 +93,7 @@ TEST(PerformanceTest, MillionQuads)
     auto start(std::chrono::steady_clock::now());
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<Point> nodes(n * m);
+    std::vector<Node> nodes(n * m);
     size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -89,12 +139,12 @@ TEST(PerformanceTest, MillionQuads)
     std::cout << "Elapsed time " << elapsedTime << " s " << std::endl;
 
     // the number of found faces is
-    auto faces = mesh.getFaces();
+    auto faces = mesh.getFacesNodes();
     std::cout << "Number of found cells " << faces.size() << std::endl;
     std::cout << "First face " << faces[0][0] << " " << faces[0][1] << " " << faces[0][2] << " " << faces[0][3] << std::endl;
     std::cout << "Second face " << faces[1][0] << " " << faces[1][1] << " " << faces[1][2] << " " << faces[1][3] << std::endl;
 
-    // to be comparable to interactor, we need to perform administration in less than 1.5 seconds
+    // to beat fortran interactor, we need to perform the entire administration in less than 1.5 seconds
     EXPECT_LE(elapsedTime, 1.5);
 }
 
@@ -104,7 +154,7 @@ TEST(PerformanceTest, ArrayAccess)
     const int arraySize = 10e6;
 
     double result = 0.0;
-    std::vector<Point> nodesAoS(arraySize,{1.0,1.0}); //Vc::Allocator<Point>
+    std::vector<Node> nodesAoS(arraySize,{1.0,1.0}); //Vc::Allocator<Node>
     auto start(std::chrono::steady_clock::now());
     for(int i=0;i< arraySize;i++)
     {
@@ -134,8 +184,6 @@ TEST(PerformanceTest, ArrayAccess)
     end = std::chrono::steady_clock::now();
     std::cout << "Elapsed time for structures of arrays " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << result2 << std::endl;
 
-
-   
 }
 
 

@@ -10,7 +10,9 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
-//#include <CGAL/Kernel/global_functions.h>
+
+#include <Eigen/Dense>
+
 #include "Operations.cpp"
 
 using namespace GridGeom;
@@ -20,7 +22,7 @@ class Mesh
 {
 public:
 
-    Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes) :
+    Mesh(const std::vector<Edge>& edges, const std::vector<Node>& nodes) :
         m_edges(edges), m_nodes(nodes)
     {
         //allocate
@@ -43,16 +45,41 @@ public:
         faceCircumcenters(1.0);
     };
 
-    const std::vector<std::vector<size_t>>& getFaces() const
+    const std::vector<std::vector<size_t>>& getNodesEdges() const
+    {
+        return m_nodesEdges;
+    }
+
+    const  std::vector<size_t>& getNodesNumEdges() const
+    {
+        return m_nodesNumEdges;
+    }
+
+    const std::vector<std::vector<size_t>>& getFacesNodes() const
     {
         return m_facesNodes;
     }
 
-    const std::vector<Point>& getFacesCircumcenters() const
+    const std::vector<std::vector<size_t>>& getFacesEdges() const
+    {
+        return m_facesEdges;
+    }
+
+    const std::vector<Node>& getFacesCircumcenters() const
     {
         return m_facesCircumcenters;
     }
-    
+
+    const std::vector<size_t>& getEdgesNumFaces() const
+    {
+        return m_edgesNumFaces;
+    }
+
+    const std::vector<std::vector<size_t>>& getEdgesFaces() const
+    {
+        return m_edgesFaces;
+    }
+
 private:
 
     // Set node admin
@@ -274,8 +301,8 @@ private:
     void faceCircumcenters(const double & weightCircumCenter)
     {
         m_facesCircumcenters.resize(m_facesNodes.size());
-        std::vector<Point> middlePoints(m_maximumNumberOfNodesPerFace);
-        std::vector<Point> normals(m_maximumNumberOfNodesPerFace);
+        std::vector<Node> middlePoints(m_maximumNumberOfNodesPerFace);
+        std::vector<Node> normals(m_maximumNumberOfNodesPerFace);
         const int maximumNumberCircumcenterIterations = 100;
         for (int f = 0; f < m_facesNodes.size(); f++)
         {
@@ -316,7 +343,7 @@ private:
                 }
                 else
                 {
-                    Point estimatedCircumCenter{ xCenter, yCenter };
+                    Node estimatedCircumCenter{ xCenter, yCenter };
                     const double eps = 1e-3;
                    
                     for (int n = 0; n < numberOfFaceNodes; n++)
@@ -328,7 +355,7 @@ private:
                         Operations<CoordinateSystem>::normalVector(m_nodes[m_facesNodes[f][n]], m_nodes[m_facesNodes[f][nextNode]], middlePoints[n], normals[n]);
                     }
 
-                    Point previousCircumCenter = estimatedCircumCenter;
+                    Node previousCircumCenter = estimatedCircumCenter;
                     for (int iter = 0; iter < maximumNumberCircumcenterIterations; iter++)
                     {
                         previousCircumCenter = estimatedCircumCenter;
@@ -368,23 +395,20 @@ private:
 
     }
 
-    //constants
-    const double m_minimumDeltaCoordinate = 1e-14;
-    const size_t m_maximumNumberOfEdgesPerNode = 8;
-    const size_t m_maximumNumberOfNodesPerFace = 10;
+   
     const double m_dcenterinside = 1.0;
 
-
     std::vector<Edge> m_edges;                                  //KN
-    std::vector<Point> m_nodes;                                 //KN
+    std::vector<Node> m_nodes;                                  //KN
     std::vector<std::vector<size_t>> m_nodesEdges;              //NOD
     std::vector<size_t> m_nodesNumEdges;                        //NMK
     std::vector<std::vector<size_t>> m_facesNodes;              //netcell%Nod
     std::vector<std::vector<size_t>> m_facesEdges;              //netcell%lin
-    std::vector<Point>   m_facesCircumcenters;                  //xw
+    std::vector<Node>   m_facesCircumcenters;                   //xw
     std::vector<size_t> m_edgesNumFaces;                        //LNN
     size_t m_numFaces;                                          //NUMP
     std::vector<std::vector<size_t>> m_edgesFaces;              //LNE
+
 
 };
 

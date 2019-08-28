@@ -15,7 +15,7 @@ namespace GridGeom
     }
 
     // transform 2d spherical to 3d cartesian
-    static void sphericalToCartesian(const Point& sphericalPoint, Point3D& cartesianPoint)
+    static void sphericalToCartesian(const Node& sphericalPoint, Node3D& cartesianPoint)
     {
         cartesianPoint.z = earth_radius * sin(sphericalPoint.y * degrad_hp);
         double rr = earth_radius * cos(sphericalPoint.y * degrad_hp);
@@ -24,7 +24,7 @@ namespace GridGeom
     }
 
     //  transform 3d cartesian coordinates to 2d spherical
-    static void cartesianToSpherical(const Point3D& cartesianPoint, const double referenceLongitude, Point& sphericalPoint)
+    static void cartesianToSpherical(const Node3D& cartesianPoint, const double referenceLongitude, Node& sphericalPoint)
     {
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
         sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * raddeg_hp;
@@ -42,17 +42,17 @@ namespace GridGeom
     template <CoordinateSystems CoordinateSystems>
     struct Operations
     {
-        static void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& orientation, Point& result);
-        static double getDx(const Point& firstPoint, const Point& secondPoint);
-        static double getDy(const Point& firstPoint, const Point& secondPoint); 
-        static void add(Point& point, const Point& normal, const double increment);
+        static void normalVector(const Node& firstPoint, const Node& secondPoint, const Node& orientation, Node& result);
+        static double getDx(const Node& firstPoint, const Node& secondPoint);
+        static double getDy(const Node& firstPoint, const Node& secondPoint); 
+        static void add(Node& point, const Node& normal, const double increment);
     };
 
     // cartesian system
     template <>
     struct Operations<CoordinateSystems::cartesian>
     {
-        static void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& orientation, Point& result)
+        static void normalVector(const Node& firstPoint, const Node& secondPoint, const Node& orientation, Node& result)
         {
             double dx = getDx(firstPoint, secondPoint);
             double dy = getDy(firstPoint, secondPoint);
@@ -64,19 +64,19 @@ namespace GridGeom
                 result.y = dy / distance;
             }
         }
-        static double getDx(const Point& firstPoint, const Point& secondPoint)
+        static double getDx(const Node& firstPoint, const Node& secondPoint)
         {
             return firstPoint.x - secondPoint.x;
         }
 
 
-        static double getDy(const Point& firstPoint, const Point& secondPoint)
+        static double getDy(const Node& firstPoint, const Node& secondPoint)
         {
             return firstPoint.y - secondPoint.y;
         }
 
 
-        static void add(Point& point, const Point& normal, const double increment)
+        static void add(Node& point, const Node& normal, const double increment)
         {
             point.x = point.x + normal.x * increment;
             point.y = point.y + normal.y * increment;
@@ -88,10 +88,10 @@ namespace GridGeom
     struct Operations<CoordinateSystems::spheric>
     {
 
-        static void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& orientation, Point& result)
+        static void normalVector(const Node& firstPoint, const Node& secondPoint, const Node& orientation, Node& result)
         {
-            Point3D firstPointCartesianCoordinates;
-            Point3D secondPointCartesianCoordinates;
+            Node3D firstPointCartesianCoordinates;
+            Node3D secondPointCartesianCoordinates;
             sphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
             sphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
 
@@ -121,7 +121,7 @@ namespace GridGeom
             }
         }
 
-        static double getDx(const Point& firstPoint, const Point& secondPoint)
+        static double getDx(const Node& firstPoint, const Node& secondPoint)
         {
             double  firstPointYDiff = abs(abs(firstPoint.y) - 90.0);
             double  secondPointYDiff = abs(abs(secondPoint.y) - 90.0);
@@ -149,7 +149,7 @@ namespace GridGeom
             return dx;
         }
 
-        static double getDy(const Point& firstPoint, const Point& secondPoint)
+        static double getDy(const Node& firstPoint, const Node& secondPoint)
         {
             double firstPointY = firstPoint.y * degrad_hp;
             double secondPointY = secondPoint.y * degrad_hp;
@@ -157,7 +157,7 @@ namespace GridGeom
             return dy;
         }
 
-        static void add(Point& point, const Point& normal, const double increment)
+        static void add(Node& point, const Node& normal, const double increment)
         {
 
             double convertedIncrement = raddeg_hp * increment / earth_radius;
