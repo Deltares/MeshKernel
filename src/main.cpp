@@ -16,7 +16,7 @@ int main()
     using Mesh = Mesh<GridGeom::CoordinateSystems::cartesian>;
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<Point> nodes(n * m);
+    std::vector<Node> nodes(n * m);
     size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -53,13 +53,13 @@ int main()
     std::cout << "start finding cells " << std::endl;
     start = std::chrono::steady_clock::now();
     // now build node-edge mapping
-    Mesh mesh(edges, nodes, false);
+    Mesh mesh(edges, nodes);
 
     end = std::chrono::steady_clock::now();
     std::cout << "Elapsed time " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << std::endl;
 
     // the number of found faces is
-    auto faces = mesh.getFaces();
+    auto faces = mesh.getFacesNodes();
     std::cout << "Number of found cells " << faces.size() << std::endl;
     std::cout << "First face " << faces[0][0] << " " << faces[0][1] << " " << faces[0][2] << " " << faces[0][3] << std::endl;
     std::cout << "Second face " << faces[1][0] << " " << faces[1][1] << " " << faces[1][2] << " " << faces[1][3] << std::endl;
