@@ -20,15 +20,15 @@ class Mesh
 {
 public:
 
-    Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, const bool isSpheric) :
-        _edges(edges), _nodes(nodes), _isSpheric(isSpheric)
+    Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes) :
+        m_edges(edges), m_nodes(nodes)
     {
         //allocate
-        _numEdgesPeNode.resize(_nodes.size());
-        _nodeEdges.resize(_nodes.size(), std::vector<size_t>(maximumNumberOfEdgesPerNode, 0));
-        _numFacesForEachEdge.resize(_edges.size());
-        _faceIndex = 0;
-        _faceIndexsesForEachEdge.resize(edges.size(), std::vector<size_t>(2));
+        m_nodesNumEdges.resize(m_nodes.size());
+        m_nodesEdges.resize(m_nodes.size(), std::vector<size_t>(m_maximumNumberOfEdgesPerNode, 0));
+        m_edgesNumFaces.resize(m_edges.size());
+        m_numFaces = 0;
+        m_edgesFaces.resize(edges.size(), std::vector<size_t>(2));
 
 
         //run administration and find the faces
@@ -45,12 +45,12 @@ public:
 
     const std::vector<std::vector<size_t>>& getFaces() const
     {
-        return _facesNodes;
+        return m_facesNodes;
     }
 
     const std::vector<Point>& getFacesCircumcenters() const
     {
-        return _facesCircumcenters;
+        return m_facesCircumcenters;
     }
     
 private:
@@ -59,45 +59,45 @@ private:
     void NodeAdministration()
     {
         // assume no duplicated linkscma
-        for (size_t e = 0; e < _edges.size(); e++)
+        for (size_t e = 0; e < m_edges.size(); e++)
         {
-            const size_t firstNode = _edges[e].first;
-            const size_t secondNode = _edges[e].second;
-            _nodeEdges[firstNode][_numEdgesPeNode[firstNode]] = e;
-            _nodeEdges[secondNode][_numEdgesPeNode[secondNode]] = e;
-            _numEdgesPeNode[firstNode]++;
-            _numEdgesPeNode[secondNode]++;
+            const size_t firstNode = m_edges[e].first;
+            const size_t secondNode = m_edges[e].second;
+            m_nodesEdges[firstNode][m_nodesNumEdges[firstNode]] = e;
+            m_nodesEdges[secondNode][m_nodesNumEdges[secondNode]] = e;
+            m_nodesNumEdges[firstNode]++;
+            m_nodesNumEdges[secondNode]++;
         }
 
         // resize
-        for (int node = 0; node < _nodeEdges.size(); node++)
+        for (int node = 0; node < m_nodesEdges.size(); node++)
         {
-            _nodeEdges[node].resize(_numEdgesPeNode[node]);
+            m_nodesEdges[node].resize(m_nodesNumEdges[node]);
         }
     }
 
     void SortEdgesInCounterClockWiseOrder()
     {
 
-        for (size_t node = 0; node < _nodes.size(); node++)
+        for (size_t node = 0; node < m_nodes.size(); node++)
         {
             double phi0 = 0.0;
             double phi;
-            std::vector<double> edgesAngles(_numEdgesPeNode[node], 0.0);
-            for (size_t edgeIndex = 0; edgeIndex < _numEdgesPeNode[node]; edgeIndex++)
+            std::vector<double> edgesAngles(m_nodesNumEdges[node], 0.0);
+            for (size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
             {
 
-                auto firstNode = _edges[_nodeEdges[node][edgeIndex]].first;
-                auto secondNode = _edges[_nodeEdges[node][edgeIndex]].second;
+                auto firstNode = m_edges[m_nodesEdges[node][edgeIndex]].first;
+                auto secondNode = m_edges[m_nodesEdges[node][edgeIndex]].second;
                 if (secondNode == node)
                 {
                     secondNode = firstNode;
                     firstNode = node;
                 }
 
-                double deltaX = Operations<CoordinateSystem>::getDx(_nodes[secondNode], _nodes[firstNode]);
-                double deltaY = Operations<CoordinateSystem>::getDy(_nodes[secondNode], _nodes[firstNode]);
-                if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
+                double deltaX = Operations<CoordinateSystem>::getDx(m_nodes[secondNode], m_nodes[firstNode]);
+                double deltaY = Operations<CoordinateSystem>::getDy(m_nodes[secondNode], m_nodes[firstNode]);
+                if (abs(deltaX) < m_minimumDeltaCoordinate && abs(deltaY) < m_minimumDeltaCoordinate)
                 {
                     if (deltaY < 0.0)
                     {
@@ -127,14 +127,14 @@ private:
             }
 
             // Performing sorting
-            std::vector<size_t> indexes(_numEdgesPeNode[node]);
-            std::vector<size_t> edgeNodeCopy{ _nodeEdges[node] };
+            std::vector<size_t> indexes(m_nodesNumEdges[node]);
+            std::vector<size_t> edgeNodeCopy{ m_nodesEdges[node] };
             iota(indexes.begin(), indexes.end(), 0);
             sort(indexes.begin(), indexes.end(), [&edgesAngles](size_t i1, size_t i2) {return edgesAngles[i1] < edgesAngles[i2]; });
 
-            for (size_t edgeIndex = 0; edgeIndex < _numEdgesPeNode[node]; edgeIndex++)
+            for (size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
             {
-                _nodeEdges[node][edgeIndex] = edgeNodeCopy[indexes[edgeIndex]];
+                m_nodesEdges[node][edgeIndex] = edgeNodeCopy[indexes[edgeIndex]];
             }
         }
     }
@@ -146,20 +146,20 @@ private:
         std::vector<size_t> foundEdges(numEdges);
         std::vector<size_t> foundNodes(numEdges);
 
-        for (size_t node = 0; node < _nodes.size(); node++)
+        for (size_t node = 0; node < m_nodes.size(); node++)
         {
-            for (size_t firstEdgeLocalIndex = 0; firstEdgeLocalIndex < _numEdgesPeNode[node]; firstEdgeLocalIndex++)
+            for (size_t firstEdgeLocalIndex = 0; firstEdgeLocalIndex < m_nodesNumEdges[node]; firstEdgeLocalIndex++)
             {
                 size_t indexFoundNodes = 0;
                 size_t indexFoundEdges = 0;
 
-                size_t currentEdge = _nodeEdges[node][firstEdgeLocalIndex];
+                size_t currentEdge = m_nodesEdges[node][firstEdgeLocalIndex];
                 size_t currentNode = node;
                 foundEdges[indexFoundEdges] = currentEdge;
                 foundNodes[indexFoundNodes] = currentNode;
                 int numFoundEdges = 1;
 
-                if (_numFacesForEachEdge[currentEdge] >= 2)
+                if (m_edgesNumFaces[currentEdge] >= 2)
                 {
                     continue;
                 }
@@ -168,19 +168,19 @@ private:
                 {
 
                     // the new node index
-                    if (_numFacesForEachEdge[currentEdge] >= 2)
+                    if (m_edgesNumFaces[currentEdge] >= 2)
                     {
                         break;
                     }
 
-                    currentNode = _edges[currentEdge].first + _edges[currentEdge].second - currentNode;
+                    currentNode = m_edges[currentEdge].first + m_edges[currentEdge].second - currentNode;
                     indexFoundNodes++;
                     foundNodes[indexFoundNodes] = currentNode;
 
                     int edgeIndex = 0;
-                    for (size_t localEdgeIndex = 0; localEdgeIndex < _numEdgesPeNode[currentNode]; localEdgeIndex++)
+                    for (size_t localEdgeIndex = 0; localEdgeIndex < m_nodesNumEdges[currentNode]; localEdgeIndex++)
                     {
-                        if (_nodeEdges[currentNode][localEdgeIndex] == currentEdge)
+                        if (m_nodesEdges[currentNode][localEdgeIndex] == currentEdge)
                         {
                             edgeIndex = localEdgeIndex;
                             break;
@@ -190,13 +190,13 @@ private:
                     edgeIndex = edgeIndex - 1;
                     if (edgeIndex < 0)
                     {
-                        edgeIndex = edgeIndex + _numEdgesPeNode[currentNode];
+                        edgeIndex = edgeIndex + m_nodesNumEdges[currentNode];
                     }
-                    if (edgeIndex > _numEdgesPeNode[currentNode] - 1)
+                    if (edgeIndex > m_nodesNumEdges[currentNode] - 1)
                     {
-                        edgeIndex = edgeIndex - _numEdgesPeNode[currentNode];
+                        edgeIndex = edgeIndex - m_nodesNumEdges[currentNode];
                     }
-                    currentEdge = _nodeEdges[currentNode][edgeIndex];
+                    currentEdge = m_nodesEdges[currentNode][edgeIndex];
                     indexFoundEdges++;
                     foundEdges[indexFoundEdges] = currentEdge;
 
@@ -204,11 +204,11 @@ private:
                 }
 
                 // now check if the last node coincides
-                if (_numFacesForEachEdge[currentEdge] >= 2)
+                if (m_edgesNumFaces[currentEdge] >= 2)
                 {
                     continue;
                 }
-                currentNode = _edges[currentEdge].first + _edges[currentEdge].second - currentNode;
+                currentNode = m_edges[currentEdge].first + m_edges[currentEdge].second - currentNode;
                 //indexFoundNodes++;
                 //foundNodes[indexFoundNodes] = currentNode;
 
@@ -218,7 +218,7 @@ private:
                     bool isFaceAlreadyFound = false;
                     for (size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
                     {
-                        if (_numFacesForEachEdge[foundEdges[localEdgeIndex]] >= 2)
+                        if (m_edgesNumFaces[foundEdges[localEdgeIndex]] >= 2)
                         {
                             isFaceAlreadyFound = true;
                             break;
@@ -232,7 +232,7 @@ private:
                     bool allEdgesHaveAFace = true;
                     for (size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
                     {
-                        if (_numFacesForEachEdge[foundEdges[localEdgeIndex]] < 1)
+                        if (m_edgesNumFaces[foundEdges[localEdgeIndex]] < 1)
                         {
                             allEdgesHaveAFace = false;
                             break;
@@ -242,7 +242,7 @@ private:
                     bool isAnAlreadyFoundBoundaryFace = true;
                     for (size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges - 1; localEdgeIndex++)
                     {
-                        if (_faceIndexsesForEachEdge[foundEdges[localEdgeIndex]][0] != _faceIndexsesForEachEdge[foundEdges[localEdgeIndex + 1]][0])
+                        if (m_edgesFaces[foundEdges[localEdgeIndex]][0] != m_edgesFaces[foundEdges[localEdgeIndex + 1]][0])
                         {
                             isAnAlreadyFoundBoundaryFace = false;
                             break;
@@ -254,18 +254,18 @@ private:
                         continue;
                     }
 
-                    // increase _numFacesForEachEdge 
-                    _faceIndex += 1;
+                    // increase m_edgesNumFaces 
+                    m_numFaces += 1;
                     for (size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
                     {
-                        _numFacesForEachEdge[foundEdges[localEdgeIndex]] += 1;
-                        const int numFace = _numFacesForEachEdge[foundEdges[localEdgeIndex]];
-                        _faceIndexsesForEachEdge[foundEdges[localEdgeIndex]][numFace - 1] = _faceIndex;
+                        m_edgesNumFaces[foundEdges[localEdgeIndex]] += 1;
+                        const int numFace = m_edgesNumFaces[foundEdges[localEdgeIndex]];
+                        m_edgesFaces[foundEdges[localEdgeIndex]][numFace - 1] = m_numFaces;
                     }
 
                     // store the result
-                    _facesNodes.push_back(foundNodes);
-                    _facesEdges.push_back(foundEdges);
+                    m_facesNodes.push_back(foundNodes);
+                    m_facesEdges.push_back(foundEdges);
                 }
             }
         }
@@ -273,22 +273,22 @@ private:
     
     void faceCircumcenters(const double & weightCircumCenter)
     {
-        _facesCircumcenters.resize(_facesNodes.size());
-        std::vector<Point> middlePoints(maximumNumberOfNodesPerFace);
-        std::vector<Point> normals(maximumNumberOfNodesPerFace);
+        m_facesCircumcenters.resize(m_facesNodes.size());
+        std::vector<Point> middlePoints(m_maximumNumberOfNodesPerFace);
+        std::vector<Point> normals(m_maximumNumberOfNodesPerFace);
         const int maximumNumberCircumcenterIterations = 100;
-        for (int f = 0; f < _facesNodes.size(); f++)
+        for (int f = 0; f < m_facesNodes.size(); f++)
         {
             // for triangles, for now assume cartesian kernel
-            size_t numberOfFaceNodes = _facesNodes[f].size();
+            size_t numberOfFaceNodes = m_facesNodes[f].size();
             if(numberOfFaceNodes == 3)
             {
-                //_nodes[_facesNodes[f][0]] 
-                //_nodes[_facesNodes[f][1]]
-                //_nodes[_facesNodes[f][2]]
-                //auto circumCenter = CGAL::circumcenter(_nodes[_facesNodes[f][0]], _nodes[_facesNodes[f][1]], _nodes[_facesNodes[f][2]]);
-                //_facesCircumcenters[f] = { circumCenter.x(),circumCenter.y() };
-                _facesCircumcenters[f] = { 0.0,0.0 };
+                //m_nodes[m_facesNodes[f][0]] 
+                //m_nodes[m_facesNodes[f][1]]
+                //m_nodes[m_facesNodes[f][2]]
+                //auto circumCenter = CGAL::circumcenter(m_nodes[m_facesNodes[f][0]], m_nodes[m_facesNodes[f][1]], m_nodes[m_facesNodes[f][2]]);
+                //m_facesCircumcenters[f] = { circumCenter.x(),circumCenter.y() };
+                m_facesCircumcenters[f] = { 0.0,0.0 };
             }
             else
             {
@@ -297,9 +297,9 @@ private:
                 size_t numberOfInteriorEdges = 0;
                 for (int n = 0; n < numberOfFaceNodes; n++)
                 {
-                    xCenter += _nodes[_facesNodes[f][n]].x;
-                    yCenter += _nodes[_facesNodes[f][n]].y;
-                    if (_numFacesForEachEdge[_facesEdges[f][n]]==2)
+                    xCenter += m_nodes[m_facesNodes[f][n]].x;
+                    yCenter += m_nodes[m_facesNodes[f][n]].y;
+                    if (m_edgesNumFaces[m_facesEdges[f][n]]==2)
                     {
                         numberOfInteriorEdges += 1;
                     }
@@ -311,8 +311,8 @@ private:
                 
                 if( numberOfInteriorEdges == 0 )
                 {
-                    _facesCircumcenters[f].x=  xCenter;
-                    _facesCircumcenters[f].y = yCenter;
+                    m_facesCircumcenters[f].x=  xCenter;
+                    m_facesCircumcenters[f].y = yCenter;
                 }
                 else
                 {
@@ -323,9 +323,9 @@ private:
                     {
                         int nextNode = n + 1;
                         if (nextNode == numberOfFaceNodes) nextNode = 0;
-                        middlePoints[n].x = 0.5 * (_nodes[_facesNodes[f][n]].x + _nodes[_facesNodes[f][nextNode]].x);
-                        middlePoints[n].y = 0.5 * (_nodes[_facesNodes[f][n]].y + _nodes[_facesNodes[f][nextNode]].y);
-                        Operations<CoordinateSystem>::normalVector(_nodes[_facesNodes[f][n]], _nodes[_facesNodes[f][nextNode]], middlePoints[n], normals[n]);
+                        middlePoints[n].x = 0.5 * (m_nodes[m_facesNodes[f][n]].x + m_nodes[m_facesNodes[f][nextNode]].x);
+                        middlePoints[n].y = 0.5 * (m_nodes[m_facesNodes[f][n]].y + m_nodes[m_facesNodes[f][nextNode]].y);
+                        Operations<CoordinateSystem>::normalVector(m_nodes[m_facesNodes[f][n]], m_nodes[m_facesNodes[f][nextNode]], middlePoints[n], normals[n]);
                     }
 
                     Point previousCircumCenter = estimatedCircumCenter;
@@ -334,7 +334,7 @@ private:
                         previousCircumCenter = estimatedCircumCenter;
                         for (int n = 0; n < numberOfFaceNodes; n++)
                         {
-                            if (_numFacesForEachEdge[_facesEdges[f][n]] == 2 || numberOfFaceNodes == 3)
+                            if (m_edgesNumFaces[m_facesEdges[f][n]] == 2 || numberOfFaceNodes == 3)
                             {
                                 int nextNode =  n + 1; 
                                 if (nextNode == numberOfFaceNodes) nextNode = 0;
@@ -348,7 +348,7 @@ private:
                             abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps && 
                             abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
                         {
-                            _facesCircumcenters[f] = estimatedCircumCenter;
+                            m_facesCircumcenters[f] = estimatedCircumCenter;
                             break;
                         }
                     }
@@ -368,23 +368,23 @@ private:
 
     }
 
-    std::vector<Edge> _edges;                                  //KN
-    std::vector<Point> _nodes;                                 //KN
-    std::vector<std::vector<size_t>> _nodeEdges;               //NOD
-    std::vector<size_t> _numEdgesPeNode;                       //NMK
-    std::vector<std::vector<size_t>> _facesNodes;              //netcell%Nod
-    std::vector<std::vector<size_t>> _facesEdges;              //netcell%lin
-    std::vector<Point>   _facesCircumcenters;                  //xw
-    std::vector<size_t> _numFacesForEachEdge;                  //LNN
-    size_t _faceIndex;                                         //NUMP
-    std::vector<std::vector<size_t>> _faceIndexsesForEachEdge; //LNE
-    bool _isSpheric;                                           //jsferic      
-
     //constants
-    const double minimumDeltaCoordinate = 1e-14;
-    const size_t maximumNumberOfEdgesPerNode = 8;
-    const size_t maximumNumberOfNodesPerFace = 10;
-    const double dcenterinside = 1.0;                          //Force cell center inside cell with factor dcenterinside, 1: confined by cell edges, 0 : at mass center
+    const double m_minimumDeltaCoordinate = 1e-14;
+    const size_t m_maximumNumberOfEdgesPerNode = 8;
+    const size_t m_maximumNumberOfNodesPerFace = 10;
+    const double m_dcenterinside = 1.0;
+
+
+    std::vector<Edge> m_edges;                                  //KN
+    std::vector<Point> m_nodes;                                 //KN
+    std::vector<std::vector<size_t>> m_nodesEdges;              //NOD
+    std::vector<size_t> m_nodesNumEdges;                        //NMK
+    std::vector<std::vector<size_t>> m_facesNodes;              //netcell%Nod
+    std::vector<std::vector<size_t>> m_facesEdges;              //netcell%lin
+    std::vector<Point>   m_facesCircumcenters;                  //xw
+    std::vector<size_t> m_edgesNumFaces;                        //LNN
+    size_t m_numFaces;                                          //NUMP
+    std::vector<std::vector<size_t>> m_edgesFaces;              //LNE
 
 };
 

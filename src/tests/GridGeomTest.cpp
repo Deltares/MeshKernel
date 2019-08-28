@@ -24,7 +24,7 @@ TEST(TestMesh, OneQuad)
     std::vector<std::vector<size_t>> edgeNode(nodes.size(), std::vector<size_t>(8, 0));
     std::vector<size_t> numEdgesPeNode(nodes.size(), 0);
     // now build node-edge mapping
-    Mesh mesh(edges, nodes, false);
+    Mesh mesh(edges, nodes);
 
 	//check values
     EXPECT_EQ(1, mesh.getFaces().size());
@@ -41,9 +41,6 @@ TEST(PerformanceTest, MillionQuads)
 
     std::cout << "start adding edges " << std::endl;
     auto start(std::chrono::steady_clock::now());
-
-    // inject the point type (cartesian or spherical)
-    using Mesh = Mesh<CoordinateSystems::cartesian>;
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
     std::vector<Point> nodes(n * m);
@@ -83,7 +80,8 @@ TEST(PerformanceTest, MillionQuads)
     std::cout << "start finding cells " << std::endl;
     start = std::chrono::steady_clock::now();
     // now build node-edge mapping
-    Mesh mesh(edges, nodes, false);
+    using Mesh = Mesh<CoordinateSystems::cartesian>;
+    Mesh mesh(edges, nodes);
 
     end = std::chrono::steady_clock::now();
 
