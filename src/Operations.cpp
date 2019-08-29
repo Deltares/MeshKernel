@@ -4,10 +4,15 @@
 #include "Entities.cpp"
 #include "Constants.cpp"
 
+#include <boost/geometry/geometries/segment.hpp> 
+#include <boost/geometry/geometries/register/point.hpp>
+#include <boost/geometry.hpp>
+// register node so we can use boost geometry algorithms
+BOOST_GEOMETRY_REGISTER_POINT_2D(GridGeom::Node, double, boost::geometry::cs::cartesian, x, y);
 
 namespace GridGeom
 {
-
+ 
     // coordinate reference indipendent operations
     static double dotProduct(const double& dx1, const double& dx2, const double& dy1, const double& dy2)
     {
@@ -29,6 +34,69 @@ namespace GridGeom
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
         sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * raddeg_hp;
         sphericalPoint.x = angle + std::lround((referenceLongitude - angle) / 360.0) * 360.0;
+    }
+
+    // isLeft(): tests if a point is Left|On|Right of an infinite line.
+    //    Input:  three points leftPoint, rightPoint, and point
+    //    Return: >0 for point left of the line through leftPoint and rightPoint
+    //            =0 for point  on the line
+    //            <0 for point  right of the line
+    static double isLeft(const Node& leftPoint, const Node& rightPoint, const Node& point)
+    {
+        double left = (rightPoint.x - leftPoint.x) * (point.y - leftPoint.y) - (point.x - leftPoint.x) * (rightPoint.y - leftPoint.y);
+        return left;
+    }
+
+    // check if a point is in polygon using the winding number method
+    // polygon: vector of points in counter clockwise order
+    static bool pointInPolygon(const Node& point, const std::vector<Node>& polygon, const int numberOfPolygonPoints)
+    {
+        int windingNumber = 0;
+        for (int n = 0; n < numberOfPolygonPoints; n++)
+        {  
+            if (polygon[n].y <= point.y) // an upward crossing
+            {    
+                if (polygon[n + 1].y > point.y)
+                {
+                    if (isLeft(polygon[n], polygon[n + 1], point) > 0.0)
+                    {
+                        
+                        ++windingNumber; // have  a valid up intersect
+                    }
+                }      
+            }
+            else 
+            {                        
+                if (polygon[n + 1].y <= point.y) // a downward crossing
+                {
+                    if (isLeft(polygon[n], polygon[n + 1], point) < 0.0)
+                    {
+                        --windingNumber; // have  a valid down intersect
+                    }    
+                }            
+            }
+        }
+        return windingNumber == 0? false : true;
+    }
+
+    static bool lineCrossing(const Node& firstSegmentFistPoint, const Node& firstSegmentSecondPoint, const Node& secondSegmentFistPoint, const Node& secondSegmentSecondPoint,  Node& intersection)
+    {
+        typedef boost::geometry::model::segment<Node> Segment;
+        Segment firstSegment(firstSegmentFistPoint, firstSegmentSecondPoint);
+        Segment secondSegment(secondSegmentFistPoint, secondSegmentSecondPoint);
+
+        std::vector<Node> intersections;
+        boost::geometry::intersection(firstSegment, secondSegment, intersections);
+
+        if (!intersections.empty())
+        {
+            intersection = intersections[0];
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
