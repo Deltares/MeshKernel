@@ -4,14 +4,14 @@
 
 TEST(TestMesh, OneQuad) 
 {
-    using Mesh = Mesh<CoordinateSystems::cartesian>;
+    using Mesh = Mesh<cartesianPoint>;
 
     //One gets the edges
-    std::vector<Node> nodes;
-    nodes.push_back(Node{ 0.0,0.0 });
-    nodes.push_back(Node{ 0.0,10.0 });
-    nodes.push_back(Node{ 10.0,0.0 });
-    nodes.push_back(Node{ 10.0,10.0 });
+    std::vector<cartesianPoint> nodes;
+    nodes.push_back(cartesianPoint{ 0.0,0.0 });
+    nodes.push_back(cartesianPoint{ 0.0,10.0 });
+    nodes.push_back(cartesianPoint{ 10.0,0.0 });
+    nodes.push_back(cartesianPoint{ 10.0,10.0 });
 
     std::vector<Edge> edges;
     // Local edges
@@ -93,7 +93,7 @@ TEST(PerformanceTest, MillionQuads)
     auto start(std::chrono::steady_clock::now());
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<Node> nodes(n * m);
+    std::vector<cartesianPoint> nodes(n * m);
     size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -130,7 +130,7 @@ TEST(PerformanceTest, MillionQuads)
     std::cout << "start finding cells " << std::endl;
     start = std::chrono::steady_clock::now();
     // now build node-edge mapping
-    using Mesh = Mesh<CoordinateSystems::cartesian>;
+    using Mesh = Mesh<cartesianPoint>;
     Mesh mesh(edges, nodes);
 
     end = std::chrono::steady_clock::now();
@@ -154,7 +154,7 @@ TEST(PerformanceTest, ArrayAccess)
     const int arraySize = 10e6;
 
     double result = 0.0;
-    std::vector<Node> nodesAoS(arraySize,{1.0,1.0}); //Vc::Allocator<Node>
+    std::vector<cartesianPoint> nodesAoS(arraySize,{1.0,1.0}); //Vc::Allocator<cartesianPoint>
     auto start(std::chrono::steady_clock::now());
     for(int i=0;i< arraySize;i++)
     {
