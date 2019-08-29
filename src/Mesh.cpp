@@ -45,6 +45,7 @@ public:
         faceCircumcenters(1.0);
 
         //compute area
+        facesArea();
     };
 
     const std::vector<std::vector<size_t>>& getNodesEdges() const
@@ -337,7 +338,6 @@ private:
                     }
                 }
                 localFace[numberOfFaceNodes] = localFace[0]; 
-
                 // average centers
                 centerOfMass = { xCenter / numberOfFaceNodes, yCenter / numberOfFaceNodes };
 
@@ -384,8 +384,6 @@ private:
                         }
                     }
                 }
-
-
                 if (weightCircumCenter <= 1.0 && weightCircumCenter >= 0.0)
                 {
                     double localWeightCircumCenter = 1.0;
@@ -419,12 +417,28 @@ private:
                     }
 
                 }
-
             }
         }
     }
 
-   
+    void facesArea()
+    {
+        // polygon coordinates 
+        m_faceArea.resize(m_facesNodes.size());
+        std::vector<Node> localFace(m_maximumNumberOfNodesPerFace + 1);
+        for (int f = 0; f < m_facesNodes.size(); f++)
+        {
+            size_t numberOfFaceNodes = m_facesNodes[f].size();
+            
+            for (int n = 0; n < numberOfFaceNodes; n++)
+            {
+                localFace[n] = m_nodes[m_facesNodes[f][n]];
+            }
+            localFace[numberOfFaceNodes] = localFace[0];
+            m_faceArea[f] = faceArea<CoordinateSystem>(localFace, numberOfFaceNodes + 1);
+        }
+    }
+
     const double m_dcenterinside = 1.0;
 
     std::vector<Edge> m_edges;                                  //KN
@@ -437,8 +451,7 @@ private:
     std::vector<size_t> m_edgesNumFaces;                        //LNN
     size_t m_numFaces;                                          //NUMP
     std::vector<std::vector<size_t>> m_edgesFaces;              //LNE
-
-
+    std::vector<double> m_faceArea;                             //Face area
 };
 
 #endif
