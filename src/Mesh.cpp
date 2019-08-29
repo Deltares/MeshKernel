@@ -1,5 +1,5 @@
 // Surface mesh part
-// TODO: Use CGAL kernel points to easy switch between cartesian and spherical basic computations (e.g. triangle circumcenters or distances)
+// TODO: compute cell area
 // Spherical coordinate kernel https://doc.cgal.org/latest/Circular_kernel_3/index.html (ja spheric)
 
 #ifndef MESH_CPP
@@ -43,6 +43,8 @@ public:
         
         // find mesh circumcenters
         faceCircumcenters(1.0);
+
+        //compute area
     };
 
     const std::vector<std::vector<size_t>>& getNodesEdges() const
@@ -298,17 +300,19 @@ private:
         }
     }
     
-    void faceCircumcenters(const double & weightCircumCenter)
+    void faceCircumcenters(const double& weightCircumCenter)
     {
         m_facesCircumcenters.resize(m_facesNodes.size());
         std::vector<Node> middlePoints(m_maximumNumberOfNodesPerFace);
         std::vector<Node> normals(m_maximumNumberOfNodesPerFace);
+        std::vector<Node> localFace(m_maximumNumberOfNodesPerFace + 1);
+        Node centerOfMass;
         const int maximumNumberCircumcenterIterations = 100;
         for (int f = 0; f < m_facesNodes.size(); f++)
         {
             // for triangles, for now assume cartesian kernel
             size_t numberOfFaceNodes = m_facesNodes[f].size();
-            if(numberOfFaceNodes == 3)
+            if (numberOfFaceNodes == 3)
             {
                 //m_nodes[m_facesNodes[f][0]] 
                 //m_nodes[m_facesNodes[f][1]]
@@ -324,35 +328,35 @@ private:
                 size_t numberOfInteriorEdges = 0;
                 for (int n = 0; n < numberOfFaceNodes; n++)
                 {
+                    localFace[n] = m_nodes[m_facesNodes[f][n]];
                     xCenter += m_nodes[m_facesNodes[f][n]].x;
                     yCenter += m_nodes[m_facesNodes[f][n]].y;
-                    if (m_edgesNumFaces[m_facesEdges[f][n]]==2)
+                    if (m_edgesNumFaces[m_facesEdges[f][n]] == 2)
                     {
                         numberOfInteriorEdges += 1;
                     }
                 }
+                localFace[numberOfFaceNodes] = localFace[0]; 
 
                 // average centers
-                xCenter = xCenter / numberOfFaceNodes;
-                yCenter = yCenter / numberOfFaceNodes;
-                
-                if( numberOfInteriorEdges == 0 )
+                centerOfMass = { xCenter / numberOfFaceNodes, yCenter / numberOfFaceNodes };
+
+                if (numberOfInteriorEdges == 0)
                 {
-                    m_facesCircumcenters[f].x=  xCenter;
-                    m_facesCircumcenters[f].y = yCenter;
+                    m_facesCircumcenters[f] = centerOfMass;
                 }
                 else
                 {
-                    Node estimatedCircumCenter{ xCenter, yCenter };
+                    Node estimatedCircumCenter = centerOfMass;
                     const double eps = 1e-3;
-                   
+
                     for (int n = 0; n < numberOfFaceNodes; n++)
                     {
                         int nextNode = n + 1;
                         if (nextNode == numberOfFaceNodes) nextNode = 0;
-                        middlePoints[n].x = 0.5 * (m_nodes[m_facesNodes[f][n]].x + m_nodes[m_facesNodes[f][nextNode]].x);
-                        middlePoints[n].y = 0.5 * (m_nodes[m_facesNodes[f][n]].y + m_nodes[m_facesNodes[f][nextNode]].y);
-                        Operations<CoordinateSystem>::normalVector(m_nodes[m_facesNodes[f][n]], m_nodes[m_facesNodes[f][nextNode]], middlePoints[n], normals[n]);
+                        middlePoints[n].x = 0.5 * (localFace[n].x + localFace[nextNode].x);
+                        middlePoints[n].y = 0.5 * (localFace[n].y + localFace[nextNode].y);
+                        Operations<CoordinateSystem>::normalVector(localFace[n], localFace[nextNode], middlePoints[n], normals[n]);
                     }
 
                     Node previousCircumCenter = estimatedCircumCenter;
@@ -363,16 +367,16 @@ private:
                         {
                             if (m_edgesNumFaces[m_facesEdges[f][n]] == 2 || numberOfFaceNodes == 3)
                             {
-                                int nextNode =  n + 1; 
+                                int nextNode = n + 1;
                                 if (nextNode == numberOfFaceNodes) nextNode = 0;
                                 double dx = Operations<CoordinateSystem>::getDx(middlePoints[n], estimatedCircumCenter);
                                 double dy = Operations<CoordinateSystem>::getDy(middlePoints[n], estimatedCircumCenter);
-                                double increment = - 0.1 * dotProduct(dx, dy, normals[n].x, normals[n].y);
+                                double increment = -0.1 * dotProduct(dx, dy, normals[n].x, normals[n].y);
                                 Operations<CoordinateSystem>::add(estimatedCircumCenter, normals[n], increment);
                             }
                         }
-                        if (iter > 0 && 
-                            abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps && 
+                        if (iter > 0 &&
+                            abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
                             abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
                         {
                             m_facesCircumcenters[f] = estimatedCircumCenter;
@@ -380,19 +384,44 @@ private:
                         }
                     }
                 }
+
+
+                if (weightCircumCenter <= 1.0 && weightCircumCenter >= 0.0)
+                {
+                    double localWeightCircumCenter = 1.0;
+                    if (numberOfFaceNodes > 3)
+                    {
+                        localWeightCircumCenter = weightCircumCenter;
+                    }
+
+                    for (int n = 0; n < numberOfFaceNodes; n++)
+                    {
+                        localFace[n].x = localWeightCircumCenter * localFace[n].x + (1.0 - localWeightCircumCenter) * centerOfMass.x;
+                        localFace[n].y = localWeightCircumCenter * localFace[n].y + (1.0 - localWeightCircumCenter) * centerOfMass.y;
+                    }
+
+                    bool isCircumcenterInside = pointInPolygon(m_facesCircumcenters[f], localFace, numberOfFaceNodes + 1);
+
+                    if(!isCircumcenterInside)
+                    {
+                        for (int n = 0; n < numberOfFaceNodes; n++)
+                        {
+                            int nextNode = n + 1;
+                            if (nextNode == numberOfFaceNodes) nextNode = 0;
+                            Node intersection;
+                            bool isLineCrossing = lineCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], intersection);
+                            if(isLineCrossing)
+                            {
+                                m_facesCircumcenters[f] = intersection;
+                                break;
+                            }
+                        }
+                    }
+
+                }
+
             }
         }
-
-        if (weightCircumCenter <= 1.0 && weightCircumCenter >=0.0)
-        {
-            //double localWeightCircumCenter = 1.0;
-            //if( numberOfFaceNodes>3 )
-            //{
-            //    localWeightCircumCenter = weightCircumCenter;
-            //}
-            // to finish
-        }
-
     }
 
    
@@ -402,7 +431,7 @@ private:
     std::vector<Node> m_nodes;                                  //KN
     std::vector<std::vector<size_t>> m_nodesEdges;              //NOD
     std::vector<size_t> m_nodesNumEdges;                        //NMK
-    std::vector<std::vector<size_t>> m_facesNodes;              //netcell%Nod
+    std::vector<std::vector<size_t>> m_facesNodes;              //netcell%Nod, the nodes composing the faces, in ccw order
     std::vector<std::vector<size_t>> m_facesEdges;              //netcell%lin
     std::vector<Node>   m_facesCircumcenters;                   //xw
     std::vector<size_t> m_edgesNumFaces;                        //LNN
