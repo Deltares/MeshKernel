@@ -6,13 +6,30 @@
 
 #include <boost/geometry/geometries/segment.hpp> 
 #include <boost/geometry/geometries/register/point.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+#include <boost/geometry/geometries/adapted/boost_tuple.hpp>
+#include <boost/geometry/geometries/register/ring.hpp>
+
 #include <boost/geometry.hpp>
 // register node so we can use boost geometry algorithms
 BOOST_GEOMETRY_REGISTER_POINT_2D(GridGeom::Node, double, boost::geometry::cs::cartesian, x, y);
+BOOST_GEOMETRY_REGISTER_RING(std::vector<GridGeom::Node>);
 
 namespace GridGeom
 {
  
+    enum class CoordinateSystems
+    {
+        cartesian,
+        spheric
+    };
+
+    // generic template
+    template <CoordinateSystems CoordinateSystems>
+    struct Operations
+    {
+    };
+
     // coordinate reference indipendent operations
     static double dotProduct(const double& dx1, const double& dx2, const double& dy1, const double& dy2)
     {
@@ -79,7 +96,49 @@ namespace GridGeom
         return windingNumber == 0? false : true;
     }
 
-    static bool lineCrossing(const Node& firstSegmentFistPoint, const Node& firstSegmentSecondPoint, const Node& secondSegmentFistPoint, const Node& secondSegmentSecondPoint,  Node& intersection)
+    template<CoordinateSystems CoordinateSystems>
+    static double faceArea(const std::vector<Node>& polygon, const int numberOfPolygonPoints)
+    {
+        //double area = boost::geometry::area(pol);
+        //return area;
+
+        double x0 = std::numeric_limits<double>::max();
+        double y0 = std::numeric_limits<double>::max();
+        for (const auto& point : polygon)
+        {
+            if (point.x < x0)
+            {
+                x0 = point.x;
+            }
+            if (abs(point.y) < abs(y0))
+            {
+                y0 = point.y;
+            }
+        }
+
+        Node reference{ x0, y0 };
+        double area = 0.0;
+        for (int p = 0; p < numberOfPolygonPoints; p++)
+        {
+            double dx0 = Operations<CoordinateSystems>::getDx(reference, polygon[p]);
+            double dy0 = Operations<CoordinateSystems>::getDx(reference, polygon[p]);
+            double dx1 = Operations<CoordinateSystems>::getDx(reference, polygon[p + 1]);
+            double dy1 = Operations<CoordinateSystems>::getDx(reference, polygon[p + 1]);
+
+            double xc = 0.5 * (dx0 + dx1);
+            double yc = 0.5 * (dy0 + dy1);
+
+            dx0 = Operations<CoordinateSystems>::getDx(polygon[p], polygon[p + 1]);
+            dy0 = Operations<CoordinateSystems>::getDx(polygon[p], polygon[p + 1]);
+            double dsx = dy0;
+            double dsy = -dx0;
+            double xds = xc * dsx + yc * dsy;
+            area = area + 0.5 * xds;
+        }
+        return area;
+    }
+
+    static bool lineCrossing(const Node& firstSegmentFistPoint, const Node& firstSegmentSecondPoint, const Node& secondSegmentFistPoint, const Node& secondSegmentSecondPoint, Node& intersection)
     {
         typedef boost::geometry::model::segment<Node> Segment;
         Segment firstSegment(firstSegmentFistPoint, firstSegmentSecondPoint);
@@ -100,21 +159,8 @@ namespace GridGeom
     }
 
 
-    enum class CoordinateSystems
-    {
-        cartesian, 
-        spheric
-    };
 
-    // generic template
-    template <CoordinateSystems CoordinateSystems>
-    struct Operations
-    {
-        static void normalVector(const Node& firstPoint, const Node& secondPoint, const Node& orientation, Node& result);
-        static double getDx(const Node& firstPoint, const Node& secondPoint);
-        static double getDy(const Node& firstPoint, const Node& secondPoint); 
-        static void add(Node& point, const Node& normal, const double increment);
-    };
+
 
     // cartesian system
     template <>
@@ -149,6 +195,7 @@ namespace GridGeom
             point.x = point.x + normal.x * increment;
             point.y = point.y + normal.y * increment;
         }
+
     };
 
     // spheric system
