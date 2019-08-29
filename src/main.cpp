@@ -13,10 +13,10 @@ int main()
     std::cout << "start adding edges " << std::endl;
     auto start(std::chrono::steady_clock::now());
 
-    using Mesh = Mesh<GridGeom::CoordinateSystems::cartesian>;
+    using Mesh = Mesh<cartesianPoint>;
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<Node> nodes(n * m);
+    std::vector<cartesianPoint> nodes(n * m);
     size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {

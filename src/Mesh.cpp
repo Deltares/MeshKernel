@@ -10,19 +10,16 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
-
-#include <Eigen/Dense>
-
 #include "Operations.cpp"
 
 using namespace GridGeom;
 
-template<CoordinateSystems CoordinateSystem>
+template<typename Point>
 class Mesh
 {
 public:
 
-    Mesh(const std::vector<Edge>& edges, const std::vector<Node>& nodes) :
+    Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes) :
         m_edges(edges), m_nodes(nodes)
     {
         //allocate
@@ -44,8 +41,8 @@ public:
         // find mesh circumcenters
         faceCircumcenters(1.0);
 
-        //compute area
-        facesArea();
+        //compute faces areas and centers of mass
+        facesAreasAndCentersOfMass();
     };
 
     const std::vector<std::vector<size_t>>& getNodesEdges() const
@@ -68,7 +65,7 @@ public:
         return m_facesEdges;
     }
 
-    const std::vector<Node>& getFacesCircumcenters() const
+    const std::vector<Point>& getFacesCircumcenters() const
     {
         return m_facesCircumcenters;
     }
@@ -125,8 +122,8 @@ private:
                     firstNode = node;
                 }
 
-                double deltaX = Operations<CoordinateSystem>::getDx(m_nodes[secondNode], m_nodes[firstNode]);
-                double deltaY = Operations<CoordinateSystem>::getDy(m_nodes[secondNode], m_nodes[firstNode]);
+                double deltaX = Operations<Point>::getDx(m_nodes[secondNode], m_nodes[firstNode]);
+                double deltaY = Operations<Point>::getDy(m_nodes[secondNode], m_nodes[firstNode]);
                 if (abs(deltaX) < m_minimumDeltaCoordinate && abs(deltaY) < m_minimumDeltaCoordinate)
                 {
                     if (deltaY < 0.0)
@@ -174,7 +171,7 @@ private:
     {
 
         std::vector<size_t> foundEdges(numEdges);
-        std::vector<size_t> foundNodes(numEdges);
+        std::vector<size_t> foundNodes(numEdges); // close the
 
         for (size_t node = 0; node < m_nodes.size(); node++)
         {
@@ -304,10 +301,10 @@ private:
     void faceCircumcenters(const double& weightCircumCenter)
     {
         m_facesCircumcenters.resize(m_facesNodes.size());
-        std::vector<Node> middlePoints(m_maximumNumberOfNodesPerFace);
-        std::vector<Node> normals(m_maximumNumberOfNodesPerFace);
-        std::vector<Node> localFace(m_maximumNumberOfNodesPerFace + 1);
-        Node centerOfMass;
+        std::vector<Point> middlePoints(m_maximumNumberOfNodesPerFace);
+        std::vector<Point> normals(m_maximumNumberOfNodesPerFace);
+        std::vector<Point> localFace(m_maximumNumberOfNodesPerFace + 1); //closed face
+        Point centerOfMass;
         const int maximumNumberCircumcenterIterations = 100;
         for (int f = 0; f < m_facesNodes.size(); f++)
         {
@@ -347,7 +344,7 @@ private:
                 }
                 else
                 {
-                    Node estimatedCircumCenter = centerOfMass;
+                    Point estimatedCircumCenter = centerOfMass;
                     const double eps = 1e-3;
 
                     for (int n = 0; n < numberOfFaceNodes; n++)
@@ -356,10 +353,10 @@ private:
                         if (nextNode == numberOfFaceNodes) nextNode = 0;
                         middlePoints[n].x = 0.5 * (localFace[n].x + localFace[nextNode].x);
                         middlePoints[n].y = 0.5 * (localFace[n].y + localFace[nextNode].y);
-                        Operations<CoordinateSystem>::normalVector(localFace[n], localFace[nextNode], middlePoints[n], normals[n]);
+                        Operations<Point>::normalVector(localFace[n], localFace[nextNode], middlePoints[n], normals[n]);
                     }
 
-                    Node previousCircumCenter = estimatedCircumCenter;
+                    Point previousCircumCenter = estimatedCircumCenter;
                     for (int iter = 0; iter < maximumNumberCircumcenterIterations; iter++)
                     {
                         previousCircumCenter = estimatedCircumCenter;
@@ -369,10 +366,10 @@ private:
                             {
                                 int nextNode = n + 1;
                                 if (nextNode == numberOfFaceNodes) nextNode = 0;
-                                double dx = Operations<CoordinateSystem>::getDx(middlePoints[n], estimatedCircumCenter);
-                                double dy = Operations<CoordinateSystem>::getDy(middlePoints[n], estimatedCircumCenter);
+                                double dx = Operations<Point>::getDx(middlePoints[n], estimatedCircumCenter);
+                                double dy = Operations<Point>::getDy(middlePoints[n], estimatedCircumCenter);
                                 double increment = -0.1 * dotProduct(dx, dy, normals[n].x, normals[n].y);
-                                Operations<CoordinateSystem>::add(estimatedCircumCenter, normals[n], increment);
+                                Operations<Point>::add(estimatedCircumCenter, normals[n], increment);
                             }
                         }
                         if (iter > 0 &&
@@ -406,7 +403,7 @@ private:
                         {
                             int nextNode = n + 1;
                             if (nextNode == numberOfFaceNodes) nextNode = 0;
-                            Node intersection;
+                            Point intersection;
                             bool isLineCrossing = lineCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], intersection);
                             if(isLineCrossing)
                             {
@@ -415,17 +412,17 @@ private:
                             }
                         }
                     }
-
                 }
             }
         }
     }
 
-    void facesArea()
+    void facesAreasAndCentersOfMass()
     {
         // polygon coordinates 
         m_faceArea.resize(m_facesNodes.size());
-        std::vector<Node> localFace(m_maximumNumberOfNodesPerFace + 1);
+        m_facesMasscenters.resize(m_facesNodes.size());
+        std::vector<Point> localFace(m_maximumNumberOfNodesPerFace + 1);
         for (int f = 0; f < m_facesNodes.size(); f++)
         {
             size_t numberOfFaceNodes = m_facesNodes[f].size();
@@ -435,19 +432,24 @@ private:
                 localFace[n] = m_nodes[m_facesNodes[f][n]];
             }
             localFace[numberOfFaceNodes] = localFace[0];
-            m_faceArea[f] = faceArea<CoordinateSystem>(localFace, numberOfFaceNodes + 1);
+            double area = 0.0;
+            Point centerOfMass;
+            faceAreaAndCenterOfMass(localFace, numberOfFaceNodes, area, centerOfMass);
+            m_faceArea[f] = area;
+            m_facesMasscenters[f] = centerOfMass;
         }
     }
 
     const double m_dcenterinside = 1.0;
 
     std::vector<Edge> m_edges;                                  //KN
-    std::vector<Node> m_nodes;                                  //KN
+    std::vector<Point> m_nodes;                                 //KN
     std::vector<std::vector<size_t>> m_nodesEdges;              //NOD
     std::vector<size_t> m_nodesNumEdges;                        //NMK
     std::vector<std::vector<size_t>> m_facesNodes;              //netcell%Nod, the nodes composing the faces, in ccw order
     std::vector<std::vector<size_t>> m_facesEdges;              //netcell%lin
-    std::vector<Node>   m_facesCircumcenters;                   //xw
+    std::vector<Point>   m_facesCircumcenters;                  //xw
+    std::vector<Point>   m_facesMasscenters;                    //the faces canters of mass
     std::vector<size_t> m_edgesNumFaces;                        //LNN
     size_t m_numFaces;                                          //NUMP
     std::vector<std::vector<size_t>> m_edgesFaces;              //LNE
