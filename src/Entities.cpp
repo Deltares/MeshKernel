@@ -9,23 +9,29 @@
 
 namespace GridGeom
 {
-    struct Node
+    struct cartesianPoint
     {
         double x;
         double y;
+    };
+
+    struct sphericalPoint
+    {
+        double x;
+        double y;
+    };
+
+    struct Point3D
+    {
+        double x;
+        double y;
+        double z;
     };
 
     struct Nodes
     {
         std::vector<double> x;
         std::vector<double> y;
-    };
-
-    struct Node3D
-    {
-        double x;
-        double y;
-        double z;
     };
 
     typedef std::pair<size_t, size_t> Edge;
