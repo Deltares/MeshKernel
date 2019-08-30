@@ -21,7 +21,7 @@ namespace GridGeom
         double y;
     };
 
-    struct Point3D
+    struct cartesian3DPoint
     {
         double x;
         double y;
