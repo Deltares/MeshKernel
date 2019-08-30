@@ -7,8 +7,8 @@
 int main()
 {
 
-    int n = 11; //x
-    int m = 11; //y
+    int n = 4001; //x
+    int m = 4001; //y
 
     std::cout << "start adding edges " << std::endl;
     auto start(std::chrono::steady_clock::now());

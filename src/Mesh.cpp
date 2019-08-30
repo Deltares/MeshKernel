@@ -105,12 +105,12 @@ private:
 
     void SortEdgesInCounterClockWiseOrder()
     {
-
+        std::vector<double> edgesAngles(m_maximumNumberOfEdgesPerNode, 0.0);
         for (size_t node = 0; node < m_nodes.size(); node++)
         {
             double phi0 = 0.0;
             double phi;
-            std::vector<double> edgesAngles(m_nodesNumEdges[node], 0.0);
+            std::fill(edgesAngles.begin(), edgesAngles.end(), 0.0);
             for (size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
             {
 
@@ -440,6 +440,94 @@ private:
         }
     }
 
+
+    bool aspectRatio()
+    {
+        std::vector<std::vector<double>> averageEdgesLength(m_edges.size(), std::vector<double>(2, missingValue));
+        std::vector<double> averageFlowEdgesLength(m_edges.size(), missingValue);
+
+        for (size_t e = 0; e < m_edges.size(); e++)
+        {
+            size_t first = m_edges[e].first;
+            size_t second = m_edges[e].second;
+
+            if (first == second) continue;
+            double distance = Operations<Point>::distance(m_nodes[first], m_nodes[second]);
+
+            Point leftCenter;
+            Point rightCenter;
+            if(m_edgesNumFaces[e]>0)
+            {
+                leftCenter = m_facesCircumcenters[m_edgesFaces[e][0]];
+            }
+            else
+            {
+                leftCenter.x = m_nodes[first];
+            }
+
+            //find right cell center, if it exists
+            if (m_edgesNumFaces[e]  == 0)
+            {
+                rightCenter = m_facesCircumcenters[m_edgesFaces[e][1]];
+            }
+            else
+            {
+                //otherwise, make ghost node by imposing boundary condition
+
+
+                //x0_bc = (1 - dinRy) * x0 + dinRy * x1
+                //y0_bc = (1 - dinRy) * y0 + dinRy * y1
+
+                //xR = 2d0 * (x0_bc)-xL
+                //yR = 2d0 * (y0_bc)-yL
+                
+
+
+
+
+            }
+        }
+
+    }
+
+
+    bool orthogonalize()
+    {
+        size_t maxNumNeighbours = std::max_element(m_nodesNumEdges);
+        maxNumNeighbours += 1;
+
+        std::vector< std::vector<size_t>> nodesNodes(m_nodes.size(), std::vector<size_t>(maxNumNeighbours, 0));
+        //for each node, determine the neighbours
+        for (size_t n = 0; n < m_nodes.size(); n++)
+        {
+            for (size_t nn = 0; nn < m_nodesNumEdges[n]; nn++)
+            {
+                Edge edge = m_edges[m_nodesEdges[n][nn]];
+                size_t neighbour = edge.first == n ? edge.second : edge.first;
+                nodesNodes[n] = neighbour;
+            }
+        }
+
+        //orthogonalization loop
+        size_t maxOuterIter = 2;
+        size_t maxInnerIter = 25;
+        std::vector<Point> nodesBackUp(m_nodes.size());
+        std::vector < std::vector < double>> weights(m_nodes.size(), std::vector < double>(maxNumNeighbours, 0.0));
+        std::vector < std::vector < double>> rightHandSide(m_nodes.size(), std::vector < double>(maxNumNeighbours, 0.0));
+        for (size_t outerIter = 0; outerIter < maxOuterIter; outerIter++)
+        {
+            nodesBackUp = m_nodes;
+
+            for (size_t innerIter = 0; innerIter < maxInnerIter; innerIter++)
+            {
+
+            }
+
+        }
+    }
+
+
+
     const double m_dcenterinside = 1.0;
 
     std::vector<Edge> m_edges;                                  //KN
@@ -454,6 +542,9 @@ private:
     size_t m_numFaces;                                          //NUMP
     std::vector<std::vector<size_t>> m_edgesFaces;              //LNE
     std::vector<double> m_faceArea;                             //Face area
+
+
+
 };
 
 #endif

@@ -86,8 +86,8 @@ TEST(TestMesh, OneQuad)
 
 TEST(PerformanceTest, MillionQuads)
 {
-    const int n = 1001; //x
-    const int m = 1001; //y
+    const int n = 4001; //x
+    const int m = 4001; //y
 
     std::cout << "start adding edges " << std::endl;
     auto start(std::chrono::steady_clock::now());
