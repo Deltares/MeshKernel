@@ -1,4 +1,5 @@
 #include "GridGeomTest.hpp"
+#include "../Orthogonaization.cpp"
 
 TEST(OrthogonalizationTest, TestAspectRatio)
 {
@@ -20,14 +21,14 @@ TEST(OrthogonalizationTest, TestAspectRatio)
 
     // now build node-edge mapping
     Mesh mesh(edges, nodes);
+    Orthogonalization<cartesianPoint> orthogonalization;
 
-    // compute the aspect ratio
-    mesh.aspectRatio();
-
-    EXPECT_EQ(1, mesh.m_aspectRatio[0]);
-    EXPECT_EQ(1, mesh.m_aspectRatio[1]);
-    EXPECT_EQ(1, mesh.m_aspectRatio[2]);
-    EXPECT_EQ(1, mesh.m_aspectRatio[3]);
+    orthogonalization.aspectRatio(mesh);
+    
+    EXPECT_EQ(1, orthogonalization.m_aspectRatio[0]);
+    EXPECT_EQ(1, orthogonalization.m_aspectRatio[1]);
+    EXPECT_EQ(1, orthogonalization.m_aspectRatio[2]);
+    EXPECT_EQ(1, orthogonalization.m_aspectRatio[3]);
 }
 
 
