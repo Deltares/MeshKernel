@@ -14,6 +14,7 @@ src/Constants.cpp -text
 src/Entities.cpp -text
 src/Mesh.cpp -text
 src/Operations.cpp -text
+src/Orthogonaization.cpp -text
 src/UnitTests.cpp -text
 src/main.cpp -text
 src/tests/GridGeomTest.cpp -text

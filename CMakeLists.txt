@@ -71,10 +71,6 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
                  EXCLUDE_FROM_ALL)
 
 # Add tests
-add_executable( GridGeomTest src/tests/GridGeomTest.cpp)
+add_executable( GridGeomTest src/tests/GridGeomTest.cpp src/tests/OrthogonalizationTest.cpp)
 target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main ) # ${Boost_LIBRARIES} CGAL::CGAL
 add_test( NAME GridGeomTest COMMAND GridGeomTest )
-
-add_executable( OrthogonalizationTest src/tests/OrthogonalizationTest.cpp)
-target_link_libraries(OrthogonalizationTest LINK_PUBLIC gtest_main ) # ${Boost_LIBRARIES} CGAL::CGAL
-add_test( NAME OrthogonalizationTest COMMAND OrthogonalizationTest )
