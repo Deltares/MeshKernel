@@ -5,6 +5,7 @@ build/bootstrap.bat -text
 buildGCC/bootstrap.sh -text
 doc/BudgetEstimateGridGeomInC++.xlsx -text
 doc/ProjectplanGridGeomInC++_v00.docx -text
+doc/cf-arrays.jpeg -text
 doc/gridgeomInC++.ppt -text
 doc/gridgeomStructure.tif -text
 doc/sent/ProjectPlanGridGeom_Phase1.docx -text
@@ -17,6 +18,7 @@ src/UnitTests.cpp -text
 src/main.cpp -text
 src/tests/GridGeomTest.cpp -text
 src/tests/GridGeomTest.hpp -text
+src/tests/OrthogonalizationTest.cpp -text
 thirdParty/eigen/.hg_archival.txt -text
 thirdParty/eigen/.hgeol -text
 thirdParty/eigen/.hgignore -text

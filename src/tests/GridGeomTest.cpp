@@ -2,7 +2,7 @@
 #include <chrono>
 //#include <Vc/Vc>
 
-TEST(TestMesh, OneQuad) 
+TEST(TestMesh, OneQuadTestConstructor) 
 {
     using Mesh = Mesh<cartesianPoint>;
 
@@ -21,11 +21,7 @@ TEST(TestMesh, OneQuad)
     edges.push_back({ 2, 3 });
 
     // now build node-edge mapping
-    std::vector<std::vector<size_t>> edgeNode(nodes.size(), std::vector<size_t>(8, 0));
-    std::vector<size_t> numEdgesPeNode(nodes.size(), 0);
-    // now build node-edge mapping
     Mesh mesh(edges, nodes);
-
 
     auto nodesEdges = mesh.getNodesEdges();
     auto nodesNumEdges = mesh.getNodesNumEdges();
@@ -82,7 +78,6 @@ TEST(TestMesh, OneQuad)
     EXPECT_EQ(0, edgesFaces[2][1]);
     EXPECT_EQ(0, edgesFaces[3][1]);
 }
-
 
 TEST(PerformanceTest, MillionQuads)
 {
