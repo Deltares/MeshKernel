@@ -24,7 +24,7 @@ public:
     {
         //allocate
         m_nodesNumEdges.resize(m_nodes.size());
-        m_nodesEdges.resize(m_nodes.size(), std::vector<size_t>(m_maximumNumberOfEdgesPerNode, 0));
+        m_nodesEdges.resize(m_nodes.size(), std::vector<size_t>(maximumNumberOfEdgesPerNode, 0));
         m_edgesNumFaces.resize(m_edges.size());
         m_numFaces = 0;
         m_edgesFaces.resize(edges.size(), std::vector<size_t>(2));
@@ -80,6 +80,136 @@ public:
         return m_edgesFaces;
     }
 
+    std::vector<double> m_aspectRatio;
+
+    bool aspectRatio()
+    {
+        std::vector<std::vector<double>> averageEdgesLength(m_edges.size(), std::vector<double>(2, doubleMissingValue));
+        std::vector<double> averageFlowEdgesLength(m_edges.size(), doubleMissingValue);
+        std::vector<bool> curvilinearGridIndicator(m_nodes.size(), true);
+        std::vector<double> edgesLength(m_edges.size(), 0.0);
+        m_aspectRatio.resize(m_edges.size(), 0.0);
+
+        for (size_t e = 0; e < m_edges.size(); e++)
+        {
+            size_t first = m_edges[e].first;
+            size_t second = m_edges[e].second;
+
+            if (first == second) continue;
+            double edgeLength = Operations<Point>::distance(m_nodes[first], m_nodes[second]);
+            edgesLength[e] = edgeLength;
+
+            Point leftCenter;
+            Point rightCenter;
+            if (m_edgesNumFaces[e] > 0)
+            {
+                leftCenter = m_facesCircumcenters[m_edgesFaces[e][0]];
+            }
+            else
+            {
+                leftCenter = m_nodes[first];
+            }
+
+            //find right cell center, if it exists
+            if (m_edgesNumFaces[e] == 2)
+            {
+                rightCenter = m_facesCircumcenters[m_edgesFaces[e][1]];
+            }
+            else
+            {
+                //otherwise, make ghost node by imposing boundary condition
+                double dinry = Operations<Point>::innerProductTwoSegments(m_nodes[first], m_nodes[second], m_nodes[first], leftCenter);
+                dinry = dinry / std::max(edgeLength * edgeLength, minimumEdgeLength);
+
+                double x0_bc = (1.0 - dinry) * m_nodes[first].x + dinry * m_nodes[second].x;
+                double y0_bc = (1.0 - dinry) * m_nodes[first].y + dinry * m_nodes[second].y;
+                rightCenter.x = 2.0 * x0_bc - leftCenter.x;
+                rightCenter.y = 2.0 * y0_bc - leftCenter.y;
+            }
+
+            averageFlowEdgesLength[e] = Operations<Point>::distance(leftCenter, rightCenter);
+        }
+
+        // Compute normal length
+        for (int f = 0; f < m_facesNodes.size(); f++)
+        {
+            size_t numberOfFaceNodes = m_facesNodes[f].size();
+            if (numberOfFaceNodes < 3) continue;
+
+            for (int n = 0; n < numberOfFaceNodes; n++)
+            {
+                if (numberOfFaceNodes != 4) curvilinearGridIndicator[m_facesNodes[f][n]] = false;
+                size_t edgeIndex = m_facesEdges[f][n];
+
+                if (m_edgesNumFaces[edgeIndex] < 1) continue;
+
+                //get the other links in the right numbering
+                //TODO: ask why only 3 are requested, why an average lenght stored in averageEdgesLength is needed?
+                //int kkm1 = n - 1; if (kkm1 < 0) kkm1 = kkm1 + numberOfFaceNodes;
+                //int kkp1 = n + 1; if (kkp1 >= numberOfFaceNodes) kkp1 = kkp1 - numberOfFaceNodes;
+                //
+                //size_t klinkm1 = m_facesEdges[f][kkm1];
+                //size_t klinkp1 = m_facesEdges[f][kkp1];
+                //
+
+                double edgeLength = edgesLength[edgeIndex];
+                if (edgeLength != 0.0)
+                {
+                    m_aspectRatio[edgeIndex] = averageFlowEdgesLength[edgeIndex] / edgeLength;
+                }
+
+                //quads
+                if (numberOfFaceNodes == 4)
+                {
+                    int kkp2 = n + 2; if (kkp2 >= numberOfFaceNodes) kkp2 = kkp2 - numberOfFaceNodes;
+                    size_t klinkp2 = m_facesEdges[f][kkp2];
+                    edgeLength = 0.5 * (edgesLength[edgeIndex] + edgesLength[klinkp2]);
+                }
+
+                if (averageEdgesLength[edgeIndex][0] == doubleMissingValue)
+                {
+                    averageEdgesLength[edgeIndex][0] = edgeLength;
+                }
+                else
+                {
+                    averageEdgesLength[edgeIndex][1] = edgeLength;
+                }
+            }
+        }
+
+        if (curvilinearToOrthogonalRatio == 1.0)
+            return true;
+
+        for (size_t e = 0; e < m_edges.size(); e++)
+        {
+            size_t first = m_edges[e].first;
+            size_t second = m_edges[e].second;
+
+            if (first < 0 || second < 0) continue;
+            if (m_edgesNumFaces[e] < 1) continue;
+            // Consider only quads
+            if (!curvilinearGridIndicator[first] || !curvilinearGridIndicator[second]) continue;
+
+            if (m_edgesNumFaces[e] == 1)
+            {
+                if (averageEdgesLength[e][0] != 0.0 && averageEdgesLength[e][0] != doubleMissingValue)
+                {
+                    m_aspectRatio[e] = averageFlowEdgesLength[e] / averageEdgesLength[e][0];
+                }
+            }
+            else
+            {
+                if (averageEdgesLength[e][0] != 0.0 && averageEdgesLength[e][1] != 0.0 &&
+                    averageEdgesLength[e][0] != doubleMissingValue && averageEdgesLength[e][1] != doubleMissingValue)
+                {
+                    m_aspectRatio[e] = curvilinearToOrthogonalRatio * m_aspectRatio[e] +
+                        (1.0 - curvilinearToOrthogonalRatio) * averageFlowEdgesLength[e] / (0.5 * (averageEdgesLength[e][0] + averageEdgesLength[e][1]));
+                }
+            }
+        }
+        return true;
+    }
+
 private:
 
     // Set node admin
@@ -105,7 +235,7 @@ private:
 
     void SortEdgesInCounterClockWiseOrder()
     {
-        std::vector<double> edgesAngles(m_maximumNumberOfEdgesPerNode, 0.0);
+        std::vector<double> edgesAngles(maximumNumberOfEdgesPerNode, 0.0);
         for (size_t node = 0; node < m_nodes.size(); node++)
         {
             double phi0 = 0.0;
@@ -124,7 +254,7 @@ private:
 
                 double deltaX = Operations<Point>::getDx(m_nodes[secondNode], m_nodes[firstNode]);
                 double deltaY = Operations<Point>::getDy(m_nodes[secondNode], m_nodes[firstNode]);
-                if (abs(deltaX) < m_minimumDeltaCoordinate && abs(deltaY) < m_minimumDeltaCoordinate)
+                if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
                 {
                     if (deltaY < 0.0)
                     {
@@ -287,7 +417,7 @@ private:
                     {
                         m_edgesNumFaces[foundEdges[localEdgeIndex]] += 1;
                         const int numFace = m_edgesNumFaces[foundEdges[localEdgeIndex]];
-                        m_edgesFaces[foundEdges[localEdgeIndex]][numFace - 1] = m_numFaces;
+                        m_edgesFaces[foundEdges[localEdgeIndex]][numFace - 1] = m_numFaces - 1;
                     }
 
                     // store the result
@@ -301,9 +431,9 @@ private:
     void faceCircumcenters(const double& weightCircumCenter)
     {
         m_facesCircumcenters.resize(m_facesNodes.size());
-        std::vector<Point> middlePoints(m_maximumNumberOfNodesPerFace);
-        std::vector<Point> normals(m_maximumNumberOfNodesPerFace);
-        std::vector<Point> localFace(m_maximumNumberOfNodesPerFace + 1); //closed face
+        std::vector<Point> middlePoints(maximumNumberOfNodesPerFace);
+        std::vector<Point> normals(maximumNumberOfNodesPerFace);
+        std::vector<Point> localFace(maximumNumberOfNodesPerFace + 1); //closed face
         Point centerOfMass;
         const int maximumNumberCircumcenterIterations = 100;
         for (int f = 0; f < m_facesNodes.size(); f++)
@@ -422,7 +552,7 @@ private:
         // polygon coordinates 
         m_faceArea.resize(m_facesNodes.size());
         m_facesMasscenters.resize(m_facesNodes.size());
-        std::vector<Point> localFace(m_maximumNumberOfNodesPerFace + 1);
+        std::vector<Point> localFace(maximumNumberOfNodesPerFace + 1);
         for (int f = 0; f < m_facesNodes.size(); f++)
         {
             size_t numberOfFaceNodes = m_facesNodes[f].size();
@@ -438,56 +568,6 @@ private:
             m_faceArea[f] = area;
             m_facesMasscenters[f] = centerOfMass;
         }
-    }
-
-
-    bool aspectRatio()
-    {
-        std::vector<std::vector<double>> averageEdgesLength(m_edges.size(), std::vector<double>(2, missingValue));
-        std::vector<double> averageFlowEdgesLength(m_edges.size(), missingValue);
-
-        for (size_t e = 0; e < m_edges.size(); e++)
-        {
-            size_t first = m_edges[e].first;
-            size_t second = m_edges[e].second;
-
-            if (first == second) continue;
-            double distance = Operations<Point>::distance(m_nodes[first], m_nodes[second]);
-
-            Point leftCenter;
-            Point rightCenter;
-            if(m_edgesNumFaces[e]>0)
-            {
-                leftCenter = m_facesCircumcenters[m_edgesFaces[e][0]];
-            }
-            else
-            {
-                leftCenter.x = m_nodes[first];
-            }
-
-            //find right cell center, if it exists
-            if (m_edgesNumFaces[e]  == 0)
-            {
-                rightCenter = m_facesCircumcenters[m_edgesFaces[e][1]];
-            }
-            else
-            {
-                //otherwise, make ghost node by imposing boundary condition
-
-
-                //x0_bc = (1 - dinRy) * x0 + dinRy * x1
-                //y0_bc = (1 - dinRy) * y0 + dinRy * y1
-
-                //xR = 2d0 * (x0_bc)-xL
-                //yR = 2d0 * (y0_bc)-yL
-                
-
-
-
-
-            }
-        }
-
     }
 
 
@@ -508,22 +588,21 @@ private:
             }
         }
 
-        //orthogonalization loop
-        size_t maxOuterIter = 2;
-        size_t maxInnerIter = 25;
-        std::vector<Point> nodesBackUp(m_nodes.size());
-        std::vector < std::vector < double>> weights(m_nodes.size(), std::vector < double>(maxNumNeighbours, 0.0));
-        std::vector < std::vector < double>> rightHandSide(m_nodes.size(), std::vector < double>(maxNumNeighbours, 0.0));
-        for (size_t outerIter = 0; outerIter < maxOuterIter; outerIter++)
-        {
-            nodesBackUp = m_nodes;
+        //Orthogonalization loop
+        //size_t maxOuterIter = 2;
+        //size_t maxInnerIter = 25;
+        //std::vector<Point> nodesBackUp(m_nodes.size());
+        //std::vector < std::vector < double>> weights(m_nodes.size(), std::vector < double>(maxNumNeighbours, 0.0));
+        //std::vector < std::vector < double>> rightHandSide(m_nodes.size(), std::vector < double>(maxNumNeighbours, 0.0));
+        //for (size_t outerIter = 0; outerIter < maxOuterIter; outerIter++)
+        //{
+        //    nodesBackUp = m_nodes;
 
-            for (size_t innerIter = 0; innerIter < maxInnerIter; innerIter++)
-            {
+        //    for (size_t innerIter = 0; innerIter < maxInnerIter; innerIter++)
+        //    {
 
-            }
-
-        }
+        //    }
+        //}
     }
 
 
@@ -534,13 +613,20 @@ private:
     std::vector<Point> m_nodes;                                 //KN
     std::vector<std::vector<size_t>> m_nodesEdges;              //NOD
     std::vector<size_t> m_nodesNumEdges;                        //NMK
+
+    //edges
+    std::vector<size_t> m_edgesNumFaces;                        //LNN
+    std::vector<std::vector<size_t>> m_edgesFaces;              //LNE
+
+    // faces
     std::vector<std::vector<size_t>> m_facesNodes;              //netcell%Nod, the nodes composing the faces, in ccw order
     std::vector<std::vector<size_t>> m_facesEdges;              //netcell%lin
     std::vector<Point>   m_facesCircumcenters;                  //xw
     std::vector<Point>   m_facesMasscenters;                    //the faces canters of mass
-    std::vector<size_t> m_edgesNumFaces;                        //LNN
+
+
     size_t m_numFaces;                                          //NUMP
-    std::vector<std::vector<size_t>> m_edgesFaces;              //LNE
+
     std::vector<double> m_faceArea;                             //Face area
 
 
