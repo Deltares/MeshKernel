@@ -1,7 +1,7 @@
 #ifndef OPERTIONS_CPP
 #define OPERTIONS_CPP
 #include <cmath>
-#include "Entities.cpp"
+#include "Entities.hpp"
 #include "Constants.cpp"
 
 #include <boost/geometry/geometries/segment.hpp> 
