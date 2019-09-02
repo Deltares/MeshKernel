@@ -173,7 +173,8 @@ namespace GridGeom
     template <>
     struct Operations<cartesianPoint>
     {
-        static void normalVector(const cartesianPoint& firstPoint, const cartesianPoint& secondPoint, const cartesianPoint& orientation, cartesianPoint& result)
+        //normalout, Creates the relative unit normal vector to edge 1->2
+        static void normalVector(const cartesianPoint& firstPoint, const cartesianPoint& secondPoint, const cartesianPoint& insidePoint, cartesianPoint& result)
         {
             double dx = getDx(firstPoint, secondPoint);
             double dy = getDy(firstPoint, secondPoint);
@@ -183,6 +184,25 @@ namespace GridGeom
                 const double distance = sqrt(squaredDistance);
                 result.x = dx / distance;
                 result.y = dy / distance;
+            }
+        }
+
+        //normaloutchk
+        static void normalVectorInside(const cartesianPoint& firstPoint, const cartesianPoint& secondPoint, const cartesianPoint& insidePoint, cartesianPoint& result, bool& flippedNormal)
+        {
+            normalVector(firstPoint, secondPoint, insidePoint, result);
+            flippedNormal = false;
+            cartesianPoint thirdPoint{ firstPoint.x + result.x, firstPoint.y + result.y };
+
+            if (outerProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint) * outerProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint) > 0.0)
+            {
+                result.x = -result.x;
+                result.y = -result.y;
+                flippedNormal = true;
+            }
+            else
+            {
+                flippedNormal = false;
             }
         }
 
@@ -232,7 +252,8 @@ namespace GridGeom
             return distance;
         }
 
-        static double innerProductTwoSegments(const cartesianPoint& firstPointFirstSegment, const cartesianPoint& secondPointFirstSegment, const cartesianPoint& firstPointSecondSegment, const cartesianPoint& secondPointSecondSegment)
+        //out product of two segments
+        static double outerProductTwoSegments(const cartesianPoint& firstPointFirstSegment, const cartesianPoint& secondPointFirstSegment, const cartesianPoint& firstPointSecondSegment, const cartesianPoint& secondPointSecondSegment)
         {
             double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment);
             double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment);
@@ -240,7 +261,7 @@ namespace GridGeom
             double dy1 = getDy(firstPointFirstSegment, secondPointFirstSegment);
             double dy2 = getDy(firstPointSecondSegment, secondPointSecondSegment);
          
-            return dotProduct(dx1, dx2, dy1, dy2);
+            return dx1 * dx2 - dy1 * dy2;
         }
     };
     
@@ -248,15 +269,15 @@ namespace GridGeom
     template <>
     struct Operations<sphericalPoint>
     {
-        static void normalVector(const sphericalPoint& firstPoint, const sphericalPoint& secondPoint, const sphericalPoint& orientation, sphericalPoint& result)
+        static void normalVector(const sphericalPoint& firstPoint, const sphericalPoint& secondPoint, const sphericalPoint& insidePoint, sphericalPoint& result)
         {
             cartesian3DPoint firstPointCartesianCoordinates;
             cartesian3DPoint secondPointCartesianCoordinates;
             sphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
             sphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
 
-            double lambda = orientation.x * degrad_hp;
-            double phi = orientation.y * degrad_hp;
+            double lambda = insidePoint.x * degrad_hp;
+            double phi = insidePoint.y * degrad_hp;
             double elambda[3] = { -sin(lambda), cos(lambda), 0.0 };
             double ephi[3] = { -sin(lambda), cos(lambda), 0.0 };
 
@@ -275,6 +296,12 @@ namespace GridGeom
                 result.x = dx / distance;
                 result.y = dy / distance;
             }
+        }
+
+        static void normalVectorInside(const sphericalPoint& firstPoint, const sphericalPoint& secondPoint, const sphericalPoint& insidePoint, sphericalPoint& result, bool& flippedNormal)
+        {
+
+            //if (JSFERIC.eq.1 . and .jasfer3D.eq.0) xn = xn * cos(dg2rd * 0.5d0 * (y0 + y1)) !normal vector needs to be in Cartesian coordinates
         }
 
         static double getDx(const sphericalPoint& firstPoint, const sphericalPoint& secondPoint)
@@ -385,6 +412,8 @@ namespace GridGeom
 
             return dotProduct(dx1, dx2, dy1, dy2, dz1, dz2);
         }
+
+        //TODO:: comp_local_coords
     };
     
 
