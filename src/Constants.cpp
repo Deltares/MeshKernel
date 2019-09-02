@@ -24,6 +24,8 @@ namespace GridGeom
     //orthogonalization 
     static constexpr double minimumEdgeLength = 1e-4;
     static constexpr double curvilinearToOrthogonalRatio= 0.5; //curvi - linear - like(0.0) or pure(1.0) orthogonalisation
+    static constexpr double orthogonalizationToSmoothingFactor = 0.975; //Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
+    static constexpr double smoothorarea = 1.0;   //Factor between smoother(1.0) and area - homogenizer(0.0)
 
 }
 

@@ -1,7 +1,7 @@
 #include "GridGeomTest.hpp"
 #include "../Orthogonaization.cpp"
 
-TEST(OrthogonalizationTest, TestAspectRatio)
+TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
 {
     using Mesh = Mesh<cartesianPoint>;
 
@@ -23,12 +23,16 @@ TEST(OrthogonalizationTest, TestAspectRatio)
     Mesh mesh(edges, nodes);
     Orthogonalization<cartesianPoint> orthogonalization;
 
+    std::vector<double> aspectRatio;
+    orthogonalization.initialize(mesh);
     orthogonalization.aspectRatio(mesh);
     
-    EXPECT_EQ(1, orthogonalization.m_aspectRatio[0]);
-    EXPECT_EQ(1, orthogonalization.m_aspectRatio[1]);
-    EXPECT_EQ(1, orthogonalization.m_aspectRatio[2]);
-    EXPECT_EQ(1, orthogonalization.m_aspectRatio[3]);
+    EXPECT_EQ(1, orthogonalization.m_aspectRatios[0]);
+    EXPECT_EQ(1, orthogonalization.m_aspectRatios[1]);
+    EXPECT_EQ(1, orthogonalization.m_aspectRatios[2]);
+    EXPECT_EQ(1, orthogonalization.m_aspectRatios[3]);
+
+    orthogonalization.computeWeights(mesh);
 }
 
 
