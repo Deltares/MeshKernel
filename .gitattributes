@@ -13,6 +13,7 @@ src/CartesianPoint.cpp -text
 src/Constants.cpp -text
 src/Entities.cpp -text
 src/Mesh.cpp -text
+src/Mesh.hpp -text
 src/Operations.cpp -text
 src/Orthogonaization.cpp -text
 src/UnitTests.cpp -text
