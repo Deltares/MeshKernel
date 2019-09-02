@@ -23,7 +23,7 @@ public:
 
     bool initialize(const Mesh<Point>& mesh)
     {
-        size_t m_maxNumNeighbours = *(std::max_element(mesh.m_nodesNumEdges.begin(), mesh.m_nodesNumEdges.end()));
+        m_maxNumNeighbours = *(std::max_element(mesh.m_nodesNumEdges.begin(), mesh.m_nodesNumEdges.end()));
         m_maxNumNeighbours += 1;
         m_nodesNodes.resize(mesh.m_nodes.size(), std::vector<size_t>(m_maxNumNeighbours, 0));
         m_weights.resize(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
@@ -114,7 +114,7 @@ public:
     bool computeOperators(const Mesh<Point>& mesh)
     {
         //allocate small arrays in the stack for speed
-        std::vector<size_t> connectedFaces(maximumNumberOfEdgesPerNode,0); //icell
+        std::vector<int> connectedFaces(maximumNumberOfEdgesPerNode,-1); //icell
         std::vector<size_t> localNodeAdministration(maximumNumberOfNodesInStencil, 0); //kk2
         std::vector<std::vector<size_t>> positionOfFacesInLocalNodeAdministration(maximumNumberOfNodesPerFace,std::vector<size_t>(connectedFacesNumber, 0));//kkc
         double admXi[maximumNumberOfNodesInStencil]{0};  //xi
@@ -139,43 +139,50 @@ public:
         return true;
     }
 
-    bool orthogonalizationAdministration(const Mesh<Point>& mesh, int n, std::vector<size_t>& connectedFaces, int & numConnectedFaces, std::vector<size_t>& localNodeAdministration, size_t & localNodeIndex, std::vector<std::vector<size_t>> & positionOfFacesInLocalNodeAdministration)
+    bool orthogonalizationAdministration(const Mesh<Point>& mesh, int currentNode, std::vector<int>& connectedFaces, int & numConnectedFaces, std::vector<size_t>& localNodeAdministration, size_t & localNodeIndex, std::vector<std::vector<size_t>> & positionOfFacesInLocalNodeAdministration)
     {
         int Nsize = connectedFacesNumber;
         int KSize = maximumNumberOfNodesInStencil;
 
-        for (auto& e : connectedFaces)  e = 0;
+        for (auto& e : connectedFaces)  e = -1;
         
 
-        if (mesh.m_nodesNumEdges[n] < 2) return true;
+        if (mesh.m_nodesNumEdges[currentNode] < 2) return true;
 
         int newFaceIndex = -999;
         numConnectedFaces = 0;
-        for (int nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
+        for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
         {
-            size_t firstEdge = mesh.m_nodesEdges[n][nn];
-            int secondIndex = nn + 1;
-            if (secondIndex >= mesh.m_nodesNumEdges[n]) secondIndex = 0;
+            size_t firstEdge = mesh.m_nodesEdges[currentNode][e];
+            int secondIndex = e + 1;
+            if (secondIndex >= mesh.m_nodesNumEdges[currentNode]) secondIndex = 0;
 
-            size_t secondEdge = mesh.m_nodesEdges[n][secondIndex];
+            size_t secondEdge = mesh.m_nodesEdges[currentNode][secondIndex];
 
             if (mesh.m_edgesNumFaces[firstEdge] < 1 || mesh.m_edgesNumFaces[secondEdge] < 1) continue;
 
-            int firstFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[firstEdge], (size_t)2), (size_t)1);
-            int secondFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[secondEdge], (size_t)2), (size_t)1);
+            int firstFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[firstEdge], size_t(2)), size_t(1)) - 1;
+            int secondFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[secondEdge], size_t(2)), size_t(1)) - 1;
 
-            if ((mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
+            if ((mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]) &&
+                mesh.m_edgesFaces[firstEdge][0]!= newFaceIndex)
             {
                 newFaceIndex = mesh.m_edgesFaces[firstEdge][0];
             }
-            else if ((mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
+            else if ((mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][secondFaceIndex])&&
+                mesh.m_edgesFaces[firstEdge][firstFaceIndex]!= newFaceIndex)
             {
                 newFaceIndex = mesh.m_edgesFaces[firstEdge][firstFaceIndex];
             }
-
-            if (mesh.m_nodesEdges[n][nn]==2 && nn==2)
+            else
             {
-                if (connectedFaces[0]) newFaceIndex = -999;
+                newFaceIndex = -999;
+            }
+
+
+            if (mesh.m_nodesNumEdges[currentNode]==2 && e==1)
+            {
+                if (connectedFaces[0]!= 0) newFaceIndex = -999;
             }
             connectedFaces[numConnectedFaces] = newFaceIndex;
             numConnectedFaces += numConnectedFaces + 1;
@@ -185,35 +192,35 @@ public:
 
         for (auto& v : localNodeAdministration) v = 0;
         localNodeIndex = 0;
-        localNodeAdministration[localNodeIndex] = n;
+        localNodeAdministration[localNodeIndex] = currentNode;
 
         // edge - connected nodes
-        for (int nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
+        for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
         {
-            size_t edge = mesh.m_nodesEdges[n][nn];
-            size_t nodeIndex = mesh.m_edges[edge].first + mesh.m_edges[edge].second - n;
+            size_t edge = mesh.m_nodesEdges[currentNode][e];
+            size_t nodeIndex = mesh.m_edges[edge].first + mesh.m_edges[edge].second - currentNode;
             localNodeIndex++;
             localNodeAdministration[localNodeIndex] = nodeIndex;
         }
 
         // other - connected nodes
-        for (int nn = 0; nn < numConnectedFaces; nn++)
+        for (int f = 0; f < numConnectedFaces; f++)
         {
             int faceIndex = connectedFaces[numConnectedFaces];
             if (faceIndex < 0) continue;
 
             size_t nodeIndex = 0;
-            for( int nnn = 0; nnn < mesh.m_facesNodes[faceIndex].size(); nnn++)
+            for( int n = 0; n < mesh.m_facesNodes[faceIndex].size(); n++)
             {
-                if(mesh.m_facesNodes[faceIndex][nnn] == n)
+                if(mesh.m_facesNodes[faceIndex][n] == currentNode)
                 {
-                    nodeIndex = nnn;
+                    nodeIndex = n;
                     break;
                 }
             }
 
             size_t numOtherNodes = mesh.m_facesEdges[faceIndex].size();
-            for (int nnn = 0; nnn < numOtherNodes; nnn++)
+            for (int n = 0; n < numOtherNodes; n++)
             {
                 nodeIndex += 1;
                 if (nodeIndex >= numOtherNodes) nodeIndex -= numOtherNodes;
@@ -221,12 +228,12 @@ public:
                 int otherFaceIndex = connectedFaces[numConnectedFaces];
                 bool isNewNode = true;
 
-                for (int nnnn = 0; nnnn < localNodeIndex; nnnn++)
+                for (int n = 0; n < localNodeIndex; n++)
                 {
-                    if(otherFaceIndex== localNodeAdministration[nnnn])
+                    if(otherFaceIndex== localNodeAdministration[n])
                     {
                         isNewNode = false;
-                        positionOfFacesInLocalNodeAdministration[nnn][nn] = nnnn;
+                        positionOfFacesInLocalNodeAdministration[n][f] = n;
                     }
                 }
 
@@ -234,7 +241,7 @@ public:
                 {
                     localNodeIndex++;
                     localNodeAdministration[localNodeIndex] = otherFaceIndex;
-                    positionOfFacesInLocalNodeAdministration[nnn][nn] = localNodeIndex;
+                    positionOfFacesInLocalNodeAdministration[n][f] = localNodeIndex;
                 }
             }
         }

@@ -20,7 +20,7 @@ Mesh<Point>::Mesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Po
     m_nodesEdges.resize(m_nodes.size(), std::vector<size_t>(GridGeom::maximumNumberOfEdgesPerNode, 0));
     m_edgesNumFaces.resize(m_edges.size());
     m_numFaces = 0;
-    m_edgesFaces.resize(edges.size(), std::vector<size_t>(2));
+    m_edgesFaces.resize(edges.size(), std::vector<int>(2, -1));
 
 
     //run administration and find the faces
