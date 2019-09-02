@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include "Operations.cpp"
-#include "Mesh.cpp"
+#include "Mesh.hpp"
 
 using namespace GridGeom;
 
