@@ -4,16 +4,16 @@
 
 TEST(TestMesh, OneQuadTestConstructor) 
 {
-    using Mesh = Mesh<cartesianPoint>;
+    using Mesh = Mesh<GridGeom::cartesianPoint>;
 
     //One gets the edges
-    std::vector<cartesianPoint> nodes;
-    nodes.push_back(cartesianPoint{ 0.0,0.0 });
-    nodes.push_back(cartesianPoint{ 0.0,10.0 });
-    nodes.push_back(cartesianPoint{ 10.0,0.0 });
-    nodes.push_back(cartesianPoint{ 10.0,10.0 });
+    std::vector<GridGeom::cartesianPoint> nodes;
+    nodes.push_back(GridGeom::cartesianPoint{ 0.0,0.0 });
+    nodes.push_back(GridGeom::cartesianPoint{ 0.0,10.0 });
+    nodes.push_back(GridGeom::cartesianPoint{ 10.0,0.0 });
+    nodes.push_back(GridGeom::cartesianPoint{ 10.0,10.0 });
 
-    std::vector<Edge> edges;
+    std::vector<GridGeom::Edge> edges;
     // Local edges
     edges.push_back({ 0, 2 });
     edges.push_back({ 1, 3 });
@@ -23,13 +23,13 @@ TEST(TestMesh, OneQuadTestConstructor)
     // now build node-edge mapping
     Mesh mesh(edges, nodes);
 
-    auto nodesEdges = mesh.getNodesEdges();
-    auto nodesNumEdges = mesh.getNodesNumEdges();
-    auto facesNodes = mesh.getFacesNodes();
-    auto facesEdges = mesh.getFacesEdges();
-    auto facesCircumcenters = mesh.getFacesCircumcenters();
-    auto edgesNumFaces = mesh.getEdgesNumFaces();
-    auto edgesFaces = mesh.getEdgesFaces();
+    auto nodesEdges = mesh.m_nodesEdges;
+    auto nodesNumEdges = mesh.m_nodesNumEdges;
+    auto facesNodes = mesh.m_facesNodes;
+    auto facesEdges = mesh.m_facesEdges;
+    auto facesCircumcenters = mesh.m_facesCircumcenters;
+    auto edgesNumFaces = mesh.m_edgesNumFaces;
+    auto edgesFaces = mesh.m_edgesFaces;
 
     // expect nodesEdges to be sorted ccw
     EXPECT_EQ(0, nodesEdges[0][0]);
@@ -81,14 +81,14 @@ TEST(TestMesh, OneQuadTestConstructor)
 
 TEST(PerformanceTest, MillionQuads)
 {
-    const int n = 4001; //x
-    const int m = 4001; //y
+    const int n = 1001; //x
+    const int m = 1001; //y
 
     std::cout << "start adding edges " << std::endl;
     auto start(std::chrono::steady_clock::now());
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<cartesianPoint> nodes(n * m);
+    std::vector<GridGeom::cartesianPoint> nodes(n * m);
     size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -100,7 +100,7 @@ TEST(PerformanceTest, MillionQuads)
         }
     }
 
-    std::vector<Edge> edges((n - 1) * m + (m - 1) * n);
+    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
     size_t edgeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -125,7 +125,7 @@ TEST(PerformanceTest, MillionQuads)
     std::cout << "start finding cells " << std::endl;
     start = std::chrono::steady_clock::now();
     // now build node-edge mapping
-    using Mesh = Mesh<cartesianPoint>;
+    using Mesh = Mesh<GridGeom::cartesianPoint>;
     Mesh mesh(edges, nodes);
 
     end = std::chrono::steady_clock::now();
@@ -134,7 +134,7 @@ TEST(PerformanceTest, MillionQuads)
     std::cout << "Elapsed time " << elapsedTime << " s " << std::endl;
 
     // the number of found faces is
-    auto faces = mesh.getFacesNodes();
+    auto faces = mesh.m_facesNodes;
     std::cout << "Number of found cells " << faces.size() << std::endl;
     std::cout << "First face " << faces[0][0] << " " << faces[0][1] << " " << faces[0][2] << " " << faces[0][3] << std::endl;
     std::cout << "Second face " << faces[1][0] << " " << faces[1][1] << " " << faces[1][2] << " " << faces[1][3] << std::endl;
@@ -149,7 +149,7 @@ TEST(PerformanceTest, ArrayAccess)
     const int arraySize = 10e6;
 
     double result = 0.0;
-    std::vector<cartesianPoint> nodesAoS(arraySize,{1.0,1.0}); //Vc::Allocator<cartesianPoint>
+    std::vector<GridGeom::cartesianPoint> nodesAoS(arraySize,{1.0,1.0}); //Vc::Allocator<cartesianPoint>
     auto start(std::chrono::steady_clock::now());
     for(int i=0;i< arraySize;i++)
     {
