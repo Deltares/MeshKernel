@@ -11,7 +11,7 @@ doc/gridgeomStructure.tif -text
 doc/sent/ProjectPlanGridGeom_Phase1.docx -text
 src/CartesianPoint.cpp -text
 src/Constants.cpp -text
-src/Entities.cpp -text
+src/Entities.hpp -text
 src/Mesh.cpp -text
 src/Mesh.hpp -text
 src/Operations.cpp -text
