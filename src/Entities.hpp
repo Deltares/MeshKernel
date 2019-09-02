@@ -1,5 +1,5 @@
-#ifndef ENTITIES_CPP
-#define ENTITIES_CPP
+#ifndef ENTITIES_HPP
+#define ENTITIES_HPP
 
 #include <utility>
 #include <vector>

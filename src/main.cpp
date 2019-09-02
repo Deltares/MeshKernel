@@ -2,7 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include "Mesh.cpp"
-#include "Entities.cpp"
+#include "Entities.hpp"
 
 int main()
 {
