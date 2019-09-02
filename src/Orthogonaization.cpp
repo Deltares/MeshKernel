@@ -4,6 +4,7 @@
 #define _USE_MATH_DEFINES
 #include <vector>
 #include <algorithm>
+#include <numeric>
 #include "Operations.cpp"
 #include "Mesh.hpp"
 
@@ -12,17 +13,22 @@ using namespace GridGeom;
 template<typename Point>
 class Orthogonalization
 {
-
 public:
 
-    std::vector<double> m_aspectRatio;
+    size_t m_maxNumNeighbours;
+    std::vector< std::vector<size_t>> m_nodesNodes;
+    std::vector<std::vector<double>> m_weights;
+    std::vector<std::vector<double>> m_rightHandSide;
+    std::vector<double> m_aspectRatios;
 
-    bool orthogonalize(Mesh<Point>& mesh)
+    bool initialize(const Mesh<Point>& mesh)
     {
-        //size_t maxNumNeighbours = std::max_element(mesh.m_nodesNumEdges.begin(), mesh.m_nodesNumEdges.end());
-        maxNumNeighbours += 1;
-
-        std::vector< std::vector<size_t>> nodesNodes(mesh.m_nodes.size(), std::vector<size_t>(maxNumNeighbours, 0));
+        size_t m_maxNumNeighbours = *(std::max_element(mesh.m_nodesNumEdges.begin(), mesh.m_nodesNumEdges.end()));
+        m_maxNumNeighbours += 1;
+        m_nodesNodes.resize(mesh.m_nodes.size(), std::vector<size_t>(m_maxNumNeighbours, 0));
+        m_weights.resize(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
+        m_rightHandSide.resize(mesh.m_nodes.size(), std::vector<double>(2, 0.0));
+        m_aspectRatios.resize(mesh.m_edges.size(), 0.0);
         //for each node, determine the neighbours
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
@@ -30,25 +36,78 @@ public:
             {
                 Edge edge = mesh.m_edges[mesh.m_nodesEdges[n][nn]];
                 size_t neighbour = edge.first == n ? edge.second : edge.first;
-                //nodesNodes[n] = neighbour;
+                m_nodesNodes[n][nn] = neighbour;
             }
         }
+        return true;
+    }
 
-        //Orthogonalization loop
-        //size_t maxOuterIter = 2;
-        //size_t maxInnerIter = 25;
-        //std::vector<Point> nodesBackUp(m_nodes.size());
-        //std::vector < std::vector < double>> weights(m_nodes.size(), std::vector < double>(maxNumNeighbours, 0.0));
-        //std::vector < std::vector < double>> rightHandSide(m_nodes.size(), std::vector < double>(maxNumNeighbours, 0.0));
-        //for (size_t outerIter = 0; outerIter < maxOuterIter; outerIter++)
-        //{
-        //    nodesBackUp = m_nodes;
 
-        //    for (size_t innerIter = 0; innerIter < maxInnerIter; innerIter++)
-        //    {
+    //TODO: Unit test me please
+    bool computeWeights(const Mesh<Point>& mesh)
+    {
+        double localOrthogonalizationToSmoothingFactor = 1.0;
+        double localOrthogonalizationToSmoothingFactorSymmetric = 1.0 - localOrthogonalizationToSmoothingFactor;
+        double mu = 1.0;
+        for (size_t n = 0; n < mesh.m_nodes.size(); n++)
+        {
+            //the check for inside a polygon is now skipped
+            for (size_t nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
+            {
+                size_t edgeIndex = mesh.m_nodesEdges[n][nn];
+                double aspectRatio = m_aspectRatios[edgeIndex];
 
-        //    }
-        //}
+                if (aspectRatio != doubleMissingValue)
+                {
+                    m_weights[n][nn] = localOrthogonalizationToSmoothingFactor * aspectRatio + localOrthogonalizationToSmoothingFactorSymmetric * mu;
+
+                    if (mesh.m_edgesNumFaces[edgeIndex] == 1)
+                    {
+                        //boundary nodes
+                        Point neighbouringNode = mesh.m_nodes[m_nodesNodes[n][nn]];
+                        double neighbouringNodeDistance = Operations<Point>::distance(neighbouringNode, mesh.m_nodes[n]);
+                        double aspectRatioByNodeDistance = aspectRatio * neighbouringNodeDistance;
+
+                        size_t leftFace = mesh.m_edgesFaces[edgeIndex][0];
+                        Point massCenterLeftFace = mesh.m_facesMasscenters[leftFace];
+                        Point normal;
+                        bool flippedNormal;
+                        Operations<Point>::normalVectorInside(mesh.m_nodes[n], neighbouringNode, massCenterLeftFace, normal, flippedNormal);
+
+                        m_rightHandSide[n][0] += localOrthogonalizationToSmoothingFactor * neighbouringNodeDistance * normal.x / 2.0 +
+                            localOrthogonalizationToSmoothingFactorSymmetric * aspectRatioByNodeDistance * normal.x * 0.5 / mu;
+
+                        m_rightHandSide[n][1] += localOrthogonalizationToSmoothingFactor * neighbouringNodeDistance * normal.y / 2.0 +
+                            localOrthogonalizationToSmoothingFactorSymmetric * aspectRatioByNodeDistance * normal.y * 0.5 / mu;
+
+                        m_weights[n][nn] = localOrthogonalizationToSmoothingFactor * 0.5 * aspectRatio +
+                            localOrthogonalizationToSmoothingFactorSymmetric * 0.5 * mu;
+                    }
+
+                }
+                else
+                {
+                    m_weights[n][nn] = 0.0;
+                }
+
+                // normalize
+                double factor = std::accumulate(m_weights[n].begin(), m_weights[n].end(), 0.0);
+                if (factor > 1e-14)
+                {
+                    factor = 1.0 / factor;
+                    for (auto& w : m_weights[n]) w = w * factor;
+                    m_rightHandSide[n][0] = factor * m_rightHandSide[n][0];
+                    m_rightHandSide[n][1] = factor * m_rightHandSide[n][1];
+                }
+            }
+        }
+        return true;
+    }
+
+    bool solveWeights(const Mesh<Point>& mesh)
+    {
+        
+        return true;
     }
 
     bool aspectRatio(const Mesh<Point>& mesh)
@@ -57,7 +116,6 @@ public:
         std::vector<double> averageFlowEdgesLength(mesh.m_edges.size(), doubleMissingValue);
         std::vector<bool> curvilinearGridIndicator(mesh.m_nodes.size(), true);
         std::vector<double> edgesLength(mesh.m_edges.size(), 0.0);
-        m_aspectRatio.resize(mesh.m_edges.size(), 0.0);
 
         for (size_t e = 0; e < mesh.m_edges.size(); e++)
         {
@@ -87,7 +145,7 @@ public:
             else
             {
                 //otherwise, make ghost node by imposing boundary condition
-                double dinry = Operations<Point>::innerProductTwoSegments(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_nodes[first], leftCenter);
+                double dinry = Operations<Point>::outerProductTwoSegments(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_nodes[first], leftCenter);
                 dinry = dinry / std::max(edgeLength * edgeLength, minimumEdgeLength);
 
                 double x0_bc = (1.0 - dinry) * mesh.m_nodes[first].x + dinry * mesh.m_nodes[second].x;
@@ -124,7 +182,7 @@ public:
                 double edgeLength = edgesLength[edgeIndex];
                 if (edgeLength != 0.0)
                 {
-                    m_aspectRatio[edgeIndex] = averageFlowEdgesLength[edgeIndex] / edgeLength;
+                    m_aspectRatios[edgeIndex] = averageFlowEdgesLength[edgeIndex] / edgeLength;
                 }
 
                 //quads
@@ -163,7 +221,7 @@ public:
             {
                 if (averageEdgesLength[e][0] != 0.0 && averageEdgesLength[e][0] != doubleMissingValue)
                 {
-                    m_aspectRatio[e] = averageFlowEdgesLength[e] / averageEdgesLength[e][0];
+                    m_aspectRatios[e] = averageFlowEdgesLength[e] / averageEdgesLength[e][0];
                 }
             }
             else
@@ -171,13 +229,14 @@ public:
                 if (averageEdgesLength[e][0] != 0.0 && averageEdgesLength[e][1] != 0.0 &&
                     averageEdgesLength[e][0] != doubleMissingValue && averageEdgesLength[e][1] != doubleMissingValue)
                 {
-                    m_aspectRatio[e] = curvilinearToOrthogonalRatio * m_aspectRatio[e] +
+                    m_aspectRatios[e] = curvilinearToOrthogonalRatio * m_aspectRatios[e] +
                         (1.0 - curvilinearToOrthogonalRatio) * averageFlowEdgesLength[e] / (0.5 * (averageEdgesLength[e][0] + averageEdgesLength[e][1]));
                 }
             }
         }
         return true;
     }
+
 };
 
 #endif
