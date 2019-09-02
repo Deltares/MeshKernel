@@ -7,16 +7,16 @@
 int main()
 {
 
-    int n = 4001; //x
-    int m = 4001; //y
+    int n = 1001; //x
+    int m = 1001; //y
 
     std::cout << "start adding edges " << std::endl;
     auto start(std::chrono::steady_clock::now());
 
-    using Mesh = Mesh<cartesianPoint>;
+    using Mesh = Mesh<GridGeom::cartesianPoint>;
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<cartesianPoint> nodes(n * m);
+    std::vector<GridGeom::cartesianPoint> nodes(n * m);
     size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -28,7 +28,7 @@ int main()
         }
     }
 
-    std::vector<Edge> edges((n - 1) * m + (m - 1) * n);
+    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
     size_t edgeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -59,7 +59,7 @@ int main()
     std::cout << "Elapsed time " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << std::endl;
 
     // the number of found faces is
-    auto faces = mesh.getFacesNodes();
+    auto faces = mesh.m_facesNodes;
     std::cout << "Number of found cells " << faces.size() << std::endl;
     std::cout << "First face " << faces[0][0] << " " << faces[0][1] << " " << faces[0][2] << " " << faces[0][3] << std::endl;
     std::cout << "Second face " << faces[1][0] << " " << faces[1][1] << " " << faces[1][2] << " " << faces[1][3] << std::endl;
