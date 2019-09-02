@@ -1,7 +1,7 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 #include <vector>
-#include "Entities.cpp"
+#include "Entities.hpp"
 
 template<typename Point>
 class Mesh
