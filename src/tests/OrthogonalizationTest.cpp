@@ -32,7 +32,7 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
     EXPECT_EQ(1, orthogonalization.m_aspectRatios[2]);
     EXPECT_EQ(1, orthogonalization.m_aspectRatios[3]);
 
-    orthogonalization.computeWeights(mesh);
+    orthogonalization.solveWeights(mesh);
 }
 
 
