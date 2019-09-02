@@ -9,6 +9,7 @@ namespace GridGeom
 {
     // missing value
     static constexpr double doubleMissingValue = -999.0;
+    static constexpr int    intMissingValue  = -999;
 
     //geometric constants
     static constexpr double degrad_hp = M_PI / 180.0; // conversion factor from degrees to radians(pi / 180)
