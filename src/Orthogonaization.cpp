@@ -115,7 +115,7 @@ public:
     {
         //allocate small arrays in the stack for speed
         std::vector<int> connectedFaces(maximumNumberOfEdgesPerNode,-1); //icell
-        std::vector<size_t> connectedNodes(maximumNumberOfNodesInStencil, 0); //kk2
+        std::vector<size_t> connectedNodes(maximumNumberOfNodesPerFace, 0); //kk2
         std::vector<std::vector<size_t>> nodeFacePosition(connectedFacesNumber, std::vector<size_t>(maximumNumberOfNodesPerFace, 0));//kkc
         double admXi[maximumNumberOfNodesInStencil]{0};  //xi
         double admEta[maximumNumberOfNodesInStencil]{0}; //eta
@@ -206,6 +206,7 @@ public:
         }
 
         // other nodes: for each connected Face, form nodeFacePosition array
+        if (nodeFacePosition.size() < numConnectedFaces) nodeFacePosition.resize(numConnectedFaces);
         for (int f = 0; f < numConnectedFaces; f++)
         {
             int faceIndex = connectedFaces[f];
