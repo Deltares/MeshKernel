@@ -28,7 +28,7 @@ namespace GridGeom
     static constexpr double orthogonalizationToSmoothingFactor = 0.975; //Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
     static constexpr double smoothorarea = 1.0;   //Factor between smoother(1.0) and area - homogenizer(0.0)
 
-    constexpr int connectedFacesNumber = 2;
+    constexpr int connectedFacesNumber = 4;
     constexpr int maximumNumberOfNodesInStencil = 4;
 
 }

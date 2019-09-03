@@ -35,4 +35,59 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
     orthogonalization.solveWeights(mesh);
 }
 
+TEST(OrthogonalizationTest, TestOrthogonalizationFourQuads)
+{
+    using Mesh = Mesh<cartesianPoint>;
+
+    const int n = 3; //x
+    const int m = 3; //y
+
+    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
+    std::vector<GridGeom::cartesianPoint> nodes(n * m);
+    size_t nodeIndex = 0;
+    for (int j = 0; j < m; ++j)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            indexesValues[i][j] = i + j * n;
+            nodes[nodeIndex] = { (double)i, (double)j };
+            nodeIndex++;
+        }
+    }
+
+    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
+    size_t edgeIndex = 0;
+    for (int j = 0; j < m; ++j)
+    {
+        for (int i = 0; i < n - 1; ++i)
+        {
+            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
+            edgeIndex++;
+        }
+    }
+
+    for (int j = 0; j < m - 1; ++j)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
+            edgeIndex++;
+        }
+    }
+
+    // now build node-edge mapping
+    Mesh mesh(edges, nodes);
+    Orthogonalization<cartesianPoint> orthogonalization;
+
+    std::vector<double> aspectRatio;
+    orthogonalization.initialize(mesh);
+    orthogonalization.aspectRatio(mesh);
+
+    //EXPECT_EQ(1, orthogonalization.m_aspectRatios[0]);
+    //EXPECT_EQ(1, orthogonalization.m_aspectRatios[1]);
+    //EXPECT_EQ(1, orthogonalization.m_aspectRatios[2]);
+    //EXPECT_EQ(1, orthogonalization.m_aspectRatios[3]);
+
+    orthogonalization.solveWeights(mesh);
+}
 
