@@ -9,14 +9,12 @@ doc/cf-arrays.jpeg -text
 doc/gridgeomInC++.ppt -text
 doc/gridgeomStructure.tif -text
 doc/sent/ProjectPlanGridGeom_Phase1.docx -text
-src/CartesianPoint.cpp -text
 src/Constants.cpp -text
 src/Entities.hpp -text
 src/Mesh.cpp -text
 src/Mesh.hpp -text
 src/Operations.cpp -text
 src/Orthogonaization.cpp -text
-src/UnitTests.cpp -text
 src/main.cpp -text
 src/tests/GridGeomTest.cpp -text
 src/tests/GridGeomTest.hpp -text
