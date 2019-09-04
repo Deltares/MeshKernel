@@ -210,16 +210,12 @@ public:
         std::vector<double>& xi,
         std::vector<double>& eta)
     {
-
-        double factor = 1.0;
-        if (m_nodesTypes[currentNode] == 2) factor = 0.5;
-        if (m_nodesTypes[currentNode] == 3) factor = 0.25;
         std::fill(xi.begin(), xi.end(), 0.0);
         std::fill(eta.begin(), eta.end(), 0.0);
         std::vector<double> thetaSquare(connectedNodesIndex + 1, doubleMissingValue);
         std::vector<bool> isSquareFace(numConnectedFaces, false);
 
-        int numQuads = 0; 
+        int numQuads = 0;
         int numSquaredTriangles = 0.0;
         int numTriangles = 0;
         double phiSquaredTriangles = 0.0;
@@ -314,7 +310,7 @@ public:
 
         // Compute internal angle
         numQuads = 0;
-        for (int f = 0; f < numConnectedFaces; f++) 
+        for (int f = 0; f < numConnectedFaces; f++)
         {
             if (connectedFaces[f] < 0) continue;// boundary cell
             int numFaceNodes = mesh.m_facesNodes[connectedFaces[f]].size();
@@ -341,7 +337,37 @@ public:
                 numTriangles += 1;
                 phiTriangles += phi;
             }
-            phiTot += phi; 
+            phiTot += phi;
+        }
+
+
+        double factor = 1.0;
+        if (m_nodesTypes[currentNode] == 2) factor = 0.5;
+        if (m_nodesTypes[currentNode] == 3) factor = 0.25;
+        double mu = 0.0;
+        double muSquaredTriangles = 0.0;
+        double muTriangles = 0.0;
+        double minPhi = 15.0 / 180.0 * M_PI;
+        if (numTriangles > 0)
+        {
+            muTriangles = (factor * 2.0 * M_PI - (phiTot - phiTriangles)) / phiTriangles;
+            muTriangles = std::max(muTriangles, double(numTriangles) * minPhi / phiTriangles);
+        }
+        else if (numSquaredTriangles > 0)
+        {
+            muSquaredTriangles = std::max(factor * 2.0 * M_PI - (phiTot - phiSquaredTriangles), double(numSquaredTriangles) * minPhi) / phiSquaredTriangles;
+        }
+
+        bool isSquare = true;
+        if (numQuads < 2) isSquare = false;
+        if (phiTot > 1e-18)
+        {
+            mu = factor * 2.0 * M_PI / (phiTot - (1.0 - muTriangles) * phiTriangles - (1.0 - muSquaredTriangles) * phiSquaredTriangles);
+        }
+        else if (numConnectedFaces > 0)
+        {
+            //TODO: signal problematic node
+            return false;
         }
 
 
