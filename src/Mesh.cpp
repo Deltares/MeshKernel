@@ -26,11 +26,12 @@ Mesh<Point>::Mesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Po
     //run administration and find the faces
     NodeAdministration();
     SortEdgesInCounterClockWiseOrder();
-    findFaces(3);
-    findFaces(4);
-    findFaces(5);
-    findFaces(6);
 
+    for(int numEdgesPerFace =3; numEdgesPerFace<= GridGeom::maximumNumberOfEdgesPerNode; numEdgesPerFace++)
+    {
+        findFaces(numEdgesPerFace);
+    }
+ 
     // find mesh circumcenters
     faceCircumcenters(1.0);
 
