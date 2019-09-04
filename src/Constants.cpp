@@ -19,8 +19,9 @@ namespace GridGeom
 
     //mesh constants
     static constexpr double minimumDeltaCoordinate = 1e-14;
-    static constexpr size_t maximumNumberOfEdgesPerNode = 8;
+    static constexpr size_t maximumNumberOfEdgesPerNode = 6;
     static constexpr size_t maximumNumberOfNodesPerFace = 10;
+    static constexpr size_t maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4;
 
     //orthogonalization 
     static constexpr double minimumEdgeLength = 1e-4;
@@ -28,7 +29,6 @@ namespace GridGeom
     static constexpr double orthogonalizationToSmoothingFactor = 0.975; //Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
     static constexpr double smoothorarea = 1.0;   //Factor between smoother(1.0) and area - homogenizer(0.0)
 
-    constexpr int connectedFacesNumber = 4;
     constexpr int maximumNumberOfNodesInStencil = 4;
 
 }
