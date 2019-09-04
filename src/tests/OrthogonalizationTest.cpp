@@ -1,5 +1,5 @@
 #include "GridGeomTest.hpp"
-#include "../Orthogonaization.cpp"
+#include "../Orthogonalization.cpp"
 
 TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
 {
