@@ -219,6 +219,7 @@ public:
         std::vector<double> thetaSquare(connectedNodesIndex + 1, doubleMissingValue);
         std::vector<bool> isSquareFace(numConnectedFaces, false);
 
+        int connectedQuads = 0;
         for (int f = 0; f < numConnectedFaces; f++)
         {
 
@@ -249,7 +250,6 @@ public:
             }
 
             //Compute optimal angle thetaSquare
-            int connectedQuads = 0;
             if (isSquare)
             {
                 if (m_nodesTypes[nextNode] == 1 || m_nodesTypes[nextNode] == 4)
