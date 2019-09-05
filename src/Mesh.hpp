@@ -19,7 +19,7 @@ public:
 
     //edges
     std::vector<size_t> m_edgesNumFaces;                        //LNN
-    std::vector<std::vector<int>> m_edgesFaces;              //LNE
+    std::vector<std::vector<int>> m_edgesFaces;                 //LNE
 
     // faces
     std::vector<std::vector<size_t>> m_facesNodes;              //netcell%Nod, the nodes composing the faces, in ccw order

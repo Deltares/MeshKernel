@@ -261,7 +261,7 @@ namespace GridGeom
             double dy1 = getDy(firstPointFirstSegment, secondPointFirstSegment);
             double dy2 = getDy(firstPointSecondSegment, secondPointSecondSegment);
          
-            return dx1 * dx2 - dy1 * dy2;
+            return dotProduct(dx1,dx2,dy1,dy2);
         }
     };
     
