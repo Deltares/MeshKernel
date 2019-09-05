@@ -179,8 +179,8 @@ public:
 
         size_t stencilEdge;
         size_t stencilFace;
-        std::vector<double> xi(m_maxNumNeighbours,0.0);
-        std::vector<double> eta(m_maxNumNeighbours,0.0);
+        std::vector<double> xi(maximumNumberOfConnectedNodes,0.0);
+        std::vector<double> eta(maximumNumberOfConnectedNodes,0.0);
         std::vector<std::vector<double>> nodeConnectedFaceNodes(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
         std::vector<size_t> numNodeConnectedFaceNodes(mesh.m_nodes.size(), 0.0);
 
@@ -215,7 +215,7 @@ public:
         std::vector<double> thetaSquare(connectedNodesIndex + 1, doubleMissingValue);
         std::vector<bool> isSquareFace(numConnectedFaces, false);
 
-        int numQuads = 0;
+        int numNonStencilQuad = 0;
         int numSquaredTriangles = 0.0;
         int numTriangles = 0;
         double phiSquaredTriangles = 0.0;
@@ -223,9 +223,9 @@ public:
         double phiTriangles = 0.0;
         double phiTot = 0.0;
 
+        //loop over the connected edges
         for (int f = 0; f < numConnectedFaces; f++)
         {
-
             size_t edgeIndex = mesh.m_nodesEdges[currentNode][f];
             size_t nextNode = connectedNodes[f + 1];
             int faceLeft = mesh.m_edgesFaces[edgeIndex][0];
@@ -234,13 +234,14 @@ public:
             if (mesh.m_edgesNumFaces[edgeIndex] == 2)
                 faceRigth = mesh.m_edgesFaces[edgeIndex][1];
 
+            //check if it is a rectangular node (not currentNode itself) 
             bool isSquare = true;
             for (int e = 0; e < mesh.m_nodesNumEdges[nextNode]; e++)
             {
                 size_t edge = mesh.m_nodesEdges[nextNode][e];
                 for (int ff = 0; ff < mesh.m_edgesNumFaces[edge]; ff++)
                 {
-                    size_t face = mesh.m_edgesFaces[edge][ff];
+                    size_t face = mesh.m_edgesFaces[edge][ff]; 
                     if (face != faceLeft && face != faceRigth)
                     {
                         isSquare = isSquare && mesh.m_facesNodes[face].size() == 4;
@@ -252,25 +253,25 @@ public:
                 }
             }
 
-            //Compute optimal angle thetaSquare
+            //Compute optimal angle thetaSquare based on the node type
             if (isSquare)
             {
                 if (m_nodesTypes[nextNode] == 1 || m_nodesTypes[nextNode] == 4)
                 {
                     // Inner node
-                    numQuads = mesh.m_nodesNumEdges[nextNode] - 2;
-                    thetaSquare[f + 1] = (2.0 - double(numQuads) * 0.5) * M_PI;
+                    numNonStencilQuad = mesh.m_nodesNumEdges[nextNode] - 2;
+                    thetaSquare[f + 1] = (2.0 - double(numNonStencilQuad) * 0.5) * M_PI;
                 }
                 if (m_nodesTypes[nextNode] == 2)
                 {
                     // Inner node
-                    numQuads = mesh.m_nodesNumEdges[nextNode] - 1 - mesh.m_edgesNumFaces[edgeIndex];
-                    thetaSquare[f + 1] = (1.0 - double(numQuads) * 0.5) * M_PI;
+                    numNonStencilQuad = mesh.m_nodesNumEdges[nextNode] - 1 - mesh.m_edgesNumFaces[edgeIndex];
+                    thetaSquare[f + 1] = (1.0 - double(numNonStencilQuad) * 0.5) * M_PI;
                 }
                 if (m_nodesTypes[nextNode] == 3)
                 {
                     // Inner node
-                    double nquad = mesh.m_nodesNumEdges[nextNode] - 2.0;
+                    numNonStencilQuad = mesh.m_nodesNumEdges[nextNode] - 2.0; 
                     thetaSquare[f + 1] = 0.5 * M_PI;
                 }
             }
@@ -278,13 +279,13 @@ public:
             int leftFaceIndex = f - 1; if (leftFaceIndex < 0) leftFaceIndex = leftFaceIndex + numConnectedFaces;
             if (connectedFaces[f] > 1)
             {
-                if (mesh.m_facesNodes[connectedFaces[f]].size() == 4) numQuads += 1;
+                if (mesh.m_facesNodes[connectedFaces[f]].size() == 4) numNonStencilQuad += 1;
             }
             if (connectedFaces[leftFaceIndex] > 1)
             {
-                if (mesh.m_facesNodes[connectedFaces[leftFaceIndex]].size() == 4) numQuads += 1;
+                if (mesh.m_facesNodes[connectedFaces[leftFaceIndex]].size() == 4) numNonStencilQuad += 1;
             }
-            if (numQuads > 3)
+            if (numNonStencilQuad > 3)
             {
                 isSquare = false;
             }
@@ -309,7 +310,7 @@ public:
         }
 
         // Compute internal angle
-        numQuads = 0;
+        numNonStencilQuad = 0;
         for (int f = 0; f < numConnectedFaces; f++)
         {
             if (connectedFaces[f] < 0) continue;// boundary cell
@@ -328,7 +329,7 @@ public:
                 }
                 else if (numFaceNodes == 4)
                 {
-                    numQuads += 1;
+                    numNonStencilQuad += 1;
                     phiQuads += phi;
                 }
             }
@@ -359,18 +360,104 @@ public:
         }
 
         bool isSquare = true;
-        if (numQuads < 2) isSquare = false;
+        if (numNonStencilQuad < 2) isSquare = false;
         if (phiTot > 1e-18)
         {
             mu = factor * 2.0 * M_PI / (phiTot - (1.0 - muTriangles) * phiTriangles - (1.0 - muSquaredTriangles) * phiSquaredTriangles);
         }
         else if (numConnectedFaces > 0)
         {
-            //TODO: signal problematic node
+            //TODO: error
             return false;
         }
 
+        double phi0 = 0.0;
+        double dPhi0 = 0.0;
+        double dPhi = 0.0;
+        double dTheta = 0.0;
+        std::vector<double> phiEdge(numConnectedFaces, 0.0);
+        for (int f = 0; f < numConnectedFaces; f++)
+        {
+            phi0 = phi0 + 0.5 * dPhi0;
+            phiEdge[f] = phi0;
+            if (connectedFaces[f] < 0)
+            {
+                if (m_nodesTypes[currentNode] == 2)
+                {
+                    dPhi = M_PI;
+                }
+                else if (m_nodesTypes[currentNode] == 3)
+                {
+                    dPhi = 1.5 * M_PI;
+                }
+                else
+                {
+                    //TODO: error
+                    return false;
+                }
+                phi0 = phi0 + 0.5 * dPhi;
+                continue;
+            }
 
+            int numFaceNodes = mesh.m_facesNodes[connectedFaces[f]].size();
+            if (numFaceNodes > maximumNumberOfEdgesPerNode)
+            {
+                //TODO: error
+                return false;
+            }
+
+            dPhi0 = optimalEdgeAngle(numFaceNodes);
+            if (isSquareFace[f])
+            {
+                int rightFaceIndex = f + 2; if (rightFaceIndex > numConnectedFaces) rightFaceIndex = rightFaceIndex - numConnectedFaces;
+                bool isBoundaryEdge = mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 1;
+                dPhi0 = optimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[rightFaceIndex], isBoundaryEdge);
+                if (numFaceNodes == 3)
+                {
+                    dPhi0 = muSquaredTriangles * dPhi0;
+                }
+            }
+            else if (numFaceNodes == 3)
+            {
+                dPhi0 = muTriangles * dPhi0; 
+            }
+
+            dPhi = mu * dPhi0;
+            phi0 = phi0 + 0.5 * dPhi;
+
+            int nodeIndex = 0;
+            for (int n = 0; n < mesh.m_facesNodes[connectedFaces[f]].size(); n++)
+            {
+                if (mesh.m_facesNodes[connectedFaces[f]][n] == currentNode)
+                {
+                    nodeIndex = n;
+                    break;
+                }
+            }
+
+            dTheta = 2.0 * M_PI / double(numFaceNodes); 
+            int previousNode = nodeIndex + 1; if (previousNode > numFaceNodes) previousNode -= numFaceNodes;
+            int nextNode = nodeIndex - 1; if (nextNode < 0) nextNode += numFaceNodes;
+            //mesh.m_facesNodes[];
+            if (nodeFacePosition[f][nextNode] - nodeFacePosition[f][previousNode] == -1 ||
+                nodeFacePosition[f][nextNode] - nodeFacePosition[f][previousNode] == mesh.m_nodesNumEdges[currentNode]-1)
+            {
+                dTheta = -dTheta;
+            }
+
+            double aspectRatio = (1.0 - std::cos(dTheta)) / std::sin(std::abs(dTheta)) * std::tan(0.5 * dPhi);
+            double radius = std::cos(0.5 * dPhi) / (1.0-cos(dTheta));
+
+            for (int n = 0; n < numFaceNodes; n++)
+            {
+                double theta = dTheta * (n - nodeIndex);
+                double xip = radius - radius * std::cos(theta);
+                double ethap = -radius * std::sin(theta);
+
+                xi[nodeFacePosition[f][n]] = xip * std::cos(phi0) - aspectRatio * ethap * std::sin(phi0);
+                eta[nodeFacePosition[f][n]] = xip * std::sin(phi0) + aspectRatio * ethap * std::cos(phi0);
+            }
+        }
 
         return true;
     }
