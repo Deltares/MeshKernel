@@ -23,6 +23,16 @@ public:
     std::vector<double> m_aspectRatios;
     std::vector<int> m_nodesTypes;                             //types of nodes,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
     std::vector<int> m_faceNumNodes;                           //number of face nodes
+    
+    int m_numTopologies = 0;
+    std::vector<int> m_nodeTopologyMapping;
+    std::vector<int> m_topologyNodes;
+    std::vector<int> m_topologyFaces;
+    std::vector<std::vector<double>> m_topologyXi;
+    std::vector<std::vector<double>> m_topologyEta;
+
+    static constexpr int topologyInitialSize = 10;
+    static constexpr double thetaTolerance = 1e-4;
 
     bool initialize(const Mesh<Point>& mesh)
     {
@@ -32,6 +42,13 @@ public:
         m_weights.resize(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
         m_rightHandSide.resize(mesh.m_nodes.size(), std::vector<double>(2, 0.0));
         m_aspectRatios.resize(mesh.m_edges.size(), 0.0);
+        
+        // topology 
+        m_nodeTopologyMapping.resize(mesh.m_nodes.size(), -1);
+        m_topologyNodes.resize(topologyInitialSize,-1);
+        m_topologyFaces.resize(topologyInitialSize,-1);
+        m_topologyXi.resize(topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
+        m_topologyEta.resize(topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
         
         //for each node, determine the neighbouring nodes
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
@@ -44,63 +61,16 @@ public:
             }
         }
 
+        // classify the nodes
         classifyNodes(mesh);
 
+        // computes the number of nodes for each face
+        computeFacesNumEdges(mesh);
+
         return true;
     }
 
-    //MAKENETNODESCODING
-    bool classifyNodes(const Mesh<Point>& mesh)
-    {
-        m_nodesTypes.resize(mesh.m_nodes.size(), 0);
 
-        for (int e = 0; e < mesh.m_edges.size(); e++)
-        {
-            size_t first = mesh.m_edges[e].first;
-            size_t second = mesh.m_edges[e].second;
-
-            if (mesh.m_edgesNumFaces[e] == 0)
-            {
-                m_nodesTypes[first] = -1;
-                m_nodesTypes[second] = -1;
-            }
-            else if (mesh.m_edgesNumFaces[e] == 1)
-            {
-                m_nodesTypes[first] += 1;
-                m_nodesTypes[second] += 1;
-            }
-        }
-
-        for (int n = 0; n < mesh.m_nodes.size(); n++)
-        {
-            if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
-            {
-                if (mesh.m_nodesNumEdges[n] == 2)
-                {
-                    //corner point
-                    m_nodesTypes[n] = 3;
-                }
-                else {}
-            }
-            else if (m_nodesTypes[n] > 2)
-            {
-                // corner point
-                m_nodesTypes[n] = 3;
-            }
-            else if (m_nodesTypes[n] != -1)
-            {
-                //internal node
-                m_nodesTypes[n] = 1;
-            }
-            
-            if (mesh.m_nodesNumEdges[n] < 2)
-            {
-                //hanging node
-                m_nodesTypes[n] = -1;
-            }
-        }
-        return true;
-    }
 
 
     //TODO: Unit test me please
@@ -183,14 +153,14 @@ public:
         std::vector<std::vector<double>> nodeConnectedFaceNodes(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
         std::vector<size_t> numNodeConnectedFaceNodes(mesh.m_nodes.size(), 0.0);
         
-        computeFacesNumEdges(mesh);
-
+        int numTopologies = 0;
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
             int numSharedFaces = 0;
             int numConnectedNodes = 0;
             orthogonalizationAdministration(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping);
             computeXiEta(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi,eta);
+            saveTopology(n, numConnectedNodes, numSharedFaces, xi, eta);
         }
 
         return true;
@@ -598,6 +568,63 @@ public:
         return true;
     }
 
+    bool saveTopology(const int currentNode,
+        const int numConnectedNodes,
+        const int numSharedFaces,
+        const std::vector<double>& xi,
+        const std::vector<double>& eta)
+    {
+        bool isNewTopology = true;
+        for (int topo = 0; topo < m_numTopologies; topo++)
+        {
+            if (numSharedFaces != m_topologyFaces[topo] || numConnectedNodes != m_topologyNodes[topo])
+            {
+                continue;
+            }
+
+            isNewTopology = false;
+            for (int n = 0; n < numConnectedNodes; n++)
+            {
+                double thetaLoc = std::atan2(eta[n], xi[n]);
+                double thetaTopology = std::atan2(m_topologyXi[topo][n], m_topologyEta[topo][n]);
+                if (std::abs(thetaLoc - thetaTopology) > thetaTolerance)
+                {
+                    isNewTopology = true;
+                    break;
+                }
+            }
+
+            if (!isNewTopology)
+            {
+                m_nodeTopologyMapping[currentNode] = topo;
+                break;
+            }
+        }
+
+        if (isNewTopology)
+        {
+            m_numTopologies += 1;
+
+            if (m_numTopologies > m_topologyNodes.size())
+            {
+                m_topologyNodes.resize(int(m_numTopologies * 1.5), 0);
+                m_topologyFaces.resize(int(m_numTopologies * 1.5), 0);
+                m_topologyXi.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
+                m_topologyEta.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
+            }
+
+            int topologyIndex = m_numTopologies - 1;
+            m_topologyNodes[topologyIndex] = numConnectedNodes;
+            m_topologyFaces[topologyIndex] = numSharedFaces;
+            m_topologyXi[topologyIndex] = xi;
+            m_topologyEta[topologyIndex] = eta;
+            m_nodeTopologyMapping[currentNode] = topologyIndex;
+        }
+
+        return true;
+    }
+    
+    
     double optimalEdgeAngle(const int numFaceNodes, const double theta1 = doubleMissingValue, const double theta2 = doubleMissingValue, bool isBoundaryEdge = false)
     {
         double angle = M_PI * (1 - 2.0 / double(numFaceNodes));
@@ -735,6 +762,59 @@ public:
                     m_aspectRatios[e] = curvilinearToOrthogonalRatio * m_aspectRatios[e] +
                         (1.0 - curvilinearToOrthogonalRatio) * averageFlowEdgesLength[e] / (0.5 * (averageEdgesLength[e][0] + averageEdgesLength[e][1]));
                 }
+            }
+        }
+        return true;
+    }
+
+    //MAKENETNODESCODING
+    bool classifyNodes(const Mesh<Point>& mesh)
+    {
+        m_nodesTypes.resize(mesh.m_nodes.size(), 0);
+
+        for (int e = 0; e < mesh.m_edges.size(); e++)
+        {
+            size_t first = mesh.m_edges[e].first;
+            size_t second = mesh.m_edges[e].second;
+
+            if (mesh.m_edgesNumFaces[e] == 0)
+            {
+                m_nodesTypes[first] = -1;
+                m_nodesTypes[second] = -1;
+            }
+            else if (mesh.m_edgesNumFaces[e] == 1)
+            {
+                m_nodesTypes[first] += 1;
+                m_nodesTypes[second] += 1;
+            }
+        }
+
+        for (int n = 0; n < mesh.m_nodes.size(); n++)
+        {
+            if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
+            {
+                if (mesh.m_nodesNumEdges[n] == 2)
+                {
+                    //corner point
+                    m_nodesTypes[n] = 3;
+                }
+                else {}
+            }
+            else if (m_nodesTypes[n] > 2)
+            {
+                // corner point
+                m_nodesTypes[n] = 3;
+            }
+            else if (m_nodesTypes[n] != -1)
+            {
+                //internal node
+                m_nodesTypes[n] = 1;
+            }
+
+            if (mesh.m_nodesNumEdges[n] < 2)
+            {
+                //hanging node
+                m_nodesTypes[n] = -1;
             }
         }
         return true;
