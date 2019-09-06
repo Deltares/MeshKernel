@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <unordered_map>
 #include "Operations.cpp"
 #include "Mesh.hpp"
 
@@ -21,6 +22,7 @@ public:
     std::vector<std::vector<double>>  m_rightHandSide;
     std::vector<double> m_aspectRatios;
     std::vector<int> m_nodesTypes;                             //types of nodes,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
+    std::vector<int> m_faceNumNodes;                           //number of face nodes
 
     bool initialize(const Mesh<Point>& mesh)
     {
@@ -30,7 +32,8 @@ public:
         m_weights.resize(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
         m_rightHandSide.resize(mesh.m_nodes.size(), std::vector<double>(2, 0.0));
         m_aspectRatios.resize(mesh.m_edges.size(), 0.0);
-        //for each node, determine the neighbours
+        
+        //for each node, determine the neighbouring nodes
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
             for (size_t nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
@@ -170,65 +173,74 @@ public:
 
     bool computeOperators(const Mesh<Point>& mesh)
     {
-        //allocate small administration arrays
-        std::vector<int> connectedFaces(maximumNumberOfEdgesPerNode,-1); //icell
+        //allocate small administration arrays only once
+        std::vector<int> sharedFaces(maximumNumberOfEdgesPerNode,-1); //icell
         std::vector<size_t> connectedNodes(maximumNumberOfConnectedNodes, 0); //kk2
-        std::vector<std::vector<size_t>> nodeFacePosition(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfNodesPerFace, 0));//kkc
-        double admXi[maximumNumberOfNodesInStencil]{0};  //xi
-        double admEta[maximumNumberOfNodesInStencil]{0}; //eta
-
-        size_t stencilEdge;
-        size_t stencilFace;
+        std::vector<std::vector<size_t>> faceNodeMapping(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfNodesPerFace, 0));//kkc
         std::vector<double> xi(maximumNumberOfConnectedNodes,0.0);
         std::vector<double> eta(maximumNumberOfConnectedNodes,0.0);
+
         std::vector<std::vector<double>> nodeConnectedFaceNodes(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
         std::vector<size_t> numNodeConnectedFaceNodes(mesh.m_nodes.size(), 0.0);
+        
+        computeFacesNumEdges(mesh);
 
-        size_t connectedNodesIndex;
-        int numConnectedFaces;
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
-            if (mesh.m_nodesNumEdges[n] < 2)continue;
-
-            orthogonalizationAdministration(mesh, n, connectedFaces, numConnectedFaces, connectedNodes, connectedNodesIndex, nodeFacePosition);
-            //nodeConnectedFaceNodes[n] = connectedNodes;
-            //numNodeConnectedFaceNodes[n] = connectedNodesIndex + 1;
-            computeXiEta(mesh, n, connectedFaces, numConnectedFaces, connectedNodes, connectedNodesIndex, nodeFacePosition, xi,eta);
-
+            int numSharedFaces = 0;
+            int numConnectedNodes = 0;
+            orthogonalizationAdministration(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping);
+            computeXiEta(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi,eta);
         }
 
         return true;
     }
 
-    bool orthogonalizationAdministration(const Mesh<Point>& mesh, const int currentNode, std::vector<int>& connectedFaces, int& numNonStencilNodes, std::vector<size_t>& connectedNodes, size_t& connectedNodesIndex, std::vector<std::vector<size_t>>& faceNodePosition)
+    bool computeFacesNumEdges(const Mesh<Point>& mesh)
     {
-        for (auto& e : connectedFaces)  e = -1;
+        // Cache the result for later calls.
+        m_faceNumNodes.resize(mesh.m_numFaces, false);
+        for(int f=0; f< mesh.m_numFaces; f++)
+        {
+            m_faceNumNodes[f] = mesh.m_facesNodes.size();
+        }
+        return true;
+    }
+
+    // computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face.
+    bool orthogonalizationAdministration(const Mesh<Point>& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<size_t>>& faceNodeMapping)
+    {
+        for (auto& f : sharedFaces)  f = -1;
 
         if (mesh.m_nodesNumEdges[currentNode] < 2) return true;
 
-        // for the currentNode, find the connected faces
+        // 1. For the currentNode, find the shared faces
         int newFaceIndex = -999;
-        numNonStencilNodes = 0;
+        numSharedFaces = 0;
         for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
         {
             size_t firstEdge = mesh.m_nodesEdges[currentNode][e]; 
-            int secondIndex = e + 1;
-            if (secondIndex >= mesh.m_nodesNumEdges[currentNode]) secondIndex = 0;
+            
+            int secondEdgeIndex = e + 1;
+            
+            if (secondEdgeIndex >= mesh.m_nodesNumEdges[currentNode]) 
+                secondEdgeIndex = 0;
 
-            size_t secondEdge = mesh.m_nodesEdges[currentNode][secondIndex];
+            size_t secondEdge = mesh.m_nodesEdges[currentNode][secondEdgeIndex];
 
             if (mesh.m_edgesNumFaces[firstEdge] < 1 || mesh.m_edgesNumFaces[secondEdge] < 1) continue;
 
+            // find the face that the first and the second edge share
             int firstFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[firstEdge], size_t(2)), size_t(1)) - 1;
             int secondFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[secondEdge], size_t(2)), size_t(1)) - 1;
 
-            if ((mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]) &&
-                mesh.m_edgesFaces[firstEdge][0] != newFaceIndex)
+            if (mesh.m_edgesFaces[firstEdge][0] != newFaceIndex &&
+               (mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
             {
                 newFaceIndex = mesh.m_edgesFaces[firstEdge][0];
             }
-            else if ((mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]) &&
-                mesh.m_edgesFaces[firstEdge][firstFaceIndex] != newFaceIndex)
+            else if (mesh.m_edgesFaces[firstEdge][firstFaceIndex] != newFaceIndex &&
+                (mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
             {
                 newFaceIndex = mesh.m_edgesFaces[firstEdge][firstFaceIndex];
             }
@@ -237,19 +249,19 @@ public:
                 newFaceIndex = -999;
             }
 
-
-            if (mesh.m_nodesNumEdges[currentNode] == 2 && e == 1)
+            //corner face (already found in the first iteration)
+            if (mesh.m_nodesNumEdges[currentNode] == 2 && e == 1 && m_nodesTypes[currentNode]==3)
             {
-                if (connectedFaces[0] != 0) newFaceIndex = -999;
+                if (sharedFaces[0] == newFaceIndex) newFaceIndex = -999;
             }
-            connectedFaces[numNonStencilNodes] = newFaceIndex;
-            numNonStencilNodes += 1;
+            sharedFaces[numSharedFaces] = newFaceIndex;
+            numSharedFaces += 1;
         }
 
-        if (numNonStencilNodes < 1) return true;
+        if (numSharedFaces < 1) return true;
 
         for (auto& v : connectedNodes) v = 0;
-        connectedNodesIndex = 0;
+        int connectedNodesIndex = 0;
         connectedNodes[connectedNodesIndex] = currentNode;
 
         // edge connected nodes
@@ -261,29 +273,34 @@ public:
             connectedNodes[connectedNodesIndex] = nodeIndex;
         }
 
-        // other nodes: for each connected Face, form faceNodePosition array
-        if (faceNodePosition.size() < numNonStencilNodes) faceNodePosition.resize(numNonStencilNodes);
-        for (int f = 0; f < numNonStencilNodes; f++)
+        // for each face store the positions of the its nodes in the connectedNodes (compressed array)
+        if (faceNodeMapping.size() < numSharedFaces) 
+            faceNodeMapping.resize(numSharedFaces);
+
+        for (int f = 0; f < numSharedFaces; f++)
         {
-            int faceIndex = connectedFaces[f];
+            int faceIndex = sharedFaces[f];
             if (faceIndex < 0) continue;
 
-            size_t nodeIndex = 0;
-            for (int n = 0; n < mesh.m_facesNodes[faceIndex].size(); n++)
+            // find the stencil node position  in the current face
+            size_t faceNodeIndex = 0;
+            size_t numFaceNodes = m_faceNumNodes[faceIndex];
+            for (int n = 0; n < numFaceNodes; n++)
             {
                 if (mesh.m_facesNodes[faceIndex][n] == currentNode)
                 {
-                    nodeIndex = n;
+                    faceNodeIndex = n;
                     break;
                 }
             }
 
-            size_t numFaceEdges = mesh.m_facesEdges[faceIndex].size();
-            for (int n = 0; n < numFaceEdges; n++)
+            for (int n = 0; n < numFaceNodes; n++)
             {
 
-                if (nodeIndex >= numFaceEdges) nodeIndex -= numFaceEdges;
-                int node = mesh.m_facesNodes[faceIndex][nodeIndex];
+                if (faceNodeIndex >= numFaceNodes) 
+                    faceNodeIndex -= numFaceNodes;
+                
+                int node = mesh.m_facesNodes[faceIndex][faceNodeIndex];
 
 
                 bool isNewNode = true;
@@ -292,7 +309,7 @@ public:
                     if (node == connectedNodes[n])
                     {
                         isNewNode = false;
-                        faceNodePosition[f][nodeIndex] = n;
+                        faceNodeMapping[f][faceNodeIndex] = n;
                         break;
                     }
                 }
@@ -301,13 +318,16 @@ public:
                 {
                     connectedNodesIndex++;
                     connectedNodes[connectedNodesIndex] = node;
-                    faceNodePosition[f][nodeIndex] = connectedNodesIndex;
+                    faceNodeMapping[f][faceNodeIndex] = connectedNodesIndex;
                 }
 
                 //update node index
-                nodeIndex += 1;
+                faceNodeIndex += 1;
             }
         }
+
+        // compute the number of connected nodes
+        numConnectedNodes = connectedNodesIndex + 1;
 
         return true;
     }
@@ -315,32 +335,27 @@ public:
 
     bool computeXiEta(const Mesh<Point>& mesh,
         const int currentNode,
-        const std::vector<int>& connectedFaces,
-        const int& numConnectedFaces,
+        const std::vector<int>& sharedFaces,
+        const int& numSharedFaces,
         const std::vector<size_t>& connectedNodes,
-        const size_t& connectedNodesIndex,
-        const std::vector<std::vector<size_t>>& nodeFacePosition,
+        const size_t& numConnectedNodes,
+        const std::vector<std::vector<size_t>>& faceNodeMapping,
         std::vector<double>& xi,
         std::vector<double>& eta)
     {
         std::fill(xi.begin(), xi.end(), 0.0);
         std::fill(eta.begin(), eta.end(), 0.0);
-        std::vector<double> thetaSquare(connectedNodesIndex + 1, doubleMissingValue);
-        std::vector<bool> isSquareFace(numConnectedFaces, false);
+        // the angles for the squared nodes connected to the stencil nodes, first the ones directly connected, then the others
+        std::vector<double> thetaSquare(numConnectedNodes, doubleMissingValue);
+        // for each shared face, a bollean indicating if it is squared or not
+        std::vector<bool> isSquareFace(numSharedFaces, false);
 
         int numNonStencilQuad = 0;
-        int numSquaredTriangles = 0.0;
-        int numTriangles = 0;
-        double phiSquaredTriangles = 0.0;
-        double phiQuads = 0.0;
-        double phiTriangles = 0.0;
-        double phiTot = 0.0;
-
         //loop over the connected edges
-        for (int f = 0; f < numConnectedFaces; f++)
+        for (int f = 0; f < numSharedFaces; f++)
         {
             size_t edgeIndex = mesh.m_nodesEdges[currentNode][f];
-            size_t nextNode = connectedNodes[f + 1];
+            size_t nextNode = connectedNodes[f + 1]; // the first entry is always the stencil node 
             int faceLeft = mesh.m_edgesFaces[edgeIndex][0];
             int faceRigth = faceLeft;
 
@@ -389,14 +404,14 @@ public:
                 }
             }
 
-            int leftFaceIndex = f - 1; if (leftFaceIndex < 0) leftFaceIndex = leftFaceIndex + numConnectedFaces;
-            if (connectedFaces[f] > 1)
+            int leftFaceIndex = f - 1; if (leftFaceIndex < 0) leftFaceIndex = leftFaceIndex + numSharedFaces;
+            if (sharedFaces[f] > 1)
             {
-                if (mesh.m_facesNodes[connectedFaces[f]].size() == 4) numNonStencilQuad += 1;
+                if (m_faceNumNodes[sharedFaces[f]]==4 ) numNonStencilQuad += 1;
             }
-            if (connectedFaces[leftFaceIndex] > 1)
+            if (sharedFaces[leftFaceIndex] > 1)
             {
-                if (mesh.m_facesNodes[connectedFaces[leftFaceIndex]].size() == 4) numNonStencilQuad += 1;
+                if (m_faceNumNodes[sharedFaces[leftFaceIndex]] == 4 ) numNonStencilQuad += 1;
             }
             if (numNonStencilQuad > 3)
             {
@@ -407,34 +422,43 @@ public:
             isSquareFace[leftFaceIndex] = isSquareFace[leftFaceIndex] || isSquare;
         }
 
-        for (int f = 0; f < numConnectedFaces; f++)
+        for (int f = 0; f < numSharedFaces; f++)
         {
-            if (connectedFaces[f] < 0) continue;// boundary cell
+            // boundary face
+            if (sharedFaces[f] < 0) continue;
 
-            int numNodes = mesh.m_facesNodes[connectedFaces[f]].size();
-            if (numNodes == 4)
+            // non boundary face 
+            if (m_faceNumNodes[sharedFaces[f]] == 4)
             {
-                for (int n = 0; n < numNodes; n++)
+                for (int n = 0; n < m_faceNumNodes[sharedFaces[f]]; n++)
                 {
-                    if (nodeFacePosition[f][n] <= numConnectedFaces) continue;
-                    thetaSquare[nodeFacePosition[f][n]] = 0.5 * M_PI;
+                    if (faceNodeMapping[f][n] <= numSharedFaces) continue;
+                    thetaSquare[faceNodeMapping[f][n]] = 0.5 * M_PI;
                 }
             }
         }
 
         // Compute internal angle
+        int numSquaredTriangles = 0.0;
+        int numTriangles = 0;
+        double phiSquaredTriangles = 0.0;
+        double phiQuads = 0.0;
+        double phiTriangles = 0.0;
+        double phiTot = 0.0;
         numNonStencilQuad = 0;
-        for (int f = 0; f < numConnectedFaces; f++)
+        for (int f = 0; f < numSharedFaces; f++)
         {
-            if (connectedFaces[f] < 0) continue;// boundary cell
-            int numFaceNodes = mesh.m_facesNodes[connectedFaces[f]].size();
+            // boundary face
+            if (sharedFaces[f] < 0) continue;
+
+            int numFaceNodes = m_faceNumNodes[sharedFaces[f]];
             double phi = optimalEdgeAngle(numFaceNodes);
 
             if (isSquareFace[f] || numFaceNodes == 4)
             {
-                int rightFaceIndex = f + 2; if (rightFaceIndex > numConnectedFaces) rightFaceIndex = rightFaceIndex - numConnectedFaces;
+                int nextNode = f + 2; if (nextNode > numSharedFaces) nextNode = nextNode - numSharedFaces;
                 bool isBoundaryEdge = mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 1;
-                phi = optimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[rightFaceIndex], isBoundaryEdge);
+                phi = optimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], isBoundaryEdge);
                 if (numFaceNodes == 3)
                 {
                     numSquaredTriangles += 1;
@@ -472,13 +496,11 @@ public:
             muSquaredTriangles = std::max(factor * 2.0 * M_PI - (phiTot - phiSquaredTriangles), double(numSquaredTriangles) * minPhi) / phiSquaredTriangles;
         }
 
-        bool isSquare = true;
-        if (numNonStencilQuad < 2) isSquare = false;
         if (phiTot > 1e-18)
         {
             mu = factor * 2.0 * M_PI / (phiTot - (1.0 - muTriangles) * phiTriangles - (1.0 - muSquaredTriangles) * phiSquaredTriangles);
         }
-        else if (numConnectedFaces > 0)
+        else if (numSharedFaces > 0)
         {
             //TODO: error
             return false;
@@ -488,12 +510,10 @@ public:
         double dPhi0 = 0.0;
         double dPhi = 0.0;
         double dTheta = 0.0;
-        std::vector<double> phiEdge(numConnectedFaces, 0.0);
-        for (int f = 0; f < numConnectedFaces; f++)
+        for (int f = 0; f < numSharedFaces; f++)
         {
-            phi0 = phi0 + 0.5 * dPhi0;
-            phiEdge[f] = phi0;
-            if (connectedFaces[f] < 0)
+            phi0 = phi0 + 0.5 * dPhi;
+            if (sharedFaces[f] < 0)
             {
                 if (m_nodesTypes[currentNode] == 2)
                 {
@@ -512,7 +532,7 @@ public:
                 continue;
             }
 
-            int numFaceNodes = mesh.m_facesNodes[connectedFaces[f]].size();
+            int numFaceNodes = m_faceNumNodes[sharedFaces[f]];
             if (numFaceNodes > maximumNumberOfEdgesPerNode)
             {
                 //TODO: error
@@ -522,9 +542,9 @@ public:
             dPhi0 = optimalEdgeAngle(numFaceNodes);
             if (isSquareFace[f])
             {
-                int rightFaceIndex = f + 2; if (rightFaceIndex > numConnectedFaces) rightFaceIndex = rightFaceIndex - numConnectedFaces;
+                int nextNode = f + 2; if (nextNode > numSharedFaces) nextNode = nextNode - numSharedFaces;
                 bool isBoundaryEdge = mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 1;
-                dPhi0 = optimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[rightFaceIndex], isBoundaryEdge);
+                dPhi0 = optimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], isBoundaryEdge);
                 if (numFaceNodes == 3)
                 {
                     dPhi0 = muSquaredTriangles * dPhi0;
@@ -538,22 +558,25 @@ public:
             dPhi = mu * dPhi0;
             phi0 = phi0 + 0.5 * dPhi;
 
+            // determine the index of the current stencil node
             int nodeIndex = 0;
-            for (int n = 0; n < mesh.m_facesNodes[connectedFaces[f]].size(); n++)
+            for (int n = 0; n < numFaceNodes; n++)
             {
-                if (mesh.m_facesNodes[connectedFaces[f]][n] == currentNode)
+                if (mesh.m_facesNodes[sharedFaces[f]][n] == currentNode)
                 {
                     nodeIndex = n;
                     break;
                 }
             }
 
-            dTheta = 2.0 * M_PI / double(numFaceNodes); 
+            // optimal angle
+            dTheta = 2.0 * M_PI / double(numFaceNodes);
+
+            // orientation of the face (necessary for folded cells)
             int previousNode = nodeIndex + 1; if (previousNode > numFaceNodes) previousNode -= numFaceNodes;
             int nextNode = nodeIndex - 1; if (nextNode < 0) nextNode += numFaceNodes;
-            //mesh.m_facesNodes[];
-            if (nodeFacePosition[f][nextNode] - nodeFacePosition[f][previousNode] == -1 ||
-                nodeFacePosition[f][nextNode] - nodeFacePosition[f][previousNode] == mesh.m_nodesNumEdges[currentNode]-1)
+            if (faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode] == -1 ||
+                faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode] == mesh.m_nodesNumEdges[currentNode]-1)
             {
                 dTheta = -dTheta;
             }
@@ -567,36 +590,28 @@ public:
                 double xip = radius - radius * std::cos(theta);
                 double ethap = -radius * std::sin(theta);
 
-                xi[nodeFacePosition[f][n]] = xip * std::cos(phi0) - aspectRatio * ethap * std::sin(phi0);
-                eta[nodeFacePosition[f][n]] = xip * std::sin(phi0) + aspectRatio * ethap * std::cos(phi0);
+                xi[faceNodeMapping[f][n]] = xip * std::cos(phi0) - aspectRatio * ethap * std::sin(phi0);
+                eta[faceNodeMapping[f][n]] = xip * std::sin(phi0) + aspectRatio * ethap * std::cos(phi0);
             }
         }
 
         return true;
     }
 
-    double optimalEdgeAngle(const int numFaceNodes, const double theta1= doubleMissingValue, const double theta2= doubleMissingValue, bool isBoundaryEdge = false)
+    double optimalEdgeAngle(const int numFaceNodes, const double theta1 = doubleMissingValue, const double theta2 = doubleMissingValue, bool isBoundaryEdge = false)
     {
-        double angle = M_PI * (1 - 2.0 / double(numFaceNodes)); 
+        double angle = M_PI * (1 - 2.0 / double(numFaceNodes));
 
-        if(theta1 != doubleMissingValue && theta2 != doubleMissingValue)
+        if (theta1 != doubleMissingValue && theta2 != doubleMissingValue && numFaceNodes == 3)
         {
-            if(numFaceNodes==3)
+            angle = 0.25 * M_PI;
+            if (theta1 + theta2 == M_PI && !isBoundaryEdge)
             {
-                angle = 0.25 * M_PI;
-                if (theta1 + theta2 == M_PI && !isBoundaryEdge)
-                {
-                    angle = 0.5 * M_PI;
-                }
-            }
-            else if(numFaceNodes == 4)
-            {
-                angle = 0.50 * M_PI;
+                angle = 0.5 * M_PI;
             }
         }
         return angle;
     }
-
 
     bool aspectRatio(const Mesh<Point>& mesh)
     {
@@ -610,7 +625,7 @@ public:
             size_t first = mesh.m_edges[e].first;
             size_t second = mesh.m_edges[e].second;
 
-            if (first == second) continue;
+            if (first == second) continue; 
             double edgeLength = Operations<Point>::distance(mesh.m_nodes[first], mesh.m_nodes[second]);
             edgesLength[e] = edgeLength;
 
