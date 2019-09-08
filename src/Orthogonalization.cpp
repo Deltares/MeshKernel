@@ -5,7 +5,6 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include <unordered_map>
 #include "Operations.cpp"
 #include "Mesh.hpp"
 
@@ -66,6 +65,13 @@ public:
 
         // computes the number of nodes for each face
         computeFacesNumEdges(mesh);
+
+        return true;
+    }
+
+    bool solveWeights(const Mesh<Point>& mesh)
+    {
+        computeOperators(mesh);
 
         return true;
     }
@@ -134,12 +140,7 @@ public:
         return true;
     }
 
-    bool solveWeights(const Mesh<Point>& mesh)
-    {
-        computeOperators(mesh);
 
-        return true;
-    }
 
     bool computeOperators(const Mesh<Point>& mesh)
     {
@@ -172,7 +173,7 @@ public:
         m_faceNumNodes.resize(mesh.m_numFaces, false);
         for(int f=0; f< mesh.m_numFaces; f++)
         {
-            m_faceNumNodes[f] = mesh.m_facesNodes.size();
+            m_faceNumNodes[f] = mesh.m_facesNodes[f].size();
         }
         return true;
     }
@@ -362,14 +363,13 @@ public:
                 }
                 if (m_nodesTypes[nextNode] == 2)
                 {
-                    // Inner node
+                    // boundary node
                     numNonStencilQuad = mesh.m_nodesNumEdges[nextNode] - 1 - mesh.m_edgesNumFaces[edgeIndex];
                     thetaSquare[f + 1] = (1.0 - double(numNonStencilQuad) * 0.5) * M_PI;
                 }
                 if (m_nodesTypes[nextNode] == 3)
                 {
-                    // Inner node
-                    numNonStencilQuad = mesh.m_nodesNumEdges[nextNode] - 2.0; 
+                    //corner node
                     thetaSquare[f + 1] = 0.5 * M_PI;
                 }
             }
@@ -545,8 +545,8 @@ public:
             // orientation of the face (necessary for folded cells)
             int previousNode = nodeIndex + 1; if (previousNode > numFaceNodes) previousNode -= numFaceNodes;
             int nextNode = nodeIndex - 1; if (nextNode < 0) nextNode += numFaceNodes;
-            if (faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode] == -1 ||
-                faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode] == mesh.m_nodesNumEdges[currentNode]-1)
+            if ((faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode]) == -1 ||
+                (faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode]) == mesh.m_nodesNumEdges[currentNode])
             {
                 dTheta = -dTheta;
             }
@@ -583,10 +583,10 @@ public:
             }
 
             isNewTopology = false;
-            for (int n = 0; n < numConnectedNodes; n++)
+            for (int n = 1; n < numConnectedNodes; n++)
             {
                 double thetaLoc = std::atan2(eta[n], xi[n]);
-                double thetaTopology = std::atan2(m_topologyXi[topo][n], m_topologyEta[topo][n]);
+                double thetaTopology = std::atan2(m_topologyEta[topo][n], m_topologyXi[topo][n]);
                 if (std::abs(thetaLoc - thetaTopology) > thetaTolerance)
                 {
                     isNewTopology = true;
