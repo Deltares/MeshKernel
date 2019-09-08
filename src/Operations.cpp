@@ -6,14 +6,11 @@
 
 #include <boost/geometry/geometries/segment.hpp> 
 #include <boost/geometry/geometries/register/point.hpp>
-#include <boost/geometry/geometries/polygon.hpp>
 #include <boost/geometry/geometries/adapted/boost_tuple.hpp>
-#include <boost/geometry/geometries/register/ring.hpp>
 
 #include <boost/geometry.hpp>
 // register node so we can use boost geometry algorithms
 BOOST_GEOMETRY_REGISTER_POINT_2D(GridGeom::cartesianPoint, double, boost::geometry::cs::cartesian, x, y);
-BOOST_GEOMETRY_REGISTER_RING(std::vector<GridGeom::cartesianPoint>);
 
 namespace GridGeom
 {
