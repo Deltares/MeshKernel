@@ -1,3 +1,4 @@
+// TODO: duplicated face detection issue for large number of edges
 #ifndef MESH_CPP
 #define MESH_CPP
 
