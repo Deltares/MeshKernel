@@ -30,6 +30,9 @@ public:
     std::vector<std::vector<double>> m_topologyXi;
     std::vector<std::vector<double>> m_topologyEta;
 
+    std::vector < std::vector<int>> m_topologySharedFaces;
+    std::vector < std::vector<size_t>>  m_topologyConnectedNodes;
+
     static constexpr int topologyInitialSize = 10;
     static constexpr double thetaTolerance = 1e-4;
 
@@ -43,11 +46,14 @@ public:
         m_aspectRatios.resize(mesh.m_edges.size(), 0.0);
         
         // topology 
+        m_numTopologies = 0;
         m_nodeTopologyMapping.resize(mesh.m_nodes.size(), -1);
         m_topologyNodes.resize(topologyInitialSize,-1);
         m_topologyFaces.resize(topologyInitialSize,-1);
         m_topologyXi.resize(topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
         m_topologyEta.resize(topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
+        m_topologySharedFaces.resize(topologyInitialSize, std::vector<int>(maximumNumberOfConnectedNodes, -1));
+        m_topologyConnectedNodes.resize(topologyInitialSize, std::vector<size_t>(maximumNumberOfConnectedNodes, -1));
         
         //for each node, determine the neighbouring nodes
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
@@ -140,6 +146,70 @@ public:
         return true;
     }
 
+    // save only the unique topologies
+    bool saveTopology(const int currentNode,
+        const std::vector<int>& sharedFaces,
+        const int numSharedFaces,
+        const std::vector<size_t>& connectedNodes,
+        const int numConnectedNodes,
+        const std::vector<double>& xi,
+        const std::vector<double>& eta)
+    {
+        bool isNewTopology = true;
+        for (int topo = 0; topo < m_numTopologies; topo++)
+        {
+            if (numSharedFaces != m_topologyFaces[topo] || numConnectedNodes != m_topologyNodes[topo])
+            {
+                continue;
+            }
+
+            isNewTopology = false;
+            for (int n = 1; n < numConnectedNodes; n++)
+            {
+                double thetaLoc = std::atan2(eta[n], xi[n]);
+                double thetaTopology = std::atan2(m_topologyEta[topo][n], m_topologyXi[topo][n]);
+                if (std::abs(thetaLoc - thetaTopology) > thetaTolerance)
+                {
+                    isNewTopology = true;
+                    break;
+                }
+            }
+
+            if (!isNewTopology)
+            {
+                m_nodeTopologyMapping[currentNode] = topo;
+                break;
+            }
+        }
+
+        if (isNewTopology)
+        {
+            m_numTopologies += 1;
+
+            if (m_numTopologies > m_topologyNodes.size())
+            {
+                m_topologyNodes.resize(int(m_numTopologies * 1.5), 0);
+                m_topologyFaces.resize(int(m_numTopologies * 1.5), 0);
+                m_topologyXi.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
+                m_topologyEta.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
+
+                m_topologySharedFaces.resize(int(m_numTopologies * 1.5), std::vector<int>(maximumNumberOfEdgesPerNode, -1));
+                m_topologyConnectedNodes.resize(int(m_numTopologies * 1.5), std::vector<size_t>(maximumNumberOfConnectedNodes, -1));
+            }
+
+            int topologyIndex = m_numTopologies - 1;
+            m_topologyNodes[topologyIndex] = numConnectedNodes;
+            m_topologyConnectedNodes[topologyIndex] = connectedNodes;
+            m_topologyFaces[topologyIndex] = numSharedFaces;
+            m_topologySharedFaces[topologyIndex] = sharedFaces;
+            m_topologyXi[topologyIndex] = xi;
+            m_topologyEta[topologyIndex] = eta;
+            m_nodeTopologyMapping[currentNode] = topologyIndex;
+        }
+
+        return true;
+    }
+
 
 
     bool computeOperators(const Mesh<Point>& mesh)
@@ -161,148 +231,76 @@ public:
             int numConnectedNodes = 0;
             orthogonalizationAdministration(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping);
             computeXiEta(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi,eta);
-            saveTopology(n, numConnectedNodes, numSharedFaces, xi, eta);
+            saveTopology(n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, xi, eta);
         }
 
+        std::vector<bool> isNewTopology(m_numTopologies, true);
+        for (size_t n = 0; n < mesh.m_nodes.size(); n++)
+        {
+            int currentTopology = m_nodeTopologyMapping[n];
+
+            if(isNewTopology[currentTopology])
+            {
+                isNewTopology[currentTopology] = false;
+            }
+            // compute
+            computeOperators(mesh, n);
+        }
         return true;
     }
 
-    bool computeFacesNumEdges(const Mesh<Point>& mesh)
+    //compute
+    bool computeOperators(const Mesh<Point>& mesh, const int currentNode)
     {
-        // Cache the result for later calls.
-        m_faceNumNodes.resize(mesh.m_numFaces, false);
-        for(int f=0; f< mesh.m_numFaces; f++)
-        {
-            m_faceNumNodes[f] = mesh.m_facesNodes[f].size();
-        }
-        return true;
-    }
+        auto topologyIndex = m_nodeTopologyMapping[currentNode];
 
-    // computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face.
-    bool orthogonalizationAdministration(const Mesh<Point>& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<size_t>>& faceNodeMapping)
-    {
-        for (auto& f : sharedFaces)  f = -1;
+        // later on replace deep copy 
+        auto numConnectedNodes = m_topologyNodes[topologyIndex];
+        auto connectedNodes = m_topologyConnectedNodes[topologyIndex];
 
-        if (mesh.m_nodesNumEdges[currentNode] < 2) return true;
+        auto numSharedFaces = m_topologyFaces[topologyIndex];
+        auto sharedFaces = m_topologySharedFaces[topologyIndex];
 
-        // 1. For the currentNode, find the shared faces
-        int newFaceIndex = -999;
-        numSharedFaces = 0;
-        for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
-        {
-            size_t firstEdge = mesh.m_nodesEdges[currentNode][e]; 
-            
-            int secondEdgeIndex = e + 1;
-            
-            if (secondEdgeIndex >= mesh.m_nodesNumEdges[currentNode]) 
-                secondEdgeIndex = 0;
-
-            size_t secondEdge = mesh.m_nodesEdges[currentNode][secondEdgeIndex];
-
-            if (mesh.m_edgesNumFaces[firstEdge] < 1 || mesh.m_edgesNumFaces[secondEdge] < 1) continue;
-
-            // find the face that the first and the second edge share
-            int firstFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[firstEdge], size_t(2)), size_t(1)) - 1;
-            int secondFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[secondEdge], size_t(2)), size_t(1)) - 1;
-
-            if (mesh.m_edgesFaces[firstEdge][0] != newFaceIndex &&
-               (mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
-            {
-                newFaceIndex = mesh.m_edgesFaces[firstEdge][0];
-            }
-            else if (mesh.m_edgesFaces[firstEdge][firstFaceIndex] != newFaceIndex &&
-                (mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
-            {
-                newFaceIndex = mesh.m_edgesFaces[firstEdge][firstFaceIndex];
-            }
-            else
-            {
-                newFaceIndex = -999;
-            }
-
-            //corner face (already found in the first iteration)
-            if (mesh.m_nodesNumEdges[currentNode] == 2 && e == 1 && m_nodesTypes[currentNode]==3)
-            {
-                if (sharedFaces[0] == newFaceIndex) newFaceIndex = -999;
-            }
-            sharedFaces[numSharedFaces] = newFaceIndex;
-            numSharedFaces += 1;
-        }
-
-        if (numSharedFaces < 1) return true;
-
-        for (auto& v : connectedNodes) v = 0;
-        int connectedNodesIndex = 0;
-        connectedNodes[connectedNodesIndex] = currentNode;
-
-        // edge connected nodes
-        for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
-        {
-            size_t edgeIndex = mesh.m_nodesEdges[currentNode][e];
-            size_t nodeIndex = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
-            connectedNodesIndex++;
-            connectedNodes[connectedNodesIndex] = nodeIndex;
-        }
-
-        // for each face store the positions of the its nodes in the connectedNodes (compressed array)
-        if (faceNodeMapping.size() < numSharedFaces) 
-            faceNodeMapping.resize(numSharedFaces);
-
+        auto xi = m_topologyXi[topologyIndex];
+        auto eta = m_topologyEta[topologyIndex];
+       
         for (int f = 0; f < numSharedFaces; f++)
         {
-            int faceIndex = sharedFaces[f];
-            if (faceIndex < 0) continue;
+            if (sharedFaces[f] < 0 || m_nodesTypes[currentNode] == 3) continue;
 
-            // find the stencil node position  in the current face
-            size_t faceNodeIndex = 0;
-            size_t numFaceNodes = m_faceNumNodes[faceIndex];
-            for (int n = 0; n < numFaceNodes; n++)
+            int edgeLeft = f+1;
+            int edgeRight = edgeLeft + 1; if (edgeRight >= numSharedFaces)edgeRight -= numSharedFaces;
+
+            double edgeLeftSquaredDistance = std::sqrt(xi[edgeLeft]* xi[edgeLeft]+ eta[edgeLeft]* eta[edgeLeft] + 1e-16);
+            double edgeRightSquaredDistance = std::sqrt(xi[edgeRight] * xi[edgeRight] + eta[edgeRight] * eta[edgeRight] + 1e-16);
+            double cDPhi = (xi[edgeLeft]* xi[edgeRight] + eta[edgeLeft]* eta[edgeRight]) / (edgeLeftSquaredDistance * edgeRightSquaredDistance);
+
+            int numFaceNodes = m_faceNumNodes[sharedFaces[f]];
+
+            
+            if (numFaceNodes == 3) 
             {
-                if (mesh.m_facesNodes[faceIndex][n] == currentNode)
-                {
-                    faceNodeIndex = n;
-                    break;
-                }
+                // determine the index of the current stencil node
+                int nodeIndex = findIndex(mesh.m_facesNodes[sharedFaces[f]], size_t(currentNode));
+
+                int nodeLeft = nodeIndex - 1; if (nodeLeft < 0 )nodeLeft += numFaceNodes;
+                int nodeRight = nodeIndex + 1; if (nodeRight >= numFaceNodes) nodeRight -= numFaceNodes;
+                double alpha = 1.0 / (1.0 - cDPhi * cDPhi + 1e-8);
+                double alphaLeft = 0.5 * (1.0 - edgeLeftSquaredDistance / edgeRightSquaredDistance * cDPhi) * alpha;
+                double alphaRight = 0.5 * (1.0 - edgeRightSquaredDistance / edgeLeftSquaredDistance * cDPhi) * alpha;
+            
+            
             }
+            
 
-            for (int n = 0; n < numFaceNodes; n++)
-            {
-
-                if (faceNodeIndex >= numFaceNodes) 
-                    faceNodeIndex -= numFaceNodes;
-                
-                int node = mesh.m_facesNodes[faceIndex][faceNodeIndex];
+            
 
 
-                bool isNewNode = true;
-                for (int n = 0; n < connectedNodesIndex + 1; n++)
-                {
-                    if (node == connectedNodes[n])
-                    {
-                        isNewNode = false;
-                        faceNodeMapping[f][faceNodeIndex] = n;
-                        break;
-                    }
-                }
-
-                if (isNewNode)
-                {
-                    connectedNodesIndex++;
-                    connectedNodes[connectedNodesIndex] = node;
-                    faceNodeMapping[f][faceNodeIndex] = connectedNodesIndex;
-                }
-
-                //update node index
-                faceNodeIndex += 1;
-            }
         }
 
-        // compute the number of connected nodes
-        numConnectedNodes = connectedNodesIndex + 1;
 
         return true;
     }
-
 
     bool computeXiEta(const Mesh<Point>& mesh,
         const int currentNode,
@@ -340,7 +338,7 @@ public:
                 size_t edge = mesh.m_nodesEdges[nextNode][e];
                 for (int ff = 0; ff < mesh.m_edgesNumFaces[edge]; ff++)
                 {
-                    size_t face = mesh.m_edgesFaces[edge][ff]; 
+                    size_t face = mesh.m_edgesFaces[edge][ff];
                     if (face != faceLeft && face != faceRigth)
                     {
                         isSquare = isSquare && mesh.m_facesNodes[face].size() == 4;
@@ -377,11 +375,11 @@ public:
             int leftFaceIndex = f - 1; if (leftFaceIndex < 0) leftFaceIndex = leftFaceIndex + numSharedFaces;
             if (sharedFaces[f] > 1)
             {
-                if (m_faceNumNodes[sharedFaces[f]]==4 ) numNonStencilQuad += 1;
+                if (m_faceNumNodes[sharedFaces[f]] == 4) numNonStencilQuad += 1;
             }
             if (sharedFaces[leftFaceIndex] > 1)
             {
-                if (m_faceNumNodes[sharedFaces[leftFaceIndex]] == 4 ) numNonStencilQuad += 1;
+                if (m_faceNumNodes[sharedFaces[leftFaceIndex]] == 4) numNonStencilQuad += 1;
             }
             if (numNonStencilQuad > 3)
             {
@@ -522,22 +520,14 @@ public:
             }
             else if (numFaceNodes == 3)
             {
-                dPhi0 = muTriangles * dPhi0; 
+                dPhi0 = muTriangles * dPhi0;
             }
 
             dPhi = mu * dPhi0;
             phi0 = phi0 + 0.5 * dPhi;
 
             // determine the index of the current stencil node
-            int nodeIndex = 0;
-            for (int n = 0; n < numFaceNodes; n++)
-            {
-                if (mesh.m_facesNodes[sharedFaces[f]][n] == currentNode)
-                {
-                    nodeIndex = n;
-                    break;
-                }
-            }
+            int nodeIndex = findIndex(mesh.m_facesNodes[sharedFaces[f]], size_t(currentNode));
 
             // optimal angle
             dTheta = 2.0 * M_PI / double(numFaceNodes);
@@ -552,7 +542,7 @@ public:
             }
 
             double aspectRatio = (1.0 - std::cos(dTheta)) / std::sin(std::abs(dTheta)) * std::tan(0.5 * dPhi);
-            double radius = std::cos(0.5 * dPhi) / (1.0-cos(dTheta));
+            double radius = std::cos(0.5 * dPhi) / (1.0 - cos(dTheta));
 
             for (int n = 0; n < numFaceNodes; n++)
             {
@@ -568,62 +558,141 @@ public:
         return true;
     }
 
-    bool saveTopology(const int currentNode,
-        const int numConnectedNodes,
-        const int numSharedFaces,
-        const std::vector<double>& xi,
-        const std::vector<double>& eta)
+    bool computeFacesNumEdges(const Mesh<Point>& mesh)
     {
-        bool isNewTopology = true;
-        for (int topo = 0; topo < m_numTopologies; topo++)
+        // Cache the result for later calls.
+        m_faceNumNodes.resize(mesh.m_numFaces, false);
+        for(int f=0; f< mesh.m_numFaces; f++)
         {
-            if (numSharedFaces != m_topologyFaces[topo] || numConnectedNodes != m_topologyNodes[topo])
+            m_faceNumNodes[f] = mesh.m_facesNodes[f].size();
+        }
+        return true;
+    }
+
+    // computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face.
+    bool orthogonalizationAdministration(const Mesh<Point>& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<size_t>>& faceNodeMapping)
+    {
+        for (auto& f : sharedFaces)  f = -1;
+
+        if (mesh.m_nodesNumEdges[currentNode] < 2) return true;
+
+        // 1. For the currentNode, find the shared faces
+        int newFaceIndex = -999;
+        numSharedFaces = 0;
+        for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
+        {
+            size_t firstEdge = mesh.m_nodesEdges[currentNode][e]; 
+            
+            int secondEdgeIndex = e + 1;
+            
+            if (secondEdgeIndex >= mesh.m_nodesNumEdges[currentNode]) 
+                secondEdgeIndex = 0;
+
+            size_t secondEdge = mesh.m_nodesEdges[currentNode][secondEdgeIndex];
+
+            if (mesh.m_edgesNumFaces[firstEdge] < 1 || mesh.m_edgesNumFaces[secondEdge] < 1) continue;
+
+            // find the face that the first and the second edge share
+            int firstFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[firstEdge], size_t(2)), size_t(1)) - 1;
+            int secondFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[secondEdge], size_t(2)), size_t(1)) - 1;
+
+            if (mesh.m_edgesFaces[firstEdge][0] != newFaceIndex &&
+               (mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
             {
-                continue;
+                newFaceIndex = mesh.m_edgesFaces[firstEdge][0];
+            }
+            else if (mesh.m_edgesFaces[firstEdge][firstFaceIndex] != newFaceIndex &&
+                (mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
+            {
+                newFaceIndex = mesh.m_edgesFaces[firstEdge][firstFaceIndex];
+            }
+            else
+            {
+                newFaceIndex = -999;
             }
 
-            isNewTopology = false;
-            for (int n = 1; n < numConnectedNodes; n++)
+            //corner face (already found in the first iteration)
+            if (mesh.m_nodesNumEdges[currentNode] == 2 && e == 1 && m_nodesTypes[currentNode]==3)
             {
-                double thetaLoc = std::atan2(eta[n], xi[n]);
-                double thetaTopology = std::atan2(m_topologyEta[topo][n], m_topologyXi[topo][n]);
-                if (std::abs(thetaLoc - thetaTopology) > thetaTolerance)
+                if (sharedFaces[0] == newFaceIndex) newFaceIndex = -999;
+            }
+            sharedFaces[numSharedFaces] = newFaceIndex;
+            numSharedFaces += 1;
+        }
+
+        if (numSharedFaces < 1) return true;
+
+        for (auto& v : connectedNodes) v = 0;
+        int connectedNodesIndex = 0;
+        connectedNodes[connectedNodesIndex] = currentNode;
+
+        // edge connected nodes
+        for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
+        {
+            size_t edgeIndex = mesh.m_nodesEdges[currentNode][e];
+            size_t nodeIndex = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
+            connectedNodesIndex++;
+            connectedNodes[connectedNodesIndex] = nodeIndex;
+        }
+
+        // for each face store the positions of the its nodes in the connectedNodes (compressed array)
+        if (faceNodeMapping.size() < numSharedFaces) 
+            faceNodeMapping.resize(numSharedFaces);
+
+        for (int f = 0; f < numSharedFaces; f++)
+        {
+            int faceIndex = sharedFaces[f];
+            if (faceIndex < 0) continue;
+
+            // find the stencil node position  in the current face
+            size_t faceNodeIndex = 0;
+            size_t numFaceNodes = m_faceNumNodes[faceIndex];
+            for (int n = 0; n < numFaceNodes; n++)
+            {
+                if (mesh.m_facesNodes[faceIndex][n] == currentNode)
                 {
-                    isNewTopology = true;
+                    faceNodeIndex = n;
                     break;
                 }
             }
 
-            if (!isNewTopology)
+            for (int n = 0; n < numFaceNodes; n++)
             {
-                m_nodeTopologyMapping[currentNode] = topo;
-                break;
+
+                if (faceNodeIndex >= numFaceNodes) 
+                    faceNodeIndex -= numFaceNodes;
+                
+                int node = mesh.m_facesNodes[faceIndex][faceNodeIndex];
+
+
+                bool isNewNode = true;
+                for (int n = 0; n < connectedNodesIndex + 1; n++)
+                {
+                    if (node == connectedNodes[n])
+                    {
+                        isNewNode = false;
+                        faceNodeMapping[f][faceNodeIndex] = n;
+                        break;
+                    }
+                }
+
+                if (isNewNode)
+                {
+                    connectedNodesIndex++;
+                    connectedNodes[connectedNodesIndex] = node;
+                    faceNodeMapping[f][faceNodeIndex] = connectedNodesIndex;
+                }
+
+                //update node index
+                faceNodeIndex += 1;
             }
         }
 
-        if (isNewTopology)
-        {
-            m_numTopologies += 1;
-
-            if (m_numTopologies > m_topologyNodes.size())
-            {
-                m_topologyNodes.resize(int(m_numTopologies * 1.5), 0);
-                m_topologyFaces.resize(int(m_numTopologies * 1.5), 0);
-                m_topologyXi.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
-                m_topologyEta.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
-            }
-
-            int topologyIndex = m_numTopologies - 1;
-            m_topologyNodes[topologyIndex] = numConnectedNodes;
-            m_topologyFaces[topologyIndex] = numSharedFaces;
-            m_topologyXi[topologyIndex] = xi;
-            m_topologyEta[topologyIndex] = eta;
-            m_nodeTopologyMapping[currentNode] = topologyIndex;
-        }
+        // compute the number of connected nodes
+        numConnectedNodes = connectedNodesIndex + 1;
 
         return true;
     }
-    
     
     double optimalEdgeAngle(const int numFaceNodes, const double theta1 = doubleMissingValue, const double theta2 = doubleMissingValue, bool isBoundaryEdge = false)
     {
@@ -819,6 +888,22 @@ public:
         }
         return true;
     }
+
+    template<typename T>
+    inline T findIndex(const std::vector<T>& vec, const T& el) 
+    {
+        T index = 0;
+        for (int n = 0; n < vec.size(); n++)
+        {
+            if (vec[n] == el)
+            {
+                index = n;
+                break;
+            }
+        }
+        return index;
+    }
+
 
 };
 

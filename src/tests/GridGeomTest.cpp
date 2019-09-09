@@ -1,7 +1,6 @@
 #include "GridGeomTest.hpp"
 #include "../Mesh.cpp"
 #include <chrono>
-//#include <Vc/Vc>
 
 TEST(TestMesh, OneQuadTestConstructor) 
 {
