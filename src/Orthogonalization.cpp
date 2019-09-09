@@ -287,6 +287,11 @@ public:
         m_Jeta.resize(numConnectedNodes);
         m_ww2.resize(numConnectedNodes);
 
+        std::vector<int> boundaryEdges(2, -1);
+        std::vector<double> leftXFaceCenter(maximumNumberOfEdgesPerNode, 0.0);
+        std::vector<double> leftYFaceCenter(maximumNumberOfEdgesPerNode, 0.0);
+        std::vector<double> rightXFaceCenter(maximumNumberOfEdgesPerNode, 0.0);
+        std::vector<double> rightYFaceCenter(maximumNumberOfEdgesPerNode, 0.0);
         for (int f = 0; f < numSharedFaces; f++)
         {
             if (sharedFaces[f] < 0 || m_nodesTypes[currentNode] == 3) continue;
@@ -328,7 +333,97 @@ public:
 
         for (int f = 0; f < numSharedFaces; f++)
         {
+            size_t edgeIndex = mesh.m_nodesEdges[currentNode][f];
+            int otherNode = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
+            int leftFace = mesh.m_edgesFaces[edgeIndex][0];
+            int faceIndex = findIndex(sharedFaces, leftFace);
 
+            // face not found, this happens when the cell is outside of the polygon
+            if (sharedFaces[faceIndex] != leftFace) 
+            {
+                return false;            
+            }
+
+            double leftRightSwap = 1.0;
+            if (mesh.m_edgesNumFaces[edgeIndex] == 1)
+            {
+                if (boundaryEdges[0] < 0)
+                {
+                    boundaryEdges[0] = f;
+                }
+                else
+                {
+                    boundaryEdges[1] = f;
+                }
+
+                // find the boundary cell in the icell array assume boundary at the right
+                // swap Left and Right if the boundary is at the left with I_SWAP_LR
+                if (f != leftFace) leftRightSwap = -1.0;
+
+                double leftXi = 0.0;
+                double leftEta = 0.0;
+                for (int i = 0; i < numConnectedNodes; i++)
+                {
+                    leftXi += xi[i] * m_Az[faceIndex][i];
+                    leftEta += eta[i] * m_Az[faceIndex][i];
+                    leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[faceIndex][i];
+                    leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[faceIndex][i];
+                }
+
+                double xiOne = xi[f];
+                double etaOne = eta[f];
+                double alpha = leftXi * xiOne + leftEta * etaOne;
+                alpha = alpha / (xiOne * xiOne + etaOne * etaOne);
+
+                if (alpha != 0.5) continue;
+
+                double xiBoundary = alpha * xiOne;
+                double etaBoundary = alpha * etaOne;
+
+                double rightXi = 2.0 * xiBoundary - leftXi;
+                double rightEta = 2.0 * etaBoundary - leftEta;
+
+                double xBc = (1.0 - alpha) * mesh.m_nodes[currentNode].x + alpha * mesh.m_nodes[otherNode].x;
+                double yBc = (1.0 - alpha) * mesh.m_nodes[currentNode].y + alpha * mesh.m_nodes[otherNode].y;
+                rightXFaceCenter[f] = 2.0 * xBc - leftXFaceCenter[f];
+                rightYFaceCenter[f] = 2.0 * yBc - leftYFaceCenter[f];            
+            }
+            else 
+            {
+                int faceLeftIndex = f;
+                int faceRightIndex = faceLeftIndex - 1; if (faceRightIndex < 0)faceRightIndex += numSharedFaces;
+
+                if (faceRightIndex < 0) continue;
+
+                int faceLeft  = sharedFaces[faceLeftIndex];
+                int faceRight = sharedFaces[faceRightIndex];
+
+                if ((faceLeft != mesh.m_edgesFaces[edgeIndex][0] && faceLeft != mesh.m_edgesFaces[edgeIndex][1]) ||
+                    (faceRight != mesh.m_edgesFaces[edgeIndex][0] && faceRight != mesh.m_edgesFaces[edgeIndex][1])) 
+                {
+                    return false;
+                }
+
+                int numNodesLeftFace = m_faceNumNodes[faceLeft];
+                int numNodesRightFace = m_faceNumNodes[faceRight];
+
+                double leftXi = 0.0;
+                double leftEta = 0.0;
+                double rightXi = 0.0;
+                double rightEta = 0.0;
+                for (int i = 0; i < numConnectedNodes; i++)
+                {
+                    leftXi += xi[i] * m_Az[faceLeftIndex][i];
+                    leftEta += eta[i] * m_Az[faceLeftIndex][i];
+                    rightXi += xi[i] * m_Az[faceRightIndex][i];
+                    rightEta += eta[i] * m_Az[faceRightIndex][i];
+
+                    leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[faceLeftIndex][i];
+                    leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[faceLeftIndex][i];
+                    rightXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[faceRightIndex][i];
+                    rightYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[faceRightIndex][i];
+                }
+            }
         }
 
 
