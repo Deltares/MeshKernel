@@ -29,9 +29,19 @@ public:
     std::vector<int> m_topologyFaces;
     std::vector<std::vector<double>> m_topologyXi;
     std::vector<std::vector<double>> m_topologyEta;
-
-    std::vector < std::vector<int>> m_topologySharedFaces;
+    std::vector<std::vector<int>> m_topologySharedFaces;
+    std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping;
     std::vector < std::vector<size_t>>  m_topologyConnectedNodes;
+
+    // maybe to move in a narrower scope
+    std::vector<std::vector<double>> m_Az;
+    std::vector<std::vector<double>> m_Gxi;
+    std::vector<std::vector<double>> m_Geta;
+    std::vector<double> m_Divxi;
+    std::vector<double> m_Diveta;
+    std::vector<double> m_Jxi;
+    std::vector<double> m_Jeta;
+    std::vector<double> m_ww2;
 
     static constexpr int topologyInitialSize = 10;
     static constexpr double thetaTolerance = 1e-4;
@@ -54,6 +64,7 @@ public:
         m_topologyEta.resize(topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
         m_topologySharedFaces.resize(topologyInitialSize, std::vector<int>(maximumNumberOfConnectedNodes, -1));
         m_topologyConnectedNodes.resize(topologyInitialSize, std::vector<size_t>(maximumNumberOfConnectedNodes, -1));
+        m_topologyFaceNodeMapping.resize(topologyInitialSize, std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, -1)));
         
         //for each node, determine the neighbouring nodes
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
@@ -81,9 +92,6 @@ public:
 
         return true;
     }
-
-
-
 
     //TODO: Unit test me please
     bool computeWeights(const Mesh<Point>& mesh)
@@ -152,6 +160,7 @@ public:
         const int numSharedFaces,
         const std::vector<size_t>& connectedNodes,
         const int numConnectedNodes,
+        const std::vector<std::vector<size_t>>& faceNodeMapping,
         const std::vector<double>& xi,
         const std::vector<double>& eta)
     {
@@ -195,6 +204,7 @@ public:
 
                 m_topologySharedFaces.resize(int(m_numTopologies * 1.5), std::vector<int>(maximumNumberOfEdgesPerNode, -1));
                 m_topologyConnectedNodes.resize(int(m_numTopologies * 1.5), std::vector<size_t>(maximumNumberOfConnectedNodes, -1));
+                m_topologyFaceNodeMapping.resize(int(m_numTopologies * 1.5), std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, -1)));
             }
 
             int topologyIndex = m_numTopologies - 1;
@@ -204,6 +214,7 @@ public:
             m_topologySharedFaces[topologyIndex] = sharedFaces;
             m_topologyXi[topologyIndex] = xi;
             m_topologyEta[topologyIndex] = eta;
+            m_topologyFaceNodeMapping[topologyIndex] = faceNodeMapping;
             m_nodeTopologyMapping[currentNode] = topologyIndex;
         }
 
@@ -231,7 +242,7 @@ public:
             int numConnectedNodes = 0;
             orthogonalizationAdministration(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping);
             computeXiEta(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi,eta);
-            saveTopology(n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, xi, eta);
+            saveTopology(n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
         }
 
         std::vector<bool> isNewTopology(m_numTopologies, true);
@@ -244,13 +255,13 @@ public:
                 isNewTopology[currentTopology] = false;
             }
             // compute
-            computeOperators(mesh, n);
+            computeOperatorsNode(mesh, n);
         }
         return true;
     }
 
     //compute
-    bool computeOperators(const Mesh<Point>& mesh, const int currentNode)
+    bool computeOperatorsNode(const Mesh<Point>& mesh, const int currentNode)
     {
         auto topologyIndex = m_nodeTopologyMapping[currentNode];
 
@@ -263,7 +274,19 @@ public:
 
         auto xi = m_topologyXi[topologyIndex];
         auto eta = m_topologyEta[topologyIndex];
-       
+
+        auto faceNodeMapping = m_topologyFaceNodeMapping[topologyIndex];
+
+        // will reallocate only if necessary
+        m_Az.resize(numConnectedNodes, std::vector<double>(numSharedFaces, 2));
+        m_Gxi.resize(numConnectedNodes, std::vector<double>(numSharedFaces, 2));
+        m_Geta.resize(numConnectedNodes, std::vector<double>(numSharedFaces, 2));
+        m_Divxi.resize(numConnectedNodes);
+        m_Diveta.resize(numConnectedNodes);
+        m_Jxi.resize(numConnectedNodes);
+        m_Jeta.resize(numConnectedNodes);
+        m_ww2.resize(numConnectedNodes);
+
         for (int f = 0; f < numSharedFaces; f++)
         {
             if (sharedFaces[f] < 0 || m_nodesTypes[currentNode] == 3) continue;
@@ -288,13 +311,23 @@ public:
                 double alpha = 1.0 / (1.0 - cDPhi * cDPhi + 1e-8);
                 double alphaLeft = 0.5 * (1.0 - edgeLeftSquaredDistance / edgeRightSquaredDistance * cDPhi) * alpha;
                 double alphaRight = 0.5 * (1.0 - edgeRightSquaredDistance / edgeLeftSquaredDistance * cDPhi) * alpha;
-            
-            
+
+                m_Az[f][faceNodeMapping[f][nodeIndex]] = 1.0 - (alphaLeft + alphaRight);
+                m_Az[f][faceNodeMapping[f][nodeLeft]]  = alphaLeft;
+                m_Az[f][faceNodeMapping[f][nodeRight]] = alphaRight;
             }
-            
+            else 
+            {
+                for (int i = 0; i < faceNodeMapping[f].size(); i++) 
+                {
+                    m_Az[f][faceNodeMapping[f][i]] = 1.0 / double(numFaceNodes);
+                }
+            }
+        }
 
-            
 
+        for (int f = 0; f < numSharedFaces; f++)
+        {
 
         }
 
