@@ -500,7 +500,49 @@ public:
             etaNodes[f + 1] = etaOne;
         }
 
+        double volxi = 0.0;
+        for (int i=0; i< mesh.m_nodesNumEdges[currentNode];i++)
+        {
+            volxi += 0.5 * (m_Divxi[i] * xis[i] + m_Diveta[i] * etas[i]);
+        }
+        if (volxi == 0.0)volxi = 1.0;
 
+        for (int i = 0; i < mesh.m_nodesNumEdges[currentNode]; i++)
+        {
+            m_Divxi[i] = m_Divxi[i]/ volxi;
+            m_Diveta[i] = m_Diveta[i] / volxi;
+        }
+
+        //compute the node-to-node gradients
+        for (int f = 0; f < numSharedFaces; f++)
+        {
+            // internal edge
+            if (mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 2) 
+            {
+                int rightNode = f - 1; if (rightNode < 0)rightNode += rightNode + m_nodesNodes[currentNode].size();
+                for (int i = 0; i < numConnectedNodes; i++)
+                {
+                    m_Jxi[i] += m_Divxi[f] * 0.5 * (m_Az[f][i] + m_Az[rightNode][i]);
+                    m_Jeta[i] += m_Diveta[f] * 0.5 * (m_Az[f][i] + m_Az[rightNode][i]);
+                }
+            }
+            m_Jxi[1] = m_Jxi[1] + m_Divxi[f] * 0.5;
+            m_Jxi[f+1]= m_Jxi[f + 1]+ m_Divxi[f] * 0.5;
+            m_Jeta[1]= m_Jeta[1] + m_Diveta[f] * 0.5;
+            m_Jeta[f+1]= m_Jeta[f + 1] + m_Diveta[f] * 0.5;
+        }
+
+        //compute the weights in the Laplacian smoother
+        std::fill(m_ww2.begin(), m_ww2.end(), 0.0);
+        for (int n = 0; n < mesh.m_nodesNumEdges[currentNode]; n++)
+        {
+            for (int i = 0; i < numConnectedNodes; i++)
+            {
+                m_ww2[i] += m_Divxi[n] * m_Gxi[n][i] + m_Diveta[n] * m_Geta[n][i];
+            }
+        }
+
+        //end of the method
         return true;
     }
 
