@@ -65,7 +65,7 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 
     //node 2
     EXPECT_EQ(3, orthogonalization.m_topologyFaces[2]);
-    EXPECT_EQ(4, orthogonalization.m_topologyNodes[2]);
+    EXPECT_EQ(5, orthogonalization.m_topologyNodes[2]);
 
     ASSERT_NEAR(0.0, orthogonalization.m_topologyXi[2][0], tolerance);
     ASSERT_NEAR(1.0, orthogonalization.m_topologyXi[2][1], tolerance);
@@ -82,7 +82,7 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 
     //node 3
     EXPECT_EQ(3, orthogonalization.m_topologyFaces[3]);
-    EXPECT_EQ(4, orthogonalization.m_topologyNodes[3]);
+    EXPECT_EQ(5, orthogonalization.m_topologyNodes[3]);
 
     ASSERT_NEAR(0.0, orthogonalization.m_topologyXi[3][0], tolerance);
     ASSERT_NEAR(1.0, orthogonalization.m_topologyXi[3][1], tolerance);
