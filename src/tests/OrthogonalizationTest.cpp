@@ -33,6 +33,7 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     orthogonalization.solveWeights(mesh);
 
     constexpr  double tolerance = 1e-8;
+    constexpr  double largeTolerance = 10.0;
     //node 0
     EXPECT_EQ(2, orthogonalization.m_topologyFaces[0]);
     EXPECT_EQ(4, orthogonalization.m_topologyNodes[0]);
@@ -111,7 +112,110 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     ASSERT_NEAR(1.0, orthogonalization.m_topologyEta[4][2], tolerance);
     ASSERT_NEAR(0.0, orthogonalization.m_topologyEta[4][3], tolerance);
     ASSERT_NEAR(0.0, orthogonalization.m_topologyEta[4][4], tolerance);
+    
+    // first topology
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[0][0][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[0][0][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[0][0][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[0][0][3], tolerance);
 
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[0][1][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[0][1][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[0][1][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[0][1][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[0][0][0], largeTolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[0][0][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[0][0][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[0][0][3], tolerance);
+
+    ASSERT_NEAR(-2e16, orthogonalization.m_Gxi[0][1][0], largeTolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[0][1][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[0][1][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[0][1][3], tolerance);
+
+    ASSERT_NEAR(-2e16, orthogonalization.m_Geta[0][0][0], largeTolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[0][0][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[0][0][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[0][0][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[0][1][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[0][1][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[0][1][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[0][1][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Divxi[0][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Divxi[0][1], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Diveta[0][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Diveta[0][1], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Jxi[0][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jxi[0][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jxi[0][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jxi[0][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Jeta[0][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jeta[0][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jeta[0][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jeta[0][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_ww2[0][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_ww2[0][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_ww2[0][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_ww2[0][3], tolerance);
+
+    // second topology
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[1][0][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[1][0][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[1][0][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[1][0][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[1][1][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[1][1][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[1][1][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Az[1][1][3], tolerance);
+
+    ASSERT_NEAR(2e16, orthogonalization.m_Gxi[1][0][0], largeTolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[1][0][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[1][0][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[1][0][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[1][1][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[1][1][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[1][1][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Gxi[1][1][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[1][0][0], largeTolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[1][0][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[1][0][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[1][0][3], tolerance);
+
+    ASSERT_NEAR(2e16, orthogonalization.m_Geta[1][1][0], largeTolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[1][1][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[1][1][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Geta[1][1][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Divxi[1][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Divxi[1][1], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Diveta[1][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Diveta[1][1], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Jxi[1][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jxi[1][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jxi[1][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jxi[1][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_Jeta[1][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jeta[1][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jeta[1][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_Jeta[1][3], tolerance);
+
+    ASSERT_NEAR(0.0, orthogonalization.m_ww2[1][0], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_ww2[1][1], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_ww2[1][2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_ww2[1][3], tolerance);
 }
 
 
