@@ -34,14 +34,14 @@ public:
     std::vector < std::vector<size_t>>  m_topologyConnectedNodes;
 
     // maybe to move in a narrower scope
-    std::vector<std::vector<double>> m_Az;
-    std::vector<std::vector<double>> m_Gxi;
-    std::vector<std::vector<double>> m_Geta;
-    std::vector<double> m_Divxi;
-    std::vector<double> m_Diveta;
-    std::vector<double> m_Jxi;
-    std::vector<double> m_Jeta;
-    std::vector<double> m_ww2;
+    std::vector<std::vector<std::vector<double>>> m_Az;
+    std::vector<std::vector<std::vector<double>>> m_Gxi;
+    std::vector<std::vector<std::vector<double>>> m_Geta;
+    std::vector<std::vector<double>> m_Divxi;
+    std::vector<std::vector<double>> m_Diveta;
+    std::vector<std::vector<double>> m_Jxi;
+    std::vector<std::vector<double>> m_Jeta;
+    std::vector<std::vector<double>> m_ww2;
 
     static constexpr int topologyInitialSize = 10;
     static constexpr double thetaTolerance = 1e-4;
@@ -54,17 +54,6 @@ public:
         m_weights.resize(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
         m_rightHandSide.resize(mesh.m_nodes.size(), std::vector<double>(2, 0.0));
         m_aspectRatios.resize(mesh.m_edges.size(), 0.0);
-        
-        // topology 
-        m_numTopologies = 0;
-        m_nodeTopologyMapping.resize(mesh.m_nodes.size(), -1);
-        m_topologyNodes.resize(topologyInitialSize,-1);
-        m_topologyFaces.resize(topologyInitialSize,-1);
-        m_topologyXi.resize(topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
-        m_topologyEta.resize(topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
-        m_topologySharedFaces.resize(topologyInitialSize, std::vector<int>(maximumNumberOfConnectedNodes, -1));
-        m_topologyConnectedNodes.resize(topologyInitialSize, std::vector<size_t>(maximumNumberOfConnectedNodes, -1));
-        m_topologyFaceNodeMapping.resize(topologyInitialSize, std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, -1)));
         
         //for each node, determine the neighbouring nodes
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
@@ -234,8 +223,18 @@ public:
 
         std::vector<std::vector<double>> nodeConnectedFaceNodes(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
         std::vector<size_t> numNodeConnectedFaceNodes(mesh.m_nodes.size(), 0.0);
+
+        // topology 
+        m_numTopologies = 0;
+        m_nodeTopologyMapping.resize(mesh.m_nodes.size(), -1);
+        m_topologyNodes.resize(topologyInitialSize, -1);
+        m_topologyFaces.resize(topologyInitialSize, -1);
+        m_topologyXi.resize(topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
+        m_topologyEta.resize(topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
+        m_topologySharedFaces.resize(topologyInitialSize, std::vector<int>(maximumNumberOfConnectedNodes, -1));
+        m_topologyConnectedNodes.resize(topologyInitialSize, std::vector<size_t>(maximumNumberOfConnectedNodes, -1));
+        m_topologyFaceNodeMapping.resize(topologyInitialSize, std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, -1)));
         
-        int numTopologies = 0;
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
             int numSharedFaces = 0;
@@ -245,6 +244,8 @@ public:
             saveTopology(n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
         }
 
+        allocateNodeOperators();
+
         std::vector<bool> isNewTopology(m_numTopologies, true);
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
@@ -253,10 +254,43 @@ public:
             if(isNewTopology[currentTopology])
             {
                 isNewTopology[currentTopology] = false;
+                // Compute node operators
+                allocateNodeOperators(currentTopology);
+                computeOperatorsNode(mesh, n);
             }
-            // compute
-            computeOperatorsNode(mesh, n);
         }
+        return true;
+    }
+
+    bool allocateNodeOperators()
+    {
+        // will reallocate only if necessary
+        m_Az.resize(m_numTopologies);
+        m_Gxi.resize(m_numTopologies);
+        m_Geta.resize(m_numTopologies);
+        m_Divxi.resize(m_numTopologies);
+        m_Diveta.resize(m_numTopologies);
+        m_Jxi.resize(m_numTopologies);
+        m_Jeta.resize(m_numTopologies);
+        m_ww2.resize(m_numTopologies);
+
+        return true;
+    }
+
+    bool allocateNodeOperators(const int topologyIndex)
+    {
+        int numSharedFaces = m_topologyFaces[topologyIndex];
+        int numConnectedNodes = m_topologyNodes[topologyIndex];
+        // will reallocate only if necessary
+        m_Az[topologyIndex].resize(numSharedFaces, std::vector<double>(numConnectedNodes, 0.0));
+        m_Gxi[topologyIndex].resize(numSharedFaces, std::vector<double>(numConnectedNodes, 0.0));
+        m_Geta[topologyIndex].resize(numSharedFaces, std::vector<double>(numConnectedNodes, 0.0));
+        m_Divxi[topologyIndex].resize(numConnectedNodes);
+        m_Diveta[topologyIndex].resize(numConnectedNodes);
+        m_Jxi[topologyIndex].resize(numConnectedNodes);
+        m_Jeta[topologyIndex].resize(numConnectedNodes);
+        m_ww2[topologyIndex].resize(numConnectedNodes);
+        
         return true;
     }
 
@@ -266,10 +300,10 @@ public:
         auto topologyIndex = m_nodeTopologyMapping[currentNode];
 
         // later on replace deep copy 
-        auto numConnectedNodes = m_topologyNodes[topologyIndex];
+        int numConnectedNodes = m_topologyNodes[topologyIndex];
         auto connectedNodes = m_topologyConnectedNodes[topologyIndex];
 
-        auto numSharedFaces = m_topologyFaces[topologyIndex];
+        int numSharedFaces = m_topologyFaces[topologyIndex];
         auto sharedFaces = m_topologySharedFaces[topologyIndex];
 
         auto xi = m_topologyXi[topologyIndex];
@@ -277,16 +311,14 @@ public:
 
         auto faceNodeMapping = m_topologyFaceNodeMapping[topologyIndex];
 
-        // will reallocate only if necessary
-        m_Az.resize(numSharedFaces, std::vector<double>(numConnectedNodes, 0));
-        m_Gxi.resize(numSharedFaces, std::vector<double>(numConnectedNodes, 2));
-        m_Geta.resize(numSharedFaces, std::vector<double>(numConnectedNodes, 2));
-        m_Divxi.resize(numConnectedNodes);
-        m_Diveta.resize(numConnectedNodes);
-        m_Jxi.resize(numConnectedNodes);
-        m_Jeta.resize(numConnectedNodes);
-        m_ww2.resize(numConnectedNodes);
-
+        auto Az = m_Az[topologyIndex];
+        auto Gxi = m_Gxi[topologyIndex];
+        auto Geta = m_Geta[topologyIndex];
+        auto Divxi = m_Divxi[topologyIndex];
+        auto Diveta = m_Diveta[topologyIndex];
+        auto Jxi = m_Jxi[topologyIndex];
+        auto Jeta = m_Jeta[topologyIndex];
+        auto ww2 = m_ww2[topologyIndex];
 
         for (int f = 0; f < numSharedFaces; f++)
         {
@@ -313,15 +345,15 @@ public:
                 double alphaLeft = 0.5 * (1.0 - edgeLeftSquaredDistance / edgeRightSquaredDistance * cDPhi) * alpha;
                 double alphaRight = 0.5 * (1.0 - edgeRightSquaredDistance / edgeLeftSquaredDistance * cDPhi) * alpha;
 
-                m_Az[f][faceNodeMapping[f][nodeIndex]] = 1.0 - (alphaLeft + alphaRight);
-                m_Az[f][faceNodeMapping[f][nodeLeft]] = alphaLeft;
-                m_Az[f][faceNodeMapping[f][nodeRight]] = alphaRight;
+                Az[f][faceNodeMapping[f][nodeIndex]] = 1.0 - (alphaLeft + alphaRight);
+                Az[f][faceNodeMapping[f][nodeLeft]] = alphaLeft;
+                Az[f][faceNodeMapping[f][nodeRight]] = alphaRight;
             }
             else
             {
                 for (int i = 0; i < faceNodeMapping[f].size(); i++)
                 {
-                    m_Az[f][faceNodeMapping[f][i]] = 1.0 / double(numFaceNodes);
+                    Az[f][faceNodeMapping[f][i]] = 1.0 / double(numFaceNodes);
                 }
             }
         }
@@ -341,6 +373,8 @@ public:
         double etaBoundary = 0.0;
         for (int f = 0; f < numSharedFaces; f++)
         {
+            if (sharedFaces[f] < 0 || m_nodesTypes[currentNode] == 3) continue;
+
             size_t edgeIndex = mesh.m_nodesEdges[currentNode][f];
             int otherNode = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
             int leftFace = mesh.m_edgesFaces[edgeIndex][0];
@@ -352,9 +386,11 @@ public:
                 return false;
             }
 
+            //by construction
+            double xiOne = xi[f+1];
+            double etaOne = eta[f+1];
+
             double leftRightSwap = 1.0;
-            double xiOne = xi[f];
-            double etaOne = eta[f];
             double leftXi = 0.0;
             double leftEta = 0.0;
             double rightXi = 0.0;
@@ -363,7 +399,7 @@ public:
             if (mesh.m_edgesNumFaces[edgeIndex] == 1)
             {
                 if (boundaryEdges[0] < 0)
-                {
+                { 
                     boundaryEdges[0] = f;
                 }
                 else
@@ -373,14 +409,14 @@ public:
 
                 // find the boundary cell in the icell array assume boundary at the right
                 // swap Left and Right if the boundary is at the left with I_SWAP_LR
-                if (f != leftFace) leftRightSwap = -1.0;
+                if (f != faceLeftIndex) leftRightSwap = -1.0;
 
                 for (int i = 0; i < numConnectedNodes; i++)
                 {
-                    leftXi += xi[i] * m_Az[faceLeftIndex][i];
-                    leftEta += eta[i] * m_Az[faceLeftIndex][i];
-                    leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[faceLeftIndex][i];
-                    leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[faceLeftIndex][i];
+                    leftXi += xi[i] * Az[faceLeftIndex][i];
+                    leftEta += eta[i] * Az[faceLeftIndex][i];
+                    leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceLeftIndex][i];
+                    leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceLeftIndex][i];
                 }
 
 
@@ -388,13 +424,11 @@ public:
                 alpha = alpha / (xiOne * xiOne + etaOne * etaOne);
 
                 alpha_x = alpha;
-                if (alpha != 0.5) continue;
-
                 xiBoundary = alpha * xiOne;
                 etaBoundary = alpha * etaOne;
 
-                double rightXi = 2.0 * xiBoundary - leftXi;
-                double rightEta = 2.0 * etaBoundary - leftEta;
+                rightXi = 2.0 * xiBoundary - leftXi;
+                rightEta = 2.0 * etaBoundary - leftEta;
 
                 double xBc = (1.0 - alpha) * mesh.m_nodes[currentNode].x + alpha * mesh.m_nodes[otherNode].x;
                 double yBc = (1.0 - alpha) * mesh.m_nodes[currentNode].y + alpha * mesh.m_nodes[otherNode].y;
@@ -422,15 +456,15 @@ public:
 
                 for (int i = 0; i < numConnectedNodes; i++)
                 {
-                    leftXi += xi[i] * m_Az[faceLeftIndex][i];
-                    leftEta += eta[i] * m_Az[faceLeftIndex][i];
-                    rightXi += xi[i] * m_Az[faceRightIndex][i];
-                    rightEta += eta[i] * m_Az[faceRightIndex][i];
+                    leftXi += xi[i] * Az[faceLeftIndex][i];
+                    leftEta += eta[i] * Az[faceLeftIndex][i];
+                    rightXi += xi[i] * Az[faceRightIndex][i];
+                    rightEta += eta[i] * Az[faceRightIndex][i];
 
-                    leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[faceLeftIndex][i];
-                    leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[faceLeftIndex][i];
-                    rightXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[faceRightIndex][i];
-                    rightYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[faceRightIndex][i];
+                    leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceLeftIndex][i];
+                    leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceLeftIndex][i];
+                    rightXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceRightIndex][i];
+                    rightYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceRightIndex][i];
                 }
             }
 
@@ -466,51 +500,54 @@ public:
             }
 
             int node1 = f + 1;
-            int node0 = 1;
+            int node0 = 0;
             for (int i = 0; i < numConnectedNodes; i++)
             {
-                m_Gxi[f][i] = facxiL * m_Az[f][i];
-                m_Geta[f][i] = facetaL * m_Az[f][i];
+                Gxi[f][i] = facxiL * Az[f][i];
+                Geta[f][i] = facetaL * Az[f][i];
                 if (mesh.m_edgesNumFaces[edgeIndex] == 2)
                 {
-                    m_Gxi[f][i] = m_Gxi[f][i] + facxiR * m_Az[f][faceRightIndex];
-                    m_Geta[f][i] = m_Geta[f][i] + facetaR * m_Az[f][faceRightIndex];
+                    Gxi[f][i] = Gxi[f][i] + facxiR * Az[f][faceRightIndex];
+                    Geta[f][i] = Geta[f][i] + facetaR * Az[f][faceRightIndex];
                 }
             }
 
 
-            m_Gxi[f][node1] = m_Gxi[f][node1] + facxi1;
-            m_Geta[f][node1] = m_Geta[f][node1] + faceta1;
+            Gxi[f][node1] = Gxi[f][node1] + facxi1;
+            Geta[f][node1] = Geta[f][node1] + faceta1;
 
-            m_Gxi[f][node0] = m_Gxi[f][node0] + facxi0;
-            m_Geta[f][node0] = m_Geta[f][node0] + faceta0;
+            Gxi[f][node0] = Gxi[f][node0] + facxi0;
+            Geta[f][node0] = Geta[f][node0] + faceta0;
 
             //fill the node - based gradient matrix
-            m_Divxi[f] = -eetaLR * leftRightSwap;
-            m_Diveta[f] = exiLR * leftRightSwap;
+            Divxi[f] = -eetaLR * leftRightSwap;
+            Diveta[f] = exiLR * leftRightSwap;
 
             // boundary link
-            if (mesh.m_edgesNumFaces[edgeIndex] == 2)
+            if (mesh.m_edgesNumFaces[edgeIndex] == 1)
             {
-                m_Divxi[f] = 0.5 * m_Divxi[f] + etaBoundary * leftRightSwap;
-                m_Diveta[f] = 0.5 * m_Diveta[f] - xiBoundary * leftRightSwap;
+                Divxi[f] = 0.5 * Divxi[f] + etaBoundary * leftRightSwap;
+                Diveta[f] = 0.5 * Diveta[f] - xiBoundary * leftRightSwap;
             }
 
             xiNodes[f + 1] = xiOne;
             etaNodes[f + 1] = etaOne;
         }
 
+        xiNodes[0] = 0.0;
+        etaNodes[0]= 0.0;
+
         double volxi = 0.0;
         for (int i=0; i< mesh.m_nodesNumEdges[currentNode];i++)
         {
-            volxi += 0.5 * (m_Divxi[i] * xis[i] + m_Diveta[i] * etas[i]);
+            volxi += 0.5 * (Divxi[i] * xis[i] + Diveta[i] * etas[i]);
         }
         if (volxi == 0.0)volxi = 1.0;
 
         for (int i = 0; i < mesh.m_nodesNumEdges[currentNode]; i++)
         {
-            m_Divxi[i] = m_Divxi[i]/ volxi;
-            m_Diveta[i] = m_Diveta[i] / volxi;
+            Divxi[i] = Divxi[i]/ volxi;
+            Diveta[i] = Diveta[i] / volxi;
         }
 
         //compute the node-to-node gradients
@@ -519,28 +556,37 @@ public:
             // internal edge
             if (mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 2) 
             {
-                int rightNode = f - 1; if (rightNode < 0)rightNode += rightNode + m_nodesNodes[currentNode].size();
+                int rightNode = f - 1; if (rightNode < 0)rightNode += rightNode + mesh.m_nodesEdges[currentNode].size();
                 for (int i = 0; i < numConnectedNodes; i++)
                 {
-                    m_Jxi[i] += m_Divxi[f] * 0.5 * (m_Az[f][i] + m_Az[rightNode][i]);
-                    m_Jeta[i] += m_Diveta[f] * 0.5 * (m_Az[f][i] + m_Az[rightNode][i]);
+                    Jxi[i] += Divxi[f] * 0.5 * (Az[f][i] + Az[rightNode][i]);
+                    Jeta[i] += Diveta[f] * 0.5 * (Az[f][i] + Az[rightNode][i]);
                 }
             }
-            m_Jxi[1] = m_Jxi[1] + m_Divxi[f] * 0.5;
-            m_Jxi[f+1]= m_Jxi[f + 1]+ m_Divxi[f] * 0.5;
-            m_Jeta[1]= m_Jeta[1] + m_Diveta[f] * 0.5;
-            m_Jeta[f+1]= m_Jeta[f + 1] + m_Diveta[f] * 0.5;
+            Jxi[0] = Jxi[0] + Divxi[f] * 0.5;
+            Jxi[f+1]= Jxi[f + 1]+ Divxi[f] * 0.5;
+            Jeta[0]= Jeta[0] + Diveta[f] * 0.5;
+            Jeta[f+1]= Jeta[f + 1] + Diveta[f] * 0.5;
         }
 
         //compute the weights in the Laplacian smoother
-        std::fill(m_ww2.begin(), m_ww2.end(), 0.0);
+        std::fill(ww2.begin(), ww2.end(), 0.0);
         for (int n = 0; n < mesh.m_nodesNumEdges[currentNode]; n++)
         {
             for (int i = 0; i < numConnectedNodes; i++)
             {
-                m_ww2[i] += m_Divxi[n] * m_Gxi[n][i] + m_Diveta[n] * m_Geta[n][i];
+                ww2[i] += Divxi[n] * Gxi[n][i] + Diveta[n] * Geta[n][i];
             }
         }
+
+        m_Az[topologyIndex]= Az;
+        m_Gxi[topologyIndex]= Gxi;
+        m_Geta[topologyIndex]= Geta;
+        m_Divxi[topologyIndex]= Divxi;
+        m_Diveta[topologyIndex]= Diveta;
+        m_Jxi[topologyIndex]= Jxi;
+        m_Jeta[topologyIndex]= Jeta;
+        m_ww2[topologyIndex]= ww2;
 
         //end of the method
         return true;
@@ -1147,8 +1193,6 @@ public:
         }
         return index;
     }
-
-
 };
 
 #endif
