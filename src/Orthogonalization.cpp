@@ -224,7 +224,6 @@ public:
         std::vector<std::vector<double>> nodeConnectedFaceNodes(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
         std::vector<size_t> numNodeConnectedFaceNodes(mesh.m_nodes.size(), 0.0);
 
-        // topology 
         m_numTopologies = 0;
         m_nodeTopologyMapping.resize(mesh.m_nodes.size(), -1);
         m_topologyNodes.resize(topologyInitialSize, -1);
@@ -234,7 +233,8 @@ public:
         m_topologySharedFaces.resize(topologyInitialSize, std::vector<int>(maximumNumberOfConnectedNodes, -1));
         m_topologyConnectedNodes.resize(topologyInitialSize, std::vector<size_t>(maximumNumberOfConnectedNodes, -1));
         m_topologyFaceNodeMapping.resize(topologyInitialSize, std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, -1)));
-        
+
+
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
             int numSharedFaces = 0;
@@ -365,8 +365,8 @@ public:
         std::vector<double> rightYFaceCenter(maximumNumberOfEdgesPerNode, 0.0);
         std::vector<double> xis(maximumNumberOfEdgesPerNode, 0.0);
         std::vector<double> etas(maximumNumberOfEdgesPerNode, 0.0);
-        std::vector<double> xiNodes(maximumNumberOfEdgesPerNode, 0.0);
-        std::vector<double> etaNodes(maximumNumberOfEdgesPerNode, 0.0);
+        std::vector<double> xiNodes(numConnectedNodes, 0.0);
+        std::vector<double> etaNodes(numConnectedNodes, 0.0);
         int faceRightIndex = 0;
         int faceLeftIndex = 0;
         double xiBoundary = 0.0;
