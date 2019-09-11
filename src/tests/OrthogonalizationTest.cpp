@@ -35,8 +35,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     constexpr  double tolerance = 1e-8;
     constexpr  double largeTolerance = 10.0;
     //node 0
-    EXPECT_EQ(2, orthogonalization.m_topologyFaces[0]);
-    EXPECT_EQ(4, orthogonalization.m_topologyNodes[0]);
+    EXPECT_EQ(2, orthogonalization.m_numTopologyFaces[0]);
+    EXPECT_EQ(4, orthogonalization.m_numTopologyNodes[0]);
 
     ASSERT_NEAR(0.0, orthogonalization.m_topologyXi[0][0], tolerance);
     ASSERT_NEAR(1.0, orthogonalization.m_topologyXi[0][1], tolerance);
@@ -49,8 +49,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     ASSERT_NEAR(1.0, orthogonalization.m_topologyEta[0][3], tolerance);
 
     //node 1
-    EXPECT_EQ(2, orthogonalization.m_topologyFaces[1]);
-    EXPECT_EQ(4, orthogonalization.m_topologyNodes[1]);
+    EXPECT_EQ(2, orthogonalization.m_numTopologyFaces[1]);
+    EXPECT_EQ(4, orthogonalization.m_numTopologyNodes[1]);
 
     ASSERT_NEAR(0.0, orthogonalization.m_topologyXi[1][0], tolerance);
     ASSERT_NEAR(0.0, orthogonalization.m_topologyXi[1][1], tolerance);
@@ -65,8 +65,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     ASSERT_NEAR(0.0, orthogonalization.m_topologyEta[1][4], tolerance);
 
     //node 2
-    EXPECT_EQ(3, orthogonalization.m_topologyFaces[2]);
-    EXPECT_EQ(5, orthogonalization.m_topologyNodes[2]);
+    EXPECT_EQ(3, orthogonalization.m_numTopologyFaces[2]);
+    EXPECT_EQ(5, orthogonalization.m_numTopologyNodes[2]);
 
     ASSERT_NEAR(0.0, orthogonalization.m_topologyXi[2][0], tolerance);
     ASSERT_NEAR(1.0, orthogonalization.m_topologyXi[2][1], tolerance);
@@ -82,8 +82,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 
 
     //node 3
-    EXPECT_EQ(3, orthogonalization.m_topologyFaces[3]);
-    EXPECT_EQ(5, orthogonalization.m_topologyNodes[3]);
+    EXPECT_EQ(3, orthogonalization.m_numTopologyFaces[3]);
+    EXPECT_EQ(5, orthogonalization.m_numTopologyNodes[3]);
 
     ASSERT_NEAR(0.0, orthogonalization.m_topologyXi[3][0], tolerance);
     ASSERT_NEAR(1.0, orthogonalization.m_topologyXi[3][1], tolerance);
@@ -98,8 +98,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     ASSERT_NEAR(-1.0, orthogonalization.m_topologyEta[3][4], tolerance);
 
     //node 4
-    EXPECT_EQ(2, orthogonalization.m_topologyFaces[4]);
-    EXPECT_EQ(3, orthogonalization.m_topologyNodes[4]);
+    EXPECT_EQ(2, orthogonalization.m_numTopologyFaces[4]);
+    EXPECT_EQ(3, orthogonalization.m_numTopologyNodes[4]);
 
     ASSERT_NEAR(0.0, orthogonalization.m_topologyXi[4][0], tolerance);
     ASSERT_NEAR(1.0, orthogonalization.m_topologyXi[4][1], tolerance);
