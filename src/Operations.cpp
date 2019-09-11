@@ -260,6 +260,19 @@ namespace GridGeom
          
             return dotProduct(dx1,dx2,dy1,dy2);
         }
+
+        static bool computeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<cartesianPoint>& nodes, std::vector<double>& J)
+        {
+            for (int i = 0; i < numNodes; i++)
+            {
+                J[0] += Jxi[i] * nodes[connectedNodes[i]].x;
+                J[1] += Jxi[i] * nodes[connectedNodes[i]].y;
+                J[2] += Jeta[i] * nodes[connectedNodes[i]].x;
+                J[3] += Jeta[i] * nodes[connectedNodes[i]].y;
+            }
+            return true;
+        }
+
     };
     
     // spherical point
@@ -411,6 +424,19 @@ namespace GridGeom
         }
 
         //TODO:: comp_local_coords
+
+        static bool computeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<sphericalPoint>& nodes, std::vector<double>& J)
+        {
+            double factor = std::cos(nodes[currentNode].y) * degrad_hp;
+            for (int i = 0; i < numNodes; i++)
+            {
+                J[0] += Jxi[i] * nodes[connectedNodes[i]].x;
+                J[1] += Jxi[i] * nodes[connectedNodes[i]].y;
+                J[2] += Jeta[i] * nodes[connectedNodes[i]].x;
+                J[3] += Jeta[i] * nodes[connectedNodes[i]].y;
+            }
+            return true;
+        }
     };
     
 

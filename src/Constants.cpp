@@ -1,5 +1,6 @@
 #ifndef CONSTANTS_CPP
 #define CONSTANTS_CPP
+#include <cmath>
 
 #ifndef M_PI
 #define M_PI (3.14159265358979323846)
@@ -13,9 +14,9 @@ namespace GridGeom
 
     //geometric constants
     static constexpr double degrad_hp = M_PI / 180.0; // conversion factor from degrees to radians(pi / 180)
+    static constexpr double raddeg_hp = 180.0 / M_PI; // conversion factor from radians to degrees(180 / pi)
     static constexpr double earth_radius = 6378137.0; // earth radius(m)
     static constexpr double dtol_pole = 0.0001;       // pole tolerance in degrees
-    static constexpr double raddeg_hp = 180.0 / M_PI; // conversion factor from radians to degrees(180 / pi)
 
     //mesh constants
     static constexpr double minimumDeltaCoordinate = 1e-14;
@@ -28,9 +29,8 @@ namespace GridGeom
     static constexpr double curvilinearToOrthogonalRatio= 0.5; //curvi - linear - like(0.0) or pure(1.0) orthogonalisation
     static constexpr double orthogonalizationToSmoothingFactor = 0.975; //Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
     static constexpr double smoothorarea = 1.0;   //Factor between smoother(1.0) and area - homogenizer(0.0)
-
-    constexpr int maximumNumberOfNodesInStencil = 4;
-
+    static constexpr int orthogonalizationBoundaryIterations = 25; // Nr.of boundary iterations in grid / net orthogonalisation. (within ITATP)
+    static constexpr int orthogonalizationInnerIterations = 25;    // Nr.of inner    iterations in grid / net orthogonalisation. (within ITBND)
 }
 
 #endif
