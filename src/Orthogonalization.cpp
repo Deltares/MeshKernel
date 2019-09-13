@@ -29,7 +29,7 @@ public:
     };
 
     size_t m_maxNumNeighbours;
-    std::vector< std::vector<size_t>> m_nodesNodes;
+    std::vector< std::vector<size_t>> m_nodesNodes;            //node neighbours
     std::vector<std::vector<double>>  m_weights;
     std::vector<std::vector<double>>  m_rightHandSide;
     std::vector<double> m_aspectRatios;
@@ -56,11 +56,23 @@ public:
     std::vector<std::vector<double>> m_Jeta;
     std::vector<std::vector<double>> m_ww2;
 
+    std::vector<std::vector<double>> m_ww2Global;
+
+    std::vector<size_t> m_numConnectedNodes;             // nmk2, determined from local node administration
+    std::vector<std::vector<size_t>> m_connectedNodes;  // kk2, determined from local node administration
+    std::vector<int> m_localCoordinates;              // iloc
+
     static constexpr int topologyInitialSize = 10;
     static constexpr double thetaTolerance = 1e-4;
 
     int m_maximumNumConnectedNodes = 0;
     int m_maximumNumSharedFaces = 0;
+
+    // run-time options
+    bool keepCircumcenters = false;
+    double atpf = 0.975;  // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
+    double atpfBoundary = 1.0;  // minimum ATPF on the boundary
+    double smoothorarea = 1.0;   //Factor between smoother(1.0) and area - homogenizer(0.0)
 
     bool initialize(const Mesh<Point>& mesh)
     {
@@ -70,7 +82,7 @@ public:
         m_weights.resize(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
         m_rightHandSide.resize(mesh.m_nodes.size(), std::vector<double>(2, 0.0));
         m_aspectRatios.resize(mesh.m_edges.size(), 0.0);
-        
+
         //for each node, determine the neighbouring nodes
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
@@ -81,6 +93,9 @@ public:
                 m_nodesNodes[n][nn] = neighbour;
             }
         }
+
+        // compute local coordinates (side effects only for spherical_points)
+
 
         // classify the nodes
         classifyNodes(mesh);
@@ -95,26 +110,127 @@ public:
     {
         computeOperators(mesh);
         computeWeightsSmooth(mesh);
-
         return true;
+    }
+
+    bool iterate(const Mesh<Point>& mesh)
+    {
+        std::vector< std::vector<double>> ww2x;
+        std::vector< std::vector<double>> ww2y;
+        if (smoothorarea != 1)
+        {
+            ww2x.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
+            ww2y.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
+        }
+
+        double mumax = (1.0 - smoothorarea) * 0.5;
+        double mumin = 1e-2;
+        double mumin = std::min(mumin, mumax);
+        double atpfOne = 1.0 - atpf;
+        double mu = mumin;
+
+        std::vector<double> dum(2);
+        std::vector<double> w0(2);
+        for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
+        {
+            for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
+            {
+                for (int n = 0; n < mesh.m_nodes.size(); n++)
+                {
+                    if ((m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2) || m_nodesTypes[n] < 2)
+                    {
+                        continue;
+                    }
+
+
+                    if (keepCircumcenters != false && (mesh.m_nodesNumEdges[n] != 3 || mesh.m_nodesNumEdges[n] != 1))
+                    {
+                        continue;
+                    }
+
+                    double atpfLoc = atpf;
+                    if (m_nodesTypes[n] == 2)
+                    {
+                        atpfLoc = std::max(atpfBoundary, atpf);
+                    }
+
+                    double atpfOneLoc = 1.0 - atpfLoc;
+                    double x0 = 0.0;
+                    double y0 = 0.0;
+                    double dx0 = 0.0;
+                    double dy0 = 0.0;
+                    double x00 = mesh.m_nodes[n].x;
+                    double y00 = mesh.m_nodes[n].y;
+
+                    dum[0] = 0.0; dum[1] = 0.0;
+                    w0[0] = 0.0; w0[1] = 0.0;
+
+                    double mumat = mu;
+                    if ((!ww2x.empty() && ww2x[n][0] != 0.0) && (!ww2y.empty() && ww2y[n][0] != 0.0))
+                    {
+                        mumat = mu * m_ww2Global[n][0] / std::max(ww2x[n][0], ww2y[n][0]);
+                    }
+
+                    int maxnn = std::max(m_nodesNumEdges[n] + 1, m_numConnectedNodes);
+                    for (int nn = 2; nn < maxnn; nn++)
+                    {
+                        double wwx = 0.0;
+                        double wwy = 0.0;
+
+                        // Smoother
+                        if (atpfLoc > 0.0)
+                        {
+                            if (m_nodesTypes[n] == 1 && !ww2x.empty() && !ww2y.empty())
+                            {
+                                wwx = atpfLoc * (mumat * ww2x[n][nn] + m_ww2Global[n][nn]);
+                                wwy = atpfLoc * (mumat * ww2y[n][nn] + m_ww2Global[n][nn]);
+                            }
+                            else (m_nodesTypes[n] == 1 && ww2x.empty() && ww2y.empty())
+                            {
+                                wwx = atpfLoc * m_ww2Global[n][nn];
+                                wwy = atpfLoc * m_ww2Global[n][nn];
+                            }
+                        }
+
+                        // Orthogonalizer
+                        int k1;
+                        if (nn < m_nodesNumEdges[n] + 1)
+                        {
+                            wwx += atpfLoc * m_rightHandSide[n][nn - 1];
+                            wwy += atpfLoc * m_rightHandSide[n][nn - 1];
+                            k1 = m_nodesNodes[n][nn - 1];
+                        }
+                        else
+                        {
+                            wwx += atpfLoc * m_rightHandSide[n][nn - 1];
+                            wwy += atpfLoc * m_rightHandSide[n][nn - 1];
+                            k1 = m_connectedNodes[n][nn];
+                        }
+
+                        Operations<Point>::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0);
+
+                    }
+
+                }
+
+            }
+        }
+
     }
 
     bool computeWeightsSmooth(const Mesh<Point>& mesh)
     {
-        std::vector<double> xi(m_maximumNumConnectedNodes, 0.0);
-        std::vector<double> eta(m_maximumNumConnectedNodes, 0.0);
-        
         std::vector<std::vector<double>> J(mesh.m_nodes.size(), std::vector<double>(4, 0)); //Jacobian
         std::vector<std::vector<double>> Ginv(mesh.m_nodes.size(), std::vector<double>(4, 0)); //mesh monitor matrix
-       
+
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
-            if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2 || m_nodesTypes[n] != 4) continue;
+            if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2 && m_nodesTypes[n] != 4) continue;
             int currentTopology = m_nodeTopologyMapping[n];
-            Operations<Point>::computeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
+            Operations<Point>::orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
         }
 
-        // TODO: Account for samples
+        // TODO: Account for samples: call orthonet_comp_Ginv(u, ops, J, Ginv)
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
             Ginv[n][0] = 1.0;
@@ -123,7 +239,7 @@ public:
             Ginv[n][3] = 1.0;
         }
 
-        std::vector<std::vector<double>> ww2(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0));
+        m_ww2Global.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0));
         std::vector<double> a1(2);
         std::vector<double> a2(2);
         Eigen::MatrixXf m(2, 2);
@@ -138,128 +254,119 @@ public:
         std::vector<double> GetaByDiveta(m_maximumNumConnectedNodes, 0.0);
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
-            if (mesh.m_nodesNumEdges[n] < 2)
+            if (mesh.m_nodesNumEdges[n] < 2) continue;
+
+            // Internal nodes and boundary nodes
+            if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2) 
             {
-                // Internal nodes and boundary nodes
-                if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
+                int currentTopology = m_nodeTopologyMapping[n];
+
+                Operations<Point>::orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
+
+                //compute the contravariant base vectors
+                double determinant = J[n][0] * J[n][3] - J[n][3] * J[n][1];
+                if (determinant == 0.0)
                 {
-                    int currentTopology = m_nodeTopologyMapping[n];
+                    continue;
+                }
 
-                    Operations<Point>::computeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
+                a1[0] = J[n][3] / determinant;
+                a1[1] = -J[n][2] / determinant;
+                a2[0] = -J[n][1] / determinant;
+                a2[1] = J[n][0] / determinant;
 
-                    //compute the contravariant base vectors
-                    double determinant = J[n][0] * J[n][3] - J[n][3] * J[n][2];
-                    if (determinant == 0.0)
-                    {
-                        continue;
-                    }
+                //m << J[n][0], J[n][3], J[n][2], J[n][4];
+                //Eigen::JacobiSVD<Eigen::MatrixXf> svd(m, Eigen::ComputeThinU | Eigen::ComputeThinV);
 
-                    a1[0] = J[n][3] / determinant;
-                    a1[1] = -J[n][2] / determinant;
-                    a2[0] = -J[n][1] / determinant;
-                    a2[1] = J[n][0] / determinant;
-                                        
-                    //m << J[n][0], J[n][3], J[n][2], J[n][4];
-                    //Eigen::JacobiSVD<Eigen::MatrixXf> svd(m, Eigen::ComputeThinU | Eigen::ComputeThinV);
+                std::fill(DGinvDxi.begin(), DGinvDxi.end(), 0.0);
+                std::fill(DGinvDeta.begin(), DGinvDeta.end(), 0.0);
+                for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+                {
+                    DGinvDxi[0] += Ginv[0][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
+                    DGinvDxi[1] += Ginv[1][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
+                    DGinvDxi[2] += Ginv[2][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
+                    DGinvDxi[3] += Ginv[3][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
 
-                    std::fill(DGinvDxi.begin(), DGinvDxi.end(), 0.0);
-                    std::fill(DGinvDeta.begin(), DGinvDeta.end(), 0.0);
-                    for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
-                    {
-                        DGinvDxi[0] += Ginv[0][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
-                        DGinvDxi[1] += Ginv[1][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
-                        DGinvDxi[2] += Ginv[2][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
-                        DGinvDxi[3] += Ginv[3][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
-                        
-                        DGinvDeta[0] += Ginv[0][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
-                        DGinvDeta[1] += Ginv[1][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
-                        DGinvDeta[2] += Ginv[2][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
-                        DGinvDeta[3] += Ginv[3][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
-                    }
+                    DGinvDeta[0] += Ginv[0][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
+                    DGinvDeta[1] += Ginv[1][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
+                    DGinvDeta[2] += Ginv[2][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
+                    DGinvDeta[3] += Ginv[3][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
+                }
 
-                    // compute weights
-                    double dGinvDxiFactor = matrixNorm(a1, a2, DGinvDxi);
-                    double dGinvDetaFactor = matrixNorm(a1, a2, DGinvDxi);
-                    
-                    // compute current Ginv
-                    currentGinv[0] = Ginv[0][n];
-                    currentGinv[1] = Ginv[1][n];
-                    currentGinv[2] = Ginv[2][n];
-                    currentGinv[3] = Ginv[3][n];
-                    double currentGinvFactor = matrixNorm(a1, a2, currentGinv);
-                    
-                    // compute small matrix operations
-                    std::fill(GxiByDivxi.begin(), GxiByDivxi.end(), 0.0);
-                    std::fill(GxiByDiveta.begin(), GxiByDiveta.end(), 0.0);
-                    std::fill(GetaByDivxi.begin(), GetaByDivxi.end(), 0.0);
-                    std::fill(GetaByDiveta.begin(), GetaByDiveta.end(), 0.0);
-                    for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
-                    {
-                        for (int j = 0; j < m_Divxi[currentTopology].size(); j++)
-                        {
-                            GxiByDivxi[i] += m_Gxi[currentTopology][i][j] * m_Divxi[currentTopology][j];
-                            GxiByDiveta[i] += m_Gxi[currentTopology][i][j] * m_Diveta[currentTopology][j];
-                            GetaByDivxi[i] += m_Geta[currentTopology][i][j] * m_Divxi[currentTopology][j];
-                            GetaByDiveta[i] += m_Geta[currentTopology][i][j] * m_Diveta[currentTopology][j];
-                        }
-                    }
-                    for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
-                    {
-                        ww2[n][i] += dGinvDxiFactor * m_Jxi[currentTopology][i] + dGinvDetaFactor * m_Jxi[currentTopology][i] + dGinvDxiFactor * m_Jeta[currentTopology][i] + dGinvDetaFactor * m_Jeta[currentTopology][i];
-                        ww2[n][i] -= (currentGinvFactor*(GxiByDivxi[i] + GxiByDiveta[i] + GetaByDivxi[i] + GetaByDiveta[i]));
-                    }
+                // compute weights
+                double dGinvDxiFactor = matrixNorm(a1, a2, DGinvDxi);
+                double dGinvDetaFactor = matrixNorm(a1, a2, DGinvDxi);
 
-                    double alpha = 0.0;
-                    for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
-                    {
-                        alpha = std::max(alpha, -ww2[n][i]) / std::max(1.0, m_ww2[currentTopology][i]);
-                    }
+                // compute current Ginv
+                currentGinv[0] = Ginv[0][n];
+                currentGinv[1] = Ginv[1][n];
+                currentGinv[2] = Ginv[2][n];
+                currentGinv[3] = Ginv[3][n];
+                double currentGinvFactor = matrixNorm(a1, a2, currentGinv);
 
-                    double sumValues = 0.0;
-                    for (int i = 1; i < m_numTopologyNodes[currentTopology]; i++)
+                // compute small matrix operations
+                std::fill(GxiByDivxi.begin(), GxiByDivxi.end(), 0.0);
+                std::fill(GxiByDiveta.begin(), GxiByDiveta.end(), 0.0);
+                std::fill(GetaByDivxi.begin(), GetaByDivxi.end(), 0.0);
+                std::fill(GetaByDiveta.begin(), GetaByDiveta.end(), 0.0);
+                for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+                {
+                    for (int j = 0; j < m_Divxi[currentTopology].size(); j++)
                     {
-                        ww2[n][i] = ww2[n][i] + alpha* std::max(1.0, ww2[n][i]);
-                        sumValues += ww2[n][i];
+                        GxiByDivxi[i] += m_Gxi[currentTopology][i][j] * m_Divxi[currentTopology][j];
+                        GxiByDiveta[i] += m_Gxi[currentTopology][i][j] * m_Diveta[currentTopology][j];
+                        GetaByDivxi[i] += m_Geta[currentTopology][i][j] * m_Divxi[currentTopology][j];
+                        GetaByDiveta[i] += m_Geta[currentTopology][i][j] * m_Diveta[currentTopology][j];
                     }
-                    ww2[n][0] = -sumValues;
-                    for (int i = 1; i < m_numTopologyNodes[currentTopology]; i++)
-                    {
-                        ww2[n][i] = ww2[n][i] / (ww2[n][0] + 1e-8);
-                    }
-                }            
+                }
+                for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+                {
+                    m_ww2Global[n][i] += dGinvDxiFactor * m_Jxi[currentTopology][i] + dGinvDetaFactor * m_Jxi[currentTopology][i] + dGinvDxiFactor * m_Jeta[currentTopology][i] + dGinvDetaFactor * m_Jeta[currentTopology][i];
+                    m_ww2Global[n][i] -= (currentGinvFactor * (GxiByDivxi[i] + GxiByDiveta[i] + GetaByDivxi[i] + GetaByDiveta[i]));
+                }
+
+                double alpha = 0.0;
+                for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+                {
+                    alpha = std::max(alpha, -m_ww2Global[n][i]) / std::max(1.0, m_ww2[currentTopology][i]);
+                }
+
+                double sumValues = 0.0;
+                for (int i = 1; i < m_numTopologyNodes[currentTopology]; i++)
+                {
+                    m_ww2Global[n][i] = m_ww2Global[n][i] + alpha * std::max(1.0, m_ww2Global[n][i]);
+                    sumValues += m_ww2Global[n][i];
+                }
+                m_ww2Global[n][0] = -sumValues;
+                for (int i = 1; i < m_numTopologyNodes[currentTopology]; i++)
+                {
+                    m_ww2Global[n][i] = m_ww2Global[n][i] / (m_ww2Global[n][0] + 1e-8);
+                }
             }
+
         }
-
         return true;
-    }
-
-    double matrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents)
-    {
-        double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[3] * x[0] + matCoefficents[4] * x[1]) * y[1];
-        return norm;
     }
 
     bool computeOperators(const Mesh<Point>& mesh)
     {
         //allocate small administration arrays only once
-        std::vector<int> sharedFaces(maximumNumberOfEdgesPerNode,-1); //icell
-        std::vector<size_t> connectedNodes(maximumNumberOfConnectedNodes, 0); //kk2
+        std::vector<int> sharedFaces(maximumNumberOfEdgesPerNode, -1); //icell
+        std::vector<size_t> connectedNodes(maximumNumberOfConnectedNodes, 0); //adm%kk2
         std::vector<std::vector<size_t>> faceNodeMapping(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfNodesPerFace, 0));//kkc
-        std::vector<double> xi(maximumNumberOfConnectedNodes,0.0);
-        std::vector<double> eta(maximumNumberOfConnectedNodes,0.0);
+        std::vector<double> xi(maximumNumberOfConnectedNodes, 0.0);
+        std::vector<double> eta(maximumNumberOfConnectedNodes, 0.0);
 
-        std::vector<std::vector<double>> nodeConnectedFaceNodes(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
-        std::vector<size_t> numNodeConnectedFaceNodes(mesh.m_nodes.size(), 0.0);
-
+        m_numConnectedNodes.resize(mesh.m_nodes.size(), 0.0);
+        m_connectedNodes.resize(mesh.m_nodes.size(), std::vector<size_t>(maximumNumberOfConnectedNodes));
         initializeTopologies(mesh);
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
             int numSharedFaces = 0;
             int numConnectedNodes = 0;
             orthogonalizationAdministration(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping);
-            computeXiEta(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi,eta);
+            computeXiEta(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
             saveTopology(n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
-
             m_maximumNumConnectedNodes = std::max(m_maximumNumConnectedNodes, numConnectedNodes);
             m_maximumNumSharedFaces = std::max(m_maximumNumSharedFaces, numSharedFaces);
         }
@@ -271,7 +378,7 @@ public:
         {
             int currentTopology = m_nodeTopologyMapping[n];
 
-            if(isNewTopology[currentTopology])
+            if (isNewTopology[currentTopology])
             {
                 isNewTopology[currentTopology] = false;
                 // Compute node operators
@@ -280,7 +387,9 @@ public:
             }
         }
 
-        resizeTopologies();
+        //have side effects only for spherical coordinates
+        Operations<Point>::orthogonalizationComputeLocalCoordinates(mesh.m_nodesNumEdges, m_numConnectedNodes, m_localCoordinates);
+
         return true;
     }
 
@@ -363,8 +472,6 @@ public:
         double etaBoundary = 0.0;
         for (int f = 0; f < numSharedFaces; f++)
         {
-            if (sharedFaces[f] < 0 || m_nodesTypes[currentNode] == 3) continue;
-
             size_t edgeIndex = mesh.m_nodesEdges[currentNode][f];
             int otherNode = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
             int leftFace = mesh.m_edgesFaces[edgeIndex][0];
@@ -377,8 +484,8 @@ public:
             }
 
             //by construction
-            double xiOne = xi[f+1];
-            double etaOne = eta[f+1];
+            double xiOne = xi[f + 1];
+            double etaOne = eta[f + 1];
 
             double leftRightSwap = 1.0;
             double leftXi = 0.0;
@@ -389,7 +496,7 @@ public:
             if (mesh.m_edgesNumFaces[edgeIndex] == 1)
             {
                 if (boundaryEdges[0] < 0)
-                { 
+                {
                     boundaryEdges[0] = f;
                 }
                 else
@@ -525,10 +632,10 @@ public:
         }
 
         xiNodes[0] = 0.0;
-        etaNodes[0]= 0.0;
+        etaNodes[0] = 0.0;
 
         double volxi = 0.0;
-        for (int i=0; i< mesh.m_nodesNumEdges[currentNode];i++)
+        for (int i = 0; i < mesh.m_nodesNumEdges[currentNode]; i++)
         {
             volxi += 0.5 * (Divxi[i] * xis[i] + Diveta[i] * etas[i]);
         }
@@ -536,7 +643,7 @@ public:
 
         for (int i = 0; i < mesh.m_nodesNumEdges[currentNode]; i++)
         {
-            Divxi[i] = Divxi[i]/ volxi;
+            Divxi[i] = Divxi[i] / volxi;
             Diveta[i] = Diveta[i] / volxi;
         }
 
@@ -544,7 +651,7 @@ public:
         for (int f = 0; f < numSharedFaces; f++)
         {
             // internal edge
-            if (mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 2) 
+            if (mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 2)
             {
                 int rightNode = f - 1; if (rightNode < 0)rightNode += rightNode + mesh.m_nodesEdges[currentNode].size();
                 for (int i = 0; i < numConnectedNodes; i++)
@@ -553,10 +660,13 @@ public:
                     Jeta[i] += Diveta[f] * 0.5 * (Az[f][i] + Az[rightNode][i]);
                 }
             }
-            Jxi[0] = Jxi[0] + Divxi[f] * 0.5;
-            Jxi[f+1]= Jxi[f + 1]+ Divxi[f] * 0.5;
-            Jeta[0]= Jeta[0] + Diveta[f] * 0.5;
-            Jeta[f+1]= Jeta[f + 1] + Diveta[f] * 0.5;
+            else
+            {
+                Jxi[0] = Jxi[0] + Divxi[f] * 0.5;
+                Jxi[f + 1] = Jxi[f + 1] + Divxi[f] * 0.5;
+                Jeta[0] = Jeta[0] + Diveta[f] * 0.5;
+                Jeta[f + 1] = Jeta[f + 1] + Diveta[f] * 0.5;
+            }
         }
 
         //compute the weights in the Laplacian smoother
@@ -569,14 +679,14 @@ public:
             }
         }
 
-        m_Az[topologyIndex]= Az;
-        m_Gxi[topologyIndex]= Gxi;
-        m_Geta[topologyIndex]= Geta;
-        m_Divxi[topologyIndex]= Divxi;
-        m_Diveta[topologyIndex]= Diveta;
-        m_Jxi[topologyIndex]= Jxi;
-        m_Jeta[topologyIndex]= Jeta;
-        m_ww2[topologyIndex]= ww2;
+        m_Az[topologyIndex] = Az;
+        m_Gxi[topologyIndex] = Gxi;
+        m_Geta[topologyIndex] = Geta;
+        m_Divxi[topologyIndex] = Divxi;
+        m_Diveta[topologyIndex] = Diveta;
+        m_Jxi[topologyIndex] = Jxi;
+        m_Jeta[topologyIndex] = Jeta;
+        m_ww2[topologyIndex] = ww2;
 
         //end of the method
         return true;
@@ -842,7 +952,7 @@ public:
     {
         // Cache the result for later calls.
         m_faceNumNodes.resize(mesh.m_numFaces, false);
-        for(int f=0; f< mesh.m_numFaces; f++)
+        for (int f = 0; f < mesh.m_numFaces; f++)
         {
             m_faceNumNodes[f] = mesh.m_facesNodes[f].size();
         }
@@ -861,11 +971,11 @@ public:
         numSharedFaces = 0;
         for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
         {
-            size_t firstEdge = mesh.m_nodesEdges[currentNode][e]; 
-            
+            size_t firstEdge = mesh.m_nodesEdges[currentNode][e];
+
             int secondEdgeIndex = e + 1;
-            
-            if (secondEdgeIndex >= mesh.m_nodesNumEdges[currentNode]) 
+
+            if (secondEdgeIndex >= mesh.m_nodesNumEdges[currentNode])
                 secondEdgeIndex = 0;
 
             size_t secondEdge = mesh.m_nodesEdges[currentNode][secondEdgeIndex];
@@ -877,7 +987,7 @@ public:
             int secondFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[secondEdge], size_t(2)), size_t(1)) - 1;
 
             if (mesh.m_edgesFaces[firstEdge][0] != newFaceIndex &&
-               (mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
+                (mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
             {
                 newFaceIndex = mesh.m_edgesFaces[firstEdge][0];
             }
@@ -892,7 +1002,7 @@ public:
             }
 
             //corner face (already found in the first iteration)
-            if (mesh.m_nodesNumEdges[currentNode] == 2 && e == 1 && m_nodesTypes[currentNode]==3)
+            if (mesh.m_nodesNumEdges[currentNode] == 2 && e == 1 && m_nodesTypes[currentNode] == 3)
             {
                 if (sharedFaces[0] == newFaceIndex) newFaceIndex = -999;
             }
@@ -910,14 +1020,22 @@ public:
         for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
         {
             size_t edgeIndex = mesh.m_nodesEdges[currentNode][e];
-            size_t nodeIndex = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
+            size_t node = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
             connectedNodesIndex++;
-            connectedNodes[connectedNodesIndex] = nodeIndex;
+            connectedNodes[connectedNodesIndex] = node;
+            if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
+            {
+                m_connectedNodes[currentNode].resize(connectedNodesIndex);
+            }
+            m_connectedNodes[currentNode][connectedNodesIndex] = node;
         }
 
         // for each face store the positions of the its nodes in the connectedNodes (compressed array)
-        if (faceNodeMapping.size() < numSharedFaces) 
-            faceNodeMapping.resize(numSharedFaces);
+        if (faceNodeMapping.size() < numSharedFaces)
+        {
+            faceNodeMapping.resize(numSharedFaces, std::vector<size_t>(maximumNumberOfNodesPerFace, 0));
+        }
+
 
         for (int f = 0; f < numSharedFaces; f++)
         {
@@ -939,11 +1057,13 @@ public:
             for (int n = 0; n < numFaceNodes; n++)
             {
 
-                if (faceNodeIndex >= numFaceNodes) 
+                if (faceNodeIndex >= numFaceNodes)
+                {
                     faceNodeIndex -= numFaceNodes;
-                
-                int node = mesh.m_facesNodes[faceIndex][faceNodeIndex];
+                }
 
+
+                int node = mesh.m_facesNodes[faceIndex][faceNodeIndex];
 
                 bool isNewNode = true;
                 for (int n = 0; n < connectedNodesIndex + 1; n++)
@@ -961,6 +1081,11 @@ public:
                     connectedNodesIndex++;
                     connectedNodes[connectedNodesIndex] = node;
                     faceNodeMapping[f][faceNodeIndex] = connectedNodesIndex;
+                    if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
+                    {
+                        m_connectedNodes[currentNode].resize(connectedNodesIndex);
+                    }
+                    m_connectedNodes[currentNode][connectedNodesIndex] = node;
                 }
 
                 //update node index
@@ -971,9 +1096,12 @@ public:
         // compute the number of connected nodes
         numConnectedNodes = connectedNodesIndex + 1;
 
+        //update connected nodes kkc
+        m_numConnectedNodes[currentNode] = numConnectedNodes;
+
         return true;
     }
-    
+
     double optimalEdgeAngle(const int numFaceNodes, const double theta1 = doubleMissingValue, const double theta2 = doubleMissingValue, bool isBoundaryEdge = false)
     {
         double angle = M_PI * (1 - 2.0 / double(numFaceNodes));
@@ -1001,7 +1129,7 @@ public:
             size_t first = mesh.m_edges[e].first;
             size_t second = mesh.m_edges[e].second;
 
-            if (first == second) continue; 
+            if (first == second) continue;
             double edgeLength = Operations<Point>::distance(mesh.m_nodes[first], mesh.m_nodes[second]);
             edgesLength[e] = edgeLength;
 
@@ -1170,7 +1298,7 @@ public:
     }
 
     template<typename T>
-    inline T findIndex(const std::vector<T>& vec, const T& el) 
+    inline T findIndex(const std::vector<T>& vec, const T& el)
     {
         T index = 0;
         for (int n = 0; n < vec.size(); n++)
@@ -1245,20 +1373,10 @@ public:
         return true;
     }
 
-
-    //memory managment
-
-    bool resizeTopologies()
+    double matrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents)
     {
-        m_nodeTopologyMapping.resize(0);
-        m_numTopologyNodes.resize(0);
-        m_numTopologyFaces.resize(0);
-        m_topologyXi.resize(0);
-        m_topologyEta.resize(0);
-        m_topologySharedFaces.resize(0);
-        m_topologyConnectedNodes.resize(0);
-        m_topologyFaceNodeMapping.resize(0);
-        return true;
+        double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[3] * x[0] + matCoefficents[4] * x[1]) * y[1];
+        return norm;
     }
 
     bool initializeTopologies(const Mesh<Point>& mesh)
