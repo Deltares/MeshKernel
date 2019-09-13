@@ -124,13 +124,12 @@ public:
         }
 
         double mumax = (1.0 - smoothorarea) * 0.5;
-        double mumin = 1e-2;
-        double mumin = std::min(mumin, mumax);
+        double mumin = std::min(1e-2, mumax);
         double atpfOne = 1.0 - atpf;
         double mu = mumin;
 
-        std::vector<double> dum(2);
-        std::vector<double> w0(2);
+        std::vector<double> rightHandSide(2);
+        std::vector<double> increments(2);
         for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
         {
             for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
@@ -161,9 +160,8 @@ public:
                     double dy0 = 0.0;
                     double x00 = mesh.m_nodes[n].x;
                     double y00 = mesh.m_nodes[n].y;
-
-                    dum[0] = 0.0; dum[1] = 0.0;
-                    w0[0] = 0.0; w0[1] = 0.0;
+                    increments[0] = 0.0;
+                    increments[1] = 0.0;
 
                     double mumat = mu;
                     if ((!ww2x.empty() && ww2x[n][0] != 0.0) && (!ww2y.empty() && ww2y[n][0] != 0.0))
@@ -207,9 +205,14 @@ public:
                             k1 = m_connectedNodes[n][nn];
                         }
 
-                        Operations<Point>::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0);
-
+                        Operations<Point>::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments);
                     }
+
+                    // combine rhs
+                    rightHandSide[n][0] = atpfLoc * m_rightHandSide[n][0];
+                    rightHandSide[n][1] = atpfLoc * m_rightHandSide[n][0];
+
+
 
                 }
 
@@ -221,7 +224,7 @@ public:
     bool computeWeightsSmooth(const Mesh<Point>& mesh)
     {
         std::vector<std::vector<double>> J(mesh.m_nodes.size(), std::vector<double>(4, 0)); //Jacobian
-        std::vector<std::vector<double>> Ginv(mesh.m_nodes.size(), std::vector<double>(4, 0)); //mesh monitor matrix
+        std::vector<std::vector<double>> Ginv(mesh.m_nodes.size(), std::vector<double>(4, 0)); //mesh monitor matrices
 
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
@@ -242,10 +245,9 @@ public:
         m_ww2Global.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0));
         std::vector<double> a1(2);
         std::vector<double> a2(2);
-        Eigen::MatrixXf m(2, 2);
 
         // matrices for dicretization
-        std::vector<double> DGinvDxi(4, 0.0);
+        std::vector<double> DGinvDxi(4, 0.0); 
         std::vector<double> DGinvDeta(4, 0.0);
         std::vector<double> currentGinv(4, 0.0);
         std::vector<double> GxiByDivxi(m_maximumNumConnectedNodes, 0.0);
@@ -282,26 +284,22 @@ public:
                 std::fill(DGinvDeta.begin(), DGinvDeta.end(), 0.0);
                 for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
                 {
-                    DGinvDxi[0] += Ginv[0][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
-                    DGinvDxi[1] += Ginv[1][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
-                    DGinvDxi[2] += Ginv[2][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
-                    DGinvDxi[3] += Ginv[3][m_topologyConnectedNodes[currentTopology][i]] * m_Jxi[currentTopology][i];
+                    DGinvDxi[0] += Ginv[m_topologyConnectedNodes[currentTopology][i]][0] * m_Jxi[currentTopology][i];
+                    DGinvDxi[1] += Ginv[m_topologyConnectedNodes[currentTopology][i]][1] * m_Jxi[currentTopology][i];
+                    DGinvDxi[2] += Ginv[m_topologyConnectedNodes[currentTopology][i]][2] * m_Jxi[currentTopology][i];
+                    DGinvDxi[3] += Ginv[m_topologyConnectedNodes[currentTopology][i]][3] * m_Jxi[currentTopology][i];
 
-                    DGinvDeta[0] += Ginv[0][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
-                    DGinvDeta[1] += Ginv[1][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
-                    DGinvDeta[2] += Ginv[2][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
-                    DGinvDeta[3] += Ginv[3][m_topologyConnectedNodes[currentTopology][i]] * m_Jeta[currentTopology][i];
+                    DGinvDeta[0] += Ginv[m_topologyConnectedNodes[currentTopology][i]][0] * m_Jeta[currentTopology][i];
+                    DGinvDeta[1] += Ginv[m_topologyConnectedNodes[currentTopology][i]][1] * m_Jeta[currentTopology][i];
+                    DGinvDeta[2] += Ginv[m_topologyConnectedNodes[currentTopology][i]][2] * m_Jeta[currentTopology][i];
+                    DGinvDeta[3] += Ginv[m_topologyConnectedNodes[currentTopology][i]][3] * m_Jeta[currentTopology][i];
                 }
 
-                // compute weights
-                double dGinvDxiFactor = matrixNorm(a1, a2, DGinvDxi);
-                double dGinvDetaFactor = matrixNorm(a1, a2, DGinvDxi);
-
                 // compute current Ginv
-                currentGinv[0] = Ginv[0][n];
-                currentGinv[1] = Ginv[1][n];
-                currentGinv[2] = Ginv[2][n];
-                currentGinv[3] = Ginv[3][n];
+                currentGinv[0] = Ginv[n][0];
+                currentGinv[1] = Ginv[n][1];
+                currentGinv[2] = Ginv[n][2];
+                currentGinv[3] = Ginv[n][3];
                 double currentGinvFactor = matrixNorm(a1, a2, currentGinv);
 
                 // compute small matrix operations
@@ -313,20 +311,26 @@ public:
                 {
                     for (int j = 0; j < m_Divxi[currentTopology].size(); j++)
                     {
-                        GxiByDivxi[i] += m_Gxi[currentTopology][i][j] * m_Divxi[currentTopology][j];
-                        GxiByDiveta[i] += m_Gxi[currentTopology][i][j] * m_Diveta[currentTopology][j];
-                        GetaByDivxi[i] += m_Geta[currentTopology][i][j] * m_Divxi[currentTopology][j];
-                        GetaByDiveta[i] += m_Geta[currentTopology][i][j] * m_Diveta[currentTopology][j];
+                        GxiByDivxi[i] += m_Gxi[currentTopology][j][i] * m_Divxi[currentTopology][j];
+                        GxiByDiveta[i] += m_Gxi[currentTopology][j][i] * m_Diveta[currentTopology][j];
+                        GetaByDivxi[i] += m_Geta[currentTopology][j][i] * m_Divxi[currentTopology][j];
+                        GetaByDiveta[i] += m_Geta[currentTopology][j][i] * m_Diveta[currentTopology][j];
                     }
                 }
                 for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
                 {
-                    m_ww2Global[n][i] += dGinvDxiFactor * m_Jxi[currentTopology][i] + dGinvDetaFactor * m_Jxi[currentTopology][i] + dGinvDxiFactor * m_Jeta[currentTopology][i] + dGinvDetaFactor * m_Jeta[currentTopology][i];
-                    m_ww2Global[n][i] -= (currentGinvFactor * (GxiByDivxi[i] + GxiByDiveta[i] + GetaByDivxi[i] + GetaByDiveta[i]));
+                    m_ww2Global[n][i] -= matrixNorm(a1, a1, DGinvDxi) * m_Jxi[currentTopology][i] +
+                                         matrixNorm(a1, a2, DGinvDeta) * m_Jxi[currentTopology][i] +
+                                         matrixNorm(a2, a1, DGinvDxi) * m_Jeta[currentTopology][i] +
+                                         matrixNorm(a2, a2, DGinvDeta) * m_Jeta[currentTopology][i];
+                    m_ww2Global[n][i] += (matrixNorm(a1, a1, currentGinv) * GxiByDivxi[i] +
+                                          matrixNorm(a1, a2, currentGinv)* GxiByDiveta[i] +
+                                          matrixNorm(a2, a1, currentGinv) * GetaByDivxi[i] +
+                                          matrixNorm(a2, a2, currentGinv) * GetaByDiveta[i]);
                 }
 
                 double alpha = 0.0;
-                for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
+                for (int i = 1; i < m_numTopologyNodes[currentTopology]; i++)
                 {
                     alpha = std::max(alpha, -m_ww2Global[n][i]) / std::max(1.0, m_ww2[currentTopology][i]);
                 }
@@ -334,13 +338,13 @@ public:
                 double sumValues = 0.0;
                 for (int i = 1; i < m_numTopologyNodes[currentTopology]; i++)
                 {
-                    m_ww2Global[n][i] = m_ww2Global[n][i] + alpha * std::max(1.0, m_ww2Global[n][i]);
+                    m_ww2Global[n][i] = m_ww2Global[n][i] + alpha * std::max(1.0, m_ww2[currentTopology][i]);
                     sumValues += m_ww2Global[n][i];
                 }
                 m_ww2Global[n][0] = -sumValues;
-                for (int i = 1; i < m_numTopologyNodes[currentTopology]; i++)
+                for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
                 {
-                    m_ww2Global[n][i] = m_ww2Global[n][i] / (m_ww2Global[n][0] + 1e-8);
+                    m_ww2Global[n][i] = -m_ww2Global[n][i] / (-sumValues + 1e-8);
                 }
             }
 
@@ -600,12 +604,12 @@ public:
             int node0 = 0;
             for (int i = 0; i < numConnectedNodes; i++)
             {
-                Gxi[f][i] = facxiL * Az[f][i];
-                Geta[f][i] = facetaL * Az[f][i];
+                Gxi[f][i] = facxiL * Az[faceLeftIndex][i];
+                Geta[f][i] = facetaL * Az[faceLeftIndex][i];
                 if (mesh.m_edgesNumFaces[edgeIndex] == 2)
                 {
-                    Gxi[f][i] = Gxi[f][i] + facxiR * Az[f][faceRightIndex];
-                    Geta[f][i] = Geta[f][i] + facetaR * Az[f][faceRightIndex];
+                    Gxi[f][i] = Gxi[f][i] + facxiR * Az[faceRightIndex][i];
+                    Geta[f][i] = Geta[f][i] + facetaR * Az[faceRightIndex][i];
                 }
             }
 
@@ -1375,7 +1379,7 @@ public:
 
     double matrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents)
     {
-        double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[3] * x[0] + matCoefficents[4] * x[1]) * y[1];
+        double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[2] * x[0] + matCoefficents[3] * x[1]) * y[1];
         return norm;
     }
 
@@ -1418,8 +1422,8 @@ public:
         m_Az[topologyIndex].resize(numSharedFaces, std::vector<double>(numConnectedNodes, 0.0));
         m_Gxi[topologyIndex].resize(numSharedFaces, std::vector<double>(numConnectedNodes, 0.0));
         m_Geta[topologyIndex].resize(numSharedFaces, std::vector<double>(numConnectedNodes, 0.0));
-        m_Divxi[topologyIndex].resize(numConnectedNodes);
-        m_Diveta[topologyIndex].resize(numConnectedNodes);
+        m_Divxi[topologyIndex].resize(numSharedFaces);
+        m_Diveta[topologyIndex].resize(numSharedFaces);
         m_Jxi[topologyIndex].resize(numConnectedNodes);
         m_Jeta[topologyIndex].resize(numConnectedNodes);
         m_ww2[topologyIndex].resize(numConnectedNodes);
@@ -1493,9 +1497,6 @@ public:
 
         return true;
     }
-
-
-
 };
 
 #endif
