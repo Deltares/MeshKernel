@@ -24,8 +24,8 @@ public:
     // faces
     std::vector<std::vector<size_t>> m_facesNodes;              //netcell%Nod, the nodes composing the faces, in ccw order
     std::vector<std::vector<size_t>> m_facesEdges;              //netcell%lin
-    std::vector<Point>   m_facesCircumcenters;                  //xw
-    std::vector<Point>   m_facesMasscenters;                    //the faces canters of mass
+    std::vector<Point>   m_facesCircumcenters;                  //xz  the face circumcenters
+    std::vector<Point>   m_facesMasscenters;                    //xzw the faces canters of mass
 
     size_t m_numFaces;                                          //NUMP
     std::vector<double> m_faceArea;                             //Face area

@@ -261,8 +261,20 @@ namespace GridGeom
             return dotProduct(dx1,dx2,dy1,dy2);
         }
 
-        static bool computeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<cartesianPoint>& nodes, std::vector<double>& J)
+
+        static bool orthogonalizationComputeLocalCoordinates(const std::vector<size_t>& m_nodesNumEdges, const std::vector<size_t>& numConnectedNodes, std::vector<int>& localCoordinates)
         {
+            //do nothing
+            return true;
+        }
+
+
+        static bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<cartesianPoint>& nodes, std::vector<double>& J)
+        {
+            J[0] = 0.0; 
+            J[1] = 0.0;
+            J[2] = 0.0;
+            J[3] = 0.0;
             for (int i = 0; i < numNodes; i++)
             {
                 J[0] += Jxi[i] * nodes[connectedNodes[i]].x;
@@ -270,6 +282,13 @@ namespace GridGeom
                 J[2] += Jeta[i] * nodes[connectedNodes[i]].x;
                 J[3] += Jeta[i] * nodes[connectedNodes[i]].y;
             }
+            return true;
+        }
+
+        static bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<cartesianPoint>& nodes, double& dx0, double& dy0)
+        {
+            dx0 = dx0 + wwx * (nodes[firstNode].x - nodes[secondNode].x);
+            dy0 = dy0 + wwy * (nodes[firstNode].y - nodes[secondNode].y);
             return true;
         }
 
@@ -424,10 +443,25 @@ namespace GridGeom
         }
 
         //TODO:: comp_local_coords
+        static bool orthogonalizationComputeLocalCoordinates(const std::vector<size_t>& m_nodesNumEdges, const std::vector<size_t>& numConnectedNodes, std::vector<int>& localCoordinates)
+        {
+            localCoordinates.resize(m_nodesNumEdges.size(), 0);
+            localCoordinates[0]=1;
+            for (int i = 0; i < m_nodesNumEdges.size(); i++)
+            {
+                localCoordinates[i+1]= localCoordinates[i]+std::max(m_nodesNumEdges[i]+1, numConnectedNodes[i]);
+            }
+            return true;
+        }
 
-        static bool computeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<sphericalPoint>& nodes, std::vector<double>& J)
+
+        static bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<sphericalPoint>& nodes, std::vector<double>& J)
         {
             double factor = std::cos(nodes[currentNode].y) * degrad_hp;
+            J[0] = 0.0;
+            J[1] = 0.0;
+            J[2] = 0.0;
+            J[3] = 0.0;
             for (int i = 0; i < numNodes; i++)
             {
                 J[0] += Jxi[i] * nodes[connectedNodes[i]].x;
@@ -435,6 +469,18 @@ namespace GridGeom
                 J[2] += Jeta[i] * nodes[connectedNodes[i]].x;
                 J[3] += Jeta[i] * nodes[connectedNodes[i]].y;
             }
+            return true;
+        }
+
+        static bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<sphericalPoint>& nodes, double& dx0, double& dy0)
+        {
+            double wwxTransformed = wwx * earth_radius * degrad_hp;
+            double wwyTransformed = wwy * earth_radius * degrad_hp;
+
+
+            dx0 = dx0 + wwxTransformed * (nodes[firstNode].x - nodes[secondNode].x);
+            dy0 = dy0 + wwxTransformed * (nodes[firstNode].y - nodes[secondNode].y);
+
             return true;
         }
     };
