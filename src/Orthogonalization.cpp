@@ -103,17 +103,20 @@ public:
         // computes the number of nodes for each face
         computeFacesNumEdges(mesh);
 
-        return true;
-    }
+        //compute aspect ratios
+        aspectRatio(mesh);
 
-    bool solveWeights(const Mesh<Point>& mesh)
-    {
+        //compute weights
+        computeWeights(mesh);
+
         computeOperators(mesh);
+
         computeWeightsSmooth(mesh);
+
         return true;
     }
 
-    bool iterate(const Mesh<Point>& mesh)
+    bool iterate(Mesh<Point>& mesh)
     {
         std::vector< std::vector<double>> ww2x;
         std::vector< std::vector<double>> ww2y;
@@ -121,12 +124,11 @@ public:
         {
             ww2x.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
             ww2y.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
+            // TODO: calculate volume weights
         }
 
-        double mumax = (1.0 - smoothorarea) * 0.5;
-        double mumin = std::min(1e-2, mumax);
         double atpfOne = 1.0 - atpf;
-        double mu = mumin;
+        double mu = std::min(1e-2, (1.0 - smoothorarea) * 0.5);
 
         std::vector<double> rightHandSide(2);
         std::vector<double> increments(2);
@@ -152,16 +154,8 @@ public:
                     {
                         atpfLoc = std::max(atpfBoundary, atpf);
                     }
+                    double atpf1Loc = 1.0 - atpfLoc;
 
-                    double atpfOneLoc = 1.0 - atpfLoc;
-                    double x0 = 0.0;
-                    double y0 = 0.0;
-                    double dx0 = 0.0;
-                    double dy0 = 0.0;
-                    double x00 = mesh.m_nodes[n].x;
-                    double y00 = mesh.m_nodes[n].y;
-                    increments[0] = 0.0;
-                    increments[1] = 0.0;
 
                     double mumat = mu;
                     if ((!ww2x.empty() && ww2x[n][0] != 0.0) && (!ww2y.empty() && ww2y[n][0] != 0.0))
@@ -169,39 +163,38 @@ public:
                         mumat = mu * m_ww2Global[n][0] / std::max(ww2x[n][0], ww2y[n][0]);
                     }
 
-                    int maxnn = std::max(m_nodesNumEdges[n] + 1, m_numConnectedNodes);
-                    for (int nn = 2; nn < maxnn; nn++)
+                    int maxnn = std::max(mesh.m_nodesNumEdges[n] + 1, m_numConnectedNodes[n]);
+                    double dx0 = 0.0;
+                    double dy0 = 0.0;
+                    increments[0] = 0.0;
+                    increments[1] = 0.0;
+                    for (int nn = 1; nn < maxnn; nn++)
                     {
                         double wwx = 0.0;
                         double wwy = 0.0;
 
                         // Smoother
-                        if (atpfLoc > 0.0)
+                        if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && !ww2x.empty() && !ww2y.empty())
                         {
-                            if (m_nodesTypes[n] == 1 && !ww2x.empty() && !ww2y.empty())
-                            {
-                                wwx = atpfLoc * (mumat * ww2x[n][nn] + m_ww2Global[n][nn]);
-                                wwy = atpfLoc * (mumat * ww2y[n][nn] + m_ww2Global[n][nn]);
-                            }
-                            else (m_nodesTypes[n] == 1 && ww2x.empty() && ww2y.empty())
-                            {
-                                wwx = atpfLoc * m_ww2Global[n][nn];
-                                wwy = atpfLoc * m_ww2Global[n][nn];
-                            }
+                            wwx = atpfLoc * (mumat * ww2x[n][nn] + m_ww2Global[n][nn]);
+                            wwy = atpfLoc * (mumat * ww2y[n][nn] + m_ww2Global[n][nn]);
+                        }
+                        else if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && ww2x.empty() && ww2y.empty())
+                        {
+                            wwx = atpfLoc * m_ww2Global[n][nn];
+                            wwy = atpfLoc * m_ww2Global[n][nn];
                         }
 
                         // Orthogonalizer
                         int k1;
-                        if (nn < m_nodesNumEdges[n] + 1)
+                        if (nn < mesh.m_nodesNumEdges[n] + 1)
                         {
-                            wwx += atpfLoc * m_rightHandSide[n][nn - 1];
-                            wwy += atpfLoc * m_rightHandSide[n][nn - 1];
+                            wwx += atpfLoc * m_weights[n][nn - 1];
+                            wwy += atpfLoc * m_weights[n][nn - 1];
                             k1 = m_nodesNodes[n][nn - 1];
                         }
                         else
                         {
-                            wwx += atpfLoc * m_rightHandSide[n][nn - 1];
-                            wwy += atpfLoc * m_rightHandSide[n][nn - 1];
                             k1 = m_connectedNodes[n][nn];
                         }
 
@@ -209,15 +202,22 @@ public:
                     }
 
                     // combine rhs
-                    rightHandSide[n][0] = atpfLoc * m_rightHandSide[n][0];
-                    rightHandSide[n][1] = atpfLoc * m_rightHandSide[n][0];
+                    rightHandSide[0] = atpfLoc * m_rightHandSide[n][0];
+                    rightHandSide[1] = atpfLoc * m_rightHandSide[n][0];
 
+                    if (std::abs(increments[0]) > 1e-8 && std::abs(increments[1]) > 1e-8)
+                    {
+                        dx0 = (dx0 + rightHandSide[0]) / increments[0];
+                        dy0 = (dy0 + rightHandSide[1]) / increments[1];
+                    }
 
+                    Operations<Point>::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n]);
 
                 }
 
             }
         }
+        return true;
 
     }
 
@@ -247,7 +247,7 @@ public:
         std::vector<double> a2(2);
 
         // matrices for dicretization
-        std::vector<double> DGinvDxi(4, 0.0); 
+        std::vector<double> DGinvDxi(4, 0.0);
         std::vector<double> DGinvDeta(4, 0.0);
         std::vector<double> currentGinv(4, 0.0);
         std::vector<double> GxiByDivxi(m_maximumNumConnectedNodes, 0.0);
@@ -259,7 +259,7 @@ public:
             if (mesh.m_nodesNumEdges[n] < 2) continue;
 
             // Internal nodes and boundary nodes
-            if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2) 
+            if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
             {
                 int currentTopology = m_nodeTopologyMapping[n];
 
@@ -320,13 +320,13 @@ public:
                 for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
                 {
                     m_ww2Global[n][i] -= matrixNorm(a1, a1, DGinvDxi) * m_Jxi[currentTopology][i] +
-                                         matrixNorm(a1, a2, DGinvDeta) * m_Jxi[currentTopology][i] +
-                                         matrixNorm(a2, a1, DGinvDxi) * m_Jeta[currentTopology][i] +
-                                         matrixNorm(a2, a2, DGinvDeta) * m_Jeta[currentTopology][i];
+                        matrixNorm(a1, a2, DGinvDeta) * m_Jxi[currentTopology][i] +
+                        matrixNorm(a2, a1, DGinvDxi) * m_Jeta[currentTopology][i] +
+                        matrixNorm(a2, a2, DGinvDeta) * m_Jeta[currentTopology][i];
                     m_ww2Global[n][i] += (matrixNorm(a1, a1, currentGinv) * GxiByDivxi[i] +
-                                          matrixNorm(a1, a2, currentGinv)* GxiByDiveta[i] +
-                                          matrixNorm(a2, a1, currentGinv) * GetaByDivxi[i] +
-                                          matrixNorm(a2, a2, currentGinv) * GetaByDiveta[i]);
+                        matrixNorm(a1, a2, currentGinv) * GxiByDiveta[i] +
+                        matrixNorm(a2, a1, currentGinv) * GetaByDivxi[i] +
+                        matrixNorm(a2, a2, currentGinv) * GetaByDiveta[i]);
                 }
 
                 double alpha = 0.0;
@@ -1156,7 +1156,7 @@ public:
             else
             {
                 //otherwise, make ghost node by imposing boundary condition
-                double dinry = Operations<Point>::outerProductTwoSegments(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_nodes[first], leftCenter);
+                double dinry = Operations<Point>::innerProductTwoSegments(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_nodes[first], leftCenter);
                 dinry = dinry / std::max(edgeLength * edgeLength, minimumEdgeLength);
 
                 double x0_bc = (1.0 - dinry) * mesh.m_nodes[first].x + dinry * mesh.m_nodes[second].x;
@@ -1324,7 +1324,12 @@ public:
         double mu = 1.0;
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
-            //the check for inside a polygon is now skipped
+            
+            if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2)
+            {
+                continue;
+            }
+                
             for (size_t nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
             {
                 size_t edgeIndex = mesh.m_nodesEdges[n][nn];
