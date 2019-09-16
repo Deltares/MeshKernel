@@ -273,12 +273,7 @@ void Mesh<Point>::faceCircumcenters(const double& weightCircumCenter)
         size_t numberOfFaceNodes = m_facesNodes[f].size();
         if (numberOfFaceNodes == 3)
         {
-            //m_nodes[m_facesNodes[f][0]] 
-            //m_nodes[m_facesNodes[f][1]]
-            //m_nodes[m_facesNodes[f][2]]
-            //auto circumCenter = CGAL::circumcenter(m_nodes[m_facesNodes[f][0]], m_nodes[m_facesNodes[f][1]], m_nodes[m_facesNodes[f][2]]);
-            //m_facesCircumcenters[f] = { circumCenter.x(),circumCenter.y() };
-            m_facesCircumcenters[f] = { 0.0,0.0 };
+            GridGeom::Operations<Point>::circumcenterOfTriangle(m_nodes[m_facesNodes[f][0]], m_nodes[m_facesNodes[f][1]], m_nodes[m_facesNodes[f][2]], m_facesCircumcenters[f]);
         }
         else
         {
@@ -385,6 +380,8 @@ void Mesh<Point>::facesAreasAndCentersOfMass()
     m_faceArea.resize(m_facesNodes.size());
     m_facesMasscenters.resize(m_facesNodes.size());
     std::vector<Point> localFace(GridGeom::maximumNumberOfNodesPerFace + 1);
+    Point centerOfMass;
+    double area = 0.0;
     for (int f = 0; f < m_facesNodes.size(); f++)
     {
         size_t numberOfFaceNodes = m_facesNodes[f].size();
@@ -394,11 +391,11 @@ void Mesh<Point>::facesAreasAndCentersOfMass()
             localFace[n] = m_nodes[m_facesNodes[f][n]];
         }
         localFace[numberOfFaceNodes] = localFace[0];
-        double area = 0.0;
-        Point centerOfMass;
+        area = 0.0;
         faceAreaAndCenterOfMass(localFace, numberOfFaceNodes, area, centerOfMass);
         m_faceArea[f] = area;
-        m_facesMasscenters[f] = centerOfMass;
+        m_facesMasscenters[f].x = centerOfMass.x;
+        m_facesMasscenters[f].y = centerOfMass.y;
     }
 }
 
