@@ -16,12 +16,12 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 
     std::vector<Edge> edges;
     // Local edges
-    edges.push_back({ 0, 1 });
+    edges.push_back({ 1, 0 });
     edges.push_back({ 0, 2 });
     edges.push_back({ 2, 4 });
-    edges.push_back({ 3, 4 });
-    edges.push_back({ 2, 3 });
-    edges.push_back({ 1, 3 });
+    edges.push_back({ 4, 3 });
+    edges.push_back({ 3, 2 });
+    edges.push_back({ 3, 1 });
 
     // now build node-edge mapping
     Mesh mesh(edges, nodes);
@@ -29,11 +29,24 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 
     std::vector<double> aspectRatio;
     orthogonalization.initialize(mesh);
-    orthogonalization.aspectRatio(mesh);
-    orthogonalization.solveWeights(mesh);
 
     constexpr  double tolerance = 1e-8;
     constexpr  double largeTolerance = 10.0;
+    //centers of mass
+    ASSERT_NEAR(13.333333333, mesh.m_facesMasscenters[0].x, tolerance);
+    ASSERT_NEAR(3.333333333, mesh.m_facesMasscenters[0].y, tolerance);
+
+    ASSERT_NEAR(5.0, mesh.m_facesCircumcenters[1].x, tolerance);
+    ASSERT_NEAR(5.0, mesh.m_facesCircumcenters[1].y, tolerance);
+
+    //aspect ratios (not correct yet)
+    ASSERT_NEAR(1.0, orthogonalization.m_aspectRatios[0], tolerance);
+    ASSERT_NEAR(1.0, orthogonalization.m_aspectRatios[1], tolerance);
+    ASSERT_NEAR(1.0, orthogonalization.m_aspectRatios[2], tolerance);
+    ASSERT_NEAR(0.0, orthogonalization.m_aspectRatios[3], tolerance);
+    ASSERT_NEAR(1.0, orthogonalization.m_aspectRatios[4], tolerance);
+    ASSERT_NEAR(1.0, orthogonalization.m_aspectRatios[5], tolerance);
+
     //node 0
     EXPECT_EQ(2, orthogonalization.m_numTopologyFaces[0]);
     EXPECT_EQ(4, orthogonalization.m_numTopologyNodes[0]);
@@ -216,6 +229,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     ASSERT_NEAR(0.0, orthogonalization.m_ww2[1][1], tolerance);
     ASSERT_NEAR(0.0, orthogonalization.m_ww2[1][2], tolerance);
     ASSERT_NEAR(0.0, orthogonalization.m_ww2[1][3], tolerance);
+
+    orthogonalization.iterate(mesh);
 }
 
 
@@ -243,14 +258,11 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
 
     std::vector<double> aspectRatio;
     orthogonalization.initialize(mesh);
-    orthogonalization.aspectRatio(mesh);
-    
+
     EXPECT_EQ(1, orthogonalization.m_aspectRatios[0]);
     EXPECT_EQ(1, orthogonalization.m_aspectRatios[1]);
     EXPECT_EQ(1, orthogonalization.m_aspectRatios[2]);
     EXPECT_EQ(1, orthogonalization.m_aspectRatios[3]);
-
-    orthogonalization.solveWeights(mesh);
 
 }
 
@@ -297,10 +309,6 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFourQuads)
     // now build node-edge mapping
     Mesh mesh(edges, nodes);
     Orthogonalization<cartesianPoint> orthogonalization;
-
-    std::vector<double> aspectRatio;
     orthogonalization.initialize(mesh);
-    orthogonalization.aspectRatio(mesh);
-    orthogonalization.solveWeights(mesh);
 }
 
