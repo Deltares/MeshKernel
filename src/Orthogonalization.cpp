@@ -127,9 +127,8 @@ public:
             // TODO: calculate volume weights
         }
 
-        double atpfOne = 1.0 - atpf;
-        double mu = std::min(1e-2, (1.0 - smoothorarea) * 0.5);
-
+        double mumax = (1.0 - smoothorarea) * 0.5;
+        double mu = std::min(1e-2, mumax);
         std::vector<double> rightHandSide(2);
         std::vector<double> increments(2);
         for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
@@ -142,21 +141,14 @@ public:
                     {
                         continue;
                     }
-
-
                     if (keepCircumcenters != false && (mesh.m_nodesNumEdges[n] != 3 || mesh.m_nodesNumEdges[n] != 1))
                     {
                         continue;
                     }
 
-                    double atpfLoc = atpf;
-                    if (m_nodesTypes[n] == 2)
-                    {
-                        atpfLoc = std::max(atpfBoundary, atpf);
-                    }
+                    double atpfLoc = m_nodesTypes[n] == 2 ? std::max(atpfBoundary, atpf) : atpf;
                     double atpf1Loc = 1.0 - atpfLoc;
-
-
+                    
                     double mumat = mu;
                     if ((!ww2x.empty() && ww2x[n][0] != 0.0) && (!ww2y.empty() && ww2y[n][0] != 0.0))
                     {
@@ -203,7 +195,7 @@ public:
 
                     // combine rhs
                     rightHandSide[0] = atpfLoc * m_rightHandSide[n][0];
-                    rightHandSide[1] = atpfLoc * m_rightHandSide[n][0];
+                    rightHandSide[1] = atpfLoc * m_rightHandSide[n][1];
 
                     if (std::abs(increments[0]) > 1e-8 && std::abs(increments[1]) > 1e-8)
                     {
@@ -212,9 +204,16 @@ public:
                     }
 
                     Operations<Point>::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n]);
-
                 }
 
+                //update mu
+                mu = std::min(2.0 * mu, mumax);
+
+                //compute new faces circumcenters
+                if (keepCircumcenters != 1)
+                {
+                    mesh.facesAreasAndCentersOfMass();
+                } 
             }
         }
         return true;
@@ -1321,15 +1320,16 @@ public:
     {
         double localOrthogonalizationToSmoothingFactor = 1.0;
         double localOrthogonalizationToSmoothingFactorSymmetric = 1.0 - localOrthogonalizationToSmoothingFactor;
-        double mu = 1.0;
+        constexpr double mu = 1.0;
+        Point normal;
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
-            
+
             if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2)
             {
                 continue;
             }
-                
+
             for (size_t nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
             {
                 size_t edgeIndex = mesh.m_nodesEdges[n][nn];
@@ -1347,10 +1347,8 @@ public:
                         double aspectRatioByNodeDistance = aspectRatio * neighbouringNodeDistance;
 
                         size_t leftFace = mesh.m_edgesFaces[edgeIndex][0];
-                        Point massCenterLeftFace = mesh.m_facesMasscenters[leftFace];
-                        Point normal;
                         bool flippedNormal;
-                        Operations<Point>::normalVectorInside(mesh.m_nodes[n], neighbouringNode, massCenterLeftFace, normal, flippedNormal);
+                        Operations<Point>::normalVectorInside(mesh.m_nodes[n], neighbouringNode, mesh.m_facesMasscenters[leftFace], normal, flippedNormal);
 
                         m_rightHandSide[n][0] += localOrthogonalizationToSmoothingFactor * neighbouringNodeDistance * normal.x / 2.0 +
                             localOrthogonalizationToSmoothingFactorSymmetric * aspectRatioByNodeDistance * normal.x * 0.5 / mu;
@@ -1367,17 +1365,18 @@ public:
                 {
                     m_weights[n][nn] = 0.0;
                 }
-
-                // normalize
-                double factor = std::accumulate(m_weights[n].begin(), m_weights[n].end(), 0.0);
-                if (factor > 1e-14)
-                {
-                    factor = 1.0 / factor;
-                    for (auto& w : m_weights[n]) w = w * factor;
-                    m_rightHandSide[n][0] = factor * m_rightHandSide[n][0];
-                    m_rightHandSide[n][1] = factor * m_rightHandSide[n][1];
-                }
             }
+
+            // normalize
+            double factor = std::accumulate(m_weights[n].begin(), m_weights[n].end(), 0.0);
+            if (std::abs(factor) > 1e-14)
+            {
+                factor = 1.0 / factor;
+                for (auto& w : m_weights[n]) w = w * factor;
+                m_rightHandSide[n][0] = factor * m_rightHandSide[n][0];
+                m_rightHandSide[n][1] = factor * m_rightHandSide[n][1];
+            }
+
         }
         return true;
     }

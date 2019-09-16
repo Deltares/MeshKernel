@@ -231,6 +231,19 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     ASSERT_NEAR(0.0, orthogonalization.m_ww2[1][3], tolerance);
 
     orthogonalization.iterate(mesh);
+
+    //check nodes are not moved after orthogonalization for thi specific case
+    ASSERT_NEAR(0.0, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(0.0, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(10.0, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(10.0, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(20.0, mesh.m_nodes[4].x, tolerance);
+
+    ASSERT_NEAR(0.0, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(10.0, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(0.0, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(10.0, mesh.m_nodes[3].y, tolerance);
+    ASSERT_NEAR(0.0, mesh.m_nodes[4].y, tolerance);
 }
 
 

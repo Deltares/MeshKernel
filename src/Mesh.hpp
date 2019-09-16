@@ -30,6 +30,8 @@ public:
     size_t m_numFaces;                                          //NUMP
     std::vector<double> m_faceArea;                             //Face area
 
+    void facesAreasAndCentersOfMass();
+
 private:
 
     // Set node admin
@@ -40,7 +42,5 @@ private:
     void findFaces(const int& numEdges);
     
     void faceCircumcenters(const double& weightCircumCenter);
-
-    void facesAreasAndCentersOfMass();
 };
 #endif
