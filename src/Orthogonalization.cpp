@@ -8,9 +8,6 @@
 #include "Operations.cpp"
 #include "Mesh.hpp"
 
-//#include <Eigen/Dense>
-//#include <Eigen/SVD>
-
 #include <boost/numeric/ublas/matrix.hpp>
 
 using namespace GridGeom;
@@ -220,6 +217,15 @@ private:
     size_t m_maxNumNeighbours;
     std::vector< std::vector<size_t>> m_nodesNodes;            //node neighbours 
 
+    //local caches (avoid re-allocation)
+    std::vector<int> m_boundaryEdges;
+    std::vector<double> m_leftXFaceCenter;
+    std::vector<double> m_leftYFaceCenter;
+    std::vector<double> m_rightXFaceCenter;
+    std::vector<double> m_rightYFaceCenter;
+    std::vector<double> m_xis;
+    std::vector<double> m_etas;
+
     bool computeWeightsSmooth(const Mesh<Point>& mesh)
     {
         std::vector<std::vector<double>> J(mesh.m_nodes.size(), std::vector<double>(4, 0)); //Jacobian
@@ -384,6 +390,15 @@ private:
         m_Jeta.resize(m_numTopologies);
         m_ww2.resize(m_numTopologies);
 
+        // allocate caches
+        m_boundaryEdges.resize(2, -1);
+        m_leftXFaceCenter.resize(maximumNumberOfEdgesPerNode, 0.0);
+        m_leftYFaceCenter.resize(maximumNumberOfEdgesPerNode, 0.0);
+        m_rightXFaceCenter.resize(maximumNumberOfEdgesPerNode, 0.0);
+        m_rightYFaceCenter.resize(maximumNumberOfEdgesPerNode, 0.0);
+        m_xis.resize(maximumNumberOfEdgesPerNode, 0.0);
+        m_etas.resize(maximumNumberOfEdgesPerNode, 0.0);
+
         std::vector<bool> isNewTopology(m_numTopologies, true);
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
@@ -467,15 +482,15 @@ private:
             }
         }
 
-        std::vector<int> boundaryEdges(2, -1);
-        std::vector<double> leftXFaceCenter(maximumNumberOfEdgesPerNode, 0.0);
-        std::vector<double> leftYFaceCenter(maximumNumberOfEdgesPerNode, 0.0);
-        std::vector<double> rightXFaceCenter(maximumNumberOfEdgesPerNode, 0.0);
-        std::vector<double> rightYFaceCenter(maximumNumberOfEdgesPerNode, 0.0);
-        std::vector<double> xis(maximumNumberOfEdgesPerNode, 0.0);
-        std::vector<double> etas(maximumNumberOfEdgesPerNode, 0.0);
-        std::vector<double> xiNodes(m_maximumNumConnectedNodes, 0.0);
-        std::vector<double> etaNodes(m_maximumNumConnectedNodes, 0.0);
+        // initialize caches
+        std::fill(m_boundaryEdges.begin(), m_boundaryEdges.end(), -1);
+        std::fill(m_leftXFaceCenter.begin(), m_leftXFaceCenter.end(), 0.0);
+        std::fill(m_leftYFaceCenter.begin(), m_leftYFaceCenter.end(), 0.0);
+        std::fill(m_rightXFaceCenter.begin(), m_rightXFaceCenter.end(), 0.0);
+        std::fill(m_rightYFaceCenter.begin(), m_rightYFaceCenter.end(),0.0);
+        std::fill(m_xis.begin(), m_xis.end(), 0.0);
+        std::fill(m_etas.begin(), m_etas.end(), 0.0);
+
         int faceRightIndex = 0;
         int faceLeftIndex = 0;
         double xiBoundary = 0.0;
@@ -505,13 +520,13 @@ private:
             double alpha_x = 0.0;
             if (mesh.m_edgesNumFaces[edgeIndex] == 1)
             {
-                if (boundaryEdges[0] < 0)
+                if (m_boundaryEdges[0] < 0)
                 {
-                    boundaryEdges[0] = f;
+                    m_boundaryEdges[0] = f;
                 }
                 else
                 {
-                    boundaryEdges[1] = f;
+                    m_boundaryEdges[1] = f;
                 }
 
                 // find the boundary cell in the icell array assume boundary at the right
@@ -522,8 +537,8 @@ private:
                 {
                     leftXi += xi[i] * Az[faceLeftIndex][i];
                     leftEta += eta[i] * Az[faceLeftIndex][i];
-                    leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceLeftIndex][i];
-                    leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceLeftIndex][i];
+                    m_leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceLeftIndex][i];
+                    m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceLeftIndex][i];
                 }
 
 
@@ -539,8 +554,8 @@ private:
 
                 double xBc = (1.0 - alpha) * mesh.m_nodes[currentNode].x + alpha * mesh.m_nodes[otherNode].x;
                 double yBc = (1.0 - alpha) * mesh.m_nodes[currentNode].y + alpha * mesh.m_nodes[otherNode].y;
-                rightXFaceCenter[f] = 2.0 * xBc - leftXFaceCenter[f];
-                rightYFaceCenter[f] = 2.0 * yBc - leftYFaceCenter[f];
+                m_leftYFaceCenter[f] = 2.0 * xBc - m_leftXFaceCenter[f];
+                m_rightYFaceCenter[f] = 2.0 * yBc - m_leftYFaceCenter[f];
             }
             else
             {
@@ -568,15 +583,15 @@ private:
                     rightXi += xi[i] * Az[faceRightIndex][i];
                     rightEta += eta[i] * Az[faceRightIndex][i];
 
-                    leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceLeftIndex][i];
-                    leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceLeftIndex][i];
-                    rightXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceRightIndex][i];
-                    rightYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceRightIndex][i];
+                    m_leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceLeftIndex][i];
+                    m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceLeftIndex][i];
+                    m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceRightIndex][i];
+                    m_rightYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceRightIndex][i];
                 }
             }
 
-            xis[f] = 0.5 * (leftXi + rightXi);
-            etas[f] = 0.5 * (leftEta + rightEta);
+            m_xis[f] = 0.5 * (leftXi + rightXi);
+            m_etas[f] = 0.5 * (leftEta + rightEta);
 
             double exiLR = rightXi - leftXi;
             double eetaLR = rightEta - leftEta;
@@ -637,17 +652,15 @@ private:
                 Diveta[f] = 0.5 * Diveta[f] - xiBoundary * leftRightSwap;
             }
 
-            xiNodes[f + 1] = xiOne;
-            etaNodes[f + 1] = etaOne;
+
         }
 
-        xiNodes[0] = 0.0;
-        etaNodes[0] = 0.0;
+
 
         double volxi = 0.0;
         for (int i = 0; i < mesh.m_nodesNumEdges[currentNode]; i++)
         {
-            volxi += 0.5 * (Divxi[i] * xis[i] + Diveta[i] * etas[i]);
+            volxi += 0.5 * (Divxi[i] * m_xis[i] + Diveta[i] * m_etas[i]);
         }
         if (volxi == 0.0)volxi = 1.0;
 
