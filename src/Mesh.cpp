@@ -28,7 +28,7 @@ Mesh<Point>::Mesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Po
     NodeAdministration();
     SortEdgesInCounterClockWiseOrder();
 
-    for(int numEdgesPerFace =3; numEdgesPerFace<= GridGeom::maximumNumberOfEdgesPerNode; numEdgesPerFace++)
+    for(int numEdgesPerFace =3; numEdgesPerFace<= 4; numEdgesPerFace++)
     {
         findFaces(numEdgesPerFace);
     }
@@ -131,7 +131,7 @@ void Mesh<Point>::findFaces(const int& numEdges)
 {
 
     std::vector<size_t> foundEdges(numEdges);
-    std::vector<size_t> foundNodes(numEdges); // close the
+    std::vector<size_t> foundNodes(numEdges); 
 
     for (size_t node = 0; node < m_nodes.size(); node++)
     {

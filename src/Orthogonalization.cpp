@@ -1,3 +1,4 @@
+// TODO: check from line 252 at 18/09/2019: there still are differences in the coordinates
 #ifndef ORTHOGONALIZATION_CPP
 #define ORTHOGONALIZATION_CPP
 
@@ -7,8 +8,6 @@
 #include <numeric>
 #include "Operations.cpp"
 #include "Mesh.hpp"
-
-#include <boost/numeric/ublas/matrix.hpp>
 
 using namespace GridGeom;
 
@@ -52,9 +51,9 @@ public:
 
     // run-time options
     bool m_keepCircumcenters = false;
-    double m_atpf = 0.975;                            // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
-    double m_atpf_boundary = 1.0;                     // minimum ATPF on the boundary
-    double m_smoothorarea = 1.0;                      //Factor between smoother(1.0) and area - homogenizer(0.0)
+    double m_atpf = 0.975;                               // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
+    double m_atpf_boundary = 1.0;                        // minimum ATPF on the boundary
+    double m_smoothorarea = 1.0;                         // Factor between smoother(1.0) and area - homogenizer(0.0)
 
     bool initialize(const Mesh<Point>& mesh)
     {
@@ -88,12 +87,14 @@ public:
         //compute aspect ratios
         aspectRatio(mesh);
 
-        //compute weights
-        computeWeights(mesh);
+        //compute weights orthogonalizer
+        computeWeightsOrthogonalizer(mesh);
 
-        computeOperators(mesh);
+        //compute weights operators for smoother
+        computeSmootherOperators(mesh);
 
-        computeWeightsSmooth(mesh);
+        //compute weights smoother
+        computeWeightsSmoother(mesh);
 
         return true;
     } 
@@ -112,20 +113,24 @@ public:
         double mumax = (1.0 - m_smoothorarea) * 0.5;
         double mu = std::min(1e-2, mumax);
         std::vector<double> rightHandSide(2);
-        std::vector<double> increments(2);
+        std::vector<double> increments(2); 
         for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
         {
             for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
             {
                 for (int n = 0; n < mesh.m_nodes.size(); n++)
                 {
-                    if ((m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2) || m_nodesTypes[n] < 2)
+                    if ((m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
                     {
                         continue;
                     }
                     if (m_keepCircumcenters != false && (mesh.m_nodesNumEdges[n] != 3 || mesh.m_nodesNumEdges[n] != 1))
                     {
                         continue;
+                    }
+                    if (n == 7)
+                    {
+                        std::cout << "debug" << std::endl;
                     }
 
                     double atpfLoc = m_nodesTypes[n] == 2 ? std::max(m_atpf_boundary, m_atpf) : m_atpf;
@@ -150,13 +155,13 @@ public:
                         // Smoother
                         if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && !ww2x.empty() && !ww2y.empty())
                         {
-                            wwx = atpfLoc * (mumat * ww2x[n][nn] + m_ww2Global[n][nn]);
-                            wwy = atpfLoc * (mumat * ww2y[n][nn] + m_ww2Global[n][nn]);
+                            wwx = atpf1Loc * (mumat * ww2x[n][nn] + m_ww2Global[n][nn]);
+                            wwy = atpf1Loc * (mumat * ww2y[n][nn] + m_ww2Global[n][nn]);
                         }
                         else if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && ww2x.empty() && ww2y.empty())
                         {
-                            wwx = atpfLoc * m_ww2Global[n][nn];
-                            wwy = atpfLoc * m_ww2Global[n][nn];
+                            wwx = atpf1Loc * m_ww2Global[n][nn];
+                            wwy = atpf1Loc * m_ww2Global[n][nn];
                         }
 
                         // Orthogonalizer
@@ -175,6 +180,8 @@ public:
                         Operations<Point>::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments);
                     }
 
+
+
                     // combine rhs
                     rightHandSide[0] = atpfLoc * m_rightHandSide[n][0];
                     rightHandSide[1] = atpfLoc * m_rightHandSide[n][1];
@@ -184,6 +191,8 @@ public:
                         dx0 = (dx0 + rightHandSide[0]) / increments[0];
                         dy0 = (dy0 + rightHandSide[1]) / increments[1];
                     }
+
+
 
                     Operations<Point>::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n]);
                 }
@@ -226,13 +235,22 @@ private:
     std::vector<double> m_xis;
     std::vector<double> m_etas;
 
-    bool computeWeightsSmooth(const Mesh<Point>& mesh)
+    // orthonet_compweights_smooth
+    // inverse - mapping elliptic smoother
+    // computes weight ww in :
+    // sum_kk ww(kk, k0)* x1(kk2(kk, k0)) = 0
+    // sum_kk ww(kk, k0) * y1(kk2(kk, k0)) = 0
+    bool computeWeightsSmoother(const Mesh<Point>& mesh)
     {
         std::vector<std::vector<double>> J(mesh.m_nodes.size(), std::vector<double>(4, 0)); //Jacobian
         std::vector<std::vector<double>> Ginv(mesh.m_nodes.size(), std::vector<double>(4, 0)); //mesh monitor matrices
 
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
+            if (n == 7)
+            {
+                std::cout << "debug" << std::endl;
+            }
             if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2 && m_nodesTypes[n] != 4) continue;
             int currentTopology = m_nodeTopologyMapping[n];
             Operations<Point>::orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
@@ -261,6 +279,11 @@ private:
         std::vector<double> GetaByDiveta(m_maximumNumConnectedNodes, 0.0);
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
+            if(n==7)
+            {
+                std::cout << "Debug " << std::endl;
+            }
+
             if (mesh.m_nodesNumEdges[n] < 2) continue;
 
             // Internal nodes and boundary nodes
@@ -356,8 +379,8 @@ private:
         }
         return true;
     }
-
-    bool computeOperators(const Mesh<Point>& mesh)
+    
+    bool computeSmootherOperators(const Mesh<Point>& mesh)
     {
         //allocate small administration arrays only once
         std::vector<int> sharedFaces(maximumNumberOfEdgesPerNode, -1); //icell
@@ -373,7 +396,7 @@ private:
         {
             int numSharedFaces = 0;
             int numConnectedNodes = 0;
-            orthogonalizationAdministration(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping);
+            orthogonalizationAdministration(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping); 
             computeXiEta(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
             saveTopology(n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
             m_maximumNumConnectedNodes = std::max(m_maximumNumConnectedNodes, numConnectedNodes);
@@ -423,7 +446,16 @@ private:
         return true;
     }
 
-    //compute
+    //orthonet_comp_operators
+    //compute coefficientmatrix G of gradient at link
+    //(d Phi / d xi)_l = sum_{ k = 1 } ^ nmk2 Gxi_k, l  Phi_k
+    //(d Phi / d eta)_l = sum_{ k = 1 } ^ nmk2 Geta_k, l Phi_k
+    //compute coefficientmatrix Div of gradient in node
+    //d Phi / d xi = sum_{ l = 1 } ^ nmk Divxi_l Phi_l
+    //d Phi / d eta = sum_{ l = 1 } ^ nmk Diveta_l Phi_l
+    //compute coefficientmatrix Az of cell - center in cell
+    //Phi_c = sum_{ l - 1 } ^ nmk Az_l Phi_l
+    //Gxi, Geta, Divxi, Divetaand Az are stored in(type tops) op
     bool computeOperatorsNode(const Mesh<Point>& mesh, const int currentNode, 
         const size_t& numConnectedNodes, const std::vector<size_t>& connectedNodes,
         const size_t& numSharedFaces, const std::vector<int>& sharedFaces,
@@ -434,22 +466,37 @@ private:
         // the current topology index
         int topologyIndex = m_nodeTopologyMapping[currentNode];
 
-        // move to avoid deep copies
-        auto Az = std::move(m_Az[topologyIndex]);
-        auto Gxi = std::move(m_Gxi[topologyIndex]);
-        auto Geta = std::move(m_Geta[topologyIndex]);
-        auto Divxi = std::move(m_Divxi[topologyIndex]);
-        auto Diveta = std::move(m_Diveta[topologyIndex]);
-        auto Jxi = std::move(m_Jxi[topologyIndex]);
-        auto Jeta = std::move(m_Jeta[topologyIndex]);
-        auto ww2 = std::move(m_ww2[topologyIndex]);
+        // TODO: AVOID DEEP COPIES
+        auto Az = m_Az[topologyIndex];
+        auto Gxi = m_Gxi[topologyIndex];
+        auto Geta = m_Geta[topologyIndex];
+        auto Divxi = m_Divxi[topologyIndex];
+        auto Diveta = m_Diveta[topologyIndex];
+        auto Jxi = m_Jxi[topologyIndex];
+        auto Jeta = m_Jeta[topologyIndex];
+        auto ww2 = m_ww2[topologyIndex];
+
+
+
+        if (currentNode == 7)
+        {
+            std::cout << " Debug" << std::endl;
+        }
 
         for (int f = 0; f < numSharedFaces; f++)
         {
+            if (f == 4)
+            {
+                std::cout << " Debug" << std::endl;
+            }
             if (sharedFaces[f] < 0 || m_nodesTypes[currentNode] == 3) continue;
 
             int edgeLeft = f + 1;
-            int edgeRight = edgeLeft + 1; if (edgeRight >= numSharedFaces)edgeRight -= numSharedFaces;
+            int edgeRight = edgeLeft + 1; 
+            if (edgeRight > numSharedFaces)
+            {
+                edgeRight -= numSharedFaces;
+            }
 
             double edgeLeftSquaredDistance = std::sqrt(xi[edgeLeft] * xi[edgeLeft] + eta[edgeLeft] * eta[edgeLeft] + 1e-16);
             double edgeRightSquaredDistance = std::sqrt(xi[edgeRight] * xi[edgeRight] + eta[edgeRight] * eta[edgeRight] + 1e-16);
@@ -495,8 +542,18 @@ private:
         int faceLeftIndex = 0;
         double xiBoundary = 0.0;
         double etaBoundary = 0.0;
+
+        if (currentNode==7)
+        {
+            std::cout << " Debug" << std::endl;
+        }
         for (int f = 0; f < numSharedFaces; f++)
         {
+            if (f == 4)
+            {
+                std::cout << " Debug" << std::endl;
+            }
+
             size_t edgeIndex = mesh.m_nodesEdges[currentNode][f];
             int otherNode = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
             int leftFace = mesh.m_edgesFaces[edgeIndex][0];
@@ -676,7 +733,11 @@ private:
             // internal edge
             if (mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 2)
             {
-                int rightNode = f - 1; if (rightNode < 0)rightNode += rightNode + mesh.m_nodesEdges[currentNode].size();
+                int rightNode = f - 1; 
+                if (rightNode < 0)
+                {
+                    rightNode += mesh.m_nodesNumEdges[currentNode];
+                }
                 for (int i = 0; i < numConnectedNodes; i++)
                 {
                     Jxi[i] += Divxi[f] * 0.5 * (Az[f][i] + Az[rightNode][i]);
@@ -702,19 +763,20 @@ private:
             }
         }
 
-        // move back
-        m_Az[topologyIndex] = std::move(Az);
-        m_Gxi[topologyIndex] = std::move(Gxi);
-        m_Geta[topologyIndex] = std::move(Geta);
-        m_Divxi[topologyIndex] = std::move(Divxi);
-        m_Diveta[topologyIndex] = std::move(Diveta);
-        m_Jxi[topologyIndex] = std::move(Jxi);
-        m_Jeta[topologyIndex] = std::move(Jeta);
-        m_ww2[topologyIndex] = std::move(ww2);
+        m_Az[topologyIndex] = Az;
+        m_Gxi[topologyIndex] = Gxi;
+        m_Geta[topologyIndex] = Geta;
+        m_Divxi[topologyIndex] = Divxi;
+        m_Diveta[topologyIndex] = Diveta;
+        m_Jxi[topologyIndex] = Jxi;
+        m_Jeta[topologyIndex] = Jeta;
+        m_ww2[topologyIndex] = ww2;
 
         return true;
     }
 
+    //orthonet_assign_xieta
+    // assign xiand eta to all nodes in the stencil
     bool computeXiEta(const Mesh<Point>& mesh,
         const int currentNode,
         const std::vector<int>& sharedFaces,
@@ -733,6 +795,13 @@ private:
         std::vector<bool> isSquareFace(numSharedFaces, false);
 
         int numNonStencilQuad = 0;
+
+        if (currentNode == 7)
+        {
+            std::cout << "Debug" << std::endl;
+        }
+
+
         //loop over the connected edges
         for (int f = 0; f < numSharedFaces; f++)
         {
@@ -764,6 +833,7 @@ private:
             }
 
             //Compute optimal angle thetaSquare based on the node type
+            int leftFaceIndex = f - 1; if (leftFaceIndex < 0) leftFaceIndex = leftFaceIndex + numSharedFaces;
             if (isSquare)
             {
                 if (m_nodesTypes[nextNode] == 1 || m_nodesTypes[nextNode] == 4)
@@ -783,20 +853,19 @@ private:
                     //corner node
                     thetaSquare[f + 1] = 0.5 * M_PI;
                 }
-            }
 
-            int leftFaceIndex = f - 1; if (leftFaceIndex < 0) leftFaceIndex = leftFaceIndex + numSharedFaces;
-            if (sharedFaces[f] > 1)
-            {
-                if (m_faceNumNodes[sharedFaces[f]] == 4) numNonStencilQuad += 1;
-            }
-            if (sharedFaces[leftFaceIndex] > 1)
-            {
-                if (m_faceNumNodes[sharedFaces[leftFaceIndex]] == 4) numNonStencilQuad += 1;
-            }
-            if (numNonStencilQuad > 3)
-            {
-                isSquare = false;
+                if (sharedFaces[f] > 1)
+                {
+                    if (m_faceNumNodes[sharedFaces[f]] == 4) numNonStencilQuad += 1;
+                }
+                if (sharedFaces[leftFaceIndex] > 1)
+                {
+                    if (m_faceNumNodes[sharedFaces[leftFaceIndex]] == 4) numNonStencilQuad += 1;
+                }
+                if (numNonStencilQuad > 3)
+                {
+                    isSquare = false;
+                }
             }
 
             isSquareFace[f] = isSquareFace[f] || isSquare;
@@ -837,7 +906,11 @@ private:
 
             if (isSquareFace[f] || numFaceNodes == 4)
             {
-                int nextNode = f + 2; if (nextNode > numSharedFaces) nextNode = nextNode - numSharedFaces;
+                int nextNode = f + 2; 
+                if (nextNode > numSharedFaces) 
+                {
+                    nextNode = nextNode - numSharedFaces;
+                }
                 bool isBoundaryEdge = mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 1;
                 phi = optimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], isBoundaryEdge);
                 if (numFaceNodes == 3)
@@ -863,9 +936,9 @@ private:
         double factor = 1.0;
         if (m_nodesTypes[currentNode] == 2) factor = 0.5;
         if (m_nodesTypes[currentNode] == 3) factor = 0.25;
-        double mu = 0.0;
-        double muSquaredTriangles = 0.0;
-        double muTriangles = 0.0;
+        double mu = 1.0;
+        double muSquaredTriangles = 1.0;
+        double muTriangles = 1.0;
         double minPhi = 15.0 / 180.0 * M_PI;
         if (numTriangles > 0)
         {
@@ -946,7 +1019,7 @@ private:
             dTheta = 2.0 * M_PI / double(numFaceNodes);
 
             // orientation of the face (necessary for folded cells)
-            int previousNode = nodeIndex + 1; if (previousNode > numFaceNodes) previousNode -= numFaceNodes;
+            int previousNode = nodeIndex + 1; if (previousNode >= numFaceNodes) previousNode -= numFaceNodes; 
             int nextNode = nodeIndex - 1; if (nextNode < 0) nextNode += numFaceNodes;
             if ((faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode]) == -1 ||
                 (faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode]) == mesh.m_nodesNumEdges[currentNode])
@@ -1125,11 +1198,11 @@ private:
         return true;
     }
 
-    double optimalEdgeAngle(const int numFaceNodes, const double theta1 = doubleMissingValue, const double theta2 = doubleMissingValue, bool isBoundaryEdge = false)
+    double optimalEdgeAngle(const int numFaceNodes, const double theta1 = -1, const double theta2 = -1, bool isBoundaryEdge = false)
     {
         double angle = M_PI * (1 - 2.0 / double(numFaceNodes));
 
-        if (theta1 != doubleMissingValue && theta2 != doubleMissingValue && numFaceNodes == 3)
+        if (theta1 != -1 && theta2 != -1 && numFaceNodes == 3)
         {
             angle = 0.25 * M_PI;
             if (theta1 + theta2 == M_PI && !isBoundaryEdge)
@@ -1140,6 +1213,8 @@ private:
         return angle;
     }
 
+    // compute link - based aspect ratios
+    // orthonet_compute_aspect
     bool aspectRatio(const Mesh<Point>& mesh)
     {
         std::vector<std::vector<double>> averageEdgesLength(mesh.m_edges.size(), std::vector<double>(2, doubleMissingValue));
@@ -1335,8 +1410,11 @@ private:
         return index;
     }
 
-    //TODO: Unit test me please
-    bool computeWeights(const Mesh<Point>& mesh)
+    //orthonet_compweights
+    // compute weights wwand right - hand side rhs in orthogonizer :
+    // sum_kk ww(kk, k0)* (x1(kk1(kk, k0)) - x1(k0)) = rhs(1, k0)
+    // sum_kk ww(kk, k0) * (y1(kk1(kk, k0)) - y1(k0)) = rhs(2, k0)
+    bool computeWeightsOrthogonalizer(const Mesh<Point>& mesh)
     {
         double localOrthogonalizationToSmoothingFactor = 1.0;
         double localOrthogonalizationToSmoothingFactorSymmetric = 1.0 - localOrthogonalizationToSmoothingFactor;
@@ -1345,9 +1423,14 @@ private:
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
 
+            if(n==7)
+            {
+                std::cout << "debug" << std::endl;
+            }
+
             if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2)
             {
-                continue;
+                continue; 
             }
 
             for (size_t nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
