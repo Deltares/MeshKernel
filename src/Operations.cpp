@@ -235,6 +235,7 @@ namespace GridGeom
             }
         }
 
+        //dbdistance
         static double distance(const cartesianPoint& firstPoint, const cartesianPoint& secondPoint)
         {
             double dx = getDx(firstPoint, secondPoint);
@@ -246,6 +247,22 @@ namespace GridGeom
                 distance = sqrt(squaredDistance);
             }
             return distance;
+        }
+
+        //dLINEDIS3
+        static double distanceFromLine(const cartesianPoint& p3, const cartesianPoint& p1, const cartesianPoint& p2, cartesianPoint& normalPoint, double& rlout)
+        {
+            double dis = 0.0;
+            double r2 = distance(p2, p1);
+            if (r2 != 0.0)
+            {
+                double rl = (getDx(p1, p3) * getDx(p1, p2) + getDy(p1, p3) * getDy(p1, p2)) / (r2 * r2);
+                rlout = std::max(std::min(1.0, rl), 0.0);
+                normalPoint.x = p1.x + rlout * (p2.x - p1.x);
+                normalPoint.y = p1.y + rlout * (p2.y - p1.y);
+                dis = distance(p3, normalPoint);
+            }
+            return dis;
         }
 
         //out product of two segments
@@ -465,6 +482,14 @@ namespace GridGeom
         {
             return -1.0;
         }
+
+        //dLINEDIS3
+        static double distanceFromLine(const sphericalPoint& p3, const sphericalPoint& p1, const sphericalPoint& p2, sphericalPoint& normalPoint, double& rlout)
+        {
+            //TODO: implement me
+            return -1.0;
+        }
+
 
         //out product of two segments
         static double outerProductTwoSegments(const sphericalPoint& firstPointFirstSegment, const sphericalPoint& secondPointFirstSegment, const sphericalPoint& firstPointSecondSegment, const sphericalPoint& secondPointSecondSegment)
