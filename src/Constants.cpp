@@ -28,8 +28,9 @@ namespace GridGeom
     static constexpr double minimumEdgeLength = 1e-4;
     static constexpr double curvilinearToOrthogonalRatio= 0.5; //curvi - linear - like(0.0) or pure(1.0) orthogonalisation
     static constexpr double orthogonalizationToSmoothingFactor = 0.975; //Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
-    static constexpr int orthogonalizationBoundaryIterations = 25; // Nr.of boundary iterations in grid / net orthogonalisation. (within ITATP)
-    static constexpr int orthogonalizationInnerIterations = 25;    // Nr.of inner    iterations in grid / net orthogonalisation. (within ITBND)
+    static constexpr int orthogonalizationOuterIterations = 2; // Nr.of outer    iterations in grid / net orthogonalisation.
+    static constexpr int orthogonalizationBoundaryIterations = 25; // Nr.of boundary iterations in grid / net orthogonalisation. (within ITBND)
+    static constexpr int orthogonalizationInnerIterations = 25;    // Nr.of inner    iterations in grid / net orthogonalisation. (within ITIN)
     static constexpr double relaxationFactorOrthogonalizationUpdate = 0.75;
 }
 

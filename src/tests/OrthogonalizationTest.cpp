@@ -30,8 +30,9 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     std::vector<double> aspectRatio;
     orthogonalization.initialize(mesh);
 
-    constexpr  double tolerance = 1e-8;
-    constexpr  double largeTolerance = 10.0;
+    constexpr double tolerance = 1e-8;
+    constexpr double largeTolerance = 10.0;
+
     //centers of mass
     ASSERT_NEAR(13.333333333, mesh.m_facesMasscenters[0].x, tolerance);
     ASSERT_NEAR(3.333333333, mesh.m_facesMasscenters[0].y, tolerance);
@@ -332,9 +333,31 @@ TEST(OrthogonalizationTest, TestOrthogonalizationTriangularGrid)
     orthogonalization.initialize(mesh);
 
     orthogonalization.iterate(mesh);
+
+    constexpr double tolerance = 1e-2;
+
+    ASSERT_NEAR(325.590101919525, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(229.213730481198, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(263.439319753147, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(429.191105834504, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(535.865215426468, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(503.753784179688, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(354.048340705929, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(346.790050854504, mesh.m_nodes[7].x, tolerance);
+    ASSERT_NEAR(315.030130405285, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(424.314957449766, mesh.m_nodes[9].x, tolerance);
+
+    ASSERT_NEAR(455.319334078551, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(362.573521507281, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(241.096458631763, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(211.483073921775, mesh.m_nodes[3].y, tolerance);
+    ASSERT_NEAR(311.401495506714, mesh.m_nodes[4].y, tolerance);
+    ASSERT_NEAR(432.379974365234, mesh.m_nodes[5].y, tolerance);
+    ASSERT_NEAR(458.064836627594, mesh.m_nodes[6].y, tolerance);
+    ASSERT_NEAR(405.311585650679, mesh.m_nodes[7].y, tolerance);
+    ASSERT_NEAR(319.612138503550, mesh.m_nodes[8].y, tolerance);
+    ASSERT_NEAR(327.102805172725, mesh.m_nodes[9].y, tolerance);
 }
-
-
 
 TEST(OrthogonalizationTest, TestOrthogonalizationFourQuads)
 {
