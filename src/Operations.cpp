@@ -307,14 +307,14 @@ namespace GridGeom
             return true;
         }
 
-        static bool orthogonalizationComputeCoordinates(double dx0, double dy0, cartesianPoint& point)
+        static bool orthogonalizationComputeCoordinates(double dx0, double dy0, const cartesianPoint& point, cartesianPoint& updatedPoint)
         {
-            double x0 = point.x + relaxationFactorOrthogonalizationUpdate * dx0;
-            double y0 = point.y + relaxationFactorOrthogonalizationUpdate * dy0;
+            double x0 = point.x + dx0;
+            double y0 = point.y + dy0;
             static constexpr double relaxationFactorCoordinates = 1.0 - relaxationFactorOrthogonalizationUpdate;
 
-            point.x = relaxationFactorOrthogonalizationUpdate * x0 + relaxationFactorCoordinates * point.x;
-            point.y = relaxationFactorOrthogonalizationUpdate * y0 + relaxationFactorCoordinates * point.y;
+            updatedPoint.x = relaxationFactorOrthogonalizationUpdate * x0 + relaxationFactorCoordinates * point.x;
+            updatedPoint.y = relaxationFactorOrthogonalizationUpdate * y0 + relaxationFactorCoordinates * point.y;
 
             return true;
         }
@@ -541,7 +541,7 @@ namespace GridGeom
             return true;
         }
 
-        static inline bool orthogonalizationComputeCoordinates(double dx0, double dy0, sphericalPoint& point)
+        static bool orthogonalizationComputeCoordinates(double dx0, double dy0, const sphericalPoint& point, sphericalPoint& updatedPoint)
         {
             //TODO: implement
             //if (jsferic.eq.1 . and .jasfer3D.eq.1) then
