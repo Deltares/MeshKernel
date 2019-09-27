@@ -19,6 +19,7 @@ src/main.cpp -text
 src/tests/GridGeomTest.cpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/OrthogonalizationTest.cpp -text
+tests/triangular_grid_test_orthogonalization_net.nc -text
 thirdParty/eigen/.hg_archival.txt -text
 thirdParty/eigen/.hgeol -text
 thirdParty/eigen/.hgignore -text

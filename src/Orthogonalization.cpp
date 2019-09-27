@@ -59,7 +59,7 @@ public:
     {
         m_maxNumNeighbours = *(std::max_element(mesh.m_nodesNumEdges.begin(), mesh.m_nodesNumEdges.end()));
         m_maxNumNeighbours += 1;
-        m_nodesNodes.resize(mesh.m_nodes.size(), std::vector<size_t>(m_maxNumNeighbours, 0));
+        m_nodesNodes.resize(mesh.m_nodes.size(), std::vector<int>(m_maxNumNeighbours, intMissingValue));
         m_weights.resize(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
         m_rightHandSide.resize(mesh.m_nodes.size(), std::vector<double>(2, 0.0));
         m_aspectRatios.resize(mesh.m_edges.size(), 0.0);
@@ -84,18 +84,6 @@ public:
         // computes the number of nodes for each face
         computeFacesNumEdges(mesh);
 
-        //compute aspect ratios
-        aspectRatio(mesh);
-
-        //compute weights orthogonalizer
-        computeWeightsOrthogonalizer(mesh);
-
-        //compute weights operators for smoother
-        computeSmootherOperators(mesh);
-
-        //compute weights smoother
-        computeWeightsSmoother(mesh);
-
         return true;
     } 
 
@@ -119,106 +107,120 @@ public:
         // in this case the nearest point is the point itself
         std::vector<int> nearestPoints(mesh.m_nodes.size());
         std::iota(nearestPoints.begin(), nearestPoints.end(), 0);
-   
-        for (size_t outerIter = 0; outerIter < orthogonalizationBoundaryIterations; outerIter++)
+
+        // back-up original nodes, for projection on original mesh boundary
+        std::vector<Point> originalNodes{mesh.m_nodes};
+
+        for (size_t outerIter = 0; outerIter < orthogonalizationOuterIterations; outerIter++)
         {
-            for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
+            //compute aspect ratios
+            aspectRatio(mesh);
+
+            //compute weights orthogonalizer
+            computeWeightsOrthogonalizer(mesh);
+
+            //compute weights operators for smoother
+            computeSmootherOperators(mesh);
+
+            //compute weights smoother
+            computeWeightsSmoother(mesh);
+
+            for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
             {
-                for (int n = 0; n < mesh.m_nodes.size(); n++)
+                for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
                 {
-                    if ((m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
+                    for (int n = 0; n < mesh.m_nodes.size(); n++)
                     {
-                        continue;
-                    }
-                    if (m_keepCircumcenters != false && (mesh.m_nodesNumEdges[n] != 3 || mesh.m_nodesNumEdges[n] != 1))
-                    {
-                        continue;
-                    }
-                    if (n == 7)
-                    {
-                        std::cout << "debug" << std::endl;
-                    }
-
-                    double atpfLoc = m_nodesTypes[n] == 2 ? std::max(m_atpf_boundary, m_atpf) : m_atpf;
-                    double atpf1Loc = 1.0 - atpfLoc;
-                    
-                    double mumat = mu;
-                    if ((!ww2x.empty() && ww2x[n][0] != 0.0) && (!ww2y.empty() && ww2y[n][0] != 0.0))
-                    {
-                        mumat = mu * m_ww2Global[n][0] / std::max(ww2x[n][0], ww2y[n][0]);
-                    }
-
-                    int maxnn = std::max(mesh.m_nodesNumEdges[n] + 1, m_numConnectedNodes[n]);
-                    double dx0 = 0.0;
-                    double dy0 = 0.0;
-                    increments[0] = 0.0;
-                    increments[1] = 0.0;
-                    for (int nn = 1; nn < maxnn; nn++)
-                    {
-                        double wwx = 0.0;
-                        double wwy = 0.0;
-
-                        // Smoother
-                        if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && !ww2x.empty() && !ww2y.empty())
+                        if ((m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
                         {
-                            wwx = atpf1Loc * (mumat * ww2x[n][nn] + m_ww2Global[n][nn]);
-                            wwy = atpf1Loc * (mumat * ww2y[n][nn] + m_ww2Global[n][nn]);
+                            continue;
                         }
-                        else if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && ww2x.empty() && ww2y.empty())
+                        if (m_keepCircumcenters != false && (mesh.m_nodesNumEdges[n] != 3 || mesh.m_nodesNumEdges[n] != 1))
                         {
-                            wwx = atpf1Loc * m_ww2Global[n][nn];
-                            wwy = atpf1Loc * m_ww2Global[n][nn];
+                            continue;
                         }
 
-                        // Orthogonalizer
-                        int k1;
-                        if (nn < mesh.m_nodesNumEdges[n] + 1)
+                        double atpfLoc = m_nodesTypes[n] == 2 ? std::max(m_atpf_boundary, m_atpf) : m_atpf;
+                        double atpf1Loc = 1.0 - atpfLoc;
+
+                        double mumat = mu;
+                        if ((!ww2x.empty() && ww2x[n][0] != 0.0) && (!ww2y.empty() && ww2y[n][0] != 0.0))
                         {
-                            wwx += atpfLoc * m_weights[n][nn - 1];
-                            wwy += atpfLoc * m_weights[n][nn - 1];
-                            k1 = m_nodesNodes[n][nn - 1];
-                        }
-                        else
-                        {
-                            k1 = m_connectedNodes[n][nn];
+                            mumat = mu * m_ww2Global[n][0] / std::max(ww2x[n][0], ww2y[n][0]);
                         }
 
-                        Operations<Point>::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments);
-                    }
+                        int maxnn = std::max(mesh.m_nodesNumEdges[n] + 1, m_numConnectedNodes[n]);
+                        double dx0 = 0.0;
+                        double dy0 = 0.0;
+                        increments[0] = 0.0;
+                        increments[1] = 0.0;
+                        for (int nn = 1; nn < maxnn; nn++)
+                        {
+                            double wwx = 0.0;
+                            double wwy = 0.0;
+
+                            // Smoother
+                            if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && !ww2x.empty() && !ww2y.empty())
+                            {
+                                wwx = atpf1Loc * (mumat * ww2x[n][nn] + m_ww2Global[n][nn]);
+                                wwy = atpf1Loc * (mumat * ww2y[n][nn] + m_ww2Global[n][nn]);
+                            }
+                            else if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && ww2x.empty() && ww2y.empty())
+                            {
+                                wwx = atpf1Loc * m_ww2Global[n][nn];
+                                wwy = atpf1Loc * m_ww2Global[n][nn];
+                            }
+
+                            // Orthogonalizer
+                            int k1;
+                            if (nn < mesh.m_nodesNumEdges[n] + 1)
+                            {
+                                wwx += atpfLoc * m_weights[n][nn - 1];
+                                wwy += atpfLoc * m_weights[n][nn - 1];
+                                k1 = m_nodesNodes[n][nn - 1];
+                            }
+                            else
+                            {
+                                k1 = m_connectedNodes[n][nn];
+                            }
+
+                            Operations<Point>::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments);
+                        }
 
 
 
-                    // combine rhs
-                    rightHandSide[0] = atpfLoc * m_rightHandSide[n][0];
-                    rightHandSide[1] = atpfLoc * m_rightHandSide[n][1];
+                        // combine rhs
+                        rightHandSide[0] = atpfLoc * m_rightHandSide[n][0];
+                        rightHandSide[1] = atpfLoc * m_rightHandSide[n][1];
 
-                    if (std::abs(increments[0]) > 1e-8 && std::abs(increments[1]) > 1e-8)
-                    {
-                        dx0 = (dx0 + rightHandSide[0]) / increments[0];
-                        dy0 = (dy0 + rightHandSide[1]) / increments[1];
-                    }
-                    Operations<Point>::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], orthogonalCoordinates[n]);
-                } // n, iteration over nodes
+                        if (std::abs(increments[0]) > 1e-8 && std::abs(increments[1]) > 1e-8)
+                        {
+                            dx0 = (dx0 + rightHandSide[0]) / increments[0];
+                            dy0 = (dy0 + rightHandSide[1]) / increments[1];
+                        }
+                        Operations<Point>::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], orthogonalCoordinates[n]);
+                    } // n, iteration over nodes
 
-                // update mesh node coordinates
-                mesh.m_nodes = orthogonalCoordinates;
+                    // update mesh node coordinates
+                    mesh.m_nodes = orthogonalCoordinates;
 
-                // project on the original net boundary
-                projectOnBoundary(mesh, nearestPoints);
+                    // project on the original net boundary
+                    projectOnBoundary(mesh, nearestPoints, originalNodes);
 
-            } // inner iter, inner iteration
+                } // inner iter, inner iteration
+
+            } // boundary iter
 
             //update mu
             mu = std::min(2.0 * mu, mumax);
 
-        } // boundary iter
-
-
-        //compute new faces circumcenters
-        if (m_keepCircumcenters != true)
-        {
-            mesh.faceCircumcenters(1.0);
-        }
+            //compute new faces circumcenters
+            if (m_keepCircumcenters != true)
+            {
+                mesh.faceCircumcenters(1.0);
+                mesh.facesAreasAndCentersOfMass();
+            }
+        }// outer iter
 
         return true;
     }
@@ -236,7 +238,7 @@ private:
     int m_maximumNumConnectedNodes = 0;
     int m_maximumNumSharedFaces = 0;
     size_t m_maxNumNeighbours;
-    std::vector< std::vector<size_t>> m_nodesNodes;            //node neighbours 
+    std::vector< std::vector<int>> m_nodesNodes;            //node neighbours 
 
     //local caches (avoid re-allocation)
     std::vector<int> m_boundaryEdges;
@@ -248,17 +250,77 @@ private:
     std::vector<double> m_etas;
 
     //orthonet_project_on_boundary: project boundary-nodes back to the boundary of an original net
-    bool projectOnBoundary(const Mesh<Point>& mesh, const std::vector<int>& nearestPoints)
+    bool projectOnBoundary(Mesh<Point>& mesh, std::vector<int>& nearestPoints, const std::vector<Point>& originalNodes)
     {
+        Point firstPoint;
+        Point secondPoint;
+        Point thirdPoint;
+        Point normalSecondPoint;
+        Point normalThirdPoint;
+        int leftNode;
+        int rightNode;
+
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
             int nearestPointIndex = nearestPoints[n];
-            if (m_nodesTypes[n] == 2 && mesh.m_nodesNumEdges[n]> 0 && mesh.m_nodesNumEdges[nearestPointIndex]>0)
+            if (m_nodesTypes[n] == 2 && mesh.m_nodesNumEdges[n] > 0 && mesh.m_nodesNumEdges[nearestPointIndex] > 0)
             {
-                // to complete!
+                firstPoint = mesh.m_nodes[n];
+                int numEdges = mesh.m_nodesNumEdges[nearestPointIndex];
+                int numNodes = 0;
+                for (size_t nn = 0; nn < numEdges; nn++)
+                {
+                    auto edgeIndex = mesh.m_nodesEdges[nearestPointIndex][nn];
+                    if (mesh.m_edgesNumFaces[edgeIndex] == 1)
+                    {
+                        numNodes++;
+                        if (numNodes == 1)
+                        {
+                            leftNode = m_nodesNodes[n][nn];
+                            if (leftNode == intMissingValue)
+                            {
+                                return false;
+                            }
+                            secondPoint = originalNodes[leftNode];
+                        }
+                        else if (numNodes == 2)
+                        {
+                            rightNode = m_nodesNodes[n][nn];
+                            if (rightNode == intMissingValue)
+                            {
+                                return false;
+                            }
+                            thirdPoint = originalNodes[rightNode];
+                        }
+                    }
+                }
 
+                //Project the moved boundary point back onto the closest ORIGINAL edge(netlink) (either between 0 and 2 or 0 and 3)
+                double rl2;
+                double dis2 = Operations<Point>::distanceFromLine(firstPoint, originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2);
+
+                double rl3;
+                double dis3 = Operations<Point>::distanceFromLine(firstPoint, originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3);
+
+                if (dis2 < dis3) 
+                {
+                    mesh.m_nodes[n] = normalSecondPoint;
+                    if (rl2 > 0.5 && m_nodesTypes[n] != 3) 
+                    {
+                        nearestPoints[n] = leftNode;
+                    }
+                }
+                else 
+                {
+                    mesh.m_nodes[n] = normalThirdPoint;
+                    if (rl3 > 0.5 && m_nodesTypes[n] != 3)
+                    {
+                        nearestPoints[n] = rightNode;
+                    }
+                }
             }
         }
+        return true;
     }
 
 
@@ -1417,14 +1479,10 @@ private:
         double localOrthogonalizationToSmoothingFactorSymmetric = 1.0 - localOrthogonalizationToSmoothingFactor;
         constexpr double mu = 1.0;
         Point normal;
+
+        std::fill(m_rightHandSide.begin(), m_rightHandSide.end(), std::vector<double>(2, 0.0));
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
-
-            if(n==7)
-            {
-                std::cout << "debug" << std::endl;
-            }
-
             if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2)
             {
                 continue; 
