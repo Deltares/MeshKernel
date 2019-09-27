@@ -113,8 +113,14 @@ public:
         double mumax = (1.0 - m_smoothorarea) * 0.5;
         double mu = std::min(1e-2, mumax);
         std::vector<double> rightHandSide(2);
-        std::vector<double> increments(2); 
-        for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
+        std::vector<double> increments(2);
+        std::vector<Point> orthogonalCoordinates(mesh.m_nodes.size());
+
+        // in this case the nearest point is the point itself
+        std::vector<int> nearestPoints(mesh.m_nodes.size());
+        std::iota(nearestPoints.begin(), nearestPoints.end(), 0);
+   
+        for (size_t outerIter = 0; outerIter < orthogonalizationBoundaryIterations; outerIter++)
         {
             for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
             {
@@ -191,24 +197,30 @@ public:
                         dx0 = (dx0 + rightHandSide[0]) / increments[0];
                         dy0 = (dy0 + rightHandSide[1]) / increments[1];
                     }
+                    Operations<Point>::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], orthogonalCoordinates[n]);
+                } // n, iteration over nodes
+
+                // update mesh node coordinates
+                mesh.m_nodes = orthogonalCoordinates;
+
+                // project on the original net boundary
+                projectOnBoundary(mesh, nearestPoints);
+
+            } // inner iter, inner iteration
+
+            //update mu
+            mu = std::min(2.0 * mu, mumax);
+
+        } // boundary iter
 
 
-
-                    Operations<Point>::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n]);
-                }
-
-                //update mu
-                mu = std::min(2.0 * mu, mumax);
-
-                //compute new faces circumcenters
-                if (m_keepCircumcenters != 1)
-                {
-                    mesh.facesAreasAndCentersOfMass();
-                } 
-            }
+        //compute new faces circumcenters
+        if (m_keepCircumcenters != true)
+        {
+            mesh.faceCircumcenters(1.0);
         }
-        return true;
 
+        return true;
     }
 
 private:
@@ -235,6 +247,21 @@ private:
     std::vector<double> m_xis;
     std::vector<double> m_etas;
 
+    //orthonet_project_on_boundary: project boundary-nodes back to the boundary of an original net
+    bool projectOnBoundary(const Mesh<Point>& mesh, const std::vector<int>& nearestPoints)
+    {
+        for (size_t n = 0; n < mesh.m_nodes.size(); n++)
+        {
+            int nearestPointIndex = nearestPoints[n];
+            if (m_nodesTypes[n] == 2 && mesh.m_nodesNumEdges[n]> 0 && mesh.m_nodesNumEdges[nearestPointIndex]>0)
+            {
+                // to complete!
+
+            }
+        }
+    }
+
+
     // orthonet_compweights_smooth
     // inverse - mapping elliptic smoother
     // computes weight ww in :
@@ -247,10 +274,6 @@ private:
 
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
-            if (n == 7)
-            {
-                std::cout << "debug" << std::endl;
-            }
             if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2 && m_nodesTypes[n] != 4) continue;
             int currentTopology = m_nodeTopologyMapping[n];
             Operations<Point>::orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
@@ -279,10 +302,6 @@ private:
         std::vector<double> GetaByDiveta(m_maximumNumConnectedNodes, 0.0);
         for (size_t n = 0; n < mesh.m_nodes.size(); n++)
         {
-            if(n==7)
-            {
-                std::cout << "Debug " << std::endl;
-            }
 
             if (mesh.m_nodesNumEdges[n] < 2) continue;
 
@@ -447,7 +466,7 @@ private:
     }
 
     //orthonet_comp_operators
-    //compute coefficientmatrix G of gradient at link
+    //compute coefficient matrix G of gradient at link
     //(d Phi / d xi)_l = sum_{ k = 1 } ^ nmk2 Gxi_k, l  Phi_k
     //(d Phi / d eta)_l = sum_{ k = 1 } ^ nmk2 Geta_k, l Phi_k
     //compute coefficientmatrix Div of gradient in node
@@ -476,19 +495,8 @@ private:
         auto Jeta = m_Jeta[topologyIndex];
         auto ww2 = m_ww2[topologyIndex];
 
-
-
-        if (currentNode == 7)
-        {
-            std::cout << " Debug" << std::endl;
-        }
-
         for (int f = 0; f < numSharedFaces; f++)
         {
-            if (f == 4)
-            {
-                std::cout << " Debug" << std::endl;
-            }
             if (sharedFaces[f] < 0 || m_nodesTypes[currentNode] == 3) continue;
 
             int edgeLeft = f + 1;
@@ -543,17 +551,8 @@ private:
         double xiBoundary = 0.0;
         double etaBoundary = 0.0;
 
-        if (currentNode==7)
-        {
-            std::cout << " Debug" << std::endl;
-        }
         for (int f = 0; f < numSharedFaces; f++)
         {
-            if (f == 4)
-            {
-                std::cout << " Debug" << std::endl;
-            }
-
             size_t edgeIndex = mesh.m_nodesEdges[currentNode][f];
             int otherNode = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
             int leftFace = mesh.m_edgesFaces[edgeIndex][0];
@@ -712,8 +711,6 @@ private:
 
         }
 
-
-
         double volxi = 0.0;
         for (int i = 0; i < mesh.m_nodesNumEdges[currentNode]; i++)
         {
@@ -729,7 +726,7 @@ private:
 
         //compute the node-to-node gradients
         for (int f = 0; f < numSharedFaces; f++)
-        {
+        { 
             // internal edge
             if (mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 2)
             {
