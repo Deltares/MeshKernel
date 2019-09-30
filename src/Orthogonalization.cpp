@@ -1,6 +1,4 @@
-// TODO: check from line 252 at 18/09/2019: there still are differences in the coordinates
-#ifndef ORTHOGONALIZATION_CPP
-#define ORTHOGONALIZATION_CPP
+#pragma once
 
 #define _USE_MATH_DEFINES
 #include <vector>
@@ -8,13 +6,17 @@
 #include <numeric>
 #include "Operations.cpp"
 #include "Mesh.hpp"
+#include "Mesh.cpp"
 
 using namespace GridGeom;
 
-template<typename Point>
+template<typename Mesh>
 class Orthogonalization
 {
 public:
+
+    typedef typename Mesh::Point Point;
+    typedef Operations<Point> Operations;
 
     enum class NodeTypes
     {
@@ -50,12 +52,12 @@ public:
     std::vector<int> m_localCoordinates;                 // iloc
 
     // run-time options
-    bool m_keepCircumcenters = false;
+    bool m_keepCircumcentersAndMassCenters = false;
     double m_atpf = 0.975;                               // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
     double m_atpf_boundary = 1.0;                        // minimum ATPF on the boundary
     double m_smoothorarea = 1.0;                         // Factor between smoother(1.0) and area - homogenizer(0.0)
 
-    bool initialize(const Mesh<Point>& mesh)
+    bool initialize(const Mesh& mesh)
     {
         m_maxNumNeighbours = *(std::max_element(mesh.m_nodesNumEdges.begin(), mesh.m_nodesNumEdges.end()));
         m_maxNumNeighbours += 1;
@@ -75,9 +77,6 @@ public:
             }
         }
 
-        // compute local coordinates (side effects only for spherical_points)
-
-
         // classify the nodes
         classifyNodes(mesh);
 
@@ -87,7 +86,7 @@ public:
         return true;
     } 
 
-    bool iterate(Mesh<Point>& mesh)
+    bool iterate(Mesh& mesh)
     {
         std::vector< std::vector<double>> ww2x;
         std::vector< std::vector<double>> ww2y;
@@ -135,7 +134,7 @@ public:
                         {
                             continue;
                         }
-                        if (m_keepCircumcenters != false && (mesh.m_nodesNumEdges[n] != 3 || mesh.m_nodesNumEdges[n] != 1))
+                        if (m_keepCircumcentersAndMassCenters != false && (mesh.m_nodesNumEdges[n] != 3 || mesh.m_nodesNumEdges[n] != 1))
                         {
                             continue;
                         }
@@ -184,7 +183,7 @@ public:
                                 k1 = m_connectedNodes[n][nn];
                             }
 
-                            Operations<Point>::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments);
+                            Operations::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments);
                         }
 
 
@@ -198,7 +197,7 @@ public:
                             dx0 = (dx0 + rightHandSide[0]) / increments[0];
                             dy0 = (dy0 + rightHandSide[1]) / increments[1];
                         }
-                        Operations<Point>::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], orthogonalCoordinates[n]);
+                        Operations::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], orthogonalCoordinates[n]);
                     } // n, iteration over nodes
 
                     // update mesh node coordinates
@@ -215,10 +214,10 @@ public:
             mu = std::min(2.0 * mu, mumax);
 
             //compute new faces circumcenters
-            if (m_keepCircumcenters != true)
+            if (m_keepCircumcentersAndMassCenters != true)
             {
                 mesh.faceCircumcenters(1.0);
-                mesh.facesAreasAndCentersOfMass();
+                mesh.facesAreasAndMassCenters();
             }
         }// outer iter
 
@@ -250,7 +249,7 @@ private:
     std::vector<double> m_etas;
 
     //orthonet_project_on_boundary: project boundary-nodes back to the boundary of an original net
-    bool projectOnBoundary(Mesh<Point>& mesh, std::vector<int>& nearestPoints, const std::vector<Point>& originalNodes)
+    bool projectOnBoundary(Mesh& mesh, std::vector<int>& nearestPoints, const std::vector<Point>& originalNodes)
     {
         Point firstPoint;
         Point secondPoint;
@@ -297,10 +296,10 @@ private:
 
                 //Project the moved boundary point back onto the closest ORIGINAL edge(netlink) (either between 0 and 2 or 0 and 3)
                 double rl2;
-                double dis2 = Operations<Point>::distanceFromLine(firstPoint, originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2);
+                double dis2 = Operations::distanceFromLine(firstPoint, originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2);
 
                 double rl3;
-                double dis3 = Operations<Point>::distanceFromLine(firstPoint, originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3);
+                double dis3 = Operations::distanceFromLine(firstPoint, originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3);
 
                 if (dis2 < dis3) 
                 {
@@ -329,7 +328,7 @@ private:
     // computes weight ww in :
     // sum_kk ww(kk, k0)* x1(kk2(kk, k0)) = 0
     // sum_kk ww(kk, k0) * y1(kk2(kk, k0)) = 0
-    bool computeWeightsSmoother(const Mesh<Point>& mesh)
+    bool computeWeightsSmoother(const Mesh& mesh)
     {
         std::vector<std::vector<double>> J(mesh.m_nodes.size(), std::vector<double>(4, 0)); //Jacobian
         std::vector<std::vector<double>> Ginv(mesh.m_nodes.size(), std::vector<double>(4, 0)); //mesh monitor matrices
@@ -338,7 +337,7 @@ private:
         {
             if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2 && m_nodesTypes[n] != 4) continue;
             int currentTopology = m_nodeTopologyMapping[n];
-            Operations<Point>::orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
+            Operations::orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
         }
 
         // TODO: Account for samples: call orthonet_comp_Ginv(u, ops, J, Ginv)
@@ -372,7 +371,7 @@ private:
             {
                 int currentTopology = m_nodeTopologyMapping[n];
 
-                Operations<Point>::orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
+                Operations::orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
 
                 //compute the contravariant base vectors
                 double determinant = J[n][0] * J[n][3] - J[n][3] * J[n][1];
@@ -461,7 +460,7 @@ private:
         return true;
     }
     
-    bool computeSmootherOperators(const Mesh<Point>& mesh)
+    bool computeSmootherOperators(const Mesh& mesh)
     {
         //allocate small administration arrays only once
         std::vector<int> sharedFaces(maximumNumberOfEdgesPerNode, -1); //icell
@@ -522,7 +521,7 @@ private:
         }
 
         //have side effects only for spherical coordinates
-        Operations<Point>::orthogonalizationComputeLocalCoordinates(mesh.m_nodesNumEdges, m_numConnectedNodes, m_localCoordinates);
+        Operations::orthogonalizationComputeLocalCoordinates(mesh.m_nodesNumEdges, m_numConnectedNodes, m_localCoordinates);
 
         return true;
     }
@@ -537,7 +536,7 @@ private:
     //compute coefficientmatrix Az of cell - center in cell
     //Phi_c = sum_{ l - 1 } ^ nmk Az_l Phi_l
     //Gxi, Geta, Divxi, Divetaand Az are stored in(type tops) op
-    bool computeOperatorsNode(const Mesh<Point>& mesh, const int currentNode, 
+    bool computeOperatorsNode(const Mesh& mesh, const int currentNode, 
         const size_t& numConnectedNodes, const std::vector<size_t>& connectedNodes,
         const size_t& numSharedFaces, const std::vector<int>& sharedFaces,
         const std::vector<double>& xi, const std::vector<double>& eta,
@@ -836,7 +835,7 @@ private:
 
     //orthonet_assign_xieta
     // assign xiand eta to all nodes in the stencil
-    bool computeXiEta(const Mesh<Point>& mesh,
+    bool computeXiEta(const Mesh& mesh,
         const int currentNode,
         const std::vector<int>& sharedFaces,
         const int& numSharedFaces,
@@ -1103,7 +1102,7 @@ private:
         return true;
     }
 
-    bool computeFacesNumEdges(const Mesh<Point>& mesh)
+    bool computeFacesNumEdges(const Mesh& mesh)
     {
         // Cache the result for later calls.
         m_faceNumNodes.resize(mesh.m_numFaces, false);
@@ -1115,7 +1114,7 @@ private:
     }
 
     // computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face.
-    bool orthogonalizationAdministration(const Mesh<Point>& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<size_t>>& faceNodeMapping)
+    bool orthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<size_t>>& faceNodeMapping)
     {
         for (auto& f : sharedFaces)  f = -1;
 
@@ -1274,7 +1273,7 @@ private:
 
     // compute link - based aspect ratios
     // orthonet_compute_aspect
-    bool aspectRatio(const Mesh<Point>& mesh)
+    bool aspectRatio(const Mesh& mesh)
     {
         std::vector<std::vector<double>> averageEdgesLength(mesh.m_edges.size(), std::vector<double>(2, doubleMissingValue));
         std::vector<double> averageFlowEdgesLength(mesh.m_edges.size(), doubleMissingValue);
@@ -1287,7 +1286,7 @@ private:
             size_t second = mesh.m_edges[e].second;
 
             if (first == second) continue;
-            double edgeLength = Operations<Point>::distance(mesh.m_nodes[first], mesh.m_nodes[second]);
+            double edgeLength = Operations::distance(mesh.m_nodes[first], mesh.m_nodes[second]);
             edgesLength[e] = edgeLength;
 
             Point leftCenter;
@@ -1309,7 +1308,7 @@ private:
             else
             {
                 //otherwise, make ghost node by imposing boundary condition
-                double dinry = Operations<Point>::innerProductTwoSegments(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_nodes[first], leftCenter);
+                double dinry = Operations::innerProductTwoSegments(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_nodes[first], leftCenter);
                 dinry = dinry / std::max(edgeLength * edgeLength, minimumEdgeLength);
 
                 double x0_bc = (1.0 - dinry) * mesh.m_nodes[first].x + dinry * mesh.m_nodes[second].x;
@@ -1318,7 +1317,7 @@ private:
                 rightCenter.y = 2.0 * y0_bc - leftCenter.y;
             }
 
-            averageFlowEdgesLength[e] = Operations<Point>::distance(leftCenter, rightCenter);
+            averageFlowEdgesLength[e] = Operations::distance(leftCenter, rightCenter);
         }
 
         // Compute normal length
@@ -1402,7 +1401,7 @@ private:
     }
 
     //MAKENETNODESCODING
-    bool classifyNodes(const Mesh<Point>& mesh)
+    bool classifyNodes(const Mesh& mesh)
     {
         m_nodesTypes.resize(mesh.m_nodes.size(), 0);
 
@@ -1473,7 +1472,7 @@ private:
     // compute weights wwand right - hand side rhs in orthogonizer :
     // sum_kk ww(kk, k0)* (x1(kk1(kk, k0)) - x1(k0)) = rhs(1, k0)
     // sum_kk ww(kk, k0) * (y1(kk1(kk, k0)) - y1(k0)) = rhs(2, k0)
-    bool computeWeightsOrthogonalizer(const Mesh<Point>& mesh)
+    bool computeWeightsOrthogonalizer(const Mesh& mesh)
     {
         double localOrthogonalizationToSmoothingFactor = 1.0;
         double localOrthogonalizationToSmoothingFactorSymmetric = 1.0 - localOrthogonalizationToSmoothingFactor;
@@ -1501,12 +1500,12 @@ private:
                     {
                         //boundary nodes
                         Point neighbouringNode = mesh.m_nodes[m_nodesNodes[n][nn]];
-                        double neighbouringNodeDistance = Operations<Point>::distance(neighbouringNode, mesh.m_nodes[n]);
+                        double neighbouringNodeDistance = Operations::distance(neighbouringNode, mesh.m_nodes[n]);
                         double aspectRatioByNodeDistance = aspectRatio * neighbouringNodeDistance;
 
                         size_t leftFace = mesh.m_edgesFaces[edgeIndex][0];
                         bool flippedNormal;
-                        Operations<Point>::normalVectorInside(mesh.m_nodes[n], neighbouringNode, mesh.m_facesMasscenters[leftFace], normal, flippedNormal);
+                        Operations::normalVectorInside(mesh.m_nodes[n], neighbouringNode, mesh.m_facesMassCenters[leftFace], normal, flippedNormal);
 
                         m_rightHandSide[n][0] += localOrthogonalizationToSmoothingFactor * neighbouringNodeDistance * normal.x / 2.0 +
                             localOrthogonalizationToSmoothingFactorSymmetric * aspectRatioByNodeDistance * normal.x * 0.5 / mu;
@@ -1545,7 +1544,7 @@ private:
         return norm;
     }
 
-    bool initializeTopologies(const Mesh<Point>& mesh)
+    bool initializeTopologies(const Mesh& mesh)
     {
         // topology 
         m_numTopologies = 0;
@@ -1645,5 +1644,3 @@ private:
         return true;
     }
 };
-
-#endif

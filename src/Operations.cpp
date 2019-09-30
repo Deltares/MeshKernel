@@ -1,5 +1,5 @@
-#ifndef OPERTIONS_CPP
-#define OPERTIONS_CPP
+#pragma once
+
 #include <cmath>
 #include "Entities.hpp"
 #include "Constants.cpp"
@@ -600,8 +600,6 @@ namespace GridGeom
             //    yz = y(1) + 0.5d0 * (dy3 + z * dx3) * raddeg_hp / earth_radius
             return true;
         }
-    };
-    
+    };  
 
 }
-#endif
