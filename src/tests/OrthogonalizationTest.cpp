@@ -25,7 +25,7 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 
     // now build node-edge mapping
     Mesh mesh(edges, nodes);
-    Orthogonalization<cartesianPoint> orthogonalization;
+    Orthogonalization<Mesh> orthogonalization;
 
     std::vector<double> aspectRatio;
     orthogonalization.initialize(mesh);
@@ -34,8 +34,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     constexpr double largeTolerance = 10.0;
 
     //centers of mass
-    ASSERT_NEAR(13.333333333, mesh.m_facesMasscenters[0].x, tolerance);
-    ASSERT_NEAR(3.333333333, mesh.m_facesMasscenters[0].y, tolerance);
+    ASSERT_NEAR(13.333333333, mesh.m_facesMassCenters[0].x, tolerance);
+    ASSERT_NEAR(3.333333333, mesh.m_facesMassCenters[0].y, tolerance);
 
     ASSERT_NEAR(5.0, mesh.m_facesCircumcenters[1].x, tolerance);
     ASSERT_NEAR(5.0, mesh.m_facesCircumcenters[1].y, tolerance);
@@ -268,7 +268,7 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
 
     // now build node-edge mapping
     Mesh mesh(edges, nodes);
-    Orthogonalization<cartesianPoint> orthogonalization;
+    Orthogonalization<Mesh> orthogonalization;
 
     std::vector<double> aspectRatio;
     orthogonalization.initialize(mesh);
@@ -328,7 +328,7 @@ TEST(OrthogonalizationTest, TestOrthogonalizationTriangularGrid)
 
     // now build node-edge mapping
     Mesh mesh(edges, nodes);
-    Orthogonalization<cartesianPoint> orthogonalization;
+    Orthogonalization<Mesh> orthogonalization;
 
     orthogonalization.initialize(mesh);
 
@@ -401,7 +401,7 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFourQuads)
 
     // now build node-edge mapping
     Mesh mesh(edges, nodes);
-    Orthogonalization<cartesianPoint> orthogonalization;
+    Orthogonalization<Mesh> orthogonalization;
     orthogonalization.initialize(mesh);
 }
 
