@@ -1,12 +1,16 @@
-#ifndef MESH_HPP
-#define MESH_HPP
+#pragma once
+
 #include <vector>
 #include "Entities.hpp"
+#include "Operations.cpp"
 
 template<typename Point>
 class Mesh
 {
 public:
+
+    typedef Point Point;
+    typedef GridGeom::Operations<Point> Operations;
 
     Mesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes);
 
@@ -25,12 +29,12 @@ public:
     std::vector<std::vector<size_t>> m_facesNodes;              //netcell%Nod, the nodes composing the faces, in ccw order
     std::vector<std::vector<size_t>> m_facesEdges;              //netcell%lin
     std::vector<Point>   m_facesCircumcenters;                  //xz  the face circumcenter
-    std::vector<Point>   m_facesMasscenters;                    //xzw the faces canters of mass
+    std::vector<Point>   m_facesMassCenters;                    //xzw the faces canters of mass
 
     size_t m_numFaces;                                          //NUMP
     std::vector<double> m_faceArea;                             //Face area
 
-    void facesAreasAndCentersOfMass();
+    void facesAreasAndMassCenters();
 
     void faceCircumcenters(const double& weightCircumCenter);
 
@@ -45,4 +49,3 @@ private:
     
 
 };
-#endif
