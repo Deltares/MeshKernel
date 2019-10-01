@@ -6,7 +6,6 @@
 #include <numeric>
 #include "Operations.cpp"
 #include "Mesh.hpp"
-#include "Mesh.cpp"
 
 using namespace GridGeom;
 

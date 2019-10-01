@@ -11,11 +11,16 @@ doc/gridgeomStructure.tif -text
 doc/sent/ProjectPlanGridGeom_Phase1.docx -text
 src/Constants.cpp -text
 src/Entities.hpp -text
+src/GeometryListNative.hpp -text
+src/Gridgeom.cpp -text
+src/Gridgeom.hpp -text
 src/Mesh.cpp -text
 src/Mesh.hpp -text
+src/MeshGeometry.hpp -text
+src/MeshGeometryDimensions.hpp -text
 src/Operations.cpp -text
 src/Orthogonalization.cpp -text
-src/main.cpp -text
+src/OrthogonalizationParametersNative.hpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/MeshTest.cpp -text
 src/tests/OrthogonalizationTest.cpp -text

@@ -24,7 +24,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     edges.push_back({ 3, 1 });
 
     // now build node-edge mapping
-    Mesh mesh(edges, nodes);
+    Mesh mesh;
+    mesh.setState(edges, nodes);
     Orthogonalization<Mesh> orthogonalization;
 
     std::vector<double> aspectRatio;
@@ -267,7 +268,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
     edges.push_back({ 2, 3 });
 
     // now build node-edge mapping
-    Mesh mesh(edges, nodes);
+    Mesh mesh;
+    mesh.setState(edges, nodes);
     Orthogonalization<Mesh> orthogonalization;
 
     std::vector<double> aspectRatio;
@@ -327,7 +329,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationTriangularGrid)
     }
 
     // now build node-edge mapping
-    Mesh mesh(edges, nodes);
+    Mesh mesh;
+    mesh.setState(edges, nodes);
     Orthogonalization<Mesh> orthogonalization;
 
     orthogonalization.initialize(mesh);
@@ -367,7 +370,7 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFourQuads)
     const int m = 3; //y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<GridGeom::cartesianPoint> nodes(n * m);
+    std::vector<cartesianPoint> nodes(n * m);
     size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -400,7 +403,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFourQuads)
     }
 
     // now build node-edge mapping
-    Mesh mesh(edges, nodes);
+    Mesh mesh;
+    mesh.setState(edges, nodes);
     Orthogonalization<Mesh> orthogonalization;
     orthogonalization.initialize(mesh);
 }

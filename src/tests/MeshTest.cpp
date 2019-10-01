@@ -21,7 +21,8 @@ TEST(TestMesh, OneQuadTestConstructor)
     edges.push_back({ 2, 3 });
 
     // now build node-edge mapping
-    Mesh mesh(edges, nodes);
+    Mesh mesh;
+    mesh.setState(edges, nodes);
 
     auto nodesEdges = mesh.m_nodesEdges;
     auto nodesNumEdges = mesh.m_nodesNumEdges;
@@ -81,8 +82,8 @@ TEST(TestMesh, OneQuadTestConstructor)
 
 TEST(PerformanceTest, MillionQuads)
 {
-    const int n = 11; //x
-    const int m = 11; //y
+    const int n = 1001; //x
+    const int m = 1001; //y
 
     std::cout << "start adding edges " << std::endl;
     auto start(std::chrono::steady_clock::now());
@@ -126,7 +127,8 @@ TEST(PerformanceTest, MillionQuads)
     start = std::chrono::steady_clock::now();
     // now build node-edge mapping
     using Mesh = Mesh<GridGeom::cartesianPoint>;
-    Mesh mesh(edges, nodes);
+    Mesh mesh;
+    mesh.setState(edges, nodes);
 
     end = std::chrono::steady_clock::now();
 
