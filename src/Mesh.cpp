@@ -12,9 +12,12 @@
 #include "Operations.cpp"
 
 template <typename Point>
-Mesh<Point>::Mesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes) :
-    m_edges(edges), m_nodes(nodes)
+bool GridGeom::Mesh<Point>::setState(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes)
 {
+    //copy edges and nodes
+    m_edges = edges;
+    m_nodes = nodes;
+
     //allocate
     m_nodesNumEdges.resize(m_nodes.size());
     m_nodesEdges.resize(m_nodes.size(), std::vector<size_t>(GridGeom::maximumNumberOfEdgesPerNode, 0));
@@ -37,10 +40,13 @@ Mesh<Point>::Mesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Po
 
     //compute faces areas and centers of mass
     facesAreasAndMassCenters();
+
+    //return value
+    return true;
 };
 
 template <typename Point>
-void Mesh<Point>::NodeAdministration()
+void GridGeom::Mesh<Point>::NodeAdministration()
 {
     // assume no duplicated links
     for (size_t e = 0; e < m_edges.size(); e++)
@@ -61,7 +67,7 @@ void Mesh<Point>::NodeAdministration()
 };
 
 template <typename Point>
-void Mesh<Point>::SortEdgesInCounterClockWiseOrder()
+void GridGeom::Mesh<Point>::SortEdgesInCounterClockWiseOrder()
 {
     std::vector<double> edgesAngles(GridGeom::maximumNumberOfEdgesPerNode, 0.0);
     for (size_t node = 0; node < m_nodes.size(); node++)
@@ -126,7 +132,7 @@ void Mesh<Point>::SortEdgesInCounterClockWiseOrder()
 
 // find cells
 template <typename Point>
-void Mesh<Point>::findFaces(const int& numEdges)
+void GridGeom::Mesh<Point>::findFaces(const int& numEdges)
 {
 
     std::vector<size_t> foundEdges(numEdges);
@@ -258,7 +264,7 @@ void Mesh<Point>::findFaces(const int& numEdges)
 }
 
 template <typename Point>
-void Mesh<Point>::faceCircumcenters(const double& weightCircumCenter)
+void GridGeom::Mesh<Point>::faceCircumcenters(const double& weightCircumCenter)
 {
     m_facesCircumcenters.resize(m_facesNodes.size());
     std::vector<Point> middlePoints(GridGeom::maximumNumberOfNodesPerFace);
@@ -373,7 +379,7 @@ void Mesh<Point>::faceCircumcenters(const double& weightCircumCenter)
 }
 
 template <typename Point>
-void Mesh<Point>::facesAreasAndMassCenters()
+void GridGeom::Mesh<Point>::facesAreasAndMassCenters()
 {
     // polygon coordinates 
     m_faceArea.resize(m_facesNodes.size());
