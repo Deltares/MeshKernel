@@ -14,8 +14,7 @@ class Orthogonalization
 {
 public:
 
-    typedef typename Mesh::Point Point;
-    typedef Operations<Point> Operations;
+    typedef typename Mesh::Operations Operations;
 
     enum class NodeTypes
     {

@@ -10,13 +10,13 @@
 
 #include <boost/geometry.hpp>
 // register node so we can use boost geometry algorithms
-BOOST_GEOMETRY_REGISTER_POINT_2D(GridGeom::cartesianPoint, double, boost::geometry::cs::cartesian, x, y);
+BOOST_GEOMETRY_REGISTER_POINT_2D(GridGeom::Point, double, boost::geometry::cs::cartesian, x, y);
 
 namespace GridGeom
 {
 
     // functions that depends of the point type
-    template<typename T>
+    template<OperationTypes operationType>
     struct Operations;
 
     // coordinate reference indipendent operations
@@ -33,7 +33,7 @@ namespace GridGeom
     }
 
     // transform 2d spherical to 3d cartesian
-    static void sphericalToCartesian(const sphericalPoint& sphericalPoint, cartesian3DPoint& cartesianPoint)
+    static void sphericalToCartesian(const Point& sphericalPoint, cartesian3DPoint& cartesianPoint)
     {
         cartesianPoint.z = earth_radius * sin(sphericalPoint.y * degrad_hp);
         double rr = earth_radius * cos(sphericalPoint.y * degrad_hp);
@@ -42,7 +42,7 @@ namespace GridGeom
     }
 
     //  transform 3d cartesian coordinates to 2d spherical
-    static void cartesianToSpherical(const cartesian3DPoint& cartesianPoint, const double referenceLongitude, sphericalPoint& sphericalPoint)
+    static void cartesianToSpherical(const cartesian3DPoint& cartesianPoint, const double referenceLongitude, Point& sphericalPoint)
     {
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
         sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * raddeg_hp;
@@ -54,7 +54,7 @@ namespace GridGeom
     //    Return: >0 for point left of the line through leftPoint and rightPoint
     //            =0 for point  on the line
     //            <0 for point  right of the line
-    static double isLeft(const cartesianPoint& leftPoint, const cartesianPoint& rightPoint, const cartesianPoint& point)
+    static double isLeft(const Point& leftPoint, const Point& rightPoint, const Point& point)
     {
         double left = (rightPoint.x - leftPoint.x) * (point.y - leftPoint.y) - (point.x - leftPoint.x) * (rightPoint.y - leftPoint.y);
         return left;
@@ -62,7 +62,7 @@ namespace GridGeom
 
     // check if a point is in polygon using the winding number method
     // polygon: vector of points in counter clockwise order
-    static bool pointInPolygon(const cartesianPoint& point, const std::vector<cartesianPoint>& polygon, const int numberOfPolygonPoints)
+    static bool pointInPolygon(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
     {
         int windingNumber = 0;
         for (int n = 0; n < numberOfPolygonPoints; n++)
@@ -93,7 +93,7 @@ namespace GridGeom
 
 
     //faceAreaAndCenterOfMass: for cartesian, spherical point and spherical3dPoint
-    template<typename Point>
+    template<OperationTypes operationType>
     static bool faceAreaAndCenterOfMass(std::vector<Point>& polygon, const int numberOfPolygonPoints, double& area, Point& centerOfMass)
     {
         if (numberOfPolygonPoints < 1)
@@ -103,7 +103,7 @@ namespace GridGeom
         
         double minX = std::numeric_limits<double>::max();
         double minY = std::numeric_limits<double>::max();
-        Operations<Point>::referencePoint(polygon, numberOfPolygonPoints, minX, minY);
+        Operations<operationType>::referencePoint(polygon, numberOfPolygonPoints, minX, minY);
 
         Point reference{ minX, minY };
         area = 0.0;
@@ -111,16 +111,16 @@ namespace GridGeom
         double yCenterOfMass = 0.0;
         for (int p = 0; p < numberOfPolygonPoints; p++)
         {
-            double dx0 = Operations<Point>::getDx(reference, polygon[p]);
-            double dy0 = Operations<Point>::getDy(reference, polygon[p]);
-            double dx1 = Operations<Point>::getDx(reference, polygon[p + 1]);
-            double dy1 = Operations<Point>::getDy(reference, polygon[p + 1]);
+            double dx0 = Operations<operationType>::getDx(reference, polygon[p]);
+            double dy0 = Operations<operationType>::getDy(reference, polygon[p]);
+            double dx1 = Operations<operationType>::getDx(reference, polygon[p + 1]);
+            double dy1 = Operations<operationType>::getDy(reference, polygon[p + 1]);
 
             double xc = 0.5 * (dx0 + dx1);
             double yc = 0.5 * (dy0 + dy1);
 
-            dx0 = Operations<Point>::getDx(polygon[p], polygon[p + 1]);
-            dy0 = Operations<Point>::getDy(polygon[p], polygon[p + 1]);
+            dx0 = Operations<operationType>::getDx(polygon[p], polygon[p + 1]);
+            dy0 = Operations<operationType>::getDy(polygon[p], polygon[p + 1]);
             double dsx = dy0;
             double dsy = -dx0;
             double xds = xc * dsx + yc * dsy;
@@ -134,7 +134,7 @@ namespace GridGeom
         xCenterOfMass = fac * xCenterOfMass;
         yCenterOfMass = fac * yCenterOfMass;
 
-        if constexpr (std::is_same<Point, sphericalPoint>::value)
+        if constexpr (operationType == sphericalOperations)
         {
             yCenterOfMass = yCenterOfMass / (earth_radius * degrad_hp);
             xCenterOfMass = xCenterOfMass / (earth_radius * degrad_hp * cos((yCenterOfMass + minY) * degrad_hp));
@@ -148,13 +148,13 @@ namespace GridGeom
         return true;
     }
 
-    static bool lineCrossing(const cartesianPoint& firstSegmentFistPoint, const cartesianPoint& firstSegmentSecondPoint, const cartesianPoint& secondSegmentFistPoint, const cartesianPoint& secondSegmentSecondPoint, cartesianPoint& intersection)
+    static bool lineCrossing(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, Point& intersection)
     {
-        typedef boost::geometry::model::segment<cartesianPoint> Segment;
+        typedef boost::geometry::model::segment<Point> Segment;
         Segment firstSegment(firstSegmentFistPoint, firstSegmentSecondPoint);
         Segment secondSegment(secondSegmentFistPoint, secondSegmentSecondPoint);
 
-        std::vector<cartesianPoint> intersections;
+        std::vector<Point> intersections;
         boost::geometry::intersection(firstSegment, secondSegment, intersections);
 
         if (!intersections.empty())
@@ -167,10 +167,10 @@ namespace GridGeom
 
     // cartesian points
     template <>
-    struct Operations<cartesianPoint>
+    struct Operations<cartesianOperations>
     {
         //normalout, Creates the relative unit normal vector to edge 1->2
-        static void normalVector(const cartesianPoint& firstPoint, const cartesianPoint& secondPoint, const cartesianPoint& insidePoint, cartesianPoint& result)
+        static void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result)
         {
             double dx = getDx(firstPoint, secondPoint);
             double dy = getDy(firstPoint, secondPoint);
@@ -184,11 +184,11 @@ namespace GridGeom
         }
 
         //normaloutchk
-        static void normalVectorInside(const cartesianPoint& firstPoint, const cartesianPoint& secondPoint, const cartesianPoint& insidePoint, cartesianPoint& result, bool& flippedNormal)
+        static void normalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, bool& flippedNormal)
         {
             normalVector(firstPoint, secondPoint, insidePoint, result);
             flippedNormal = false;
-            cartesianPoint thirdPoint{ firstPoint.x + result.x, firstPoint.y + result.y };
+            Point thirdPoint{ firstPoint.x + result.x, firstPoint.y + result.y };
 
             if (outerProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint) * outerProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint) > 0.0)
             {
@@ -202,23 +202,23 @@ namespace GridGeom
             }
         }
 
-        static double getDx(const cartesianPoint& firstPoint, const cartesianPoint& secondPoint)
+        static double getDx(const Point& firstPoint, const Point& secondPoint)
         {
             return secondPoint.x - firstPoint.x;
         }
 
-        static double getDy(const cartesianPoint& firstPoint, const cartesianPoint& secondPoint)
+        static double getDy(const Point& firstPoint, const Point& secondPoint)
         {
             return secondPoint.y - firstPoint.y;
         }
 
-        static void add(cartesianPoint& point, const cartesianPoint& normal, const double increment)
+        static void add(Point& point, const Point& normal, const double increment)
         {
             point.x = point.x + normal.x * increment;
             point.y = point.y + normal.y * increment;
         }
 
-        static void referencePoint(std::vector<cartesianPoint>& polygon, const int numPoints, double& minX, double& minY)
+        static void referencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY)
         {
             minX = std::numeric_limits<double>::max();
             minY = std::numeric_limits<double>::max();
@@ -236,7 +236,7 @@ namespace GridGeom
         }
 
         //dbdistance
-        static double distance(const cartesianPoint& firstPoint, const cartesianPoint& secondPoint)
+        static double distance(const Point& firstPoint, const Point& secondPoint)
         {
             double dx = getDx(firstPoint, secondPoint);
             double dy = getDy(firstPoint, secondPoint);
@@ -250,7 +250,7 @@ namespace GridGeom
         }
 
         //dLINEDIS3
-        static double distanceFromLine(const cartesianPoint& p3, const cartesianPoint& p1, const cartesianPoint& p2, cartesianPoint& normalPoint, double& rlout)
+        static double distanceFromLine(const Point& p3, const Point& p1, const Point& p2, Point& normalPoint, double& rlout)
         {
             double dis = 0.0;
             double r2 = distance(p2, p1);
@@ -266,7 +266,7 @@ namespace GridGeom
         }
 
         //out product of two segments
-        static double outerProductTwoSegments(const cartesianPoint& firstPointFirstSegment, const cartesianPoint& secondPointFirstSegment, const cartesianPoint& firstPointSecondSegment, const cartesianPoint& secondPointSecondSegment)
+        static double outerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment)
         {
             double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment);
             double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment);
@@ -278,7 +278,7 @@ namespace GridGeom
         }
 
         //inner product of two segments
-        static double innerProductTwoSegments(const cartesianPoint& firstPointFirstSegment, const cartesianPoint& secondPointFirstSegment, const cartesianPoint& firstPointSecondSegment, const cartesianPoint& secondPointSecondSegment)
+        static double innerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment)
         {
             double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment);
             double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment);
@@ -297,7 +297,7 @@ namespace GridGeom
         }
 
 
-        static inline bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<cartesianPoint>& nodes, std::vector<double>& J)
+        static inline bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<Point>& nodes, std::vector<double>& J)
         {
             J[0] = 0.0; 
             J[1] = 0.0;
@@ -313,7 +313,7 @@ namespace GridGeom
             return true;
         }
 
-        static  bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<cartesianPoint>& nodes, double& dx0, double& dy0, std::vector<double>& increments)
+        static  bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<Point>& nodes, double& dx0, double& dy0, std::vector<double>& increments)
         {
 
             increments[0] += wwx;
@@ -324,7 +324,7 @@ namespace GridGeom
             return true;
         }
 
-        static bool orthogonalizationComputeCoordinates(double dx0, double dy0, const cartesianPoint& point, cartesianPoint& updatedPoint)
+        static bool orthogonalizationComputeCoordinates(double dx0, double dy0, const Point& point, Point& updatedPoint)
         {
             double x0 = point.x + dx0;
             double y0 = point.y + dy0;
@@ -336,7 +336,7 @@ namespace GridGeom
             return true;
         }
 
-        static bool circumcenterOfTriangle(const cartesianPoint& p1, const cartesianPoint& p2, const cartesianPoint& p3, cartesianPoint& circumcenter)
+        static bool circumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Point& circumcenter)
         {
             double dx2 = getDx(p1, p2);
             double dy2 = getDy(p1, p2);
@@ -360,9 +360,9 @@ namespace GridGeom
     
     // spherical point
     template <>
-    struct Operations<sphericalPoint>
+    struct Operations<sphericalOperations>
     {
-        static void normalVector(const sphericalPoint& firstPoint, const sphericalPoint& secondPoint, const sphericalPoint& insidePoint, sphericalPoint& result)
+        static void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result)
         {
             cartesian3DPoint firstPointCartesianCoordinates;
             cartesian3DPoint secondPointCartesianCoordinates;
@@ -391,13 +391,13 @@ namespace GridGeom
             }
         }
 
-        static void normalVectorInside(const sphericalPoint& firstPoint, const sphericalPoint& secondPoint, const sphericalPoint& insidePoint, sphericalPoint& result, bool& flippedNormal)
+        static void normalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, bool& flippedNormal)
         {
 
             //if (JSFERIC.eq.1 . and .jasfer3D.eq.0) xn = xn * cos(dg2rd * 0.5d0 * (y0 + y1)) !normal vector needs to be in Cartesian coordinates
         }
 
-        static double getDx(const sphericalPoint& firstPoint, const sphericalPoint& secondPoint)
+        static double getDx(const Point& firstPoint, const Point& secondPoint)
         {
             double  firstPointYDiff = abs(abs(firstPoint.y) - 90.0);
             double  secondPointYDiff = abs(abs(secondPoint.y) - 90.0);
@@ -425,7 +425,7 @@ namespace GridGeom
             return dx;
         }
 
-        static double getDy(const sphericalPoint& firstPoint, const sphericalPoint& secondPoint)
+        static double getDy(const Point& firstPoint, const Point& secondPoint)
         {
             double firstPointY = firstPoint.y * degrad_hp;
             double secondPointY = secondPoint.y * degrad_hp;
@@ -433,7 +433,7 @@ namespace GridGeom
             return dy;
         }
 
-        static void add(sphericalPoint& point, const sphericalPoint& normal, const double increment)
+        static void add(Point& point, const Point& normal, const double increment)
         {
             double convertedIncrement = raddeg_hp * increment / earth_radius;
             double xf = 1.0 / cos(degrad_hp * point.y);
@@ -441,7 +441,7 @@ namespace GridGeom
             point.y = point.y + normal.y * convertedIncrement;
         }
 
-        static void referencePoint(std::vector<sphericalPoint>& polygon, const int numPoints, double& minX, double& minY)
+        static void referencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY)
         {
             minX = std::numeric_limits<double>::max();
             minY = std::numeric_limits<double>::max();
@@ -475,16 +475,16 @@ namespace GridGeom
                 minX = minX + 360.0;
             }
             //TODO: check result
-            minX = std::min_element(polygon.begin(), polygon.end(), [](const sphericalPoint& p1, const sphericalPoint& p2) { return p1.x < p2.x; })->x;
+            minX = std::min_element(polygon.begin(), polygon.end(), [](const Point& p1, const Point& p2) { return p1.x < p2.x; })->x;
         }
 
-        static double distance(const sphericalPoint& firstPoint, const sphericalPoint& secondPoint)
+        static double distance(const Point& firstPoint, const Point& secondPoint)
         {
             return -1.0;
         }
 
         //dLINEDIS3
-        static double distanceFromLine(const sphericalPoint& p3, const sphericalPoint& p1, const sphericalPoint& p2, sphericalPoint& normalPoint, double& rlout)
+        static double distanceFromLine(const Point& p3, const Point& p1, const Point& p2, Point& normalPoint, double& rlout)
         {
             //TODO: implement me
             return -1.0;
@@ -492,14 +492,14 @@ namespace GridGeom
 
 
         //out product of two segments
-        static double outerProductTwoSegments(const sphericalPoint& firstPointFirstSegment, const sphericalPoint& secondPointFirstSegment, const sphericalPoint& firstPointSecondSegment, const sphericalPoint& secondPointSecondSegment)
+        static double outerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment)
         {
             //TODO: IMPLEMENTATION IS MISSING
 
             return 0.0;
         }
 
-        static double innerProductTwoSegments(const sphericalPoint& firstPointFirstSegment, const sphericalPoint& secondPointFirstSegment, const sphericalPoint& firstPointSecondSegment, const sphericalPoint& secondPointSecondSegment)
+        static double innerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment)
         {
             cartesian3DPoint firstPointFirstSegment3D;
             cartesian3DPoint secondPointFirstSegment3D;
@@ -535,7 +535,7 @@ namespace GridGeom
         }
 
 
-        static bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<sphericalPoint>& nodes, std::vector<double>& J)
+        static bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<Point>& nodes, std::vector<double>& J)
         {
             double factor = std::cos(nodes[currentNode].y) * degrad_hp;
             J[0] = 0.0;
@@ -552,7 +552,7 @@ namespace GridGeom
             return true;
         }
 
-        static bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<sphericalPoint>& nodes, double& dx0, double& dy0, std::vector<double>& increments)
+        static bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<Point>& nodes, double& dx0, double& dy0, std::vector<double>& increments)
         {
             double wwxTransformed = wwx * earth_radius * degrad_hp;
             double wwyTransformed = wwy * earth_radius * degrad_hp;
@@ -566,7 +566,7 @@ namespace GridGeom
             return true;
         }
 
-        static bool orthogonalizationComputeCoordinates(double dx0, double dy0, const sphericalPoint& point, sphericalPoint& updatedPoint)
+        static bool orthogonalizationComputeCoordinates(double dx0, double dy0, const Point& point, Point& updatedPoint)
         {
             //TODO: implement
             //if (jsferic.eq.1 . and .jasfer3D.eq.1) then
@@ -578,7 +578,7 @@ namespace GridGeom
             return true;
         }
 
-        static bool circumcenterOfTriangle(const sphericalPoint& p1, const sphericalPoint& p2, const sphericalPoint& p3, sphericalPoint& circumcenter)
+        static bool circumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Point& circumcenter)
         {
             double dx2 = getDx(p1, p2);
             double dy2 = getDy(p1, p2);

@@ -4,14 +4,14 @@
 
 TEST(TestMesh, OneQuadTestConstructor) 
 {
-    using Mesh = Mesh<GridGeom::cartesianPoint>;
+    using Mesh = GridGeom::Mesh<GridGeom::OperationTypes::cartesianOperations>;
 
     //One gets the edges
-    std::vector<GridGeom::cartesianPoint> nodes;
-    nodes.push_back(GridGeom::cartesianPoint{ 0.0,0.0 });
-    nodes.push_back(GridGeom::cartesianPoint{ 0.0,10.0 });
-    nodes.push_back(GridGeom::cartesianPoint{ 10.0,0.0 });
-    nodes.push_back(GridGeom::cartesianPoint{ 10.0,10.0 });
+    std::vector<GridGeom::Point> nodes;
+    nodes.push_back(GridGeom::Point{ 0.0,0.0 });
+    nodes.push_back(GridGeom::Point{ 0.0,10.0 });
+    nodes.push_back(GridGeom::Point{ 10.0,0.0 });
+    nodes.push_back(GridGeom::Point{ 10.0,10.0 });
 
     std::vector<GridGeom::Edge> edges;
     // Local edges
@@ -89,7 +89,7 @@ TEST(PerformanceTest, MillionQuads)
     auto start(std::chrono::steady_clock::now());
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<GridGeom::cartesianPoint> nodes(n * m);
+    std::vector<GridGeom::Point> nodes(n * m);
     size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -126,7 +126,7 @@ TEST(PerformanceTest, MillionQuads)
     std::cout << "start finding cells " << std::endl;
     start = std::chrono::steady_clock::now();
     // now build node-edge mapping
-    using Mesh = Mesh<GridGeom::cartesianPoint>;
+    using Mesh = GridGeom::Mesh<GridGeom::OperationTypes::cartesianOperations>;
     Mesh mesh;
     mesh.setState(edges, nodes);
 
@@ -151,7 +151,7 @@ TEST(PerformanceTest, ArrayAccess)
     const int arraySize = 10e6;
 
     double result = 0.0;
-    std::vector<GridGeom::cartesianPoint> nodesAoS(arraySize,{1.0,1.0}); //Vc::Allocator<cartesianPoint>
+    std::vector<GridGeom::Point> nodesAoS(arraySize,{1.0,1.0}); //Vc::Allocator<cartesianPoint>
     auto start(std::chrono::steady_clock::now());
     for(int i=0;i< arraySize;i++)
     {
