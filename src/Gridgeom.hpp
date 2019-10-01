@@ -4,7 +4,6 @@
 #include "MeshGeometryDimensions.hpp"
 #include "MeshGeometry.hpp"
 
-
 using namespace GridGeomApi;
 
 static std::vector<std::unique_ptr<GridGeom::MeshInterface>> meshInstances;
@@ -22,7 +21,7 @@ extern "C"
     //int ggeo_orthogonalize(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
     //    OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries);
 
-    //int ggeo_get_mesh(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
+    int ggeo_get_mesh(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
 
 #ifdef __cplusplus
 }

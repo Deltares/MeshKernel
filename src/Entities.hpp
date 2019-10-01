@@ -9,19 +9,13 @@
 
 namespace GridGeom
 {
+    enum OperationTypes 
+    {
+        cartesianOperations,
+        sphericalOperations
+    };
+
     struct Point
-    {
-        double x;
-        double y;
-    };
-
-    struct cartesianPoint
-    {
-        double x;
-        double y;
-    };
-
-    struct sphericalPoint
     {
         double x;
         double y;
