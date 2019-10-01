@@ -9,6 +9,12 @@
 
 namespace GridGeom
 {
+    struct Point
+    {
+        double x;
+        double y;
+    };
+
     struct cartesianPoint
     {
         double x;
