@@ -4,15 +4,15 @@
 
 TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 {
-    using Mesh = Mesh<cartesianPoint>;
+    using Mesh = Mesh<cartesianOperations>;
 
     //One gets the edges
-    std::vector<cartesianPoint> nodes;
-    nodes.push_back(cartesianPoint{ 0.0,0.0 });
-    nodes.push_back(cartesianPoint{ 0.0,10.0 });
-    nodes.push_back(cartesianPoint{ 10.0,0.0 });
-    nodes.push_back(cartesianPoint{ 10.0,10.0 });
-    nodes.push_back(cartesianPoint{ 20.0,0.0 });
+    std::vector<Point> nodes;
+    nodes.push_back(Point{ 0.0,0.0 });
+    nodes.push_back(Point{ 0.0,10.0 });
+    nodes.push_back(Point{ 10.0,0.0 });
+    nodes.push_back(Point{ 10.0,10.0 });
+    nodes.push_back(Point{ 20.0,0.0 });
 
     std::vector<Edge> edges;
     // Local edges
@@ -251,14 +251,14 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 
 TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
 {
-    using Mesh = Mesh<cartesianPoint>;
+    using Mesh = Mesh<cartesianOperations>;
 
     //One gets the edges
-    std::vector<cartesianPoint> nodes;
-    nodes.push_back(cartesianPoint{ 0.0,0.0 });
-    nodes.push_back(cartesianPoint{ 0.0,10.0 });
-    nodes.push_back(cartesianPoint{ 10.0,0.0 });
-    nodes.push_back(cartesianPoint{ 10.0,10.0 });
+    std::vector<Point> nodes;
+    nodes.push_back(Point{ 0.0,0.0 });
+    nodes.push_back(Point{ 0.0,10.0 });
+    nodes.push_back(Point{ 10.0,0.0 });
+    nodes.push_back(Point{ 10.0,10.0 });
 
     std::vector<Edge> edges;
     // Local edges
@@ -283,21 +283,21 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
 
 TEST(OrthogonalizationTest, TestOrthogonalizationTriangularGrid)
 {
-    using Mesh = Mesh<cartesianPoint>;
+    using Mesh = Mesh<cartesianOperations>;
 
     //One gets the edges
-    std::vector<cartesianPoint> nodes;
+    std::vector<Point> nodes;
 
-    nodes.push_back(cartesianPoint{ 322.252624511719,454.880187988281 });
-    nodes.push_back(cartesianPoint{ 227.002044677734,360.379241943359 });
-    nodes.push_back(cartesianPoint{ 259.252227783203,241.878051757813 });
-    nodes.push_back(cartesianPoint{ 428.003295898438,210.377746582031 });
-    nodes.push_back(cartesianPoint{ 536.003967285156,310.878753662109 });
-    nodes.push_back(cartesianPoint{ 503.753784179688,432.379974365234 });
-    nodes.push_back(cartesianPoint{ 350.752807617188,458.630249023438 });
-    nodes.push_back(cartesianPoint{ 343.15053976393,406.232256102912 });
-    nodes.push_back(cartesianPoint{ 310.300984548069,319.41005739802 });
-    nodes.push_back(cartesianPoint{ 423.569603308318,326.17986967523 });
+    nodes.push_back(Point{ 322.252624511719,454.880187988281 });
+    nodes.push_back(Point{ 227.002044677734,360.379241943359 });
+    nodes.push_back(Point{ 259.252227783203,241.878051757813 });
+    nodes.push_back(Point{ 428.003295898438,210.377746582031 });
+    nodes.push_back(Point{ 536.003967285156,310.878753662109 });
+    nodes.push_back(Point{ 503.753784179688,432.379974365234 });
+    nodes.push_back(Point{ 350.752807617188,458.630249023438 });
+    nodes.push_back(Point{ 343.15053976393,406.232256102912 });
+    nodes.push_back(Point{ 310.300984548069,319.41005739802 });
+    nodes.push_back(Point{ 423.569603308318,326.17986967523 });
 
     std::vector<Edge> edges;
     // Local edges
@@ -364,13 +364,13 @@ TEST(OrthogonalizationTest, TestOrthogonalizationTriangularGrid)
 
 TEST(OrthogonalizationTest, TestOrthogonalizationFourQuads)
 {
-    using Mesh = Mesh<cartesianPoint>;
+    using Mesh = Mesh<cartesianOperations>;
 
     const int n = 3; //x
     const int m = 3; //y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<cartesianPoint> nodes(n * m);
+    std::vector<Point> nodes(n * m);
     size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {

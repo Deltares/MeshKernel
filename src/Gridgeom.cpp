@@ -20,7 +20,7 @@
  {
      if (IsGeographic)
      {
-         auto instance = std::make_unique<GridGeom::Mesh<GridGeom::cartesianPoint>>();
+         auto instance = std::make_unique<GridGeom::Mesh<GridGeom::OperationTypes::cartesianOperations>>();
 
          std::vector<GridGeom::Edge> edges(meshGeometryDimensions.numedge);
          for (int e = 0; e < edges.size(); e++)
@@ -29,7 +29,7 @@
              edges[e].second = 0;
          }
 
-         std::vector<GridGeom::cartesianPoint> nodes(meshGeometryDimensions.numnode);
+         std::vector<GridGeom::Point> nodes(meshGeometryDimensions.numnode);
          for (int n = 0; n < edges.size(); n++)
          {
              nodes[n].x = meshGeometry.nodex[n];
@@ -39,7 +39,17 @@
          instance->setState(edges, nodes);
 
          meshInstances[gridStateId] = std::move(instance);
-
      }
+     return 0;
+ }
+
+
+ int ggeo_get_mesh(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+ {
+
+
+
+
+
      return 0;
  }

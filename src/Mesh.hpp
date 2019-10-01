@@ -8,15 +8,15 @@ namespace GridGeom
 {
     struct MeshInterface
     {
+
     };
 
-    template<typename Point>
+    template<OperationTypes OperationType>
     class Mesh : public MeshInterface
     {
-    public:
 
-        typedef Point Point;
-        typedef GridGeom::Operations<Point> Operations;
+    public:
+        typedef Operations<OperationType> Operations;
 
         bool setState(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes);
 
