@@ -12,11 +12,9 @@
 #define GRIDGEOM_API __declspec(dllimport)   
 #endif 
 
-
+// contains all mesh instances
 namespace GridGeomApi
 {
-    // contains all mesh instances
-    static std::vector<std::unique_ptr<GridGeom::MeshBase>> meshInstances;
 
 #ifdef __cplusplus
     extern "C"
@@ -27,12 +25,12 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_deallocate_state(int& gridStateId);
 
-        GRIDGEOM_API int ggeo_set_state(int gridStateId, GridGeomApi::MeshGeometryDimensions& meshGeometryDimensions, GridGeomApi::MeshGeometry& meshGeometry, bool IsGeographic);
+        GRIDGEOM_API int ggeo_set_state(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool IsGeographic);
 
-        GRIDGEOM_API int ggeo_orthogonalize(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
+        GRIDGEOM_API int ggeo_orthogonalize(int& gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
                                GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative, GridGeomApi::GeometryListNative& geometryListNativePolygon, GridGeomApi::GeometryListNative& geometryListNativeLandBoundaries);
 
-        GRIDGEOM_API int ggeo_get_mesh(int gridStateId, GridGeomApi::MeshGeometryDimensions& meshGeometryDimensions, GridGeomApi::MeshGeometry& meshGeometry);
+        GRIDGEOM_API int ggeo_get_mesh(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
 
 #ifdef __cplusplus
     }
