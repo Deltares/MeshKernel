@@ -15,6 +15,12 @@
 template <GridGeom::OperationTypes OperationType>
 bool GridGeom::Mesh<OperationType>::setMesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes)
 {
+    // return
+    if( edges.size()==0 || nodes.size() == 0)
+    {
+        return true;
+    }
+
     //copy edges and nodes
     m_edges = edges;
     m_nodes = nodes;
@@ -27,7 +33,7 @@ bool GridGeom::Mesh<OperationType>::setMesh(const std::vector<GridGeom::Edge>& e
     m_edgesFaces.resize(edges.size(), std::vector<int>(2, -1));
 
 
-    //run administration and find the faces
+    //run administration and find the faces    
     NodeAdministration();
     SortEdgesInCounterClockWiseOrder();
 
