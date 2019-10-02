@@ -13,7 +13,7 @@
 #include "OperationsSpherical.cpp"
 
 template <GridGeom::OperationTypes OperationType>
-bool GridGeom::Mesh<OperationType>::setState(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes)
+bool GridGeom::Mesh<OperationType>::setMesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes)
 {
     //copy edges and nodes
     m_edges = edges;
@@ -45,6 +45,24 @@ bool GridGeom::Mesh<OperationType>::setState(const std::vector<GridGeom::Edge>& 
     //return value
     return true;
 };
+
+template <GridGeom::OperationTypes OperationType>
+std::vector<GridGeom::Point>& GridGeom::Mesh<OperationType>::getNodes()
+{
+    return m_nodes;
+}
+
+template <GridGeom::OperationTypes OperationType>
+std::vector<GridGeom::Edge>& GridGeom::Mesh<OperationType>::getEdges()
+{
+    return m_edges;
+}
+
+template <GridGeom::OperationTypes OperationType>
+int GridGeom::Mesh<OperationType>::getNumFaces()
+{
+    return m_numFaces;
+}
 
 template <GridGeom::OperationTypes OperationType>
 void GridGeom::Mesh<OperationType>::NodeAdministration()
