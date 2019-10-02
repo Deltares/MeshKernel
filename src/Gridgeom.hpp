@@ -6,6 +6,13 @@
 #include "GeometryListNative.hpp"
 #include "OrthogonalizationParametersNative.hpp"
 
+#ifdef GRIDGEOM_EXPORTS 
+#define GRIDGEOM_API __declspec(dllexport)
+#else  
+#define GRIDGEOM_API __declspec(dllimport)   
+#endif 
+
+
 namespace GridGeomApi
 {
     // contains all mesh instances
@@ -16,16 +23,16 @@ namespace GridGeomApi
     {
 #endif
 
-        int ggeo_new_grid(int& gridStateId);
+        GRIDGEOM_API int ggeo_new_grid(int& gridStateId);
 
-        int ggeo_deallocate_state(int& gridStateId);
+        GRIDGEOM_API int ggeo_deallocate_state(int& gridStateId);
 
-        int ggeo_set_state(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool IsGeographic);
+        GRIDGEOM_API int ggeo_set_state(int gridStateId, GridGeomApi::MeshGeometryDimensions& meshGeometryDimensions, GridGeomApi::MeshGeometry& meshGeometry, bool IsGeographic);
 
-        int ggeo_orthogonalize(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
-            OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries);
+        GRIDGEOM_API int ggeo_orthogonalize(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
+                               GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative, GridGeomApi::GeometryListNative& geometryListNativePolygon, GridGeomApi::GeometryListNative& geometryListNativeLandBoundaries);
 
-        int ggeo_get_mesh(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
+        GRIDGEOM_API int ggeo_get_mesh(int gridStateId, GridGeomApi::MeshGeometryDimensions& meshGeometryDimensions, GridGeomApi::MeshGeometry& meshGeometry);
 
 #ifdef __cplusplus
     }

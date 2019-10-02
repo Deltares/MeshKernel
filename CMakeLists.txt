@@ -1,4 +1,4 @@
-project( GridGeom )
+project( gridgeomStateful_dll )
 cmake_minimum_required(VERSION 3.1)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -24,7 +24,7 @@ source_group(include FILES ${all_headers})
 FILE( GLOB all_srcs src/*.cpp)
 source_group(source FILES ${all_srcs})
 
-add_library( GridGeom SHARED ${all_srcs} ${all_headers})
+add_library( gridgeomStateful_dll SHARED ${all_srcs} ${all_headers})
 
 if (UNIX)
 	#set c++11
@@ -43,7 +43,8 @@ if (UNIX)
 
 endif()
 
-target_link_libraries(GridGeom LINK_PUBLIC) #  ${Boost_LIBRARIES} CGAL::CGAL
+add_compile_definitions(GRIDGEOM_EXPORTS)
+target_link_libraries(gridgeomStateful_dll LINK_PUBLIC) #  ${Boost_LIBRARIES} CGAL::CGAL
 
 #-----------------------------------------------------------------------------------------------------------------#
 # Google tests 
