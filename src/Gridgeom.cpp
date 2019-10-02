@@ -6,20 +6,20 @@
 
 namespace GridGeomApi
 {
-    int ggeo_new_grid(int& gridStateId)
+    GRIDGEOM_API int ggeo_new_grid(int& gridStateId)
     {
         gridStateId = meshInstances.size() + 1;
-        meshInstances.reserve(gridStateId);
+        meshInstances.resize(gridStateId);
         return 0;
     };
 
-    int ggeo_deallocate_state(int& gridStateId)
+    GRIDGEOM_API int ggeo_deallocate_state(int& gridStateId)
     {
         meshInstances.erase(meshInstances.begin() + gridStateId);
         return 0;
     }
 
-    int ggeo_set_state(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool IsGeographic)
+    GRIDGEOM_API int ggeo_set_state(int gridStateId, GridGeomApi::MeshGeometryDimensions& meshGeometryDimensions, GridGeomApi::MeshGeometry& meshGeometry, bool IsGeographic)
     {
 
         std::vector<GridGeom::Edge> edges(meshGeometryDimensions.numedge);
@@ -53,7 +53,7 @@ namespace GridGeomApi
     }
 
 
-    int ggeo_get_mesh(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    GRIDGEOM_API int ggeo_get_mesh(int gridStateId, GridGeomApi::MeshGeometryDimensions& meshGeometryDimensions, GridGeomApi::MeshGeometry& meshGeometry)
     {
 
         auto nodes = meshInstances[gridStateId]->getNodes();
@@ -82,8 +82,8 @@ namespace GridGeomApi
         return 0;
     }
 
-    int ggeo_orthogonalize(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
-        OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
+    GRIDGEOM_API int ggeo_orthogonalize(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
+                           GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative, GridGeomApi::GeometryListNative& geometryListNativePolygon, GridGeomApi::GeometryListNative& geometryListNativeLandBoundaries)
     {
         GridGeom::Mesh<GridGeom::cartesianOperations>* cartesianMeshPtr = dynamic_cast<GridGeom::Mesh<GridGeom::cartesianOperations>*>(meshInstances[gridStateId].get());
         if(cartesianMeshPtr !=nullptr)
