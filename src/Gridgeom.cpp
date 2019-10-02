@@ -46,10 +46,5 @@
 
  int ggeo_get_mesh(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
  {
-
-
-
-
-
      return 0;
  }
