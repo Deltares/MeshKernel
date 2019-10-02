@@ -22,7 +22,7 @@ TEST(TestMesh, OneQuadTestConstructor)
 
     // now build node-edge mapping
     Mesh mesh;
-    mesh.setState(edges, nodes);
+    mesh.setMesh(edges, nodes);
 
     auto nodesEdges = mesh.m_nodesEdges;
     auto nodesNumEdges = mesh.m_nodesNumEdges;
@@ -128,7 +128,7 @@ TEST(PerformanceTest, MillionQuads)
     // now build node-edge mapping
     using Mesh = GridGeom::Mesh<GridGeom::OperationTypes::cartesianOperations>;
     Mesh mesh;
-    mesh.setState(edges, nodes);
+    mesh.setMesh(edges, nodes);
 
     end = std::chrono::steady_clock::now();
 

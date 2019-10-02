@@ -4,17 +4,17 @@
 
 TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 {
-    using Mesh = Mesh<cartesianOperations>;
+    using Mesh = GridGeom::Mesh<GridGeom::cartesianOperations>;
 
     //One gets the edges
-    std::vector<Point> nodes;
-    nodes.push_back(Point{ 0.0,0.0 });
-    nodes.push_back(Point{ 0.0,10.0 });
-    nodes.push_back(Point{ 10.0,0.0 });
-    nodes.push_back(Point{ 10.0,10.0 });
-    nodes.push_back(Point{ 20.0,0.0 });
+    std::vector<GridGeom::Point> nodes;
+    nodes.push_back(GridGeom::Point{ 0.0,0.0 });
+    nodes.push_back(GridGeom::Point{ 0.0,10.0 });
+    nodes.push_back(GridGeom::Point{ 10.0,0.0 });
+    nodes.push_back(GridGeom::Point{ 10.0,10.0 });
+    nodes.push_back(GridGeom::Point{ 20.0,0.0 });
 
-    std::vector<Edge> edges;
+    std::vector<GridGeom::Edge> edges;
     // Local edges
     edges.push_back({ 1, 0 });
     edges.push_back({ 0, 2 });
@@ -25,8 +25,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 
     // now build node-edge mapping
     Mesh mesh;
-    mesh.setState(edges, nodes);
-    Orthogonalization<Mesh> orthogonalization;
+    mesh.setMesh(edges, nodes);
+    GridGeom::Orthogonalization<Mesh> orthogonalization;
 
     std::vector<double> aspectRatio;
     orthogonalization.initialize(mesh);
@@ -251,16 +251,16 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
 
 TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
 {
-    using Mesh = Mesh<cartesianOperations>;
+    using Mesh = GridGeom::Mesh<GridGeom::cartesianOperations>;
 
     //One gets the edges
-    std::vector<Point> nodes;
-    nodes.push_back(Point{ 0.0,0.0 });
-    nodes.push_back(Point{ 0.0,10.0 });
-    nodes.push_back(Point{ 10.0,0.0 });
-    nodes.push_back(Point{ 10.0,10.0 });
+    std::vector<GridGeom::Point> nodes;
+    nodes.push_back(GridGeom::Point{ 0.0,0.0 });
+    nodes.push_back(GridGeom::Point{ 0.0,10.0 });
+    nodes.push_back(GridGeom::Point{ 10.0,0.0 });
+    nodes.push_back(GridGeom::Point{ 10.0,10.0 });
 
-    std::vector<Edge> edges;
+    std::vector<GridGeom::Edge> edges;
     // Local edges
     edges.push_back({ 0, 2 });
     edges.push_back({ 1, 3 });
@@ -269,8 +269,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
 
     // now build node-edge mapping
     Mesh mesh;
-    mesh.setState(edges, nodes);
-    Orthogonalization<Mesh> orthogonalization;
+    mesh.setMesh(edges, nodes);
+    GridGeom::Orthogonalization<Mesh> orthogonalization;
 
     std::vector<double> aspectRatio;
     orthogonalization.initialize(mesh);
@@ -283,23 +283,23 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFunctions)
 
 TEST(OrthogonalizationTest, TestOrthogonalizationTriangularGrid)
 {
-    using Mesh = Mesh<cartesianOperations>;
+    using Mesh = GridGeom::Mesh<GridGeom::cartesianOperations>;
 
     //One gets the edges
-    std::vector<Point> nodes;
+    std::vector<GridGeom::Point> nodes;
 
-    nodes.push_back(Point{ 322.252624511719,454.880187988281 });
-    nodes.push_back(Point{ 227.002044677734,360.379241943359 });
-    nodes.push_back(Point{ 259.252227783203,241.878051757813 });
-    nodes.push_back(Point{ 428.003295898438,210.377746582031 });
-    nodes.push_back(Point{ 536.003967285156,310.878753662109 });
-    nodes.push_back(Point{ 503.753784179688,432.379974365234 });
-    nodes.push_back(Point{ 350.752807617188,458.630249023438 });
-    nodes.push_back(Point{ 343.15053976393,406.232256102912 });
-    nodes.push_back(Point{ 310.300984548069,319.41005739802 });
-    nodes.push_back(Point{ 423.569603308318,326.17986967523 });
+    nodes.push_back(GridGeom::Point{ 322.252624511719,454.880187988281 });
+    nodes.push_back(GridGeom::Point{ 227.002044677734,360.379241943359 });
+    nodes.push_back(GridGeom::Point{ 259.252227783203,241.878051757813 });
+    nodes.push_back(GridGeom::Point{ 428.003295898438,210.377746582031 });
+    nodes.push_back(GridGeom::Point{ 536.003967285156,310.878753662109 });
+    nodes.push_back(GridGeom::Point{ 503.753784179688,432.379974365234 });
+    nodes.push_back(GridGeom::Point{ 350.752807617188,458.630249023438 });
+    nodes.push_back(GridGeom::Point{ 343.15053976393,406.232256102912 });
+    nodes.push_back(GridGeom::Point{ 310.300984548069,319.41005739802 });
+    nodes.push_back(GridGeom::Point{ 423.569603308318,326.17986967523 });
 
-    std::vector<Edge> edges;
+    std::vector<GridGeom::Edge> edges;
     // Local edges
     edges.push_back({ 3, 9 });
     edges.push_back({ 9, 2 });
@@ -330,8 +330,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationTriangularGrid)
 
     // now build node-edge mapping
     Mesh mesh;
-    mesh.setState(edges, nodes);
-    Orthogonalization<Mesh> orthogonalization;
+    mesh.setMesh(edges, nodes);
+    GridGeom::Orthogonalization<Mesh> orthogonalization;
 
     orthogonalization.initialize(mesh);
 
@@ -364,13 +364,13 @@ TEST(OrthogonalizationTest, TestOrthogonalizationTriangularGrid)
 
 TEST(OrthogonalizationTest, TestOrthogonalizationFourQuads)
 {
-    using Mesh = Mesh<cartesianOperations>;
+    using Mesh = GridGeom::Mesh<GridGeom::cartesianOperations>;
 
     const int n = 3; //x
     const int m = 3; //y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<Point> nodes(n * m);
+    std::vector<GridGeom::Point> nodes(n * m);
     size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -404,8 +404,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFourQuads)
 
     // now build node-edge mapping
     Mesh mesh;
-    mesh.setState(edges, nodes);
-    Orthogonalization<Mesh> orthogonalization;
+    mesh.setMesh(edges, nodes);
+    GridGeom::Orthogonalization<Mesh> orthogonalization;
     orthogonalization.initialize(mesh);
 }
 
