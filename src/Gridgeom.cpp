@@ -4,12 +4,15 @@
 #include "Mesh.cpp"
 #include "Orthogonalization.cpp"
 
+static std::vector<std::unique_ptr<GridGeom::MeshBase>> meshInstances = std::vector<std::unique_ptr<GridGeom::MeshBase>>{};
+
 namespace GridGeomApi
 {
     GRIDGEOM_API int ggeo_new_grid(int& gridStateId)
     {
-        gridStateId = meshInstances.size() + 1;
-        meshInstances.resize(gridStateId);
+        int instanceSize = meshInstances.size();
+        meshInstances.resize(instanceSize + 1);
+        gridStateId = instanceSize; 
         return 0;
     };
 
@@ -19,7 +22,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_set_state(int gridStateId, GridGeomApi::MeshGeometryDimensions& meshGeometryDimensions, GridGeomApi::MeshGeometry& meshGeometry, bool IsGeographic)
+    GRIDGEOM_API int ggeo_set_state(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool IsGeographic)
     {
 
         std::vector<GridGeom::Edge> edges(meshGeometryDimensions.numedge);
@@ -53,7 +56,7 @@ namespace GridGeomApi
     }
 
 
-    GRIDGEOM_API int ggeo_get_mesh(int gridStateId, GridGeomApi::MeshGeometryDimensions& meshGeometryDimensions, GridGeomApi::MeshGeometry& meshGeometry)
+    GRIDGEOM_API int ggeo_get_mesh(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
 
         auto nodes = meshInstances[gridStateId]->getNodes();
@@ -83,9 +86,9 @@ namespace GridGeomApi
     }
 
     GRIDGEOM_API int ggeo_orthogonalize(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
-                           GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative, GridGeomApi::GeometryListNative& geometryListNativePolygon, GridGeomApi::GeometryListNative& geometryListNativeLandBoundaries)
+                           OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
     {
-        GridGeom::Mesh<GridGeom::cartesianOperations>* cartesianMeshPtr = dynamic_cast<GridGeom::Mesh<GridGeom::cartesianOperations>*>(meshInstances[gridStateId].get());
+        const auto cartesianMeshPtr = dynamic_cast<GridGeom::Mesh<GridGeom::cartesianOperations>*>(meshInstances[gridStateId].get());
         if(cartesianMeshPtr !=nullptr)
         {
             GridGeom::Orthogonalization<GridGeom::Mesh<GridGeom::cartesianOperations>> ortogonalization;
@@ -94,7 +97,7 @@ namespace GridGeomApi
             return 0;
         }
 
-        GridGeom::Mesh<GridGeom::sphericalOperations>* sphericalMeshPtr = dynamic_cast<GridGeom::Mesh<GridGeom::sphericalOperations>*>(meshInstances[gridStateId].get());
+        const auto sphericalMeshPtr = dynamic_cast<GridGeom::Mesh<GridGeom::sphericalOperations>*>(meshInstances[gridStateId].get());
         if (sphericalMeshPtr != nullptr)
         {
             GridGeom::Orthogonalization<GridGeom::Mesh<GridGeom::sphericalOperations>> ortogonalization;
