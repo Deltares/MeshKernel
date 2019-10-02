@@ -4,8 +4,8 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include "Operations.cpp"
-#include "Mesh.hpp"
+#include "OperationsCartesian.cpp"
+#include "OperationsSpherical.cpp"
 
 using namespace GridGeom;
 
