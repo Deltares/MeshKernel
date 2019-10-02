@@ -9,7 +9,8 @@
 
 #include "Mesh.hpp"
 #include "Constants.cpp"
-#include "Operations.cpp"
+#include "OperationsCartesian.cpp"
+#include "OperationsSpherical.cpp"
 
 template <GridGeom::OperationTypes OperationType>
 bool GridGeom::Mesh<OperationType>::setState(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes)

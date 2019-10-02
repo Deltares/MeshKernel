@@ -6,7 +6,7 @@
 
 using namespace GridGeomApi;
 
-static std::vector<std::unique_ptr<GridGeom::MeshInterface>> meshInstances;
+static std::vector<std::unique_ptr<GridGeom::MeshBase>> meshInstances;
 #ifdef __cplusplus
 extern "C" 
 {

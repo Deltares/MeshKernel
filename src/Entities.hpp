@@ -1,5 +1,4 @@
-#ifndef ENTITIES_HPP
-#define ENTITIES_HPP
+#pragma once
 
 #include <utility>
 #include <vector>
@@ -14,6 +13,10 @@ namespace GridGeom
         cartesianOperations,
         sphericalOperations
     };
+
+    // functions that depends of the point type
+    template<OperationTypes operationType>
+    struct Operations;
 
     struct Point
     {
@@ -36,9 +39,12 @@ namespace GridGeom
 
     typedef std::pair<size_t, size_t> Edge;
 
+    struct MeshBase
+    {
+        //getters..
+    };
+
     typedef Eigen::Matrix<double, Eigen::Dynamic, 1> VectorED;
     typedef Eigen::Matrix<int, Eigen::Dynamic, 1> VectorEI;
 
 }
-
-#endif

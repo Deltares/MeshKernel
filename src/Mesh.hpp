@@ -6,13 +6,8 @@
 
 namespace GridGeom 
 {
-    struct MeshInterface
-    {
-
-    };
-
     template<OperationTypes OperationType>
-    class Mesh : public MeshInterface
+    class Mesh : public MeshBase
     {
 
     public:
