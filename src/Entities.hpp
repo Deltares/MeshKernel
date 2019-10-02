@@ -14,7 +14,7 @@ namespace GridGeom
         sphericalOperations
     };
 
-    // functions that depends of the point type
+    // contains a store of static functions
     template<OperationTypes operationType>
     struct Operations;
 
@@ -41,7 +41,10 @@ namespace GridGeom
 
     struct MeshBase
     {
-        //getters..
+        virtual bool setMesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes) = 0;
+        virtual std::vector<Point>& getNodes() = 0;
+        virtual std::vector<Edge>& getEdges() = 0;
+        virtual int getNumFaces() = 0;
     };
 
     typedef Eigen::Matrix<double, Eigen::Dynamic, 1> VectorED;

@@ -13,7 +13,10 @@ namespace GridGeom
     public:
         typedef Operations<OperationType> Operations;
 
-        bool setState(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes);
+        bool setMesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes) override;
+        std::vector<Point>& getNodes() override;
+        std::vector<Edge>& getEdges() override;
+        int getNumFaces() override;
 
         const double m_dcenterinside = 1.0;
 
