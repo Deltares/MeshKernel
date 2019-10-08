@@ -86,6 +86,20 @@ namespace GridGeom
         return windingNumber == 0 ? false : true;
     }
 
+    template <typename T>
+    T findIndex(const std::vector<T>& vec, const T& el)
+    {
+        T index = 0;
+        for (int n = 0; n < vec.size(); n++)
+        {
+            if (vec[n] == el)
+            {
+                index = n;
+                break;
+            }
+        }
+        return index;
+    }
 
     //faceAreaAndCenterOfMass: for cartesian, spherical point and spherical3dPoint
     template<OperationTypes operationType>
