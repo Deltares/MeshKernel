@@ -33,14 +33,7 @@ namespace GridGeomApi
 
         double* layer_zs = nullptr;
         double* interface_zs = nullptr;
-
-        const char* nodeids = nullptr;
-        const char* nodelongnames = nullptr;
-        const char* nbranchids = nullptr;
-        const char* nbranchlongnames = nullptr;
-        const char* nnodeids = nullptr;
-        const char* nnodelongnames = nullptr;
-        int          startIndex = 1;
+        int     startIndex = 0;
     };
 }
 
