@@ -13,30 +13,29 @@ namespace GridGeom
     public:
         typedef Operations<OperationType> Operations;
 
-        bool setMesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes) override;
-        std::vector<Point>& getNodes() override;
-        std::vector<Edge>& getEdges() override;
+        bool setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes) override;
+        bool setState() override;
         int getNumFaces() override;
 
         const double m_dcenterinside = 1.0;
 
-        std::vector<GridGeom::Edge> m_edges;                        //KN
-        std::vector<Point> m_nodes;                                 //KN
-        std::vector<std::vector<size_t>> m_nodesEdges;              //NOD
-        std::vector<size_t> m_nodesNumEdges;                        //NMK
+        std::vector<Edge>  m_edges;                                 // KN
+        std::vector<Point> m_nodes;                                 // KN
+        std::vector<std::vector<size_t>> m_nodesEdges;              // NOD
+        std::vector<size_t> m_nodesNumEdges;                        // NMK
 
         //edges
-        std::vector<size_t> m_edgesNumFaces;                        //LNN
-        std::vector<std::vector<int>> m_edgesFaces;                 //LNE
+        std::vector<size_t> m_edgesNumFaces;                        // LNN
+        std::vector<std::vector<int>> m_edgesFaces;                 // LNE
 
         // faces
-        std::vector<std::vector<size_t>> m_facesNodes;              //netcell%Nod, the nodes composing the faces, in ccw order
-        std::vector<std::vector<size_t>> m_facesEdges;              //netcell%lin
-        std::vector<Point>   m_facesCircumcenters;                  //xz  the face circumcenter
-        std::vector<Point>   m_facesMassCenters;                    //xzw the faces canters of mass
+        std::vector<std::vector<size_t>> m_facesNodes;              // netcell%Nod, the nodes composing the faces, in ccw order
+        std::vector<std::vector<size_t>> m_facesEdges;              // netcell%lin
+        std::vector<Point>   m_facesCircumcenters;                  // xz  the face circumcenter
+        std::vector<Point>   m_facesMassCenters;                    // xzw the faces canters of mass
 
-        size_t m_numFaces;                                          //NUMP
-        std::vector<double> m_faceArea;                             //Face area
+        size_t m_numFaces;                                          // NUMP
+        std::vector<double> m_faceArea;                             // Face area
 
         void facesAreasAndMassCenters();
 
