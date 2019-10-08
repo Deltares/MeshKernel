@@ -13,7 +13,7 @@
 #include "OperationsSpherical.cpp"
 
 template <GridGeom::OperationTypes OperationType>
-bool GridGeom::Mesh<OperationType>::setMesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes)
+bool GridGeom::Mesh<OperationType>::setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes)
 {
     // return
     if( edges.size()==0 || nodes.size() == 0)
@@ -27,7 +27,7 @@ bool GridGeom::Mesh<OperationType>::setMesh(const std::vector<GridGeom::Edge>& e
 
     //allocate
     m_nodesNumEdges.resize(m_nodes.size());
-    m_nodesEdges.resize(m_nodes.size(), std::vector<size_t>(GridGeom::maximumNumberOfEdgesPerNode, 0));
+    m_nodesEdges.resize(m_nodes.size(), std::vector<size_t>(maximumNumberOfEdgesPerNode, 0));
     m_edgesNumFaces.resize(m_edges.size());
     m_numFaces = 0;
     m_edgesFaces.resize(edges.size(), std::vector<int>(2, -1));
@@ -53,15 +53,28 @@ bool GridGeom::Mesh<OperationType>::setMesh(const std::vector<GridGeom::Edge>& e
 };
 
 template <GridGeom::OperationTypes OperationType>
-std::vector<GridGeom::Point>& GridGeom::Mesh<OperationType>::getNodes()
+bool GridGeom::Mesh<OperationType>::setState()
 {
-    return m_nodes;
-}
+    //Used for internal state
+    m_nodex.resize(m_nodes.size());
+    m_nodey.resize(m_nodes.size());
+    m_nodez.resize(m_nodes.size(), 0.0);
+    for (int n = 0; n < m_nodex.size(); n++)
+    {
+        m_nodex[n] = m_nodes[n].x;
+        m_nodey[n] = m_nodes[n].y;
+    }
 
-template <GridGeom::OperationTypes OperationType>
-std::vector<GridGeom::Edge>& GridGeom::Mesh<OperationType>::getEdges()
-{
-    return m_edges;
+    m_edgeNodes.resize(m_edges.size() * 2);
+    int ei = 0;
+    for (int e = 0; e < m_edges.size(); e++)
+    {
+        m_edgeNodes[ei] = m_edges[e].first;
+        ei++;
+        m_edgeNodes[ei] = m_edges[e].second;
+        ei++;
+    }
+    return true;
 }
 
 template <GridGeom::OperationTypes OperationType>

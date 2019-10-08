@@ -9,12 +9,10 @@
 
 namespace GridGeom
 {
-
     template<typename Mesh>
     class Orthogonalization
     {
     public:
-
         typedef typename Mesh::Operations Operations;
 
         enum class NodeTypes
@@ -87,8 +85,8 @@ namespace GridGeom
 
         bool iterate(Mesh& mesh)
         {
-            std::vector< std::vector<double>> ww2x;
-            std::vector< std::vector<double>> ww2y;
+            std::vector<std::vector<double>> ww2x;
+            std::vector<std::vector<double>> ww2y;
             if (m_smoothorarea != 1)
             {
                 ww2x.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
@@ -545,16 +543,6 @@ namespace GridGeom
             // the current topology index
             int topologyIndex = m_nodeTopologyMapping[currentNode];
 
-            // TODO: AVOID DEEP COPIES
-            auto Az = m_Az[topologyIndex];
-            auto Gxi = m_Gxi[topologyIndex];
-            auto Geta = m_Geta[topologyIndex];
-            auto Divxi = m_Divxi[topologyIndex];
-            auto Diveta = m_Diveta[topologyIndex];
-            auto Jxi = m_Jxi[topologyIndex];
-            auto Jeta = m_Jeta[topologyIndex];
-            auto ww2 = m_ww2[topologyIndex];
-
             for (int f = 0; f < numSharedFaces; f++)
             {
                 if (sharedFaces[f] < 0 || m_nodesTypes[currentNode] == 3) continue;
@@ -584,15 +572,15 @@ namespace GridGeom
                     double alphaLeft = 0.5 * (1.0 - edgeLeftSquaredDistance / edgeRightSquaredDistance * cDPhi) * alpha;
                     double alphaRight = 0.5 * (1.0 - edgeRightSquaredDistance / edgeLeftSquaredDistance * cDPhi) * alpha;
 
-                    Az[f][faceNodeMapping[f][nodeIndex]] = 1.0 - (alphaLeft + alphaRight);
-                    Az[f][faceNodeMapping[f][nodeLeft]] = alphaLeft;
-                    Az[f][faceNodeMapping[f][nodeRight]] = alphaRight;
+                    m_Az[topologyIndex][f][faceNodeMapping[f][nodeIndex]] = 1.0 - (alphaLeft + alphaRight);
+                    m_Az[topologyIndex][f][faceNodeMapping[f][nodeLeft]] = alphaLeft;
+                    m_Az[topologyIndex][f][faceNodeMapping[f][nodeRight]] = alphaRight;
                 }
                 else
                 {
                     for (int i = 0; i < faceNodeMapping[f].size(); i++)
                     {
-                        Az[f][faceNodeMapping[f][i]] = 1.0 / double(numFaceNodes);
+                        m_Az[topologyIndex][f][faceNodeMapping[f][i]] = 1.0 / double(numFaceNodes);
                     }
                 }
             }
@@ -651,10 +639,10 @@ namespace GridGeom
 
                     for (int i = 0; i < numConnectedNodes; i++)
                     {
-                        leftXi += xi[i] * Az[faceLeftIndex][i];
-                        leftEta += eta[i] * Az[faceLeftIndex][i];
-                        m_leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceLeftIndex][i];
-                        m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceLeftIndex][i];
+                        leftXi += xi[i] * m_Az[topologyIndex][faceLeftIndex][i];
+                        leftEta += eta[i] * m_Az[topologyIndex][faceLeftIndex][i];
+                        m_leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[topologyIndex][faceLeftIndex][i];
+                        m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[topologyIndex][faceLeftIndex][i];
                     }
 
 
@@ -694,15 +682,15 @@ namespace GridGeom
 
                     for (int i = 0; i < numConnectedNodes; i++)
                     {
-                        leftXi += xi[i] * Az[faceLeftIndex][i];
-                        leftEta += eta[i] * Az[faceLeftIndex][i];
-                        rightXi += xi[i] * Az[faceRightIndex][i];
-                        rightEta += eta[i] * Az[faceRightIndex][i];
+                        leftXi += xi[i] * m_Az[topologyIndex][faceLeftIndex][i];
+                        leftEta += eta[i] * m_Az[topologyIndex][faceLeftIndex][i];
+                        rightXi += xi[i] * m_Az[topologyIndex][faceRightIndex][i];
+                        rightEta += eta[i] * m_Az[topologyIndex][faceRightIndex][i];
 
-                        m_leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceLeftIndex][i];
-                        m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceLeftIndex][i];
-                        m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * Az[faceRightIndex][i];
-                        m_rightYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * Az[faceRightIndex][i];
+                        m_leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[topologyIndex][faceLeftIndex][i];
+                        m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[topologyIndex][faceLeftIndex][i];
+                        m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[topologyIndex][faceRightIndex][i];
+                        m_rightYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[topologyIndex][faceRightIndex][i];
                     }
                 }
 
@@ -741,31 +729,31 @@ namespace GridGeom
                 int node0 = 0;
                 for (int i = 0; i < numConnectedNodes; i++)
                 {
-                    Gxi[f][i] = facxiL * Az[faceLeftIndex][i];
-                    Geta[f][i] = facetaL * Az[faceLeftIndex][i];
+                    m_Gxi[topologyIndex][f][i] = facxiL * m_Az[topologyIndex][faceLeftIndex][i];
+                    m_Geta[topologyIndex][f][i] = facetaL * m_Az[topologyIndex][faceLeftIndex][i];
                     if (mesh.m_edgesNumFaces[edgeIndex] == 2)
                     {
-                        Gxi[f][i] = Gxi[f][i] + facxiR * Az[faceRightIndex][i];
-                        Geta[f][i] = Geta[f][i] + facetaR * Az[faceRightIndex][i];
+                        m_Gxi[topologyIndex][f][i] = m_Gxi[topologyIndex][f][i] + facxiR * m_Az[topologyIndex][faceRightIndex][i];
+                        m_Geta[topologyIndex][f][i] = m_Geta[topologyIndex][f][i] + facetaR * m_Az[topologyIndex][faceRightIndex][i];
                     }
                 }
 
 
-                Gxi[f][node1] = Gxi[f][node1] + facxi1;
-                Geta[f][node1] = Geta[f][node1] + faceta1;
+                m_Gxi[topologyIndex][f][node1] = m_Gxi[topologyIndex][f][node1] + facxi1;
+                m_Geta[topologyIndex][f][node1] = m_Geta[topologyIndex][f][node1] + faceta1;
 
-                Gxi[f][node0] = Gxi[f][node0] + facxi0;
-                Geta[f][node0] = Geta[f][node0] + faceta0;
+                m_Gxi[topologyIndex][f][node0] = m_Gxi[topologyIndex][f][node0] + facxi0;
+                m_Geta[topologyIndex][f][node0] = m_Geta[topologyIndex][f][node0] + faceta0;
 
                 //fill the node - based gradient matrix
-                Divxi[f] = -eetaLR * leftRightSwap;
-                Diveta[f] = exiLR * leftRightSwap;
+                m_Divxi[topologyIndex][f] = -eetaLR * leftRightSwap;
+                m_Diveta[topologyIndex][f] = exiLR * leftRightSwap;
 
                 // boundary link
                 if (mesh.m_edgesNumFaces[edgeIndex] == 1)
                 {
-                    Divxi[f] = 0.5 * Divxi[f] + etaBoundary * leftRightSwap;
-                    Diveta[f] = 0.5 * Diveta[f] - xiBoundary * leftRightSwap;
+                    m_Divxi[topologyIndex][f] = 0.5 * m_Divxi[topologyIndex][f] + etaBoundary * leftRightSwap;
+                    m_Diveta[topologyIndex][f] = 0.5 * m_Diveta[topologyIndex][f] - xiBoundary * leftRightSwap;
                 }
 
 
@@ -774,14 +762,14 @@ namespace GridGeom
             double volxi = 0.0;
             for (int i = 0; i < mesh.m_nodesNumEdges[currentNode]; i++)
             {
-                volxi += 0.5 * (Divxi[i] * m_xis[i] + Diveta[i] * m_etas[i]);
+                volxi += 0.5 * (m_Divxi[topologyIndex][i] * m_xis[i] + m_Diveta[topologyIndex][i] * m_etas[i]);
             }
             if (volxi == 0.0)volxi = 1.0;
 
             for (int i = 0; i < mesh.m_nodesNumEdges[currentNode]; i++)
             {
-                Divxi[i] = Divxi[i] / volxi;
-                Diveta[i] = Diveta[i] / volxi;
+                m_Divxi[topologyIndex][i] = m_Divxi[topologyIndex][i] / volxi;
+                m_Diveta[topologyIndex][i] = m_Diveta[topologyIndex][i] / volxi;
             }
 
             //compute the node-to-node gradients
@@ -797,37 +785,28 @@ namespace GridGeom
                     }
                     for (int i = 0; i < numConnectedNodes; i++)
                     {
-                        Jxi[i] += Divxi[f] * 0.5 * (Az[f][i] + Az[rightNode][i]);
-                        Jeta[i] += Diveta[f] * 0.5 * (Az[f][i] + Az[rightNode][i]);
+                        m_Jxi[topologyIndex][i] += m_Divxi[topologyIndex][f] * 0.5 * (m_Az[topologyIndex][f][i] + m_Az[topologyIndex][rightNode][i]);
+                        m_Jeta[topologyIndex][i] += m_Diveta[topologyIndex][f] * 0.5 * (m_Az[topologyIndex][f][i] + m_Az[topologyIndex][rightNode][i]);
                     }
                 }
                 else
                 {
-                    Jxi[0] = Jxi[0] + Divxi[f] * 0.5;
-                    Jxi[f + 1] = Jxi[f + 1] + Divxi[f] * 0.5;
-                    Jeta[0] = Jeta[0] + Diveta[f] * 0.5;
-                    Jeta[f + 1] = Jeta[f + 1] + Diveta[f] * 0.5;
+                    m_Jxi[topologyIndex][0] = m_Jxi[topologyIndex][0] + m_Divxi[topologyIndex][f] * 0.5;
+                    m_Jxi[topologyIndex][f + 1] = m_Jxi[topologyIndex][f + 1] + m_Divxi[topologyIndex][f] * 0.5;
+                    m_Jeta[topologyIndex][0] = m_Jeta[topologyIndex][0] + m_Diveta[topologyIndex][f] * 0.5;
+                    m_Jeta[topologyIndex][f + 1] = m_Jeta[topologyIndex][f + 1] + m_Diveta[topologyIndex][f] * 0.5;
                 }
             }
 
             //compute the weights in the Laplacian smoother
-            std::fill(ww2.begin(), ww2.end(), 0.0);
+            std::fill(m_ww2[topologyIndex].begin(), m_ww2[topologyIndex].end(), 0.0);
             for (int n = 0; n < mesh.m_nodesNumEdges[currentNode]; n++)
             {
                 for (int i = 0; i < numConnectedNodes; i++)
                 {
-                    ww2[i] += Divxi[n] * Gxi[n][i] + Diveta[n] * Geta[n][i];
+                    m_ww2[topologyIndex][i] += m_Divxi[topologyIndex][n] * m_Gxi[topologyIndex][n][i] + m_Diveta[topologyIndex][n] * m_Geta[topologyIndex][n][i];
                 }
             }
-
-            m_Az[topologyIndex] = Az;
-            m_Gxi[topologyIndex] = Gxi;
-            m_Geta[topologyIndex] = Geta;
-            m_Divxi[topologyIndex] = Divxi;
-            m_Diveta[topologyIndex] = Diveta;
-            m_Jxi[topologyIndex] = Jxi;
-            m_Jeta[topologyIndex] = Jeta;
-            m_ww2[topologyIndex] = ww2;
 
             return true;
         }
