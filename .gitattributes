@@ -22,6 +22,7 @@ src/Operations.cpp -text
 src/OperationsCartesian.cpp -text
 src/OperationsSpherical.cpp -text
 src/Orthogonalization.cpp -text
+src/Orthogonalization.hpp -text
 src/OrthogonalizationParametersNative.hpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/MeshTest.cpp -text
