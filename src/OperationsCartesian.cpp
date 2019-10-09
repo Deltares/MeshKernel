@@ -4,15 +4,17 @@
 #include "Entities.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
+#include "IOperations.hpp"
 
 namespace GridGeom
 {
     // cartesian points
-    template <>
-    struct Operations<cartesianOperations>
+    struct OperationsCartesian: IOperations
     {
+        OperationsCartesian() = default;
+
         //normalout, Creates the relative unit normal vector to edge 1->2
-        static void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result)
+        void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result) override
         {
             double dx = getDx(firstPoint, secondPoint);
             double dy = getDy(firstPoint, secondPoint);
@@ -26,7 +28,7 @@ namespace GridGeom
         }
 
         //normaloutchk
-        static void normalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, bool& flippedNormal)
+        void normalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, bool& flippedNormal) override
         {
             normalVector(firstPoint, secondPoint, insidePoint, result);
             flippedNormal = false;
@@ -44,23 +46,23 @@ namespace GridGeom
             }
         }
 
-        static double getDx(const Point& firstPoint, const Point& secondPoint)
+        double getDx(const Point& firstPoint, const Point& secondPoint) override
         {
             return secondPoint.x - firstPoint.x;
         }
 
-        static double getDy(const Point& firstPoint, const Point& secondPoint)
+        double getDy(const Point& firstPoint, const Point& secondPoint) override
         {
             return secondPoint.y - firstPoint.y;
         }
 
-        static void add(Point& point, const Point& normal, const double increment)
+        void add(Point& point, const Point& normal, const double increment) override
         {
             point.x = point.x + normal.x * increment;
             point.y = point.y + normal.y * increment;
         }
 
-        static void referencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY)
+        void referencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY) override
         {
             minX = std::numeric_limits<double>::max();
             minY = std::numeric_limits<double>::max();
@@ -78,7 +80,7 @@ namespace GridGeom
         }
 
         //dbdistance
-        static double distance(const Point& firstPoint, const Point& secondPoint)
+        double distance(const Point& firstPoint, const Point& secondPoint) override
         {
             double dx = getDx(firstPoint, secondPoint);
             double dy = getDy(firstPoint, secondPoint);
@@ -92,7 +94,7 @@ namespace GridGeom
         }
 
         //dLINEDIS3
-        static double distanceFromLine(const Point& p3, const Point& p1, const Point& p2, Point& normalPoint, double& rlout)
+        double distanceFromLine(const Point& p3, const Point& p1, const Point& p2, Point& normalPoint, double& rlout) override
         {
             double dis = 0.0;
             double r2 = distance(p2, p1);
@@ -108,7 +110,7 @@ namespace GridGeom
         }
 
         //out product of two segments
-        static double outerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment)
+        double outerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment) override
         {
             double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment);
             double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment);
@@ -120,7 +122,7 @@ namespace GridGeom
         }
 
         //inner product of two segments
-        static double innerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment)
+        double innerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment) override
         {
             double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment);
             double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment);
@@ -132,14 +134,14 @@ namespace GridGeom
         }
 
 
-        static bool orthogonalizationComputeLocalCoordinates(const std::vector<size_t>& m_nodesNumEdges, const std::vector<size_t>& numConnectedNodes, std::vector<int>& localCoordinates)
+        bool orthogonalizationComputeLocalCoordinates(const std::vector<size_t>& m_nodesNumEdges, const std::vector<size_t>& numConnectedNodes, std::vector<int>& localCoordinates) override
         {
             //do nothing
             return true;
         }
 
 
-        static inline bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<Point>& nodes, std::vector<double>& J)
+        bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<Point>& nodes, std::vector<double>& J) override
         {
             J[0] = 0.0; 
             J[1] = 0.0;
@@ -155,7 +157,7 @@ namespace GridGeom
             return true;
         }
 
-        static  bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<Point>& nodes, double& dx0, double& dy0, std::vector<double>& increments)
+        bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<Point>& nodes, double& dx0, double& dy0, std::vector<double>& increments) override
         {
 
             increments[0] += wwx;
@@ -166,7 +168,7 @@ namespace GridGeom
             return true;
         }
 
-        static bool orthogonalizationComputeCoordinates(double dx0, double dy0, const Point& point, Point& updatedPoint)
+        bool orthogonalizationComputeCoordinates(double dx0, double dy0, const Point& point, Point& updatedPoint) override
         {
             double x0 = point.x + dx0;
             double y0 = point.y + dy0;
@@ -178,7 +180,7 @@ namespace GridGeom
             return true;
         }
 
-        static bool circumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Point& circumcenter)
+        bool circumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Point& circumcenter) override
         {
             double dx2 = getDx(p1, p2);
             double dy2 = getDy(p1, p2);

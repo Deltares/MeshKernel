@@ -39,18 +39,6 @@ namespace GridGeom
 
     typedef std::pair<size_t, size_t> Edge;
 
-    struct MeshBase
-    {
-        virtual bool setMesh(const std::vector<GridGeom::Edge>& edges, const std::vector<Point>& nodes) = 0;
-        virtual bool setState() = 0;
-        virtual int getNumFaces() = 0;
-        //Used for internal state
-        std::vector<double> m_nodex;
-        std::vector<double> m_nodey;
-        std::vector<double> m_nodez;
-        std::vector<int>    m_edgeNodes;
-    };
-
     typedef Eigen::Matrix<double, Eigen::Dynamic, 1> VectorED;
     typedef Eigen::Matrix<int, Eigen::Dynamic, 1> VectorEI;
 

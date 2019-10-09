@@ -9,11 +9,9 @@
 
 #include "Mesh.hpp"
 #include "Constants.cpp"
-#include "OperationsCartesian.cpp"
-#include "OperationsSpherical.cpp"
+#include "Operations.cpp"
 
-template <GridGeom::OperationTypes OperationType>
-bool GridGeom::Mesh<OperationType>::setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes)
+bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes)
 {
     // return
     if( edges.size()==0 || nodes.size() == 0)
@@ -52,8 +50,8 @@ bool GridGeom::Mesh<OperationType>::setMesh(const std::vector<Edge>& edges, cons
     return true;
 };
 
-template <GridGeom::OperationTypes OperationType>
-bool GridGeom::Mesh<OperationType>::setState()
+
+bool GridGeom::Mesh::setState()
 {
     //Used for internal state
     m_nodex.resize(m_nodes.size());
@@ -77,14 +75,7 @@ bool GridGeom::Mesh<OperationType>::setState()
     return true;
 }
 
-template <GridGeom::OperationTypes OperationType>
-int GridGeom::Mesh<OperationType>::getNumFaces()
-{
-    return m_numFaces;
-}
-
-template <GridGeom::OperationTypes OperationType>
-void GridGeom::Mesh<OperationType>::NodeAdministration()
+void GridGeom::Mesh::NodeAdministration()
 {
     // assume no duplicated links
     for (size_t e = 0; e < m_edges.size(); e++)
@@ -104,8 +95,8 @@ void GridGeom::Mesh<OperationType>::NodeAdministration()
     }
 };
 
-template <GridGeom::OperationTypes OperationType>
-void GridGeom::Mesh<OperationType>::SortEdgesInCounterClockWiseOrder()
+
+void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
 {
     std::vector<double> edgesAngles(GridGeom::maximumNumberOfEdgesPerNode, 0.0);
     for (size_t node = 0; node < m_nodes.size(); node++)
@@ -124,8 +115,8 @@ void GridGeom::Mesh<OperationType>::SortEdgesInCounterClockWiseOrder()
                 firstNode = node;
             }
 
-            double deltaX = Operations::getDx(m_nodes[secondNode], m_nodes[firstNode]);
-            double deltaY = Operations::getDy(m_nodes[secondNode], m_nodes[firstNode]);
+            double deltaX = m_operations->getDx(m_nodes[secondNode], m_nodes[firstNode]);
+            double deltaY = m_operations->getDy(m_nodes[secondNode], m_nodes[firstNode]);
             if (abs(deltaX) < GridGeom::minimumDeltaCoordinate && abs(deltaY) < GridGeom::minimumDeltaCoordinate)
             {
                 if (deltaY < 0.0)
@@ -169,8 +160,8 @@ void GridGeom::Mesh<OperationType>::SortEdgesInCounterClockWiseOrder()
 }
 
 // find cells
-template <GridGeom::OperationTypes OperationType>
-void GridGeom::Mesh<OperationType>::findFaces(const int& numEdges)
+
+void GridGeom::Mesh::findFaces(const int& numEdges)
 {
 
     std::vector<size_t> foundEdges(numEdges);
@@ -301,8 +292,8 @@ void GridGeom::Mesh<OperationType>::findFaces(const int& numEdges)
     }
 }
 
-template <GridGeom::OperationTypes OperationType>
-void GridGeom::Mesh<OperationType>::faceCircumcenters(const double& weightCircumCenter)
+
+void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
 {
     m_facesCircumcenters.resize(m_facesNodes.size());
     std::vector<Point> middlePoints(GridGeom::maximumNumberOfNodesPerFace);
@@ -316,7 +307,7 @@ void GridGeom::Mesh<OperationType>::faceCircumcenters(const double& weightCircum
         size_t numberOfFaceNodes = m_facesNodes[f].size();
         if (numberOfFaceNodes == 3)
         {
-            Operations::circumcenterOfTriangle(m_nodes[m_facesNodes[f][0]], m_nodes[m_facesNodes[f][1]], m_nodes[m_facesNodes[f][2]], m_facesCircumcenters[f]);
+            m_operations->circumcenterOfTriangle(m_nodes[m_facesNodes[f][0]], m_nodes[m_facesNodes[f][1]], m_nodes[m_facesNodes[f][2]], m_facesCircumcenters[f]);
         }
         else
         {
@@ -352,7 +343,7 @@ void GridGeom::Mesh<OperationType>::faceCircumcenters(const double& weightCircum
                     if (nextNode == numberOfFaceNodes) nextNode = 0;
                     middlePoints[n].x = 0.5 * (localFace[n].x + localFace[nextNode].x);
                     middlePoints[n].y = 0.5 * (localFace[n].y + localFace[nextNode].y);
-                    Operations::normalVector(localFace[n], localFace[nextNode], middlePoints[n], normals[n]);
+                    m_operations->normalVector(localFace[n], localFace[nextNode], middlePoints[n], normals[n]);
                 }
 
                 Point previousCircumCenter = estimatedCircumCenter;
@@ -365,10 +356,10 @@ void GridGeom::Mesh<OperationType>::faceCircumcenters(const double& weightCircum
                         {
                             int nextNode = n + 1;
                             if (nextNode == numberOfFaceNodes) nextNode = 0;
-                            double dx = Operations::getDx(middlePoints[n], estimatedCircumCenter);
-                            double dy = Operations::getDy(middlePoints[n], estimatedCircumCenter);
-                            double increment = -0.1 * GridGeom::dotProduct(dx, dy, normals[n].x, normals[n].y);
-                            Operations::add(estimatedCircumCenter, normals[n], increment);
+                            double dx = m_operations->getDx(middlePoints[n], estimatedCircumCenter);
+                            double dy = m_operations->getDy(middlePoints[n], estimatedCircumCenter);
+                            double increment = -0.1 * dotProduct(dx, dy, normals[n].x, normals[n].y);
+                            m_operations->add(estimatedCircumCenter, normals[n], increment);
                         }
                     }
                     if (iter > 0 &&
@@ -416,8 +407,8 @@ void GridGeom::Mesh<OperationType>::faceCircumcenters(const double& weightCircum
     }
 }
 
-template <GridGeom::OperationTypes OperationType>
-void GridGeom::Mesh<OperationType>::facesAreasAndMassCenters()
+
+void GridGeom::Mesh::facesAreasAndMassCenters()
 {
     // polygon coordinates 
     m_faceArea.resize(m_facesNodes.size());
@@ -435,7 +426,7 @@ void GridGeom::Mesh<OperationType>::facesAreasAndMassCenters()
         }
         localFace[numberOfFaceNodes] = localFace[0];
         area = 0.0;
-        faceAreaAndCenterOfMass<OperationType>(localFace, numberOfFaceNodes, area, centerOfMass);
+        faceAreaAndCenterOfMass(localFace, numberOfFaceNodes, area, centerOfMass, m_operations);
         m_faceArea[f] = area;
         m_facesMassCenters[f].x = centerOfMass.x;
         m_facesMassCenters[f].y = centerOfMass.y;

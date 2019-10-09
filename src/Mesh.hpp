@@ -2,22 +2,26 @@
 
 #include <vector>
 #include "Entities.hpp"
-#include "Operations.cpp"
+#include "IOperations.hpp"
 
 namespace GridGeom 
 {
-    template<OperationTypes OperationType>
-    class Mesh : public MeshBase
+    class Mesh
     {
-
     public:
-        typedef Operations<OperationType> Operations;
+        Mesh()
+        {
+        }
 
-        bool setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes) override;
-        bool setState() override;
-        int getNumFaces() override;
+        explicit Mesh(IOperations* operations)
+            : m_operations(operations)
+        {
+        }
 
-        const double m_dcenterinside = 1.0;
+        bool setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes);
+        bool setState();
+
+        double m_dcenterinside = 1.0;
 
         std::vector<Edge>  m_edges;                                 // KN
         std::vector<Point> m_nodes;                                 // KN
@@ -36,6 +40,14 @@ namespace GridGeom
 
         size_t m_numFaces;                                          // NUMP
         std::vector<double> m_faceArea;                             // Face area
+
+        IOperations* m_operations;                                  // Run-time selection of the operations to perform
+        
+        //Used for internal state
+        std::vector<double> m_nodex;
+        std::vector<double> m_nodey;
+        std::vector<double> m_nodez;
+        std::vector<int>    m_edgeNodes;
 
         void facesAreasAndMassCenters();
 

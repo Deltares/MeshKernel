@@ -3,6 +3,7 @@
 #include <cmath>
 #include "Entities.hpp"
 #include "Constants.cpp"
+#include "IOperations.hpp"
 
 #include <boost/geometry/geometries/segment.hpp> 
 #include <boost/geometry/geometries/register/point.hpp>
@@ -102,8 +103,7 @@ namespace GridGeom
     }
 
     //faceAreaAndCenterOfMass: for cartesian, spherical point and spherical3dPoint
-    template<OperationTypes operationType>
-    static bool faceAreaAndCenterOfMass(std::vector<Point>& polygon, const int numberOfPolygonPoints, double& area, Point& centerOfMass)
+    static bool faceAreaAndCenterOfMass(std::vector<Point>& polygon, const int numberOfPolygonPoints, double& area, Point& centerOfMass, IOperations* operations)
     {
         if (numberOfPolygonPoints < 1)
         {
@@ -112,7 +112,7 @@ namespace GridGeom
         
         double minX = std::numeric_limits<double>::max();
         double minY = std::numeric_limits<double>::max();
-        Operations<operationType>::referencePoint(polygon, numberOfPolygonPoints, minX, minY);
+        operations->referencePoint(polygon, numberOfPolygonPoints, minX, minY);
 
         Point reference{ minX, minY };
         area = 0.0;
@@ -120,16 +120,16 @@ namespace GridGeom
         double yCenterOfMass = 0.0;
         for (int p = 0; p < numberOfPolygonPoints; p++)
         {
-            double dx0 = Operations<operationType>::getDx(reference, polygon[p]);
-            double dy0 = Operations<operationType>::getDy(reference, polygon[p]);
-            double dx1 = Operations<operationType>::getDx(reference, polygon[p + 1]);
-            double dy1 = Operations<operationType>::getDy(reference, polygon[p + 1]);
+            double dx0 = operations->getDx(reference, polygon[p]);
+            double dy0 = operations->getDy(reference, polygon[p]);
+            double dx1 = operations->getDx(reference, polygon[p + 1]);
+            double dy1 = operations->getDy(reference, polygon[p + 1]);
 
             double xc = 0.5 * (dx0 + dx1);
             double yc = 0.5 * (dy0 + dy1);
 
-            dx0 = Operations<operationType>::getDx(polygon[p], polygon[p + 1]);
-            dy0 = Operations<operationType>::getDy(polygon[p], polygon[p + 1]);
+            dx0 = operations->getDx(polygon[p], polygon[p + 1]);
+            dy0 = operations->getDy(polygon[p], polygon[p + 1]);
             double dsx = dy0;
             double dsy = -dx0;
             double xds = xc * dsx + yc * dsy;
@@ -143,11 +143,11 @@ namespace GridGeom
         xCenterOfMass = fac * xCenterOfMass;
         yCenterOfMass = fac * yCenterOfMass;
 
-        if constexpr (operationType == sphericalOperations)
-        {
-            yCenterOfMass = yCenterOfMass / (earth_radius * degrad_hp);
-            xCenterOfMass = xCenterOfMass / (earth_radius * degrad_hp * cos((yCenterOfMass + minY) * degrad_hp));
-        }
+        //if constexpr (operationType == sphericalOperations)
+        //{
+        //    yCenterOfMass = yCenterOfMass / (earth_radius * degrad_hp);
+        //    xCenterOfMass = xCenterOfMass / (earth_radius * degrad_hp * cos((yCenterOfMass + minY) * degrad_hp));
+        //}
 
         centerOfMass.x = xCenterOfMass + minX;
         centerOfMass.y = yCenterOfMass + minY;
