@@ -13,8 +13,57 @@ namespace GridGeom
         
         bool initialize(const Mesh& mesh);
         bool iterate(Mesh& mesh);
+        //prepare iterations
 
+        // before boundary and inner iterations
+        bool computeAllWeightsAndOperators(const Mesh& mesh);
+
+        // inner iteration
+        bool innerIteration(Mesh& mesh);
+    
     private:
+
+        /// @brief orthonet_project_on_boundary: project boundary-nodes back to the boundary of an original net
+        bool projectOnBoundary(Mesh& mesh);
+
+        /// @brief orthonet_compweights_smooth: inverse - mapping elliptic smoother
+        bool computeWeightsSmoother(const Mesh& mesh);
+
+        bool computeSmootherOperators(const Mesh& mesh);
+
+        /// @brief orthonet_comp_operators, compute coefficient matrix G of gradient at link, compute coefficientmatrix Div of gradient in node, compute coefficientmatrix Az of cell - center in cell
+        bool computeOperatorsNode(const Mesh& mesh, const int currentNode, const size_t& numConnectedNodes, const std::vector<size_t>& connectedNodes, const size_t& numSharedFaces, const std::vector<int>& sharedFaces,
+            const std::vector<double>& xi, const std::vector<double>& eta, const std::vector<std::vector<size_t>>& faceNodeMapping);
+
+        /// @brief orthonet_assign_xieta: assign xiand eta to all nodes in the stencil
+        bool computeXiEta(const Mesh& mesh, int currentNode, const std::vector<int>& sharedFaces, const int& numSharedFaces, const std::vector<size_t>& connectedNodes,
+            const size_t& numConnectedNodes, const std::vector<std::vector<size_t>>& faceNodeMapping, std::vector<double>& xi, std::vector<double>& eta);
+
+        bool computeFacesNumEdges(const Mesh& mesh);
+
+        /// @brief  computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face.
+        bool orthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<size_t>>& faceNodeMapping);
+
+        double optimalEdgeAngle(int numFaceNodes, double theta1 = -1.0, double theta2 = -1.0, bool isBoundaryEdge = false);
+
+        /// @brief  orthonet_compute_aspect: compute link - based aspect ratios
+        bool aspectRatio(const Mesh& mesh);
+
+        /// @brief makenetnodescoding: computes node types
+        bool classifyNodes(const Mesh& mesh);
+
+        /// @brief orthonet_compweights: compute weights wwand right - hand side rhs in orthogonalizer
+        bool computeWeightsOrthogonalizer(const Mesh& mesh);
+
+        double matrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents);
+
+        bool initializeTopologies(const Mesh& mesh);
+
+        bool allocateNodeOperators(const int topologyIndex);
+
+        /// @brief save only the unique topologies
+        bool saveTopology(int currentNode, const std::vector<int>& sharedFaces, int numSharedFaces, const std::vector<size_t>& connectedNodes, int numConnectedNodes,
+            const std::vector<std::vector<size_t>>& faceNodeMapping, const std::vector<double>& xi, const std::vector<double>& eta);
 
         typedef typename Mesh::Operations Operations;
 
@@ -79,80 +128,13 @@ namespace GridGeom
         std::vector<double> m_xis;
         std::vector<double> m_etas;
 
-        //orthonet_project_on_boundary: project boundary-nodes back to the boundary of an original net
-        bool projectOnBoundary(Mesh& mesh, std::vector<int>& nearestPoints, const std::vector<GridGeom::Point>& originalNodes);
-
-        // orthonet_compweights_smooth
-        // inverse - mapping elliptic smoother
-        // computes weight ww in :
-        // sum_kk ww(kk, k0)* x1(kk2(kk, k0)) = 0
-        // sum_kk ww(kk, k0) * y1(kk2(kk, k0)) = 0
-        bool computeWeightsSmoother(const Mesh& mesh);
-
-        bool computeSmootherOperators(const Mesh& mesh);
-
-        //orthonet_comp_operators
-        //compute coefficient matrix G of gradient at link
-        //(d Phi / d xi)_l = sum_{ k = 1 } ^ nmk2 Gxi_k, l  Phi_k
-        //(d Phi / d eta)_l = sum_{ k = 1 } ^ nmk2 Geta_k, l Phi_k
-        //compute coefficientmatrix Div of gradient in node
-        //d Phi / d xi = sum_{ l = 1 } ^ nmk Divxi_l Phi_l
-        //d Phi / d eta = sum_{ l = 1 } ^ nmk Diveta_l Phi_l
-        //compute coefficientmatrix Az of cell - center in cell
-        //Phi_c = sum_{ l - 1 } ^ nmk Az_l Phi_l
-        //Gxi, Geta, Divxi, Divetaand Az are stored in(type tops) op
-        bool computeOperatorsNode(const Mesh& mesh, const int currentNode,
-            const size_t& numConnectedNodes, const std::vector<size_t>& connectedNodes,
-            const size_t& numSharedFaces, const std::vector<int>& sharedFaces,
-            const std::vector<double>& xi, const std::vector<double>& eta,
-            const std::vector<std::vector<size_t>>& faceNodeMapping);
-
-        //orthonet_assign_xieta
-        // assign xiand eta to all nodes in the stencil
-        bool computeXiEta(const Mesh& mesh,
-            const int currentNode,
-            const std::vector<int>& sharedFaces,
-            const int& numSharedFaces,
-            const std::vector<size_t>& connectedNodes,
-            const size_t& numConnectedNodes,
-            const std::vector<std::vector<size_t>>& faceNodeMapping,
-            std::vector<double>& xi,
-            std::vector<double>& eta);
-
-        bool computeFacesNumEdges(const Mesh& mesh);
-
-        // computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face.
-        bool orthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<size_t>>& faceNodeMapping);
-
-        double optimalEdgeAngle(const int numFaceNodes, const double theta1 = -1, const double theta2 = -1, bool isBoundaryEdge = false);
-
-        // compute link - based aspect ratios
-        // orthonet_compute_aspect
-        bool aspectRatio(const Mesh& mesh);
-
-        //MAKENETNODESCODING
-        bool classifyNodes(const Mesh& mesh);
-
-        //orthonet_compweights
-        // compute weights wwand right - hand side rhs in orthogonizer :
-        // sum_kk ww(kk, k0)* (x1(kk1(kk, k0)) - x1(k0)) = rhs(1, k0)
-        // sum_kk ww(kk, k0) * (y1(kk1(kk, k0)) - y1(k0)) = rhs(2, k0)
-        bool computeWeightsOrthogonalizer(const Mesh& mesh);
-
-        double matrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents);
-
-        bool initializeTopologies(const Mesh& mesh);
-
-        bool allocateNodeOperators(const int topologyIndex);
-
-        // save only the unique topologies
-        bool saveTopology(const int currentNode,
-            const std::vector<int>& sharedFaces,
-            const int numSharedFaces,
-            const std::vector<size_t>& connectedNodes,
-            const int numConnectedNodes,
-            const std::vector<std::vector<size_t>>& faceNodeMapping,
-            const std::vector<double>& xi,
-            const std::vector<double>& eta);
+        // orthogonalization iterations
+        std::vector<std::vector<double>> m_ww2x;
+        std::vector<std::vector<double>> m_ww2y;
+        std::vector<Point> m_orthogonalCoordinates;
+        std::vector<int> m_nearestPoints;
+        std::vector<Point> m_originalNodes;
+        double m_mumax;
+        double m_mu;
     };
 }

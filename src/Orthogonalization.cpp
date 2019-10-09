@@ -34,136 +34,47 @@ bool GridGeom::Orthogonalization<Mesh>::initialize(const Mesh& mesh)
     // computes the number of nodes for each face
     computeFacesNumEdges(mesh);
 
+    // before iteration
+    if (m_smoothorarea != 1)
+    {
+        m_ww2x.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
+        m_ww2y.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
+        // TODO: calculate volume weights
+    }
+
+    m_mumax = (1.0 - m_smoothorarea) * 0.5;
+    m_mu = std::min(1e-2, m_mumax);
+    m_orthogonalCoordinates.resize(mesh.m_nodes.size());
+
+    // in this case the nearest point is the point itself
+    m_nearestPoints.resize(mesh.m_nodes.size());
+    std::iota(m_nearestPoints.begin(), m_nearestPoints.end(), 0);
+
+    // back-up original nodes, for projection on original mesh boundary
+    m_originalNodes = mesh.m_nodes;
+
     return true;
 }
 
 template <typename Mesh>
 bool GridGeom::Orthogonalization<Mesh>::iterate(Mesh& mesh)
 {
-    std::vector<std::vector<double>> ww2x;
-    std::vector<std::vector<double>> ww2y;
-    if (m_smoothorarea != 1)
-    {
-        ww2x.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
-        ww2y.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
-        // TODO: calculate volume weights
-    }
-
-    double mumax = (1.0 - m_smoothorarea) * 0.5;
-    double mu = std::min(1e-2, mumax);
-    std::vector<double> rightHandSide(2);
-    std::vector<double> increments(2);
-    std::vector<Point> orthogonalCoordinates(mesh.m_nodes.size());
-
-    // in this case the nearest point is the point itself
-    std::vector<int> nearestPoints(mesh.m_nodes.size());
-    std::iota(nearestPoints.begin(), nearestPoints.end(), 0);
-
-    // back-up original nodes, for projection on original mesh boundary
-    std::vector<Point> originalNodes{ mesh.m_nodes };
-
     for (size_t outerIter = 0; outerIter < orthogonalizationOuterIterations; outerIter++)
     {
-        //compute aspect ratios
-        aspectRatio(mesh);
-
-        //compute weights orthogonalizer
-        computeWeightsOrthogonalizer(mesh);
-
-        //compute weights operators for smoother
-        computeSmootherOperators(mesh);
-
-        //compute weights smoother
-        computeWeightsSmoother(mesh);
+        computeAllWeightsAndOperators(mesh);
 
         for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
         {
             for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
             {
-                for (int n = 0; n < mesh.m_nodes.size(); n++)
-                {
-                    if ((m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
-                    {
-                        continue;
-                    }
-                    if (m_keepCircumcentersAndMassCenters != false && (mesh.m_nodesNumEdges[n] != 3 || mesh.m_nodesNumEdges[n] != 1))
-                    {
-                        continue;
-                    }
-
-                    double atpfLoc = m_nodesTypes[n] == 2 ? std::max(m_atpf_boundary, m_atpf) : m_atpf;
-                    double atpf1Loc = 1.0 - atpfLoc;
-
-                    double mumat = mu;
-                    if ((!ww2x.empty() && ww2x[n][0] != 0.0) && (!ww2y.empty() && ww2y[n][0] != 0.0))
-                    {
-                        mumat = mu * m_ww2Global[n][0] / std::max(ww2x[n][0], ww2y[n][0]);
-                    }
-
-                    int maxnn = std::max(mesh.m_nodesNumEdges[n] + 1, m_numConnectedNodes[n]);
-                    double dx0 = 0.0;
-                    double dy0 = 0.0;
-                    increments[0] = 0.0;
-                    increments[1] = 0.0;
-                    for (int nn = 1; nn < maxnn; nn++)
-                    {
-                        double wwx = 0.0;
-                        double wwy = 0.0;
-
-                        // Smoother
-                        if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && !ww2x.empty() && !ww2y.empty())
-                        {
-                            wwx = atpf1Loc * (mumat * ww2x[n][nn] + m_ww2Global[n][nn]);
-                            wwy = atpf1Loc * (mumat * ww2y[n][nn] + m_ww2Global[n][nn]);
-                        }
-                        else if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && ww2x.empty() && ww2y.empty())
-                        {
-                            wwx = atpf1Loc * m_ww2Global[n][nn];
-                            wwy = atpf1Loc * m_ww2Global[n][nn];
-                        }
-
-                        // Orthogonalizer
-                        int k1;
-                        if (nn < mesh.m_nodesNumEdges[n] + 1)
-                        {
-                            wwx += atpfLoc * m_weights[n][nn - 1];
-                            wwy += atpfLoc * m_weights[n][nn - 1];
-                            k1 = m_nodesNodes[n][nn - 1];
-                        }
-                        else
-                        {
-                            k1 = m_connectedNodes[n][nn];
-                        }
-
-                        Operations::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments);
-                    }
-
-
-
-                    // combine rhs
-                    rightHandSide[0] = atpfLoc * m_rightHandSide[n][0];
-                    rightHandSide[1] = atpfLoc * m_rightHandSide[n][1];
-
-                    if (std::abs(increments[0]) > 1e-8 && std::abs(increments[1]) > 1e-8)
-                    {
-                        dx0 = (dx0 + rightHandSide[0]) / increments[0];
-                        dy0 = (dy0 + rightHandSide[1]) / increments[1];
-                    }
-                    Operations::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], orthogonalCoordinates[n]);
-                } // n, iteration over nodes
-
-                // update mesh node coordinates
-                mesh.m_nodes = orthogonalCoordinates;
-
-                // project on the original net boundary
-                projectOnBoundary(mesh, nearestPoints, originalNodes);
+                innerIteration(mesh);
 
             } // inner iter, inner iteration
 
         } // boundary iter
 
         //update mu
-        mu = std::min(2.0 * mu, mumax);
+        m_mu = std::min(2.0 * m_mu, m_mumax);
 
         //compute new faces circumcenters
         if (m_keepCircumcentersAndMassCenters != true)
@@ -177,7 +88,114 @@ bool GridGeom::Orthogonalization<Mesh>::iterate(Mesh& mesh)
 }
 
 template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::projectOnBoundary(Mesh& mesh, std::vector<int>& nearestPoints, const std::vector<GridGeom::Point>& originalNodes)
+bool GridGeom::Orthogonalization<Mesh>::computeAllWeightsAndOperators(const Mesh& mesh) 
+{
+
+    bool status = true;
+
+    //compute aspect ratios
+    if(status) status = aspectRatio(mesh);
+
+    //compute weights orthogonalizer
+    if (status) status = computeWeightsOrthogonalizer(mesh);
+
+    //compute weights operators for smoother
+    if (status) status = computeSmootherOperators(mesh);
+
+    //compute weights smoother
+    if (status) status = computeWeightsSmoother(mesh);
+
+    return status;
+}
+
+template <typename Mesh>
+bool GridGeom::Orthogonalization<Mesh>::innerIteration(Mesh& mesh)
+{
+    std::vector<double> rightHandSide(2);
+    std::vector<double> increments(2);
+
+    for (int n = 0; n < mesh.m_nodes.size(); n++)
+    {
+        if ((m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
+        {
+            continue;
+        }
+        if (m_keepCircumcentersAndMassCenters != false && (mesh.m_nodesNumEdges[n] != 3 || mesh.m_nodesNumEdges[n] != 1))
+        {
+            continue;
+        }
+
+        double atpfLoc = m_nodesTypes[n] == 2 ? std::max(m_atpf_boundary, m_atpf) : m_atpf;
+        double atpf1Loc = 1.0 - atpfLoc;
+
+        double mumat = m_mu;
+        if ((!m_ww2x.empty() && m_ww2x[n][0] != 0.0) && (!m_ww2y.empty() && m_ww2y[n][0] != 0.0))
+        {
+            mumat = m_mu * m_ww2Global[n][0] / std::max(m_ww2x[n][0], m_ww2y[n][0]);
+        }
+
+        int maxnn = std::max(mesh.m_nodesNumEdges[n] + 1, m_numConnectedNodes[n]);
+        double dx0 = 0.0;
+        double dy0 = 0.0;
+        increments[0] = 0.0;
+        increments[1] = 0.0;
+        for (int nn = 1; nn < maxnn; nn++)
+        {
+            double wwx = 0.0;
+            double wwy = 0.0;
+
+            // Smoother
+            if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && !m_ww2x.empty() && !m_ww2y.empty())
+            {
+                wwx = atpf1Loc * (mumat * m_ww2x[n][nn] + m_ww2Global[n][nn]);
+                wwy = atpf1Loc * (mumat * m_ww2y[n][nn] + m_ww2Global[n][nn]);
+            }
+            else if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && m_ww2x.empty() && m_ww2y.empty())
+            {
+                wwx = atpf1Loc * m_ww2Global[n][nn];
+                wwy = atpf1Loc * m_ww2Global[n][nn];
+            }
+
+            // Orthogonalizer
+            int k1;
+            if (nn < mesh.m_nodesNumEdges[n] + 1)
+            {
+                wwx += atpfLoc * m_weights[n][nn - 1];
+                wwy += atpfLoc * m_weights[n][nn - 1];
+                k1 = m_nodesNodes[n][nn - 1];
+            }
+            else
+            {
+                k1 = m_connectedNodes[n][nn];
+            }
+
+            Operations::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments);
+        }
+
+        // combine rhs
+        rightHandSide[0] = atpfLoc * m_rightHandSide[n][0];
+        rightHandSide[1] = atpfLoc * m_rightHandSide[n][1];
+
+        if (std::abs(increments[0]) > 1e-8 && std::abs(increments[1]) > 1e-8)
+        {
+            dx0 = (dx0 + rightHandSide[0]) / increments[0];
+            dy0 = (dy0 + rightHandSide[1]) / increments[1];
+        }
+        Operations::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], m_orthogonalCoordinates[n]);
+    } // n, iteration over nodes
+
+    // update mesh node coordinates
+    mesh.m_nodes = m_orthogonalCoordinates;
+
+    // project on the original net boundary
+    projectOnBoundary(mesh);
+
+    return true;
+}
+
+
+template <typename Mesh>
+bool GridGeom::Orthogonalization<Mesh>::projectOnBoundary(Mesh& mesh)
 {
     Point firstPoint;
     Point secondPoint;
@@ -189,7 +207,7 @@ bool GridGeom::Orthogonalization<Mesh>::projectOnBoundary(Mesh& mesh, std::vecto
 
     for (size_t n = 0; n < mesh.m_nodes.size(); n++)
     {
-        int nearestPointIndex = nearestPoints[n];
+        int nearestPointIndex = m_nearestPoints[n];
         if (m_nodesTypes[n] == 2 && mesh.m_nodesNumEdges[n] > 0 && mesh.m_nodesNumEdges[nearestPointIndex] > 0)
         {
             firstPoint = mesh.m_nodes[n];
@@ -208,7 +226,7 @@ bool GridGeom::Orthogonalization<Mesh>::projectOnBoundary(Mesh& mesh, std::vecto
                         {
                             return false;
                         }
-                        secondPoint = originalNodes[leftNode];
+                        secondPoint = m_originalNodes[leftNode];
                     }
                     else if (numNodes == 2)
                     {
@@ -217,24 +235,24 @@ bool GridGeom::Orthogonalization<Mesh>::projectOnBoundary(Mesh& mesh, std::vecto
                         {
                             return false;
                         }
-                        thirdPoint = originalNodes[rightNode];
+                        thirdPoint = m_originalNodes[rightNode];
                     }
                 }
             }
 
             //Project the moved boundary point back onto the closest ORIGINAL edge(netlink) (either between 0 and 2 or 0 and 3)
             double rl2;
-            double dis2 = Operations::distanceFromLine(firstPoint, originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2);
+            double dis2 = Operations::distanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2);
 
             double rl3;
-            double dis3 = Operations::distanceFromLine(firstPoint, originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3);
+            double dis3 = Operations::distanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3);
 
             if (dis2 < dis3)
             {
                 mesh.m_nodes[n] = normalSecondPoint;
                 if (rl2 > 0.5 && m_nodesTypes[n] != 3)
                 {
-                    nearestPoints[n] = leftNode;
+                    m_nearestPoints[n] = leftNode;
                 }
             }
             else
@@ -242,7 +260,7 @@ bool GridGeom::Orthogonalization<Mesh>::projectOnBoundary(Mesh& mesh, std::vecto
                 mesh.m_nodes[n] = normalThirdPoint;
                 if (rl3 > 0.5 && m_nodesTypes[n] != 3)
                 {
-                    nearestPoints[n] = rightNode;
+                    m_nearestPoints[n] = rightNode;
                 }
             }
         }
@@ -731,7 +749,7 @@ bool GridGeom::Orthogonalization<Mesh>::computeOperatorsNode(const Mesh& mesh, c
 
 template <typename Mesh>
 bool GridGeom::Orthogonalization<Mesh>::computeXiEta(const Mesh& mesh,
-    const int currentNode,
+    int currentNode,
     const std::vector<int>& sharedFaces,
     const int& numSharedFaces,
     const std::vector<size_t>& connectedNodes,
@@ -1147,7 +1165,7 @@ bool GridGeom::Orthogonalization<Mesh>::orthogonalizationAdministration(const Me
 }
 
 template <typename Mesh>
-double GridGeom::Orthogonalization<Mesh>::optimalEdgeAngle(const int numFaceNodes, const double theta1 = -1, const double theta2 = -1, bool isBoundaryEdge = false)
+double GridGeom::Orthogonalization<Mesh>::optimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge)
 {
     double angle = M_PI * (1 - 2.0 / double(numFaceNodes));
 
@@ -1453,11 +1471,11 @@ bool GridGeom::Orthogonalization<Mesh>::allocateNodeOperators(const int topology
 }
 
 template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::saveTopology(const int currentNode,
+bool GridGeom::Orthogonalization<Mesh>::saveTopology(int currentNode,
     const std::vector<int>& sharedFaces,
-    const int numSharedFaces,
+    int numSharedFaces,
     const std::vector<size_t>& connectedNodes,
-    const int numConnectedNodes,
+    int numConnectedNodes,
     const std::vector<std::vector<size_t>>& faceNodeMapping,
     const std::vector<double>& xi,
     const std::vector<double>& eta)
