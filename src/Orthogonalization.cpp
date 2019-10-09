@@ -60,36 +60,33 @@ bool GridGeom::Orthogonalization::initialize(const Mesh& mesh)
 
 bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
 {
+    bool status = true;
     for (size_t outerIter = 0; outerIter < orthogonalizationOuterIterations; outerIter++)
     {
-        computeAllWeightsAndOperators(mesh);
+        if (status) 
+            status = prapareOuterIteration(mesh);
 
         for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
         {
             for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
             {
-                innerIteration(mesh);
+                if (status) 
+                    status = innerIteration(mesh);
 
             } // inner iter, inner iteration
 
         } // boundary iter
 
         //update mu
-        m_mu = std::min(2.0 * m_mu, m_mumax);
-
-        //compute new faces circumcenters
-        if (m_keepCircumcentersAndMassCenters != true)
-        {
-            mesh.faceCircumcenters(1.0);
-            mesh.facesAreasAndMassCenters();
-        }
+        if (status) 
+            status = finalizeOuterIteration(mesh);
     }// outer iter
 
     return true;
 }
 
 
-bool GridGeom::Orthogonalization::computeAllWeightsAndOperators(const Mesh& mesh) 
+bool GridGeom::Orthogonalization::prapareOuterIteration(const Mesh& mesh) 
 {
 
     bool status = true;
@@ -107,6 +104,21 @@ bool GridGeom::Orthogonalization::computeAllWeightsAndOperators(const Mesh& mesh
     if (status) status = computeWeightsSmoother(mesh);
 
     return status;
+}
+
+
+bool GridGeom::Orthogonalization::finalizeOuterIteration(Mesh& mesh)
+{
+    m_mu = std::min(2.0 * m_mu, m_mumax);
+
+    //compute new faces circumcenters
+    if (m_keepCircumcentersAndMassCenters != true)
+    {
+        mesh.faceCircumcenters(1.0);
+        mesh.facesAreasAndMassCenters();
+    }
+
+    return true;
 }
 
 

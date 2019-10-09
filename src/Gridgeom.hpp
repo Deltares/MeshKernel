@@ -28,6 +28,16 @@ namespace GridGeomApi
             OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries);
 
         GRIDGEOM_API int ggeo_get_mesh(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
+        
+        GRIDGEOM_API int ggeo_orthogonalize_initialize(int& gridStateId);
+
+        GRIDGEOM_API int ggeo_orthogonalize_prepare_outer_iteration(int& gridStateId);
+
+        GRIDGEOM_API int ggeo_orthogonalize_inner_iteration(int& gridStateId);
+
+        GRIDGEOM_API int ggeo_orthogonalize_finalize_outer_iteration(int& gridStateId);
+
+        GRIDGEOM_API int ggeo_orthogonalize_delete(int& gridStateId);
 
 #ifdef __cplusplus
     }

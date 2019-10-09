@@ -12,13 +12,14 @@ namespace GridGeom
     public:
         
         bool initialize(const Mesh& mesh);
+
         bool iterate(Mesh& mesh);
 
-        // before boundary and inner iterations
-        bool computeAllWeightsAndOperators(const Mesh& mesh);
+        bool prapareOuterIteration(const Mesh& mesh);
 
-        // inner iteration
         bool innerIteration(Mesh& mesh);
+
+        bool finalizeOuterIteration(Mesh& mesh);
     
     private:
 
