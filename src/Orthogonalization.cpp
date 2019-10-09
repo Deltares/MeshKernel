@@ -4,11 +4,12 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include "IOperations.hpp"
 #include "Orthogonalization.hpp"
 #include "OperationsCartesian.cpp"
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::initialize(const Mesh& mesh)
+
+bool GridGeom::Orthogonalization::initialize(const Mesh& mesh)
 {
     m_maxNumNeighbours = *(std::max_element(mesh.m_nodesNumEdges.begin(), mesh.m_nodesNumEdges.end()));
     m_maxNumNeighbours += 1;
@@ -56,8 +57,8 @@ bool GridGeom::Orthogonalization<Mesh>::initialize(const Mesh& mesh)
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::iterate(Mesh& mesh)
+
+bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
 {
     for (size_t outerIter = 0; outerIter < orthogonalizationOuterIterations; outerIter++)
     {
@@ -87,8 +88,8 @@ bool GridGeom::Orthogonalization<Mesh>::iterate(Mesh& mesh)
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::computeAllWeightsAndOperators(const Mesh& mesh) 
+
+bool GridGeom::Orthogonalization::computeAllWeightsAndOperators(const Mesh& mesh) 
 {
 
     bool status = true;
@@ -108,8 +109,8 @@ bool GridGeom::Orthogonalization<Mesh>::computeAllWeightsAndOperators(const Mesh
     return status;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::innerIteration(Mesh& mesh)
+
+bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
 {
     std::vector<double> rightHandSide(2);
     std::vector<double> increments(2);
@@ -169,7 +170,7 @@ bool GridGeom::Orthogonalization<Mesh>::innerIteration(Mesh& mesh)
                 k1 = m_connectedNodes[n][nn];
             }
 
-            Operations::orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments);
+            mesh.m_operations->orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments);
         }
 
         // combine rhs
@@ -181,7 +182,7 @@ bool GridGeom::Orthogonalization<Mesh>::innerIteration(Mesh& mesh)
             dx0 = (dx0 + rightHandSide[0]) / increments[0];
             dy0 = (dy0 + rightHandSide[1]) / increments[1];
         }
-        Operations::orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], m_orthogonalCoordinates[n]);
+        mesh.m_operations->orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], m_orthogonalCoordinates[n]);
     } // n, iteration over nodes
 
     // update mesh node coordinates
@@ -194,8 +195,8 @@ bool GridGeom::Orthogonalization<Mesh>::innerIteration(Mesh& mesh)
 }
 
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::projectOnBoundary(Mesh& mesh)
+
+bool GridGeom::Orthogonalization::projectOnBoundary(Mesh& mesh)
 {
     Point firstPoint;
     Point secondPoint;
@@ -242,10 +243,10 @@ bool GridGeom::Orthogonalization<Mesh>::projectOnBoundary(Mesh& mesh)
 
             //Project the moved boundary point back onto the closest ORIGINAL edge(netlink) (either between 0 and 2 or 0 and 3)
             double rl2;
-            double dis2 = Operations::distanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2);
+            double dis2 = mesh.m_operations->distanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2);
 
             double rl3;
-            double dis3 = Operations::distanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3);
+            double dis3 = mesh.m_operations->distanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3);
 
             if (dis2 < dis3)
             {
@@ -268,8 +269,8 @@ bool GridGeom::Orthogonalization<Mesh>::projectOnBoundary(Mesh& mesh)
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::computeWeightsSmoother(const Mesh& mesh)
+
+bool GridGeom::Orthogonalization::computeWeightsSmoother(const Mesh& mesh)
 {
     std::vector<std::vector<double>> J(mesh.m_nodes.size(), std::vector<double>(4, 0)); //Jacobian
     std::vector<std::vector<double>> Ginv(mesh.m_nodes.size(), std::vector<double>(4, 0)); //mesh monitor matrices
@@ -278,7 +279,7 @@ bool GridGeom::Orthogonalization<Mesh>::computeWeightsSmoother(const Mesh& mesh)
     {
         if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2 && m_nodesTypes[n] != 4) continue;
         int currentTopology = m_nodeTopologyMapping[n];
-        Operations::orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
+        mesh.m_operations->orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
     }
 
     // TODO: Account for samples: call orthonet_comp_Ginv(u, ops, J, Ginv)
@@ -312,7 +313,7 @@ bool GridGeom::Orthogonalization<Mesh>::computeWeightsSmoother(const Mesh& mesh)
         {
             int currentTopology = m_nodeTopologyMapping[n];
 
-            Operations::orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
+            mesh.m_operations->orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n]);
 
             //compute the contravariant base vectors
             double determinant = J[n][0] * J[n][3] - J[n][3] * J[n][1];
@@ -401,8 +402,8 @@ bool GridGeom::Orthogonalization<Mesh>::computeWeightsSmoother(const Mesh& mesh)
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::computeSmootherOperators(const Mesh& mesh)
+
+bool GridGeom::Orthogonalization::computeSmootherOperators(const Mesh& mesh)
 {
     //allocate small administration arrays only once
     std::vector<int> sharedFaces(maximumNumberOfEdgesPerNode, -1); //icell
@@ -463,13 +464,13 @@ bool GridGeom::Orthogonalization<Mesh>::computeSmootherOperators(const Mesh& mes
     }
 
     //have side effects only for spherical coordinates
-    Operations::orthogonalizationComputeLocalCoordinates(mesh.m_nodesNumEdges, m_numConnectedNodes, m_localCoordinates);
+    mesh.m_operations->orthogonalizationComputeLocalCoordinates(mesh.m_nodesNumEdges, m_numConnectedNodes, m_localCoordinates);
 
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::computeOperatorsNode(const Mesh& mesh, const int currentNode,
+
+bool GridGeom::Orthogonalization::computeOperatorsNode(const Mesh& mesh, const int currentNode,
     const size_t& numConnectedNodes, const std::vector<size_t>& connectedNodes,
     const size_t& numSharedFaces, const std::vector<int>& sharedFaces,
     const std::vector<double>& xi, const std::vector<double>& eta,
@@ -747,8 +748,8 @@ bool GridGeom::Orthogonalization<Mesh>::computeOperatorsNode(const Mesh& mesh, c
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::computeXiEta(const Mesh& mesh,
+
+bool GridGeom::Orthogonalization::computeXiEta(const Mesh& mesh,
     int currentNode,
     const std::vector<int>& sharedFaces,
     const int& numSharedFaces,
@@ -1009,8 +1010,8 @@ bool GridGeom::Orthogonalization<Mesh>::computeXiEta(const Mesh& mesh,
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::computeFacesNumEdges(const Mesh& mesh)
+
+bool GridGeom::Orthogonalization::computeFacesNumEdges(const Mesh& mesh)
 {
     // Cache the result for later calls.
     m_faceNumNodes.resize(mesh.m_numFaces, false);
@@ -1021,8 +1022,8 @@ bool GridGeom::Orthogonalization<Mesh>::computeFacesNumEdges(const Mesh& mesh)
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::orthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<size_t>>& faceNodeMapping)
+
+bool GridGeom::Orthogonalization::orthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<size_t>>& faceNodeMapping)
 {
     for (auto& f : sharedFaces)  f = -1;
 
@@ -1164,8 +1165,8 @@ bool GridGeom::Orthogonalization<Mesh>::orthogonalizationAdministration(const Me
     return true;
 }
 
-template <typename Mesh>
-double GridGeom::Orthogonalization<Mesh>::optimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge)
+
+double GridGeom::Orthogonalization::optimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge)
 {
     double angle = M_PI * (1 - 2.0 / double(numFaceNodes));
 
@@ -1180,8 +1181,8 @@ double GridGeom::Orthogonalization<Mesh>::optimalEdgeAngle(int numFaceNodes, dou
     return angle;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::aspectRatio(const Mesh& mesh)
+
+bool GridGeom::Orthogonalization::aspectRatio(const Mesh& mesh)
 {
     std::vector<std::vector<double>> averageEdgesLength(mesh.m_edges.size(), std::vector<double>(2, doubleMissingValue));
     std::vector<double> averageFlowEdgesLength(mesh.m_edges.size(), doubleMissingValue);
@@ -1194,7 +1195,7 @@ bool GridGeom::Orthogonalization<Mesh>::aspectRatio(const Mesh& mesh)
         size_t second = mesh.m_edges[e].second;
 
         if (first == second) continue;
-        double edgeLength = Operations::distance(mesh.m_nodes[first], mesh.m_nodes[second]);
+        double edgeLength = mesh.m_operations->distance(mesh.m_nodes[first], mesh.m_nodes[second]);
         edgesLength[e] = edgeLength;
 
         Point leftCenter;
@@ -1216,7 +1217,7 @@ bool GridGeom::Orthogonalization<Mesh>::aspectRatio(const Mesh& mesh)
         else
         {
             //otherwise, make ghost node by imposing boundary condition
-            double dinry = Operations::innerProductTwoSegments(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_nodes[first], leftCenter);
+            double dinry = mesh.m_operations->innerProductTwoSegments(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_nodes[first], leftCenter);
             dinry = dinry / std::max(edgeLength * edgeLength, minimumEdgeLength);
 
             double x0_bc = (1.0 - dinry) * mesh.m_nodes[first].x + dinry * mesh.m_nodes[second].x;
@@ -1225,7 +1226,7 @@ bool GridGeom::Orthogonalization<Mesh>::aspectRatio(const Mesh& mesh)
             rightCenter.y = 2.0 * y0_bc - leftCenter.y;
         }
 
-        averageFlowEdgesLength[e] = Operations::distance(leftCenter, rightCenter);
+        averageFlowEdgesLength[e] = mesh.m_operations->distance(leftCenter, rightCenter);
     }
 
     // Compute normal length
@@ -1308,8 +1309,8 @@ bool GridGeom::Orthogonalization<Mesh>::aspectRatio(const Mesh& mesh)
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::classifyNodes(const Mesh& mesh)
+
+bool GridGeom::Orthogonalization::classifyNodes(const Mesh& mesh)
 {
     m_nodesTypes.resize(mesh.m_nodes.size(), 0);
 
@@ -1361,8 +1362,8 @@ bool GridGeom::Orthogonalization<Mesh>::classifyNodes(const Mesh& mesh)
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::computeWeightsOrthogonalizer(const Mesh& mesh)
+
+bool GridGeom::Orthogonalization::computeWeightsOrthogonalizer(const Mesh& mesh)
 {
     double localOrthogonalizationToSmoothingFactor = 1.0;
     double localOrthogonalizationToSmoothingFactorSymmetric = 1.0 - localOrthogonalizationToSmoothingFactor;
@@ -1390,12 +1391,12 @@ bool GridGeom::Orthogonalization<Mesh>::computeWeightsOrthogonalizer(const Mesh&
                 {
                     //boundary nodes
                     Point neighbouringNode = mesh.m_nodes[m_nodesNodes[n][nn]];
-                    double neighbouringNodeDistance = Operations::distance(neighbouringNode, mesh.m_nodes[n]);
+                    double neighbouringNodeDistance = mesh.m_operations->distance(neighbouringNode, mesh.m_nodes[n]);
                     double aspectRatioByNodeDistance = aspectRatio * neighbouringNodeDistance;
 
                     size_t leftFace = mesh.m_edgesFaces[edgeIndex][0];
                     bool flippedNormal;
-                    Operations::normalVectorInside(mesh.m_nodes[n], neighbouringNode, mesh.m_facesMassCenters[leftFace], normal, flippedNormal);
+                    mesh.m_operations->normalVectorInside(mesh.m_nodes[n], neighbouringNode, mesh.m_facesMassCenters[leftFace], normal, flippedNormal);
 
                     m_rightHandSide[n][0] += localOrthogonalizationToSmoothingFactor * neighbouringNodeDistance * normal.x / 2.0 +
                         localOrthogonalizationToSmoothingFactorSymmetric * aspectRatioByNodeDistance * normal.x * 0.5 / mu;
@@ -1428,15 +1429,15 @@ bool GridGeom::Orthogonalization<Mesh>::computeWeightsOrthogonalizer(const Mesh&
     return true;
 }
 
-template <typename Mesh>
-double GridGeom::Orthogonalization<Mesh>::matrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents)
+
+double GridGeom::Orthogonalization::matrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents)
 {
     double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[2] * x[0] + matCoefficents[3] * x[1]) * y[1];
     return norm;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::initializeTopologies(const Mesh& mesh)
+
+bool GridGeom::Orthogonalization::initializeTopologies(const Mesh& mesh)
 {
     // topology 
     m_numTopologies = 0;
@@ -1452,8 +1453,8 @@ bool GridGeom::Orthogonalization<Mesh>::initializeTopologies(const Mesh& mesh)
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::allocateNodeOperators(const int topologyIndex)
+
+bool GridGeom::Orthogonalization::allocateNodeOperators(const int topologyIndex)
 {
     int numSharedFaces = m_numTopologyFaces[topologyIndex];
     int numConnectedNodes = m_numTopologyNodes[topologyIndex];
@@ -1470,8 +1471,8 @@ bool GridGeom::Orthogonalization<Mesh>::allocateNodeOperators(const int topology
     return true;
 }
 
-template <typename Mesh>
-bool GridGeom::Orthogonalization<Mesh>::saveTopology(int currentNode,
+
+bool GridGeom::Orthogonalization::saveTopology(int currentNode,
     const std::vector<int>& sharedFaces,
     int numSharedFaces,
     const std::vector<size_t>& connectedNodes,

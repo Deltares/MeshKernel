@@ -14,6 +14,7 @@ src/Entities.hpp -text
 src/GeometryListNative.hpp -text
 src/Gridgeom.cpp -text
 src/Gridgeom.hpp -text
+src/IOperations.hpp -text
 src/Mesh.cpp -text
 src/Mesh.hpp -text
 src/MeshGeometry.hpp -text

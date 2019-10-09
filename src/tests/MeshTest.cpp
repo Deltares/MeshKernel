@@ -1,11 +1,10 @@
 #include "GridGeomTest.hpp"
+#include "../OperationsCartesian.cpp"
 #include "../Mesh.cpp"
 #include <chrono>
 
 TEST(TestMesh, OneQuadTestConstructor) 
 {
-    using Mesh = GridGeom::Mesh<GridGeom::OperationTypes::cartesianOperations>;
-
     //One gets the edges
     std::vector<GridGeom::Point> nodes;
     nodes.push_back(GridGeom::Point{ 0.0,0.0 });
@@ -20,8 +19,9 @@ TEST(TestMesh, OneQuadTestConstructor)
     edges.push_back({ 0, 1 });
     edges.push_back({ 2, 3 });
 
-    // now build node-edge mapping
-    Mesh mesh;
+    // now build node-edge mapping  
+    GridGeom::OperationsCartesian operationsCartesian;
+    GridGeom::Mesh mesh(&operationsCartesian);
     mesh.setMesh(edges, nodes);
 
     auto nodesEdges = mesh.m_nodesEdges;
@@ -126,8 +126,8 @@ TEST(PerformanceTest, MillionQuads)
     std::cout << "start finding cells " << std::endl;
     start = std::chrono::steady_clock::now();
     // now build node-edge mapping
-    using Mesh = GridGeom::Mesh<GridGeom::OperationTypes::cartesianOperations>;
-    Mesh mesh;
+    GridGeom::OperationsCartesian operationsCartesian;
+    GridGeom::Mesh mesh(&operationsCartesian);
     mesh.setMesh(edges, nodes);
 
     end = std::chrono::steady_clock::now();

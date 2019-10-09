@@ -3,17 +3,16 @@
 #define _USE_MATH_DEFINES
 #include <vector>
 #include "Entities.hpp"
+#include "Mesh.hpp"
 
 namespace GridGeom
 {
-    template<typename Mesh>
     class Orthogonalization
     {
     public:
         
         bool initialize(const Mesh& mesh);
         bool iterate(Mesh& mesh);
-        //prepare iterations
 
         // before boundary and inner iterations
         bool computeAllWeightsAndOperators(const Mesh& mesh);
@@ -64,8 +63,6 @@ namespace GridGeom
         /// @brief save only the unique topologies
         bool saveTopology(int currentNode, const std::vector<int>& sharedFaces, int numSharedFaces, const std::vector<size_t>& connectedNodes, int numConnectedNodes,
             const std::vector<std::vector<size_t>>& faceNodeMapping, const std::vector<double>& xi, const std::vector<double>& eta);
-
-        typedef typename Mesh::Operations Operations;
 
         enum class NodeTypes
         {

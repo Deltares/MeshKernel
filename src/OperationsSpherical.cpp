@@ -4,14 +4,14 @@
 #include "Entities.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
+#include "IOperations.hpp"
 
 namespace GridGeom
 {
     // spherical point
-    template <>
-    struct Operations<sphericalOperations>
+    struct OperationsSpherical : IOperations
     {
-        static void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result)
+        void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result) override
         {
             cartesian3DPoint firstPointCartesianCoordinates;
             cartesian3DPoint secondPointCartesianCoordinates;
@@ -40,13 +40,13 @@ namespace GridGeom
             }
         }
 
-        static void normalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, bool& flippedNormal)
+        void normalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, bool& flippedNormal) override
         {
 
             //if (JSFERIC.eq.1 . and .jasfer3D.eq.0) xn = xn * cos(dg2rd * 0.5d0 * (y0 + y1)) !normal vector needs to be in Cartesian coordinates
         }
 
-        static double getDx(const Point& firstPoint, const Point& secondPoint)
+        double getDx(const Point& firstPoint, const Point& secondPoint) override
         {
             double  firstPointYDiff = abs(abs(firstPoint.y) - 90.0);
             double  secondPointYDiff = abs(abs(secondPoint.y) - 90.0);
@@ -74,7 +74,7 @@ namespace GridGeom
             return dx;
         }
 
-        static double getDy(const Point& firstPoint, const Point& secondPoint)
+        double getDy(const Point& firstPoint, const Point& secondPoint) override
         {
             double firstPointY = firstPoint.y * degrad_hp;
             double secondPointY = secondPoint.y * degrad_hp;
@@ -82,7 +82,7 @@ namespace GridGeom
             return dy;
         }
 
-        static void add(Point& point, const Point& normal, const double increment)
+        void add(Point& point, const Point& normal, const double increment) override
         {
             double convertedIncrement = raddeg_hp * increment / earth_radius;
             double xf = 1.0 / cos(degrad_hp * point.y);
@@ -90,7 +90,7 @@ namespace GridGeom
             point.y = point.y + normal.y * convertedIncrement;
         }
 
-        static void referencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY)
+        void referencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY) override
         {
             minX = std::numeric_limits<double>::max();
             minY = std::numeric_limits<double>::max();
@@ -127,13 +127,13 @@ namespace GridGeom
             minX = std::min_element(polygon.begin(), polygon.end(), [](const Point& p1, const Point& p2) { return p1.x < p2.x; })->x;
         }
 
-        static double distance(const Point& firstPoint, const Point& secondPoint)
+        double distance(const Point& firstPoint, const Point& secondPoint) override
         {
             return -1.0;
         }
 
         //dLINEDIS3
-        static double distanceFromLine(const Point& p3, const Point& p1, const Point& p2, Point& normalPoint, double& rlout)
+        double distanceFromLine(const Point& p3, const Point& p1, const Point& p2, Point& normalPoint, double& rlout) override
         {
             //TODO: implement me
             return -1.0;
@@ -141,14 +141,14 @@ namespace GridGeom
 
 
         //out product of two segments
-        static double outerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment)
+        double outerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment) override
         {
             //TODO: IMPLEMENTATION IS MISSING
 
             return 0.0;
         }
 
-        static double innerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment)
+        double innerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment) override
         {
             cartesian3DPoint firstPointFirstSegment3D;
             cartesian3DPoint secondPointFirstSegment3D;
@@ -172,7 +172,7 @@ namespace GridGeom
         }
 
         //TODO:: comp_local_coords
-        static bool orthogonalizationComputeLocalCoordinates(const std::vector<size_t>& m_nodesNumEdges, const std::vector<size_t>& numConnectedNodes, std::vector<int>& localCoordinates)
+        bool orthogonalizationComputeLocalCoordinates(const std::vector<size_t>& m_nodesNumEdges, const std::vector<size_t>& numConnectedNodes, std::vector<int>& localCoordinates) override
         {
             localCoordinates.resize(m_nodesNumEdges.size(), 0);
             localCoordinates[0] = 1;
@@ -184,7 +184,7 @@ namespace GridGeom
         }
 
 
-        static bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<Point>& nodes, std::vector<double>& J)
+        bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<Point>& nodes, std::vector<double>& J) override
         {
             double factor = std::cos(nodes[currentNode].y) * degrad_hp;
             J[0] = 0.0;
@@ -201,7 +201,7 @@ namespace GridGeom
             return true;
         }
 
-        static bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<Point>& nodes, double& dx0, double& dy0, std::vector<double>& increments)
+        bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<Point>& nodes, double& dx0, double& dy0, std::vector<double>& increments) override
         {
             double wwxTransformed = wwx * earth_radius * degrad_hp;
             double wwyTransformed = wwy * earth_radius * degrad_hp;
@@ -215,7 +215,7 @@ namespace GridGeom
             return true;
         }
 
-        static bool orthogonalizationComputeCoordinates(double dx0, double dy0, const Point& point, Point& updatedPoint)
+        bool orthogonalizationComputeCoordinates(double dx0, double dy0, const Point& point, Point& updatedPoint) override
         {
             //TODO: implement
             //if (jsferic.eq.1 . and .jasfer3D.eq.1) then
@@ -227,7 +227,7 @@ namespace GridGeom
             return true;
         }
 
-        static bool circumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Point& circumcenter)
+        bool circumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Point& circumcenter) override
         {
             double dx2 = getDx(p1, p2);
             double dy2 = getDy(p1, p2);
