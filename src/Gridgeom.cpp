@@ -4,8 +4,12 @@
 #include "Mesh.hpp"
 #include "Orthogonalization.hpp"
 #include "OperationsCartesian.cpp"
+#include "OperationsSpherical.cpp"
 
-static std::vector<GridGeom::Mesh> meshInstances;
+static std::vector<GridGeom::Mesh> meshInstances{};
+static std::map<int,GridGeom::Orthogonalization> orthogonalizationInstances;
+static  GridGeom::OperationsCartesian operationsCartesian;
+static  GridGeom::OperationsSpherical operationsSpherical;
 
 namespace GridGeomApi
 {
@@ -46,11 +50,8 @@ namespace GridGeomApi
         // TODO: re-enable switch
         //if (IsGeographic)
         //{
-
-        GridGeom::OperationsCartesian operationsCartesian;
         meshInstances[gridStateId].m_operations = &operationsCartesian;
         meshInstances[gridStateId].setMesh(edges, nodes);
-
         //}
         //else
         //{
@@ -80,15 +81,45 @@ namespace GridGeomApi
     }
 
     GRIDGEOM_API int ggeo_orthogonalize(int& gridStateId, int& isTriangulationRequired, int& isAccountingForLandBoundariesRequired, int& projectToLandBoundaryOption,
-                           OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
+        OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
     {
 
-            GridGeom::Orthogonalization ortogonalization;
-            ortogonalization.initialize(meshInstances[gridStateId]);
-            ortogonalization.iterate(meshInstances[gridStateId]);
-            return 0;
-
-
-        return -1;
+        GridGeom::Orthogonalization ortogonalization;
+        ortogonalization.initialize(meshInstances[gridStateId]);
+        ortogonalization.iterate(meshInstances[gridStateId]);
+        return 0;
     }
+
+    GRIDGEOM_API int ggeo_orthogonalize_initialize(int& gridStateId)
+    {
+        GridGeom::Orthogonalization ortogonalization;
+        ortogonalization.initialize(meshInstances[gridStateId]);
+        orthogonalizationInstances[gridStateId] = ortogonalization;
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_orthogonalize_prepare_outer_iteration(int& gridStateId)
+    {
+        const bool status = orthogonalizationInstances[gridStateId].prapareOuterIteration(meshInstances[gridStateId]);
+        return status == true ? 0 : 1;
+    }
+
+    GRIDGEOM_API int ggeo_orthogonalize_inner_iteration(int& gridStateId)
+    {
+        const bool status = orthogonalizationInstances[gridStateId].innerIteration(meshInstances[gridStateId]);
+        return status == true ? 0 : 1;
+    }
+
+    GRIDGEOM_API int ggeo_orthogonalize_finalize_outer_iteration(int& gridStateId)
+    {
+        const bool status = orthogonalizationInstances[gridStateId].finalizeOuterIteration(meshInstances[gridStateId]);
+        return status == true ? 0 : 1;
+    }
+
+    GRIDGEOM_API int ggeo_orthogonalize_delete(int& gridStateId)
+    {
+        const int returnValue = orthogonalizationInstances.erase(gridStateId);
+        return returnValue == 1 ?  0 : 1;
+    }
+
 }
