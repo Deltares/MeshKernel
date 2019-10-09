@@ -413,7 +413,7 @@ void GridGeom::Mesh::facesAreasAndMassCenters()
     // polygon coordinates 
     m_faceArea.resize(m_facesNodes.size());
     m_facesMassCenters.resize(m_facesNodes.size());
-    std::vector<Point> localFace(GridGeom::maximumNumberOfNodesPerFace + 1);
+    std::vector<Point> localFace(maximumNumberOfNodesPerFace + 1);
     Point centerOfMass;
     double area = 0.0;
     for (int f = 0; f < m_facesNodes.size(); f++)

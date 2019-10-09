@@ -11,6 +11,10 @@ namespace GridGeom
     // spherical point
     struct OperationsSpherical : IOperations
     {
+        OperationsSpherical()
+        {
+        }
+
         void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result) override
         {
             cartesian3DPoint firstPointCartesianCoordinates;
