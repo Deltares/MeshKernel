@@ -5,13 +5,13 @@
 #include "Constants.cpp"
 #include "IOperations.hpp"
 
+#ifdef USE_BOOST 
 #include <boost/geometry/geometries/segment.hpp> 
 #include <boost/geometry/geometries/register/point.hpp>
 #include <boost/geometry/geometries/adapted/boost_tuple.hpp>
-
 #include <boost/geometry.hpp>
-// register node so we can use boost geometry algorithms
 BOOST_GEOMETRY_REGISTER_POINT_2D(GridGeom::Point, double, boost::geometry::cs::cartesian, x, y);
+#endif 
 
 namespace GridGeom
 {
@@ -155,23 +155,6 @@ namespace GridGeom
         area = std::abs(area);
 
         return true;
-    }
-
-    static bool lineCrossing(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, Point& intersection)
-    {
-        typedef boost::geometry::model::segment<Point> Segment;
-        Segment firstSegment(firstSegmentFistPoint, firstSegmentSecondPoint);
-        Segment secondSegment(secondSegmentFistPoint, secondSegmentSecondPoint);
-
-        std::vector<Point> intersections;
-        boost::geometry::intersection(firstSegment, secondSegment, intersections);
-
-        if (!intersections.empty())
-        {
-            intersection = intersections[0];
-            return true;
-        }
-        return false;
     }
 
 }

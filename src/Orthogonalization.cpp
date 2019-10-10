@@ -4,10 +4,10 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include "Operations.cpp"
 #include "IOperations.hpp"
 #include "Orthogonalization.hpp"
 #include "OperationsCartesian.cpp"
-
 
 bool GridGeom::Orthogonalization::initialize(const Mesh& mesh)
 {
@@ -60,26 +60,26 @@ bool GridGeom::Orthogonalization::initialize(const Mesh& mesh)
 
 bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
 {
-    bool status = true;
+    bool state = true;
     for (size_t outerIter = 0; outerIter < orthogonalizationOuterIterations; outerIter++)
     {
-        if (status) 
-            status = prapareOuterIteration(mesh);
+        if (state) 
+            state = prapareOuterIteration(mesh);
 
         for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
         {
             for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
             {
-                if (status) 
-                    status = innerIteration(mesh);
+                if (state) 
+                    state = innerIteration(mesh);
 
             } // inner iter, inner iteration
 
         } // boundary iter
 
         //update mu
-        if (status) 
-            status = finalizeOuterIteration(mesh);
+        if (state) 
+            state = finalizeOuterIteration(mesh);
     }// outer iter
 
     return true;
@@ -89,21 +89,21 @@ bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
 bool GridGeom::Orthogonalization::prapareOuterIteration(const Mesh& mesh) 
 {
 
-    bool status = true;
+    bool state = true;
 
     //compute aspect ratios
-    if(status) status = aspectRatio(mesh);
+    if(state) state = aspectRatio(mesh);
 
     //compute weights orthogonalizer
-    if (status) status = computeWeightsOrthogonalizer(mesh);
+    if (state) state = computeWeightsOrthogonalizer(mesh);
 
     //compute weights operators for smoother
-    if (status) status = computeSmootherOperators(mesh);
+    if (state) state = computeSmootherOperators(mesh);
 
     //compute weights smoother
-    if (status) status = computeWeightsSmoother(mesh);
+    if (state) state = computeWeightsSmoother(mesh);
 
-    return status;
+    return state;
 }
 
 

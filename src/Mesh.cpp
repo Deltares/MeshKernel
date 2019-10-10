@@ -2,6 +2,7 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
+#include <iostream>
 #include <vector>
 #include <cmath>
 #include <numeric>
@@ -305,29 +306,28 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
     {
         // for triangles, for now assume cartesian kernel
         size_t numberOfFaceNodes = m_facesNodes[f].size();
+        double xCenter = 0.0;
+        double yCenter = 0.0;
+        size_t numberOfInteriorEdges = 0;
+        for (int n = 0; n < numberOfFaceNodes; n++)
+        {
+            localFace[n] = m_nodes[m_facesNodes[f][n]];
+            xCenter += m_nodes[m_facesNodes[f][n]].x;
+            yCenter += m_nodes[m_facesNodes[f][n]].y;
+            if (m_edgesNumFaces[m_facesEdges[f][n]] == 2)
+            {
+                numberOfInteriorEdges += 1;
+            }
+        }
+        centerOfMass.x = xCenter / numberOfFaceNodes;
+        centerOfMass.y = yCenter / numberOfFaceNodes;
+        localFace[numberOfFaceNodes] = localFace[0];
         if (numberOfFaceNodes == 3)
         {
             m_operations->circumcenterOfTriangle(m_nodes[m_facesNodes[f][0]], m_nodes[m_facesNodes[f][1]], m_nodes[m_facesNodes[f][2]], m_facesCircumcenters[f]);
         }
         else
         {
-            double xCenter = 0.0;
-            double yCenter = 0.0;
-            size_t numberOfInteriorEdges = 0;
-            for (int n = 0; n < numberOfFaceNodes; n++)
-            {
-                localFace[n] = m_nodes[m_facesNodes[f][n]];
-                xCenter += m_nodes[m_facesNodes[f][n]].x;
-                yCenter += m_nodes[m_facesNodes[f][n]].y;
-                if (m_edgesNumFaces[m_facesEdges[f][n]] == 2)
-                {
-                    numberOfInteriorEdges += 1;
-                }
-            }
-            localFace[numberOfFaceNodes] = localFace[0];
-            // average centers
-            centerOfMass = { xCenter / numberOfFaceNodes, yCenter / numberOfFaceNodes };
-
             if (numberOfInteriorEdges == 0)
             {
                 m_facesCircumcenters[f] = centerOfMass;
@@ -371,39 +371,45 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
                     }
                 }
             }
-            if (weightCircumCenter <= 1.0 && weightCircumCenter >= 0.0)
+        }
+        if (weightCircumCenter <= 1.0 && weightCircumCenter >= 0.0)
+        {
+            double localWeightCircumCenter = 1.0;
+            if (numberOfFaceNodes > 3)
             {
-                double localWeightCircumCenter = 1.0;
-                if (numberOfFaceNodes > 3)
-                {
-                    localWeightCircumCenter = weightCircumCenter;
-                }
+                localWeightCircumCenter = weightCircumCenter;
+            }
 
+            for (int n = 0; n < numberOfFaceNodes; n++)
+            {
+                localFace[n].x = localWeightCircumCenter * localFace[n].x + (1.0 - localWeightCircumCenter) * centerOfMass.x;
+                localFace[n].y = localWeightCircumCenter * localFace[n].y + (1.0 - localWeightCircumCenter) * centerOfMass.y;
+            }
+
+            if (f == 2)
+            {
+                std::cout << "debug";
+            }
+            bool isCircumcenterInside = pointInPolygon(m_facesCircumcenters[f], localFace, numberOfFaceNodes);
+
+            if (!isCircumcenterInside)
+            {
                 for (int n = 0; n < numberOfFaceNodes; n++)
                 {
-                    localFace[n].x = localWeightCircumCenter * localFace[n].x + (1.0 - localWeightCircumCenter) * centerOfMass.x;
-                    localFace[n].y = localWeightCircumCenter * localFace[n].y + (1.0 - localWeightCircumCenter) * centerOfMass.y;
-                }
-
-                bool isCircumcenterInside = pointInPolygon(m_facesCircumcenters[f], localFace, numberOfFaceNodes + 1);
-
-                if (!isCircumcenterInside)
-                {
-                    for (int n = 0; n < numberOfFaceNodes; n++)
+                    int nextNode = n + 1;
+                    if (nextNode == numberOfFaceNodes) nextNode = 0;
+                    Point intersection;
+                    double crossProduct;
+                    bool isLineCrossing = m_operations->linesCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], false, intersection, crossProduct);
+                    if (isLineCrossing)
                     {
-                        int nextNode = n + 1;
-                        if (nextNode == numberOfFaceNodes) nextNode = 0;
-                        Point intersection;
-                        bool isLineCrossing = lineCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], intersection);
-                        if (isLineCrossing)
-                        {
-                            m_facesCircumcenters[f] = intersection;
-                            break;
-                        }
+                        m_facesCircumcenters[f] = intersection;
+                        break;
                     }
                 }
             }
         }
+
     }
 }
 

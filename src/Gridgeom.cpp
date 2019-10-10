@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 #include "Gridgeom.hpp"
 #include "Mesh.hpp"
 #include "Orthogonalization.hpp"
@@ -8,8 +10,8 @@
 
 static std::vector<GridGeom::Mesh> meshInstances{};
 static std::map<int,GridGeom::Orthogonalization> orthogonalizationInstances;
-static  GridGeom::OperationsCartesian operationsCartesian;
-static  GridGeom::OperationsSpherical operationsSpherical;
+static GridGeom::OperationsCartesian operationsCartesian;
+static GridGeom::OperationsSpherical operationsSpherical;
 
 namespace GridGeomApi
 {
