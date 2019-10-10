@@ -42,5 +42,8 @@ namespace GridGeom
 
         virtual bool circumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Point& circumcenter) = 0;
 
+        //CROSS
+        virtual bool linesCrossing(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, bool adimensional, Point& intersection, double& crossProduct) = 0;
+
     };
 }

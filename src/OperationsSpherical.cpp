@@ -1,5 +1,5 @@
 #pragma once
-
+#include <algorithm>
 #include <cmath>
 #include "Entities.hpp"
 #include "Constants.cpp"
@@ -252,6 +252,45 @@ namespace GridGeom
             //    xz = x(1) + xf * 0.5d0 * (dx3 - z * dy3) * raddeg_hp / earth_radius
             //    yz = y(1) + 0.5d0 * (dy3 + z * dx3) * raddeg_hp / earth_radius
             return true;
+        }
+
+        bool linesCrossing(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, bool adimensional, Point& intersection, double& crossProduct) override
+        {
+            bool isCrossing = false;
+
+            double x21 = getDx(firstSegmentFistPoint, firstSegmentSecondPoint);
+            double y21 = getDy(firstSegmentFistPoint, firstSegmentSecondPoint);
+
+            double x43 = getDx(secondSegmentFistPoint, secondSegmentSecondPoint);
+            double y43 = getDy(secondSegmentFistPoint, secondSegmentSecondPoint);
+
+            double x31 = getDx(firstSegmentFistPoint, secondSegmentFistPoint);
+            double y31 = getDy(firstSegmentFistPoint, secondSegmentFistPoint);
+
+            double det = x43 * y21 - y43 * x21;
+
+            std::vector<double> values{ x21, y21, x43, y43 };
+            double eps = std::max(0.00001 * (*std::max_element(values.begin(), values.end())), std::numeric_limits<double>::denorm_min());
+
+            if (det < eps)
+            {
+                return isCrossing;
+            }
+
+            double sm = (y31 * y21 - x31 * y21) / det;
+            double sl = (y31 * x43 - x31 * y43) / det;
+            if (sm >= 0.0 && sm <= 1.0 && sl >= 0.0 && sl <= 1.0)
+            {
+                isCrossing = true;
+            }
+            intersection.x = firstSegmentFistPoint.x + sl * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
+            intersection.y = firstSegmentFistPoint.y + sl * (firstSegmentSecondPoint.x - firstSegmentFistPoint.y);
+            crossProduct = -det;
+            if (adimensional)
+            {
+                crossProduct = -det / (std::sqrt(x21 * x21 + y21 * y21) * std::sqrt(x43 * x43 + y43 * y43) + 1e-8);
+            }
+            return isCrossing;
         }
     };
 }

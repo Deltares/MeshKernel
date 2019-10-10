@@ -2,20 +2,20 @@ project( gridgeomStateful_dll )
 cmake_minimum_required(VERSION 3.1)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-#Boost (Required)
-FIND_PACKAGE( Boost )
+#Boost (Optional)
+#FIND_PACKAGE( Boost )
 
 #Vc SIMD classes (Optional)
 #set(Vc_DIR "thirdParty/Vc/installIntel/lib/cmake/Vc")
 #FIND_PACKAGE( Vc )
 
-#CGAL geometric libraries
-FIND_PACKAGE( Cgal REQUIRED )
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+#CGAL geometric libraries (Optional)
+#FIND_PACKAGE( Cgal REQUIRED )
+#INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
-#EIGEN 
-SET( EIGEN3_INCLUDE_DIR thirdParty/eigen )
-INCLUDE_DIRECTORIES ( "${EIGEN3_INCLUDE_DIR}" )
+#EIGEN (Optional) 
+#SET( EIGEN3_INCLUDE_DIR thirdParty/eigen )
+#INCLUDE_DIRECTORIES ( "${EIGEN3_INCLUDE_DIR}" )
 
 #add all headers and cpp files
 FILE( GLOB all_headers src/*.hpp )
