@@ -2,7 +2,6 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
-#include <iostream>
 #include <vector>
 #include <cmath>
 #include <numeric>
@@ -385,11 +384,8 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
                 localFace[n].x = localWeightCircumCenter * localFace[n].x + (1.0 - localWeightCircumCenter) * centerOfMass.x;
                 localFace[n].y = localWeightCircumCenter * localFace[n].y + (1.0 - localWeightCircumCenter) * centerOfMass.y;
             }
+            localFace[numberOfFaceNodes] = localFace[0];
 
-            if (f == 2)
-            {
-                std::cout << "debug";
-            }
             bool isCircumcenterInside = pointInPolygon(m_facesCircumcenters[f], localFace, numberOfFaceNodes);
 
             if (!isCircumcenterInside)
