@@ -28,7 +28,8 @@ src/OrthogonalizationParametersNative.hpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/MeshTest.cpp -text
 src/tests/OrthogonalizationTest.cpp -text
-tests/triangular_grid_test_orthogonalization_net.nc -text
+tests/TestOrthogonalizationLargeTriangularGrid_net.nc -text
+tests/TestOrthogonalizationSmallTriangularGrid_net.nc -text
 thirdParty/eigen/.hg_archival.txt -text
 thirdParty/eigen/.hgeol -text
 thirdParty/eigen/.hgignore -text
