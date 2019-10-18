@@ -1,0 +1,195 @@
+﻿<UserControl x:Class="DeltaShell.Plugins.GridEditor.Gui.Controls.SplinesToCurvilinearParametersControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:api="clr-namespace:DeltaShell.Plugins.GridEditor.GridGeomStateful.Api;assembly=DeltaShell.Plugins.GridEditor"
+             mc:Ignorable="d">
+    <Grid x:Name="MainGrid"
+          d:DataContext="{d:DesignInstance api:SplinesToCurvilinearParameters, IsDesignTimeCreatable=True}">
+        <Grid.Resources>
+            <ResourceDictionary Source="Dictionaries/ParameterControlStyles.xaml" />
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="0"
+                   Text="M-refinement factor" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="0"
+                 x:Name="MRefinementTextBox"
+                 d:DataContext="{d:DesignInstance api:CurvilinearParameters, IsDesignTimeCreatable=True}"
+                 Text="{Binding MRefinement}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="0"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="1"
+                   Text="N-refinement factor" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="1"
+                 x:Name="NRefinementTextBox"
+                 d:DataContext="{d:DesignInstance api:CurvilinearParameters, IsDesignTimeCreatable=True}"
+                 Text="{Binding NRefinement}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="1"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="2"
+                   Text="Aspect ratio" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="2"
+                 Text="{Binding AspectRatio}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="2"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="3"
+                   Text="Aspect ratio grow factor" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="3"
+                 Text="{Binding AspectRatioGrowFactor}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="3"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="4"
+                   Text="Average mesh width" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="4"
+                 Text="{Binding AverageWidth}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="4"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="5"
+                   Text="Curvature adapted grid spacing" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="5"
+                 Text="{Binding CurvatureAdaptedGridSpacing}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="5"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="6"
+                   Text="Grow grid outside" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="6"
+                 Text="{Binding GrowGridOutside}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="6"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="7"
+                   Text="Maximum number of layers in uniform part" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="7"
+                 Text="{Binding MaximumNumberOfGridCellsInTheUniformPart}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="7"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="8"
+                   Text="On top of each other tolerance" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="8"
+                 Text="{Binding GridsOnTopOfEachOtherTolerance}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="8"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="9"
+                   Text="Minimum cosine of crossing angles" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="9"
+                 Text="{Binding MinimumCosineOfCrossingAngles}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="9"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="10"
+                   Text="Check fronts collisions" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="10"
+                 Text="{Binding CheckFrontCollisions}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="10"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="11"
+                   Text="Uniform grid size" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="11"
+                 Text="{Binding UniformGridSize}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="11"
+                   Text="-" />
+
+        <TextBlock Grid.Column="0"
+                   Grid.Row="12"
+                   Text="Remove skinny triangles" />
+
+        <TextBox Grid.Column="1"
+                 Grid.Row="12"
+                 Text="{Binding RemoveSkinnyTriangles}" />
+
+        <TextBlock Grid.Column="2"
+                   Grid.Row="12"
+                   Text="-" />
+    </Grid>
+</UserControl>

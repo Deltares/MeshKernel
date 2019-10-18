@@ -1,0 +1,883 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaShell.Plugins.SharpMapGis</name>
+    </assembly>
+    <members>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.ImportExport.NetFile.Write(System.String,NetTopologySuite.Extensions.Grids.UnstructuredGrid,DeltaShell.Plugins.SharpMapGis.ImportExport.NetFile.CoordinateVariableStyle)">
+            <summary>
+            Writes the unstructured grid to a net-file
+            </summary>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.ImportExport.NetFile.WriteToExisting(System.String,NetTopologySuite.Extensions.Grids.UnstructuredGrid,DeltaShell.Plugins.SharpMapGis.ImportExport.NetFile.CoordinateVariableStyle)">
+            <summary>
+            Writes the unstructured grid to an existing netcdf file
+            </summary>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.ImportExport.NetFile.RewriteGridCoordinates(System.String,NetTopologySuite.Extensions.Grids.UnstructuredGrid)">
+            <summary>
+            Overwrites the existing x and y coordinates of the vertices with new values. Note: the number of supplied values must equal 
+            the number of existing values. Useful for coordinate transformation etc.
+            </summary>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.ImportExport.NetFile.WriteCoordinateSystem(System.String,GeoAPI.Extensions.CoordinateSystems.ICoordinateSystem)">
+            <summary>
+            Writes the given coordinate system to the netcdf file
+            </summary>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.ImportExport.NetFile.ReadCoordinateSystem(System.String)">
+            <summary>
+            Reads the net file coordinate system
+            </summary>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.ImportExport.NetFile.WriteCrsCoordinateSystemVariable(DelftTools.Utils.NetCdf.NetCdfFile,GeoAPI.Extensions.CoordinateSystems.ICoordinateSystem)">
+            <summary>
+            Writes rgfgrid-style coordinate system information
+            </summary>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.ImportExport.NetFile.WriteProjectedCoordinateSystemVariable(DelftTools.Utils.NetCdf.NetCdfFile,GeoAPI.Extensions.CoordinateSystems.ICoordinateSystem)">
+            <summary>
+            Writes dflowfm=style coordinate system information
+            </summary>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.ImportExport.GdalFileImporter">
+            <summary>
+            Imports one or more raster files into time dependent regular grid.
+            </summary>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.HibernateMappings.StyleTypeConverter">
+            <summary>
+            Converter to serialize an <see cref="T:SharpMap.Api.IStyle"/> object into a <see cref="T:SharpVectors.Dom.Css.CssStyleDeclaration"/> object or CSS declaration string
+            </summary>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.StyleTypeConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)">
+            <summary>
+            Converts a CSS-like string to a <see cref="T:SharpMap.Api.IStyle"/> object.
+            </summary>
+            <param name="context"></param>
+            <param name="culture"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.StyleTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
+            <summary>
+            Converts a <see cref="T:SharpMap.Api.IStyle"/> object to a CSS-like string
+            </summary>
+            <param name="context"></param>
+            <param name="culture"></param>
+            <param name="value"></param>
+            <param name="destinationType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.StyleTypeConverter.SetGeneralProperties(SharpMap.Api.IStyle,SharpVectors.Dom.Css.ICssStyleDeclaration)">
+            <summary>
+            Sets general properties of the style in the csd.
+            </summary>
+            <param name="from"></param>
+            <param name="csd"></param>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.StyleTypeConverter.SetBrushStyleProperty(SharpVectors.Dom.Css.ICssStyleDeclaration,System.String,System.Drawing.Brush,System.Drawing.Brush)">
+            <summary>
+            Sets the CSS property of a brush if it was different from the original
+            </summary>
+            <param name="csd">The style to add the CSS property to</param>
+            <param name="property">The property name to use</param>
+            <param name="value">The set brush value of the object to serialize</param>
+            <param name="original">The original non-changed object to compare changes to</param>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.StyleTypeConverter.SetColorStyleProperty(SharpVectors.Dom.Css.ICssStyleDeclaration,System.String,System.Drawing.Color,System.Drawing.Color)">
+            <summary>
+            Sets the CSS property of a color if it was different from the original
+            </summary>
+            <param name="csd">The style to add the CSS property to</param>
+            <param name="property">The property name to use</param>
+            <param name="value">The set color value of the object to serialize</param>
+            <param name="original">The original non-changed object to compare changes to</param>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.StyleTypeConverter.SetColorToCss(System.Drawing.Color,SharpVectors.Dom.Css.ICssStyleDeclaration,System.String)">
+            <summary>
+            Stores the color in a string using the name (for support known colors) and the 
+            ARGB to support the alpha channel which is not supported by ColorTranslator.
+            </summary>
+            <param name="color"></param>
+            <param name="csd"></param>
+            <param name="propertyName"></param>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.HibernateMappings.theme">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.theme.Item">
+            <remarks/>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeCategory">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeCategory.defaultStyle">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeCategory.noDataValueType">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeCategory.noDataValues">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeCategory.categoryThemeItems">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeCategory.columnName">
+            <remarks/>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeItem">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeItem.label">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeItem.style">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeItem.intervalMinValue">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeItem.intervalMaxValue">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeItem.value">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeItem.valueType">
+            <remarks/>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.HibernateMappings.colorBlend">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.colorBlend.color">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.colorBlend.position">
+            <remarks/>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeCustom">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeCustom.defaultStyle">
+            <remarks/>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.gradientThemeItems">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.minStyle">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.maxStyle">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.numberOfClasses">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.useCustomRange">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.textColorBlends">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.lineColorBlends">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.fillColorBlends">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.minValue">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.maxValue">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.noDataValueType">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.noDataValues">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeGradient.columnName">
+            <remarks/>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeQuantity">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeQuantity.defaultStyle">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeQuantity.quantityThemeItems">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeQuantity.noDataValueType">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeQuantity.noDataValues">
+            <remarks/>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.HibernateMappings.themeQuantity.columnName">
+            <remarks/>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.HibernateMappings.ThemeTypeConverter">
+            <summary>
+            Converter to serialize <see cref="N:SharpMap"/> <see cref="T:SharpMap.Api.ITheme"/> objects into an XML (with CSS) string
+            </summary>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.ThemeTypeConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)">
+            <summary>
+             Converts from a XML-like string to a <see cref="N:SharpMap"/> <see cref="T:SharpMap.Api.ITheme"/> object
+            </summary>
+            <param name="context"></param>
+            <param name="culture"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.ThemeTypeConverter.ConvertNoDataValues(System.Double[],System.String)">
+            <summary>
+            Convert the nodatavalues from an array of double to an array of the type noDataValueType
+            todo find a more generic method via reflection;
+            </summary>
+            <param name="noDataValues"></param>
+            <param name="noDataValueType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.ThemeTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
+            <summary>
+            Converts from a a <see cref="N:SharpMap"/> <see cref="T:SharpMap.Api.ITheme"/> object to a XML-like string
+            </summary>
+            <param name="context"></param>
+            <param name="culture"></param>
+            <param name="value"></param>
+            <param name="destinationType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.ThemeTypeConverter.createColorBlendForTheme(System.Collections.Generic.IEnumerable{DeltaShell.Plugins.SharpMapGis.HibernateMappings.colorBlend})">
+            <summary>
+            Creates a <see cref="T:SharpMap.Rendering.Thematics.ColorBlend"/> object (to use in a <see cref="T:SharpMap.Rendering.Thematics.GradientTheme"/>) from a list of XML/CSS-loaded colorBlends
+            </summary>
+            <param name="blends">List of color-position pairs stored in an XML/CSS-loaded object</param>
+            <returns>New <see cref="T:SharpMap.Rendering.Thematics.ColorBlend"/> object with colors and positions</returns>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.HibernateMappings.ThemeTypeConverter.CreateBlendsFromTheme(SharpMap.Rendering.Thematics.ColorBlend)">
+            <summary>
+            Build a list of CSS/XML-like <see cref="T:SharpMap.Rendering.Thematics.ColorBlend"/> objects from a <see cref="T:SharpMap.Rendering.Thematics.GradientTheme"/> <see cref="T:SharpMap.Rendering.Thematics.ColorBlend"/>
+            </summary>
+            <param name="colorBlend">The original <see cref="T:SharpMap.Rendering.Thematics.ColorBlend"/> with colors and positions</param>
+            <returns>An array of object containing a color and position; to be used to store as XML</returns>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.BackGroundMapLayer">
+            <summary>
+            Layer group based on a map. Contains the layers of the source map.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.BackGroundMapLayer.BackgroundMap">
+            <summary>
+            Map used a basis for this grouplayer
+            </summary>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.RegularGridCoverageLoader.IsPathValid(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.RegularGridCoverageLoader.IsGdalFile(System.String)">
+            <summary>
+            TODO: move this check to GdalHelper
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.FileBasedLayerFactory">
+            <summary>
+            Create layers from file datasource
+            </summary>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.MapDependencyResolver">
+            <summary>
+            Currently only support for chilc data item IRegularGridCoverage
+            </summary>
+        </member>
+        <member name="T:DeltaShell.Plugins.SharpMapGis.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.BackGroundMapLayer_UpdateLayers_Background_BackgroundMapName">
+            <summary>
+              Looks up a localized string similar to Background ({0}).
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.Category_Data_Import">
+            <summary>
+              Looks up a localized string similar to Data Import.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.Category_General">
+            <summary>
+              Looks up a localized string similar to General.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageFileExporter_Description_Exports_coverage_to_specified_file_format">
+            <summary>
+              Looks up a localized string similar to Exports coverage to specified file format.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageFileExporter_Export_No_dialog_to_show">
+            <summary>
+              Looks up a localized string similar to No dialog to show.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageFileExporter_Export_Selected_item_not_of_type_spatial_data__cannot_export">
+            <summary>
+              Looks up a localized string similar to Selected item not of type spatial data, cannot export.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageFileExporter_Export_Unknown_file_format__cannot_export">
+            <summary>
+              Looks up a localized string similar to Unknown file format, cannot export.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageFileExporter_FileFilter_CSV_file">
+            <summary>
+              Looks up a localized string similar to CSV file.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageFileExporter_FileFilter_NetCdf_file">
+            <summary>
+              Looks up a localized string similar to NetCdf file.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageFileExporter_Name_Coverage_Exporter__Csv_or_NetCdf_">
+            <summary>
+              Looks up a localized string similar to Coverage Exporter (Csv or NetCdf).
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageSpatialOperationValueConverter_CopyValues_Argument_feature_provider_does_not_contain_spatial_data_">
+            <summary>
+              Looks up a localized string similar to Argument feature provider does not contain spatial data..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageSpatialOperationValueConverter_CopyValues_Setting_values">
+            <summary>
+              Looks up a localized string similar to Setting values.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageSpatialOperationValueConverter_DeepClone_Clone_should_be_implemented___">
+            <summary>
+              Looks up a localized string similar to Clone should be implemented....
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CoverageTool_OnDragDrop_Spatial_data_layer_for__0__added_to__1__">
+            <summary>
+              Looks up a localized string similar to Spatial data layer for {0} added to {1}..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.CsvFunctionExporter_Export_Unable_to_export_to_csv__0_">
+            <summary>
+              Looks up a localized string similar to Unable to export to csv {0}.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.exportIcon">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ExportMapToImageMapTool_GetContextMenuItems_Zoom_to_extents">
+            <summary>
+              Looks up a localized string similar to Zoom to extents.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ExportMapToImageMapTool_OnBeforeContextMenu_Export_map_as_image">
+            <summary>
+              Looks up a localized string similar to Export map as image.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.feature_coverage">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.feature_coverage_with_time">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.FileBasedLayerFactory_SupportedFormats_ESRI_Grid">
+            <summary>
+              Looks up a localized string similar to ESRI Grid.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.FileBasedLayerFactory_SupportedFormats_ESRI_Personal_GeoDatabase">
+            <summary>
+              Looks up a localized string similar to ESRI Personal GeoDatabase.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.FileBasedLayerFactory_SupportedFormats_Grid_file">
+            <summary>
+              Looks up a localized string similar to Grid file.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.FileBasedLayerFactory_SupportedFormats_Land_boundary">
+            <summary>
+              Looks up a localized string similar to Land boundary.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.FileBasedLayerFactory_SupportedFormats_netCDF_Grid">
+            <summary>
+              Looks up a localized string similar to netCDF Grid.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.FileBasedLayerFactory_SupportedFormats_Shapefile">
+            <summary>
+              Looks up a localized string similar to Shapefile.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.FileBasedLayerFactory_SupportedFormats_Supported_Formats">
+            <summary>
+              Looks up a localized string similar to Supported Formats.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.FileBasedLayerFactory_SupportedFormats_XYZ_file">
+            <summary>
+              Looks up a localized string similar to XYZ file.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.GdalFileExporter_Description_Exports_regular_grids_to_the_specified_file_format_">
+            <summary>
+              Looks up a localized string similar to Exports regular grids to the specified file format..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.GdalFileExporter_Name_Grid_Files">
+            <summary>
+              Looks up a localized string similar to Grid Files.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.GdalFileImporter_Category_Spatial_Data">
+            <summary>
+              Looks up a localized string similar to Spatial data.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.GdalFileImporter_Description_Imports_the_specified_file_to_a_regular_grid_">
+            <summary>
+              Looks up a localized string similar to Imports the specified file to a regular grid..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.GdalFileImporter_Name_Raster_File">
+            <summary>
+              Looks up a localized string similar to Raster File.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.Grid2D">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.IdfImporter_Description_Imports_a_IDF_file_as_a_regular_grid_coverage_">
+            <summary>
+              Looks up a localized string similar to Imports a IDF file as a regular grid coverage..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.IdfImporter_FileFilter_IDF_file">
+            <summary>
+              Looks up a localized string similar to IDF file.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.IdfImporter_ImportItem_Creating_grid">
+            <summary>
+              Looks up a localized string similar to Creating grid.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.IdfImporter_ImportItem_Non_equidistant">
+            <summary>
+              Looks up a localized string similar to Non equidistant.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.IdfImporter_ImportItem_Reading_row">
+            <summary>
+              Looks up a localized string similar to Reading row.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.IdfImporter_ImportItem_Top_bottom">
+            <summary>
+              Looks up a localized string similar to Top bottom.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.IdfImporter_Name_IDF_importer">
+            <summary>
+              Looks up a localized string similar to IDF.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.Map">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.map_32">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.MapLegendView_ButtonAddWmsLayerClick_Aerial">
+            <summary>
+              Looks up a localized string similar to Aerial.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.MapLegendView_ButtonAddWmsLayerClick_Bing_Maps">
+            <summary>
+              Looks up a localized string similar to Bing Maps.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.MapLegendView_ButtonAddWmsLayerClick_Hybrid">
+            <summary>
+              Looks up a localized string similar to Hybrid.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.MapLegendView_ButtonAddWmsLayerClick_Roads">
+            <summary>
+              Looks up a localized string similar to Roads.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.MapZoomToExtentsImage">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetFile_WriteBathymetry_Bottom_level_at_net_nodes__flow_element_s_corners_">
+            <summary>
+              Looks up a localized string similar to Bottom level at net nodes (flow element&apos;s corners).
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetFile_WriteCoordinateSystem_Unknown_projected">
+            <summary>
+              Looks up a localized string similar to Unknown projected.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetFileImporter_ImportGrid_Net_file__0__is_empty__will_create_an_empty_grid_">
+            <summary>
+              Looks up a localized string similar to Net file {0} is empty, will create an empty grid..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetFileImporter_ImportModelGrid_Unable_to_read_grid_from_Net_file__0___will_create_an_empty_grid_">
+            <summary>
+              Looks up a localized string similar to Unable to read grid from Net file {0}, will create an empty grid..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetFileImporter_ReadFlowLinks_No_flow_links_could_be_read_from_input_net_file__0_">
+            <summary>
+              Looks up a localized string similar to No flow links could be read from input net-file {0}.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetFileImporter_TryReadGrid_No_cells_could_be_read_from_input_net_file__0_">
+            <summary>
+              Looks up a localized string similar to No cells could be read from input net-file {0}.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetworkCoverageCsvFileImporter_Description_Imports_a__csv_file_as_network_coverage_">
+            <summary>
+              Looks up a localized string similar to Imports a .csv file as network coverage..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetworkCoverageCsvFileImporter_FileFilter_CSV_Files">
+            <summary>
+              Looks up a localized string similar to CSV Files.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetworkCoverageCsvFileImporter_ImportCoverageFromBranchChainageTable_Branch___0___is_not_present_in_the_target_network">
+            <summary>
+              Looks up a localized string similar to Branch &apos;{0}&apos; is not present in the target network.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetworkCoverageCsvFileImporter_ImportCoverageFromBranchChainageTable_Could_not_import_value_to_branch___0___at_chainage__1___Did_you_resize_this_branch_">
+            <summary>
+              Looks up a localized string similar to Could not import value to branch &apos;{0}&apos; at chainage {1}. Did you resize this branch?.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetworkCoverageCsvFileImporter_ImportItem_Csv_import_failed__input_table_in_wrong_format_">
+            <summary>
+              Looks up a localized string similar to Csv import failed, input table in wrong format..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetworkCoverageCsvFileImporter_ImportItem_Csv_import_failed__please_check_the_file_layout">
+            <summary>
+              Looks up a localized string similar to Csv import failed, please check the file layout.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetworkCoverageCsvFileImporter_ImportItem_Csv_import_failed__target_not_set">
+            <summary>
+              Looks up a localized string similar to Csv import failed, target not set.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.NetworkCoverageCsvFileImporter_Name_Network_Data__CSV_">
+            <summary>
+              Looks up a localized string similar to Network Data (CSV).
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudExporter_Category_Feature_geometry">
+            <summary>
+              Looks up a localized string similar to Feature geometry.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudExporter_FileFilter_XYZ_file">
+            <summary>
+              Looks up a localized string similar to XYZ-file.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudExporter_Name_Points_to_XYZ_file">
+            <summary>
+              Looks up a localized string similar to Points to XYZ-file.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudImporter_Description_Imports_XYZ_file_as_a_point_cloud_">
+            <summary>
+              Looks up a localized string similar to Imports XYZ file as a point cloud..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudImporter_FileFilter_XYZ_file">
+            <summary>
+              Looks up a localized string similar to XYZ-file.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudImporter_Name_Points_from_XYZ_file">
+            <summary>
+              Looks up a localized string similar to Points from XYZ-file.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudImporter_OnImportItem_Adding_points">
+            <summary>
+              Looks up a localized string similar to Adding points.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudImporter_OnImportItem_Finished_importing__0__point_features">
+            <summary>
+              Looks up a localized string similar to Finished importing {0} point features.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudImporter_OnImportItem_Importing__0__point_features">
+            <summary>
+              Looks up a localized string similar to Importing {0} point features.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudImporter_OnImportItem_Importing_point_features____0_____1__">
+            <summary>
+              Looks up a localized string similar to Importing point features : {0} / {1}.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.PointCloudSpatialOperationValueConverter_DeepClone_Clone_should_be_implemented___">
+            <summary>
+              Looks up a localized string similar to Clone should be implemented....
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.points">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.Project_Template_Description">
+            <summary>
+              Looks up a localized string similar to Creates a project with a map item. This map item will have a layer showing the world..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.RegularGridCoverageLoader_ErrorMessages_Error_loading_the_file__No_regular_grid_data_found">
+            <summary>
+              Looks up a localized string similar to Error loading the file. No regular grid data found.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.RegularGridCoverageLoader_ErrorMessages_File_doesn_t_exist">
+            <summary>
+              Looks up a localized string similar to File doesn&apos;t exist.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.RegularGridCoverageLoader_ErrorMessages_File_is_is_not_supported_">
+            <summary>
+              Looks up a localized string similar to File is not supported..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.Resources_nl_NL">
+             <summary>
+               Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+            &lt;root&gt;
+              &lt;!-- 
+                Microsoft ResX Schema 
+                
+                Version 2.0
+                
+                The primary goals of this format is to allow a simple XML format 
+                that is mostly human readable. The generation and parsing of the 
+                various data types are done through the TypeConverter classes 
+                associated with the data types.
+                
+                Example:
+                
+                ... ado.net/XML headers &amp; schema ...
+                &lt;resheader name=&quot;resmimetype&quot;&gt;text/microsoft-resx&lt;/resheader&gt;
+                &lt;resheader n [rest of string was truncated]&quot;;.
+             </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ShapeFileExporter_Description_Exports_map_layers_to_shapefile_">
+            <summary>
+              Looks up a localized string similar to Exports map layers to shapefile..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ShapeFileExporter_FileFilter_ESRI_Shapefile">
+            <summary>
+              Looks up a localized string similar to ESRI Shapefile.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ShapeFileExporter_GetHeaderForAttributes_Attribute___0___of_type__1__could_not_be_written_to_shapefile__Unable_to_write_this_type_to_shapefile_">
+            <summary>
+              Looks up a localized string similar to Attribute &apos;{0}&apos; of type {1} could not be written to shapefile. Unable to write this type to shapefile..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ShapeFileExporter_Name_Shapefile_exporter">
+            <summary>
+              Looks up a localized string similar to Shapefile exporter.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.SharpMapGisApplicationPlugin_Description">
+            <summary>
+              Looks up a localized string similar to Provides common GIS functionality..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.SharpMapGisApplicationPlugin_DisplayName_SharpMap_GIS_Plugin">
+            <summary>
+              Looks up a localized string similar to SharpMap GIS Plugin.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.SharpMapGisApplicationPlugin_GetDataItemInfos_Adds_a_map_with_a_default_background_layers___Open_street_map__and__Bing_aerial">
+            <summary>
+              Looks up a localized string similar to Adds a map with a default background layers (&apos;Open street map&apos; and &apos;Bing aerial&apos;) and sets the map coordinate system to pseudo web mercator. &apos;This can be used to view all kinds of GIS data..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.SharpMapGisApplicationPlugin_GetDataItemInfos_Adds_an_empty_map_to_the_project__This_can_be_used_to_view_all_kinds_of_GIS_data_">
+            <summary>
+              Looks up a localized string similar to Adds an empty map to the project. This can be used to view all kinds of GIS data..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.SharpMapGisApplicationPlugin_GetDataItemInfos_General">
+            <summary>
+              Looks up a localized string similar to General.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.SharpMapGisApplicationPlugin_GetDataItemInfos_Map">
+            <summary>
+              Looks up a localized string similar to Map.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.SharpMapGisApplicationPlugin_GetDataItemInfos_Map__World_">
+            <summary>
+              Looks up a localized string similar to Map (World).
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.SharpMapGisApplicationPlugin_GetDataItemInfos_Open_Street_Map">
+            <summary>
+              Looks up a localized string similar to Open Street Map.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.SpatialOperationSetValueConverter_LoadConvertedValue_Target_data_item_value__0__is_not_of_the_required_type__1_">
+            <summary>
+              Looks up a localized string similar to Target data item value {0} is not of the required type {1}.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.SpatialOperationValueConverterFactory_GetOrCreateSpatialOperationValueConverter_Cannot_replace_value_converter_with_spatial_operationSet_value_converter">
+            <summary>
+              Looks up a localized string similar to Cannot replace value converter with spatial operationSet value converter.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ThemeFileExporter_Description_Exports_layer_theme_settings_to_dsleg_file_">
+            <summary>
+              Looks up a localized string similar to Exports layer theme settings to dsleg file..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ThemeFileExporter_FileFilter_DeltaShell_legend_files">
+            <summary>
+              Looks up a localized string similar to DeltaShell legend files.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ThemeFileExporter_Name_Legend_settings_exporter">
+            <summary>
+              Looks up a localized string similar to Legend settings exporter.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ThemeFileImporter_Description_Imports_theme_from_dsleg_file_">
+            <summary>
+              Looks up a localized string similar to Imports theme from dsleg file..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ThemeFileImporter_FileFilter_DeltaShell_legend_files">
+            <summary>
+              Looks up a localized string similar to DeltaShell legend files.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ThemeFileImporter_FileFilter_Demis_Mapper_legend_files">
+            <summary>
+              Looks up a localized string similar to Demis Mapper legend files.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.ThemeFileImporter_Name_Legend_Settings">
+            <summary>
+              Looks up a localized string similar to Legend Settings.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.TimeDependentGridFileImporter_Description_Imports_time_depended_regular_grid_">
+            <summary>
+              Looks up a localized string similar to Imports time depended regular grid..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.TimeDependentGridFileImporter_ImportItem_Found_time_dependent_input_grid__only_static_input_grids_supported_for_now">
+            <summary>
+              Looks up a localized string similar to Found time-dependent input grid, only static input grids supported for now.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.TimeDependentGridFileImporter_ImportItem_Importing_1_time_step_from_grid__0_____">
+            <summary>
+              Looks up a localized string similar to Importing 1 time step from grid {0} ....
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.TimeDependentGridFileImporter_ImportItem_Invalid_grid_resolution___0___only_import_of_grids_with_the_same_resolution___origin_is_supported_for_now">
+            <summary>
+              Looks up a localized string similar to Invalid grid resolution: {0}. Only grids with the same resolution and origin can be currently imported in one set..
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.TimeDependentGridFileImporter_Name_Time_Dependent_Grid">
+            <summary>
+              Looks up a localized string similar to Time-Dependent Grid.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.TimeSeriesGrid2D">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:DeltaShell.Plugins.SharpMapGis.Properties.Resources.XyzFileExporter_Description_Exports_data_to_xyz_file_">
+            <summary>
+              Looks up a localized string similar to Exports data to xyz file..
+            </summary>
+        </member>
+        <member name="M:DeltaShell.Plugins.SharpMapGis.SpatialOperations.SpatialOperationValueConverterFactory.GetOrCreateSpatialOperationValueConverter(DelftTools.Shell.Core.Workflow.DataItems.IDataItem,System.String)">
+            <summary>
+            Get or create a value converter. Also sets the value converter on the data item when created.
+            </summary>
+            <param name="dataItem"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

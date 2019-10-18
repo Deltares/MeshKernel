@@ -1,0 +1,15 @@
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\bin\x64\Debug\DeltaShell.Plugins.GridEditor.Gui.Tests.dll.config
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\bin\x64\Debug\DeltaShell.Plugins.GridEditor.Gui.Tests.dll
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\bin\x64\Debug\DeltaShell.Plugins.GridEditor.Gui.Tests.pdb
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\bin\x64\Debug\nunit.framework.dll
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\bin\x64\Debug\Rhino.Mocks.dll
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\bin\x64\Debug\nunit.framework.xml
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\bin\x64\Debug\Rhino.Mocks.xml
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\bin\x64\Debug\DeltaShell.Plugins.GridEditor.Gui.Tests.pssym
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Gui.Tests.csprojAssemblyReference.cache
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Gui.Tests.csproj.CoreCompileInputs.cache
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Gui.Tests.csproj.CopyComplete
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Gui.Tests.dll.postsharp
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Gui.Tests.dll
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Gui.Tests.pdb
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\x64\Debug\PostSharpHost.config

@@ -1,0 +1,673 @@
+﻿<UserControl x:Class="DeltaShell.Plugins.GridEditor.Gui.Controls.Ribbon.GridEditorRibbon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:fluent="clr-namespace:Fluent;assembly=Fluent"
+             xmlns:grids="clr-namespace:NetTopologySuite.Extensions.Grids;assembly=NetTopologySuite.Extensions"
+             xmlns:valueConverters="clr-namespace:DelftTools.Controls.Wpf.ValueConverters;assembly=DelftTools.Controls.Wpf"
+             xmlns:api="clr-namespace:DeltaShell.Plugins.GridEditor.GridGeomStateful.Api;assembly=DeltaShell.Plugins.GridEditor"
+             xmlns:extensions="clr-namespace:DelftTools.Controls.Wpf.Extensions;assembly=DelftTools.Controls.Wpf"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:helpers="clr-namespace:DeltaShell.Plugins.GridEditor.Helpers;assembly=DeltaShell.Plugins.GridEditor"
+             xmlns:controllerApi="clr-namespace:DeltaShell.Plugins.GridEditor.Gui.Controllers.Api"
+             xmlns:ribbon="clr-namespace:DeltaShell.Plugins.GridEditor.Gui.Controls.Ribbon"
+             xmlns:controls="clr-namespace:DeltaShell.Plugins.GridEditor.Gui.Controls"
+             mc:Ignorable="d" Height="168" Background="White" x:ClassModifier="internal">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/DelftTools.Controls.Wpf;Component/DrawingBrushesDictionary.xaml" />
+                <ResourceDictionary Source="/DelftTools.Controls.Wpf;Component/DeltaresStyleDictionairy.xaml" />
+                <ResourceDictionary Source="/DeltaShell.Plugins.SharpMapGis.Gui;Component/SharpMapGisGraphics.xaml" />
+                <ResourceDictionary Source="/Fluent;Component/Themes/generic.xaml"/>
+                <ResourceDictionary Source="/DeltaShell.Plugins.GridEditor.Gui;component/Controls/Dictionaries/IconDictionary.xaml" />
+                <ResourceDictionary Source="/DeltaShell.Plugins.GridEditor.Gui;component/Controls/Dictionaries/IconBrushes.xaml" />
+                <ResourceDictionary Source="/DeltaShell.Plugins.GridEditor.Gui;component/Controls/Dictionaries/ControlTemplates.xaml" />
+                <ResourceDictionary>
+                    <valueConverters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+                    <system:Double x:Key="ScreenTipWidth">350</system:Double>
+
+                    <Style x:Key="SplitButtonItemContainerStyle" TargetType="MenuItem">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="-30,0,0,0"/> <!--Hide icon-->
+                            <Setter Property="CommandParameter" Value="{Binding}"/>
+                        </Style.Setters>
+                    </Style>
+
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <fluent:Ribbon Name="RibbonControl" x:FieldModifier="private">
+        <fluent:Ribbon.ContextualGroups>
+            <fluent:RibbonContextualTabGroup Header="GIS" Visibility="Visible" Name="geospatialContextualGroup" Background="Green" BorderBrush="Green" />
+        </fluent:Ribbon.ContextualGroups>
+
+        <fluent:RibbonTabItem x:Name="GridEditorTab" 
+                              Header="Grid" 
+                              fluent:KeyTip.Keys="G" 
+                              Group="{Binding ElementName=geospatialContextualGroup}">
+            <fluent:RibbonTabItem.DataContext>
+                <ribbon:GridEditorRibbonViewModel x:Name="GridEditingGroupViewModel"/>
+            </fluent:RibbonTabItem.DataContext>
+
+            <fluent:RibbonGroupBox Header="Start/save">
+                <ComboBox ItemsSource="{Binding UnstructuredGrids}" 
+                          SelectedItem="{Binding SelectedGrid, Mode=TwoWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
+                          IsEnabled="{Binding IsEditing, Converter={StaticResource InverseBooleanConverter}}"
+                          Visibility="{Binding MoreThanOneGrid, Converter={StaticResource boolToVisibilityConverter}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="grids:UnstructuredGrid">
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Fill="{StaticResource GridBrush}" Width="24" Height="24"/>
+                                <TextBlock Text="Grid" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <fluent:ToggleButton Header="Edit" 
+                                     IsEnabled="{Binding CanEdit}"
+                                     IsChecked="{Binding IsEditing}">
+                    <fluent:ToggleButton.ToolTip>
+                        <fluent:ScreenTip Title="Edit" Text="Enables or disables editing for the selected grid.
+                                          Enabling editing creates a working copy of the selected grid and enables all available editing functions.
+                                          Disabling editing will ask you if you want to replace the actual grid with the working copy"
+                                          Width="{StaticResource ScreenTipWidth}"/>
+                    </fluent:ToggleButton.ToolTip>
+                    <fluent:ToggleButton.LargeIcon>
+                        <Rectangle Fill="{StaticResource EditBrush}"/>
+                    </fluent:ToggleButton.LargeIcon>
+                </fluent:ToggleButton>
+            </fluent:RibbonGroupBox>
+
+            <fluent:RibbonGroupBox IsEnabled="{Binding CanDoActions}">
+                <fluent:RibbonGroupBox.Resources>
+                    <Style x:Key="ImportExportTypeRectangleStyle" TargetType="Rectangle">
+                        <Style.Triggers>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static helpers:ImportExportType.Grid}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="{StaticResource GridBrush}"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static helpers:ImportExportType.Polygons}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="{StaticResource PolygonBrush}"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static helpers:ImportExportType.Spline}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="{StaticResource AddPointBrush}"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static helpers:ImportExportType.LandBoundary}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="{StaticResource AddPointBrush}"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static helpers:ImportExportType.Samples}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill">
+                                        <Setter.Value>
+                                            <DrawingBrush Drawing="{StaticResource PointCloudDrawing}"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger.Setters>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
+                    <DataTemplate x:Key="ImportExportItemTemplate" DataType="{x:Type helpers:ImportExportType}">
+                        <StackPanel>
+                            <Rectangle Width="32" Height="32" Tag="{Binding}" Style="{StaticResource ImportExportTypeRectangleStyle}"/>
+                            <TextBlock Text="{Binding}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </fluent:RibbonGroupBox.Resources>
+
+                <fluent:SplitButton Header="{Binding SelectedImportTypeString}"
+                                    Command="{Binding ImportCommand}"
+                                    CommandParameter="{Binding SelectedImportType}"
+                                    Template="{StaticResource RibbonSplitButtonWithSeparatorControlTemplate}"
+                                    ItemTemplate="{StaticResource ImportExportItemTemplate}"
+                                    ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type helpers:ImportExportType}}}">
+                    <fluent:SplitButton.LargeIcon>
+                        <Rectangle Width="32" Height="32" Tag="{Binding SelectedImportType}"
+                                   Style="{StaticResource ImportExportTypeRectangleStyle}" />
+                    </fluent:SplitButton.LargeIcon>
+                    <fluent:SplitButton.ItemContainerStyle>
+                        <Style TargetType="MenuItem" BasedOn="{StaticResource SplitButtonItemContainerStyle}">
+                            <Style.Setters>
+                                <Setter Property="Command" Value="{Binding DataContext.ImportCommand, 
+                                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"/>
+                            </Style.Setters>
+                        </Style>
+                    </fluent:SplitButton.ItemContainerStyle>
+                </fluent:SplitButton>
+
+                <fluent:SplitButton Header="{Binding SelectedExportTypeString}"
+                                    Command="{Binding ExportCommand}"
+                                    CommandParameter="{Binding SelectedExportType}"
+                                    Template="{StaticResource RibbonSplitButtonWithSeparatorControlTemplate}"
+                                    ItemTemplate="{StaticResource ImportExportItemTemplate}"
+                                    ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type helpers:ImportExportType}}}">
+                    <fluent:SplitButton.LargeIcon>
+                        <Rectangle Width="32" Height="32" Tag="{Binding SelectedExportType}"
+                                   Style="{StaticResource ImportExportTypeRectangleStyle}" />
+                    </fluent:SplitButton.LargeIcon>
+                    <fluent:SplitButton.ItemContainerStyle>
+                        <Style TargetType="MenuItem" BasedOn="{StaticResource SplitButtonItemContainerStyle}">
+                            <Style.Setters>
+                                <Setter Property="Command" Value="{Binding DataContext.ExportCommand,
+                                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"/>
+                            </Style.Setters>
+                        </Style>
+                    </fluent:SplitButton.ItemContainerStyle>
+                </fluent:SplitButton>
+            </fluent:RibbonGroupBox>
+            
+            <fluent:RibbonGroupBox>
+                <fluent:SplitButton Header="Orthogonalization" Command="{Binding OrthogonalizeCommand}" IsEnabled="{Binding CanDoActions}">
+                    <fluent:SplitButton.Icon>
+                        <Rectangle Width="16" Height="16" Fill="{StaticResource LineBrush}"/>
+                    </fluent:SplitButton.Icon>
+                    <fluent:SplitButton.LargeIcon>
+                        <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                    </fluent:SplitButton.LargeIcon>
+                    <controls:OrthogonalizationParametersControl DataContext="{Binding OrthogonalizationParameters}"/>
+                </fluent:SplitButton>
+
+                <StackPanel Visibility="{Binding IsTaskRunning, Converter={StaticResource boolToVisibilityConverter}}">
+                    <TextBlock Text="{Binding CurrentProgressText}"/>
+                    <ProgressBar MinWidth="200" MinHeight="20" Minimum="0" Maximum="100" Value="{Binding CurrentProgress}"/>
+                </StackPanel>
+                <fluent:Button Header="Stop" Command="{Binding CancelTaskCommand}"
+                               Visibility="{Binding IsTaskRunning, Converter={StaticResource boolToVisibilityConverter}}">
+                    <fluent:Button.LargeIcon>
+                        <Rectangle Style="{StaticResource LargeImageStyle}" Fill="{StaticResource StatusCriticalErrorBrush}"></Rectangle>
+                    </fluent:Button.LargeIcon>
+                </fluent:Button>
+            </fluent:RibbonGroupBox>
+
+            <fluent:RibbonGroupBox Header="Generate grid" IsEnabled="{Binding CanDoActions}">
+                <fluent:RibbonGroupBox.Resources>
+                    <Style x:Key="WorkFlowTypeRectangleStyle" TargetType="Rectangle">
+                        <Style.Triggers>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static ribbon:GenerateGridWorkFlowType.CurveLinearTransfinite}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="SaddleBrown"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static ribbon:GenerateGridWorkFlowType.CurveLinearOrthogonal}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="Red"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static ribbon:GenerateGridWorkFlowType.Regular}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="Orange"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static ribbon:GenerateGridWorkFlowType.TriangularWithPolygon}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="Yellow"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static ribbon:GenerateGridWorkFlowType.RegularWithPolygon}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="Green"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static ribbon:GenerateGridWorkFlowType.Samples}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="Blue"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger Property ="Rectangle.Tag" Value="{x:Static ribbon:GenerateGridWorkFlowType.RefinementSamples}">
+                                <Trigger.Setters>
+                                    <Setter Property="Rectangle.Fill" Value="Purple"/>
+                                </Trigger.Setters>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
+                    <DataTemplate x:Key="WorkFlowTypeItemTemplate" DataType="{x:Type ribbon:GenerateGridWorkFlowType}">
+                        <StackPanel>
+                            <Rectangle Width="32" Height="32" Tag="{Binding}" 
+                                       Style="{StaticResource WorkFlowTypeRectangleStyle}"/>
+                            <TextBlock Text="{Binding}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </fluent:RibbonGroupBox.Resources>
+
+
+                <fluent:DropDownButton Header="{Binding SelectedGenerateGridWorkFlowTypeString}"
+                                    ItemTemplate="{StaticResource WorkFlowTypeItemTemplate}"
+                                    ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type ribbon:GenerateGridWorkFlowType}}}">
+                    <fluent:DropDownButton.LargeIcon>
+                        <Rectangle Width="32" Height="32" Tag="{Binding SelectedGenerateGridWorkFlowType}"
+                                   Style="{StaticResource WorkFlowTypeRectangleStyle}" />
+                    </fluent:DropDownButton.LargeIcon>
+                    <fluent:DropDownButton.ItemContainerStyle>
+                        <Style TargetType="MenuItem" BasedOn="{StaticResource SplitButtonItemContainerStyle}">
+                            <Style.Setters>
+                                <Setter Property="Command" Value="{Binding DataContext.SwitchWorkFlowCommand, 
+                                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}}"/>
+                            </Style.Setters>
+                        </Style>
+                    </fluent:DropDownButton.ItemContainerStyle>
+                </fluent:DropDownButton>
+
+                <fluent:ToggleButton Header="Polygons"
+                                     IsChecked="{Binding PolygonToolEnabled, Mode=OneWay}"
+                                     Visibility="{Binding IsPolygonToolVisible, Converter={StaticResource boolToVisibilityConverter}}"
+                                     Command="{Binding SelectMapToolCommand}"
+                                     CommandParameter="{x:Static controllerApi:MapToolType.Polygon}">
+                    <fluent:ToggleButton.LargeIcon>
+                        <Rectangle Fill="{StaticResource PolygonBrush}"/>
+                    </fluent:ToggleButton.LargeIcon>
+                </fluent:ToggleButton>
+                <fluent:ToggleButton Header="Splines" 
+                                     Command="{Binding SelectMapToolCommand}"
+                                     CommandParameter="{x:Static controllerApi:MapToolType.Spline}"
+                                     Visibility="{Binding IsSplineToolVisible, Converter={StaticResource boolToVisibilityConverter}}"
+                                     IsChecked="{Binding SplineToolEnabled, Mode=OneWay}">
+                    <fluent:ToggleButton.LargeIcon>
+                        <Rectangle Width="32" Height="32" Fill="{StaticResource AddPointBrush}"/>
+                    </fluent:ToggleButton.LargeIcon>
+                </fluent:ToggleButton>
+
+                <fluent:SplitButton Header="Generate" Template="{StaticResource RibbonSplitButtonWithSeparatorControlTemplate}" Command="{Binding GenerateUsingCurrentWorkFlowCommand}">
+                    <fluent:SplitButton.LargeIcon>
+                        <Rectangle Width="32" Height="32" Fill="{StaticResource AsteriskBrush}"/>
+                    </fluent:SplitButton.LargeIcon>
+                    <ContentControl>
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedGenerateGridWorkFlowType}" Value="{x:Static ribbon:GenerateGridWorkFlowType.CurveLinearTransfinite}">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <controls:CurvilinearParametersControl CurvilinearParameters="{Binding CurvilinearParameters}"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedGenerateGridWorkFlowType}" Value="{x:Static ribbon:GenerateGridWorkFlowType.CurveLinearOrthogonal}">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <controls:SplinesToCurvilinearParametersControl SplinesToCurvilinearParameters="{Binding SplinesToCurvilinearParameters}"
+                                                                                                CurvilinearParameters="{Binding CurvilinearParameters}"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedGenerateGridWorkFlowType}" Value="{x:Static ribbon:GenerateGridWorkFlowType.TriangularWithPolygon}">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <TextBox Text="No settings"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedGenerateGridWorkFlowType}" Value="{x:Static ribbon:GenerateGridWorkFlowType.RegularWithPolygon}">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <controls:MakeGridParametersControl MakeGridParameters="{Binding MakeGridParameters}"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedGenerateGridWorkFlowType}" Value="{x:Static ribbon:GenerateGridWorkFlowType.Regular}">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <controls:MakeGridParametersControl MakeGridParameters="{Binding MakeGridParameters}"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedGenerateGridWorkFlowType}" Value="{x:Static ribbon:GenerateGridWorkFlowType.Samples}">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <TextBox Text="No settings"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedGenerateGridWorkFlowType}" Value="{x:Static ribbon:GenerateGridWorkFlowType.RefinementSamples}">
+                                        <Setter Property="Content">
+                                            <Setter.Value>
+                                                <controls:SamplesRefineParametersControl SamplesRefineParameters="{Binding SamplesRefineParameters}" 
+                                                                                         InterpolationParameters="{Binding InterpolationParameters}"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
+                </fluent:SplitButton>
+            </fluent:RibbonGroupBox>
+
+            <fluent:RibbonGroupBox Header="Geometry Tools" IsEnabled="{Binding CanDoActions}">
+                <fluent:Button Header="Boundary grid" Command="{Binding GetMeshBoundaryPolygon}" Size="Middle">
+                    <fluent:Button.Icon>
+                        <Rectangle Width="16" Height="16" Fill="{StaticResource LineBrush}"/>
+                    </fluent:Button.Icon>
+                </fluent:Button>
+
+                <fluent:SplitButton Header="Offset" Command="{Binding OffsetPolygonCommand}" Size="Middle">
+                    <fluent:SplitButton.Icon>
+                        <Rectangle Width="16" Height="16" Fill="{StaticResource RefinePolygonBrush}"/>
+                    </fluent:SplitButton.Icon>
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Offset distance (positive outwards, negative inwards)"/>
+                        <TextBox Grid.Column="1" Margin="5,0,5,0"  MinWidth="200" Text="{Binding PolygonOffsetDistance}"/>
+                        <TextBlock Grid.Column="2" Text="m"/>
+                    </Grid>
+                </fluent:SplitButton>
+
+                <fluent:SplitButton Header="Refine point" Command="{Binding RefinePolygonCommand}" Size="Middle">
+                    <fluent:SplitButton.Icon>
+                        <Rectangle Width="16" Height="16" Fill="{StaticResource RefinePolygonBrush}"/>
+                    </fluent:SplitButton.Icon>
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="RefinementSamples distance"/>
+                        <TextBox Grid.Column="1" Margin="5,0,5,0"  MinWidth="200" Text="{Binding PolygonRefinementDistance}"/>
+                        <TextBlock Grid.Column="2" Text="m"/>
+                    </Grid>
+                </fluent:SplitButton>
+            </fluent:RibbonGroupBox>
+
+            <fluent:RibbonGroupBox Header="Validate" IsEnabled="{Binding CanDoActions}">
+                <fluent:Button Header="Orthogonalization" Command="{Binding ShowOrthogonality}" Size="Middle">
+                    <fluent:Button.Icon>
+                        <Rectangle Width="16" Height="16" Fill="Blue"/>
+                    </fluent:Button.Icon>
+                </fluent:Button>
+
+                <fluent:Button Header="Smoothness" Command="{Binding ShowSmoothness}" Size="Middle">
+                    <fluent:Button.Icon>
+                        <Rectangle Width="16" Height="16" Fill="Red"/>
+                    </fluent:Button.Icon>
+                </fluent:Button>
+            </fluent:RibbonGroupBox>
+
+            <fluent:RibbonGroupBox Header="Advanced" IsEnabled="{Binding CanDoActions}" >
+                <fluent:DropDownButton Header="Advanced options" MaxDropDownHeight="700">
+                    <fluent:DropDownButton.LargeIcon>
+                        <Rectangle Style="{StaticResource LargeImageStyle}" Fill="{StaticResource SettingsBrush}"/>
+                    </fluent:DropDownButton.LargeIcon>
+                    <WrapPanel>
+                        <fluent:RibbonGroupBox Header="Tools">
+                            <fluent:ToggleButton Header="Polygons"
+                                                 IsChecked="{Binding PolygonToolEnabled, Mode=OneWay}"
+                                                 Command="{Binding SelectMapToolCommand}"
+                                                 CommandParameter="{x:Static controllerApi:MapToolType.Polygon}">
+                                <fluent:ToggleButton.Icon>
+                                    <Rectangle Fill="{StaticResource PolygonBrush}"/>
+                                </fluent:ToggleButton.Icon>
+                                <fluent:ToggleButton.LargeIcon>
+                                    <Rectangle Fill="{StaticResource PolygonBrush}"/>
+                                </fluent:ToggleButton.LargeIcon>
+                            </fluent:ToggleButton>
+                            <fluent:ToggleButton Header="Splines" 
+                                                 Command="{Binding SelectMapToolCommand}"
+                                                 CommandParameter="{x:Static controllerApi:MapToolType.Spline}"
+                                                 IsChecked="{Binding SplineToolEnabled, Mode=OneWay}">
+                                <fluent:ToggleButton.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource AddPointBrush}"/>
+                                </fluent:ToggleButton.LargeIcon>
+                            </fluent:ToggleButton>
+                            <fluent:ToggleButton Header="Land boundaries" 
+                                                 Command="{Binding SelectMapToolCommand}"
+                                                 CommandParameter="{x:Static controllerApi:MapToolType.LandBoundaries}"
+                                                 IsChecked="{Binding LandBoundariesToolEnabled, Mode=OneWay}">
+                                <fluent:ToggleButton.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource AddPointBrush}"/>
+                                </fluent:ToggleButton.LargeIcon>
+                            </fluent:ToggleButton>
+                        </fluent:RibbonGroupBox>
+                        <fluent:RibbonGroupBox Header="Polygon actions" IsEnabled="{Binding IsEditing}">
+                            <fluent:SplitButton Header="Offset polygon" Command="{Binding OffsetPolygonCommand}">
+                                <fluent:SplitButton.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource RefinePolygonBrush}"/>
+                                </fluent:SplitButton.LargeIcon>
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="Offset distance (positive outwards, negative inwards)"/>
+                                    <TextBox Grid.Column="1" Margin="5,0,5,0"  MinWidth="200" Text="{Binding PolygonOffsetDistance}"/>
+                                    <TextBlock Grid.Column="2" Text="m"/>
+                                </Grid>
+                            </fluent:SplitButton>
+
+
+                            <fluent:ToggleButton Header="Select/change"
+                                     IsChecked="{Binding ChangePolygonToolEnabled, Mode=OneWay}"
+                                     Command="{Binding ChangePolygonCommand}">
+                                <fluent:ToggleButton.LargeIcon>
+                                    <Rectangle Fill="{StaticResource MoveSinleGeometryPointBrush}"/>
+                                </fluent:ToggleButton.LargeIcon>
+                            </fluent:ToggleButton>
+
+                            <fluent:SplitButton Header="Refine polygon" Command="{Binding RefinePolygonCommand}">
+                                <fluent:SplitButton.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource RefinePolygonBrush}"/>
+                                </fluent:SplitButton.LargeIcon>
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="RefinementSamples distance"/>
+                                    <TextBox Grid.Column="1" Margin="5,0,5,0"  MinWidth="200" Text="{Binding PolygonRefinementDistance}"/>
+                                    <TextBlock Grid.Column="2" Text="m"/>
+                                </Grid>
+                            </fluent:SplitButton>
+                            <fluent:Button Header="Mesh boundaries to polygon" Command="{Binding GetMeshBoundaryPolygon}">
+                                <fluent:Button.Icon>
+                                    <Rectangle Width="16" Height="16" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.Icon>
+                                <fluent:Button.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.LargeIcon>
+                            </fluent:Button>
+                            <fluent:ToggleButton Header="Insert Edges" 
+                                     Command="{Binding SelectMapToolCommand}"
+                                     CommandParameter="{x:Static controllerApi:MapToolType.InsertEdges}"
+                                     IsChecked="{Binding InsertEdgesToolEnabled, Mode=OneWay}">
+                                <fluent:ToggleButton.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource AddPointBrush}"/>
+                                </fluent:ToggleButton.LargeIcon>
+                            </fluent:ToggleButton>
+                        </fluent:RibbonGroupBox>
+
+                        <fluent:RibbonGroupBox Header="Grid actions" IsEnabled="{Binding IsEditing}">
+                            <fluent:Button Header="Delete (selected nodes)" Command="{Binding DeleteVerticesCommand}">
+                                <fluent:Button.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource RemovePointBrush}"/>
+                                </fluent:Button.LargeIcon>
+                                <fluent:Button.ToolTip>
+                                    <fluent:ScreenTip Title="Delete (selected nodes)"
+                                          Text="Deletes the nodes that are in the selection polygon(s).
+                                          If no selection polygon is used the entire grid will be removed"
+                                          Width="{StaticResource ScreenTipWidth}"/>
+                                </fluent:Button.ToolTip>
+                            </fluent:Button>
+
+
+                            <fluent:SplitButton Header="Delete mesh with options" Command="{Binding DeleteMeshWithOptionsCommand}">
+                                <fluent:SplitButton.Icon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource RemovePointBrush}"/>
+                                </fluent:SplitButton.Icon>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Option" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <ComboBox SelectedItem="{Binding DeleteMeshOption}"
+                                              ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type api:DeleteMeshOptions}}}"/>
+                                </StackPanel>
+                            </fluent:SplitButton>
+
+
+                            <fluent:Button Header="Insert edge" Command="{Binding InsertEdgesCommand}">
+                                <fluent:Button.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.LargeIcon>
+                            </fluent:Button>
+                            <fluent:Button Header="Merge vertices" Command="{Binding MergeVerticesCommand}">
+                                <fluent:Button.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.LargeIcon>
+                            </fluent:Button>
+                            <fluent:Button Header="Merge two vertices" Command="{Binding MergeTwoVerticesCommand}">
+                                <fluent:Button.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.LargeIcon>
+                            </fluent:Button>
+                            <fluent:Button Header="Flip edges"  Command="{Binding FlipEdgesCommand}">
+                                <fluent:Button.LargeIcon>
+                                    <Rectangle Width="Auto" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.LargeIcon>
+                            </fluent:Button>
+                            <fluent:SplitButton Header="Orthogonalization" Command="{Binding OrthogonalizeCommand}">
+                                <fluent:SplitButton.Icon>
+                                    <Rectangle Width="16" Height="16" Fill="{StaticResource LineBrush}"/>
+                                </fluent:SplitButton.Icon>
+                                <fluent:SplitButton.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:SplitButton.LargeIcon>
+                                <controls:OrthogonalizationParametersControl DataContext="{Binding OrthogonalizationParameters}"/>
+                            </fluent:SplitButton>
+                            <fluent:SplitButton Header="Refine grid based on samples" Command="{Binding RefineGridBasedOnSampleCommand}">
+                                <fluent:SplitButton.Icon>
+                                    <Rectangle Width="16" Height="16" Fill="{StaticResource LineBrush}"/>
+                                </fluent:SplitButton.Icon>
+                                <fluent:SplitButton.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:SplitButton.LargeIcon>
+
+                                <controls:SamplesRefineParametersControl SamplesRefineParameters="{Binding SamplesRefineParameters}" 
+                                                           InterpolationParameters="{Binding InterpolationParameters}"/>
+                            </fluent:SplitButton>
+
+                            <fluent:SplitButton Header="Refine grid based on polygon" Command="{Binding RefineGridBasedOnPolygonCommand}">
+                                <fluent:SplitButton.Icon>
+                                    <Rectangle Width="16" Height="16" Fill="{StaticResource LineBrush}"/>
+                                </fluent:SplitButton.Icon>
+                                <fluent:SplitButton.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:SplitButton.LargeIcon>
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" 
+                             Margin="0,0,5,0"
+                             Text="Maximum number of grid refinement iterations"/>
+                                    <TextBox Grid.Column="1"
+                           MinWidth="200"
+                           Text="{Binding InterpolationParameters.MaxNumberOfRefinementIterations}"/>
+                                    <TextBlock Grid.Column="2" 
+                             Margin="0,0,5,0"
+                             Text="Nr."/>
+                                </Grid>
+                            </fluent:SplitButton>
+
+                        </fluent:RibbonGroupBox>
+
+                        <fluent:RibbonGroupBox Header="Generate grid" IsEnabled="{Binding IsEditing}">
+                            <fluent:SplitButton Header="Make grid" Command="{Binding MakeGridCommand}" 
+                                   Size="Middle">
+                                <controls:MakeGridParametersControl MakeGridParameters="{Binding MakeGridParameters, Mode=OneWay}"/>
+                            </fluent:SplitButton>
+
+                            <fluent:SplitButton Header="From splines (transfinite interp.)" Size="Middle"
+                                Command="{Binding MakeGridFromSplinesCommand}">
+                                <controls:CurvilinearParametersControl CurvilinearParameters="{Binding CurvilinearParameters}"/>
+                            </fluent:SplitButton>
+
+                            <fluent:SplitButton Header="From splines (orthogonal)" 
+                                Command="{Binding MakeGridFromSplinesOrthogonalCommand}"
+                                Size="Middle">
+                                <controls:SplinesToCurvilinearParametersControl SplinesToCurvilinearParameters ="{Binding SplinesToCurvilinearParameters}"
+                                                                    CurvilinearParameters="{Binding CurvilinearParameters}"/>
+                            </fluent:SplitButton>
+
+                            <fluent:Button Header="From polygon (triangulate)" Command="{Binding MakeTriangularGridInPolygon}">
+                                <fluent:Button.Icon>
+                                    <Rectangle Width="16" Height="16" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.Icon>
+                                <fluent:Button.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.LargeIcon>
+                            </fluent:Button>
+
+                            <fluent:Button Header="From samples (triangulate)" Command="{Binding MakeTriangularGridFromSamples}">
+                                <fluent:Button.Icon>
+                                    <Rectangle Width="16" Height="16" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.Icon>
+                                <fluent:Button.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.LargeIcon>
+                            </fluent:Button>
+
+                        </fluent:RibbonGroupBox>
+
+                        <fluent:RibbonGroupBox Header="Settings">
+                            <fluent:SplitButton Header="Visualization" IsEnabled="{Binding IsEditing}">
+                                <fluent:SplitButton.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource GridBrush}"/>
+                                </fluent:SplitButton.LargeIcon>
+                                <fluent:CheckBox Header="Show grid vertices" IsChecked="{Binding ShowVertices}"/>
+                                <fluent:CheckBox Header="Fill polygons"
+                                  IsChecked="{Binding DrawFilledInPolygons}"/>
+                                <fluent:CheckBox Header="Show selected grid vertices"
+                                  IsChecked="{Binding DrawSelectedVertices}"/>
+                                <fluent:CheckBox Header="Invert vertices selection"
+                                                 IsChecked="{Binding InvertVerticesSelection}"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Vertex size" VerticalAlignment="Center"/>
+                                    <fluent:Spinner Minimum="1" Maximum="10" Increment="1" Interval="1" Value="{Binding VertexSize}"/>
+                                </StackPanel>
+                            </fluent:SplitButton>
+
+                            <fluent:Button Header="Show ortogonality" Command="{Binding ShowOrthogonality}">
+                                <fluent:Button.Icon>
+                                    <Rectangle Width="16" Height="16" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.Icon>
+                                <fluent:Button.LargeIcon>
+                                    <Rectangle Width="32" Height="32" Fill="{StaticResource LineBrush}"/>
+                                </fluent:Button.LargeIcon>
+                            </fluent:Button>
+
+                            <fluent:CheckBox IsChecked="{Binding IsTriangulationRequired}" Header="Triangulate cells"/>
+                            <fluent:CheckBox IsChecked="{Binding IsAccountingForLandBoundariesRequired}" Header="Account for land boundaries"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Type" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <ComboBox SelectedItem="{Binding ProjectToLandBoundaryOption}"
+                              ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type api:ProjectToLandBoundaryOptions}}}"/>
+                            </StackPanel>
+                        </fluent:RibbonGroupBox>
+                    </WrapPanel>
+                </fluent:DropDownButton>
+            </fluent:RibbonGroupBox>
+
+        </fluent:RibbonTabItem>
+    </fluent:Ribbon>
+</UserControl>

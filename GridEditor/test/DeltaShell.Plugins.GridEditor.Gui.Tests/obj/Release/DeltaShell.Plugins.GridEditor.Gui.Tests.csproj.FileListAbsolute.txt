@@ -1,0 +1,10 @@
+C:\engines\DeltaShell\GridEditor_v03\bin\Release\DeltaShell.Plugins.GridEditor.Gui.Tests.dll.config
+C:\engines\DeltaShell\GridEditor_v03\bin\Release\DeltaShell.Plugins.GridEditor.Gui.Tests.dll
+C:\engines\DeltaShell\GridEditor_v03\bin\Release\DeltaShell.Plugins.GridEditor.Gui.Tests.pdb
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\Release\DeltaShell.Plugins.GridEditor.Gui.Tests.csprojAssemblyReference.cache
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\Release\DeltaShell.Plugins.GridEditor.Gui.Tests.csproj.CoreCompileInputs.cache
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\Release\DeltaShell.Plugins.GridEditor.Gui.Tests.csproj.CopyComplete
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\Release\DeltaShell.Plugins.GridEditor.Gui.Tests.dll.postsharp
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\Release\DeltaShell.Plugins.GridEditor.Gui.Tests.dll
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\Release\DeltaShell.Plugins.GridEditor.Gui.Tests.pdb
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Gui.Tests\obj\Release\PostSharpHost.config
