@@ -70,6 +70,7 @@ namespace GridGeom
             internalNode,
             onRing,
             cornerNode,
+            hangingNode,
             other
         };
 
@@ -94,28 +95,28 @@ namespace GridGeom
 
         std::vector<double> m_aspectRatios;
         std::vector<std::vector<double>> m_ww2Global;
-        std::vector<size_t> m_numConnectedNodes;             // nmk2, determined from local node administration
-        std::vector<std::vector<size_t>> m_connectedNodes;   // kk2, determined from local node administration
-        std::vector<int> m_localCoordinates;                 // iloc
-
-        // run-time options
-        bool m_keepCircumcentersAndMassCenters = false;
-        double m_atpf = 0.975;                               // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
-        double m_atpf_boundary = 1.0;                        // minimum ATPF on the boundary
-        double m_smoothorarea = 1.0;                         // Factor between smoother(1.0) and area - homogenizer(0.0)
+        std::vector<size_t> m_numConnectedNodes;                                 // nmk2, determined from local node administration
+        std::vector<std::vector<size_t>> m_connectedNodes;                       // kk2, determined from local node administration
+        std::vector<int> m_localCoordinates;                                     // iloc
+                                                                                 
+        // run-time options                                                      
+        bool m_keepCircumcentersAndMassCenters = false;                          
+        double m_atpf = 0.975;                                                   // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
+        double m_atpf_boundary = 1.0;                                            // minimum ATPF on the boundary
+        double m_smoothorarea = 1.0;                                             // Factor between smoother(1.0) and area - homogenizer(0.0)
 
         static constexpr int m_topologyInitialSize = 10;
         static constexpr double m_thetaTolerance = 1e-4;
 
         std::vector<std::vector<double>>  m_weights;
         std::vector<std::vector<double>>  m_rightHandSide;
-        std::vector<int> m_nodesTypes;                             //types of nodes,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
-        std::vector<int> m_faceNumNodes;                           //number of face nodes
+        std::vector<int> m_nodesTypes;                                           //types of nodes,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
+        std::vector<int> m_faceNumNodes;                                         //number of face nodes
 
         int m_maximumNumConnectedNodes = 0;
         int m_maximumNumSharedFaces = 0;
         size_t m_maxNumNeighbours;
-        std::vector< std::vector<int>> m_nodesNodes;            //node neighbours 
+        std::vector< std::vector<int>> m_nodesNodes;                              //node neighbours 
 
         //local caches (avoid re-allocation)
         std::vector<int> m_boundaryEdges;
@@ -134,5 +135,10 @@ namespace GridGeom
         std::vector<Point> m_originalNodes;
         double m_mumax;
         double m_mu;
+
+        // nodes with errors
+        std::vector<double> m_nodeXErrors;
+        std::vector<double> m_nodeYErrors;
+        std::vector<int>    m_nodeErrorCode;
     };
 }

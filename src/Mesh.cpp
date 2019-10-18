@@ -13,23 +13,26 @@
 
 bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes)
 {
-    // return
-    if( edges.size()==0 || nodes.size() == 0)
-    {
-        return true;
-    }
-
-    //copy edges and nodes
+     //copy edges and nodes
     m_edges = edges;
     m_nodes = nodes;
 
-    //allocate
     m_nodesNumEdges.resize(m_nodes.size());
     m_nodesEdges.resize(m_nodes.size(), std::vector<size_t>(maximumNumberOfEdgesPerNode, 0));
     m_edgesNumFaces.resize(m_edges.size());
     m_numFaces = 0;
+    m_facesNodes.resize(0);
+    m_facesEdges.resize(0);
+    m_facesCircumcenters.resize(0);
+    m_facesMassCenters.resize(0);
+    m_faceArea.resize(0);
+
     m_edgesFaces.resize(edges.size(), std::vector<int>(2, -1));
 
+    if( edges.size()==0 || nodes.size() == 0)
+    {
+        return true;
+    }
 
     //run administration and find the faces    
     NodeAdministration();
@@ -54,24 +57,53 @@ bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<P
 bool GridGeom::Mesh::setState()
 {
     //Used for internal state
-    m_nodex.resize(m_nodes.size());
-    m_nodey.resize(m_nodes.size());
-    m_nodez.resize(m_nodes.size(), 0.0);
-    for (int n = 0; n < m_nodex.size(); n++)
+    if (m_nodes.size() >0)
     {
-        m_nodex[n] = m_nodes[n].x;
-        m_nodey[n] = m_nodes[n].y;
+        m_nodex.resize(m_nodes.size());
+        m_nodey.resize(m_nodes.size());
+        m_nodez.resize(m_nodes.size(), 0.0);
+        for (int n = 0; n < m_nodex.size(); n++)
+        {
+            m_nodex[n] = m_nodes[n].x;
+            m_nodey[n] = m_nodes[n].y;
+        }
+        m_edgeNodes.resize(m_edges.size() * 2);
+        int ei = 0;
+        for (int e = 0; e < m_edges.size(); e++)
+        {
+            m_edgeNodes[ei] = m_edges[e].first;
+            ei++;
+            m_edgeNodes[ei] = m_edges[e].second;
+            ei++;
+        }    
+    }
+    else
+    {
+        m_nodex.resize(1);
+        m_nodey.resize(1);
+        m_nodez.resize(1);
+        m_edgeNodes.resize(1);    
     }
 
-    m_edgeNodes.resize(m_edges.size() * 2);
-    int ei = 0;
-    for (int e = 0; e < m_edges.size(); e++)
-    {
-        m_edgeNodes[ei] = m_edges[e].first;
-        ei++;
-        m_edgeNodes[ei] = m_edges[e].second;
-        ei++;
-    }
+    return true;
+}
+
+bool GridGeom::Mesh::deleteState()
+{
+    //Used for internal state
+    m_edges.resize(0);
+    m_nodes.resize(0);
+    m_nodesEdges.resize(0);
+    m_nodesNumEdges.resize(0);
+    m_edgesNumFaces.resize(0);
+    m_edgesFaces.resize(0);
+    m_facesNodes.resize(0);
+    m_facesEdges.resize(0);
+    m_facesCircumcenters.resize(0);
+    m_facesMassCenters.resize(0);
+    m_faceArea.resize(0);
+    setState();
+
     return true;
 }
 

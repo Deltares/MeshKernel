@@ -25,7 +25,13 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_deallocate_state(int& gridStateId)
     {
-        meshInstances.erase(meshInstances.begin() + gridStateId);
+        meshInstances[gridStateId].deleteState();
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_delete_mesh(int& gridStateId, GeometryListNative& geometryListNativePolygon, int& deletionOption)
+    {
+        meshInstances[gridStateId].deleteState();
         return 0;
     }
 
@@ -68,16 +74,26 @@ namespace GridGeomApi
     {
         
         meshInstances[gridStateId].setState();
-                
+
         meshGeometry.nodex = &meshInstances[gridStateId].m_nodex[0];
         meshGeometry.nodey = &meshInstances[gridStateId].m_nodey[0];
         meshGeometry.nodez = &meshInstances[gridStateId].m_nodez[0];
-        meshGeometry.edge_nodes = &meshInstances[gridStateId].m_edgeNodes[0];
+        meshGeometry.edge_nodes = &meshInstances[gridStateId].m_edgeNodes[0];            
 
-        meshGeometryDimensions.numnode = meshInstances[gridStateId].m_nodex.size();
-        meshGeometryDimensions.numedge = meshInstances[gridStateId].m_edgeNodes.size() / 2;
-        meshGeometryDimensions.numface = meshInstances[gridStateId].m_numFaces;
-        meshGeometryDimensions.maxnumfacenodes = 4;
+        if (meshInstances[gridStateId].m_nodex.size()==1)
+        {
+            meshGeometryDimensions.numnode = 0;
+            meshGeometryDimensions.numedge = 0;
+            meshGeometryDimensions.numface = 0;
+            meshGeometryDimensions.maxnumfacenodes = 4; 
+        }
+        else
+        {
+            meshGeometryDimensions.numnode = meshInstances[gridStateId].m_nodex.size();
+            meshGeometryDimensions.numedge = meshInstances[gridStateId].m_edgeNodes.size() / 2;
+            meshGeometryDimensions.numface = meshInstances[gridStateId].m_numFaces;
+            meshGeometryDimensions.maxnumfacenodes = 4;
+        }
 
         return 0;
     }
