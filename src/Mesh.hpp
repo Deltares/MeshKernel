@@ -20,6 +20,7 @@ namespace GridGeom
 
         bool setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes);
         bool setState();
+        bool deleteState();
 
         double m_dcenterinside = 1.0;
 
