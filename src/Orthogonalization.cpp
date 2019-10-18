@@ -8,6 +8,8 @@
 #include "IOperations.hpp"
 #include "Orthogonalization.hpp"
 #include "OperationsCartesian.cpp"
+#include <string>
+
 
 bool GridGeom::Orthogonalization::initialize(const Mesh& mesh)
 {
@@ -53,6 +55,7 @@ bool GridGeom::Orthogonalization::initialize(const Mesh& mesh)
 
     // back-up original nodes, for projection on original mesh boundary
     m_originalNodes = mesh.m_nodes;
+    m_orthogonalCoordinates = mesh.m_nodes;
 
     return true;
 }
@@ -92,16 +95,28 @@ bool GridGeom::Orthogonalization::prapareOuterIteration(const Mesh& mesh)
     bool state = true;
 
     //compute aspect ratios
-    if(state) state = aspectRatio(mesh);
+    if (state)
+    {
+        state = aspectRatio(mesh);
+    }
 
     //compute weights orthogonalizer
-    if (state) state = computeWeightsOrthogonalizer(mesh);
+    if (state)
+    {
+        state = computeWeightsOrthogonalizer(mesh);
+    }
 
     //compute weights operators for smoother
-    if (state) state = computeSmootherOperators(mesh);
+    if (state)
+    {
+        state = computeSmootherOperators(mesh);
+    }
 
     //compute weights smoother
-    if (state) state = computeWeightsSmoother(mesh);
+    if (state)
+    {
+        state = computeWeightsSmoother(mesh);
+    }
 
     return state;
 }
@@ -426,16 +441,37 @@ bool GridGeom::Orthogonalization::computeSmootherOperators(const Mesh& mesh)
 
     m_numConnectedNodes.resize(mesh.m_nodes.size(), 0.0);
     m_connectedNodes.resize(mesh.m_nodes.size(), std::vector<size_t>(maximumNumberOfConnectedNodes));
-    initializeTopologies(mesh);
+    bool state = initializeTopologies(mesh);
     for (size_t n = 0; n < mesh.m_nodes.size(); n++)
     {
         int numSharedFaces = 0;
         int numConnectedNodes = 0;
-        orthogonalizationAdministration(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping);
-        computeXiEta(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
-        saveTopology(n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
-        m_maximumNumConnectedNodes = std::max(m_maximumNumConnectedNodes, numConnectedNodes);
-        m_maximumNumSharedFaces = std::max(m_maximumNumSharedFaces, numSharedFaces);
+        if (state)
+        {
+            state = orthogonalizationAdministration(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping);
+        }
+
+        if (state)
+        {
+            state = computeXiEta(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
+        }
+            
+        if (state)
+        {
+            state = saveTopology(n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
+        }
+        
+        if (state)
+        {
+            m_maximumNumConnectedNodes = std::max(m_maximumNumConnectedNodes, numConnectedNodes);
+            m_maximumNumSharedFaces = std::max(m_maximumNumSharedFaces, numSharedFaces);
+        }
+            
+    }
+
+    if (!state)
+    {
+        return false;
     }
 
     // allocate local operators for unique topologies
@@ -466,19 +502,28 @@ bool GridGeom::Orthogonalization::computeSmootherOperators(const Mesh& mesh)
         {
             isNewTopology[currentTopology] = false;
             // Compute node operators
-            allocateNodeOperators(currentTopology);
-            computeOperatorsNode(mesh, n,
-                m_numTopologyNodes[currentTopology], m_topologyConnectedNodes[currentTopology],
-                m_numTopologyFaces[currentTopology], m_topologySharedFaces[currentTopology],
-                m_topologyXi[currentTopology], m_topologyEta[currentTopology],
-                m_topologyFaceNodeMapping[currentTopology]);
+            if (state)
+            {
+                state = allocateNodeOperators(currentTopology);
+            }
+            if (state)
+            {
+                state = computeOperatorsNode(mesh, n,
+                    m_numTopologyNodes[currentTopology], m_topologyConnectedNodes[currentTopology],
+                    m_numTopologyFaces[currentTopology], m_topologySharedFaces[currentTopology],
+                    m_topologyXi[currentTopology], m_topologyEta[currentTopology],
+                    m_topologyFaceNodeMapping[currentTopology]);
+            } 
         }
     }
 
     //have side effects only for spherical coordinates
-    mesh.m_operations->orthogonalizationComputeLocalCoordinates(mesh.m_nodesNumEdges, m_numConnectedNodes, m_localCoordinates);
+    if (state)
+    {
+        state = mesh.m_operations->orthogonalizationComputeLocalCoordinates(mesh.m_nodesNumEdges, m_numConnectedNodes, m_localCoordinates);
+    }
 
-    return true;
+    return state;
 }
 
 
@@ -934,7 +979,10 @@ bool GridGeom::Orthogonalization::computeXiEta(const Mesh& mesh,
     }
     else if (numSharedFaces > 0)
     {
-        //TODO: error
+        //TODO: add logger and cirr(xk(k0), yk(k0), ncolhl)
+        std::string message{ "fatal error in computeXiEta: phiTot=0'" };
+        m_nodeXErrors.push_back(mesh.m_nodes[currentNode].x);
+        m_nodeXErrors.push_back(mesh.m_nodes[currentNode].y);
         return false;
     }
 
@@ -957,7 +1005,10 @@ bool GridGeom::Orthogonalization::computeXiEta(const Mesh& mesh,
             }
             else
             {
-                //TODO: error
+                //TODO: add logger and cirr(xk(k0), yk(k0), ncolhl)
+                std::string message{ "fatal error in computeXiEta: inappropriate fictitious boundary cell" };
+                m_nodeXErrors.push_back(mesh.m_nodes[currentNode].x);
+                m_nodeXErrors.push_back(mesh.m_nodes[currentNode].y);
                 return false;
             }
             phi0 = phi0 + 0.5 * dPhi;
