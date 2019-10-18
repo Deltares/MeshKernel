@@ -1,0 +1,11 @@
+C:\engines\DeltaShell\GridEditor_v03\bin\Release\plugins\DeltaShell.Plugins.GridEditor\Lib\gridgeomStateful_dll.dll
+C:\engines\DeltaShell\GridEditor_v03\bin\Release\plugins\DeltaShell.Plugins.GridEditor\Lib\libifcoremd.dll
+C:\engines\DeltaShell\GridEditor_v03\bin\Release\plugins\DeltaShell.Plugins.GridEditor\Lib\libmmd.dll
+C:\engines\DeltaShell\GridEditor_v03\bin\Release\plugins\DeltaShell.Plugins.GridEditor\Lib\svml_dispmd.dll
+C:\engines\DeltaShell\GridEditor_v03\bin\Release\plugins\DeltaShell.Plugins.GridEditor\DeltaShell.Plugins.GridEditor.dll
+C:\engines\DeltaShell\GridEditor_v03\bin\Release\plugins\DeltaShell.Plugins.GridEditor\DeltaShell.Plugins.GridEditor.pdb
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\obj\Release\DeltaShell.Plugins.GridEditor.csproj.CoreCompileInputs.cache
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\obj\Release\DeltaShell.Plugins.GridEditor.dll.postsharp
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\obj\Release\DeltaShell.Plugins.GridEditor.dll
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\obj\Release\DeltaShell.Plugins.GridEditor.pdb
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\obj\Release\PostSharpHost.config

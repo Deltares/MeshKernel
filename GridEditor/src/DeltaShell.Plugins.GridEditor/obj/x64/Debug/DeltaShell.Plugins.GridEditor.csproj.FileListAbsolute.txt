@@ -1,0 +1,12 @@
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\bin\x64\Debug\Lib\gridgeomStateful_dll.dll
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\bin\x64\Debug\Lib\libifcoremd.dll
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\bin\x64\Debug\Lib\libmmd.dll
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\bin\x64\Debug\Lib\svml_dispmd.dll
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\bin\x64\Debug\DeltaShell.Plugins.GridEditor.dll
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\bin\x64\Debug\DeltaShell.Plugins.GridEditor.pdb
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\bin\x64\Debug\DeltaShell.Plugins.GridEditor.pssym
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\obj\x64\Debug\DeltaShell.Plugins.GridEditor.csproj.CoreCompileInputs.cache
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\obj\x64\Debug\DeltaShell.Plugins.GridEditor.dll.postsharp
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\obj\x64\Debug\DeltaShell.Plugins.GridEditor.dll
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\obj\x64\Debug\DeltaShell.Plugins.GridEditor.pdb
+C:\engines\DeltaShell\GridEditor_v03\src\DeltaShell.Plugins.GridEditor\obj\x64\Debug\PostSharpHost.config

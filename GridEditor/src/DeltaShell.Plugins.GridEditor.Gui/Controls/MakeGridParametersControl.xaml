@@ -1,0 +1,226 @@
+﻿<UserControl x:Class="DeltaShell.Plugins.GridEditor.Gui.Controls.MakeGridParametersControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:extensions="clr-namespace:DelftTools.Controls.Wpf.Extensions;assembly=DelftTools.Controls.Wpf"
+             xmlns:api="clr-namespace:DeltaShell.Plugins.GridEditor.GridGeomStateful.Api;assembly=DeltaShell.Plugins.GridEditor"
+             xmlns:controls="clr-namespace:DeltaShell.Plugins.GridEditor.Gui.Controls"
+             mc:Ignorable="d">
+    <StackPanel Orientation="Horizontal">
+        <StackPanel.DataContext>
+            <controls:MakeGridParametersControlViewModel x:Name="ViewModel" />
+            <!--GridParameters="{d:DesignInstance api:MakeGridParameters, IsDesignTimeCreatable=True}"-->
+        </StackPanel.DataContext>
+        <Grid DataContext="{Binding GridParameters}">
+            <Grid.Resources>
+                <ResourceDictionary Source="Dictionaries/ParameterControlStyles.xaml"/>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" 
+                       Grid.Row="0"
+                       Text="Grid type"/>
+
+            <ComboBox Grid.Column="1"
+                      Grid.Row="0" 
+                      SelectedItem="{Binding GridType}"
+                      ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type api:GridTypeOptions}}}"/>
+
+            <TextBlock Grid.Column="0" 
+                       Grid.Row="1" 
+                       Text="Number of columns"/>
+
+            <TextBox Grid.Column="1"
+                     Grid.Row="1"
+                     Text="{Binding NumberOfColumns}"/>
+
+            <TextBlock Grid.Column="2" 
+                       Grid.Row="1"
+                       Text="Nr."/>
+
+            <TextBlock Grid.Column="0" 
+                       Grid.Row="2" 
+                       Text="Number of rows"/>
+
+            <TextBox Grid.Column="1"
+                     Grid.Row="2"
+                     Text="{Binding NumberOfRows}"/>
+
+            <TextBlock Grid.Column="2" 
+                       Grid.Row="2" 
+                       Text="Nr."/>
+
+            <TextBlock Grid.Column="0" 
+                       Grid.Row="3" 
+                       Text="Grid angle"/>
+
+            <TextBox Grid.Column="1"
+                     Grid.Row="3"
+                     Text="{Binding GridAngle}"/>
+
+            <TextBlock Grid.Column="2" 
+                       Grid.Row="3" 
+                       Text="Angular deg."/>
+
+            <TextBlock Grid.Column="0" 
+                       Grid.Row="4" 
+                       Text="Block size"/>
+
+            <TextBox Grid.Column="1"
+                     Grid.Row="4"
+                     Text="{Binding GridBlockSize}"/>
+
+            <TextBlock Grid.Column="2" 
+                       Grid.Row="4" 
+                       Text="m"/>
+
+            <TextBlock Grid.Column="0" 
+                       Grid.Row="5" 
+                       Text="Origin x coordinate"/>
+
+            <TextBox Grid.Column="1"
+                     Grid.Row="5"
+                     Text="{Binding OriginXCoordinate}"/>
+
+            <TextBlock Grid.Column="2" 
+                       Grid.Row="5" 
+                       Text="m"/>
+
+            <TextBlock Grid.Column="0" 
+                       Grid.Row="6" 
+                       Text="Origin y coordinate"/>
+
+            <TextBox Grid.Column="1"
+                     Grid.Row="6"
+                     Text="{Binding OriginYCoordinate}"/>
+
+            <TextBlock Grid.Column="2" 
+                       Grid.Row="6" 
+                       Text="m"/>
+
+            <TextBlock Grid.Column="0" 
+                       Grid.Row="7" 
+                       Text="Origin z coordinate"/>
+
+            <TextBox Grid.Column="1"
+                     Grid.Row="7"
+                     Text="{Binding OriginZCoordinate}"/>
+
+            <TextBlock Grid.Column="2" 
+                       Grid.Row="7" 
+                       Text="m"/>
+
+            <TextBlock Grid.Column="0" 
+                       Grid.Row="8" 
+                       Text="x Grid block size for squared grids"/>
+
+            <TextBox Grid.Column="1"
+                     Grid.Row="8"
+                     Text="{Binding XGridBlockSize}"/>
+
+            <TextBlock Grid.Column="2" 
+                       Grid.Row="8" 
+                       Text="m"/>
+
+            <TextBlock Grid.Column="0" 
+                       Grid.Row="9" 
+                       Text="y Grid block size for squared grids"/>
+
+            <TextBox Grid.Column="1"
+                     Grid.Row="9"
+                     Text="{Binding YGridBlockSize}"/>
+
+            <TextBlock Grid.Column="2" 
+                       Grid.Row="9" 
+                       Text="m"/>
+        </Grid>
+
+        <Expander Header="Get from Asc" Padding="3" ExpandDirection="Right">
+            <Grid>
+                <Grid.Resources>
+                    <Thickness x:Key="Margin">3</Thickness>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            Grid.Row="0"
+                            
+                            Margin="{StaticResource Margin}"
+                            Orientation="Horizontal">
+
+                    <Button Padding="3"
+                            Height="30"
+                            Margin="{StaticResource Margin}"
+                            Command="{Binding ReadAsciiFileDimensionsCommand}"
+                            Content="..."/>
+
+                    <TextBlock Text="{Binding AsciiFilePath}" 
+                               VerticalAlignment="Center"
+                               Width="300" 
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <Border Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Grid.Row="1"
+                        BorderBrush="Black"
+                        Margin="{StaticResource Margin}"
+                        BorderThickness="1">
+                    <TextBox IsReadOnly="True"
+                             Text="{Binding FileParametersString, Mode=OneWay}" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                </Border>
+
+                <TextBlock Grid.Column="0"
+                           Grid.Row="2"
+                           Margin="{StaticResource Margin}"
+                           Text="Data location"/>
+
+                <CheckBox Grid.Column="1"
+                          Grid.Row="2"
+                          Margin="{StaticResource Margin}"
+                          Content="Values on cell centers"
+                          IsChecked="{Binding ForcePointsOnCellCenters}"/>
+
+                <Button Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Grid.Row="3"
+                        Margin="{StaticResource Margin}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Content="Set dimensions from asc file"
+                        Command="{Binding SetDimensionsFromAsciiCommand}"/>
+            </Grid>
+        </Expander>
+    </StackPanel>
+</UserControl>
+
+    
