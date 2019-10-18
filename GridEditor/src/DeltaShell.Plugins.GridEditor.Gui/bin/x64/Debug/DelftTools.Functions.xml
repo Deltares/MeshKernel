@@ -1,0 +1,2081 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DelftTools.Functions</name>
+    </assembly>
+    <members>
+        <member name="T:DelftTools.Functions.Binding.FunctionBindingList">
+            <summary>
+            Adapter to IFunction to IBindinglist
+            
+            TODO: make it IBindingList[IFunctionValue] (IFunctionValue is a combination of ComponentValues + ArgumentValues)
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Binding.FunctionBindingList.SynchronizeInvoke">
+            <summary>
+            Used to allow thread-safe behavior (e.g. in Windows.Forms).
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Binding.FunctionBindingList.GetMultiDimensionalRowIndex(DelftTools.Functions.Binding.FunctionBindingListRow)">
+            <summary>
+            Returns multi-dimensional row index of the row based on the current sort order, filters, etc.
+            </summary>
+            <param name="row"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Binding.FunctionBindingList.AddNewCore">
+            <summary>
+            Adds item to the binded function. The new item should be unique.
+            </summary>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:DelftTools.Functions.Binding.MultipleFunctionBindingList" -->
+        <member name="P:DelftTools.Functions.Binding.MultipleFunctionBindingList.SynchronizeInvoke">
+            <summary>
+            Used to allow thread-safe behaviour (e.g. in Windows.Forms).
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Binding.MultipleFunctionBindingList.GetMultiDimensionalRowIndex(DelftTools.Functions.Binding.MultipleFunctionBindingListRow)">
+            <summary>
+            Returns multi-dimensional row index of the row based on the current sort order, filters, etc.
+            </summary>
+            <param name="row"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Binding.MultipleFunctionBindingList.AddNewCore">
+            <summary>
+            Adds item to the binded function. The new item should be unique.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:DelftTools.Functions.Binding.MultipleFunctionBindingListRow">
+            TODO: we have to make this class implement IEditableObject when we need transactional add/remove on function
+        </member>
+        <member name="P:DelftTools.Functions.Binding.IFunctionBindingList.SynchronizeInvoke">
+            <summary>
+            Used to allow thread-safe behaviour (e.g. in Windows.Forms).
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Binding.IFunctionBindingList.SynchronizeWaitMethod">
+            <summary>
+            In most cases it it equal to Application.DoEvents
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.Binding.MultiDimensionalArrayBindingList">
+            <summary>
+            Represents a data <c>bindable</c>, customized view of two dimensional data
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Binding.MultiDimensionalArrayBindingList.#ctor(DelftTools.Functions.IMultiDimensionalArray)">
+            <summary>
+            Initializes a new MultiDimensionalArrayBindingList from data.
+            </summary>
+            <param name="array">data of data.</param>
+        </member>
+        <member name="M:DelftTools.Functions.Binding.MultiDimensionalArrayBindingList.#ctor(DelftTools.Functions.IMultiDimensionalArray,System.Object[])">
+            <summary>
+            Initializes a new MultiDimensionalArrayBindingList from data with custom column names.
+            </summary>
+            <param name="array">data of data.</param>
+            <param name="columnNames">collection of column names.</param>
+        </member>
+        <member name="T:DelftTools.Functions.Binding.MultiDimensionalArrayBindingListRow">
+            <summary>
+            Represents a row from data view.
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.Binding.MultiDimensionaArrayPropertyDescriptor">
+            <summary>
+            Property descriptor for data
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.FilteredArrayInfo">
+            <summary>
+            Provides logic to determince Origin,Shape,Size and Stride for a variable given a list of VariableAggregationFilters.
+            TODO: name is confusing, this class has something to do with Functions and variable filters
+            TODO: Maybe combine with other filters???
+            TODO: check NetCDF Section, Range, maybe use something similar
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.FilteredArrayInfo.Size">
+            <summary>
+            Size in the actual array..more like a span
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.Conversion.ConvertedFunction`2">
+            <summary>
+            Converts a variable in a function to another type :
+            For example a function x(DateTime) can be converted to x(Double) 
+            by specifying a converter between datetime and double
+            </summary>
+            <typeparam name="TTarget"></typeparam>
+            <typeparam name="TSource"></typeparam>
+        </member>
+        <member name="M:DelftTools.Functions.Conversion.ConvertedFunction`2.#ctor(DelftTools.Functions.IFunction,DelftTools.Functions.Generic.IVariable{`1},System.Func{`0,`1},System.Func{`1,`0})">
+            <summary>
+            
+            </summary>
+            <param name="parent">Function to convert</param>
+            <param name="variableToConvert">Variable inside the function to convert</param>
+            <param name="toSource">Method to convert from TTarget to TSource</param>
+            <param name="toTarget">Method to convert from TTarget to TSource</param>
+        </member>
+        <member name="T:DelftTools.Functions.Conversion.ConvertedVariable`3">
+            <summary>
+            Convert a certain variable within a variable (for example x(t) convert t-t')
+            Here x is variable, t is sourcevariable, t' is target variable
+            </summary>
+            <typeparam name="TVariable">Type of resulting variable</typeparam>
+            <typeparam name="TTarget">Type of converted variable</typeparam>
+            <typeparam name="TSource">Type of source variable</typeparam>
+        </member>
+        <member name="P:DelftTools.Functions.Filters.VariableAggregationFilter.Count">
+            <summary>
+            Total number of values to read.
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.Filters.VariableValueRangesFilter`1">
+            <summary>
+            Variable ValueRanges is a VariableIndexRangesFilter with a custom constructor
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:DelftTools.Functions.Filters.VariableReduceFilter">
+            <summary>
+            Used to exclude <see cref="P:DelftTools.Functions.Filters.VariableReduceFilter.Variable"/> from the results when querying values from <see cref="T:DelftTools.Functions.Function"/>.
+            Reduces dimensionality of the <see cref="T:DelftTools.Functions.IMultiDimensionalArray"/> returned by the <see cref="M:DelftTools.Functions.IFunction.GetValues(DelftTools.Functions.Filters.IVariableFilter[])"/>.
+            <seealso cref="P:DelftTools.Functions.IMultiDimensionalArrayView.Reduce"/> 
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Filters.VariableValueFilter`1.#ctor(DelftTools.Functions.IVariable,System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            
+            </summary>
+            <param name="variable"></param>
+            <param name="values">
+              Precondition: collection size must be > 0 and all items in collection must be assignable to <paramref name="variable"/>
+            </param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+              When <paramref name="values"/> is not > 0 or when not all items in <paramref name="values"/> are assignable to <paramref name="variable"/>
+            </exception>
+        </member>
+        <member name="F:DelftTools.Functions.Generic.ExtrapolationType.Constant">
+            <summary>
+            Performs a piece-wise interpolation. On extrapolation nearest defined value is used.
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.Generic.ExtrapolationType.Linear">
+            <summary>
+            Provider linear inter- and extra-polation
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.Generic.ExtrapolationType.Periodic">
+            <summary>
+            Repeats given values . For a example if values 1,2,3 are defined then the value 4 will be the same as value 2.
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.Generic.InterpolationType.Constant">
+            <summary>
+            Performs a piece-wise interpolation. On extrapolation nearest defined value is used.
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.Generic.InterpolationType.Linear">
+            <summary>
+            Provider linear inter- and extra-polation
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.IMultiDimensionalArray`1.Item(System.Int32[])">
+            <summary>
+            Gets value at the specified dimension indexes.
+            </summary>
+            <param name="indexes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Generic.IMultiDimensionalArray`1.Select(System.Int32[],System.Int32[])">
+            <summary>
+            Selects subset of an original array. Keeps reference to the parent array.
+            </summary>
+            <param name="start"></param>
+            <param name="end"></param>
+            <returns>View of the original array where reference to the parent array is in <see cref="P:DelftTools.Functions.IMultiDimensionalArrayView.Parent"/></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Generic.IMultiDimensionalArray`1.Select(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Allows to select only specific part of the parent array.
+            </summary>
+            <param name="dimension"></param>
+            <param name="start">Start offset in the parent or <seealso cref="F:System.Int32.MinValue"/> if it is equal to the parent</param>
+            <param name="end">Start offset in the parent or <seealso cref="F:System.Int32.MaxValue"/> if it is equal to the parent</param>
+            <returns>View of the original array where reference to the parent array is in <see cref="P:DelftTools.Functions.IMultiDimensionalArrayView.Parent"/></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Generic.IMultiDimensionalArray`1.Select(System.Int32,System.Int32[])">
+            <summary>
+            Selects subset of an original array based on dimension and indexes for that dimenion. Keeps reference to the parent array.
+            </summary>
+            <param name="dimension">Dimension to filter</param>
+            <param name="indexes">Indexes which will be selected</param>
+            <returns>View of the original array where reference to the parent array is in <see cref="P:DelftTools.Functions.IMultiDimensionalArrayView.Parent"/></returns>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.IMultiDimensionalArray`1.Count">
+            <summary>
+            Total number of elements in array.
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.Generic.LazyMultiDimensionalArray`1">
+            <summary>
+            Class wrapping another array. Other array is read only when needed using sourceArrayFunc.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:DelftTools.Functions.Generic.MultiDimensionalArray`1.GetShape(System.Collections.IList,System.Int32[])" -->
+        <member name="P:DelftTools.Functions.Generic.MultiDimensionalArray`1.Values">
+            <summary>
+            Don't remove it, used for NHibernate mapping before a better solution will be found
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.IVariable`1.Values">
+            <summary>
+            List of values of the variable.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.IVariable`1.DefaultValue">
+            <summary>
+            Default value of the variable. Used when number of values in dependent variable changes and default values need to be added.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.IVariable`1.NoDataValues">
+            <summary>
+            List of values which will be interpreted as no-data values.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Generic.IVariable`1.GetValues(DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+            Gets values with filters
+            </summary>
+            <param name="filters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Generic.IVariable`1.AddValues``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            
+            </summary>
+            <param name="values"></param>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.IVariable`1.MinValue">
+            <summary>
+            Minimum value of the variable
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.IVariable`1.MaxValue">
+            <summary>
+            Maximum value of the variable
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.IVariable`1.AllValues">
+            <summary>
+            Returns all values of the variable. Includes values that have been filtered out.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Generic.Variable`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:DelftTools.Functions.Generic.Variable`1"/> class.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Generic.Variable`1.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DelftTools.Functions.Generic.Variable`1"/> class.
+            </summary>
+            <param name="name">The function argument name.</param>
+        </member>
+        <member name="M:DelftTools.Functions.Generic.Variable`1.#ctor(System.String,DelftTools.Units.IUnit,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:DelftTools.Functions.Generic.Variable`1"/> class.
+            </summary>
+            <param name="name">The function argument name.</param>
+            <param name="quantity">The physical quantity.</param>
+            <param name="fixedSize">Size of the variable. Used by netcdf for static dimenions</param>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.Variable`1.Values">
+            <summary>
+            Returns copy of the argument values.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.Variable`1.IsAutoSorted">
+            <summary>
+            Determines whether the values of the variable are automatically sorted.
+            Cannot be determined by IsIndependent because sometimes the variable is unsorted but still independent. For example
+            the locations of a network coverage.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.Variable`1.FixedSize">
+            <summary>
+            -1: non-fixed
+            
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.Variable`1.DisplayName">
+            <summary>
+            HACK: move it to presentation layer
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Generic.Variable`1.CreateValuesFilter(System.Collections.IEnumerable)">
+            <summary>
+            Factory method.
+            </summary>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="P:DelftTools.Functions.Generic.Variable`1.CachedValues">
+            <summary>
+            Performance optimization for MemoryFunctionStore.
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ColumnFilterCheck_GetFilterOption_Can_t_determine_operator_from__0_">
+            <summary>
+              Looks up a localized string similar to Can&apos;t determine operator from {0}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ComponentFilter_Intersect_Filters_are_incompatible">
+            <summary>
+              Looks up a localized string similar to Filters are incompatible.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ConvertedVariable_ConvertedVariable_Conversion_of_non_arguments_not_supported_yet">
+            <summary>
+              Looks up a localized string similar to Conversion of non-arguments not supported yet.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ConvertedVariable_Unit_Can_t_set_unit_for_a_filtered_function_">
+            <summary>
+              Looks up a localized string similar to Can&apos;t set unit for a filtered function..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FilteredArrayInfo_Size_Only_single_value_based_selection_or_range_based_selection_are_supported__VariableIndexRangeFilter__minIndex__maxIndex_">
+            <summary>
+              Looks up a localized string similar to Only single value-based selection or range-based selection are supported, VariableIndexRangeFilter [minIndex, maxIndex].
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_AddArgumentVariableValuesFromFilters_Only_filtering_values_on_argument_variables_is_supported_for_now___0_">
+            <summary>
+              Looks up a localized string similar to Only filtering values on argument variables is supported for now: {0}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_Clone_Clone_filters_property__redirect_to_new_cloned_variables_">
+            <summary>
+              Looks up a localized string similar to Clone filters property (redirect to new cloned variables).
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_Clone_Clone_was_unsuccessful__missing_data_">
+            <summary>
+              Looks up a localized string similar to Clone was unsuccessful: missing data?.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_CreateArgumentFilters_Number_of_argument_values_is_greater_than_number_of_arguments">
+            <summary>
+              Looks up a localized string similar to Number of argument values is greater than number of arguments.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_DefaultName_new_function">
+            <summary>
+              Looks up a localized string similar to new function.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_EvaluateByArgumentValues_No_interpolation_method_specified">
+            <summary>
+              Looks up a localized string similar to No interpolation method specified.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_GetComponentFromFilters_Setting_or_getting_multiple_components_at_once_is_not_supported">
+            <summary>
+              Looks up a localized string similar to Setting or getting multiple components at once is not supported.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_GetExtrapolatedValue_ExtrapolationType_set_to_none_">
+            <summary>
+              Looks up a localized string similar to ExtrapolationType set to none..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_GetExtrapolatedValue_Periodic_extrapolation_is_not_support_for_arguments_of_type__0_">
+            <summary>
+              Looks up a localized string similar to Periodic extrapolation is not support for arguments of type {0}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_GetFiltersInParent_Variable_value_filters_should_have_values_">
+            <summary>
+              Looks up a localized string similar to Variable value filters should have values!.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_GetRatio_Cannot_determine_ratio">
+            <summary>
+              Looks up a localized string similar to Cannot determine ratio.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_SetValues_Size_of__values__argument_must_be_greater_than_0_">
+            <summary>
+              Looks up a localized string similar to Size of &apos;values&apos; argument must be greater than 0..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_ValidateArgumentValuesAreInRange_Extrapolation_is_disabled">
+            <summary>
+              Looks up a localized string similar to Extrapolation is disabled.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_ValidateOrThrow_Interpolation_is_currently_supported_only_for_1_component_functions">
+            <summary>
+              Looks up a localized string similar to Interpolation is currently supported only for 1 component functions.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_ValidateOrThrow_Interpolation_is_currently_supported_only_for_1d_and_2d_functions">
+            <summary>
+              Looks up a localized string similar to Interpolation is currently supported only for 1d and 2d functions.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Function_ValidateOrThrow_Variable___0___was_not_found_in_arguments_or_components_of_function___1__">
+            <summary>
+              Looks up a localized string similar to Variable &apos;{0}&apos; was not found in arguments or components of function &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionBindingList_OnListChanged_Removing_data_row">
+            <summary>
+              Looks up a localized string similar to Removing data row.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionBindingListRow_CommitTransientValues_Can_only_commit_when_no_longer_in_edit_mode">
+            <summary>
+              Looks up a localized string similar to Can only commit when no longer in edit mode.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionBindingListRow_CommitTransientValues_Committed_changes_to_row">
+            <summary>
+              Looks up a localized string similar to Committed changes to row.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionBindingListRow_FillTransientValues_Can_only_fill_when_not_yet_in_edit_mode">
+            <summary>
+              Looks up a localized string similar to Can only fill when not yet in edit mode.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionExtensions_ValidateFunctionIs1DAndOfCorrectTypeOrThrow_Function_argument_is_not_of_type__0__">
+            <summary>
+              Looks up a localized string similar to Function argument is not of type {0}..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionExtensions_ValidateFunctionIs1DAndOfCorrectTypeOrThrow_Function_component_is_not_of_type__0__">
+            <summary>
+              Looks up a localized string similar to Function component is not of type {0}..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionExtensions_ValidateFunctionIs1DAndOfCorrectTypeOrThrow_Function_does_not_have_a_single_argument_and_component_">
+            <summary>
+              Looks up a localized string similar to Function does not have a single argument and component..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionHelper_AddDataTableRowsToFunction_Only_function_with_1_argument_are_supported">
+            <summary>
+              Looks up a localized string similar to Only function with 1 argument are supported.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionHelper_AddDataTableRowsToFunction_Too_many_columns_in_datatable">
+            <summary>
+              Looks up a localized string similar to Too many columns in datatable.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionHelper_CopyValuesFrom_Number_of_arguments_in_source_and_target_do_not_match_">
+            <summary>
+              Looks up a localized string similar to Number of arguments in source and target do not match..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionHelper_CopyValuesFrom_Number_of_components_in_source_and_target_do_not_match_">
+            <summary>
+              Looks up a localized string similar to Number of components in source and target do not match..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionHelper_CopyValuesFrom_only_support_for_1_argument_">
+            <summary>
+              Looks up a localized string similar to only support for 1 argument..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionHelper_SetValuesRaw_Can_only_perform_this_on_empty_array">
+            <summary>
+              Looks up a localized string similar to Can only perform this on empty array.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionHelper_SplitEnumerable_Invalid_number_of_component_values__Expected_a_DelftTools_Utils_Tuple_of__0_">
+            <summary>
+              Looks up a localized string similar to Invalid number of component values. Expected a DelftTools.Utils.Tuple of {0}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionRemoveValuesEditAction_FunctionRemoveValuesEditAction_Remove_Function_Values">
+            <summary>
+              Looks up a localized string similar to Remove Function Values.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.FunctionSetValuesEditAction_FunctionSetValuesEditAction_Set_Function_Values">
+            <summary>
+              Looks up a localized string similar to Set Function Values.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.InsertAtEditAction_InsertAtEditAction_Inserting_value_s_">
+            <summary>
+              Looks up a localized string similar to Inserting value(s).
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.InsertAtEditAction_Restore_Restore_does_not_work_with_AutoSorted_with_more_than_one_dimension">
+            <summary>
+              Looks up a localized string similar to Restore does not work with AutoSorted with more than one dimension.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MemoryFunctionStore_CheckConsistency_Variable__0__is_inconsistent__number_of_values_is_not_equal_to_multiple_of_all_argument_values">
+            <summary>
+              Looks up a localized string similar to Variable {0} is inconsistent, number of values is not equal to multiple of all argument values.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MemoryFunctionStore_Functions_CollectionChanging_Function_already_registered_in_the_store">
+            <summary>
+              Looks up a localized string similar to Function already registered in the store.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MemoryFunctionStore_GetVariableValueFilterIndexes_Filtering_on_multidimensional_variable_is_not_supported">
+            <summary>
+              Looks up a localized string similar to Filtering on multidimensional variable is not supported.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MemoryFunctionStore_SetDependendVariabeleValues_Number_of_values_to_be_written_to_dependent_variable___0___exceeds_argument_values_range__Got__1__values_expected_at_most__2__">
+            <summary>
+              Looks up a localized string similar to Number of values to be written to dependent variable &apos;{0}&apos; exceeds argument values range. Got {1} values expected at most {2}..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MemoryFunctionStore_SetIndependendFunctionValues_don_t_use_filters_to_set_independend_variables__the_only_exception_is_an_index_filter_with_index_equal_to_count">
+            <summary>
+              Looks up a localized string similar to don&apos;t use filters to set independend variables. the only exception is an index filter with index equal to count.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MemoryFunctionStore_ThrowIfVariableNotPartOfStore_Function_is_not_a_part_of_the_store__add_it_to_the_Functions_first_">
+            <summary>
+              Looks up a localized string similar to Function is not a part of the store, add it to the Functions first..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MemoryFunctionStore_ToString_Memory_store">
+            <summary>
+              Looks up a localized string similar to Memory store.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MoveEditAction_MoveEditAction_Rearranging_value_s_">
+            <summary>
+              Looks up a localized string similar to Rearranging value(s).
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArray_BaseGetValue_Invalid_number_of_indexes">
+            <summary>
+              Looks up a localized string similar to Invalid number of indexes.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArray_Clear_Clearing_array">
+            <summary>
+              Looks up a localized string similar to Clearing array.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArray_InsertAt_Adding_range_of_values_for_sorted_array_is_only_possible_if_these_values_are_all_bigger_than_the_current_max_and_sorted">
+            <summary>
+              Looks up a localized string similar to Adding range of values for sorted array is only possible if these values are all bigger than the current max and sorted.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArray_InsertAt_Sorted_array_does_not_allow_update_of_Indexes_in_CollectionChanging">
+            <summary>
+              Looks up a localized string similar to Sorted array does not allow update of Indexes in CollectionChanging.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArray_MultiDimensionalArray_Copy_constructor_shape_does_not_match_values">
+            <summary>
+              Looks up a localized string similar to Copy constructor shape does not match values.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArray_Parse_Cant_parse_string___0_">
+            <summary>
+              Looks up a localized string similar to Cant parse string: {0}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArray_SetValue_Updating_indexes_in_collectionChanging_is_not_supported_for_AutoSortedArrays">
+            <summary>
+              Looks up a localized string similar to Updating indexes in collectionChanging is not supported for AutoSortedArrays.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArray_ThrowIfArrayHasMoreThanOneDimension_Not_allowed_for_array_with_multiple_dimensions__use_multidimensional_index_">
+            <summary>
+              Looks up a localized string similar to Not allowed for array with multiple dimensions, use multidimensional index..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArray_VerifyIsNotReadOnly_Illegal_attempt_to_modify_readonly_array">
+            <summary>
+              Looks up a localized string similar to Illegal attempt to modify readonly array.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayBindingList_Add_TODO__Add_is_not_implemented_in_the_binding_list">
+            <summary>
+              Looks up a localized string similar to TODO: Add is not implemented in the binding list.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayBindingList_Clear_TODO__Clear_is_not_implemented_in_the_binding_list">
+            <summary>
+              Looks up a localized string similar to TODO: Clear is not implemented in the binding list.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayBindingList_Contains_TODO__Contains_is_not_implemented_in_the_binding_list">
+            <summary>
+              Looks up a localized string similar to TODO: Contains is not implemented in the binding list.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayBindingList_IndexOf_TODO__IndexOf_is_not_implemented_in_the_binding_list">
+            <summary>
+              Looks up a localized string similar to TODO: IndexOf is not implemented in the binding list.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayBindingList_Insert_TODO__Insert_is_not_implemented_in_the_binding_list">
+            <summary>
+              Looks up a localized string similar to TODO: Insert is not implemented in the binding list.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayBindingList_MultiDimensionalArrayBindingList_column_names_must_correspond_to_data_columns_">
+            <summary>
+              Looks up a localized string similar to column names must correspond to data columns..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayBindingList_MultiDimensionalArrayBindingList_Supports_only_two_dimensional_arrays">
+            <summary>
+              Looks up a localized string similar to Supports only two dimensional arrays.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayBindingList_Remove_TODO__Remove_is_not_implemented_in_the_binding_list">
+            <summary>
+              Looks up a localized string similar to TODO: Remove is not implemented in the binding list.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayBindingList_RemoveIndex_TODO__RemoveIndex_is_not_implemented_in_the_binding_list">
+            <summary>
+              Looks up a localized string similar to TODO: RemoveIndex is not implemented in the binding list.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayEnumerator_Current_Use_MoveNext_to_select_the_next_element">
+            <summary>
+              Looks up a localized string similar to Use MoveNext to select the next element.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayHelper_DecrementIndexForShape_Cannot_decrement_index_any_further">
+            <summary>
+              Looks up a localized string similar to Cannot decrement index any further.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayHelper_ToString_array_with_total_size__0_">
+            <summary>
+              Looks up a localized string similar to array with total size {0}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayHelper_VerifyValuesCountMatchesShape_Number_of_values_to_insert_does_not_match_shape_of_insert__Expected__0__values_got__1_">
+            <summary>
+              Looks up a localized string similar to Number of values to insert does not match shape of insert. Expected {0} values got {1}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayView_GetIndexInParent_Can_t_use_dimension_index_filters_and_offsets_at_the_same_time">
+            <summary>
+              Looks up a localized string similar to Can&apos;t use dimension index filters and offsets at the same time.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayView_MultiDimensionalArrayView_Rank_of_array_and_number_of_elements_in_the_arguments_are_not_equal">
+            <summary>
+              Looks up a localized string similar to Rank of array and number of elements in the arguments are not equal.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayView_ReduceCollectionChanged_Reduction_not_possible_because_dimension__0__is_not_bound_to_a_single_index">
+            <summary>
+              Looks up a localized string similar to Reduction not possible because dimension {0} is not bound to a single index.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayView_RemoveAt_Should_redirect_call_to_parent_with_proper_index">
+            <summary>
+              Looks up a localized string similar to Should redirect call to parent with proper index.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayView_SetValues_Not_supported_for_views">
+            <summary>
+              Looks up a localized string similar to Not supported for views.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultiDimensionalArrayView_Shape_Parent_array_must_be_selected_in_the_array_view_first">
+            <summary>
+              Looks up a localized string similar to Parent array must be selected in the array view first.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultipleFunctionBindingList_GetVariableForColumnIndex_Column_index_does_not_belong_to_valid_component">
+            <summary>
+              Looks up a localized string similar to Column index does not belong to valid component.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.MultipleFunctionBindingListRow_SetColumnValue_Row_value_changed_column___0___row___1_">
+            <summary>
+              Looks up a localized string similar to Row value changed column: {0}, row: {1}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.PairTypeConverter_ConvertTo_Can_t_convert_from_Pair__0____1___to_type___2_">
+            <summary>
+              Looks up a localized string similar to Can&apos;t convert from Pair&lt;{0}, {1}&gt; to type: {2}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ReadOnlyNetCdfFunctionStoreBase_GetNetCdfVariable_No_variable_for_dimension">
+            <summary>
+              Looks up a localized string similar to No variable for dimension.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ReadOnlyNetCdfFunctionStoreBase_GetVariableValuesCore_Please_add_the_NcRefDateAttribute_attribute_to_your_time_arguments_">
+            <summary>
+              Looks up a localized string similar to Please add the NcRefDateAttribute attribute to your time arguments!.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ReadOnlyNetCdfFunctionStoreBase_ReadReferenceDateFromFile_Could_not_parse_time_reference">
+            <summary>
+              Looks up a localized string similar to Could not parse time reference.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ReadOnlyNetCdfFunctionStoreBase_ThrowForUnsupportedFilters_Only_single_index_filters_are_supported">
+            <summary>
+              Looks up a localized string similar to Only single index filters are supported.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ReadOnlyNetCdfFunctionStoreBase_ThrowForUnsupportedFilters_Only_single_value_filters_supported">
+            <summary>
+              Looks up a localized string similar to Only single value filters supported.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ReadOnlyNetCdfFunctionStoreBase_ThrowForUnsupportedFilters_Only_variable_value_filters_supported">
+            <summary>
+              Looks up a localized string similar to Only variable value filters supported.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.RemoveAtEditAction_RemoveAtEditAction_Removing_value_s_">
+            <summary>
+              Looks up a localized string similar to Removing value(s).
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.RemoveAtEditAction_Restore_Inserting_elements_in_multidimensional_arrays_with_zero_range_dimensions_not_implemented_">
+            <summary>
+              Looks up a localized string similar to Inserting elements in multidimensional arrays with zero-range dimensions not implemented..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.ResizeEditAction_ResizeEditAction_Resizing_array">
+            <summary>
+              Looks up a localized string similar to Resizing array.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.SetValueEditAction_SetValueEditAction_Set_value">
+            <summary>
+              Looks up a localized string similar to Set value.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.StandardProcessNames_Morphology_morphology">
+            <summary>
+              Looks up a localized string similar to morphology.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.StandardProcessNames_Salinity_salinity">
+            <summary>
+              Looks up a localized string similar to salinity.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.StandardProcessNames_Temperature_temperature">
+            <summary>
+              Looks up a localized string similar to temperature.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.StandardProcessNames_WaterFlow_water_flow">
+            <summary>
+              Looks up a localized string similar to water flow.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.StandardProcessNames_WaterQuality_water_quality">
+            <summary>
+              Looks up a localized string similar to water quality.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.StandardProcessNames_Waves_waves">
+            <summary>
+              Looks up a localized string similar to waves.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.TimeArgumentNavigatable_TimeArgumentNavigatable_Filter_should_not_be_null">
+            <summary>
+              Looks up a localized string similar to Filter should not be null.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_AddValues_Adding_values_is_only_possible_for_independend_variables_">
+            <summary>
+              Looks up a localized string similar to Adding values is only possible for independend variables..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_AllowSetExtrapolationType_Can_t_set_AllowSetExtrapolationType_for_filtered_variable__set_it_on_the__unfiltered__parent_">
+            <summary>
+              Looks up a localized string similar to Can&apos;t set AllowSetExtrapolationType for filtered variable; set it on the (unfiltered) parent..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_AllowSetInterpolationType_Can_t_set_AllowSetInterpolationType_for_filtered_variable__set_it_on_the__unfiltered__parent_">
+            <summary>
+              Looks up a localized string similar to Can&apos;t set AllowSetInterpolationType for filtered variable; set it on the (unfiltered) parent..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_ExtrapolationType_Can_t_set_ExtrapolationType_for_filtered_variable__set_it_on_the__unfiltered__parent_">
+            <summary>
+              Looks up a localized string similar to Can&apos;t set ExtrapolationType for filtered variable; set it on the (unfiltered) parent..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_GetNextValue_Unable_to_generate_next_value_for_variable_of_type__0___Add_a_NextValueGenerator_to_the_variable">
+            <summary>
+              Looks up a localized string similar to Unable to generate next value for variable of type {0}. Add a NextValueGenerator to the variable.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_InterpolationType_Can_t_set_InterpolationType_for_filtered_variable__set_it_on_the__unfiltered__parent_">
+            <summary>
+              Looks up a localized string similar to Can&apos;t set InterpolationType for filtered variable; set it on the (unfiltered) parent..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_IsAutoSorted_ValueType__0__must_implement_IComparable_for_AutoSorted_to_work_">
+            <summary>
+              Looks up a localized string similar to ValueType {0} must implement IComparable for AutoSorted to work..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_OnFunctionValuesChanging_Values_added_to_independent_variable_must_be_unique__adding__0__index__1_">
+            <summary>
+              Looks up a localized string similar to Values added to independent variable must be unique, adding {0} index {1}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_SetValues_Value_of_type__0___but_expected_type__1__for_variable__2_">
+            <summary>
+              Looks up a localized string similar to Value of type {0}, but expected type {1} for variable {2}.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_ThrowIfSettingNoDataValuesOnFilteredFunction_Cannot_set_No_Data_values_on_filtered_function__please_set_it_on_the_parent_function_">
+            <summary>
+              Looks up a localized string similar to Cannot set No Data values on filtered function, please set it on the parent function..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_Unit_Can_t_set_unit_for_a_filtered_function_">
+            <summary>
+              Looks up a localized string similar to Can&apos;t set unit for a filtered function..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.Variable_Variable_Components_CollectionChanged_Cannot_change_components_collection_of_an_independent_variable">
+            <summary>
+              Looks up a localized string similar to Cannot change components collection of an independent variable.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.VariableIndexFilter_Intersect_Currently_only_filter_of_the_same_type_can_be_intersected">
+            <summary>
+              Looks up a localized string similar to Currently only filter of the same type can be intersected.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.VariableIndexFilter_Intersect_Filters_are_incompatible">
+            <summary>
+              Looks up a localized string similar to Filters are incompatible.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.VariableIndexRangeFilter_Intersect_Currently_only_filter_of_the_same_type_can_be_intersected">
+            <summary>
+              Looks up a localized string similar to Currently only filter of the same type can be intersected.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.VariableIndexRangeFilter_Intersect_Filters_are_incompatible">
+            <summary>
+              Looks up a localized string similar to Filters are incompatible.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.VariableReduceFilter_Intersect_Currently_only_filter_of_the_same_type_can_be_intersected">
+            <summary>
+              Looks up a localized string similar to Currently only filter of the same type can be intersected.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.VariableReduceFilter_Intersect_Filters_are_incompatible">
+            <summary>
+              Looks up a localized string similar to Filters are incompatible.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.VariableValueFilter_Intersect_Currently_only_filter_of_the_same_type_can_be_intersected">
+            <summary>
+              Looks up a localized string similar to Currently only filter of the same type can be intersected.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.VariableValueFilter_Intersect_Filters_are_incompatible">
+            <summary>
+              Looks up a localized string similar to Filters are incompatible.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.VariableValueFilter_VariableValueFilter_Cannot_be_empty">
+            <summary>
+              Looks up a localized string similar to Cannot be empty.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Properties.Resources.VariableValueFilter_VariableValueFilter_Invalid_value_type">
+            <summary>
+              Looks up a localized string similar to Invalid value type.
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.ReadOnlyNetCdfFunctionStoreBase.NcNameAttribute">
+            <summary>
+            Indicates the name of the netcdf variable (or the dimension name if no actual variable exists, or the dimension should be use to determine the size)
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.ReadOnlyNetCdfFunctionStoreBase.NcRefDateAttribute">
+            <summary>
+            Use this attribute on each DateTime Variable to indicate the reference date (as a string). This ref date is supplied for you as part of the variable info. (see usage)
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.ReadOnlyNetCdfFunctionStoreBase.NcUseVariableSizeAttribute">
+            <summary>
+            Indicates if NcName indicates the variable name or dimension name: use "true" if variable name. This is where the variable size is determined from.
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.ReadOnlyNetCdfFunctionStoreBase.NcVirtualAttribute">
+            <summary>
+            Indicates whether the store can find a variable in the netcdf file or if it should generate unique identifiers on the fly
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.ReadOnlyNetCdfFunctionStoreBase.IsMultiValueFilteringSupported">
+            <summary>
+            We don't allow multi value filtering in the netcdffunctionstorebase.
+            See throw code. <see cref="M:DelftTools.Functions.ReadOnlyNetCdfFunctionStoreBase.ThrowForUnsupportedFilters(DelftTools.Functions.Filters.IVariableFilter[])"/>.
+            </summary>
+        </member>
+        <member name="E:DelftTools.Functions.TimeArgumentNavigatable.TimeSelectionChanged">
+            <summary>
+            Occurs when the time selection changed.
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.Function">
+             <summary>
+             Implements multi-dimensional discrete vector function consisting of a set of components and arguments.
+             
+             See more links for reference: 
+             http://mathworld.wolfram.com/VectorFunction.html
+             http://www.mathreference.com/ca-mv,vec.html
+             
+             Example:
+             
+             F - velocity field in 2D space, each function value should contain 2 components
+             to define X and Y components of the velocity.
+             
+             F = (Vx, Vy)(t), where
+            
+             Vx, Vy - function components
+             t - function argument
+             </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Function.Dummy">
+            <summary>
+            HACK: field used to route changes in function as a PropertyChanged event.
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.Function.skipObserverNotification">
+            <summary>
+            Should the function notify observers of changes in the store?
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Function.#ctor">
+            <summary>
+            Creates an instance of a new Function which uses memory-based values store by default.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Function.#ctor(System.String)">
+            <summary>
+            Creates an instance of a new Function which uses memory-based values store by default.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Function.Name">
+            <summary>
+            Readable name of the function.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Function.Components">
+            <summary>
+            Gets function components.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.Function.Arguments">
+            <summary>
+            Gets function arguments.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Function.GetNewFilteredFunctionInstance(System.Collections.Generic.IEnumerable{DelftTools.Functions.Filters.IVariableFilter})">
+            <summary>
+            Returns a function based on filters. 
+            If for example a coverage is filtered on time it is still a coverage. If argument
+            locations is reduced it would no longer be a coverage.
+            </summary>
+            <param name="filters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Function.CreateInstance">
+            <summary>
+            Create instance of this class, if many instances need to be created - override this method and create instance explicitly.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Function.Filter(DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+            Creates filtered function by filtering it's arguments to a specified set of values.
+            Filtered function is still based on original function which can be accessed using <see cref="P:DelftTools.Functions.Function.Parent"/> property.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Function.GetComponentValueIndexInChildComponent(System.Int32[],System.Int32[])">
+            <summary>
+            Compute index in filtered multi-dimensional array based on index in parent multi-dimensional array
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Function.GetFiltersInParent(System.Collections.Generic.IEnumerable{DelftTools.Functions.Filters.IVariableFilter})">
+            <summary>
+            Returns filters containing variables which exist in the store. 
+            If variable in the filter is filtered - use parent vararible.
+            </summary>
+            <param name="filters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Function.CombineCompatibleFilters(System.Collections.Generic.IEnumerable{DelftTools.Functions.Filters.IVariableFilter})">
+            <summary>
+            Combines compatible filters. 
+            </summary>
+            <param name="allFilters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Function.EvaluateByArgumentValues``1(System.Object[])">
+            <summary>
+            Gives function value for the given argument values (interpolated,extrapolated or defined). Used by evaluate.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="argumentValues"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.Function.NotifyObserversOnFunctionValuesChanged">
+            <summary>
+            Use to notify observers (views) of a change in the function.
+            
+            HACK: we should handle CollectionChanged or other event instead of redirecting collection changed as property changed
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.Function.GetComponentFromFilters(DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+            Returns the variable for which a component filter is defined.
+            </summary>
+            <param name="filters"></param>
+            <returns></returns>
+        </member>
+        <member name="P:DelftTools.Functions.Function.IsIndependent">
+            <summary>
+            A function is independent if it does not have any arguments AND there is no independent function
+            with more components of which this is one.
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.FunctionAttributes">
+            <summary>
+            A few string constants as used for attributes in netcdf variables
+            TODO: check what names we can use from: http://cf-pcmdi.llnl.gov/documents/cf-standard-names/standard-name-table/19/cf-standard-name-table.html
+            http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1
+            TODO: check INSPIRE documents for recommended variable names
+            
+            TODO: refactor this into a list of StandardName structs:
+            
+            public struct VariableInfo
+            {
+                string Name
+                string UnitName
+                string Description
+                string Symbol
+            }
+            
+            public static StandardNames
+            {
+                public static VariableInfo WaterLevel;
+                ...
+            }
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.FunctionAttributes.StandardNames.WaterLevelTable">
+            <summary>
+            Q(h) Boundary
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.FunctionExtensions.GetFirstArgumentVariableOfType``1(DelftTools.Functions.IFunction)">
+            <summary>
+            Gets the first argument variable in the function of data type T
+            </summary>
+            <typeparam name="T">The type to search for</typeparam>
+            <param name="function">The function to explore</param>
+            <returns>If a match is found the variable will be returned. Null otherwise</returns>
+        </member>
+        <member name="M:DelftTools.Functions.FunctionExtensions.GetFirstComponentVariableOfType``1(DelftTools.Functions.IFunction)">
+            <summary>
+            Getst the first component variable in the function of data type T
+            </summary>
+            <typeparam name="T">The type to search for</typeparam>
+            <param name="function">The function to explore</param>
+            <returns>If a match is found the variable will be returned. Null otherwise</returns>
+        </member>
+        <member name="M:DelftTools.Functions.FunctionExtensions.SetComponentArgumentValues``2(DelftTools.Functions.IFunction,System.Collections.Generic.IEnumerable{``1},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            TODO: refactor, very specific case only makes API of function in all other cases unnecessary complex
+            </summary>
+            <typeparam name="TArg"></typeparam>
+            <typeparam name="TComp"></typeparam>
+            <param name="function"></param>
+            <param name="compValue"></param>
+            <param name="argValues"></param>
+        </member>
+        <member name="M:DelftTools.Functions.FunctionExtensions.Evaluate1D``2(DelftTools.Functions.IFunction,``0)">
+            <summary>
+            TODO: refactor, very specific case only makes API of function in all other cases unnecessary complex
+            </summary>
+            <typeparam name="TArg"></typeparam>
+            <typeparam name="TComp"></typeparam>
+            <param name="function"></param>
+            <param name="argvalue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.FunctionExtensions.GetAllComponentValues(DelftTools.Functions.IFunction,System.Object[])">
+            <summary>
+            Returns an array of all component values, and works for multi-component functions.
+            This function should be used instead of <see cref="M:DelftTools.Functions.Function.GetValues(DelftTools.Functions.Filters.IVariableFilter[])"/> as long as that method
+            does not return ALL component values
+            TODO [Tiemen]: Should be fixed in function
+            </summary>
+            <param name="function"></param>
+            <param name="arguments"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.FunctionHelper.SplitEnumerable(System.Collections.IEnumerable,System.Collections.Generic.IList{System.Type})">
+            <summary>
+            Divides a single enumerable into multiple one's. This is used when setting multiple values like
+            f[0] = {1,2} for a two component function. The values are divived among the components by order.
+            This could be slow. For fast access set component values directly
+            </summary>
+            <param name="enumerable"></param>
+            <param name="variables"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.FunctionHelper.SearchLastSmallerValueIndex(System.IComparable,System.Collections.IList,System.Int32@)">
+            <summary>
+            Updates <see cref="!:lastIndex"/> by the index of the last value from the <see cref="!:values"/> array which is smaller than <see cref="!:value"/>.
+            </summary>
+            <param name="value">value to search in the array</param>
+            <param name="values">values to search in</param>
+            <param name="previousIndex">last used index (optimization)</param>
+        </member>
+        <member name="M:DelftTools.Functions.FunctionHelper.Get1DFunction``2(System.String,System.String,System.String)">
+            <summary>
+            Returns a function with one argument and one component
+            </summary>
+            <typeparam name="TArg">Argument type</typeparam>
+            <typeparam name="TComp">Component type</typeparam>
+            <param name="functionName"></param>
+            <param name="argumentName"></param>
+            <param name="componentName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.FunctionHelper.AddDataTableRowsToFunction(System.Data.DataTable,DelftTools.Functions.IFunction)">
+            <summary>
+            Add rows of a datatable to function. Assumes the first column is the argument next ones the components.
+            Order of columns should match order of components.
+            If number of columns - 1 is less than number of components these components are not set
+            </summary>
+            <param name="dataTable"></param>
+            <param name="function"></param>
+        </member>
+        <member name="M:DelftTools.Functions.ITimeSeries.Evaluate``1(System.DateTime)">
+            <summary>
+            Gets the interpolated value at the given time step 
+            </summary>
+            <typeparam name="T">The type of the value</typeparam>
+            <param name="timeStep">The time step argument to use in the function</param>
+            <returns>The (interpolated) value</returns>
+            <remarks>
+            Logs exceptions to the logger
+            </remarks>
+        </member>
+        <member name="T:DelftTools.Functions.ITypeConverter">
+            <summary>
+            Interface to convert types. 
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.ITypeConverter.VariableNames">
+            <summary>
+            Gets the names of the store types
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.ITypeConverter.VariableStandardNames">
+            <summary>
+            Gets the standard names of the store types
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.ITypeConverter.VariableUnits">
+            <summary>
+            Gets the units of the store types (as string)
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.ITypeConverter.ConvertToStore(System.Object)">
+            <summary>
+            Returns a DelftTools.Utils.Tuple of values in NetCdf. TODO: refactor it to convert list of object instead of a single object
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.ITypeConverter.ConvertFromStore(System.Object)">
+            <summary>
+            Creates instance using DelftTools.Utils.Tuple of values. TODO: refactor it to convert list of object instead of a single object
+            </summary>
+            <param name="o"></param>
+            <returns></returns>
+        </member>
+        <member name="F:DelftTools.Functions.TimeSeries.Log">
+            <summary>
+            Declare the logger
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.TimeSeries.Evaluate``1(System.DateTime)">
+            <summary>
+            Gets the interpolated value at the given time step 
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.ICachedMultiDimensionalArray.Cache(DelftTools.Functions.IMultiDimensionalArrayView)">
+            <summary>
+            Retrieves values for view in a efficient way
+            </summary>
+            <param name="view"></param>
+        </member>
+        <member name="M:DelftTools.Functions.ICachedMultiDimensionalArray.Free(DelftTools.Functions.IMultiDimensionalArrayView)">
+            <summary>
+            Frees cache for the given view
+            </summary>
+            <param name="view"></param>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArrayView.Parent">
+            <summary>
+            Parent array of the current array.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArrayView.OffsetStart">
+            <summary>
+            Start offset in the parent array for all dimensions.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArrayView.OffsetEnd">
+            <summary>
+            End offset in the parent array for all dimensions.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArrayView.Reduce">
+            <summary>
+            Gets true if dimension is reduced, array of flags for all dimensions.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArrayView.SelectedIndexes">
+            <summary>
+            Indexes for each dimension. Provides a selection of the Parent for the given dimension.
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.MemoryFunctionStoreHelper">
+            <summary>
+            TODO: get a base class for Stores and get this stuff in abstract or not.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.MemoryFunctionStoreHelper.GetDependentVariables(System.Collections.Generic.IList{DelftTools.Functions.IFunction})">
+            <summary>
+            Creates a dictionary describing argument based dependencies for the given list of functions.
+            </summary>
+            <param name="functions"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.MemoryFunctionStoreHelper.GetComponentsDependencyTable(System.Collections.Generic.IList{DelftTools.Functions.IFunction})">
+            <summary>
+            Creates a dictionary describing component based dependencies for the given list of functions.
+            </summary>
+            <param name="functions"></param>
+            <returns></returns>
+        </member>
+        <member name="F:DelftTools.Functions.MultiDimensionalArrayChangingEventArgs.Index">
+            <summary>
+            When inserting, this is the position where the item is inserted / being inserted.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.MultiDimensionalArrayChangingEventArgs.MultiDimensionalIndex">
+            <summary>
+            Multidimensional index of the changed value
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.MultiDimensionalArrayChangingEventArgs.Shape">
+            <summary>
+            shape of the items changed/added/removed
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.MultiDimensionalArrayChangingEventArgs.Stride">
+            <summary>
+            Current Stride of the array. Used to compute index.
+            </summary>
+        </member>
+        <member name="F:DelftTools.Functions.MultiDimensionalArrayChangingEventArgs.Items">
+            <summary>
+            When number of items added (or removed) is more than one.
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.MultiDimensionalArrayDimensionChangeAction">
+            <summary>
+            Specifies how the Multidimensionalarray is changed
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.MultiDimensionalArrayResizeArgs">
+            <summary>
+            Arguments specifying how the array was resized
+            </summary>
+            TODO: merge it with NotifyCollectionChanged
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArrayView.#ctor(DelftTools.Functions.IMultiDimensionalArray,System.Collections.Generic.IList{System.Int32},System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Create a attached copy of the parent array
+            </summary>
+            <param name="parent">Parent array</param>
+            <param name="start">Start for dimension</param>
+            <param name="end">End for dimension</param>
+        </member>
+        <member name="P:DelftTools.Functions.MultiDimensionalArrayView.SelectedIndexes">
+            <summary>
+            Defines which indexes should be selected for each dimension? Is null if all indexes are to be selected
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.MultiDimensionalArrayView.Parent">
+            <summary>
+            The array of which this array is 'derived'
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArrayView.ReduceCollectionChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
+            <summary>
+            Listens for changes in reduce array and throws exception if reduction is 
+            not possible for the given dimension
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArrayView.GetIndexInParent(System.Int32[])">
+            <summary>
+            Returns index to parent. For performance reasons does not check upperbounds
+            </summary>
+            <param name="index">Index in the child array</param>
+            <returns>Index in the parent array</returns>
+        </member>
+        <member name="M:DelftTools.Functions.MemoryFunctionStore.#ctor(DelftTools.Functions.IFunctionStore)">
+            <summary>
+            Copy constructor, creates memory function store with cloned functions from original store.
+            Does not copy values!!
+            </summary>
+            <param name="sourceStore"></param>
+        </member>
+        <member name="P:DelftTools.Functions.MemoryFunctionStore.FunctionValues">
+            NOTE : nhibernate uses this accessor.
+        </member>
+        <member name="M:DelftTools.Functions.MemoryFunctionStore.UpdateVariableSize(DelftTools.Functions.IVariable)">
+            <summary>
+            Updates variable size based on size of it's arguments
+            
+            This method is slow :(.
+            </summary>
+            <param name="variable"></param>
+        </member>
+        <member name="M:DelftTools.Functions.MemoryFunctionStore.ReconnectClonedComponentsAndArguments(System.Collections.Generic.IList{DelftTools.Functions.IFunction},System.Collections.Generic.IList{DelftTools.Functions.IFunction})">
+            <summary>
+            rewire all components and arguments
+            </summary>
+            <param name="clonedFunctions"></param>
+            <param name="sourceFunctions"></param>
+        </member>
+        <member name="M:DelftTools.Functions.MemoryFunctionStore.CreateComponentArrayFromFilters(DelftTools.Functions.IFunction,System.Collections.Generic.IList{DelftTools.Functions.Filters.IVariableFilter})">
+            <summary>
+            Prepares the Multidimensional array of function. Expands dimensions where needed.
+            TODO: this and above methods seem to be redundant
+            
+            TODO: shouldn't it happen in Function?
+            </summary>
+            <param name="function"></param>
+            <param name="filters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.MemoryFunctionStore.ResizeDependentFunctionValuesForArgument(DelftTools.Functions.IVariable,DelftTools.Utils.Collections.NotifyCollectionChangeAction,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Resizes functions for the given argumentVariable. if x is dependend on y, x gets resized
+            </summary>
+            <param name="argumentVariable">The argument variable that is altered</param>
+            <param name="action">action on the argument</param>
+            <param name="index">index in argument array</param>
+            <param name="oldIndex"></param>
+            <param name="i"></param>
+        </member>
+        <member name="M:DelftTools.Functions.MemoryFunctionStore.GetVariableValueFilterIndexes(DelftTools.Functions.Filters.IVariableValueFilter)">
+            <summary>
+            Returns the indexes of the variable for the given values
+            </summary>
+            <param name="filter"></param>
+            <returns></returns>
+            TODO: move to function. In store work with indexes. Gives problems on insert.
+        </member>
+        <member name="M:DelftTools.Functions.MemoryFunctionStore.CheckConsistency">
+            <summary>
+            A store is consistent if the function arguments and components are in synch
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArray.#ctor(System.Boolean,System.Boolean,System.Object,System.Collections.IList,System.Int32[])">
+            <summary>
+            Creates a new multidimensional array using provided values as 1D array. 
+            Values in the provided list will used in a row-major order.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.MultiDimensionalArray.IsAutoSorted">
+            <summary>
+            Determines whether the array maintains a sort by modifying inserts and updates to values.
+            Only works in 1D situations for now
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArray.Resize(System.Int32[])">
+            <summary>
+            Resizes array using new lengths of dimensions.
+            </summary>
+            <param name="newShape"></param>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArray.InsertAt(System.Int32,System.Int32,System.Int32,System.Collections.IList)">
+            <summary>
+            Insert a slices of value(s) for a given dimension
+            </summary>
+            <param name="dimension">Dimensen at which to insert</param>
+            <param name="index">Index of insert for dimension</param>
+            <param name="length">Length (in the dimensions). In 1D this is ValuesToInsert.Count but not in n-D</param>
+            <param name="valuesToInsert">Total values</param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArray.RemoveValue1D(System.Object)">
+            <summary>
+            Removes value and does unsubscribe
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArray.SetValues(System.Collections.IList)">
+            <summary>
+            Sets underlying storage to a given array. No events are sent! Backdoor to internal storage.
+            </summary>
+            <param name="newValues"></param>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArray.SetValue1DCore(System.Object,System.Int32)">
+            <summary>
+            Sets value in underlying array and subscribes to changes if possible
+            </summary>
+            <param name="newValue"></param>
+            <param name="newIndex1D"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:DelftTools.Functions.MultiDimensionalArray.Move(System.Int32,System.Int32,System.Int32,System.Int32)" -->
+        <!-- Badly formed XML comment ignored for member "M:DelftTools.Functions.MultiDimensionalArray.Move(System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean)" -->
+        <member name="M:DelftTools.Functions.MultiDimensionalArray.CopyRight(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Copies a block of the array to the right
+            </summary>
+            <param name="startIndex">Source index for copy</param>
+            <param name="length">Length of block to copy</param>
+            <param name="positions">Number of positions to move the block</param>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArray.CopyLeft(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Copies a block of the array to the left
+            </summary>
+            <param name="startIndex">Source index for copy</param>
+            <param name="length">Length of block to copy</param>
+            <param name="positions">Number of positions to move the block</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:DelftTools.Functions.MultiDimensionalArray.MaxValue" -->
+        <!-- Badly formed XML comment ignored for member "P:DelftTools.Functions.MultiDimensionalArray.MinValue" -->
+        <member name="M:DelftTools.Functions.MultiDimensionalArray.CreateValuesList">
+            <summary>
+            Returns a new instance for the internal 'flat' list.
+            Returns a generic version if possible 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArray.CreateClone(System.Collections.IList)">
+            <summary>
+            Creates a new values list and copies the values in values.
+            </summary>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DelftTools.Functions.IFunction">
+            <summary>
+            Defines a <b>functional relation</b> between <b>component and argument variables</b>.
+            Allows to access values of the components using GetValues, SetValues or this[<c>params</c> argumentIndexes[]].
+            <example>
+            Example of the function:<br/><br/>
+            F = (Vx, Vy, Vz)(x, y, z, t)<br/><br/>
+             
+            S = { f(x), g(y), h(z) }
+            Here F is a function, Vx, Vy, Vz are <b>component variables</b> and x, y, z, t are <b>argument variables</b><br/><br/>
+            	</example>
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IFunction.Store">
+            <summary>
+            Store associated with the current function. Used to get/set values and all properties of the function.
+            TODO: get out of the interface.or split IFunction into something more light and the heavy part can have a store
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IFunction.Components">
+            <summary>
+            Function components, e.g. for F = (Vx, Vy, Vz)(t, x, y, z) components are Vx, Vy, Vz
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IFunction.Arguments">
+            <summary>
+            Function components, e.g. for F = (Vx, Vy, Vz)(t, x, y, z) arguments are: t, x, y, z
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IFunction.Attributes">
+            <summary>
+            Arbitrary attributes.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IFunction.Item(System.Object[])">
+            <summary>
+            Gets or sets a single value using argument values. 
+            A single value of a function is a DelftTools.Utils.Tuple of all it's components.
+            If function has only one component - a single value will be returned here.
+            </summary>
+            <param name="argumentValues"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.IFunction.Filter(DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+            Creates filtered function by specifying filters on its arguments / components.
+            </summary>
+            <param name="filters"></param>
+            <returns></returns>
+        </member>
+        <member name="P:DelftTools.Functions.IFunction.Filters">
+            <summary>
+            Gets or sets filters currently used in function to filter it's values. 
+            They can filter only specific values, ranges of indexes/values or entire components.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IFunction.Parent">
+            <summary>
+            Parent function of the filtered function.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IFunction.GetValues(DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+            Returns list of all values of the function components. (But see remarks!)
+            When filters are provided - only subset of component values will be returned.
+            If function has more than one component and no component filter is provided - values will be returned in the following order:
+            <example>
+            For function defined as: F = (f1, f2)(x)<br/>
+            <see cref="T:System.Collections.IList"/> values = F.GetValues(); <br/><br/>
+            Will return: { f1[0], f2[0], f1[1], f2[1] ... f1[x.Count - 1], f2[x.Count - 1] }
+            </example>
+            
+            </summary>
+            <param name="filters"></param>
+            <returns></returns>
+            <remarks>This function does NOT return all component values for multi-component functions.
+            It will return all component values for the first component. 
+            <see cref="M:DelftTools.Functions.FunctionExtensions.GetAllComponentValues(DelftTools.Functions.IFunction,System.Object[])"/> has been introduces to solve this issues temporarily.
+            TODO [Tiemen]: This function should return all component values for multi-component functions.
+            </remarks>
+        </member>
+        <member name="M:DelftTools.Functions.IFunction.GetValues``1(DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+            Returns list of all values of the function components. (But see remarks!)
+            When filters are provided - only subset of component values will be returned.
+            If function has more than one component and no component filter is provided - values will be returned in the following order:
+            <example>
+            For function defined as: F = (f1, f2)(x)<br/>
+            <see cref="T:System.Collections.IList"/> values = F.GetValues(); <br/><br/>
+            Will return: { f1[0], f2[0], f1[1], f2[1] ... f1[x.Count - 1], f2[x.Count - 1] }
+            </example>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="filters"></param>
+            <returns></returns>
+            <remarks>This function does NOT return all component values for multi-component functions. 
+            It will return all component values for the first component. 
+            <see cref="M:DelftTools.Functions.FunctionExtensions.GetAllComponentValues(DelftTools.Functions.IFunction,System.Object[])"/> has been introduces to solve this issues temporarily.
+            TODO [Tiemen]: This function should return all component values for multi-component functions.
+            </remarks>
+        </member>
+        <member name="P:DelftTools.Functions.IFunction.SkipArgumentValidationInEvaluate">
+            <summary>
+            Performance flag, when set - argument validation is skipped during <see cref="M:DelftTools.Functions.IFunction.Evaluate``1(DelftTools.Functions.Filters.IVariableFilter[])"/> calls.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IFunction.Evaluate``1(DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+            Return function value. Uses approximation if needed
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="filters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.IFunction.Evaluate``1(System.Object[])">
+            <summary>
+            Evaluate function value using arguments.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="arguments"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.IFunction.SetValues(System.Collections.IEnumerable,DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+              Sets all values for a given array of argument values.
+            </summary>
+            <param name="values">Components values.
+              Precondition: Collection cannot be empty or its size cannot be larger than the (permutation) size of the subspace described by <paramref name="filters"/>
+            </param>
+            <param name="filters">Filtering
+              Precondition: The size of the subspace described by the collection of <see cref="T:DelftTools.Functions.Filters.IVariableFilter"/> cannot be 0
+            </param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+              When <paramref name="values"/> size is 0
+            </exception>
+            <exception cref="T:System.ArgumentException">
+              When <paramref name="values"/> size is larger than the number of permutations of the subspace described by <paramref name="filters"/>
+            </exception>
+        </member>
+        <member name="M:DelftTools.Functions.IFunction.RemoveValues(DelftTools.Functions.Filters.IVariableValueFilter[])">
+            <summary>
+            Removes all values for all argument values specified in the filters.
+            </summary>
+            <param name="filters"></param>
+        </member>
+        <member name="M:DelftTools.Functions.IFunction.Clear">
+            <summary>
+            Clears all values of the function, but not structure!
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IFunction.IsIndependent">
+            <summary>
+            True if variable is independent (has no no arguments).
+            TODO: this is not property of the function but of variable, push down?
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IFunction.IsEditable">
+            <summary>
+            Determines whether values can be set by user. TODO: why not readonly???
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IFunction.Clone(DelftTools.Functions.IFunctionStore)">
+            <summary>
+            Creates a new function as a clone of the current function using a given <see cref="!:targetStore"/>.
+            Cloned function is automatically added to the <see cref="!:targetStore"/>.
+            Copies values from the source function to the target function.
+            </summary>
+            <param name="targetStore">Store to be used as a target for a new function</param>
+            <returns>New function with the same schema and values as a present function.</returns>
+        </member>
+        <member name="T:DelftTools.Functions.IFunctionStore">
+            <summary>
+            Defines interface of the function values data store.
+            
+            TODO: remove the params overloads. The inenumerable is nicer and params is just convenience.it makes it easier to write more stores
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IFunctionStore.Functions">
+            <summary>
+            Functions contained in the store. Use it to add or remove functions.
+            During add value store must check
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IFunctionStore.SetVariableValues``1(DelftTools.Functions.IVariable,System.Collections.Generic.IEnumerable{``0},DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+            Sets new values.
+            </summary>
+            <param name="function"></param>
+            <param name="values">List containing combination of component values.</param>
+            <param name="filters"></param>
+        </member>
+        <member name="M:DelftTools.Functions.IFunctionStore.RemoveFunctionValues(DelftTools.Functions.IFunction,DelftTools.Functions.Filters.IVariableValueFilter[])">
+            <summary>
+            Removes all values that match any of the filters from the store
+            </summary>
+            <param name="function"></param>
+            <param name="filters"></param>
+        </member>
+        <member name="P:DelftTools.Functions.IFunctionStore.SupportsPartialRemove">
+            <summary>
+            Some stores are read-only, or support only add, or clear, but not remove of specific values.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IFunctionStore.AddIndependentVariableValues``1(DelftTools.Functions.IVariable,System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Adds new values to independend variables. If value exist it is ignored
+            </summary>
+            <param name="function"></param>
+            <param name="values">List containing combination of component values.</param>
+            <param name="filters"></param>
+        </member>
+        <member name="M:DelftTools.Functions.IFunctionStore.GetVariableValues(DelftTools.Functions.IVariable,DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+            Returns values of the selected function as multidimensional array.
+            </summary>
+            <param name="function"></param>
+            <param name="filters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.IFunctionStore.GetVariableValues``1(DelftTools.Functions.IVariable,DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+             Returns values of the function as strongly typed multidimensional array.
+            </summary>
+            <param name="function"></param>
+            <param name="filters"></param>
+            <returns></returns>
+        </member>
+        <member name="P:DelftTools.Functions.IFunctionStore.TypeConverters">
+            <summary>
+            List of custom stored userTypes. 
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IFunctionStore.FireEvents">
+            <summary>
+            Determines wether values changes should result in events
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IFunctionStore.UpdateVariableSize(DelftTools.Functions.IVariable)">
+            <summary>
+            Used when a variables needs to resize explicitly. Resizes the variable to match it's argument
+            TODO: this should not be part of the interface!
+            </summary>
+            <param name="variable"></param>
+        </member>
+        <member name="T:DelftTools.Functions.IMultiDimensionalArray">
+            <summary>
+             Multi-dimensional array.
+             
+             <remarks>
+             When values are accessed using <see cref="T:System.Collections.IList"/> index of the element is computed in the following way:
+             <c>index = sum { length(dimension(i)) * indexOf(dimension(i)) }</c>
+             </remarks>
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.Resize(System.Int32[])">
+            <summary>
+            Changes lenghts of the dimensions.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArray.Item(System.Int32[])">
+            <summary>
+            Gets value at the specified dimension index.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArray.Count">
+            <summary>
+            Total number of elements in array.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArray.DefaultValue">
+            <summary>
+            Default value to be used when array is resized.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArray.Shape">
+            <summary>
+            Gets lengths of the dimensions.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArray.Stride">
+            <summary>
+            Stride(s) are used to find 1D index based on nD index. 
+            Stride for every dimension means how many elements should be skipped in 1D array to get to the next element for that dimension.
+            Given multidimensional index Index_nD as an array and Stride array the 1D index is calculated using the following formula:
+            
+            Index_1D = sum(Index_nD(i) * Stride(i))
+            
+            <example>shape = [2, 3, 4], stride = [12, 4, 1]</example>
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArray.Rank">
+            <summary>
+            Gets rank (number of dimensions).
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.Select(System.Int32[],System.Int32[])">
+            <summary>
+            Selects subset of an original array. Keeps reference to the parent array.
+            </summary>
+            <param name="start"></param>
+            <param name="end"></param>
+            <returns>View of the original array where reference to the parent array is in <see cref="P:DelftTools.Functions.IMultiDimensionalArrayView.Parent"/></returns>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.Select(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Allows to select only specific part of the parent array.
+            </summary>
+            <param name="dimension"></param>
+            <param name="start">Start offset in the parent or <seealso cref="F:System.Int32.MinValue"/> if it is equal to the parent</param>
+            <param name="end">Start offset in the parent or <seealso cref="F:System.Int32.MaxValue"/> if it is equal to the parent</param>
+            <returns>View of the original array where reference to the parent array is in <see cref="P:DelftTools.Functions.IMultiDimensionalArrayView.Parent"/></returns>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.Select(System.Int32,System.Int32[])">
+            <summary>
+            Selects subset of an original array based on dimension and indexes for that dimenion. Keeps reference to the parent array.
+            </summary>
+            <param name="dimension">Dimension to filter</param>
+            <param name="indexes">Indexes which will be selected</param>
+            <returns>View of the original array where reference to the parent array is in <see cref="P:DelftTools.Functions.IMultiDimensionalArrayView.Parent"/></returns>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.InsertAt(System.Int32,System.Int32,System.Int32,System.Collections.IList)">
+            <summary>
+            Insert a slices of value(s) for a given dimension
+            </summary>
+            <param name="dimension"></param>
+            <param name="index"></param>
+            <param name="length"></param>
+            <param name="valuesToInsert"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.RemoveAt(System.Int32,System.Int32)">
+            <summary>
+            Removes one slice on a given dimension, <see cref="!:index"/>.
+            </summary>
+            <param name="dimension">Dimension index</param>
+            <param name="index">Starting index</param>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.RemoveAt(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Removes <see cref="!:length"/> slices on a given dimension, <see cref="!:index"/>.
+            </summary>
+            <param name="dimension">Dimension index</param>
+            <param name="index">Starting index</param>
+            <param name="length">Number of indexes to remove</param>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.InsertAt(System.Int32,System.Int32)">
+            <summary>
+            Inserts one slice on a given dimension, at the <see cref="!:index"/>.
+            </summary>
+            <param name="dimension">Dimension index</param>
+            <param name="index">Index on the specified dimension</param>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.InsertAt(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Inserts <see cref="!:length"/> slices on a given dimension starting at <see cref="!:index"/>.
+            </summary>
+            <param name="dimension">Dimension index</param>
+            <param name="index">Starting index</param>
+            <param name="length">Number of indexes to remove</param>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.Move(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Moves <see cref="!:length"/> elements at the given <see cref="!:dimension"/> and <see cref="!:index"/> to a new index: <see cref="!:newIndex"/>
+            </summary>
+            <param name="dimension"></param>
+            <param name="index"></param>
+            <param name="length"></param>
+            <param name="newIndex"></param>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArray.FireEvents">
+            <summary>
+            CollectionChanging and CollectionChanged events are not fired when this property is false. 
+            Default value is true - events are fired.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IMultiDimensionalArray.AddRange(System.Collections.IList)">
+            <summary>
+            Adds elements to the end of array.
+            </summary>
+            <param name="values"></param>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArray.MaxValue">
+            <summary>
+            TODO: remove it, higher-level logica
+            Gets the maximal value in the array or throws an exception if the array type is not support
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArray.MinValue">
+            <summary>
+            TODO: remove it, higher-level logica
+            Gets the minimal value in the array or throws an exception if the array type is not support
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IMultiDimensionalArray.IsAutoSorted">
+            <summary>
+            Determines whether the array maintains a sort by modifying inserts and updates to values.
+            Only works in 1D situations for now
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.IVariable">
+            <summary>
+            Defines a variable which can be used in any function as an argument or component.
+            Variable itself can be independent or dependent. Every variable by definition is a function with only one component.
+            Here variable is defined as a discrete variable which has a set of values. 
+            Depending on type of the variable (dependent, independent) values of the variable are represented by 1D or nD array, 
+            see also <see cref="T:DelftTools.Functions.IMultiDimensionalArray"/>.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.Values">
+            <summary>
+            Provides access to all values of the variable.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.DefaultStep">
+            <summary>
+            Default step used to add new values to the variable. TODO: remove it, UI-related
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.NoDataValues">
+            <summary>
+            List of values which will be interpreted as no-data values.
+            TODO: make me value, IComparable?
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.NoDataValue">
+            <summary>
+            Single no-datavalue. First element of the list of NoDataValues. If set the list is cleared
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IVariable.Filter(DelftTools.Functions.Filters.IVariableFilter[])">
+            <summary>
+            Creates filtered variable as a new function which has current variable as it's parent.
+            </summary>
+            <param name="filters"></param>
+            <returns></returns>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.FixedSize">
+            <summary>
+            For some value stores, e.g. NetCDF, size of the variable must be specified. Otherwise if should be 0.
+            Which means that variable size may change in the future. Factor out to INetCdfVariable?
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.IVariable.AddValues(System.Collections.IEnumerable)">
+            <summary>
+            Adds values to independend varaible
+            </summary>
+            <param name="values"></param>
+        </member>
+        <member name="M:DelftTools.Functions.IVariable.CreateStorageArray(System.Boolean,DelftTools.Functions.IMultiDimensionalArray)">
+            <summary>
+            Factory method.  Creates a new instance of the proper multi dimensional array which can be used to 
+            keep values of the variable. *Pure optimization issue*
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.IsAutoSorted">
+            <summary>
+            This is 'on' by default but can be disabled for for example networkcoverages with routes..
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.GenerateUniqueValueForDefaultValue">
+            <summary>
+            Will replace the default value with a values based on defaultStep and predecessor
+            usefull for binding in datagrids and lists
+            This should not be the default beghaviour because the side effect is that adding a default value
+            on purpose will fail. 
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.CachedValues">
+            <summary>
+            Performance optimization for MemoryFunctionStore.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.AllowSetInterpolationType">
+            <summary>
+            Determines whether a user is allowed to set the interpolation type in the UI.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.AllowSetExtrapolationType">
+            <summary>
+            Determines whether a user is allowed to set the extrapolation type in the UI.
+            </summary>
+        </member>
+        <member name="P:DelftTools.Functions.IVariable.SkipUniqueValuesCheck">
+            <summary>
+            Determines whether the variable should check added values for uniqueness.
+            </summary>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArrayHelper.IsIndexWithinShape(System.Int32[],System.Int32[])">
+            <summary>
+            Check to see if the indexes fit in the new shape. 
+            </summary>
+            <param name="shape"></param>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArrayHelper.GetIndex(System.Int32,System.Int32[])">
+            <summary>
+            Convert a single dimensional index1d to a MD using current stride
+            </summary>
+            <param name="index1d"></param>
+            <param name="stride"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArrayHelper.GetIndex1d(System.Int32[],System.Int32[])">
+            <summary>
+            Converts indexes to a single dimensional offset.
+            </summary>
+            <param name="index"></param>
+            <param name="stride"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArrayHelper.GetStride(System.Int32[])">
+            <summary>
+            Calculate the stride vector for a given shape.
+            </summary>
+            <param name="shape"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArrayHelper.GetTotalLength(System.Int32[])">
+            <summary>
+            Returns the length of the underlying one dimensional array for a given shape
+            </summary>
+            <param name="shape"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArrayHelper.IncrementIndex(System.Int32[],System.Int32[],System.Int32)">
+            <summary>
+            Determines whether the index[] can be incremented (and it does) given the shape. Indexed is incremented along dimension
+            </summary>
+            <param name="index"></param>
+            <param name="shape"></param>
+            <param name="dimension"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DelftTools.Functions.MultiDimensionalArrayHelper.GetInsertionIndex(System.Object,System.Collections.IList)">
+            <summary>
+            Gets the index at which to insert a value and remain sorted.
+            Index is computed from 0 to Count
+            </summary>
+        </member>
+        <member name="T:DelftTools.Functions.DelftTools.Utils.Tuples.Pair`2">
+            <summary>
+            also refer to DelftTools.DataObjects.Functions.DelftTools.Utils.Tuples.DelftTools.Utils.Tuple for another solution.
+            </summary>
+            <typeparam name="TFirst"></typeparam>
+            <typeparam name="TSecond"></typeparam>
+        </member>
+        <member name="P:DelftTools.Functions.TypeConverterBase`1.VariableNames">
+            <summary>
+            Gets the variable names for the stored types
+            </summary>
+            <remarks>
+            The names are stored in the same order as the types. 
+            </remarks>
+        </member>
+    </members>
+</doc>

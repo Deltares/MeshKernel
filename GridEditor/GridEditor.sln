@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DF519A10-8962-431F-B747-31D81EDCAF78}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{298DED02-62DE-40A0-AF3F-9D0FA42DEB62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaShell.Plugins.GridEditor.Gui", "Src\DeltaShell.Plugins.GridEditor.Gui\DeltaShell.Plugins.GridEditor.Gui.csproj", "{79266571-0337-4E54-8FF2-17389CE798B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaShell.Plugins.GridEditor", "src\DeltaShell.Plugins.GridEditor\DeltaShell.Plugins.GridEditor.csproj", "{A4B1A9B6-84F8-417A-863A-F671EAA92AF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaShell.Plugins.GridEditor.Tests", "test\DeltaShell.Plugins.GridEditor.Tests\DeltaShell.Plugins.GridEditor.Tests.csproj", "{0960380D-30A4-424F-825A-196577ED5FC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaShell.Plugins.GridEditor.Gui.Tests", "test\DeltaShell.Plugins.GridEditor.Gui.Tests\DeltaShell.Plugins.GridEditor.Gui.Tests.csproj", "{2F858C6F-2D58-475A-92B5-75AF69CF6500}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79266571-0337-4E54-8FF2-17389CE798B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79266571-0337-4E54-8FF2-17389CE798B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79266571-0337-4E54-8FF2-17389CE798B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79266571-0337-4E54-8FF2-17389CE798B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4B1A9B6-84F8-417A-863A-F671EAA92AF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4B1A9B6-84F8-417A-863A-F671EAA92AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4B1A9B6-84F8-417A-863A-F671EAA92AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4B1A9B6-84F8-417A-863A-F671EAA92AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0960380D-30A4-424F-825A-196577ED5FC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0960380D-30A4-424F-825A-196577ED5FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0960380D-30A4-424F-825A-196577ED5FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0960380D-30A4-424F-825A-196577ED5FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F858C6F-2D58-475A-92B5-75AF69CF6500}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F858C6F-2D58-475A-92B5-75AF69CF6500}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F858C6F-2D58-475A-92B5-75AF69CF6500}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F858C6F-2D58-475A-92B5-75AF69CF6500}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{79266571-0337-4E54-8FF2-17389CE798B0} = {DF519A10-8962-431F-B747-31D81EDCAF78}
+		{A4B1A9B6-84F8-417A-863A-F671EAA92AF3} = {DF519A10-8962-431F-B747-31D81EDCAF78}
+		{0960380D-30A4-424F-825A-196577ED5FC3} = {298DED02-62DE-40A0-AF3F-9D0FA42DEB62}
+		{2F858C6F-2D58-475A-92B5-75AF69CF6500} = {298DED02-62DE-40A0-AF3F-9D0FA42DEB62}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {303DCE3E-F007-4403-886E-57FE165C5AD7}
+	EndGlobalSection
+EndGlobal

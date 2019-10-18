@@ -1,0 +1,16 @@
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\bin\x64\Debug\DeltaShell.Plugins.GridEditor.Tests.dll.config
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\bin\x64\Debug\DeltaShell.Plugins.GridEditor.Tests.dll
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\bin\x64\Debug\DeltaShell.Plugins.GridEditor.Tests.pdb
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\bin\x64\Debug\nunit.framework.dll
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\bin\x64\Debug\SharpMapTestUtils.dll
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\bin\x64\Debug\nunit.framework.xml
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\bin\x64\Debug\SharpMapTestUtils.pdb
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\bin\x64\Debug\SharpMapTestUtils.dll.config
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\bin\x64\Debug\DeltaShell.Plugins.GridEditor.Tests.pssym
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Tests.csprojAssemblyReference.cache
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Tests.csproj.CoreCompileInputs.cache
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Tests.csproj.CopyComplete
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Tests.dll.postsharp
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Tests.dll
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\obj\x64\Debug\DeltaShell.Plugins.GridEditor.Tests.pdb
+C:\engines\DeltaShell\GridEditor_v03\test\DeltaShell.Plugins.GridEditor.Tests\obj\x64\Debug\PostSharpHost.config
