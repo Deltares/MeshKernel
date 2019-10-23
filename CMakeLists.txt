@@ -24,7 +24,7 @@ source_group(include FILES ${all_headers})
 FILE( GLOB all_srcs src/*.cpp)
 source_group(source FILES ${all_srcs})
 
-add_library( gridgeomStateful_dll SHARED ${all_srcs} ${all_headers})
+add_library( gridgeomStateful_dll STATIC ${all_srcs} ${all_headers})
 
 if (UNIX)
 	#set c++11
@@ -80,3 +80,7 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 add_executable( GridGeomTest src/tests/MeshTest.cpp src/tests/OrthogonalizationTest.cpp)
 target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main ) # ${Boost_LIBRARIES} CGAL::CGAL
 add_test( NAME GridGeomTest COMMAND GridGeomTest )
+
+# Add main executable
+add_executable( GridGeomMainTest src/main.cpp )
+target_link_libraries(GridGeomMainTest LINK_PUBLIC gridgeomStateful_dll ) # ${Boost_LIBRARIES} CGAL::CGAL

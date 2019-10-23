@@ -133,6 +133,29 @@ namespace GridGeom
             return dx1 * dx2 + dy1 * dy2;
         }
 
+        // dcosphi
+        double normalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment) override
+        {
+            double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment);
+            double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment);
+
+            double dy1 = getDy(firstPointFirstSegment, secondPointFirstSegment);
+            double dy2 = getDy(firstPointSecondSegment, secondPointSecondSegment);
+
+            double r1 = dx1 * dx1 + dy1 * dy1;
+            double r2 = dx2 * dx2 + dy2 * dy2;
+
+            double cosphi;
+            if (r1 == 0.0 || r2 == 0.0)
+            {
+                cosphi = doubleMissingValue;
+            }
+
+            cosphi = (dx1 * dx2 + dy1 * dy2) / std::sqrt(r1 * r2);
+            cosphi = std::max(std::min(cosphi, 1.0), -1.0);
+            return cosphi;
+        }
+
 
         bool orthogonalizationComputeLocalCoordinates(const std::vector<size_t>& m_nodesNumEdges, const std::vector<size_t>& numConnectedNodes, std::vector<int>& localCoordinates) override
         {
