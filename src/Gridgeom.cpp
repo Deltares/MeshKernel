@@ -140,4 +140,16 @@ namespace GridGeomApi
         return returnValue == 1 ?  0 : 1;
     }
 
+    GRIDGEOM_API int ggeo_get_orthogonality(int& gridStateId, GeometryListNative& geometryList)
+    {
+        const bool status = orthogonalizationInstances[gridStateId].getOrthogonality(meshInstances[gridStateId], geometryList.zCoordinates);
+        return status == true ? 0 : 1;
+    }
+
+    GRIDGEOM_API int ggeo_get_smoothness(int& gridStateId, GeometryListNative& geometryList)
+    {
+        const bool status = orthogonalizationInstances[gridStateId].getSmoothness(meshInstances[gridStateId], geometryList.zCoordinates);
+        return status == true ? 0 : 1;
+    }
+
 }

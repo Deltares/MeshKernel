@@ -29,6 +29,10 @@ namespace GridGeomApi
         GRIDGEOM_API int ggeo_orthogonalize(int& gridStateId, int& isTriangulationRequired, int& isAccountingForLandBoundariesRequired, int& projectToLandBoundaryOption,
             OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries);
 
+        GRIDGEOM_API int ggeo_get_orthogonality(int& gridStateId, GeometryListNative& geometryList);
+
+        GRIDGEOM_API int ggeo_get_smoothness(int& gridStateId, GeometryListNative& geometryList);
+
         GRIDGEOM_API int ggeo_get_mesh(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
         
         GRIDGEOM_API int ggeo_orthogonalize_initialize(int& gridStateId);

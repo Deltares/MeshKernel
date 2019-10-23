@@ -475,6 +475,7 @@ src/OperationsSpherical.cpp -text
 src/Orthogonalization.cpp -text
 src/Orthogonalization.hpp -text
 src/OrthogonalizationParametersNative.hpp -text
+src/main.cpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/MeshTest.cpp -text
 src/tests/OrthogonalizationTest.cpp -text

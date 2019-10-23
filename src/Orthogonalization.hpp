@@ -20,6 +20,12 @@ namespace GridGeom
         bool innerIteration(Mesh& mesh);
 
         bool finalizeOuterIteration(Mesh& mesh);
+
+        /// @brief retrive orthogonality
+        bool getOrthogonality(const Mesh& mesh, double* orthogonality);
+
+        /// @brief retrive smoothness
+        bool getSmoothness(const Mesh& mesh, double* smoothness);
     
     private:
 

@@ -66,23 +66,31 @@ bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
     bool state = true;
     for (size_t outerIter = 0; outerIter < orthogonalizationOuterIterations; outerIter++)
     {
-        if (state) 
+        if (state)
+        {
             state = prapareOuterIteration(mesh);
+        }
+
 
         for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
         {
             for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
             {
-                if (state) 
+                if (state)
+                {
                     state = innerIteration(mesh);
-
+                }
+                    
             } // inner iter, inner iteration
 
         } // boundary iter
 
         //update mu
-        if (state) 
+        if (state)
+        {
             state = finalizeOuterIteration(mesh);
+        }
+            
     }// outer iter
 
     return true;
@@ -1598,5 +1606,61 @@ bool GridGeom::Orthogonalization::saveTopology(int currentNode,
         m_nodeTopologyMapping[currentNode] = topologyIndex;
     }
 
+    return true;
+}
+
+bool GridGeom::Orthogonalization::getOrthogonality(const Mesh& mesh, double* orthogonality)
+{
+    for(int e=0; e < mesh.m_edges.size() ; e++)
+    {
+        orthogonality[e] = doubleMissingValue;
+        int firstVertex = mesh.m_edges[e].first;
+        int secondVertex = mesh.m_edges[e].second;
+
+        if (firstVertex!=0 && secondVertex !=0)
+        {
+            if (e < mesh.m_edgesNumFaces.size() && mesh.m_edgesNumFaces[e]==2 )
+            {
+                orthogonality[e] = mesh.m_operations->normalizedInnerProductTwoSegments(mesh.m_nodes[firstVertex], mesh.m_nodes[secondVertex],
+                    mesh.m_facesCircumcenters[mesh.m_edgesFaces[e][0]], mesh.m_facesCircumcenters[mesh.m_edgesFaces[e][1]]);
+                if (orthogonality[e] != doubleMissingValue)
+                {
+                    orthogonality[e] = std::abs(orthogonality[e]);
+
+                }
+            }
+        }
+    }
+    return true;
+}
+
+bool GridGeom::Orthogonalization::getSmoothness(const Mesh& mesh, double* smoothness)
+{
+    for (int e = 0; e < mesh.m_edges.size(); e++)
+    {
+        smoothness[e] = doubleMissingValue;
+        int firstVertex = mesh.m_edges[e].first;
+        int secondVertex = mesh.m_edges[e].second;
+
+        if (firstVertex != 0 && secondVertex != 0)
+        {
+            if (e < mesh.m_edgesNumFaces.size() && mesh.m_edgesNumFaces[e] == 2)
+            {
+                int leftFace = mesh.m_edgesFaces[e][0];
+                int rightFace = mesh.m_edgesFaces[e][1];
+                double leftFaceArea = mesh.m_faceArea[leftFace];
+                double rightFaceArea = mesh.m_faceArea[rightFace];
+
+                if (leftFaceArea< minimumCellArea || rightFaceArea< minimumCellArea)
+                {
+                    smoothness[e] = rightFaceArea / leftFaceArea;
+                }
+                if (smoothness[e] < 1.0) 
+                {
+                    smoothness[e] = 1.0 / smoothness[e];
+                }
+            }
+        }
+    }
     return true;
 }

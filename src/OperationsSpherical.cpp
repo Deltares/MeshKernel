@@ -175,6 +175,11 @@ namespace GridGeom
             return dotProduct(dx1, dx2, dy1, dy2, dz1, dz2);
         }
 
+        double normalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment) override
+        {
+            return doubleMissingValue;
+        }
+
         //TODO:: comp_local_coords
         bool orthogonalizationComputeLocalCoordinates(const std::vector<size_t>& m_nodesNumEdges, const std::vector<size_t>& numConnectedNodes, std::vector<int>& localCoordinates) override
         {
