@@ -148,7 +148,6 @@ namespace GridGeom
         double outerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment) override
         {
             //TODO: IMPLEMENTATION IS MISSING
-
             return 0.0;
         }
 

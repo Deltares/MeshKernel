@@ -262,5 +262,6 @@ namespace GridGeom
             return isCrossing;
         }
 
+
     };
 }
