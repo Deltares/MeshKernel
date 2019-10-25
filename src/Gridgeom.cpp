@@ -5,13 +5,9 @@
 #include "Gridgeom.hpp"
 #include "Mesh.hpp"
 #include "Orthogonalization.hpp"
-#include "OperationsCartesian.cpp"
-#include "OperationsSpherical.cpp"
 
 static std::vector<GridGeom::Mesh> meshInstances{};
 static std::map<int,GridGeom::Orthogonalization> orthogonalizationInstances;
-static GridGeom::OperationsCartesian operationsCartesian;
-static GridGeom::OperationsSpherical operationsSpherical;
 
 namespace GridGeomApi
 {
