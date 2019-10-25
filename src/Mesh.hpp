@@ -2,7 +2,6 @@
 
 #include <vector>
 #include "Entities.hpp"
-#include "IOperations.hpp"
 
 namespace GridGeom 
 {

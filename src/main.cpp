@@ -1,5 +1,4 @@
 #include "Orthogonalization.hpp"
-#include "OperationsCartesian.cpp"
 #include "Mesh.hpp"
 #include "../thirdParty/netcdf/include/netcdf.h"
 #include <Windows.h>

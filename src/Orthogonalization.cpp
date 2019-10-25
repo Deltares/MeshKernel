@@ -6,7 +6,6 @@
 #include <numeric>
 #include "Operations.cpp"
 #include "Orthogonalization.hpp"
-#include "OperationsCartesian.cpp"
 #include <string>
 
 

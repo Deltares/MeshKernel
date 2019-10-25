@@ -1,6 +1,5 @@
 #ifndef CONSTANTS_CPP
 #define CONSTANTS_CPP
-#include <cmath>
 
 #ifndef M_PI
 #define M_PI (3.14159265358979323846)
