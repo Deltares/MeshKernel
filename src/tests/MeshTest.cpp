@@ -20,9 +20,8 @@ TEST(TestMesh, OneQuadTestConstructor)
     edges.push_back({ 2, 3 });
 
     // now build node-edge mapping  
-    GridGeom::OperationsCartesian operationsCartesian;
-    GridGeom::Mesh mesh(&operationsCartesian);
-    mesh.setMesh(edges, nodes);
+    GridGeom::Mesh mesh;
+    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
 
     auto nodesEdges = mesh.m_nodesEdges;
     auto nodesNumEdges = mesh.m_nodesNumEdges;
@@ -126,9 +125,8 @@ TEST(PerformanceTest, MillionQuads)
     std::cout << "start finding cells " << std::endl;
     start = std::chrono::steady_clock::now();
     // now build node-edge mapping
-    GridGeom::OperationsCartesian operationsCartesian;
-    GridGeom::Mesh mesh(&operationsCartesian);
-    mesh.setMesh(edges, nodes);
+    GridGeom::Mesh mesh;
+    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
 
     end = std::chrono::steady_clock::now();
 

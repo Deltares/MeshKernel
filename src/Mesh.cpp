@@ -11,11 +11,12 @@
 #include "Constants.cpp"
 #include "Operations.cpp"
 
-bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes)
+bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
 {
      //copy edges and nodes
     m_edges = edges;
     m_nodes = nodes;
+    m_projection = projection;
 
     m_nodesNumEdges.resize(m_nodes.size());
     m_nodesEdges.resize(m_nodes.size(), std::vector<size_t>(maximumNumberOfEdgesPerNode, 0));
@@ -147,8 +148,8 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
                 firstNode = node;
             }
 
-            double deltaX = m_operations->getDx(m_nodes[secondNode], m_nodes[firstNode]);
-            double deltaY = m_operations->getDy(m_nodes[secondNode], m_nodes[firstNode]);
+            double deltaX = getDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
+            double deltaY = getDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
             if (abs(deltaX) < GridGeom::minimumDeltaCoordinate && abs(deltaY) < GridGeom::minimumDeltaCoordinate)
             {
                 if (deltaY < 0.0)
@@ -335,6 +336,7 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
     const int maximumNumberCircumcenterIterations = 100;
     for (int f = 0; f < m_facesNodes.size(); f++)
     {
+
         // for triangles, for now assume cartesian kernel
         size_t numberOfFaceNodes = m_facesNodes[f].size();
         double xCenter = 0.0;
@@ -355,7 +357,7 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
         localFace[numberOfFaceNodes] = localFace[0];
         if (numberOfFaceNodes == 3)
         {
-            m_operations->circumcenterOfTriangle(m_nodes[m_facesNodes[f][0]], m_nodes[m_facesNodes[f][1]], m_nodes[m_facesNodes[f][2]], m_facesCircumcenters[f]);
+            circumcenterOfTriangle(m_nodes[m_facesNodes[f][0]], m_nodes[m_facesNodes[f][1]], m_nodes[m_facesNodes[f][2]], m_facesCircumcenters[f], m_projection);
         }
         else
         {
@@ -374,7 +376,7 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
                     if (nextNode == numberOfFaceNodes) nextNode = 0;
                     middlePoints[n].x = 0.5 * (localFace[n].x + localFace[nextNode].x);
                     middlePoints[n].y = 0.5 * (localFace[n].y + localFace[nextNode].y);
-                    m_operations->normalVector(localFace[n], localFace[nextNode], middlePoints[n], normals[n]);
+                    normalVector(localFace[n], localFace[nextNode], middlePoints[n], normals[n], m_projection);
                 }
 
                 Point previousCircumCenter = estimatedCircumCenter;
@@ -387,10 +389,10 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
                         {
                             int nextNode = n + 1;
                             if (nextNode == numberOfFaceNodes) nextNode = 0;
-                            double dx = m_operations->getDx(middlePoints[n], estimatedCircumCenter);
-                            double dy = m_operations->getDy(middlePoints[n], estimatedCircumCenter);
+                            double dx = getDx(middlePoints[n], estimatedCircumCenter, m_projection);
+                            double dy = getDy(middlePoints[n], estimatedCircumCenter, m_projection);
                             double increment = -0.1 * dotProduct(dx, dy, normals[n].x, normals[n].y);
-                            m_operations->add(estimatedCircumCenter, normals[n], increment);
+                            add(estimatedCircumCenter, normals[n], increment, m_projection);
                         }
                     }
                     if (iter > 0 &&
@@ -428,7 +430,7 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
                     if (nextNode == numberOfFaceNodes) nextNode = 0;
                     Point intersection;
                     double crossProduct;
-                    bool isLineCrossing = m_operations->linesCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], false, intersection, crossProduct);
+                    bool isLineCrossing = linesCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], false, intersection, crossProduct, m_projection);
                     if (isLineCrossing)
                     {
                         m_facesCircumcenters[f] = intersection;
@@ -460,7 +462,7 @@ void GridGeom::Mesh::facesAreasAndMassCenters()
         }
         localFace[numberOfFaceNodes] = localFace[0];
         area = 0.0;
-        faceAreaAndCenterOfMass(localFace, numberOfFaceNodes, area, centerOfMass, m_operations);
+        faceAreaAndCenterOfMass(localFace, numberOfFaceNodes, area, centerOfMass, m_projection);
         m_faceArea[f] = area;
         m_facesMassCenters[f].x = centerOfMass.x;
         m_facesMassCenters[f].y = centerOfMass.y;

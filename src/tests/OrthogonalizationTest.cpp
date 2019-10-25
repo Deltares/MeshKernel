@@ -24,9 +24,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationOneQuadOneTriangle)
     edges.push_back({ 3, 1 });
 
     // now build node-edge mapping
-    GridGeom::OperationsCartesian operationsCartesian;
-    GridGeom::Mesh mesh(&operationsCartesian);
-    mesh.setMesh(edges, nodes);
+    GridGeom::Mesh mesh;
+    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
     orthogonalization.initialize(mesh);
@@ -93,9 +92,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationSmallTriangularGrid)
     }
 
     // now build node-edge mapping
-    GridGeom::OperationsCartesian operationsCartesian;
-    GridGeom::Mesh mesh(&operationsCartesian);
-    mesh.setMesh(edges, nodes);
+    GridGeom::Mesh mesh;
+    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
     orthogonalization.initialize(mesh);
@@ -971,9 +969,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationMediumTriangularGrid)
     }
 
     // now build node-edge mapping
-    GridGeom::OperationsCartesian operationsCartesian;
-    GridGeom::Mesh mesh(&operationsCartesian);
-    mesh.setMesh(edges, nodes);
+    GridGeom::Mesh mesh;
+    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
     orthogonalization.initialize(mesh);
@@ -1115,9 +1112,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationLargeTriangularGridAndMeasureRu
     }
 
     // now build node-edge mapping
-    GridGeom::OperationsCartesian operationsCartesian;
-    GridGeom::Mesh mesh(&operationsCartesian);
-    mesh.setMesh(edges, nodes);
+    GridGeom::Mesh mesh;
+    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
     std::cout << "start orthogonalization " << std::endl;
@@ -1174,9 +1170,8 @@ TEST(OrthogonalizationTest, TestOrthogonalizationFourQuads)
     }
 
     // now build node-edge mapping
-    GridGeom::OperationsCartesian operationsCartesian;
-    GridGeom::Mesh mesh(&operationsCartesian);
-    mesh.setMesh(edges, nodes);
+    GridGeom::Mesh mesh;
+    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
     orthogonalization.initialize(mesh);
 }

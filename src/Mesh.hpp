@@ -13,12 +13,7 @@ namespace GridGeom
         {
         }
 
-        explicit Mesh(IOperations* operations)
-            : m_operations(operations)
-        {
-        }
-
-        bool setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes);
+        bool setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
         bool setState();
         bool deleteState();
 
@@ -41,8 +36,6 @@ namespace GridGeom
 
         size_t m_numFaces;                                          // NUMP
         std::vector<double> m_faceArea;                             // Face area
-
-        IOperations* m_operations;                                  // Run-time selection of the operations to perform
         
         //Used for internal state
         std::vector<double> m_nodex;
@@ -51,8 +44,8 @@ namespace GridGeom
         std::vector<int>    m_edgeNodes;
 
         void facesAreasAndMassCenters();
-
         void faceCircumcenters(const double& weightCircumCenter);
+        Projections m_projection;
 
     private:
 
