@@ -58,8 +58,7 @@ namespace GridGeomApi
         // TODO: re-enable switch
         //if (IsGeographic)
         //{
-        meshInstances[gridStateId].m_operations = &operationsCartesian;
-        meshInstances[gridStateId].setMesh(edges, nodes);
+        meshInstances[gridStateId].setMesh(edges, nodes, GridGeom::Projections::cartesian);
         //}
         //else
         //{

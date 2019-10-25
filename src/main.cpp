@@ -18,21 +18,21 @@ int main()
         exit(EXIT_FAILURE);
     }
     std::string env_path = buf;
-    env_path += ";D:\\LUCA\\ENGINES\\GridGeom++\\gridgeom++\\thirdParty\\io_netcdf\\Debug";
+    env_path += ";D:\\LUCA\\ENGINES\\GridGeom++\\lastCheckout\\thirdParty\\netcdf\\bin";
     err = _putenv_s("PATH", env_path.c_str());
     if (err) {
         std::cerr << "`_putenv_s` failed, returned " << err << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    auto netcdf = LoadLibrary("../../thirdParty/io_netcdf/Debug/netcdf.dll");
+    auto netcdf = LoadLibrary("../../thirdParty/netcdf/bin/netcdf.dll");
     if (!netcdf)
     {
         exit(EXIT_FAILURE);
     }
 
     //get the mesh from file
-    std::string c_path{ "D:\\LUCA\\ENGINES\\GridGeom++\\gridgeom++\\tests\\TestOrthogonalizationLargeTriangularGrid_net.nc" };
+    std::string c_path{ "D:\\LUCA\\ENGINES\\GridGeom++\\lastCheckout\\tests\\TestOrthogonalizationLargeTriangularGrid_net.nc" };
     typedef  int(__stdcall* nc_open_dll)(const char *path, int mode, int *ncidp);
     auto nc_open = (nc_open_dll)GetProcAddress(netcdf, "nc_open");
 
@@ -109,17 +109,14 @@ int main()
     }
 
     // now build node-edge mapping
-    GridGeom::OperationsCartesian operationsCartesian;
-    GridGeom::Mesh mesh(&operationsCartesian);
-    mesh.setMesh(edges, nodes);
+    
+    std::cout << "start computing " << std::endl;
+    GridGeom::Mesh mesh;
+    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
-
-    std::cout << "start orthogonalization " << std::endl;
     auto start(std::chrono::steady_clock::now());
-
     orthogonalization.initialize(mesh);
     orthogonalization.iterate(mesh);
-
     auto end(std::chrono::steady_clock::now());
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
     std::cout << "Elapsed time " << duration << " s " << std::endl;
