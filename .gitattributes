@@ -464,14 +464,11 @@ src/Entities.hpp -text
 src/GeometryListNative.hpp -text
 src/Gridgeom.cpp -text
 src/Gridgeom.hpp -text
-src/IOperations.hpp -text
 src/Mesh.cpp -text
 src/Mesh.hpp -text
 src/MeshGeometry.hpp -text
 src/MeshGeometryDimensions.hpp -text
 src/Operations.cpp -text
-src/OperationsCartesian.cpp -text
-src/OperationsSpherical.cpp -text
 src/Orthogonalization.cpp -text
 src/Orthogonalization.hpp -text
 src/OrthogonalizationParametersNative.hpp -text
