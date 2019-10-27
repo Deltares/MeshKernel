@@ -51,6 +51,7 @@ namespace GridGeom
         // Set node admin
         void NodeAdministration();
 
+        //sort_links_ccw
         void SortEdgesInCounterClockWiseOrder();
 
         void findFaces(const int& numEdges);

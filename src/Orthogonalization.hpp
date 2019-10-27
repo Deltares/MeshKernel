@@ -1,6 +1,5 @@
 #pragma once
 
-#define _USE_MATH_DEFINES
 #include <vector>
 #include "Entities.hpp"
 #include "Mesh.hpp"
@@ -146,5 +145,6 @@ namespace GridGeom
         std::vector<double> m_nodeXErrors;
         std::vector<double> m_nodeYErrors;
         std::vector<int>    m_nodeErrorCode;
+
     };
 }
