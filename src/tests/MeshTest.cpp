@@ -1,5 +1,4 @@
 #include "GridGeomTest.hpp"
-#include "../OperationsCartesian.cpp"
 #include "../Mesh.cpp"
 #include <chrono>
 

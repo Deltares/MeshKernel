@@ -1,13 +1,12 @@
 #pragma once
 
-#define _USE_MATH_DEFINES
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include "Operations.cpp"
-#include "Orthogonalization.hpp"
 #include <string>
 
+#include "Operations.cpp"
+#include "Orthogonalization.hpp"
 
 bool GridGeom::Orthogonalization::initialize(const Mesh& mesh)
 {
@@ -123,7 +122,6 @@ bool GridGeom::Orthogonalization::prapareOuterIteration(const Mesh& mesh)
     {
         state = computeWeightsSmoother(mesh);
     }
-
     return state;
 }
 
@@ -165,36 +163,37 @@ bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
         double atpf1Loc = 1.0 - atpfLoc;
 
         double mumat = m_mu;
-        if ((!m_ww2x.empty() && m_ww2x[n][0] != 0.0) && (!m_ww2y.empty() && m_ww2y[n][0] != 0.0))
+        if (!m_ww2x.empty() && m_ww2x[n][0] != 0.0 && m_ww2y[n][0] != 0.0)
         {
             mumat = m_mu * m_ww2Global[n][0] / std::max(m_ww2x[n][0], m_ww2y[n][0]);
         }
 
-        int maxnn = std::max(mesh.m_nodesNumEdges[n] + 1, m_numConnectedNodes[n]);
+        const int maxnn = std::max(mesh.m_nodesNumEdges[n] + 1, m_numConnectedNodes[n]);
         double dx0 = 0.0;
         double dy0 = 0.0;
-        double wwx;
-        double wwy;
-        int k1;
         increments[0] = 0.0;
         increments[1] = 0.0;
         for (int nn = 1; nn < maxnn; nn++)
         {
-            wwx = 0.0;
-            wwy = 0.0;
+            double wwx = 0.0;
+            double wwy = 0.0;
             // Smoother
-            if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && !m_ww2x.empty() && !m_ww2y.empty())
+            if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1)
             {
-                wwx = atpf1Loc * (mumat * m_ww2x[n][nn] + m_ww2Global[n][nn]);
-                wwy = atpf1Loc * (mumat * m_ww2y[n][nn] + m_ww2Global[n][nn]);
-            }
-            else if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1 && m_ww2x.empty() && m_ww2y.empty())
-            {
-                wwx = atpf1Loc * m_ww2Global[n][nn];
-                wwy = atpf1Loc * m_ww2Global[n][nn];
+                if(!m_ww2x.empty())
+                {
+                    wwx = atpf1Loc * (mumat * m_ww2x[n][nn] + m_ww2Global[n][nn]);
+                    wwy = atpf1Loc * (mumat * m_ww2y[n][nn] + m_ww2Global[n][nn]);
+                }
+                else
+                {
+                    wwx = atpf1Loc * m_ww2Global[n][nn];
+                    wwy = atpf1Loc * m_ww2Global[n][nn];
+                }
             }
 
             // Orthogonalizer
+            int k1;
             if (nn < mesh.m_nodesNumEdges[n] + 1)
             {
                 wwx += atpfLoc * m_weights[n][nn - 1];

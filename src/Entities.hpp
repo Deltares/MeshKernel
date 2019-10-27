@@ -3,8 +3,6 @@
 #include <utility>
 #include <vector>
 
-#define _USE_MATH_DEFINES
-
 namespace GridGeom
 {
     enum OperationTypes 

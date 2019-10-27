@@ -17,14 +17,13 @@ int main()
         exit(EXIT_FAILURE);
     }
     std::string env_path = buf;
-    env_path += ";D:\\LUCA\\ENGINES\\GridGeom++\\lastCheckout\\thirdParty\\netcdf\\bin";
     err = _putenv_s("PATH", env_path.c_str());
     if (err) {
         std::cerr << "`_putenv_s` failed, returned " << err << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    auto netcdf = LoadLibrary("../../thirdParty/netcdf/bin/netcdf.dll");
+    auto netcdf = LoadLibrary("netcdf.dll");
     if (!netcdf)
     {
         exit(EXIT_FAILURE);
@@ -110,10 +109,10 @@ int main()
     // now build node-edge mapping
     
     std::cout << "start computing " << std::endl;
+    auto start(std::chrono::steady_clock::now());
     GridGeom::Mesh mesh;
     mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
-    auto start(std::chrono::steady_clock::now());
     orthogonalization.initialize(mesh);
     orthogonalization.iterate(mesh);
     auto end(std::chrono::steady_clock::now());
