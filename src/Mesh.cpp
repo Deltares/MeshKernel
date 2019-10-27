@@ -1,7 +1,6 @@
 // TODO: duplicated face detection issue for large number of edges
 #pragma once
 
-#define _USE_MATH_DEFINES
 #include <vector>
 #include <cmath>
 #include <numeric>

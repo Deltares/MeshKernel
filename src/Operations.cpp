@@ -323,8 +323,8 @@ namespace GridGeom
         }
         if (projection == Projections::spherical)
         {
-            return -1.0;
         }
+        return doubleMissingValue;
     }
 
     //dLINEDIS3
