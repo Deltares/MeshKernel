@@ -1,3 +1,3 @@
 @echo off
-cmake .. -G"Visual Studio 16 2019"
+cmake .. -G"Visual Studio 14 2015"
 pause

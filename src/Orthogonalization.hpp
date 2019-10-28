@@ -70,6 +70,8 @@ namespace GridGeom
         bool saveTopology(int currentNode, const std::vector<int>& sharedFaces, int numSharedFaces, const std::vector<size_t>& connectedNodes, int numConnectedNodes,
             const std::vector<std::vector<size_t>>& faceNodeMapping, const std::vector<double>& xi, const std::vector<double>& eta);
 
+        bool computeIncrements(const Mesh& mesh);
+
         enum class NodeTypes
         {
             internalNode,
@@ -138,6 +140,16 @@ namespace GridGeom
         std::vector<Point> m_orthogonalCoordinates;
         std::vector<int> m_nearestPoints;
         std::vector<Point> m_originalNodes;
+
+        std::vector<int> m_k1;
+        std::vector<double> m_wwx;
+        std::vector<double> m_wwy;
+        std::vector<double> m_increments;
+        std::vector<double> m_rightHandSideCached;
+        std::vector<int> m_startCacheIndex;
+        std::vector<int> m_endCacheIndex;
+        int m_cacheSize = 0;
+        
         double m_mumax;
         double m_mu;
 
