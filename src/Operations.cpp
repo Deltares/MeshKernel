@@ -473,6 +473,43 @@ namespace GridGeom
         return true;
     }
 
+    static bool orthogonalizationComputeDeltasDxDy(int firstNode, int secondNode, double wwx, double wwy, const std::vector<Point>& nodes, double& dx0, double& dy0, const Projections& projection)
+    {
+        if (projection == Projections::cartesian)
+        {
+            dx0 += wwx * (nodes[firstNode].x - nodes[secondNode].x);
+            dy0 += wwy * (nodes[firstNode].y - nodes[secondNode].y);
+        }
+        if (projection == Projections::spherical)
+        {
+            double wwxTransformed = wwx * earth_radius * degrad_hp;
+            double wwyTransformed = wwy * earth_radius * degrad_hp;
+
+            dx0 += dx0 + wwxTransformed * (nodes[firstNode].x - nodes[secondNode].x);
+            dy0 += dy0 + wwyTransformed * (nodes[firstNode].y - nodes[secondNode].y);
+        }
+        return true;
+    }
+
+    static bool orthogonalizationComputeIncrements(double wwx, double wwy, double* increments, const Projections& projection)
+    {
+        if (projection == Projections::cartesian)
+        {
+            increments[0] += wwx;
+            increments[1] += wwy;
+
+        }
+        if (projection == Projections::spherical)
+        {
+            double wwxTransformed = wwx * earth_radius * degrad_hp;
+            double wwyTransformed = wwy * earth_radius * degrad_hp;
+
+            increments[0] += wwxTransformed;
+            increments[1] += wwyTransformed;
+        }
+        return true;
+    }
+
     static bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<Point>& nodes, double& dx0, double& dy0, double* increments, const Projections& projection)
     {
         if (projection == Projections::cartesian)
