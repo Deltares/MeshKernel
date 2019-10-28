@@ -61,14 +61,34 @@ bool GridGeom::Orthogonalization::initialize(const Mesh& mesh)
 bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
 {
     bool state = true;
+
+    m_increments.resize(mesh.m_nodes.size() * 2);
+    m_rightHandSideCached.resize(mesh.m_nodes.size() * 2);
+    m_startCacheIndex.resize(mesh.m_nodes.size());
+    m_endCacheIndex.resize(mesh.m_nodes.size());
+
     for (size_t outerIter = 0; outerIter < orthogonalizationOuterIterations; outerIter++)
     {
         if (state)
         {
             state = prapareOuterIteration(mesh);
         }
-
-
+        if (state && m_cacheSize ==0)
+        {
+            for (int n = 0; n < mesh.m_nodes.size(); n++)
+            {
+                m_startCacheIndex[n] = m_cacheSize;
+                m_cacheSize += std::max(mesh.m_nodesNumEdges[n] + 1, m_numConnectedNodes[n]);
+                m_endCacheIndex[n] = m_cacheSize;
+            }
+            m_k1.resize(m_cacheSize);
+            m_wwx.resize(m_cacheSize);
+            m_wwy.resize(m_cacheSize);
+        }
+		if (state)
+		{
+			state = computeIncrements(mesh);
+		}
         for (size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
         {
             for (size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
@@ -89,6 +109,15 @@ bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
         }
             
     }// outer iter
+
+    m_increments.resize(0);
+    m_rightHandSideCached.resize(0);
+    m_startCacheIndex.resize(0);
+    m_endCacheIndex.resize(0);
+    m_k1.resize(0);
+    m_wwx.resize(0);
+    m_wwy.resize(0);
+    m_cacheSize = 0;
 
     return true;
 }
@@ -140,15 +169,12 @@ bool GridGeom::Orthogonalization::finalizeOuterIteration(Mesh& mesh)
     return true;
 }
 
-
-bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
+bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
 {
-    double rightHandSide[2] { 0.0, 0.0 };
-    double increments[2]{ 0.0, 0.0 };
     double max_aptf = std::max(m_atpf_boundary, m_atpf);
-    
-#pragma omp parallel for private(rightHandSide,increments)
-    for (int n = 0; n < mesh.m_nodes.size(); n++)
+    double increments[2]{ 0.0, 0.0 };
+#pragma omp parallel for private(increments)
+	for (int n = 0, firstCacheIndex = 0; n < mesh.m_nodes.size(); n++, firstCacheIndex = firstCacheIndex + 2)
     {
         if ((m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
         {
@@ -168,12 +194,11 @@ bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
             mumat = m_mu * m_ww2Global[n][0] / std::max(m_ww2x[n][0], m_ww2y[n][0]);
         }
 
-        const int maxnn = std::max(mesh.m_nodesNumEdges[n] + 1, m_numConnectedNodes[n]);
-        double dx0 = 0.0;
-        double dy0 = 0.0;
         increments[0] = 0.0;
         increments[1] = 0.0;
-        for (int nn = 1; nn < maxnn; nn++)
+
+        int maxnn = m_endCacheIndex[n] - m_startCacheIndex[n];
+        for (int nn = 1, cacheIndex = m_startCacheIndex[n]; nn < maxnn; nn++, cacheIndex++)
         {
             double wwx = 0.0;
             double wwy = 0.0;
@@ -191,35 +216,57 @@ bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
                     wwy = atpf1Loc * m_ww2Global[n][nn];
                 }
             }
-
+            
             // Orthogonalizer
-            int k1;
             if (nn < mesh.m_nodesNumEdges[n] + 1)
             {
                 wwx += atpfLoc * m_weights[n][nn - 1];
                 wwy += atpfLoc * m_weights[n][nn - 1];
-                k1 = m_nodesNodes[n][nn - 1];
+                m_k1[cacheIndex] = m_nodesNodes[n][nn - 1];
             }
             else
             {
-                k1 = m_connectedNodes[n][nn];
+                m_k1[cacheIndex] = m_connectedNodes[n][nn];
             }
-
-            orthogonalizationComputeDeltas(k1, n, wwx, wwy, mesh.m_nodes, dx0, dy0, increments, mesh.m_projection);
+            m_wwx[cacheIndex] = wwx;
+            m_wwy[cacheIndex] = wwy;
+            orthogonalizationComputeIncrements(wwx, wwy, increments, mesh.m_projection);
         }
 
-        // combine rhs
-        rightHandSide[0] = atpfLoc * m_rightHandSide[n][0];
-        rightHandSide[1] = atpfLoc * m_rightHandSide[n][1];
+        m_increments[firstCacheIndex] = increments[0];
+        m_increments[firstCacheIndex + 1] = increments[1];
 
-        if (std::abs(increments[0]) > 1e-8 && std::abs(increments[1]) > 1e-8)
+        m_rightHandSideCached[firstCacheIndex] = atpfLoc * m_rightHandSide[n][0];
+        m_rightHandSideCached[firstCacheIndex + 1] = atpfLoc * m_rightHandSide[n][1];
+	}
+	
+	return true;
+}
+
+
+bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
+{
+#pragma omp parallel for
+	for (int n = 0, firstCacheIndex=0; n < mesh.m_nodes.size(); n++, firstCacheIndex= firstCacheIndex + 2)
+    {
+        double dx0 = 0.0;
+        double dy0 = 0.0;
+
+        int maxnn = m_endCacheIndex[n] - m_startCacheIndex[n];
+        for (int nn = 1, cacheIndex = m_startCacheIndex[n]; nn < maxnn; nn++, cacheIndex++)
         {
-            dx0 = (dx0 + rightHandSide[0]) / increments[0];
-            dy0 = (dy0 + rightHandSide[1]) / increments[1];
+            orthogonalizationComputeDeltasDxDy(m_k1[cacheIndex], n, m_wwx[cacheIndex], m_wwy[cacheIndex], mesh.m_nodes, dx0, dy0, mesh.m_projection);
         }
-        orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], m_orthogonalCoordinates[n], mesh.m_projection);
-    } // n, iteration over nodes
+        
+        if (std::abs(m_increments[firstCacheIndex]) > 1e-8 && std::abs(m_increments[firstCacheIndex +1]) > 1e-8)
+        {
+            dx0 = (dx0 + m_rightHandSideCached[firstCacheIndex]) / m_increments[firstCacheIndex];
+            dy0 = (dy0 + m_rightHandSideCached[firstCacheIndex +1]) / m_increments[firstCacheIndex +1];
+        }
 
+        orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], m_orthogonalCoordinates[n], mesh.m_projection);
+    }
+	
     // update mesh node coordinates
     mesh.m_nodes = m_orthogonalCoordinates;
 
