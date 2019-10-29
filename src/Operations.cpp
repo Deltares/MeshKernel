@@ -1,4 +1,3 @@
-#pragma once
 #include <cmath>
 #include <algorithm>
 #include "Entities.hpp"
@@ -423,7 +422,7 @@ namespace GridGeom
         return doubleMissingValue;
     }
 
-    static bool orthogonalizationComputeLocalCoordinates(const std::vector<size_t>& m_nodesNumEdges, const std::vector<size_t>& numConnectedNodes, std::vector<int>& localCoordinates, const Projections& projection)
+    static bool orthogonalizationComputeLocalCoordinates(const std::vector<std::size_t>& m_nodesNumEdges, const std::vector<std::size_t>& numConnectedNodes, std::vector<int>& localCoordinates, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -441,7 +440,7 @@ namespace GridGeom
         return true;
     }
 
-    static bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<size_t>& connectedNodes, const int numNodes, const std::vector<Point>& nodes, std::vector<double>& J, const Projections& projection)
+    static bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<std::size_t>& connectedNodes, const int numNodes, const std::vector<Point>& nodes, std::vector<double>& J, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {

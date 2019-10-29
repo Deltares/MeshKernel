@@ -11,10 +11,6 @@ source_group(source FILES ${all_srcs})
 
 add_library( gridgeomStateful_dll STATIC ${all_srcs} ${all_headers})
 
-MESSAGE(STATUS "CXX version is set to ${cxxVersion}")
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -cxxlib=/opt/gcc/4.9.2")
-
 target_link_libraries(gridgeomStateful_dll LINK_PUBLIC)
 
 #-----------------------------------------------------------------------------------------------------------------#

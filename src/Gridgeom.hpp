@@ -4,10 +4,10 @@
 #include "GeometryListNative.hpp"
 #include "OrthogonalizationParametersNative.hpp"
 
-#ifdef GRIDGEOM_EXPORTS 
+#if defined(_WIN32) 
 #define GRIDGEOM_API __declspec(dllexport)
 #else  
-#define GRIDGEOM_API __declspec(dllimport)   
+#define GRIDGEOM_API __attribute__((visibility("default")))
 #endif 
 
 // contains all mesh instances

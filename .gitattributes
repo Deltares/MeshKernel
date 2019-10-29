@@ -450,7 +450,6 @@ GridEditor/test/DeltaShell.Plugins.GridEditor.Tests/test-data/ValidPolygonFile.p
 GridEditor/test/DeltaShell.Plugins.GridEditor.Tests/test-data/ValidSplineFile.spl -text
 GridEditor/test/DeltaShell.Plugins.GridEditor.Tests/test-data/bendprof_map.nc -text
 build/bootstrap.bat -text
-build/bootstrap.sh -text
 build/postBuild.bat -text
 buildGCC/bootstrap.sh -text
 doc/BudgetEstimateGridGeomInC++.xlsx -text

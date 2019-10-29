@@ -1,6 +1,4 @@
 // TODO: duplicated face detection issue for large number of edges
-#pragma once
-
 #include <vector>
 #include <cmath>
 #include <numeric>
@@ -18,7 +16,7 @@ bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<P
     m_projection = projection;
 
     m_nodesNumEdges.resize(m_nodes.size());
-    m_nodesEdges.resize(m_nodes.size(), std::vector<size_t>(maximumNumberOfEdgesPerNode, 0));
+    m_nodesEdges.resize(m_nodes.size(), std::vector<std::size_t>(maximumNumberOfEdgesPerNode, 0));
     m_edgesNumFaces.resize(m_edges.size());
     m_numFaces = 0;
     m_facesNodes.resize(0);
@@ -110,10 +108,10 @@ bool GridGeom::Mesh::deleteState()
 void GridGeom::Mesh::NodeAdministration()
 {
     // assume no duplicated links
-    for (size_t e = 0; e < m_edges.size(); e++)
+    for (std::size_t e = 0; e < m_edges.size(); e++)
     {
-        const size_t firstNode = m_edges[e].first;
-        const size_t secondNode = m_edges[e].second;
+        const std::size_t firstNode = m_edges[e].first;
+        const std::size_t secondNode = m_edges[e].second;
         m_nodesEdges[firstNode][m_nodesNumEdges[firstNode]] = e;
         m_nodesEdges[secondNode][m_nodesNumEdges[secondNode]] = e;
         m_nodesNumEdges[firstNode]++;
@@ -131,12 +129,12 @@ void GridGeom::Mesh::NodeAdministration()
 void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
 {
     std::vector<double> edgesAngles(GridGeom::maximumNumberOfEdgesPerNode, 0.0);
-    for (size_t node = 0; node < m_nodes.size(); node++)
+    for (std::size_t node = 0; node < m_nodes.size(); node++)
     {
         double phi0 = 0.0;
         double phi;
         std::fill(edgesAngles.begin(), edgesAngles.end(), 0.0);
-        for (size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
+        for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
         {
 
             auto firstNode = m_edges[m_nodesEdges[node][edgeIndex]].first;
@@ -179,12 +177,12 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
         }
 
         // Performing sorting
-        std::vector<size_t> indexes(m_nodesNumEdges[node]);
-        std::vector<size_t> edgeNodeCopy{ m_nodesEdges[node] };
+        std::vector<std::size_t> indexes(m_nodesNumEdges[node]);
+        std::vector<std::size_t> edgeNodeCopy{ m_nodesEdges[node] };
         iota(indexes.begin(), indexes.end(), 0);
-        sort(indexes.begin(), indexes.end(), [&edgesAngles](size_t i1, size_t i2) {return edgesAngles[i1] < edgesAngles[i2]; });
+        sort(indexes.begin(), indexes.end(), [&edgesAngles](std::size_t i1, std::size_t i2) {return edgesAngles[i1] < edgesAngles[i2]; });
 
-        for (size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
+        for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
         {
             m_nodesEdges[node][edgeIndex] = edgeNodeCopy[indexes[edgeIndex]];
         }
@@ -196,18 +194,18 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
 void GridGeom::Mesh::findFaces(const int& numEdges)
 {
 
-    std::vector<size_t> foundEdges(numEdges);
-    std::vector<size_t> foundNodes(numEdges); 
+    std::vector<std::size_t> foundEdges(numEdges);
+    std::vector<std::size_t> foundNodes(numEdges); 
 
-    for (size_t node = 0; node < m_nodes.size(); node++)
+    for (std::size_t node = 0; node < m_nodes.size(); node++)
     {
-        for (size_t firstEdgeLocalIndex = 0; firstEdgeLocalIndex < m_nodesNumEdges[node]; firstEdgeLocalIndex++)
+        for (std::size_t firstEdgeLocalIndex = 0; firstEdgeLocalIndex < m_nodesNumEdges[node]; firstEdgeLocalIndex++)
         {
-            size_t indexFoundNodes = 0;
-            size_t indexFoundEdges = 0;
+            std::size_t indexFoundNodes = 0;
+            std::size_t indexFoundEdges = 0;
 
-            size_t currentEdge = m_nodesEdges[node][firstEdgeLocalIndex];
-            size_t currentNode = node;
+            std::size_t currentEdge = m_nodesEdges[node][firstEdgeLocalIndex];
+            std::size_t currentNode = node;
             foundEdges[indexFoundEdges] = currentEdge;
             foundNodes[indexFoundNodes] = currentNode;
             int numFoundEdges = 1;
@@ -231,7 +229,7 @@ void GridGeom::Mesh::findFaces(const int& numEdges)
                 foundNodes[indexFoundNodes] = currentNode;
 
                 int edgeIndex = 0;
-                for (size_t localEdgeIndex = 0; localEdgeIndex < m_nodesNumEdges[currentNode]; localEdgeIndex++)
+                for (std::size_t localEdgeIndex = 0; localEdgeIndex < m_nodesNumEdges[currentNode]; localEdgeIndex++)
                 {
                     if (m_nodesEdges[currentNode][localEdgeIndex] == currentEdge)
                     {
@@ -269,7 +267,7 @@ void GridGeom::Mesh::findFaces(const int& numEdges)
             {
                 // a cell has been found
                 bool isFaceAlreadyFound = false;
-                for (size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
+                for (std::size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
                 {
                     if (m_edgesNumFaces[foundEdges[localEdgeIndex]] >= 2)
                     {
@@ -283,7 +281,7 @@ void GridGeom::Mesh::findFaces(const int& numEdges)
                 }
 
                 bool allEdgesHaveAFace = true;
-                for (size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
+                for (std::size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
                 {
                     if (m_edgesNumFaces[foundEdges[localEdgeIndex]] < 1)
                     {
@@ -293,7 +291,7 @@ void GridGeom::Mesh::findFaces(const int& numEdges)
                 }
 
                 bool isAnAlreadyFoundBoundaryFace = true;
-                for (size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges - 1; localEdgeIndex++)
+                for (std::size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges - 1; localEdgeIndex++)
                 {
                     if (m_edgesFaces[foundEdges[localEdgeIndex]][0] != m_edgesFaces[foundEdges[localEdgeIndex + 1]][0])
                     {
@@ -309,7 +307,7 @@ void GridGeom::Mesh::findFaces(const int& numEdges)
 
                 // increase m_edgesNumFaces 
                 m_numFaces += 1;
-                for (size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
+                for (std::size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
                 {
                     m_edgesNumFaces[foundEdges[localEdgeIndex]] += 1;
                     const int numFace = m_edgesNumFaces[foundEdges[localEdgeIndex]];
@@ -337,10 +335,10 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
     {
 
         // for triangles, for now assume cartesian kernel
-        size_t numberOfFaceNodes = m_facesNodes[f].size();
+        std::size_t numberOfFaceNodes = m_facesNodes[f].size();
         double xCenter = 0.0;
         double yCenter = 0.0;
-        size_t numberOfInteriorEdges = 0;
+        std::size_t numberOfInteriorEdges = 0;
         for (int n = 0; n < numberOfFaceNodes; n++)
         {
             localFace[n] = m_nodes[m_facesNodes[f][n]];
@@ -453,7 +451,7 @@ void GridGeom::Mesh::facesAreasAndMassCenters()
     double area = 0.0;
     for (int f = 0; f < m_facesNodes.size(); f++)
     {
-        size_t numberOfFaceNodes = m_facesNodes[f].size();
+        std::size_t numberOfFaceNodes = m_facesNodes[f].size();
 
         for (int n = 0; n < numberOfFaceNodes; n++)
         {
