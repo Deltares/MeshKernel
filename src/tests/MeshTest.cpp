@@ -79,7 +79,7 @@ TEST(TestMesh, OneQuadTestConstructor)
 //
 //    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
 //    std::vector<GridGeom::Point> nodes(n * m);
-//    size_t nodeIndex = 0;
+//    std::size_t nodeIndex = 0;
 //    for (int j = 0; j < m; ++j)
 //    {
 //        for (int i = 0; i < n; ++i)
@@ -91,7 +91,7 @@ TEST(TestMesh, OneQuadTestConstructor)
 //    }
 //
 //    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
-//    size_t edgeIndex = 0;
+//    std::size_t edgeIndex = 0;
 //    for (int j = 0; j < m; ++j)
 //    {
 //        for (int i = 0; i < n - 1; ++i)

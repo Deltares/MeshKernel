@@ -37,17 +37,17 @@ namespace GridGeom
         bool computeSmootherOperators(const Mesh& mesh);
 
         /// @brief orthonet_comp_operators, compute coefficient matrix G of gradient at link, compute coefficientmatrix Div of gradient in node, compute coefficientmatrix Az of cell - center in cell
-        bool computeOperatorsNode(const Mesh& mesh, const int currentNode, const size_t& numConnectedNodes, const std::vector<size_t>& connectedNodes, const size_t& numSharedFaces, const std::vector<int>& sharedFaces,
-            const std::vector<double>& xi, const std::vector<double>& eta, const std::vector<std::vector<size_t>>& faceNodeMapping);
+        bool computeOperatorsNode(const Mesh& mesh, const int currentNode, const std::size_t& numConnectedNodes, const std::vector<std::size_t>& connectedNodes, const std::size_t& numSharedFaces, const std::vector<int>& sharedFaces,
+            const std::vector<double>& xi, const std::vector<double>& eta, const std::vector<std::vector<std::size_t>>& faceNodeMapping);
 
         /// @brief orthonet_assign_xieta: assign xiand eta to all nodes in the stencil
-        bool computeXiEta(const Mesh& mesh, int currentNode, const std::vector<int>& sharedFaces, const int& numSharedFaces, const std::vector<size_t>& connectedNodes,
-            const size_t& numConnectedNodes, const std::vector<std::vector<size_t>>& faceNodeMapping, std::vector<double>& xi, std::vector<double>& eta);
+        bool computeXiEta(const Mesh& mesh, int currentNode, const std::vector<int>& sharedFaces, const int& numSharedFaces, const std::vector<std::size_t>& connectedNodes,
+            const std::size_t& numConnectedNodes, const std::vector<std::vector<std::size_t>>& faceNodeMapping, std::vector<double>& xi, std::vector<double>& eta);
 
         bool computeFacesNumEdges(const Mesh& mesh);
 
         /// @brief  computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face.
-        bool orthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<size_t>>& faceNodeMapping);
+        bool orthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<std::size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<std::size_t>>& faceNodeMapping);
 
         double optimalEdgeAngle(int numFaceNodes, double theta1 = -1.0, double theta2 = -1.0, bool isBoundaryEdge = false);
 
@@ -67,8 +67,8 @@ namespace GridGeom
         bool allocateNodeOperators(const int topologyIndex);
 
         /// @brief save only the unique topologies
-        bool saveTopology(int currentNode, const std::vector<int>& sharedFaces, int numSharedFaces, const std::vector<size_t>& connectedNodes, int numConnectedNodes,
-            const std::vector<std::vector<size_t>>& faceNodeMapping, const std::vector<double>& xi, const std::vector<double>& eta);
+        bool saveTopology(int currentNode, const std::vector<int>& sharedFaces, int numSharedFaces, const std::vector<std::size_t>& connectedNodes, int numConnectedNodes,
+            const std::vector<std::vector<std::size_t>>& faceNodeMapping, const std::vector<double>& xi, const std::vector<double>& eta);
 
         bool computeIncrements(const Mesh& mesh);
 
@@ -97,13 +97,13 @@ namespace GridGeom
         std::vector<std::vector<double>> m_topologyXi;
         std::vector<std::vector<double>> m_topologyEta;
         std::vector<std::vector<int>> m_topologySharedFaces;
-        std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping;
-        std::vector < std::vector<size_t>>  m_topologyConnectedNodes;
+        std::vector<std::vector<std::vector<std::size_t>>> m_topologyFaceNodeMapping;
+        std::vector < std::vector<std::size_t>>  m_topologyConnectedNodes;
 
         std::vector<double> m_aspectRatios;
         std::vector<std::vector<double>> m_ww2Global;
-        std::vector<size_t> m_numConnectedNodes;                                 // nmk2, determined from local node administration
-        std::vector<std::vector<size_t>> m_connectedNodes;                       // kk2, determined from local node administration
+        std::vector<std::size_t> m_numConnectedNodes;                                 // nmk2, determined from local node administration
+        std::vector<std::vector<std::size_t>> m_connectedNodes;                       // kk2, determined from local node administration
         std::vector<int> m_localCoordinates;                                     // iloc
                                                                                  
         // run-time options                                                      
@@ -122,7 +122,7 @@ namespace GridGeom
 
         int m_maximumNumConnectedNodes = 0;
         int m_maximumNumSharedFaces = 0;
-        size_t m_maxNumNeighbours;
+        std::size_t m_maxNumNeighbours;
         std::vector< std::vector<int>> m_nodesNodes;                              //node neighbours 
 
         //local caches (avoid re-allocation)
