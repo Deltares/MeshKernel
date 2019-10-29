@@ -2,21 +2,6 @@ project( gridgeomStateful_dll )
 cmake_minimum_required(VERSION 3.1)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-#Boost (Optional)
-#FIND_PACKAGE( Boost )
-
-#Vc SIMD classes (Optional)
-#set(Vc_DIR "thirdParty/Vc/installIntel/lib/cmake/Vc")
-#FIND_PACKAGE( Vc )
-
-#CGAL geometric libraries (Optional)
-#FIND_PACKAGE( Cgal REQUIRED )
-#INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
-
-#EIGEN (Optional) 
-#SET( EIGEN3_INCLUDE_DIR thirdParty/eigen )
-#INCLUDE_DIRECTORIES ( "${EIGEN3_INCLUDE_DIR}" )
-
 #add all headers and cpp files
 FILE( GLOB all_headers src/*.hpp )
 source_group(include FILES ${all_headers})
@@ -78,9 +63,9 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 				 
 # Add tests
 add_executable( GridGeomTest src/tests/MeshTest.cpp src/tests/OrthogonalizationTest.cpp)
-target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main ) # ${Boost_LIBRARIES} CGAL::CGAL
+target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main )
 add_test( NAME GridGeomTest COMMAND GridGeomTest )
 
 # Add main executable
 add_executable( GridGeomMainTest src/main.cpp )
-target_link_libraries(GridGeomMainTest LINK_PUBLIC gridgeomStateful_dll ) # ${Boost_LIBRARIES} CGAL::CGAL
+target_link_libraries(GridGeomMainTest LINK_PUBLIC gridgeomStateful_dll )
