@@ -1037,7 +1037,7 @@
 //    typedef  int(__stdcall* nc_inq_dimid_dll)(int ncid, const char *name, int *idp);
 //    auto nc_inq_dimid = (nc_inq_dimid_dll)GetProcAddress(netcdf, "nc_inq_dimid");
 //
-//    typedef  int(__stdcall* nc_inq_dim_dll)(int ncid, int dimid, char *name, size_t *lenp);
+//    typedef  int(__stdcall* nc_inq_dim_dll)(int ncid, int dimid, char *name, std::size_t *lenp);
 //    auto nc_inq_dim = (nc_inq_dim_dll)GetProcAddress(netcdf, "nc_inq_dim");
 //
 //    typedef  int(__stdcall* nc_inq_varid_dll)(int ncid, const char *name, int *varidp);
@@ -1057,7 +1057,7 @@
 //    int dimid = 0;
 //    err = nc_inq_dimid(ncidp, mesh2dNodes.c_str(), &dimid);
 //    EXPECT_EQ(err, 0.0);
-//    size_t num_nodes;
+//    std::size_t num_nodes;
 //    auto read_name = new char[NC_MAX_NAME];
 //    err = nc_inq_dim(ncidp, dimid, read_name, &num_nodes);
 //    EXPECT_EQ(err, 0.0);
@@ -1066,7 +1066,7 @@
 //    int dimidedges = 0;
 //    err = nc_inq_dimid(ncidp, mesh2dEdges.c_str(), &dimid);
 //    EXPECT_EQ(err, 0.0);
-//    size_t num_edges;
+//    std::size_t num_edges;
 //    err = nc_inq_dim(ncidp, dimid, read_name, &num_edges);
 //    EXPECT_EQ(err, 0.0);
 //
@@ -1140,7 +1140,7 @@
 //
 //    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
 //    std::vector<GridGeom::Point> nodes(n * m);
-//    size_t nodeIndex = 0;
+//    std::size_t nodeIndex = 0;
 //    for (int j = 0; j < m; ++j)
 //    {
 //        for (int i = 0; i < n; ++i)
@@ -1152,7 +1152,7 @@
 //    }
 //
 //    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
-//    size_t edgeIndex = 0;
+//    std::size_t edgeIndex = 0;
 //    for (int j = 0; j < m; ++j)
 //    {
 //        for (int i = 0; i < n - 1; ++i)
