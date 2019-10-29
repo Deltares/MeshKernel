@@ -34,7 +34,7 @@ namespace GridGeom
         std::vector<double> y;
     };
 
-    typedef std::pair<size_t, size_t> Edge;
+    typedef std::pair<std::size_t, std::size_t> Edge;
 
     enum class Projections
     {

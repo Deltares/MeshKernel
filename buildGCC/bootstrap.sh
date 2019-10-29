@@ -1,3 +1,1 @@
-@echo off
-cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
-pause
+cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -cxxlib=/opt/gcc/4.9.2"
