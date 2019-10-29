@@ -1,5 +1,5 @@
 project( gridgeomStateful_dll )
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 2.8)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 #add all headers and cpp files
@@ -11,25 +11,11 @@ source_group(source FILES ${all_srcs})
 
 add_library( gridgeomStateful_dll STATIC ${all_srcs} ${all_headers})
 
-if (UNIX)
-	#set c++11
-	set(cxxVersion "-std=c++11")
-	MESSAGE(STATUS "CXX version is set to ${cxxVersion}")
-	
-	#Release
-    set(CMAKE_C_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C compiler flags for a Release build")
-    set(CMAKE_CXX_FLAGS_RELEASE "-g -O2 ${cxxVersion}" CACHE STRING "List of C++ compiler flags for a Release build")
-	MESSAGE(STATUS "CMAKE_CXX_FLAGS_RELEASE is set to ${CMAKE_CXX_FLAGS_RELEASE}")
+MESSAGE(STATUS "CXX version is set to ${cxxVersion}")
 
-    #Debug
-    set(CMAKE_C_FLAGS_DEBUG"-g -O0 ${preciseFpModel}" CACHE STRING "List of C compiler flags for a Debug build")
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0  ${preciseFpModel} ${cxxVersion}" CACHE STRING "List of C++ compiler flags for a Debug build")
-	MESSAGE(STATUS "CMAKE_CXX_FLAGS_DEBUG is set to ${CMAKE_CXX_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -cxxlib=/opt/gcc/4.9.2")
 
-endif()
-
-add_compile_definitions(GRIDGEOM_EXPORTS)
-target_link_libraries(gridgeomStateful_dll LINK_PUBLIC) #  ${Boost_LIBRARIES} CGAL::CGAL
+target_link_libraries(gridgeomStateful_dll LINK_PUBLIC)
 
 #-----------------------------------------------------------------------------------------------------------------#
 # Google tests 
@@ -66,6 +52,8 @@ add_executable( GridGeomTest src/tests/MeshTest.cpp src/tests/OrthogonalizationT
 target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main )
 add_test( NAME GridGeomTest COMMAND GridGeomTest )
 
+if(WIN32)
 # Add main executable
 add_executable( GridGeomMainTest src/main.cpp )
 target_link_libraries(GridGeomMainTest LINK_PUBLIC gridgeomStateful_dll )
+endif()

@@ -1,7 +1,9 @@
 #include "GridGeomTest.hpp"
 #include "../Orthogonalization.cpp"
 #include "../../thirdParty/netcdf/include/netcdf.h"
+#if defined(_WIN32)
 #include <Windows.h>
+#endif
 #include <chrono>
 
 //TEST(OrthogonalizationTests, TestOrthogonalizationOneQuadOneTriangle)

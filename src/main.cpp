@@ -1,13 +1,19 @@
 #include "Orthogonalization.hpp"
 #include "Mesh.hpp"
 #include "../thirdParty/netcdf/include/netcdf.h"
+
+#if defined(_WIN32)
 #include <Windows.h>
+#endif
+
+
 #include <chrono>
 #include <string>
 #include <iostream>
 
 int main()
 {
+#if defined(_WIN32)
     const std::size_t ENV_BUF_SIZE = 2000;
     char buf[ENV_BUF_SIZE];
     std::size_t bufsize = ENV_BUF_SIZE;
@@ -119,6 +125,6 @@ int main()
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
     std::cout << "Elapsed time " << duration << " s " << std::endl;
     std::cout << "Test finished " << std::endl;
-	
+#endif
 	return 0;
 }
