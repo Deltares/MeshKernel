@@ -126,6 +126,7 @@ namespace GridGeom
             double dx = earth_radius * cosPhi * (secondPointX - firstPointX);
             return dx;
         }
+        return doubleMissingValue;
     }
 
     static double getDy(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
@@ -141,6 +142,7 @@ namespace GridGeom
             double dy = earth_radius * (secondPointY - firstPointY);
             return dy;
         }
+        return doubleMissingValue;
     }
 
     //normalout, Creates the relative unit normal vector to edge 1->2
@@ -204,8 +206,8 @@ namespace GridGeom
         if (projection == Projections::spherical)
         {
             //TODO: IMPLEMENTATION IS MISSING
-            return 0.0;
         }
+        return doubleMissingValue;
     }
 
     //normaloutchk
@@ -228,7 +230,7 @@ namespace GridGeom
                 flippedNormal = false;
             }
         }
-        else
+        if (projection == Projections::spherical)
         {
             //if (JSFERIC.eq.1 . and .jasfer3D.eq.0) xn = xn * cos(dg2rd * 0.5d0 * (y0 + y1)) !normal vector needs to be in Cartesian coordinates
         }
