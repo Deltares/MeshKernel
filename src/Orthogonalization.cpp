@@ -171,8 +171,8 @@ bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
 {
     double max_aptf = std::max(m_atpf_boundary, m_atpf);
     double increments[2]{ 0.0, 0.0 };
-#pragma omp parallel for private(increments)
-	for (int n = 0, firstCacheIndex = 0; n < mesh.m_nodes.size(); n++, firstCacheIndex = firstCacheIndex + 2)
+//#pragma omp parallel for private(increments)
+	for (int n = 0,  firstCacheIndex = 0; n < mesh.m_nodes.size(); n++, firstCacheIndex = firstCacheIndex + 2)
     {
         if ((m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
         {
@@ -244,7 +244,7 @@ bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
 
 bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
 {
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int n = 0, firstCacheIndex=0; n < mesh.m_nodes.size(); n++, firstCacheIndex= firstCacheIndex + 2)
     {
         double dx0 = 0.0;
