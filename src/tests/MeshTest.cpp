@@ -41,10 +41,10 @@ TEST(TestMesh, OneQuadTestConstructor)
     EXPECT_EQ(2, mesh.m_nodesNumEdges[3]);
 
     // the nodes composing the face, in ccw order
-    EXPECT_EQ(0, mesh.m_facesEdges[0][0]);
-    EXPECT_EQ(2, mesh.m_facesEdges[0][1]);
-    EXPECT_EQ(3, mesh.m_facesEdges[0][2]);
-    EXPECT_EQ(1, mesh.m_facesEdges[0][3]);
+    EXPECT_EQ(0, mesh.m_facesNodes[0][0]);
+    EXPECT_EQ(2, mesh.m_facesNodes[0][1]);
+    EXPECT_EQ(3, mesh.m_facesNodes[0][2]);
+    EXPECT_EQ(1, mesh.m_facesNodes[0][3]);
 
     // the edges composing the face, in ccw order
     EXPECT_EQ(0, mesh.m_facesEdges[0][0]);
