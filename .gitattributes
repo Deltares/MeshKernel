@@ -458,6 +458,7 @@ doc/cf-arrays.jpeg -text
 doc/gridgeomInC++.ppt -text
 doc/gridgeomStructure.tif -text
 doc/sent/ProjectPlanGridGeom_Phase1.docx -text
+doc/sent/ProjectplanGridGeomInC++Phase2_V00.docx -text
 src/Constants.cpp -text
 src/Entities.hpp -text
 src/GeometryListNative.hpp -text
