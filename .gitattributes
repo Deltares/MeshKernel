@@ -453,6 +453,7 @@ build/bootstrap.bat -text
 build/postBuild.bat -text
 buildGCC/bootstrap.sh -text
 doc/BudgetEstimateGridGeomInC++.xlsx -text
+doc/BudgetEstimateGridGeomInC++_phase2.xlsx -text
 doc/ProjectplanGridGeomInC++_v00.docx -text
 doc/cf-arrays.jpeg -text
 doc/gridgeomInC++.ppt -text
