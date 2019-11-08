@@ -25,12 +25,30 @@ TEST(OrthogonalizationTests, TestOrthogonalizationOneQuadOneTriangle)
     edges.push_back({ 3, 2 });
     edges.push_back({ 3, 1 });
 
+    int isTriangulationRequired = 0;
+    int isAccountingForLandBoundariesRequired = 0;
+    int projectToLandBoundaryOption = 0;
+    GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
+    GridGeomApi::GeometryListNative geometryListNativePolygon;
+    GridGeomApi::GeometryListNative geometryListNativeLandBoundaries;
+    orthogonalizationParametersNative.InnerIterations = 2;
+    orthogonalizationParametersNative.BoundaryIterations = 25;
+    orthogonalizationParametersNative.OuterIterations = 25;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.975;
+
     // Execute
     GridGeom::Mesh mesh;
     mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
 
     GridGeom::Orthogonalization orthogonalization;
-    orthogonalization.initialize(mesh);
+    orthogonalization.initialize(mesh, 
+        isTriangulationRequired, 
+        isAccountingForLandBoundariesRequired, 
+        projectToLandBoundaryOption,
+        orthogonalizationParametersNative,
+        geometryListNativePolygon,
+        geometryListNativeLandBoundaries);
     orthogonalization.iterate(mesh);
 
     // Assert
@@ -93,12 +111,30 @@ TEST(OrthogonalizationTests, TestOrthogonalizationSmallTriangularGrid)
         edges[i].second -= 1;
     }
 
+    int isTriangulationRequired = 0;
+    int isAccountingForLandBoundariesRequired = 0;
+    int projectToLandBoundaryOption = 0;
+    GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
+    GridGeomApi::GeometryListNative geometryListNativePolygon;
+    GridGeomApi::GeometryListNative geometryListNativeLandBoundaries;
+    orthogonalizationParametersNative.InnerIterations = 2;
+    orthogonalizationParametersNative.BoundaryIterations = 25;
+    orthogonalizationParametersNative.OuterIterations = 25;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.975;
+
     // now build node-edge mapping
     GridGeom::Mesh mesh;
     mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
-    orthogonalization.initialize(mesh);
+    orthogonalization.initialize(mesh,
+        isTriangulationRequired,
+        isAccountingForLandBoundariesRequired,
+        projectToLandBoundaryOption,
+        orthogonalizationParametersNative,
+        geometryListNativePolygon,
+        geometryListNativeLandBoundaries);
 
     orthogonalization.iterate(mesh);
 
@@ -970,12 +1006,31 @@ TEST(OrthogonalizationTests, TestOrthogonalizationMediumTriangularGrid)
         edges[i].second -= 1;
     }
 
+    int isTriangulationRequired = 0;
+    int isAccountingForLandBoundariesRequired = 0;
+    int projectToLandBoundaryOption = 0;
+    GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
+    GridGeomApi::GeometryListNative geometryListNativePolygon;
+    GridGeomApi::GeometryListNative geometryListNativeLandBoundaries;
+    orthogonalizationParametersNative.InnerIterations = 2;
+    orthogonalizationParametersNative.BoundaryIterations = 25;
+    orthogonalizationParametersNative.OuterIterations = 25;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.5;
+
     // now build node-edge mapping
     GridGeom::Mesh mesh;
     mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
-    orthogonalization.initialize(mesh);
+    orthogonalization.initialize(mesh,
+        isTriangulationRequired,
+        isAccountingForLandBoundariesRequired,
+        projectToLandBoundaryOption,
+        orthogonalizationParametersNative,
+        geometryListNativePolygon,
+        geometryListNativeLandBoundaries);
+
     orthogonalization.iterate(mesh);
 
     constexpr double tolerance = 1.5;
@@ -1004,117 +1059,6 @@ TEST(OrthogonalizationTests, TestOrthogonalizationMediumTriangularGrid)
     ASSERT_NEAR(1631.412199601948, mesh.m_nodes[9].y, tolerance);
 
 }
-
-TEST(OrthogonalizationTests, TestOrthogonalizationLargeTriangularGridAndMeasureRuntime)
-{
-    auto netcdf = LoadLibrary("netcdf.dll");
-    if (!netcdf)
-    {
-        exit(EXIT_FAILURE);
-    }
-
-    //get the mesh from file
-    std::string c_path{ "D:\\LUCA\\ENGINES\\GridGeom++\\gridgeom++\\tests\\TestOrthogonalizationLargeTriangularGrid_net.nc" };
-    typedef  int(__stdcall* nc_open_dll)(const char *path, int mode, int *ncidp);
-    auto nc_open = (nc_open_dll)GetProcAddress(netcdf, "nc_open");
-
-    typedef  int(__stdcall* nc_inq_dimid_dll)(int ncid, const char *name, int *idp);
-    auto nc_inq_dimid = (nc_inq_dimid_dll)GetProcAddress(netcdf, "nc_inq_dimid");
-
-    typedef  int(__stdcall* nc_inq_dim_dll)(int ncid, int dimid, char *name, std::size_t *lenp);
-    auto nc_inq_dim = (nc_inq_dim_dll)GetProcAddress(netcdf, "nc_inq_dim");
-
-    typedef  int(__stdcall* nc_inq_varid_dll)(int ncid, const char *name, int *varidp);
-    auto nc_inq_varid = (nc_inq_varid_dll)GetProcAddress(netcdf, "nc_inq_varid");
-
-    typedef  int(__stdcall* nc_get_var_double_dll)(int ncid, int varid, double* ip);
-    auto nc_get_var_double = (nc_get_var_double_dll)GetProcAddress(netcdf, "nc_get_var_double");
-
-    typedef  int(__stdcall * nc_get_var_int_dll)(int ncid, int varid, int* ip);
-    auto nc_get_var_int = (nc_get_var_int_dll)GetProcAddress(netcdf, "nc_get_var_int");
-
-    int ncidp = 0;
-    int err = nc_open(c_path.c_str(), NC_NOWRITE, &ncidp);
-    EXPECT_EQ(err, 0.0);
-
-    std::string mesh2dNodes{ "nNetNode" };
-    int dimid = 0;
-    err = nc_inq_dimid(ncidp, mesh2dNodes.c_str(), &dimid);
-    EXPECT_EQ(err, 0.0);
-    std::size_t num_nodes;
-    auto read_name = new char[NC_MAX_NAME];
-    err = nc_inq_dim(ncidp, dimid, read_name, &num_nodes);
-    EXPECT_EQ(err, 0.0);
-
-    std::string mesh2dEdges{ "nNetLink" };
-    int dimidedges = 0;
-    err = nc_inq_dimid(ncidp, mesh2dEdges.c_str(), &dimid);
-    EXPECT_EQ(err, 0.0);
-    std::size_t num_edges;
-    err = nc_inq_dim(ncidp, dimid, read_name, &num_edges);
-    EXPECT_EQ(err, 0.0);
-
-    std::vector<double> nodeX(num_nodes, 0.0);
-    std::vector<double> nodeY(num_nodes, 0.0);
-    std::string mesh2dNodeX{ "NetNode_x" };
-    int varid = 0;
-    err = nc_inq_varid(ncidp, mesh2dNodeX.c_str(), &varid);
-    EXPECT_EQ(err, 0.0);
-
-    err = nc_get_var_double(ncidp, varid, &nodeX[0]);
-    EXPECT_EQ(err, 0.0);
-
-    std::string mesh2dNodeY{ "NetNode_y" };
-    err = nc_inq_varid(ncidp, mesh2dNodeY.c_str(), &varid);
-    EXPECT_EQ(err, 0.0);
-
-    err = nc_get_var_double(ncidp, varid, &nodeY[0]);
-    EXPECT_EQ(err, 0.0);
-
-    std::string mesh2dEdgeNodes{ "NetLink" };
-    err = nc_inq_varid(ncidp, mesh2dEdgeNodes.c_str(), &varid);
-    EXPECT_EQ(err, 0.0);
-
-    std::vector<int> edge_nodes(num_edges *2, 0.0);
-    err = nc_get_var_int(ncidp, varid, &edge_nodes[0]);
-    EXPECT_EQ(err, 0.0);
-
-    std::vector<GridGeom::Edge> edges(num_edges);
-    std::vector<GridGeom::Point> nodes(num_nodes);
-
-    for (int i = 0; i < nodeX.size(); i++)
-    {
-        nodes[i].x = nodeX[i];
-        nodes[i].y = nodeY[i];
-    }
-
-    int index = 0;
-    for (int i = 0; i < edges.size(); i++)
-    {
-        edges[i].first = edge_nodes[index]-1;
-        index++;
-        edges[i].second = edge_nodes[index]-1;
-        index++;
-    }
-
-    // now build node-edge mapping
-    GridGeom::Mesh mesh;
-    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
-    GridGeom::Orthogonalization orthogonalization;
-
-    std::cout << "start orthogonalization " << std::endl;
-    auto start(std::chrono::steady_clock::now());
-
-    orthogonalization.initialize(mesh);
-    orthogonalization.iterate(mesh);
-
-    auto end(std::chrono::steady_clock::now());
-    auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
-    std::cout << "Elapsed time " << duration << " s " << std::endl;
-    std::cout << "Test finished " << std::endl;
-
-}
-
 
 TEST(OrthogonalizationTests, TestOrthogonalizationFourQuads)
 {
@@ -1155,10 +1099,28 @@ TEST(OrthogonalizationTests, TestOrthogonalizationFourQuads)
         }
     }
 
+    int isTriangulationRequired = 0;
+    int isAccountingForLandBoundariesRequired = 0;
+    int projectToLandBoundaryOption = 0;
+    GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
+    GridGeomApi::GeometryListNative geometryListNativePolygon;
+    GridGeomApi::GeometryListNative geometryListNativeLandBoundaries;
+    orthogonalizationParametersNative.InnerIterations = 2;
+    orthogonalizationParametersNative.BoundaryIterations = 25;
+    orthogonalizationParametersNative.OuterIterations = 25;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.975;
+
     // now build node-edge mapping
     GridGeom::Mesh mesh;
     mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
-    orthogonalization.initialize(mesh);
+    orthogonalization.initialize(mesh,
+        isTriangulationRequired,
+        isAccountingForLandBoundariesRequired,
+        projectToLandBoundaryOption,
+        orthogonalizationParametersNative,
+        geometryListNativePolygon,
+        geometryListNativeLandBoundaries);
 }
 
