@@ -10,7 +10,7 @@
 
 bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
 {
-     //copy edges and nodes
+     // copy edges and nodes
     m_edges = edges;
     m_nodes = nodes;
     m_projection = projection;
@@ -32,7 +32,7 @@ bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<P
         return true;
     }
 
-    //run administration and find the faces    
+    // run administration and find the faces    
     NodeAdministration();
     SortEdgesInCounterClockWiseOrder();
 
@@ -44,17 +44,17 @@ bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<P
     // find mesh circumcenters
     faceCircumcenters(1.0);
 
-    //compute faces areas and centers of mass
+    // compute faces areas and centers of mass
     facesAreasAndMassCenters();
 
-    //return value
+    // return value
     return true;
 };
 
 
 bool GridGeom::Mesh::setState()
 {
-    //Used for internal state
+    // Used for internal state
     if (m_nodes.size() >0)
     {
         m_nodex.resize(m_nodes.size());

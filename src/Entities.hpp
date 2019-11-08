@@ -11,10 +11,6 @@ namespace GridGeom
         sphericalOperations
     };
 
-    // contains a store of static functions
-    template<OperationTypes operationType>
-    struct Operations;
-
     struct Point
     {
         double x;

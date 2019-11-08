@@ -97,7 +97,7 @@ namespace GridGeomApi
 
         GridGeom::Orthogonalization ortogonalization;
         ortogonalization.initialize(meshInstances[gridStateId]);
-        ortogonalization.iterate(meshInstances[gridStateId]);
+        ortogonalization.iterate(meshInstances[gridStateId], orthogonalizationParametersNative.OuterIterations, orthogonalizationParametersNative.BoundaryIterations, orthogonalizationParametersNative.InnerIterations);
         return 0;
     }
 
@@ -111,7 +111,7 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_orthogonalize_prepare_outer_iteration(int& gridStateId)
     {
-        const bool status = orthogonalizationInstances[gridStateId].prapareOuterIteration(meshInstances[gridStateId]);
+        bool status = orthogonalizationInstances[gridStateId].prapareOuterIteration(meshInstances[gridStateId]);
         return status == true ? 0 : 1;
     }
 
