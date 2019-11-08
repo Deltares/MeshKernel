@@ -1,39 +1,28 @@
 #include "Orthogonalization.hpp"
 #include "Mesh.hpp"
 #include "../thirdParty/netcdf/include/netcdf.h"
+#include "Gridgeom.hpp"
 
 #if defined(_WIN32)
 #include <Windows.h>
+#define GRIDGEOM_API __declspec(dllimport)
 #endif
-
 
 #include <chrono>
 #include <string>
 #include <iostream>
 
+using namespace GridGeomApi;
+
 int main()
 {
-#if defined(_WIN32)
-    const std::size_t ENV_BUF_SIZE = 2000;
-    char buf[ENV_BUF_SIZE];
-    std::size_t bufsize = ENV_BUF_SIZE;
-    int err = getenv_s(&bufsize, buf, bufsize, "PATH");
-    if (err)
-    {
-        exit(EXIT_FAILURE);
-    }
-    std::string env_path = buf;
-    err = _putenv_s("PATH", env_path.c_str());
-    if (err) {
-        std::cerr << "`_putenv_s` failed, returned " << err << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
+    std::cout << "load netcdf " << std::endl;
     auto netcdf = LoadLibrary("netcdf.dll");
     if (!netcdf)
     {
         exit(EXIT_FAILURE);
     }
+    std::cout << "netcdf loaded " << netcdf << std::endl;
 
     //get the mesh from file
     std::string c_path{ "D:\\LUCA\\ENGINES\\GridGeom++\\lastCheckout\\tests\\TestOrthogonalizationLargeTriangularGrid_net.nc" };
@@ -56,8 +45,7 @@ int main()
     auto nc_get_var_int = (nc_get_var_int_dll)GetProcAddress(netcdf, "nc_get_var_int");
 
     int ncidp = 0;
-    err = nc_open(c_path.c_str(), NC_NOWRITE, &ncidp);
- 
+    int err = nc_open(c_path.c_str(), NC_NOWRITE, &ncidp);
 
     std::string mesh2dNodes{ "nNetNode" };
     int dimid = 0;
@@ -77,6 +65,7 @@ int main()
 
     std::vector<double> nodeX(num_nodes, 0.0);
     std::vector<double> nodeY(num_nodes, 0.0);
+    std::vector<double> nodeZ(num_nodes, 0.0);
     std::string mesh2dNodeX{ "NetNode_x" };
     int varid = 0;
     err = nc_inq_varid(ncidp, mesh2dNodeX.c_str(), &varid);
@@ -106,25 +95,65 @@ int main()
     int index = 0;
     for (int i = 0; i < edges.size(); i++)
     {
-        edges[i].first = edge_nodes[index] - 1;
+        edge_nodes[index] -= 1;
+        edges[i].first = edge_nodes[index];
+        
         index++;
+        edge_nodes[index] -= 1;
         edges[i].second = edge_nodes[index] - 1;
         index++;
     }
 
     // now build node-edge mapping
-    
-    std::cout << "start computing " << std::endl;
+    auto gridgeom = LoadLibrary("gridgeomStateful_dll.dll");
     auto start(std::chrono::steady_clock::now());
-    GridGeom::Mesh mesh;
-    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
-    GridGeom::Orthogonalization orthogonalization;
-    orthogonalization.initialize(mesh);
-    orthogonalization.iterate(mesh);
+
+    int gridStateId;
+    int ierr = ggeo_new_grid(gridStateId);
+    if (ierr != 0) 
+    {
+        std::cout << "ggeo_new_grid failed " << std::endl;
+        return 0;
+    }
+
+    MeshGeometryDimensions meshGeometryDimensions;
+    meshGeometryDimensions.numnode = num_nodes;
+    meshGeometryDimensions.numedge = num_edges;
+
+    MeshGeometry meshGeometry;
+    meshGeometry.nodex = &nodeX[0];
+    meshGeometry.nodey = &nodeY[0];
+    meshGeometry.nodez = &nodeZ[0];
+    meshGeometry.edge_nodes = &edge_nodes[0];
+
+    ierr = ggeo_set_state(gridStateId, meshGeometryDimensions, meshGeometry, false);
+
+    if (ierr != 0)
+    {
+        std::cout << "ggeo_set_state failed " << std::endl;
+        return 0;
+    }
+
+    int isTriangulationRequired = 0;
+    int isAccountingForLandBoundariesRequired = 0;
+    int projectToLandBoundaryOption = 0;
+    OrthogonalizationParametersNative orthogonalizationParametersNative;
+    GeometryListNative geometryListNativePolygon;
+    GeometryListNative geometryListNativeLandBoundaries;
+    ierr = ggeo_orthogonalize(gridStateId, isTriangulationRequired, isAccountingForLandBoundariesRequired, projectToLandBoundaryOption,
+        orthogonalizationParametersNative, geometryListNativePolygon, geometryListNativeLandBoundaries);
+
+    if (ierr != 0)
+    {
+        std::cout << "ggeo_orthogonalize failed " << std::endl;
+        return 0;
+    }
+
     auto end(std::chrono::steady_clock::now());
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
+
     std::cout << "Elapsed time " << duration << " s " << std::endl;
     std::cout << "Test finished " << std::endl;
-#endif
+
 	return 0;
 }

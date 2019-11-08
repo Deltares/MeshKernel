@@ -12,7 +12,7 @@ namespace GridGeom
         
         bool initialize(const Mesh& mesh);
 
-        bool iterate(Mesh& mesh);
+        bool iterate(Mesh& mesh, int orthogonalizationOuterIterations, int orthogonalizationBoundaryIterations, int orthogonalizationInnerIterations);
 
         bool prapareOuterIteration(const Mesh& mesh);
 
@@ -72,6 +72,10 @@ namespace GridGeom
 
         bool computeIncrements(const Mesh& mesh);
 
+        bool allocateCaches(const Mesh& mesh);
+
+        bool deallocateCaches();
+
         enum class NodeTypes
         {
             internalNode,
@@ -102,8 +106,8 @@ namespace GridGeom
 
         std::vector<double> m_aspectRatios;
         std::vector<std::vector<double>> m_ww2Global;
-        std::vector<std::size_t> m_numConnectedNodes;                                 // nmk2, determined from local node administration
-        std::vector<std::vector<std::size_t>> m_connectedNodes;                       // kk2, determined from local node administration
+        std::vector<std::size_t> m_numConnectedNodes;                            // nmk2, determined from local node administration
+        std::vector<std::vector<std::size_t>> m_connectedNodes;                  // kk2, determined from local node administration
         std::vector<int> m_localCoordinates;                                     // iloc
                                                                                  
         // run-time options                                                      
