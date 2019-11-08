@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Annotations;
 using DelftTools.Utils.Collections;
 using DelftTools.Utils.Collections.Extensions;
 using DeltaShell.Plugins.GridEditor.Data;
@@ -807,10 +808,16 @@ namespace DeltaShell.Plugins.GridEditor.Gui.Controllers
             {
                 var stopwatch = new Stopwatch();
 
-                int orthogonalizationOuterIterations = 2;
-                int orthogonalizationBoundaryIterations = 25;
-                int orthogonalizationInnerIterations = 25;
-                bool state = api.OrthogonalizationInitialize(gridGeomId);
+                int orthogonalizationOuterIterations = OrthogonalizationParameters.OuterIterations;
+                int orthogonalizationBoundaryIterations = OrthogonalizationParameters.BoundaryIterations;
+                int orthogonalizationInnerIterations = OrthogonalizationParameters.InnerIterations;
+                bool state = api.OrthogonalizationInitialize(gridGeomId, 
+                     IsTriangulationRequired, 
+                     IsAccountingForLandBoundariesRequired,
+                     ProjectToLandBoundaryOption,
+                     OrthogonalizationParameters,
+                     polygons,
+                     landBoundaries);
 
                 var totalProgressIterations = orthogonalizationOuterIterations * orthogonalizationBoundaryIterations;
                 RibbonState.IsTaskRunning = true;
@@ -821,6 +828,7 @@ namespace DeltaShell.Plugins.GridEditor.Gui.Controllers
                 {
                         state = api.OrthogonalizationPrepareOuterIteration(gridGeomId);
 
+                    int elapsedBoundaryIter = 0;
                     for (int boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
                     {
                         await Task.Run(() =>
@@ -835,10 +843,12 @@ namespace DeltaShell.Plugins.GridEditor.Gui.Controllers
                         RibbonState?.UpdateProgress((float)(currentIteration/totalProgressIterations * 100.0),$"Iteration {currentIteration} of {totalProgressIterations}");
 
                         // show intermediate results
-                        if (stopwatch.Elapsed > new TimeSpan(0, 0, 0, 0, 200))
+                        elapsedBoundaryIter++;
+                        if (stopwatch.Elapsed > new TimeSpan(0, 0, 0, 1) && elapsedBoundaryIter> 10)
                         {
                             RefreshGridStateMesh();
-                            stopwatch.Reset();
+                            stopwatch.Restart();
+                            elapsedBoundaryIter = 0;
                         }
                         
 

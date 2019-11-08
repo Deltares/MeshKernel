@@ -163,7 +163,7 @@ namespace DeltaShell.Plugins.GridEditor.GridGeomStateful.Native
         internal static extern int Orthogonalization([In] ref int gridStateId, [In] ref int isTriangulationRequired, [In] ref int isAccountingForLandBoundariesRequired, [In] ref int projectToLandBoundaryOption, [In] ref OrthogonalizationParametersNative orthogonalizationParametersNative, [In] ref GeometryListNative geometryListNativePolygon, [In] ref GeometryListNative geometryListNativeLandBoundaries);
 
         [DllImport(GridGeomStatefulDllName, EntryPoint = "ggeo_orthogonalize_initialize", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int OrthogonalizationInitialize([In] ref int gridStateId);
+        internal static extern int OrthogonalizationInitialize([In] ref int gridStateId, [In] ref int isTriangulationRequired, [In] ref int isAccountingForLandBoundariesRequired, [In] ref int projectToLandBoundaryOption, [In] ref OrthogonalizationParametersNative orthogonalizationParametersNative, [In] ref GeometryListNative geometryListNativePolygon, [In] ref GeometryListNative geometryListNativeLandBoundaries);
 
         [DllImport(GridGeomStatefulDllName, EntryPoint = "ggeo_orthogonalize_prepare_outer_iteration", CallingConvention = CallingConvention.Cdecl)]
         internal static extern int OrthogonalizationPrepareOuterIteration([In] ref int gridStateId);

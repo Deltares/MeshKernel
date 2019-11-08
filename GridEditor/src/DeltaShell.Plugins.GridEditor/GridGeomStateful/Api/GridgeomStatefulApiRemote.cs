@@ -199,10 +199,14 @@ namespace DeltaShell.Plugins.GridEditor.GridGeomStateful.Api
             return gridgeomStatefulApi.DeleteMeshWithOptions(gridGeomId, ref disposableGeometryListOut, ref deletionOption);
         }
 
-        public bool OrthogonalizationInitialize(int gridGeomId)
+        public bool OrthogonalizationInitialize(int gridStateId, bool isTriangulationRequired, bool isAccountingForLandBoundariesRequired,
+            ProjectToLandBoundaryOptions projectToLandBoundaryOption,
+            OrthogonalizationParameters orthogonalizationParameters, DisposableGeometryList geometryListNativePolygon, DisposableGeometryList geometryListNativeLandBoundaries)
         {
-            return gridgeomStatefulApi.OrthogonalizationInitialize(gridGeomId);
+            return gridgeomStatefulApi.OrthogonalizationInitialize(gridStateId, isTriangulationRequired, isAccountingForLandBoundariesRequired,
+                projectToLandBoundaryOption, orthogonalizationParameters, geometryListNativePolygon, geometryListNativeLandBoundaries);
         }
+
 
         public bool OrthogonalizationPrepareOuterIteration(int gridGeomId)
         {
