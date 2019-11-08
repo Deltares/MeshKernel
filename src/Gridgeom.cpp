@@ -94,17 +94,35 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_orthogonalize(int& gridStateId, int& isTriangulationRequired, int& isAccountingForLandBoundariesRequired, int& projectToLandBoundaryOption,
         OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
     {
-
         GridGeom::Orthogonalization ortogonalization;
-        ortogonalization.initialize(meshInstances[gridStateId]);
-        ortogonalization.iterate(meshInstances[gridStateId], orthogonalizationParametersNative.OuterIterations, orthogonalizationParametersNative.BoundaryIterations, orthogonalizationParametersNative.InnerIterations);
+        ortogonalization.initialize(meshInstances[gridStateId],
+            isTriangulationRequired,
+            isAccountingForLandBoundariesRequired,
+            projectToLandBoundaryOption,
+            orthogonalizationParametersNative,
+            geometryListNativePolygon,
+            geometryListNativeLandBoundaries);
+        ortogonalization.iterate(meshInstances[gridStateId]);
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_orthogonalize_initialize(int& gridStateId)
+    GRIDGEOM_API int ggeo_orthogonalize_initialize(int& gridStateId,
+        int& isTriangulationRequired,
+        int& isAccountingForLandBoundariesRequired,
+        int& projectToLandBoundaryOption,
+        OrthogonalizationParametersNative& orthogonalizationParametersNative,
+        GeometryListNative& geometryListNativePolygon,
+        GeometryListNative& geometryListNativeLandBoundaries)
     {
         GridGeom::Orthogonalization ortogonalization;
-        ortogonalization.initialize(meshInstances[gridStateId]);
+        ortogonalization.initialize(meshInstances[gridStateId], 
+            isTriangulationRequired,
+            isAccountingForLandBoundariesRequired,
+            projectToLandBoundaryOption,
+            orthogonalizationParametersNative,
+            geometryListNativePolygon,
+            geometryListNativeLandBoundaries);
+
         orthogonalizationInstances[gridStateId] = ortogonalization;
         return 0;
     }
