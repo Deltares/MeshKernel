@@ -289,7 +289,10 @@ namespace DeltaShell.Plugins.GridEditor.GridGeomStateful.Api
         bool DeleteMeshWithOptions(int gridGeomId, ref DisposableGeometryList disposableGeometryListOut, ref int deletionOption);
 
 
-        bool OrthogonalizationInitialize(int gridGeomId);
+        bool OrthogonalizationInitialize(int gridStateId, bool isTriangulationRequired, bool isAccountingForLandBoundariesRequired,
+            ProjectToLandBoundaryOptions projectToLandBoundaryOption,
+            OrthogonalizationParameters orthogonalizationParameters, DisposableGeometryList geometryListNativePolygon,
+            DisposableGeometryList geometryListNativeLandBoundaries);
 
         bool OrthogonalizationPrepareOuterIteration(int gridGeomId);
 
