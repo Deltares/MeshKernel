@@ -6,7 +6,13 @@
 #include "Operations.cpp"
 #include "Orthogonalization.hpp"
 
-bool GridGeom::Orthogonalization::initialize(const Mesh& mesh)
+bool GridGeom::Orthogonalization::initialize(const Mesh& mesh,
+    int& isTriangulationRequired,
+    int& isAccountingForLandBoundariesRequired,
+    int& projectToLandBoundaryOption,
+    GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
+    GridGeomApi::GeometryListNative& geometryListNativePolygon,
+    GridGeomApi::GeometryListNative& geometryListNativeLandBoundaries)
 {
     m_maxNumNeighbours = *(std::max_element(mesh.m_nodesNumEdges.begin(), mesh.m_nodesNumEdges.end()));
     m_maxNumNeighbours += 1;
@@ -52,22 +58,27 @@ bool GridGeom::Orthogonalization::initialize(const Mesh& mesh)
     m_originalNodes = mesh.m_nodes;
     m_orthogonalCoordinates = mesh.m_nodes;
 
+    // algorithm settings
+    m_orthogonalizationToSmoothingFactor = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor;
+    m_orthogonalizationToSmoothingFactorBoundary = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary;
+    m_smoothorarea = orthogonalizationParametersNative.Smoothorarea;
+
     return true;
 }
 
-bool GridGeom::Orthogonalization::iterate(Mesh& mesh, int orthogonalizationOuterIterations, int orthogonalizationBoundaryIterations, int orthogonalizationInnerIterations)
+bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
 {
     bool state = true;
 
-    for (std::size_t outerIter = 0; outerIter < orthogonalizationOuterIterations; outerIter++)
+    for (std::size_t outerIter = 0; outerIter < m_orthogonalizationOuterIterations; outerIter++)
     {
         if (state)
         {
             state = prapareOuterIteration(mesh);
         }
-        for (std::size_t boundaryIter = 0; boundaryIter < orthogonalizationBoundaryIterations; boundaryIter++)
+        for (std::size_t boundaryIter = 0; boundaryIter < m_orthogonalizationBoundaryIterations; boundaryIter++)
         {
-            for (std::size_t innerIter = 0; innerIter < orthogonalizationInnerIterations; innerIter++)
+            for (std::size_t innerIter = 0; innerIter < m_orthogonalizationInnerIterations; innerIter++)
             {
                 if (state)
                 {
@@ -189,7 +200,7 @@ bool GridGeom::Orthogonalization::finalizeOuterIteration(Mesh& mesh)
 
 bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
 {
-    double max_aptf = std::max(m_atpf_boundary, m_atpf);
+    double max_aptf = std::max(m_orthogonalizationToSmoothingFactorBoundary, m_orthogonalizationToSmoothingFactor);
     double increments[2]{ 0.0, 0.0 };
 #pragma omp parallel for private(increments)
 	for (int n = 0,  firstCacheIndex = 0; n < mesh.m_nodes.size(); n++, firstCacheIndex = firstCacheIndex + 2)
@@ -203,7 +214,7 @@ bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
             continue;
         }
 
-        double atpfLoc = m_nodesTypes[n] == 2 ? max_aptf : m_atpf;
+        double atpfLoc = m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationToSmoothingFactor;
         double atpf1Loc = 1.0 - atpfLoc;
 
         double mumat = m_mu;

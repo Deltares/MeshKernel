@@ -3,6 +3,8 @@
 #include <vector>
 #include "Entities.hpp"
 #include "Mesh.hpp"
+#include "OrthogonalizationParametersNative.hpp"
+#include "GeometryListNative.hpp"
 
 namespace GridGeom
 {
@@ -10,9 +12,15 @@ namespace GridGeom
     {
     public:
         
-        bool initialize(const Mesh& mesh);
+        bool initialize(const Mesh& mesh,
+            int& isTriangulationRequired,
+            int& isAccountingForLandBoundariesRequired,
+            int& projectToLandBoundaryOption,
+            GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
+            GridGeomApi::GeometryListNative& geometryListNativePolygon,
+            GridGeomApi::GeometryListNative& geometryListNativeLandBoundaries);
 
-        bool iterate(Mesh& mesh, int orthogonalizationOuterIterations, int orthogonalizationBoundaryIterations, int orthogonalizationInnerIterations);
+        bool iterate(Mesh& mesh);
 
         bool prapareOuterIteration(const Mesh& mesh);
 
@@ -112,9 +120,12 @@ namespace GridGeom
                                                                                  
         // run-time options                                                      
         bool m_keepCircumcentersAndMassCenters = false;                          
-        double m_atpf = 0.975;                                                   // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
-        double m_atpf_boundary = 1.0;                                            // minimum ATPF on the boundary
+        double m_orthogonalizationToSmoothingFactor = 0.975;                     // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
+        double m_orthogonalizationToSmoothingFactorBoundary = 1.0;               // minimum ATPF on the boundary
         double m_smoothorarea = 1.0;                                             // Factor between smoother(1.0) and area - homogenizer(0.0)
+        int m_orthogonalizationOuterIterations = 2;
+        int m_orthogonalizationBoundaryIterations = 25;
+        int m_orthogonalizationInnerIterations = 25;
 
         static constexpr int m_topologyInitialSize = 10;
         static constexpr double m_thetaTolerance = 1e-4;
