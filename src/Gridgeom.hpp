@@ -5,7 +5,9 @@
 #include "OrthogonalizationParametersNative.hpp"
 
 #if defined(_WIN32) 
+#if !defined(GRIDGEOM_API)
 #define GRIDGEOM_API __declspec(dllexport)
+#endif
 #else  
 #define GRIDGEOM_API __attribute__((visibility("default")))
 #endif 
