@@ -264,9 +264,25 @@ namespace DeltaShell.Plugins.GridEditor.GridGeomStateful.Api
             return GridgeomStatefulDll.DeleteMeshWithOptions(ref gridGeomId, ref geometryListNativeIn, ref  deletionOption) == 0;
         }
 
-        public bool OrthogonalizationInitialize(int gridGeomId)
+        public bool OrthogonalizationInitialize(int gridStateId, bool isTriangulationRequired, bool isAccountingForLandBoundariesRequired,
+            ProjectToLandBoundaryOptions projectToLandBoundaryOption,
+            OrthogonalizationParameters orthogonalizationParameters, DisposableGeometryList geometryListNativePolygon,
+            DisposableGeometryList geometryListNativeLandBoundaries)
         {
-            return GridgeomStatefulDll.OrthogonalizationInitialize(ref gridGeomId) == 0;
+            int isTriangulationRequiredInt = isTriangulationRequired ? 1 : 0;
+            int isAccountingForLandBoundariesRequiredInt = isAccountingForLandBoundariesRequired ? 1 : 0;
+            int projectToLandBoundaryOptionInt = (int)projectToLandBoundaryOption;
+
+            var nativeOrthogonalizationParameters = orthogonalizationParameters.ToOrthogonalizationParametersNative();
+
+            var geometryListPolygon = geometryListNativePolygon?.CreateGeometryListNative() ??
+                                      new GeometryListNative { numberOfCoordinates = 0 };
+            var geometryListLandBoundaries = geometryListNativeLandBoundaries?.CreateGeometryListNative() ??
+                                             new GeometryListNative { numberOfCoordinates = 0 };
+
+            return GridgeomStatefulDll.OrthogonalizationInitialize(ref gridStateId, ref isTriangulationRequiredInt,
+                       ref isAccountingForLandBoundariesRequiredInt, ref projectToLandBoundaryOptionInt,
+                       ref nativeOrthogonalizationParameters, ref geometryListPolygon, ref geometryListLandBoundaries) == 0;
         }
 
         public bool OrthogonalizationPrepareOuterIteration(int gridGeomId)
