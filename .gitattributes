@@ -465,6 +465,8 @@ src/Entities.hpp -text
 src/GeometryListNative.hpp -text
 src/Gridgeom.cpp -text
 src/Gridgeom.hpp -text
+src/LandBoundaries.cpp -text
+src/LandBoundaries.hpp -text
 src/Mesh.cpp -text
 src/Mesh.hpp -text
 src/MeshGeometry.hpp -text
@@ -473,10 +475,12 @@ src/Operations.cpp -text
 src/Orthogonalization.cpp -text
 src/Orthogonalization.hpp -text
 src/OrthogonalizationParametersNative.hpp -text
+src/Polygons.hpp -text
 src/main.cpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/MeshTest.cpp -text
 src/tests/OrthogonalizationTest.cpp -text
+src/tests/PolygonTest.cpp -text
 tests/TestOrthogonalizationLargeTriangularGrid_net.nc -text
 tests/TestOrthogonalizationSmallTriangularGrid_net.nc -text
 thirdParty/eigen/.hg_archival.txt -text
