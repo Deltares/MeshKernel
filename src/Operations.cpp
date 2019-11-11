@@ -50,6 +50,11 @@ namespace GridGeom
     // polygon: vector of points in counter clockwise order
     static bool pointInPolygon(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
     {
+        if (numberOfPolygonPoints == 0)
+        {
+            return true;
+        }
+
         int windingNumber = 0;
         for (int n = 0; n < numberOfPolygonPoints; n++)
         {

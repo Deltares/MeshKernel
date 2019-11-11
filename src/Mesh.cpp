@@ -36,11 +36,9 @@ bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<P
     NodeAdministration();
     SortEdgesInCounterClockWiseOrder();
 
-    for(int numEdgesPerFace =3; numEdgesPerFace<= 4; numEdgesPerFace++)
-    {
-        findFaces(numEdgesPerFace);
-    }
- 
+    // find faces
+    findFaces();
+
     // find mesh circumcenters
     faceCircumcenters(1.0);
 
@@ -190,7 +188,6 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
 }
 
 // find cells
-
 void GridGeom::Mesh::findFaces(const int& numEdges)
 {
 
@@ -322,6 +319,14 @@ void GridGeom::Mesh::findFaces(const int& numEdges)
     }
 }
 
+void GridGeom::Mesh::findFaces()
+{
+    for (int numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
+    {
+        findFaces(numEdgesPerFace);
+    }
+}
+
 
 void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
 {
@@ -439,7 +444,6 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
 
     }
 }
-
 
 void GridGeom::Mesh::facesAreasAndMassCenters()
 {
