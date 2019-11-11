@@ -44,6 +44,7 @@ namespace GridGeom
 
         void facesAreasAndMassCenters();
         void faceCircumcenters(const double& weightCircumCenter);
+        void findFaces();
         Projections m_projection;
 
     private:
@@ -51,9 +52,10 @@ namespace GridGeom
         // Set node admin
         void NodeAdministration();
 
-        //sort_links_ccw
+        // Sort_links_ccw
         void SortEdgesInCounterClockWiseOrder();
 
+        // find cells
         void findFaces(const int& numEdges);
 
     };

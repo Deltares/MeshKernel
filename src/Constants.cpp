@@ -20,6 +20,7 @@ namespace GridGeom
     //mesh constants
     static constexpr double minimumDeltaCoordinate = 1e-14;
     static constexpr int maximumNumberOfEdgesPerNode = 10;
+    static constexpr int maximumNumberOfEdgesPerFace = 6;
     static constexpr int maximumNumberOfNodesPerFace = 8;
     static constexpr int maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4;
     static constexpr double minimumCellArea = 1e-12;
