@@ -8,16 +8,18 @@
 #include "Constants.cpp"
 #include "Operations.cpp"
 
-bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
+bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
 {
      // copy edges and nodes
     m_edges = edges;
     m_nodes = nodes;
     m_projection = projection;
 
+    m_nodesEdges.resize(m_nodes.size(), 
+        std::vector<std::size_t>(maximumNumberOfEdgesPerNode, 0));
     m_nodesNumEdges.resize(m_nodes.size());
-    m_nodesEdges.resize(m_nodes.size(), std::vector<std::size_t>(maximumNumberOfEdgesPerNode, 0));
     m_edgesNumFaces.resize(m_edges.size());
+
     m_numFaces = 0;
     m_facesNodes.resize(0);
     m_facesEdges.resize(0);
@@ -37,20 +39,20 @@ bool GridGeom::Mesh::setMesh(const std::vector<Edge>& edges, const std::vector<P
     SortEdgesInCounterClockWiseOrder();
 
     // find faces
-    findFaces();
+    FindFaces();
 
     // find mesh circumcenters
-    faceCircumcenters(1.0);
+    FaceCircumcenters(1.0);
 
     // compute faces areas and centers of mass
-    facesAreasAndMassCenters();
+    FacesAreasAndMassCenters();
 
     // return value
     return true;
 };
 
 
-bool GridGeom::Mesh::setState()
+bool GridGeom::Mesh::SetFlatCopies()
 {
     // Used for internal state
     if (m_nodes.size() >0)
@@ -84,7 +86,7 @@ bool GridGeom::Mesh::setState()
     return true;
 }
 
-bool GridGeom::Mesh::deleteState()
+bool GridGeom::Mesh::DeleteFlatCopies()
 {
     //Used for internal state
     m_edges.resize(0);
@@ -98,7 +100,7 @@ bool GridGeom::Mesh::deleteState()
     m_facesCircumcenters.resize(0);
     m_facesMassCenters.resize(0);
     m_faceArea.resize(0);
-    setState();
+    SetFlatCopies();
 
     return true;
 }
@@ -188,7 +190,7 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
 }
 
 // find cells
-void GridGeom::Mesh::findFaces(const int& numEdges)
+void GridGeom::Mesh::FindFaces(const int& numEdges)
 {
 
     std::vector<std::size_t> foundEdges(numEdges);
@@ -319,16 +321,16 @@ void GridGeom::Mesh::findFaces(const int& numEdges)
     }
 }
 
-void GridGeom::Mesh::findFaces()
+void GridGeom::Mesh::FindFaces()
 {
     for (int numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
-        findFaces(numEdgesPerFace);
+        FindFaces(numEdgesPerFace);
     }
 }
 
 
-void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
+void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
 {
     m_facesCircumcenters.resize(m_facesNodes.size());
     std::vector<Point> middlePoints(GridGeom::maximumNumberOfNodesPerFace);
@@ -445,7 +447,7 @@ void GridGeom::Mesh::faceCircumcenters(const double& weightCircumCenter)
     }
 }
 
-void GridGeom::Mesh::facesAreasAndMassCenters()
+void GridGeom::Mesh::FacesAreasAndMassCenters()
 {
     // polygon coordinates 
     m_faceArea.resize(m_facesNodes.size());

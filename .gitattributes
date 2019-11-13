@@ -449,6 +449,7 @@ GridEditor/test/DeltaShell.Plugins.GridEditor.Tests/test-data/ValidExportedSplin
 GridEditor/test/DeltaShell.Plugins.GridEditor.Tests/test-data/ValidPolygonFile.pol -text
 GridEditor/test/DeltaShell.Plugins.GridEditor.Tests/test-data/ValidSplineFile.spl -text
 GridEditor/test/DeltaShell.Plugins.GridEditor.Tests/test-data/bendprof_map.nc -text
+build/ClassDiagram.cd -text
 build/bootstrap.bat -text
 build/postBuild.bat -text
 buildGCC/bootstrap.sh -text
@@ -480,6 +481,7 @@ src/OrthogonalizationParametersNative.hpp -text
 src/Polygons.hpp -text
 src/main.cpp -text
 src/tests/GridGeomTest.hpp -text
+src/tests/LandBoundaryTest.cpp -text
 src/tests/MeshTest.cpp -text
 src/tests/OrthogonalizationTest.cpp -text
 src/tests/PolygonTest.cpp -text

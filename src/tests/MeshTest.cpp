@@ -18,7 +18,7 @@ TEST(TestMesh, OneQuadTestConstructor)
 
     // 2 Execution
     GridGeom::Mesh mesh;
-    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     // 3 Validation
     // expect nodesEdges to be sorted ccw
@@ -116,7 +116,7 @@ TEST(TestMesh, OneQuadTestConstructor)
 //    start = std::chrono::steady_clock::now();
 //    // now build node-edge mapping
 //    GridGeom::Mesh mesh;
-//    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
+//    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 //
 //    end = std::chrono::steady_clock::now();
 //
