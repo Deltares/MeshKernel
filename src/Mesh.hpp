@@ -7,16 +7,22 @@ namespace GridGeom
 {
     class Mesh
     {
+
     public:
-        Mesh()
-        {
-        }
 
-        bool setMesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
-        bool setState();
-        bool deleteState();
+        Mesh(){}
 
-        double m_dcenterinside = 1.0;
+        bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
+        
+        bool SetFlatCopies();
+        
+        bool DeleteFlatCopies();
+
+        void FacesAreasAndMassCenters();
+
+        void FaceCircumcenters(const double& weightCircumCenter);
+
+        void FindFaces();
 
         std::vector<Edge>  m_edges;                                 // KN
         std::vector<Point> m_nodes;                                 // KN
@@ -42,9 +48,6 @@ namespace GridGeom
         std::vector<double> m_nodez;
         std::vector<int>    m_edgeNodes;
 
-        void facesAreasAndMassCenters();
-        void faceCircumcenters(const double& weightCircumCenter);
-        void findFaces();
         Projections m_projection;
 
     private:
@@ -56,7 +59,9 @@ namespace GridGeom
         void SortEdgesInCounterClockWiseOrder();
 
         // find cells
-        void findFaces(const int& numEdges);
+        void FindFaces(const int& numEdges);
+
+        double m_dcenterinside = 1.0;
 
     };
 }

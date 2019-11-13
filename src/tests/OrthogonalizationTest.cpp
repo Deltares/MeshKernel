@@ -39,7 +39,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationOneQuadOneTriangle)
 
     // Execute
     GridGeom::Mesh mesh;
-    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     GridGeom::Orthogonalization orthogonalization;
     orthogonalization.initialize(mesh, 
@@ -125,7 +125,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationSmallTriangularGrid)
 
     // now build node-edge mapping
     GridGeom::Mesh mesh;
-    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
     orthogonalization.initialize(mesh,
@@ -1020,7 +1020,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationMediumTriangularGrid)
 
     // now build node-edge mapping
     GridGeom::Mesh mesh;
-    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
     orthogonalization.initialize(mesh,
@@ -1113,7 +1113,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationFourQuads)
 
     // now build node-edge mapping
     GridGeom::Mesh mesh;
-    mesh.setMesh(edges, nodes, GridGeom::Projections::cartesian);
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
     orthogonalization.initialize(mesh,
         isTriangulationRequired,

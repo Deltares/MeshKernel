@@ -40,9 +40,11 @@ source_group(include FILES ${all_headers})
 FILE( GLOB all_srcs src/*.cpp)
 source_group(source FILES ${all_srcs})
 
-add_library( gridgeomStateful_dll STATIC ${all_srcs} ${all_headers})
+add_library( gridgeomStateful_dll SHARED ${all_srcs} ${all_headers})
 target_link_libraries(gridgeomStateful_dll LINK_PUBLIC)
-				 
+
+set(CMAKE_CXX_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C++ compiler flags for a Release build")
+
 # Add tests
 add_executable( GridGeomTest src/tests/MeshTest.cpp src/tests/OrthogonalizationTest.cpp)
 target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main )
