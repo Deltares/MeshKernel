@@ -738,4 +738,32 @@ namespace GridGeom
 
         return true;
     }
+
+    // Memory allocations
+    template<typename T>
+    bool ResizeVector(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
+    {
+        const int currentSize = vectorToResize.size();
+        if (newSize > currentSize)
+        {
+            newSize = std::max(newSize, int(currentSize * 1.2));
+            vectorToResize.resize(newSize, fillValue);
+        }
+        return true;
+    }
+
+    template<typename T>
+    bool AllocateVector(int& newSize, std::vector<T>& vectorToResize)
+    {
+        const int currentSize = vectorToResize.size();
+        if (newSize < currentSize)
+        {
+            return true;
+        }
+        newSize = std::max(10000, int(5 * newSize));
+        vectorToResize.resize(newSize);
+        return true;
+    }
+
+
 }

@@ -19,13 +19,13 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_deallocate_state(int& gridStateId)
     {
-        meshInstances[gridStateId].deleteState();
+        meshInstances[gridStateId].DeleteFlatCopies();
         return 0;
     }
 
     GRIDGEOM_API int ggeo_delete_mesh(int& gridStateId, GeometryListNative& geometryListNativePolygon, int& deletionOption)
     {
-        meshInstances[gridStateId].deleteState();
+        meshInstances[gridStateId].DeleteFlatCopies();
         return 0;
     }
 
@@ -52,12 +52,12 @@ namespace GridGeomApi
         // TODO: re-enable switch
         //if (IsGeographic)
         //{
-        meshInstances[gridStateId].setMesh(edges, nodes, GridGeom::Projections::cartesian);
+        meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::cartesian);
         //}
         //else
         //{
         //    auto instance = std::make_unique<GridGeom::Mesh<GridGeom::OperationTypes::sphericalOperations>>();
-        //    instance->setMesh(edges, nodes);
+        //    instance->Set(edges, nodes);
         //}
 
         return 0;
@@ -66,7 +66,7 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_get_mesh(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
         
-        meshInstances[gridStateId].setState();
+        meshInstances[gridStateId].SetFlatCopies();
 
         meshGeometry.nodex = &meshInstances[gridStateId].m_nodex[0];
         meshGeometry.nodey = &meshInstances[gridStateId].m_nodey[0];

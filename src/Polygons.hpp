@@ -14,20 +14,20 @@ namespace GridGeom
 
     public:
 
-        Polygons() : m_numPolygonNodes(0), m_allocatedSize(0)
+        Polygons() : m_numNodes(0), m_numAllocatedNodes(0)
         {
-            increasePolygon(0);
+            AllocateVector(m_numAllocatedNodes, m_nodes);
         }
 
-        bool SetPolygon(const std::vector<Point>& polygon)
+        bool Set(const std::vector<Point>& polygon)
         {
             // resize if necessary
-            resizeVector(m_numPolygonNodes + 1 + polygon.size(), m_polygonNodes, { doubleMissingValue ,doubleMissingValue });
+            ResizeVector(m_numNodes + 1 + polygon.size(), m_nodes);
 
-            m_polygonNodes[m_numPolygonNodes] = { doubleMissingValue,doubleMissingValue };
-            for (int n = m_numPolygonNodes + 1, nn = 0; nn < polygon.size(); nn++)
+            m_nodes[m_numNodes] = { doubleMissingValue,doubleMissingValue };
+            for (int n = m_numNodes + 1, nn = 0; nn < polygon.size(); nn++)
             {
-                m_polygonNodes[n] = polygon[nn];
+                m_nodes[n] = polygon[nn];
             }
             return true;
         }
@@ -40,79 +40,69 @@ namespace GridGeom
             std::vector<Point>& meshBoundaryPolygon)
         {
             std::vector<bool> isVisited(mesh.m_edges.size());
-            std::vector<int> startingPolygonEdges(mesh.m_edges.size());
+            std::vector<int> boundaryPolygonStarts(mesh.m_edges.size());
 
             meshBoundaryPolygon.resize(mesh.m_nodes.size(), { doubleMissingValue ,doubleMissingValue });
             int meshBoundaryPolygonSize = meshBoundaryPolygon.size();
-            int numNodesBoundaryPolygon = 0;
-            int numPolygonEdges = 0;
+            int numNodesBoundaryPolygons = 0;
+            int numBoundaryPolygons = 0;
 
             for (int e = 0; e < mesh.m_edges.size(); e++)
             {
-                if (isVisited[e])
+                if (isVisited[e] || mesh.m_edgesNumFaces[e] != 1)
                 {
                     continue;
                 }
 
-                if (mesh.m_edgesNumFaces[e] != 1)
-                {
-                    continue;
-                }
+                const int first = mesh.m_edges[e].first;
+                const int second = mesh.m_edges[e].second;
+                const auto firstPoint = mesh.m_nodes[first];
+                const auto secondPoint = mesh.m_nodes[second];
 
-                int first = mesh.m_edges[e].first;
-                int second = mesh.m_edges[e].second;
-                auto firstPoint = mesh.m_nodes[first];
-                auto secondPoint = mesh.m_nodes[second];
-
-                bool inHullFirst = pointInPolygon(mesh.m_nodes[first], m_polygonNodes, m_numPolygonNodes);
-                bool inHullSecond = pointInPolygon(mesh.m_nodes[second], m_polygonNodes, m_numPolygonNodes);
+                bool inHullFirst = pointInPolygon(mesh.m_nodes[first], m_nodes, m_numNodes);
+                bool inHullSecond = pointInPolygon(mesh.m_nodes[second], m_nodes, m_numNodes);
 
                 if (!inHullFirst && !inHullSecond)
                 {
                     continue;
                 }
 
-                resizeVector(numNodesBoundaryPolygon + 3, meshBoundaryPolygon, { doubleMissingValue, doubleMissingValue });
+                ResizeVector(numNodesBoundaryPolygons + 3, meshBoundaryPolygon);
 
                 //Start a new polyline
-                if (numNodesBoundaryPolygon > 0)
+                if (numNodesBoundaryPolygons > 0)
                 {
-                    numNodesBoundaryPolygon++;
+                    numNodesBoundaryPolygons++;
                 }
 
-                startingPolygonEdges[numPolygonEdges] = numNodesBoundaryPolygon;
+                boundaryPolygonStarts[numBoundaryPolygons] = numNodesBoundaryPolygons;
+                numBoundaryPolygons++;
 
-                const int startPolygonEdges = numNodesBoundaryPolygon;
+                const int startPolygonEdges = numNodesBoundaryPolygons;
                 const int nodeStart = first;
 
-
-                meshBoundaryPolygon[numNodesBoundaryPolygon] = firstPoint;
-                numNodesBoundaryPolygon++;
-                meshBoundaryPolygon[numNodesBoundaryPolygon] = secondPoint;
+                meshBoundaryPolygon[numNodesBoundaryPolygons] = firstPoint;
+                numNodesBoundaryPolygons++;
+                meshBoundaryPolygon[numNodesBoundaryPolygons] = secondPoint;
 
                 isVisited[e] = true;
-                numPolygonEdges++;
 
+                // walk the current mesh boundary
                 int currentNode = second;
+                WalkBoundary(mesh, isVisited, numNodesBoundaryPolygons, currentNode, meshBoundaryPolygonSize, meshBoundaryPolygon);
 
-                walkBoundary(mesh, isVisited, numNodesBoundaryPolygon, currentNode, meshBoundaryPolygonSize, meshBoundaryPolygon);
+                const int numNodesFirstTail = numNodesBoundaryPolygons;
 
-                int numNodesFirstTail = numNodesBoundaryPolygon;
-
-                // polyline is closed itself
-                if (currentNode == nodeStart)
-                {
-
-                }
-                else
+                // if the boundary polygon is not closed
+                if (currentNode != nodeStart)
                 {
                     //Now grow a polyline starting at the other side of the original link L, i.e., the second tail
                     currentNode = nodeStart;
-                    walkBoundary(mesh, isVisited, numNodesBoundaryPolygon, currentNode, meshBoundaryPolygonSize, meshBoundaryPolygon);
+                    WalkBoundary(mesh, isVisited, numNodesBoundaryPolygons, currentNode, meshBoundaryPolygonSize, meshBoundaryPolygon);
                 }
 
                 // There is a nonempty second tail, so reverse the first tail, so that they connect.
-                if (numNodesBoundaryPolygon > numNodesFirstTail)
+                if (numNodesBoundaryPolygons > numNodesFirstTail)
                 {
                     const int start = startPolygonEdges + std::ceil((numNodesFirstTail - startPolygonEdges + 1) / 2.0);
                     Point backupPoint;
@@ -126,14 +116,17 @@ namespace GridGeom
                 }
             }
 
-            startingPolygonEdges[numPolygonEdges + 1] = numNodesBoundaryPolygon + 2;
+            boundaryPolygonStarts[numBoundaryPolygons] = numNodesBoundaryPolygons + 1;
 
             return true;
         }
 
+        std::vector<Point> m_nodes;             // Polygon nodes
+        int m_numNodes;                         // NPL
+        int m_numAllocatedNodes;                // MAXPOL
     private:
 
-        bool walkBoundary(const Mesh& mesh,
+        bool WalkBoundary(const Mesh& mesh,
             std::vector<bool>& isVisited,
             int& numNodesBoundaryPolygon,
             int& currentNode,
@@ -143,7 +136,7 @@ namespace GridGeom
             int ee = 0;
             while(ee < mesh.m_nodesNumEdges[currentNode])
             {
-                bool inHull = pointInPolygon(mesh.m_nodes[currentNode], m_polygonNodes, m_numPolygonNodes);
+                bool inHull = pointInPolygon(mesh.m_nodes[currentNode], m_nodes, m_numNodes);
 
                 if (!inHull)
                 {
@@ -174,7 +167,7 @@ namespace GridGeom
 
                 numNodesBoundaryPolygon++;
 
-                resizeVector(numNodesBoundaryPolygon, meshBoundaryPolygon, { doubleMissingValue , doubleMissingValue });
+                ResizeVector(numNodesBoundaryPolygon, meshBoundaryPolygon);
 
                 meshBoundaryPolygon[numNodesBoundaryPolygon] = mesh.m_nodes[currentNode];
 
@@ -182,37 +175,6 @@ namespace GridGeom
             }
             return true;
         }
-
-        template<typename T>
-        bool resizeVector(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
-        {
-            int currentSize = vectorToResize.size();
-            if (newSize > currentSize)
-            {
-                currentSize = std::max(newSize, int(currentSize * 1.2));
-                vectorToResize.resize(currentSize, fillValue);
-            }
-            return true;
-        }
-
-        bool increasePolygon(int newSize)
-        {
-            int currentSize = m_polygonNodes.size();
-            if (newSize < currentSize)
-            {
-                return true;
-            }
-
-            m_allocatedSize = std::max(10000, int(5 * newSize));
-            m_polygonNodes.resize(m_allocatedSize, { doubleMissingValue,doubleMissingValue });
-            return true;
-        }
-
-
-        std::vector<Point> m_polygonNodes;  // Polygon nodes
-        int m_numPolygonNodes;              // NPL
-        int m_allocatedSize;                // MAXPOL
-
     };
 
 }

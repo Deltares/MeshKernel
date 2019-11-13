@@ -1,9 +1,9 @@
 #include "GridGeomTest.hpp"
-#include "../Polygons.hpp"
+#include "../LandBoundaries.hpp"
 
-TEST(PolygonTests, MeshBoundaryToPolygon)
+TEST(LandBoundariesTests, LandBoundaryAdministration)
 {
-    //One gets the edges
+    // Prepare
     std::vector<GridGeom::Point> nodes;
 
     nodes.push_back(GridGeom::Point{ 322.252624511719,454.880187988281 });
@@ -18,7 +18,6 @@ TEST(PolygonTests, MeshBoundaryToPolygon)
     nodes.push_back(GridGeom::Point{ 423.569603308318,326.17986967523 });
 
     std::vector<GridGeom::Edge> edges;
-    // Local edges
     edges.push_back({ 3, 9 });
     edges.push_back({ 9, 2 });
     edges.push_back({ 2, 3 });
@@ -46,15 +45,24 @@ TEST(PolygonTests, MeshBoundaryToPolygon)
         edges[i].second -= 1;
     }
 
-    // now build node-edge mapping
     GridGeom::Mesh mesh;
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
+    GridGeom::LandBoundaries landboundaries(mesh.m_projection);
+    std::vector<GridGeom::Point> landBoundaryPolygon
+    {
+        { 222.621918, 382.651917 },
+        { 316.206177, 461.190796 },
+        { 350.811279, 465.102692 },
+        { 510.295715, 438.923065 }
+    };
+
     GridGeom::Polygons polygons;
-    const std::vector<GridGeom::Point> polygon;
-    std::vector<GridGeom::Point> meshBoundaryPolygon;
-    polygons.Set(polygon);
-    polygons.MeshBoundaryToPolygon(mesh, 0, 1, meshBoundaryPolygon);
+
+    // Execute
+    landboundaries.Set(landBoundaryPolygon);
+    landboundaries.Administrate(mesh, polygons);
+
 
 
     //constexpr double tolerance = 1e-2;
