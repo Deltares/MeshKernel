@@ -1,5 +1,4 @@
 #include "GridGeomTest.hpp"
-#include "../Mesh.cpp"
 #include <chrono>
 
 TEST(TestMesh, OneQuadTestConstructor) 
@@ -15,9 +14,11 @@ TEST(TestMesh, OneQuadTestConstructor)
     edges.push_back({ 1, 3 });
     edges.push_back({ 0, 1 });
     edges.push_back({ 2, 3 });
+    
+    GridGeom::Mesh mesh;
 
     // 2 Execution
-    GridGeom::Mesh mesh;
+    
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     // 3 Validation
@@ -69,69 +70,69 @@ TEST(TestMesh, OneQuadTestConstructor)
     EXPECT_EQ(-1, mesh.m_edgesFaces[3][1]);
 }
 
-//TEST(PerformanceTest, MillionQuads)
-//{
-//    const int n = 1001; //x
-//    const int m = 1001; //y
-//
-//    //std::cout << "start adding edges " << std::endl;
-//    auto start(std::chrono::steady_clock::now());
-//
-//    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-//    std::vector<GridGeom::Point> nodes(n * m);
-//    std::size_t nodeIndex = 0;
-//    for (int j = 0; j < m; ++j)
-//    {
-//        for (int i = 0; i < n; ++i)
-//        {
-//            indexesValues[i][j] = i + j * n;
-//            nodes[nodeIndex] = { (double)i, (double)j };
-//            nodeIndex++;
-//        }
-//    }
-//
-//    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
-//    std::size_t edgeIndex = 0;
-//    for (int j = 0; j < m; ++j)
-//    {
-//        for (int i = 0; i < n - 1; ++i)
-//        {
-//            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
-//            edgeIndex++;
-//        }
-//    }
-//
-//    for (int j = 0; j < m - 1; ++j)
-//    {
-//        for (int i = 0; i < n; ++i)
-//        {
-//            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
-//            edgeIndex++;
-//        }
-//    }
-//    auto end(std::chrono::steady_clock::now());
-//    //std::cout << "Elapsed time " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << std::endl;
-//
-//    //std::cout << "start finding cells " << std::endl;
-//    start = std::chrono::steady_clock::now();
-//    // now build node-edge mapping
-//    GridGeom::Mesh mesh;
-//    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
-//
-//    end = std::chrono::steady_clock::now();
-//
-//    double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
-//    //std::cout << "Elapsed time " << elapsedTime << " s " << std::endl;
-//
-//    // the number of found faces is
-//    auto faces = mesh.m_facesNodes;
-//    //std::cout << "Number of found cells " << faces.size() << std::endl;
-//    //std::cout << "First face " << faces[0][0] << " " << faces[0][1] << " " << faces[0][2] << " " << faces[0][3] << std::endl;
-//    //std::cout << "Second face " << faces[1][0] << " " << faces[1][1] << " " << faces[1][2] << " " << faces[1][3] << std::endl;
-//
-//    // to beat fortran interactor, we need to perform the entire administration in less than 1.5 seconds
-//    EXPECT_LE(elapsedTime, 1.5);
-//}
+TEST(PerformanceTest, MillionQuads)
+{
+    const int n = 1001; //x
+    const int m = 1001; //y
+
+    //std::cout << "start adding edges " << std::endl;
+    auto start(std::chrono::steady_clock::now());
+
+    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
+    std::vector<GridGeom::Point> nodes(n * m);
+    std::size_t nodeIndex = 0;
+    for (int j = 0; j < m; ++j)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            indexesValues[i][j] = i + j * n;
+            nodes[nodeIndex] = { (double)i, (double)j };
+            nodeIndex++;
+        }
+    }
+
+    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::size_t edgeIndex = 0;
+    for (int j = 0; j < m; ++j)
+    {
+        for (int i = 0; i < n - 1; ++i)
+        {
+            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
+            edgeIndex++;
+        }
+    }
+
+    for (int j = 0; j < m - 1; ++j)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
+            edgeIndex++;
+        }
+    }
+    auto end(std::chrono::steady_clock::now());
+    //std::cout << "Elapsed time " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << std::endl;
+
+    //std::cout << "start finding cells " << std::endl;
+    start = std::chrono::steady_clock::now();
+    // now build node-edge mapping
+    GridGeom::Mesh mesh;
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    end = std::chrono::steady_clock::now();
+
+    double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
+    std::cout << "Elapsed time " << elapsedTime << " s " << std::endl;
+
+    // the number of found faces is
+    //auto faces = mesh.m_facesNodes;
+    std::cout << "Number of found cells " << mesh.m_facesNodes.size() << std::endl;
+    //std::cout << "First face " << faces[0][0] << " " << faces[0][1] << " " << faces[0][2] << " " << faces[0][3] << std::endl;
+    //std::cout << "Second face " << faces[1][0] << " " << faces[1][1] << " " << faces[1][2] << " " << faces[1][3] << std::endl;
+
+    // to beat fortran interactor, we need to perform the entire administration in less than 1.5 seconds
+    EXPECT_LE(elapsedTime, 1.5);
+}
 
 //TEST(PerformanceTest, ArrayAccess)
 //{

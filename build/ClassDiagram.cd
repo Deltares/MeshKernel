@@ -2,39 +2,104 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="GridGeom::Mesh">
     <Position X="0.75" Y="0.5" Width="3.75" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
+    <Members>
+      <Field Name="m_dcenterinside" Hidden="true" />
+      <Method Name="NodeAdministration" Hidden="true" />
+      <Method Name="SortEdgesInCounterClockWiseOrder" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>ACQ4ABAAAoQAAIAAADEAACAQRAAAABEAARAACADAAQQ=</HashCode>
+      <HashCode>ACQ6AAAAAIQABIIAICEAACAQRAAAABEAARAAAADAAQg=</HashCode>
       <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\Mesh.hpp</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GridGeom::LandBoundaries">
-    <Position X="9.25" Y="2.75" Width="4" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
+    <Position X="9.25" Y="3.25" Width="4" />
+    <Members>
+      <Field Name="m_closeToLandBoundary" Hidden="true" />
+      <Field Name="m_DCLOSE_bound" Hidden="true" />
+      <Field Name="m_DCLOSE_whole" Hidden="true" />
+      <Field Name="m_jleft" Hidden="true" />
+      <Field Name="m_jright" Hidden="true" />
+      <Field Name="m_Ladd_land" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>GJRAAAgRIAAABAgEgAAQAgAACAAAAAAAAAIAAAAIAAA=</HashCode>
+      <HashCode>GJRAAAgRIAAABAgEgAAAAgAACAAAAAIAIAIAAAAIAAA=</HashCode>
       <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\LandBoundaries.hpp</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GridGeom::Polygons">
     <Position X="9.25" Y="0.5" Width="4" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
+    <Members>
+      <Method Name="WalkBoundary" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>AIQAAAAAAAAAAAACAAAAAAAACAAAAAABBQAAAAAAAAA=</HashCode>
+      <HashCode>AAQAAAAAAAAABAAAAAAAAAAACAAAAAABBQAAAACAAAA=</HashCode>
       <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\Polygons.hpp</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GridGeom::Orthogonalization">
     <Position X="4.75" Y="0.5" Width="4" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
+    <Members>
+      <Method Name="allocateCaches" Hidden="true" />
+      <Method Name="allocateNodeOperators" Hidden="true" />
+      <Method Name="aspectRatio" Hidden="true" />
+      <Method Name="classifyNodes" Hidden="true" />
+      <Method Name="computeFacesNumEdges" Hidden="true" />
+      <Method Name="computeIncrements" Hidden="true" />
+      <Method Name="computeOperatorsNode" Hidden="true" />
+      <Method Name="computeSmootherOperators" Hidden="true" />
+      <Method Name="computeWeightsOrthogonalizer" Hidden="true" />
+      <Method Name="computeWeightsSmoother" Hidden="true" />
+      <Method Name="computeXiEta" Hidden="true" />
+      <Method Name="deallocateCaches" Hidden="true" />
+      <Method Name="initializeTopologies" Hidden="true" />
+      <Field Name="m_mu" Hidden="true" />
+      <Field Name="m_mumax" Hidden="true" />
+      <Field Name="m_nearestPoints" Hidden="true" />
+      <Field Name="m_nodeErrorCode" Hidden="true" />
+      <Field Name="m_nodesNodes" Hidden="true" />
+      <Field Name="m_nodesTypes" Hidden="true" />
+      <Field Name="m_nodeTopologyMapping" Hidden="true" />
+      <Field Name="m_nodeXErrors" Hidden="true" />
+      <Field Name="m_nodeYErrors" Hidden="true" />
+      <Field Name="m_numConnectedNodes" Hidden="true" />
+      <Field Name="m_numTopologies" Hidden="true" />
+      <Field Name="m_numTopologyFaces" Hidden="true" />
+      <Field Name="m_numTopologyNodes" Hidden="true" />
+      <Field Name="m_originalNodes" Hidden="true" />
+      <Field Name="m_orthogonalCoordinates" Hidden="true" />
+      <Field Name="m_orthogonalizationBoundaryIterations" Hidden="true" />
+      <Field Name="m_orthogonalizationInnerIterations" Hidden="true" />
+      <Field Name="m_orthogonalizationOuterIterations" Hidden="true" />
+      <Field Name="m_orthogonalizationToSmoothingFactor" Hidden="true" />
+      <Field Name="m_orthogonalizationToSmoothingFactorBoundary" Hidden="true" />
+      <Field Name="m_rightHandSide" Hidden="true" />
+      <Field Name="m_rightHandSideCached" Hidden="true" />
+      <Field Name="m_rightXFaceCenter" Hidden="true" />
+      <Field Name="m_rightYFaceCenter" Hidden="true" />
+      <Field Name="m_smoothorarea" Hidden="true" />
+      <Field Name="m_startCacheIndex" Hidden="true" />
+      <Field Name="m_thetaTolerance" Hidden="true" />
+      <Field Name="m_topologyConnectedNodes" Hidden="true" />
+      <Field Name="m_topologyEta" Hidden="true" />
+      <Field Name="m_topologyFaceNodeMapping" Hidden="true" />
+      <Field Name="m_topologyInitialSize" Hidden="true" />
+      <Field Name="m_topologySharedFaces" Hidden="true" />
+      <Field Name="m_topologyXi" Hidden="true" />
+      <Field Name="m_weights" Hidden="true" />
+      <Field Name="m_ww2" Hidden="true" />
+      <Field Name="m_ww2Global" Hidden="true" />
+      <Field Name="m_ww2x" Hidden="true" />
+      <Field Name="m_ww2y" Hidden="true" />
+      <Field Name="m_wwx" Hidden="true" />
+      <Field Name="m_wwy" Hidden="true" />
+      <Field Name="m_xis" Hidden="true" />
+      <Method Name="matrixNorm" Hidden="true" />
+      <Method Name="optimalEdgeAngle" Hidden="true" />
+      <Method Name="orthogonalizationAdministration" Hidden="true" />
+      <Method Name="projectOnBoundary" Hidden="true" />
+      <Method Name="saveTopology" Hidden="true" />
+    </Members>
     <NestedTypes>
       <Enum Name="GridGeom::Orthogonalization::NodeTypes" Collapsed="true">
         <TypeIdentifier>

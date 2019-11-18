@@ -486,6 +486,7 @@ src/tests/MeshTest.cpp -text
 src/tests/OrthogonalizationTest.cpp -text
 src/tests/PolygonTest.cpp -text
 tests/TestOrthogonalizationLargeTriangularGrid_net.nc -text
+tests/TestOrthogonalizationSmallTriangularGrid_landBoundary.ldb -text
 tests/TestOrthogonalizationSmallTriangularGrid_net.nc -text
 thirdParty/eigen/.hg_archival.txt -text
 thirdParty/eigen/.hgeol -text

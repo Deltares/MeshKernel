@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cmath>
 #include <algorithm>
 #include "Entities.hpp"
@@ -5,17 +7,44 @@
 
 namespace GridGeom
 {
-    // coordinate reference indipendent operations
+    // coordinate reference independent operations
     template<typename T>
-    static double dotProduct(const T& dx1, const T& dx2)
+    T dotProduct(T& dx1, T& dx2)
     {
         return dx1 * dx2;
     }
 
     template<typename T, typename... Args>
-    static T dotProduct(T dx1, T dx2, Args... args)
+    T dotProduct(T& dx1, T& dx2, Args&... args)
     {
         return dx1 * dx2 + dotProduct(args...);
+    }
+
+
+    template<typename T>
+    bool ResizeVector(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
+    {
+        const int currentSize = vectorToResize.size();
+        if (newSize > currentSize)
+        {
+            newSize = std::max(newSize, int(currentSize * 1.2));
+            vectorToResize.resize(newSize, fillValue);
+        }
+        return true;
+    }
+
+    template<typename T>
+    bool AllocateVector(int& newSize, std::vector<T>& vectorToResize, T fillValue = T())
+    {
+        const int currentSize = vectorToResize.size();
+        if (newSize < currentSize)
+        {
+            newSize = currentSize;
+            return true;
+        }
+        newSize = std::max(10000, int(5 * newSize));
+        vectorToResize.resize(newSize, fillValue);
+        return true;
     }
 
     // transform 2d spherical to 3d cartesian
@@ -607,6 +636,7 @@ namespace GridGeom
         return true;
     }
 
+    //CROSS
     static bool linesCrossing(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, bool adimensional, Point& intersection, double& crossProduct, const Projections& projection)
     {
         bool isCrossing = false;
@@ -738,32 +768,5 @@ namespace GridGeom
 
         return true;
     }
-
-    // Memory allocations
-    template<typename T>
-    bool ResizeVector(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
-    {
-        const int currentSize = vectorToResize.size();
-        if (newSize > currentSize)
-        {
-            newSize = std::max(newSize, int(currentSize * 1.2));
-            vectorToResize.resize(newSize, fillValue);
-        }
-        return true;
-    }
-
-    template<typename T>
-    bool AllocateVector(int& newSize, std::vector<T>& vectorToResize)
-    {
-        const int currentSize = vectorToResize.size();
-        if (newSize < currentSize)
-        {
-            return true;
-        }
-        newSize = std::max(10000, int(5 * newSize));
-        vectorToResize.resize(newSize);
-        return true;
-    }
-
 
 }

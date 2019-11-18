@@ -53,8 +53,9 @@ TEST(PolygonTests, MeshBoundaryToPolygon)
     GridGeom::Polygons polygons;
     const std::vector<GridGeom::Point> polygon;
     std::vector<GridGeom::Point> meshBoundaryPolygon;
+    int numNodesBoundaryPolygons;
     polygons.Set(polygon);
-    polygons.MeshBoundaryToPolygon(mesh, 0, 1, meshBoundaryPolygon);
+    polygons.MeshBoundaryToPolygon(mesh, 0, 1, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
 
     //constexpr double tolerance = 1e-2;

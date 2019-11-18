@@ -32,20 +32,20 @@ namespace GridGeom
             return true;
         }
 
-
         // copynetboundstopol
         bool MeshBoundaryToPolygon(Mesh& mesh,
             int counterClockWise,
             int setMeshState,
-            std::vector<Point>& meshBoundaryPolygon)
+            std::vector<Point>& meshBoundaryPolygon,
+            int& numNodesBoundaryPolygons)
         {
             std::vector<bool> isVisited(mesh.m_edges.size());
             std::vector<int> boundaryPolygonStarts(mesh.m_edges.size());
+            int numBoundaryPolygons = 0;
+            numNodesBoundaryPolygons = 0;
 
             meshBoundaryPolygon.resize(mesh.m_nodes.size(), { doubleMissingValue ,doubleMissingValue });
             int meshBoundaryPolygonSize = meshBoundaryPolygon.size();
-            int numNodesBoundaryPolygons = 0;
-            int numBoundaryPolygons = 0;
 
             for (int e = 0; e < mesh.m_edges.size(); e++)
             {
