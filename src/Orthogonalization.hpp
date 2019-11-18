@@ -160,7 +160,7 @@ namespace GridGeom
         std::vector<double> m_wwx;
         std::vector<double> m_wwy;
         std::vector<double> m_increments;
-        std::vector<double> m_rightHandSideCached;
+        std::vector<double> m_rightHandSideCache;
         std::vector<int> m_startCacheIndex;
         std::vector<int> m_endCacheIndex;
         int m_cacheSize = 0;

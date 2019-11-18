@@ -152,7 +152,7 @@ bool GridGeom::Orthogonalization::allocateCaches(const Mesh& mesh)
     if (state && m_cacheSize == 0)
     {
         m_increments.resize(mesh.m_nodes.size() * 2);
-        m_rightHandSideCached.resize(mesh.m_nodes.size() * 2);
+        m_rightHandSideCache.resize(mesh.m_nodes.size() * 2);
         m_startCacheIndex.resize(mesh.m_nodes.size());
         m_endCacheIndex.resize(mesh.m_nodes.size());
 
@@ -173,7 +173,7 @@ bool GridGeom::Orthogonalization::allocateCaches(const Mesh& mesh)
 bool GridGeom::Orthogonalization::deallocateCaches() 
 {
     m_increments.resize(0);
-    m_rightHandSideCached.resize(0);
+    m_rightHandSideCache.resize(0);
     m_startCacheIndex.resize(0);
     m_endCacheIndex.resize(0);
     m_k1.resize(0);
@@ -265,8 +265,8 @@ bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
         m_increments[firstCacheIndex] = increments[0];
         m_increments[firstCacheIndex + 1] = increments[1];
 
-        m_rightHandSideCached[firstCacheIndex] = atpfLoc * m_rightHandSide[n][0];
-        m_rightHandSideCached[firstCacheIndex + 1] = atpfLoc * m_rightHandSide[n][1];
+        m_rightHandSideCache[firstCacheIndex] = atpfLoc * m_rightHandSide[n][0];
+        m_rightHandSideCache[firstCacheIndex + 1] = atpfLoc * m_rightHandSide[n][1];
 	}
 	
 	return true;
@@ -289,8 +289,8 @@ bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
         
         if (std::abs(m_increments[firstCacheIndex]) > 1e-8 && std::abs(m_increments[firstCacheIndex +1]) > 1e-8)
         {
-            dx0 = (dx0 + m_rightHandSideCached[firstCacheIndex]) / m_increments[firstCacheIndex];
-            dy0 = (dy0 + m_rightHandSideCached[firstCacheIndex +1]) / m_increments[firstCacheIndex +1];
+            dx0 = (dx0 + m_rightHandSideCache[firstCacheIndex]) / m_increments[firstCacheIndex];
+            dy0 = (dy0 + m_rightHandSideCache[firstCacheIndex +1]) / m_increments[firstCacheIndex +1];
         }
 
         orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], m_orthogonalCoordinates[n], mesh.m_projection);

@@ -1,5 +1,6 @@
 #include "GridGeomTest.hpp"
 #include "../LandBoundaries.hpp"
+#include "../Mesh.cpp"
 
 TEST(LandBoundariesTests, LandBoundaryAdministration)
 {
