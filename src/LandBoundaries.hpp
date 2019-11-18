@@ -39,16 +39,20 @@ namespace GridGeom
         };
 
 
-        bool FindNearestMeshBoundary(const Mesh& mesh, int meshLineOption)
+        bool FindNearestMeshBoundary(const Mesh& mesh, const Polygons& polygon, int meshLineOption)
         {
-            m_nodeMask.resize(mesh.m_nodes.size());
-            m_faceMask.resize(mesh.m_numFaces);
-            m_edgeMask.resize(mesh.m_edges.size());
+            m_nodeMask.resize(mesh.m_nodes.size(), intMissingValue);
+            m_faceMask.resize(mesh.m_numFaces, intMissingValue);
+            m_edgeMask.resize(mesh.m_edges.size(), intMissingValue);
 
             polygonCache.resize(maximumNumberOfNodesPerFace);
             m_landMask = true;
             for (int n = 0; n < m_numSegmentIndexses; n++)
             {
+                int numPaths;
+                int numRejectedPaths;
+                bool successful = MakePath(mesh, polygon, n, numPaths, numRejectedPaths);
+
 
 
             }
@@ -157,8 +161,10 @@ namespace GridGeom
                 begin = found + 1;
             }
 
+
+            int numSegmentIndexses = m_numSegmentIndexses;
             // split the line segments into two to accommodate closed segments
-            for (int i = 0; i < m_numSegmentIndexses; i++)
+            for (int i = 0; i < numSegmentIndexses; i++)
             {
                 int start = m_segmentIndices[i][0];
                 int end = m_segmentIndices[i][1];
@@ -166,9 +172,9 @@ namespace GridGeom
                 {
                     int split = int(start + (end - start) / 2);
                     m_segmentIndices[i][1] = split;
-                    m_numSegmentIndexses++;
                     m_segmentIndices[m_numSegmentIndexses][0] = split;
                     m_segmentIndices[m_numSegmentIndexses][1] = end;
+                    m_numSegmentIndexses++;
                 }
             }
 
@@ -177,32 +183,31 @@ namespace GridGeom
 
 
         //make_path
-        bool MakePath(const Mesh& mesh, int segmentIndex, int& numPaths, int& numRejectedPaths)
+        bool MakePath(const Mesh& mesh, const Polygons& polygon, int landBoundarySegment, int& numPaths, int& numRejectedPaths)
         {
 
-            int jstart = m_segmentIndices[m_numSegmentIndexses][0];
-            int jend = m_segmentIndices[m_numSegmentIndexses][1];
+            int startLandBoundaryIndex = m_segmentIndices[landBoundarySegment][0];
+            int endLandBoundaryIndex = m_segmentIndices[landBoundarySegment][1];
 
-            int jLeft = jend - 1;
-            int jRight = jstart;
+            m_outerLeft = endLandBoundaryIndex - 1;
+            m_outerRight = startLandBoundaryIndex;
 
-            double rLleft = 1.0;
-            double rLright = 0.0;
+            m_leftRatio = 1.0;
+            m_rightRatio = 0.0;
 
-            if (jstart < 0 || jstart >= m_numNode || jstart >= jend)
+            if (startLandBoundaryIndex < 0 || startLandBoundaryIndex >= m_numNode || startLandBoundaryIndex >= endLandBoundaryIndex)
                 return true;
 
-            bool state = ComputeMask(mesh, segmentIndex, jstart, jend, jLeft, jRight, rLleft, rLright);
+            bool state = ComputeMask(mesh, polygon, landBoundarySegment, startLandBoundaryIndex, endLandBoundaryIndex);
 
             //will set jleft, jright, rLleft and rLright
-
             //!write(6, *) numseg, jstart, jend, jleft, jright, rLleft, rLright
 
             return true;
         }
 
         //masknodes
-        bool ComputeMask(const Mesh& mesh, int segmentIndex, int& jstart, int& jend, int& jLeft, int& jRight, double& rLleft, double& rLright)
+        bool ComputeMask(const Mesh& mesh, const Polygons& polygon,int segmentIndex, int& jstart, int& jend)
         {
             std::fill(m_nodeMask.begin(), m_nodeMask.end(), doubleMissingValue);
             //find the start cell for node masking
@@ -267,13 +272,39 @@ namespace GridGeom
                     m_faceMask[crossedFace] = 1;
                 }
 
-                int numFacesMasked = 0;
-                int maskDepth = 0;
+                m_numFacesMasked = 0;
+                m_maskDepth = 0;
+                std::vector<int> landBoundaryFaces{ crossedFace };
+                maskFaces(mesh, landBoundaryFaces, jstart, jend);
 
+                // Mask all nodes of the masked faces
+                for (int f = 0; f < mesh.m_numFaces; f++)
+                {
+                    if (m_faceMask[f] == 1)
+                    {
+                        for (int n = 0; n < mesh.m_facesNodes[f].size(); n++)
+                        {
+                            m_faceMask[mesh.m_facesNodes[f][n]] = segmentIndex;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (auto& e : m_nodeMask)
+                    e = segmentIndex;
+            }
 
-
-
-
+            for (int n = 0; n < mesh.m_nodes.size(); n++)
+            {
+                if(m_nodeMask[n]> 0)
+                {
+                    bool inPolygon = pointInPolygon(mesh.m_nodes[n], polygon.m_nodes, polygon.m_numNodes);
+                    if (!inPolygon)
+                    {
+                        m_nodeMask[n] = 0;
+                    }
+                }
             }
 
             return true;
@@ -312,7 +343,7 @@ namespace GridGeom
         }
 
         //linkcrossedbyland
-        bool isEdgeCloseToLandBoundaries(const Mesh& mesh, int edgeIndex, int startNode, int endNode, int& landBoundaryNode, int& startNodeLandBoundary, int& endNodeLandBoundary)
+        bool isEdgeCloseToLandBoundaries(const Mesh& mesh, int edgeIndex, int endNode, int& landBoundaryNode, int& startNodeLandBoundary, int& endNodeLandBoundary)
         {
             bool isClose = false;
 
@@ -387,11 +418,11 @@ namespace GridGeom
                 if (landBoundaryNode < startNodeLandBoundary)
                 {
                     startNodeLandBoundary = landBoundaryNode;
-                    m_rLleft = std::min(std::max(minimumRatio, 0.0), 1.0);
+                    m_leftRatio = std::min(std::max(minimumRatio, 0.0), 1.0);
                 }
                 else if (landBoundaryNode == startNodeLandBoundary)
                 {
-                    m_rLleft = std::min(std::max(minimumRatio, 0.0), m_rLleft);
+                    m_leftRatio = std::min(std::max(minimumRatio, 0.0), m_leftRatio);
                 }
 
                 // maximum
@@ -399,11 +430,11 @@ namespace GridGeom
                 if (landBoundaryNode > endNodeLandBoundary)
                 {
                     endNodeLandBoundary = landBoundaryNode;
-                    m_rLright = std::min(std::max(maximumRatio, 0.0), 1.0);
+                    m_rightRatio = std::min(std::max(maximumRatio, 0.0), 1.0);
                 }
                 else if (landBoundaryNode == endNodeLandBoundary)
                 {
-                    m_rLright = std::max(std::min(minimumRatio, 1.0), m_rLright);
+                    m_rightRatio = std::max(std::min(minimumRatio, 1.0), m_rightRatio);
                 }
             }
             return isClose;
@@ -413,12 +444,14 @@ namespace GridGeom
 
         bool maskFaces(const Mesh& mesh, std::vector<int>& landBoundaryFaces, int& startNodeLandBoundary, int &endNodeLandBoundary)
         {
-
+            int numNextFaces = 0;
+            std::vector<int> nextFaces(landBoundaryFaces.size(), intMissingValue);
             for (int f = 0; f < landBoundaryFaces.size(); f++)
             {
                 // no start face specified: mask boundary faces only
                 // these are the faces that are close (up to a certain tolerance) by a land boundary
-                if (landBoundaryFaces[f] <= 0)
+                int face = landBoundaryFaces[f];
+                if (face < 0)
                 {
                     int endNode = 0;
                     for (int e = 0; e < mesh.m_edges.size(); e++)
@@ -434,14 +467,14 @@ namespace GridGeom
                         if (firstMeshNodeIndex < 0 || secondMeshNodeIndex < 0)
                             continue;
 
-                        bool isClose = 0;
+                        bool isClose = false;
                         for (int ee = 0; ee < mesh.m_facesEdges[otherFace].size(); ee++)
                         {
                             int landBoundaryNode = 0;
+                            int edge = mesh.m_facesEdges[otherFace][ee];
                             //TODO: to check
                             bool isClose =
-                                isEdgeCloseToLandBoundaries(mesh, mesh.m_facesEdges[otherFace][ee],
-                                    0, endNode, landBoundaryNode, startNodeLandBoundary, endNodeLandBoundary);
+                                isEdgeCloseToLandBoundaries(mesh, edge, endNode, landBoundaryNode, startNodeLandBoundary, endNodeLandBoundary);
 
                             if (isClose)
                             {
@@ -453,9 +486,87 @@ namespace GridGeom
                         {
                             m_faceMask[otherFace] = 1;
                         }
+                    }
+                }
+                else
+                {
+                    const int numEdges = mesh.m_facesEdges.size();
+
+                    if (numEdges < 3)
+                        continue;
+
+                    bool isClose = false;
+                    int isFaceFound = 0;
+                    for (int e = 0; e < numEdges; e++)
+                    {
+                        int edge = mesh.m_facesEdges[face][e];
+                        // If boundary face : no further checking in that direction.
+                        if (mesh.m_edgesNumFaces[edge] <= 1)
+                            continue;
+
+                        int otherFace = mesh.m_edgesFaces[e][0] + mesh.m_edgesFaces[e][1] - face;
+                        if (m_faceMask[otherFace] != intMissingValue)
+                            continue;
+
+
+                        for (int ee = 0; ee < mesh.m_facesEdges[otherFace].size(); ee++)
+                        {
+                            int edge = mesh.m_facesEdges[otherFace][ee];
+
+                            if (m_edgeMask[edge] == 1)
+                            {
+                                // previously visited crossed link
+                                isClose = true;
+                                isFaceFound = 1;
+                            }
+                            else if (m_edgeMask[edge] == 0)
+                            {
+                                // previously visited uncrossed link - check next (kothercell) link
+                                continue;
+                            }
+                            else
+                            {
+                                int endNode = 0;
+                                // linkmask is IMISS, i.e.the link is unvisited, unvisited links
+                                m_edgeMask[edge] = 0;
+
+                                int landBoundaryNode = 0;
+                                //TODO: to check
+                                isClose = isEdgeCloseToLandBoundaries(mesh, edge, endNode, landBoundaryNode, startNodeLandBoundary, endNodeLandBoundary);
+
+                                if (isClose)
+                                {
+                                    m_edgeMask[edge] = 1;
+                                    isFaceFound = 1;
+                                }
+                            }
+                        }
+
+                        // the rest of the loop
+                        m_faceMask[otherFace] = isFaceFound;
+
+                        if(isFaceFound==1)
+                        {
+                            m_numFacesMasked += 1;
+                            numNextFaces += 1;
+                            if (numNextFaces > nextFaces.size())
+                            {
+                                nextFaces.resize(std::max(int(numNextFaces *1.2), 10));
+                            }
+                            nextFaces[numNextFaces] = otherFace;
+                        }
 
                     }
                 }
+            }
+
+            landBoundaryFaces.resize(0);
+
+            if(numNextFaces> 0 )
+            {
+                m_maskDepth += 1;
+                maskFaces(mesh, nextFaces, startNodeLandBoundary, endNodeLandBoundary);
+                m_maskDepth += 1;
             }
 
             return true;
@@ -478,12 +589,13 @@ namespace GridGeom
         std::vector<int> m_edgeMask;                  // masking edges
         std::vector<Point> polygonCache;                 // array of points (e.g. points of a face)
         bool m_landMask = true;
+        int m_numFacesMasked = 0;
+        int m_maskDepth = 0;
 
-
-        int m_jleft;                                  // outer land boundary segments in projection
-        int m_jright;
-        double m_rLleft;                              // fractional location of the projected outer nodes(min and max) on the land boundary segment
-        double m_rLright;
+        int m_outerLeft;                                  // outer land boundary segments in projection
+        int m_outerRight;
+        double m_leftRatio;                              // fractional location of the projected outer nodes(min and max) on the land boundary segment
+        double m_rightRatio;
 
         double m_DCLOSE_bound = 5.0;                  // close - to - landboundary tolerance, netbound only, measured in number of meshwidths
         double m_DCLOSE_whole = 1.0;                  // close - to - landboundary tolerance, whole network, measured in number of meshwidths
