@@ -147,7 +147,7 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
 
             double deltaX = getDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
             double deltaY = getDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
-            if (abs(deltaX) < GridGeom::minimumDeltaCoordinate && abs(deltaY) < GridGeom::minimumDeltaCoordinate)
+            if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
             {
                 if (deltaY < 0.0)
                 {
