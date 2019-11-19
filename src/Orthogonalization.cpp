@@ -642,7 +642,7 @@ bool GridGeom::Orthogonalization::computeOperatorsNode(const Mesh& mesh, const i
         if (numFaceNodes == 3)
         {
             // determine the index of the current stencil node
-            int nodeIndex = findIndex(mesh.m_facesNodes[sharedFaces[f]], std::size_t(currentNode));
+            int nodeIndex = FindIndex(mesh.m_facesNodes[sharedFaces[f]], std::size_t(currentNode));
 
             int nodeLeft = nodeIndex - 1; if (nodeLeft < 0)nodeLeft += numFaceNodes;
             int nodeRight = nodeIndex + 1; if (nodeRight >= numFaceNodes) nodeRight -= numFaceNodes;
@@ -682,7 +682,7 @@ bool GridGeom::Orthogonalization::computeOperatorsNode(const Mesh& mesh, const i
         std::size_t edgeIndex = mesh.m_nodesEdges[currentNode][f];
         int otherNode = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
         int leftFace = mesh.m_edgesFaces[edgeIndex][0];
-        faceLeftIndex = findIndex(sharedFaces, leftFace);
+        faceLeftIndex = FindIndex(sharedFaces, leftFace);
 
         // face not found, this happens when the cell is outside of the polygon
         if (sharedFaces[faceLeftIndex] != leftFace)
@@ -1126,7 +1126,7 @@ bool GridGeom::Orthogonalization::computeXiEta(const Mesh& mesh,
         phi0 = phi0 + 0.5 * dPhi;
 
         // determine the index of the current stencil node
-        int nodeIndex = findIndex(mesh.m_facesNodes[sharedFaces[f]], std::size_t(currentNode));
+        int nodeIndex = FindIndex(mesh.m_facesNodes[sharedFaces[f]], std::size_t(currentNode));
 
         // optimal angle
         dTheta = 2.0 * M_PI / double(numFaceNodes);
@@ -1342,7 +1342,7 @@ bool GridGeom::Orthogonalization::aspectRatio(const Mesh& mesh)
         std::size_t second = mesh.m_edges[e].second;
 
         if (first == second) continue;
-        double edgeLength = distance(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_projection);
+        double edgeLength = Distance(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_projection);
         edgesLength[e] = edgeLength;
 
         Point leftCenter;
@@ -1373,7 +1373,7 @@ bool GridGeom::Orthogonalization::aspectRatio(const Mesh& mesh)
             rightCenter.y = 2.0 * y0_bc - leftCenter.y;
         }
 
-        averageFlowEdgesLength[e] = distance(leftCenter, rightCenter, mesh.m_projection);
+        averageFlowEdgesLength[e] = Distance(leftCenter, rightCenter, mesh.m_projection);
     }
 
     // Compute normal length
@@ -1538,7 +1538,7 @@ bool GridGeom::Orthogonalization::computeWeightsOrthogonalizer(const Mesh& mesh)
                 {
                     //boundary nodes
                     Point neighbouringNode = mesh.m_nodes[m_nodesNodes[n][nn]];
-                    double neighbouringNodeDistance = distance(neighbouringNode, mesh.m_nodes[n], mesh.m_projection);
+                    double neighbouringNodeDistance = Distance(neighbouringNode, mesh.m_nodes[n], mesh.m_projection);
                     double aspectRatioByNodeDistance = aspectRatio * neighbouringNodeDistance;
 
                     std::size_t leftFace = mesh.m_edgesFaces[edgeIndex][0];
