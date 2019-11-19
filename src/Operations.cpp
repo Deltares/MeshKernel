@@ -9,15 +9,15 @@ namespace GridGeom
 {
     // coordinate reference independent operations
     template<typename T>
-    T dotProduct(T& dx1, T& dx2)
+    T DotProduct(T& dx1, T& dx2)
     {
         return dx1 * dx2;
     }
 
     template<typename T, typename... Args>
-    T dotProduct(T& dx1, T& dx2, Args&... args)
+    T DotProduct(T& dx1, T& dx2, Args&... args)
     {
-        return dx1 * dx2 + dotProduct(args...);
+        return dx1 * dx2 + DotProduct(args...);
     }
 
 
@@ -47,8 +47,41 @@ namespace GridGeom
         return true;
     }
 
+    template <typename T>
+    T FindIndex(const std::vector<T>& vec, const T& el)
+    {
+        T index = 0;
+        for (int n = 0; n < vec.size(); n++)
+        {
+            if (vec[n] == el)
+            {
+                index = n;
+                break;
+            }
+        }
+        return index;
+    }
+
+    static int FindIndexes(const std::vector<Point>& vec, const double& separator, std::vector<std::vector<int>>& indexes)
+    {
+        int pos = 0;
+        for (int n = 0; n < vec.size(); n++)
+        {
+            if (vec[n].x != separator && indexes[pos][0] == 0)
+            {
+                indexes[pos][0] = n;
+            }
+            else if (vec[n].x == separator && indexes[pos][1] == 0)
+            {
+                indexes[pos][1] = n - 1;
+                pos++;
+            }
+        }
+        return pos;
+    }
+
     // transform 2d spherical to 3d cartesian
-    static void sphericalToCartesian(const Point& sphericalPoint, cartesian3DPoint& cartesianPoint)
+    static void SphericalToCartesian(const Point& sphericalPoint, cartesian3DPoint& cartesianPoint)
     {
         cartesianPoint.z = earth_radius * sin(sphericalPoint.y * degrad_hp);
         double rr = earth_radius * cos(sphericalPoint.y * degrad_hp);
@@ -57,27 +90,28 @@ namespace GridGeom
     }
 
     //  transform 3d cartesian coordinates to 2d spherical
-    static void cartesianToSpherical(const cartesian3DPoint& cartesianPoint, const double referenceLongitude, Point& sphericalPoint)
+    static void CartesianToSpherical(const cartesian3DPoint& cartesianPoint, const double referenceLongitude, Point& sphericalPoint)
     {
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
         sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * raddeg_hp;
         sphericalPoint.x = angle + std::lround((referenceLongitude - angle) / 360.0) * 360.0;
     }
 
-    // isLeft(): tests if a point is Left|On|Right of an infinite line.
+    // IsLeft(): tests if a point is Left|On|Right of an infinite line.
     //    Input:  three points leftPoint, rightPoint, and point
     //    Return: >0 for point left of the line through leftPoint and rightPoint
     //            =0 for point  on the line
     //            <0 for point  right of the line
-    static double isLeft(const Point& leftPoint, const Point& rightPoint, const Point& point)
+    static double IsLeft(const Point& leftPoint, const Point& rightPoint, const Point& point)
     {
         double left = (rightPoint.x - leftPoint.x) * (point.y - leftPoint.y) - (point.x - leftPoint.x) * (rightPoint.y - leftPoint.y);
         return left;
     }
 
+
     // check if a point is in polygon using the winding number method
     // polygon: a closed polygon consisting in a vector of numberOfPolygonPoints+1 in counter clockwise order
-    static bool PointInPolygon(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
+    static bool IsPointInPolygon(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
     {
         if (numberOfPolygonPoints <= 0)
         {
@@ -91,7 +125,7 @@ namespace GridGeom
             {
                 if (polygon[n + 1].y > point.y)
                 {
-                    if (isLeft(polygon[n], polygon[n + 1], point) > 0.0)
+                    if (IsLeft(polygon[n], polygon[n + 1], point) > 0.0)
                     {
                         ++windingNumber; // have  a valid up intersect
                     }
@@ -101,7 +135,7 @@ namespace GridGeom
             {
                 if (polygon[n + 1].y <= point.y) // a downward crossing
                 {
-                    if (isLeft(polygon[n], polygon[n + 1], point) < 0.0)
+                    if (IsLeft(polygon[n], polygon[n + 1], point) < 0.0)
                     {
                         --windingNumber; // have  a valid down intersect
                     }
@@ -111,20 +145,56 @@ namespace GridGeom
         return windingNumber == 0 ? false : true;
     }
 
-    template <typename T>
-    T findIndex(const std::vector<T>& vec, const T& el)
+    // dbpinpol_optinside_perpol
+    static bool IsPointInPolygons(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
     {
-        T index = 0;
-        for (int n = 0; n < vec.size(); n++)
+        if (numberOfPolygonPoints <= 0)
         {
-            if (vec[n] == el)
+            return true;
+        }
+
+        // Split input polygons in parts 
+        std::vector<std::vector<int>> indexes(numberOfPolygonPoints, std::vector<int>(2));
+        std::vector<Point> subpolygon(numberOfPolygonPoints);
+        int numPolygons = FindIndexes(polygon, doubleMissingValue, indexes);
+
+        bool inPolygon = false;
+        auto compareX = [](const auto&p1, const auto&p2) { return p1->x > p2->x; };
+        auto compareY = [](const auto&p1, const auto&p2) { return p1->y > p2->y; };
+        for (int p = 0; p <= numPolygons; p++) 
+        {
+            // Calculate the bounding box
+            auto startPolygon = polygon.begin() + indexes[p][0];
+            auto endPolygon = polygon.begin() + indexes[p][1];
+            const int numberOfSubPolygonPoints = indexes[p][1] - indexes[p][0] + 2;
+            
+            for (int pp = 0; pp < numberOfSubPolygonPoints; pp++) 
             {
-                index = n;
-                break;
+                subpolygon[pp] = polygon[indexes[p][0] + pp];
+            }
+            subpolygon[numberOfSubPolygonPoints] = polygon[indexes[p][0]];
+            
+            // create bounding box before actual checking
+            double XMin = std::min(startPolygon, endPolygon, compareX)->x;
+            double XMax = std::max(startPolygon, endPolygon, compareX)->x;
+            double YMin = std::min(startPolygon, endPolygon, compareY)->y;
+            double YMax = std::max(startPolygon, endPolygon, compareY)->y;
+
+            if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax)) 
+            {
+                 inPolygon = IsPointInPolygon(point, subpolygon, numberOfSubPolygonPoints);
+            }
+
+            if (inPolygon) 
+            {
+                return true;
             }
         }
-        return index;
+
+        return false;
     }
+
+
 
     static double getDx(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
@@ -197,8 +267,8 @@ namespace GridGeom
         {
             cartesian3DPoint firstPointCartesianCoordinates;
             cartesian3DPoint secondPointCartesianCoordinates;
-            sphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
-            sphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
+            SphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
+            SphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
 
             double lambda = insidePoint.x * degrad_hp;
             double phi = insidePoint.y * degrad_hp;
@@ -342,7 +412,7 @@ namespace GridGeom
     }
 
     //dbdistance
-    static double distance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    static double Distance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -368,14 +438,14 @@ namespace GridGeom
         if (projection == Projections::cartesian)
         {
             double dis = 0.0;
-            double r2 = distance(secondNode, firstNode, projection);
+            double r2 = Distance(secondNode, firstNode, projection);
             if (r2 != 0.0)
             {
                 ratio = (getDx(firstNode, point, projection) * getDx(firstNode, secondNode, projection) + getDy(firstNode, point, projection) * getDy(firstNode, secondNode, projection)) / (r2 * r2);
                 double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
                 normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
                 normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
-                dis = distance(point, normalPoint, projection);
+                dis = Distance(point, normalPoint, projection);
             }
             return dis;
         }
@@ -406,10 +476,10 @@ namespace GridGeom
             cartesian3DPoint firstPointSecondSegment3D;
             cartesian3DPoint secondPointSecondSegment3D;
 
-            sphericalToCartesian(firstPointFirstSegment, firstPointFirstSegment3D);
-            sphericalToCartesian(secondPointFirstSegment, secondPointFirstSegment3D);
-            sphericalToCartesian(firstPointSecondSegment, firstPointSecondSegment3D);
-            sphericalToCartesian(secondPointSecondSegment, secondPointSecondSegment3D);
+            SphericalToCartesian(firstPointFirstSegment, firstPointFirstSegment3D);
+            SphericalToCartesian(secondPointFirstSegment, secondPointFirstSegment3D);
+            SphericalToCartesian(firstPointSecondSegment, firstPointSecondSegment3D);
+            SphericalToCartesian(secondPointSecondSegment, secondPointSecondSegment3D);
 
             double dx1 = secondPointFirstSegment3D.x - firstPointFirstSegment3D.x;
             double dy1 = secondPointFirstSegment3D.y - firstPointFirstSegment3D.y;
@@ -419,7 +489,7 @@ namespace GridGeom
             double dy2 = secondPointSecondSegment3D.y - firstPointSecondSegment3D.y;
             double dz2 = secondPointSecondSegment3D.z - firstPointSecondSegment3D.z;
 
-            return dotProduct(dx1, dx2, dy1, dy2, dz1, dz2);
+            return DotProduct(dx1, dx2, dy1, dy2, dz1, dz2);
         }
 
         return doubleMissingValue;

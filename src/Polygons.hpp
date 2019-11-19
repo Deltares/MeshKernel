@@ -59,8 +59,8 @@ namespace GridGeom
                 const auto firstPoint = mesh.m_nodes[first];
                 const auto secondPoint = mesh.m_nodes[second];
 
-                bool inHullFirst = PointInPolygon(mesh.m_nodes[first], m_nodes, m_numNodes);
-                bool inHullSecond = PointInPolygon(mesh.m_nodes[second], m_nodes, m_numNodes);
+                bool inHullFirst = IsPointInPolygon(mesh.m_nodes[first], m_nodes, m_numNodes);
+                bool inHullSecond = IsPointInPolygon(mesh.m_nodes[second], m_nodes, m_numNodes);
 
                 if (!inHullFirst && !inHullSecond)
                 {
@@ -136,7 +136,7 @@ namespace GridGeom
             int ee = 0;
             while(ee < mesh.m_nodesNumEdges[currentNode])
             {
-                bool inHull = PointInPolygon(mesh.m_nodes[currentNode], m_nodes, m_numNodes);
+                bool inHull = IsPointInPolygon(mesh.m_nodes[currentNode], m_nodes, m_numNodes);
 
                 if (!inHull)
                 {

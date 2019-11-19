@@ -395,7 +395,7 @@ void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
                             if (nextNode == numberOfFaceNodes) nextNode = 0;
                             double dx = getDx(middlePoints[n], estimatedCircumCenter, m_projection);
                             double dy = getDy(middlePoints[n], estimatedCircumCenter, m_projection);
-                            double increment = -0.1 * dotProduct(dx, dy, normals[n].x, normals[n].y);
+                            double increment = -0.1 * DotProduct(dx, dy, normals[n].x, normals[n].y);
                             add(estimatedCircumCenter, normals[n], increment, m_projection);
                         }
                     }
@@ -424,7 +424,7 @@ void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
             }
             localFace[numberOfFaceNodes] = localFace[0];
 
-            bool isCircumcenterInside = PointInPolygon(m_facesCircumcenters[f], localFace, numberOfFaceNodes);
+            bool isCircumcenterInside = IsPointInPolygon(m_facesCircumcenters[f], localFace, numberOfFaceNodes);
 
             if (!isCircumcenterInside)
             {
