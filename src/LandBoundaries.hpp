@@ -39,21 +39,28 @@ namespace GridGeom
         };
 
 
-        bool FindNearestMeshBoundary(const Mesh& mesh, const Polygons& polygon, int meshLineOption)
+        bool FindNearestMeshBoundary(const Mesh& mesh, const Polygons& polygon, bool onlyNetBoundary)
         {
+            if(onlyNetBoundary)
+            {
+                m_relativeCloseDistance = 5;
+            }
+            else
+            {
+                m_relativeCloseDistance = 1;
+            }
+            
             m_nodeMask.resize(mesh.m_nodes.size(), intMissingValue);
             m_faceMask.resize(mesh.m_numFaces, intMissingValue);
             m_edgeMask.resize(mesh.m_edges.size(), intMissingValue);
 
-            polygonCache.resize(maximumNumberOfNodesPerFace);
+            polygonCache.resize(maximumNumberOfNodesPerFace + 1);
             m_landMask = true;
             for (int n = 0; n < m_numSegmentIndexses; n++)
             {
                 int numPaths;
                 int numRejectedPaths;
                 bool successful = MakePath(mesh, polygon, n, numPaths, numRejectedPaths);
-
-
 
             }
 
@@ -70,8 +77,8 @@ namespace GridGeom
             {
                 if (m_nodes[n].x != doubleMissingValue && m_nodes[n + 1].x != doubleMissingValue)
                 {
-                    bool firstPointInPolygon = pointInPolygon(m_nodes[n], polygons.m_nodes, polygons.m_numNodes);
-                    bool secondPointInPolygon = pointInPolygon(m_nodes[n + 1], polygons.m_nodes, polygons.m_numNodes);
+                    bool firstPointInPolygon = PointInPolygon(m_nodes[n], polygons.m_nodes, polygons.m_numNodes);
+                    bool secondPointInPolygon = PointInPolygon(m_nodes[n + 1], polygons.m_nodes, polygons.m_numNodes);
 
                     if (firstPointInPolygon || secondPointInPolygon)
                     {
@@ -116,8 +123,8 @@ namespace GridGeom
 
                         Point normalPoint;
                         double rlout;
-                        const double distanceFirstMeshNode = distanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, mesh.m_projection);
-                        const double distanceSecondMeshNode = distanceFromLine(secondMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, mesh.m_projection);
+                        const double distanceFirstMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, mesh.m_projection);
+                        const double distanceSecondMeshNode = DistanceFromLine(secondMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, mesh.m_projection);
 
                         if (distanceFirstMeshNode <= minDistance || distanceFirstMeshNode <= distanceSecondMeshNode)
                         {
@@ -162,9 +169,9 @@ namespace GridGeom
             }
 
 
-            int numSegmentIndexses = m_numSegmentIndexses;
+            int numSegmentIndexsesBeforeSplitting = m_numSegmentIndexses;
             // split the line segments into two to accommodate closed segments
-            for (int i = 0; i < numSegmentIndexses; i++)
+            for (int i = 0; i < numSegmentIndexsesBeforeSplitting; i++)
             {
                 int start = m_segmentIndices[i][0];
                 int end = m_segmentIndices[i][1];
@@ -189,8 +196,8 @@ namespace GridGeom
             int startLandBoundaryIndex = m_segmentIndices[landBoundarySegment][0];
             int endLandBoundaryIndex = m_segmentIndices[landBoundarySegment][1];
 
-            m_outerLeft = endLandBoundaryIndex - 1;
-            m_outerRight = startLandBoundaryIndex;
+            m_outerLandBoundaryLeft = endLandBoundaryIndex - 1;
+            m_outerLandBoundaryRight = startLandBoundaryIndex;
 
             m_leftRatio = 1.0;
             m_rightRatio = 0.0;
@@ -207,18 +214,18 @@ namespace GridGeom
         }
 
         //masknodes
-        bool ComputeMask(const Mesh& mesh, const Polygons& polygon,int segmentIndex, int& jstart, int& jend)
+        bool ComputeMask(const Mesh& mesh, const Polygons& polygon,int segmentIndex, int& startLandBoundaryIndex, int& endLandBoundaryIndex)
         {
             std::fill(m_nodeMask.begin(), m_nodeMask.end(), doubleMissingValue);
             //find the start cell for node masking
             int kstart = 0;
             int in = -1;
             // first node of land boundary segment in mesh
-            int jstart1 = jstart;
+            int jstart1 = startLandBoundaryIndex;
             bool nodeInFace = false;
-            for (int l = jstart; l < jend; l++)
+            for (int i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
             {
-                auto node = m_nodes[l];
+                auto node = m_nodes[i];
 
                 for (int f = 0; f < mesh.m_numFaces; f++)
                 {
@@ -231,8 +238,9 @@ namespace GridGeom
                     {
                         polygonCache[n] = mesh.m_nodes[mesh.m_facesNodes[f][n]];
                     }
+                    polygonCache[numFaceNodes] = polygonCache[0];
 
-                    nodeInFace = pointInPolygon(node, polygonCache, numFaceNodes);
+                    nodeInFace = PointInPolygon(node, polygonCache, numFaceNodes);
                     if (nodeInFace)
                         break;
                 }
@@ -252,7 +260,7 @@ namespace GridGeom
 
                     int face = mesh.m_edgesFaces[e][0];
 
-                    bool isCellCrossed = isCellCrossedByLandBoundaries(mesh, face, jstart, jend);
+                    bool isCellCrossed = IsFaceCrossedByLandBoundaries(mesh, face, startLandBoundaryIndex, endLandBoundaryIndex);
 
                     if (isCellCrossed)
                     {
@@ -275,7 +283,7 @@ namespace GridGeom
                 m_numFacesMasked = 0;
                 m_maskDepth = 0;
                 std::vector<int> landBoundaryFaces{ crossedFace };
-                maskFaces(mesh, landBoundaryFaces, jstart, jend);
+                maskFaces(mesh, landBoundaryFaces, startLandBoundaryIndex, endLandBoundaryIndex);
 
                 // Mask all nodes of the masked faces
                 for (int f = 0; f < mesh.m_numFaces; f++)
@@ -284,7 +292,7 @@ namespace GridGeom
                     {
                         for (int n = 0; n < mesh.m_facesNodes[f].size(); n++)
                         {
-                            m_faceMask[mesh.m_facesNodes[f][n]] = segmentIndex;
+                            m_nodeMask[mesh.m_facesNodes[f][n]] = segmentIndex;
                         }
                     }
                 }
@@ -299,7 +307,7 @@ namespace GridGeom
             {
                 if(m_nodeMask[n]> 0)
                 {
-                    bool inPolygon = pointInPolygon(mesh.m_nodes[n], polygon.m_nodes, polygon.m_numNodes);
+                    bool inPolygon = PointInPolygon(mesh.m_nodes[n], polygon.m_nodes, polygon.m_numNodes);
                     if (!inPolygon)
                     {
                         m_nodeMask[n] = 0;
@@ -311,7 +319,7 @@ namespace GridGeom
         }
 
         // cellcrossedbyland
-        bool isCellCrossedByLandBoundaries(const Mesh& mesh, int face, int jstart, int jend)
+        bool IsFaceCrossedByLandBoundaries(const Mesh& mesh, int face, int startLandBoundaryIndex, int endLandBoundaryIndex)
         {
             bool isCrossed = false;
             bool areCrossing = false;
@@ -320,18 +328,18 @@ namespace GridGeom
             {
                 auto edge = mesh.m_facesEdges[face][e];
 
-                for (int s = jstart; s < jend - 1; s++)
+                for (int i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
                 {
                     auto firstMeshNode = mesh.m_nodes[mesh.m_edges[edge].first];
                     auto secondMeshNode = mesh.m_nodes[mesh.m_edges[edge].second];
 
-                    auto firstNode = m_nodes[s];
-                    auto secondNode = m_nodes[s + 1];
+                    auto firstNode = m_nodes[i];
+                    auto secondNode = m_nodes[i + 1];
                     bool adimensional = false;
                     Point intersection;
                     double crossProduct;
 
-                    bool areCrossing = linesCrossing(firstMeshNode, secondMeshNode, firstNode, secondNode, adimensional, intersection, crossProduct, mesh.m_projection);
+                    bool areCrossing = AreLinesCrossing(firstMeshNode, secondMeshNode, firstNode, secondNode, adimensional, intersection, crossProduct, mesh.m_projection);
 
                     if (areCrossing)
                     {
@@ -343,28 +351,28 @@ namespace GridGeom
         }
 
         //linkcrossedbyland
-        bool isEdgeCloseToLandBoundaries(const Mesh& mesh, int edgeIndex, int endNode, int& landBoundaryNode, int& startNodeLandBoundary, int& endNodeLandBoundary)
+        bool isEdgeCloseToLandBoundaries(const Mesh& mesh, int edgeIndex, int& landBoundaryNode, int startNodeLandBoundary, int endNodeLandBoundary)
         {
             bool isClose = false;
 
-            int startNode = std::max(std::min(landBoundaryNode, endNode), landBoundaryNode);
+            const int startNode = std::max(std::min(landBoundaryNode, endNodeLandBoundary - 1), landBoundaryNode);
 
-            int firstMeshNodeIndex = mesh.m_edges[edgeIndex].first;
-            int secondMeshNodeIndex = mesh.m_edges[edgeIndex].second;
+            const int firstMeshNodeIndex = mesh.m_edges[edgeIndex].first;
+            const int secondMeshNodeIndex = mesh.m_edges[edgeIndex].second;
 
             if (firstMeshNodeIndex < 0 || secondMeshNodeIndex < 0)
                 return isClose;
 
-            auto firstMeshNode = mesh.m_nodes[firstMeshNodeIndex];
-            auto secondMeshNode = mesh.m_nodes[secondMeshNodeIndex];
+            const auto firstMeshNode = mesh.m_nodes[firstMeshNodeIndex];
+            const auto secondMeshNode = mesh.m_nodes[secondMeshNodeIndex];
 
-            double edgeLength = distance(firstMeshNode, secondMeshNode, mesh.m_projection);
-            double closeDistance = edgeLength * m_relativeCloseDistance;
+            const double meshEdgeLength = distance(firstMeshNode, secondMeshNode, mesh.m_projection);
+            const double closeDistance = meshEdgeLength * m_relativeCloseDistance;
 
             //TODO: this is a slightly different implementation 
             double ratioFirstMeshNode;
             double ratioSecondMeshNode;
-            for (int n = startNode; n < endNode - 1; n++)
+            for (int n = startNode; n < endNodeLandBoundary; n++)
             {
 
                 auto firstNode = m_nodes[n];
@@ -373,16 +381,16 @@ namespace GridGeom
                 if (firstNode.x == doubleMissingValue || firstNode.x == doubleMissingValue)
                     continue;
 
-                double edgeLength = distance(firstNode, secondNode, mesh.m_projection);
+                const double landBoundaryLength = distance(firstNode, secondNode, mesh.m_projection);
 
-                if (edgeLength <= std::numeric_limits<double>::min())
+                if (landBoundaryLength <= std::numeric_limits<double>::min())
                     continue;
 
                 Point normalPoint;
                 ratioFirstMeshNode = 0.0;
                 ratioSecondMeshNode = 1.0;
 
-                const double distanceFromLandBoundaryFirstMeshNode = distanceFromLine(firstMeshNode, firstNode, secondNode, normalPoint, ratioFirstMeshNode, mesh.m_projection);
+                const double distanceFromLandBoundaryFirstMeshNode = DistanceFromLine(firstMeshNode, firstNode, secondNode, normalPoint, ratioFirstMeshNode, mesh.m_projection);
 
                 if (distanceFromLandBoundaryFirstMeshNode < closeDistance)
                 {
@@ -396,7 +404,7 @@ namespace GridGeom
                 }
                 else
                 {
-                    double distanceFromLandBoundarySecondMeshNode = distanceFromLine(secondMeshNode, firstNode, secondNode, normalPoint, ratioSecondMeshNode, mesh.m_projection);
+                    double distanceFromLandBoundarySecondMeshNode = DistanceFromLine(secondMeshNode, firstNode, secondNode, normalPoint, ratioSecondMeshNode, mesh.m_projection);
 
                     if (distanceFromLandBoundarySecondMeshNode < closeDistance)
                     {
@@ -411,30 +419,31 @@ namespace GridGeom
                 }
             }
 
+
             if (isClose)
             {
                 // minimum
                 double minimumRatio = std::min(ratioFirstMeshNode, ratioSecondMeshNode);
-                if (landBoundaryNode < startNodeLandBoundary)
+                if (landBoundaryNode < m_outerLandBoundaryLeft)
                 {
-                    startNodeLandBoundary = landBoundaryNode;
+                    m_outerLandBoundaryLeft = landBoundaryNode;
                     m_leftRatio = std::min(std::max(minimumRatio, 0.0), 1.0);
                 }
-                else if (landBoundaryNode == startNodeLandBoundary)
+                else if (landBoundaryNode == m_outerLandBoundaryLeft)
                 {
                     m_leftRatio = std::min(std::max(minimumRatio, 0.0), m_leftRatio);
                 }
 
                 // maximum
                 double maximumRatio = std::max(ratioFirstMeshNode, ratioSecondMeshNode);
-                if (landBoundaryNode > endNodeLandBoundary)
+                if (landBoundaryNode > m_outerLandBoundaryRight)
                 {
-                    endNodeLandBoundary = landBoundaryNode;
+                    m_outerLandBoundaryRight = landBoundaryNode;
                     m_rightRatio = std::min(std::max(maximumRatio, 0.0), 1.0);
                 }
-                else if (landBoundaryNode == endNodeLandBoundary)
+                else if (landBoundaryNode == m_outerLandBoundaryRight)
                 {
-                    m_rightRatio = std::max(std::min(minimumRatio, 1.0), m_rightRatio);
+                    m_rightRatio = std::max(std::min(maximumRatio, 1.0), m_rightRatio);
                 }
             }
             return isClose;
@@ -473,8 +482,12 @@ namespace GridGeom
                             int landBoundaryNode = 0;
                             int edge = mesh.m_facesEdges[otherFace][ee];
                             //TODO: to check
-                            bool isClose =
-                                isEdgeCloseToLandBoundaries(mesh, edge, endNode, landBoundaryNode, startNodeLandBoundary, endNodeLandBoundary);
+                            if(otherFace==5)
+                            {
+                                std::cout << " debug " << std::endl;
+                            }
+
+                            isClose = isEdgeCloseToLandBoundaries(mesh, edge, landBoundaryNode, startNodeLandBoundary, endNodeLandBoundary);
 
                             if (isClose)
                             {
@@ -532,7 +545,7 @@ namespace GridGeom
 
                                 int landBoundaryNode = 0;
                                 //TODO: to check
-                                isClose = isEdgeCloseToLandBoundaries(mesh, edge, endNode, landBoundaryNode, startNodeLandBoundary, endNodeLandBoundary);
+                                isClose = isEdgeCloseToLandBoundaries(mesh, edge, landBoundaryNode, startNodeLandBoundary, endNodeLandBoundary);
 
                                 if (isClose)
                                 {
@@ -592,16 +605,14 @@ namespace GridGeom
         int m_numFacesMasked = 0;
         int m_maskDepth = 0;
 
-        int m_outerLeft;                                  // outer land boundary segments in projection
-        int m_outerRight;
+        int m_outerLandBoundaryLeft;                                  // outer land boundary segments in projection
+        int m_outerLandBoundaryRight;
         double m_leftRatio;                              // fractional location of the projected outer nodes(min and max) on the land boundary segment
         double m_rightRatio;
 
-        double m_DCLOSE_bound = 5.0;                  // close - to - landboundary tolerance, netbound only, measured in number of meshwidths
-        double m_DCLOSE_whole = 1.0;                  // close - to - landboundary tolerance, whole network, measured in number of meshwidths
         double m_closeToLandBoundary = 5.0;           // close - to - landboundary tolerance, measured in number of meshwidths
 
-        double m_relativeCloseDistance = 1.0;         //close - to - landboundary tolerance, measured in number of meshwidths
+        double m_relativeCloseDistance = 1.0;         // DCLOSE, close - to - landboundary tolerance, measured in number of meshwidths
 
         bool m_Ladd_land = true;                      // add land boundary between land boundary segments that are close to each other
     };

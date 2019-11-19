@@ -76,10 +76,10 @@ namespace GridGeom
     }
 
     // check if a point is in polygon using the winding number method
-    // polygon: vector of points in counter clockwise order
-    static bool pointInPolygon(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
+    // polygon: a closed polygon consisting in a vector of numberOfPolygonPoints+1 in counter clockwise order
+    static bool PointInPolygon(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
     {
-        if (numberOfPolygonPoints == 0)
+        if (numberOfPolygonPoints <= 0)
         {
             return true;
         }
@@ -363,19 +363,19 @@ namespace GridGeom
     }
 
     //dLINEDIS3
-    static double distanceFromLine(const Point& p3, const Point& p1, const Point& p2, Point& normalPoint, double& rlout, const Projections& projection)
+    static double DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, Point& normalPoint, double& ratio, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
             double dis = 0.0;
-            double r2 = distance(p2, p1, projection);
+            double r2 = distance(secondNode, firstNode, projection);
             if (r2 != 0.0)
             {
-                double rl = (getDx(p1, p3, projection) * getDx(p1, p2, projection) + getDy(p1, p3, projection) * getDy(p1, p2, projection)) / (r2 * r2);
-                rlout = std::max(std::min(1.0, rl), 0.0);
-                normalPoint.x = p1.x + rlout * (p2.x - p1.x);
-                normalPoint.y = p1.y + rlout * (p2.y - p1.y);
-                dis = distance(p3, normalPoint, projection);
+                ratio = (getDx(firstNode, point, projection) * getDx(firstNode, secondNode, projection) + getDy(firstNode, point, projection) * getDy(firstNode, secondNode, projection)) / (r2 * r2);
+                double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
+                normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
+                normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
+                dis = distance(point, normalPoint, projection);
             }
             return dis;
         }
@@ -637,7 +637,7 @@ namespace GridGeom
     }
 
     //CROSS
-    static bool linesCrossing(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, bool adimensional, Point& intersection, double& crossProduct, const Projections& projection)
+    static bool AreLinesCrossing(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, bool adimensional, Point& intersection, double& crossProduct, const Projections& projection)
     {
         bool isCrossing = false;
         if (projection == Projections::cartesian)
