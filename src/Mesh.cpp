@@ -424,7 +424,7 @@ void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
             }
             localFace[numberOfFaceNodes] = localFace[0];
 
-            bool isCircumcenterInside = pointInPolygon(m_facesCircumcenters[f], localFace, numberOfFaceNodes);
+            bool isCircumcenterInside = PointInPolygon(m_facesCircumcenters[f], localFace, numberOfFaceNodes);
 
             if (!isCircumcenterInside)
             {
@@ -434,7 +434,7 @@ void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
                     if (nextNode == numberOfFaceNodes) nextNode = 0;
                     Point intersection;
                     double crossProduct;
-                    bool isLineCrossing = linesCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], false, intersection, crossProduct, m_projection);
+                    bool isLineCrossing = AreLinesCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], false, intersection, crossProduct, m_projection);
                     if (isLineCrossing)
                     {
                         m_facesCircumcenters[f] = intersection;

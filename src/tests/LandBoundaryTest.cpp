@@ -59,12 +59,11 @@ TEST(LandBoundariesTests, LandBoundaryAdministration)
     };
 
     GridGeom::Polygons polygons;
-    int meshLineOption = 0 ;
 
     // Execute
     landboundaries.Set(landBoundaryPolygon);
     landboundaries.Administrate(mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(mesh, polygons, meshLineOption);
+    landboundaries.FindNearestMeshBoundary(mesh, polygons, true);
 
 
 
