@@ -432,7 +432,9 @@ namespace GridGeom
         return doubleMissingValue;
     }
 
-    //dLINEDIS3
+    // dLINEDIS3
+    // Computes the perpendicular distance from point to a line firstNode - secondNode.
+    // normalPoint: coordinates of the projected point from point onto the line
     static double DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, Point& normalPoint, double& ratio, const Projections& projection)
     {
         if (projection == Projections::cartesian)
