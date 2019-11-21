@@ -32,9 +32,6 @@ bool GridGeom::Orthogonalization::initialize(const Mesh& mesh,
         }
     }
 
-    // classify the nodes
-    classifyNodes(mesh);
-
     // computes the number of nodes for each face
     computeFacesNumEdges(mesh);
 
@@ -205,7 +202,7 @@ bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
 #pragma omp parallel for private(increments)
 	for (int n = 0,  firstCacheIndex = 0; n < mesh.m_nodes.size(); n++, firstCacheIndex = firstCacheIndex + 2)
     {
-        if ((m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
+        if ((mesh.m_nodesTypes[n] != 1 && mesh.m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
         {
             continue;
         }
@@ -214,7 +211,7 @@ bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
             continue;
         }
 
-        double atpfLoc = m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationToSmoothingFactor;
+        double atpfLoc = mesh.m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationToSmoothingFactor;
         double atpf1Loc = 1.0 - atpfLoc;
 
         double mumat = m_mu;
@@ -232,7 +229,7 @@ bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
             double wwx = 0.0;
             double wwy = 0.0;
             // Smoother
-            if (atpf1Loc > 0.0 && m_nodesTypes[n] == 1)
+            if (atpf1Loc > 0.0 && mesh.m_nodesTypes[n] == 1)
             {
                 if(!m_ww2x.empty())
                 {
@@ -320,7 +317,7 @@ bool GridGeom::Orthogonalization::projectOnBoundary(Mesh& mesh)
     for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
     {
         int nearestPointIndex = m_nearestPoints[n];
-        if (m_nodesTypes[n] == 2 && mesh.m_nodesNumEdges[n] > 0 && mesh.m_nodesNumEdges[nearestPointIndex] > 0)
+        if (mesh.m_nodesTypes[n] == 2 && mesh.m_nodesNumEdges[n] > 0 && mesh.m_nodesNumEdges[nearestPointIndex] > 0)
         {
             firstPoint = mesh.m_nodes[n];
             int numEdges = mesh.m_nodesNumEdges[nearestPointIndex];
@@ -362,7 +359,7 @@ bool GridGeom::Orthogonalization::projectOnBoundary(Mesh& mesh)
             if (dis2 < dis3)
             {
                 mesh.m_nodes[n] = normalSecondPoint;
-                if (rl2 > 0.5 && m_nodesTypes[n] != 3)
+                if (rl2 > 0.5 && mesh.m_nodesTypes[n] != 3)
                 {
                     m_nearestPoints[n] = leftNode;
                 }
@@ -370,7 +367,7 @@ bool GridGeom::Orthogonalization::projectOnBoundary(Mesh& mesh)
             else
             {
                 mesh.m_nodes[n] = normalThirdPoint;
-                if (rl3 > 0.5 && m_nodesTypes[n] != 3)
+                if (rl3 > 0.5 && mesh.m_nodesTypes[n] != 3)
                 {
                     m_nearestPoints[n] = rightNode;
                 }
@@ -388,7 +385,7 @@ bool GridGeom::Orthogonalization::computeWeightsSmoother(const Mesh& mesh)
 
     for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
     {
-        if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2 && m_nodesTypes[n] != 4) continue;
+        if (mesh.m_nodesTypes[n] != 1 && mesh.m_nodesTypes[n] != 2 && mesh.m_nodesTypes[n] != 4) continue;
         int currentTopology = m_nodeTopologyMapping[n];
         orthogonalizationComputeJacobian(n, m_Jxi[currentTopology], m_Jeta[currentTopology], m_topologyConnectedNodes[currentTopology], m_numTopologyNodes[currentTopology], mesh.m_nodes, J[n], mesh.m_projection);
     }
@@ -420,7 +417,7 @@ bool GridGeom::Orthogonalization::computeWeightsSmoother(const Mesh& mesh)
         if (mesh.m_nodesNumEdges[n] < 2) continue;
 
         // Internal nodes and boundary nodes
-        if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
+        if (mesh.m_nodesTypes[n] == 1 || mesh.m_nodesTypes[n] == 2)
         {
             int currentTopology = m_nodeTopologyMapping[n];
 
@@ -623,7 +620,7 @@ bool GridGeom::Orthogonalization::computeOperatorsNode(const Mesh& mesh, const i
 
     for (int f = 0; f < numSharedFaces; f++)
     {
-        if (sharedFaces[f] < 0 || m_nodesTypes[currentNode] == 3) continue;
+        if (sharedFaces[f] < 0 || mesh.m_nodesTypes[currentNode] == 3) continue;
 
         int edgeLeft = f + 1;
         int edgeRight = edgeLeft + 1;
@@ -943,19 +940,19 @@ bool GridGeom::Orthogonalization::computeXiEta(const Mesh& mesh,
         int leftFaceIndex = f - 1; if (leftFaceIndex < 0) leftFaceIndex = leftFaceIndex + numSharedFaces;
         if (isSquare)
         {
-            if (m_nodesTypes[nextNode] == 1 || m_nodesTypes[nextNode] == 4)
+            if (mesh.m_nodesTypes[nextNode] == 1 || mesh.m_nodesTypes[nextNode] == 4)
             {
                 // Inner node
                 numNonStencilQuad = mesh.m_nodesNumEdges[nextNode] - 2;
                 thetaSquare[f + 1] = (2.0 - double(numNonStencilQuad) * 0.5) * M_PI;
             }
-            if (m_nodesTypes[nextNode] == 2)
+            if (mesh.m_nodesTypes[nextNode] == 2)
             {
                 // boundary node
                 numNonStencilQuad = mesh.m_nodesNumEdges[nextNode] - 1 - mesh.m_edgesNumFaces[edgeIndex];
                 thetaSquare[f + 1] = (1.0 - double(numNonStencilQuad) * 0.5) * M_PI;
             }
-            if (m_nodesTypes[nextNode] == 3)
+            if (mesh.m_nodesTypes[nextNode] == 3)
             {
                 //corner node
                 thetaSquare[f + 1] = 0.5 * M_PI;
@@ -1041,8 +1038,8 @@ bool GridGeom::Orthogonalization::computeXiEta(const Mesh& mesh,
 
 
     double factor = 1.0;
-    if (m_nodesTypes[currentNode] == 2) factor = 0.5;
-    if (m_nodesTypes[currentNode] == 3) factor = 0.25;
+    if (mesh.m_nodesTypes[currentNode] == 2) factor = 0.5;
+    if (mesh.m_nodesTypes[currentNode] == 3) factor = 0.25;
     double mu = 1.0;
     double muSquaredTriangles = 1.0;
     double muTriangles = 1.0;
@@ -1079,11 +1076,11 @@ bool GridGeom::Orthogonalization::computeXiEta(const Mesh& mesh,
         phi0 = phi0 + 0.5 * dPhi;
         if (sharedFaces[f] < 0)
         {
-            if (m_nodesTypes[currentNode] == 2)
+            if (mesh.m_nodesTypes[currentNode] == 2)
             {
                 dPhi = M_PI;
             }
-            else if (m_nodesTypes[currentNode] == 3)
+            else if (mesh.m_nodesTypes[currentNode] == 3)
             {
                 dPhi = 1.5 * M_PI;
             }
@@ -1212,7 +1209,7 @@ bool GridGeom::Orthogonalization::orthogonalizationAdministration(const Mesh& me
         }
 
         //corner face (already found in the first iteration)
-        if (mesh.m_nodesNumEdges[currentNode] == 2 && e == 1 && m_nodesTypes[currentNode] == 3)
+        if (mesh.m_nodesNumEdges[currentNode] == 2 && e == 1 && mesh.m_nodesTypes[currentNode] == 3)
         {
             if (sharedFaces[0] == newFaceIndex) newFaceIndex = -999;
         }
@@ -1456,60 +1453,6 @@ bool GridGeom::Orthogonalization::aspectRatio(const Mesh& mesh)
     return true;
 }
 
-
-bool GridGeom::Orthogonalization::classifyNodes(const Mesh& mesh)
-{
-    m_nodesTypes.resize(mesh.m_nodes.size(), 0);
-
-    for (int e = 0; e < mesh.m_edges.size(); e++)
-    {
-        std::size_t first = mesh.m_edges[e].first;
-        std::size_t second = mesh.m_edges[e].second;
-
-        if (mesh.m_edgesNumFaces[e] == 0)
-        {
-            m_nodesTypes[first] = -1;
-            m_nodesTypes[second] = -1;
-        }
-        else if (mesh.m_edgesNumFaces[e] == 1)
-        {
-            m_nodesTypes[first] += 1;
-            m_nodesTypes[second] += 1;
-        }
-    }
-
-    for (int n = 0; n < mesh.m_nodes.size(); n++)
-    {
-        if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
-        {
-            if (mesh.m_nodesNumEdges[n] == 2)
-            {
-                //corner point
-                m_nodesTypes[n] = 3;
-            }
-            else {}
-        }
-        else if (m_nodesTypes[n] > 2)
-        {
-            // corner point
-            m_nodesTypes[n] = 3;
-        }
-        else if (m_nodesTypes[n] != -1)
-        {
-            //internal node
-            m_nodesTypes[n] = 1;
-        }
-
-        if (mesh.m_nodesNumEdges[n] < 2)
-        {
-            //hanging node
-            m_nodesTypes[n] = -1;
-        }
-    }
-    return true;
-}
-
-
 bool GridGeom::Orthogonalization::computeWeightsOrthogonalizer(const Mesh& mesh)
 {
     double localOrthogonalizationToSmoothingFactor = 1.0;
@@ -1520,7 +1463,7 @@ bool GridGeom::Orthogonalization::computeWeightsOrthogonalizer(const Mesh& mesh)
     std::fill(m_rightHandSide.begin(), m_rightHandSide.end(), std::vector<double>(2, 0.0));
     for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
     {
-        if (m_nodesTypes[n] != 1 && m_nodesTypes[n] != 2)
+        if (mesh.m_nodesTypes[n] != 1 && mesh.m_nodesTypes[n] != 2)
         {
             continue;
         }

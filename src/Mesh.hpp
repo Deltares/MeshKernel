@@ -44,6 +44,8 @@ namespace GridGeom
         std::size_t m_numFaces;                                     // NUMP
         std::vector<double> m_faceArea;                             // Face area
         
+        std::vector<int> m_nodesTypes;                              // Node types,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
+
         //Used for internal state
         std::vector<double> m_nodex;
         std::vector<double> m_nodey;
@@ -62,6 +64,9 @@ namespace GridGeom
 
         // find cells
         void FindFaces(const int& numEdges);
+
+        /// @brief makenetnodescoding: computes node types
+        bool ClassifyNodes();
 
         double m_dcenterinside = 1.0;
 

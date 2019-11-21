@@ -62,9 +62,6 @@ namespace GridGeom
         /// @brief  orthonet_compute_aspect: compute link - based aspect ratios
         bool aspectRatio(const Mesh& mesh);
 
-        /// @brief makenetnodescoding: computes node types
-        bool classifyNodes(const Mesh& mesh);
-
         /// @brief orthonet_compweights: compute weights wwand right - hand side rhs in orthogonalizer
         bool computeWeightsOrthogonalizer(const Mesh& mesh);
 
@@ -132,7 +129,6 @@ namespace GridGeom
 
         std::vector<std::vector<double>>  m_weights;
         std::vector<std::vector<double>>  m_rightHandSide;
-        std::vector<int> m_nodesTypes;                                           //types of nodes,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
         std::vector<int> m_faceNumNodes;                                         //number of face nodes
 
         int m_maximumNumConnectedNodes = 0;
