@@ -47,6 +47,9 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
     // compute faces areas and centers of mass
     FacesAreasAndMassCenters();
 
+    // classify node types
+    ClassifyNodes();
+
     // return value
     return true;
 };
@@ -470,4 +473,56 @@ void GridGeom::Mesh::FacesAreasAndMassCenters()
         m_facesMassCenters[f].x = centerOfMass.x;
         m_facesMassCenters[f].y = centerOfMass.y;
     }
+}
+
+bool GridGeom::Mesh::ClassifyNodes()
+{
+    m_nodesTypes.resize(m_nodes.size(), 0);
+
+    for (int e = 0; e < m_edges.size(); e++)
+    {
+        std::size_t first = m_edges[e].first;
+        std::size_t second = m_edges[e].second;
+
+        if (m_edgesNumFaces[e] == 0)
+        {
+            m_nodesTypes[first] = -1;
+            m_nodesTypes[second] = -1;
+        }
+        else if (m_edgesNumFaces[e] == 1)
+        {
+            m_nodesTypes[first] += 1;
+            m_nodesTypes[second] += 1;
+        }
+    }
+
+    for (int n = 0; n < m_nodes.size(); n++)
+    {
+        if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
+        {
+            if (m_nodesNumEdges[n] == 2)
+            {
+                //corner point
+                m_nodesTypes[n] = 3;
+            }
+            else {}
+        }
+        else if (m_nodesTypes[n] > 2)
+        {
+            // corner point
+            m_nodesTypes[n] = 3;
+        }
+        else if (m_nodesTypes[n] != -1)
+        {
+            //internal node
+            m_nodesTypes[n] = 1;
+        }
+
+        if (m_nodesNumEdges[n] < 2)
+        {
+            //hanging node
+            m_nodesTypes[n] = -1;
+        }
+    }
+    return true;
 }
