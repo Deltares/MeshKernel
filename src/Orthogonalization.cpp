@@ -198,10 +198,12 @@ bool GridGeom::Orthogonalization::finalizeOuterIteration(Mesh& mesh)
 bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
 {
     double max_aptf = std::max(m_orthogonalizationToSmoothingFactorBoundary, m_orthogonalizationToSmoothingFactor);
-    double increments[2]{ 0.0, 0.0 };
-#pragma omp parallel for private(increments)
-	for (int n = 0,  firstCacheIndex = 0; n < mesh.m_nodes.size(); n++, firstCacheIndex = firstCacheIndex + 2)
+    
+#pragma omp parallel for
+	for (int n = 0; n < mesh.m_nodes.size(); n++)
     {
+        int firstCacheIndex = n * 2;
+        double increments[2]{ 0.0, 0.0 };
         if ((mesh.m_nodesTypes[n] != 1 && mesh.m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
         {
             continue;
@@ -273,11 +275,11 @@ bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
 bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
 {
 #pragma omp parallel for
-	for (int n = 0, firstCacheIndex=0; n < mesh.m_nodes.size(); n++, firstCacheIndex= firstCacheIndex + 2)
+	for (int n = 0; n < mesh.m_nodes.size(); n++)
     {
         double dx0 = 0.0;
         double dy0 = 0.0;
-
+        int firstCacheIndex = n * 2;
         int maxnn = m_endCacheIndex[n] - m_startCacheIndex[n];
         for (int nn = 1, cacheIndex = m_startCacheIndex[n]; nn < maxnn; nn++, cacheIndex++)
         {

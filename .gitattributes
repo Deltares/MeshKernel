@@ -451,7 +451,7 @@ GridEditor/test/DeltaShell.Plugins.GridEditor.Tests/test-data/ValidSplineFile.sp
 GridEditor/test/DeltaShell.Plugins.GridEditor.Tests/test-data/bendprof_map.nc -text
 build/ClassDiagram.cd -text
 build/bootstrap.bat -text
-build/postBuild.bat -text
+build/post_build.bat -text
 buildGCC/bootstrap.sh -text
 doc/BudgetEstimateGridGeomInC++.xlsx -text
 doc/BudgetEstimateGridGeomInC++_phase2.xlsx -text
