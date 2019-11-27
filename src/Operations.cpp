@@ -414,6 +414,11 @@ namespace GridGeom
     //dbdistance
     static double Distance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
+
+        if (firstPoint.x == doubleMissingValue || firstPoint.y == doubleMissingValue ||
+            secondPoint.x == doubleMissingValue || secondPoint.y == doubleMissingValue)
+            return 0.0;
+
         if (projection == Projections::cartesian)
         {
             double dx = getDx(firstPoint, secondPoint, projection);
