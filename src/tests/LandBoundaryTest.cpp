@@ -65,6 +65,8 @@ TEST(LandBoundariesTests, LandBoundaryAdministration)
     landboundaries.Administrate(mesh, polygons);
     landboundaries.FindNearestMeshBoundary(mesh, polygons, true);
 
+    //check m_nodeLandBoundarySegments
+
 
 
     //constexpr double tolerance = 1e-2;
