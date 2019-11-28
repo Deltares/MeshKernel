@@ -95,14 +95,14 @@ namespace GridGeomApi
         OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
     {
         GridGeom::Orthogonalization ortogonalization;
-        ortogonalization.initialize(meshInstances[gridStateId],
+        ortogonalization.Initialize(meshInstances[gridStateId],
             isTriangulationRequired,
             isAccountingForLandBoundariesRequired,
             projectToLandBoundaryOption,
             orthogonalizationParametersNative,
             geometryListNativePolygon,
             geometryListNativeLandBoundaries);
-        ortogonalization.iterate(meshInstances[gridStateId]);
+        ortogonalization.Iterate(meshInstances[gridStateId]);
         return 0;
     }
 
@@ -115,7 +115,7 @@ namespace GridGeomApi
         GeometryListNative& geometryListNativeLandBoundaries)
     {
         GridGeom::Orthogonalization ortogonalization;
-        ortogonalization.initialize(meshInstances[gridStateId], 
+        ortogonalization.Initialize(meshInstances[gridStateId], 
             isTriangulationRequired,
             isAccountingForLandBoundariesRequired,
             projectToLandBoundaryOption,
@@ -129,19 +129,19 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_orthogonalize_prepare_outer_iteration(int& gridStateId)
     {
-        bool status = orthogonalizationInstances[gridStateId].prapareOuterIteration(meshInstances[gridStateId]);
+        bool status = orthogonalizationInstances[gridStateId].PrapareOuterIteration(meshInstances[gridStateId]);
         return status == true ? 0 : 1;
     }
 
     GRIDGEOM_API int ggeo_orthogonalize_inner_iteration(int& gridStateId)
     {
-        const bool status = orthogonalizationInstances[gridStateId].innerIteration(meshInstances[gridStateId]);
+        const bool status = orthogonalizationInstances[gridStateId].InnerIteration(meshInstances[gridStateId]);
         return status == true ? 0 : 1;
     }
 
     GRIDGEOM_API int ggeo_orthogonalize_finalize_outer_iteration(int& gridStateId)
     {
-        const bool status = orthogonalizationInstances[gridStateId].finalizeOuterIteration(meshInstances[gridStateId]);
+        const bool status = orthogonalizationInstances[gridStateId].FinalizeOuterIteration(meshInstances[gridStateId]);
         return status == true ? 0 : 1;
     }
 
@@ -153,13 +153,13 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_get_orthogonality(int& gridStateId, GeometryListNative& geometryList)
     {
-        const bool status = orthogonalizationInstances[gridStateId].getOrthogonality(meshInstances[gridStateId], geometryList.zCoordinates);
+        const bool status = orthogonalizationInstances[gridStateId].GetOrthogonality(meshInstances[gridStateId], geometryList.zCoordinates);
         return status == true ? 0 : 1;
     }
 
     GRIDGEOM_API int ggeo_get_smoothness(int& gridStateId, GeometryListNative& geometryList)
     {
-        const bool status = orthogonalizationInstances[gridStateId].getSmoothness(meshInstances[gridStateId], geometryList.zCoordinates);
+        const bool status = orthogonalizationInstances[gridStateId].GetSmoothness(meshInstances[gridStateId], geometryList.zCoordinates);
         return status == true ? 0 : 1;
     }
 

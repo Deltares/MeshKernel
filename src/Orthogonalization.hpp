@@ -5,6 +5,7 @@
 #include "Mesh.hpp"
 #include "OrthogonalizationParametersNative.hpp"
 #include "GeometryListNative.hpp"
+#include "LandBoundaries.hpp"
 
 namespace GridGeom
 {
@@ -12,7 +13,7 @@ namespace GridGeom
     {
     public:
         
-        bool initialize(const Mesh& mesh,
+        bool Initialize(const Mesh& mesh,
             int& isTriangulationRequired,
             int& isAccountingForLandBoundariesRequired,
             int& projectToLandBoundaryOption,
@@ -20,24 +21,25 @@ namespace GridGeom
             GridGeomApi::GeometryListNative& geometryListNativePolygon,
             GridGeomApi::GeometryListNative& geometryListNativeLandBoundaries);
 
-        bool iterate(Mesh& mesh);
+        bool Iterate(Mesh& mesh);
 
-        bool prapareOuterIteration(const Mesh& mesh);
+        bool PrapareOuterIteration(const Mesh& mesh);
 
-        bool innerIteration(Mesh& mesh);
+        bool InnerIteration(Mesh& mesh);
 
-        bool finalizeOuterIteration(Mesh& mesh);
+        bool FinalizeOuterIteration(Mesh& mesh);
 
-        /// retrive orthogonality
-        bool getOrthogonality(const Mesh& mesh, double* orthogonality);
+        bool GetOrthogonality(const Mesh& mesh, double* orthogonality);
 
-        /// retrive smoothness
-        bool getSmoothness(const Mesh& mesh, double* smoothness);
+        bool GetSmoothness(const Mesh& mesh, double* smoothness);
     
     private:
 
         /// orthonet_project_on_boundary: project boundary-nodes back to the boundary of an original net
         bool projectOnBoundary(Mesh& mesh);
+
+        /// snapping nodes to land boundaries
+        bool SnapToLandBoundary(Mesh& mesh, const LandBoundaries& landBoundaries);
 
         /// orthonet_compweights_smooth: inverse - mapping elliptic smoother
         bool computeWeightsSmoother(const Mesh& mesh);

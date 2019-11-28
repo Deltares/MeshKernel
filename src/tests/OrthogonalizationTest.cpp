@@ -41,14 +41,14 @@ TEST(OrthogonalizationTests, TestOrthogonalizationOneQuadOneTriangle)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     GridGeom::Orthogonalization orthogonalization;
-    orthogonalization.initialize(mesh, 
+    orthogonalization.Initialize(mesh, 
         isTriangulationRequired, 
         isAccountingForLandBoundariesRequired, 
         projectToLandBoundaryOption,
         orthogonalizationParametersNative,
         geometryListNativePolygon,
         geometryListNativeLandBoundaries);
-    orthogonalization.iterate(mesh);
+    orthogonalization.Iterate(mesh);
 
     // Assert
     constexpr double tolerance = 1e-8;
@@ -127,7 +127,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationSmallTriangularGrid)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
-    orthogonalization.initialize(mesh,
+    orthogonalization.Initialize(mesh,
         isTriangulationRequired,
         isAccountingForLandBoundariesRequired,
         projectToLandBoundaryOption,
@@ -135,7 +135,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationSmallTriangularGrid)
         geometryListNativePolygon,
         geometryListNativeLandBoundaries);
 
-    orthogonalization.iterate(mesh);
+    orthogonalization.Iterate(mesh);
 
     constexpr double tolerance = 1e-2;
 
@@ -1022,7 +1022,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationMediumTriangularGrid)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
-    orthogonalization.initialize(mesh,
+    orthogonalization.Initialize(mesh,
         isTriangulationRequired,
         isAccountingForLandBoundariesRequired,
         projectToLandBoundaryOption,
@@ -1030,7 +1030,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationMediumTriangularGrid)
         geometryListNativePolygon,
         geometryListNativeLandBoundaries);
 
-    orthogonalization.iterate(mesh);
+    orthogonalization.Iterate(mesh);
 
     constexpr double tolerance = 1.5;
 
@@ -1114,7 +1114,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationFourQuads)
     GridGeom::Mesh mesh;
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
-    orthogonalization.initialize(mesh,
+    orthogonalization.Initialize(mesh,
         isTriangulationRequired,
         isAccountingForLandBoundariesRequired,
         projectToLandBoundaryOption,
