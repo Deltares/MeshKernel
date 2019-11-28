@@ -48,10 +48,10 @@ namespace GridGeom
             m_edgeMask.resize(mesh.m_edges.size(), intMissingValue);
             polygonCache.resize(maximumNumberOfNodesPerFace + 1);
             m_landMask = true;
-            m_nodeLandBoundarySegments.resize(mesh.m_nodes.size(), -1);
+            m_meshNodesLandBoundarySegments.resize(mesh.m_nodes.size(), -1);
             m_nodesMinDistances.resize(mesh.m_nodes.size(), doubleMissingValue);
 
-            for (int n = 0; n < m_numSegmentIndexses; n++)
+            for (int n = 0; n < m_numSegments; n++)
             {
                 int numPaths;
                 int numRejectedPaths;
@@ -67,20 +67,224 @@ namespace GridGeom
                         return false;
                 }
             }
-            //m_nodeLandBoundarySegments
 
-            //if (meshBoundOnly) 
-            //{
-            //    for (int e = 0; e < mesh.m_edges.size(); e++)
-            //    {
-            //        successful = connect_boundary_paths(L, nodemask, 1, numnodes, nodelist);
-            //        if (!successful)
-            //            return false;
-            //    }            
-            //}
+            // connect the mesh nodes
+            if (meshBoundOnly) 
+            {
+                std::vector<int> connectedNodes;
+                int numConnectedNodes = 0;
+                for (int e = 0; e < mesh.m_edges.size(); e++)
+                {
+                    if (mesh.m_edgesNumFaces[e] != 1)
+                        continue;
+                    successful = AssignAllBoundaryMeshNodesToLandBoundaries(mesh, e, true, connectedNodes, numConnectedNodes);
+                    if (!successful)
+                        return false;
+                }            
+            }
 
             return successful;
         };
+
+
+        /// connect_boundary_paths, build an additional boundary for not assigned nodes  
+        bool AssignAllBoundaryMeshNodesToLandBoundaries(const Mesh& mesh, int edgeIndex, bool initialize, std::vector<int>& nodes, int numNodes)
+        {
+            bool successful = false;
+            std::vector<int> nodesLoc;
+            int numNodesLoc;
+
+            if (initialize)
+            {
+                if (mesh.m_edgesNumFaces[edgeIndex] != 1 || mesh.m_edges[edgeIndex].first < 0 || mesh.m_edges[edgeIndex].second < 0)
+                    return true;
+
+                int firstMeshNode = mesh.m_edges[edgeIndex].first;
+                int secondMeshNode = mesh.m_edges[edgeIndex].second;
+
+                if (m_meshNodesLandBoundarySegments[firstMeshNode] >= 0 &&
+                    m_meshNodesLandBoundarySegments[secondMeshNode] < 0 &&
+                    m_nodeMask[firstMeshNode] > 0 &&
+                    m_nodeMask[secondMeshNode] > 0)
+                {
+                    nodesLoc.resize(3);
+                    nodesLoc[0] = firstMeshNode;
+                    nodesLoc[1] = secondMeshNode;
+                    numNodesLoc = 2;
+                }
+                else if (m_meshNodesLandBoundarySegments[firstMeshNode] < 0 &&
+                    m_meshNodesLandBoundarySegments[secondMeshNode] >= 0 &&
+                    m_nodeMask[firstMeshNode] > 0 &&
+                    m_nodeMask[secondMeshNode] > 0)
+                {
+                    nodesLoc.resize(3);
+                    nodesLoc[0] = secondMeshNode;
+                    nodesLoc[1] = firstMeshNode;
+                    numNodesLoc = 2;
+                }
+                else
+                {
+                    //not a valid edge
+                    return true;
+                }
+            }
+            else
+            {
+                nodesLoc.resize(numNodes + 1);
+                numNodesLoc = numNodes;
+                std::copy(nodes.begin(), nodes.end(), nodesLoc.begin());
+            }
+
+            int maxNodes = *std::max_element(nodesLoc.begin(), nodesLoc.end() - 1);
+            if (numNodesLoc > maxNodes)
+                return true;
+
+            int lastVisitedNode = nodesLoc[numNodesLoc - 1];
+
+            for (int e = 0; e < mesh.m_nodesNumEdges[lastVisitedNode]; e++)
+            {
+                int edge = mesh.m_nodesEdges[lastVisitedNode][e];
+
+                if (mesh.m_edgesNumFaces[edge] != 1)
+                    continue;
+
+                int otherNode = mesh.m_edges[edge].first + mesh.m_edges[edge].second - lastVisitedNode;
+
+                // path stopped
+                if (m_nodeMask[otherNode] < 0)
+                    break;
+
+                bool otherNodeAlreadyVisited = false;
+                for (int n = numNodesLoc - 1; n >= 0; n--)
+                {
+                    if (otherNode == nodesLoc[n])
+                    {
+                        otherNodeAlreadyVisited = true;
+                        break;
+                    }
+                }
+
+                if (otherNodeAlreadyVisited)
+                    continue;
+
+                nodesLoc[numNodesLoc] = otherNode;
+
+                if (m_meshNodesLandBoundarySegments[otherNode] >= 0)
+                {
+                    // Now check landboundary for otherNode
+                    for (int n = 1; n < numNodesLoc; n++)
+                    {
+                        int meshNode = nodesLoc[n];
+                        double minimumDistance;
+                        Point pointOnLandBoundary;
+                        int nearestLandBoundaryNodeIndex;
+                        double edgeRatio;
+
+                        successful = NearestPointOnLandBoundary(mesh, mesh.m_nodes[meshNode], 0, m_numNode,
+                            minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio);
+
+                        // find the segment index of the found point
+                        int landboundarySegmentIndex = -1;
+                        for (int s = 0; s < m_numSegments; s++)
+                        {
+                            if (nearestLandBoundaryNodeIndex >= m_segmentIndices[s][0] && nearestLandBoundaryNodeIndex < m_segmentIndices[s][1])
+                            {
+                                landboundarySegmentIndex = s;
+                                break;
+                            }
+                        }
+
+                        //TODO: maybe this is not completly correct
+                        if (landboundarySegmentIndex == -1)
+                            return false;
+
+                        if ((landboundarySegmentIndex == m_segmentIndices[landboundarySegmentIndex][0] && edgeRatio < 0.0) ||
+                            (landboundarySegmentIndex == m_segmentIndices[landboundarySegmentIndex][1] && edgeRatio > 1.0))
+                        {
+                            if (m_addLandboundaries)
+                            {
+                                AddLandBoundary(mesh, nodesLoc, numNodesLoc, lastVisitedNode);
+                                m_meshNodesLandBoundarySegments[meshNode] = landboundarySegmentIndex;
+                            }
+                        }
+                        else 
+                        {
+                            m_meshNodesLandBoundarySegments[meshNode] = landboundarySegmentIndex;
+                        }
+                    }
+                }
+                else
+                {
+                    AssignAllBoundaryMeshNodesToLandBoundaries(mesh, edge, false, nodesLoc, numNodesLoc + 1);
+                }
+            }
+            return true;
+        }
+
+        /// add_land, add new land boundary segment that connects two others
+        bool AddLandBoundary(const Mesh& mesh, const std::vector<int>& nodesLoc, int numNodesLoc, int nodeIndex)
+        {
+            bool successful = false;
+            
+            int startSegmentIndex = m_meshNodesLandBoundarySegments[nodesLoc[0]];
+            int endSegmentIndex = m_meshNodesLandBoundarySegments[nodesLoc[numNodesLoc]];
+
+            if (startSegmentIndex < 0 || startSegmentIndex >= m_numSegments || 
+                endSegmentIndex < 0 || endSegmentIndex >=  m_numSegments)
+            {
+                return false;
+            }
+
+            // find start/end
+            int startNode = m_segmentIndices[startSegmentIndex][0];
+            int endNode = m_segmentIndices[startSegmentIndex][1];
+
+            Point newNodeLeft;
+            if (Distance(mesh.m_nodes[nodeIndex],m_nodes[startNode],mesh.m_projection)<= Distance(mesh.m_nodes[nodeIndex], m_nodes[endNode], mesh.m_projection))
+            {
+                newNodeLeft = m_nodes[startNode];
+            }
+            else 
+            {
+                newNodeLeft = m_nodes[endNode];
+            }
+
+            Point newNodeRight;
+            if (endSegmentIndex == startSegmentIndex)
+            {
+                newNodeRight = m_nodes[startNode] + m_nodes[endNode] - newNodeLeft;
+            }
+            else 
+            {
+                // find start/end
+                startNode = m_segmentIndices[endSegmentIndex][0];
+                endNode = m_segmentIndices[endSegmentIndex][1];
+                if (Distance(mesh.m_nodes[nodeIndex], m_nodes[startNode], mesh.m_projection) <= Distance(mesh.m_nodes[nodeIndex], m_nodes[endNode], mesh.m_projection))
+                {
+                    newNodeRight = m_nodes[startNode];
+                }
+                else
+                {
+                    newNodeRight = m_nodes[endNode];
+                }
+            }
+
+            // Update  nodes
+            int minSize = m_numNode + 3;
+            AllocateVector(minSize, m_nodes, { doubleMissingValue,doubleMissingValue });
+            m_numNode += 3;
+            m_nodes[m_numNode - 2] = newNodeLeft;
+            m_nodes[m_numNode - 1] = newNodeRight;
+
+            // Update segment indexses
+            minSize = m_numSegments + 1;
+            AllocateVector(minSize, m_segmentIndices, { -1, -1 });
+            m_segmentIndices[m_numSegments][0] = m_numNode - 2;
+            m_segmentIndices[m_numSegments][1] = m_numNode - 1;
+            m_numSegments++;
+
+            return successful;
+        }
 
         // admin_landboundary_segments
         bool Administrate(Mesh& mesh, Polygons& polygons)
@@ -135,7 +339,7 @@ namespace GridGeom
                         }
 
                         const double edgeLength = Distance(firstMeshBoundaryNode, secondMeshBoundaryNode, mesh.m_projection);
-                        const double minDistance = m_closeToLandBoundary * edgeLength;
+                        const double minDistance = m_closeToLandBoundaryFactor * edgeLength;
 
                         Point normalPoint;
                         double rlout;
@@ -178,14 +382,14 @@ namespace GridGeom
                 int endInd = found - 1;
                 if (endInd > startInd && landBoundaryMask[startInd] != 0)
                 {
-                    m_segmentIndices[m_numSegmentIndexses] = { startInd, endInd };
-                    m_numSegmentIndexses++;
+                    m_segmentIndices[m_numSegments] = { startInd, endInd };
+                    m_numSegments++;
                 }
                 begin = found + 1;
             }
 
             // Generate two segments for closed land boundaries
-            int numSegmentIndexsesBeforeSplitting = m_numSegmentIndexses;
+            int numSegmentIndexsesBeforeSplitting = m_numSegments;
             for (int i = 0; i < numSegmentIndexsesBeforeSplitting; i++)
             {
                 int start = m_segmentIndices[i][0];
@@ -194,9 +398,9 @@ namespace GridGeom
                 {
                     int split = int(start + (end - start) / 2);
                     m_segmentIndices[i][1] = split;
-                    m_segmentIndices[m_numSegmentIndexses][0] = split;
-                    m_segmentIndices[m_numSegmentIndexses][1] = end;
-                    m_numSegmentIndexses++;
+                    m_segmentIndices[m_numSegments][0] = split;
+                    m_segmentIndices[m_numSegments][1] = end;
+                    m_numSegments++;
                 }
             }
 
@@ -204,7 +408,7 @@ namespace GridGeom
         };
 
 
-        /// Assigns to each node a land boundary a segment index (m_nodeLandBoundarySegments) 
+        /// make_path, Assigns to each node a land boundary a segment index (m_nodeLandBoundarySegments) 
         bool MakePath(const Mesh& mesh, const Polygons& polygons, 
             int landBoundarySegment, bool meshBoundOnly, int& numNodesInPath, int& numRejectedNodesInPath)
         {
@@ -238,7 +442,7 @@ namespace GridGeom
             if (!successful)
                 return false;
 
-            int lastSegment = m_nodeLandBoundarySegments[endMeshNode];
+            int lastSegment = m_meshNodesLandBoundarySegments[endMeshNode];
             int lastNode = -1;
             int currentNode = endMeshNode;
             double minDinstanceFromLandBoundary;
@@ -255,10 +459,10 @@ namespace GridGeom
             {
                 stopPathSearch = true;
 
-                if (m_nodeLandBoundarySegments[currentNode] >= 0)
+                if (m_meshNodesLandBoundarySegments[currentNode] >= 0)
                 {
                     // Multiple boundary segments: take the nearest
-                    int previousLandBoundarySegment = m_nodeLandBoundarySegments[currentNode];
+                    int previousLandBoundarySegment = m_meshNodesLandBoundarySegments[currentNode];
                     int previousStartMeshNode = m_segmentIndices[previousLandBoundarySegment][0];
                     int previousEndMeshNode = m_segmentIndices[previousLandBoundarySegment][1];
                     int previousEndLandBoundaryIndex;
@@ -274,9 +478,10 @@ namespace GridGeom
                     if (!successful)
                         return false;
 
-                    double minDinstanceFromLandBoundaryCurrentNode = m_nodesMinDistances[currentNode];
+                    const double minDinstanceFromLandBoundaryCurrentNode = m_nodesMinDistances[currentNode];
 
-                    if (distanceFromLandBoundary <= previousMinDistance && distanceFromLandBoundary < m_minDistanceFromLandFactor * minDinstanceFromLandBoundaryCurrentNode)
+                    if (distanceFromLandBoundary <= previousMinDistance && 
+                        distanceFromLandBoundary < m_minDistanceFromLandFactor * minDinstanceFromLandBoundaryCurrentNode)
                     {
                         stopPathSearch = false;
                     }
@@ -315,25 +520,25 @@ namespace GridGeom
 
                     if (numConnectedNodes == 1 && lastSegment != -1)
                     {
-                        m_nodeLandBoundarySegments[lastNode] = lastSegment;
+                        m_meshNodesLandBoundarySegments[lastNode] = lastSegment;
                     }
                     numConnectedNodes = 0;
                     numRejectedNodesInPath += 1;
                 }
                 else
                 {
-                    lastSegment = m_nodeLandBoundarySegments[currentNode];
+                    lastSegment = m_meshNodesLandBoundarySegments[currentNode];
                     lastNode = currentNode;
 
                     numNodesInPath += 1;
                     numConnectedNodes += 1;
 
-                    m_nodeLandBoundarySegments[lastNode] = landBoundarySegment;
+                    m_meshNodesLandBoundarySegments[lastNode] = landBoundarySegment;
                 }
 
                 if (stopPathSearch && numConnectedNodes == 1)
                 {
-                    m_nodeLandBoundarySegments[lastSegment];
+                    m_meshNodesLandBoundarySegments[lastSegment];
                 }
 
                 if (currentNode == startMeshNode)
@@ -358,7 +563,7 @@ namespace GridGeom
 
             if (numConnectedNodes == 1)
             {
-                m_nodeLandBoundarySegments[lastNode] = lastSegment;
+                m_meshNodesLandBoundarySegments[lastNode] = lastSegment;
             }
 
             return true;
@@ -602,7 +807,7 @@ namespace GridGeom
 
             const double meshEdgeLength = Distance(firstMeshNode, secondMeshNode, mesh.m_projection);
 
-            const double distanceFactor = meshBoundOnly ? m_closeToLandBoundary : m_closeWholeMesh;
+            const double distanceFactor = meshBoundOnly ? m_closeToLandBoundaryFactor : m_closeWholeMeshFactor;
             const double closeDistance = meshEdgeLength * distanceFactor;
 
             double ratioFirstMeshNode;
@@ -940,6 +1145,7 @@ namespace GridGeom
             return true;
         }
 
+        /// toland, compute the nearest point on the land boundary
         bool NearestPointOnLandBoundary(const Mesh& mesh, const Point& node, int startLandBoundaryIndex, int endLandBoundaryIndex,
             double& minimumDistance, Point& pointOnLandBoundary, int& nearestLandBoundaryNodeIndex, double& edgeRatio)
         {
@@ -1003,37 +1209,39 @@ namespace GridGeom
         }
 
 
-        std::vector<Point> m_nodes;                     // XLAN, YLAN, ZLAN
-        int m_numAllocatedNodes;                        // MAXLAN
-        int m_numNodesLoc;                              // MXLAN_loc
+        std::vector<Point> m_nodes;                       // XLAN, YLAN, ZLAN
+        int m_numAllocatedNodes;                          // MAXLAN
+        int m_numNodesLoc;                                // MXLAN_loc
+        int m_numNode;                                    // actual MXLAN
+ 
+       // number of land boundary segments 
+        int m_numSegments = 0;                            // Nlanseg
+        std::vector<std::vector<int>> m_segmentIndices;   // lanseg_startend
+        std::vector<std::vector<double>> m_nodesLand;     // !node to land boundary segment mapping
+        std::vector<int> m_meshNodesLandBoundarySegments; // lanseg_map mesh node to land boundary
 
-        // number of land boundary segments
-        int m_numSegments;                               // Nlanseg
-        int m_numNode;                                   // actual MXLAN
-
-        int m_numSegmentIndexses = 0;
-        std::vector<std::vector<int>> m_segmentIndices;  // lanseg_startend
-        std::vector<std::vector<double>> m_nodesLand;    // !node to land boundary segment mapping
-        std::vector<int> m_nodeMask;                     // masking the net nodes
-        std::vector<int> m_faceMask;                     // masking faces
-        std::vector<int> m_edgeMask;                     // masking edges
-        std::vector<Point> polygonCache;                 // array of points (e.g. points of a face)
-
-        std::vector<int> m_nodeLandBoundarySegments;
-        std::vector<double> m_nodesMinDistances;
-
+        std::vector<int> m_nodeMask;                      // masking the net nodes
+        std::vector<int> m_faceMask;                      // masking faces
+        std::vector<int> m_edgeMask;                      // masking edges
+        
         bool m_landMask = true;
+        bool m_addLandboundaries = true;
         int m_numFacesMasked = 0;
         int m_maskDepth = 0;
 
-        int m_LeftIndex;                                // outer land boundary segments in projection
+
+        int m_LeftIndex;                                  // outer land boundary segments in projection
         int m_RightIndex;
-        double m_leftEdgeRatio;                         // fractional location of the projected outer nodes(min and max) on the land boundary segment
+        double m_leftEdgeRatio;                           // fractional location of the projected outer nodes(min and max) on the land boundary segment
         double m_rightEdgeRatio;
 
+        // caches
+        std::vector<Point> polygonCache;                  // array of points (e.g. points of a face)
+        std::vector<double> m_nodesMinDistances;
+
         // Parameters
-        const double m_closeToLandBoundary = 5.0;      // close - to - landboundary tolerance, measured in number of meshwidths
-        const double m_closeWholeMesh = 1.0;           // close - to - landboundary tolerance, measured in number of meshwidths
+        const double m_closeToLandBoundaryFactor = 5.0;        // close - to - landboundary tolerance, measured in number of meshwidths
+        const double m_closeWholeMeshFactor = 1.0;             // close - to - landboundary tolerance, measured in number of meshwidths
         const double m_minDistanceFromLandFactor = 2.0;
     };
 }
