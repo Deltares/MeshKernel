@@ -6,7 +6,7 @@
 #include "Operations.cpp"
 #include "Orthogonalization.hpp"
 
-bool GridGeom::Orthogonalization::initialize(const Mesh& mesh,
+bool GridGeom::Orthogonalization::Initialize(const Mesh& mesh,
     int& isTriangulationRequired,
     int& isAccountingForLandBoundariesRequired,
     int& projectToLandBoundaryOption,
@@ -63,7 +63,7 @@ bool GridGeom::Orthogonalization::initialize(const Mesh& mesh,
     return true;
 }
 
-bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
+bool GridGeom::Orthogonalization::Iterate(Mesh& mesh)
 {
     bool state = true;
 
@@ -71,7 +71,7 @@ bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
     {
         if (state)
         {
-            state = prapareOuterIteration(mesh);
+            state = PrapareOuterIteration(mesh);
         }
         for (std::size_t boundaryIter = 0; boundaryIter < m_orthogonalizationBoundaryIterations; boundaryIter++)
         {
@@ -79,7 +79,7 @@ bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
             {
                 if (state)
                 {
-                    state = innerIteration(mesh);
+                    state = InnerIteration(mesh);
                 }
                     
             } // inner iter, inner iteration
@@ -88,7 +88,7 @@ bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
         //update mu
         if (state)
         {
-            state = finalizeOuterIteration(mesh);
+            state = FinalizeOuterIteration(mesh);
         }
             
     }// outer iter
@@ -99,7 +99,7 @@ bool GridGeom::Orthogonalization::iterate(Mesh& mesh)
 }
 
 
-bool GridGeom::Orthogonalization::prapareOuterIteration(const Mesh& mesh) 
+bool GridGeom::Orthogonalization::PrapareOuterIteration(const Mesh& mesh) 
 {
 
     bool state = true;
@@ -181,7 +181,7 @@ bool GridGeom::Orthogonalization::deallocateCaches()
     return true;
 }
 
-bool GridGeom::Orthogonalization::finalizeOuterIteration(Mesh& mesh)
+bool GridGeom::Orthogonalization::FinalizeOuterIteration(Mesh& mesh)
 {
     m_mu = std::min(2.0 * m_mu, m_mumax);
 
@@ -272,7 +272,7 @@ bool GridGeom::Orthogonalization::computeIncrements(const Mesh& mesh)
 }
 
 
-bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
+bool GridGeom::Orthogonalization::InnerIteration(Mesh& mesh)
 {
 #pragma omp parallel for
 	for (int n = 0; n < mesh.m_nodes.size(); n++)
@@ -304,6 +304,12 @@ bool GridGeom::Orthogonalization::innerIteration(Mesh& mesh)
     return true;
 }
 
+bool GridGeom::Orthogonalization::SnapToLandBoundary(Mesh& mesh, const LandBoundaries& landBoundaries)
+{
+    bool successful = false;
+
+    return successful;
+}
 
 
 bool GridGeom::Orthogonalization::projectOnBoundary(Mesh& mesh)
@@ -1630,7 +1636,7 @@ bool GridGeom::Orthogonalization::saveTopology(int currentNode,
     return true;
 }
 
-bool GridGeom::Orthogonalization::getOrthogonality(const Mesh& mesh, double* orthogonality)
+bool GridGeom::Orthogonalization::GetOrthogonality(const Mesh& mesh, double* orthogonality)
 {
     for(int e=0; e < mesh.m_edges.size() ; e++)
     {
@@ -1655,7 +1661,7 @@ bool GridGeom::Orthogonalization::getOrthogonality(const Mesh& mesh, double* ort
     return true;
 }
 
-bool GridGeom::Orthogonalization::getSmoothness(const Mesh& mesh, double* smoothness)
+bool GridGeom::Orthogonalization::GetSmoothness(const Mesh& mesh, double* smoothness)
 {
     for (int e = 0; e < mesh.m_edges.size(); e++)
     {

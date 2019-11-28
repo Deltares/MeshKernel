@@ -15,6 +15,26 @@ namespace GridGeom
     {
         double x;
         double y;
+
+        Point operator+(Point const& rhs) const 
+        {
+            Point point
+            {
+                x + rhs.x,
+                y + rhs.y
+            };
+            return std::move(point);
+        }
+
+        Point operator-(Point const& rhs) const
+        {
+            Point point
+            {
+                x - rhs.x,
+                y - rhs.y
+            };
+            return std::move(point);
+        }
     };
 
     struct cartesian3DPoint
