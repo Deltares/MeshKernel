@@ -198,13 +198,13 @@ namespace GridGeom
                         if (landboundarySegmentIndex == -1)
                             return false;
 
-                        if ((landboundarySegmentIndex == m_segmentIndices[landboundarySegmentIndex][0] && edgeRatio < 0.0) ||
-                            (landboundarySegmentIndex == m_segmentIndices[landboundarySegmentIndex][1] && edgeRatio > 1.0))
+                        if ((nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][0]     && edgeRatio < 0.0) ||
+                            (nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][1] - 1 && edgeRatio > 1.0))
                         {
                             if (m_addLandboundaries)
                             {
                                 AddLandBoundary(mesh, nodesLoc, numNodesLoc, lastVisitedNode);
-                                m_meshNodesLandBoundarySegments[meshNode] = landboundarySegmentIndex;
+                                m_meshNodesLandBoundarySegments[meshNode] = m_numSegments - 1; //last added ;and boundary
                             }
                         }
                         else 
