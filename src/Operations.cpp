@@ -89,7 +89,7 @@ namespace GridGeom
         cartesianPoint.y = rr * sin(sphericalPoint.x * degrad_hp);
     }
 
-    //  transform 3d cartesian coordinates to 2d spherical
+    /// Transform 3d cartesian coordinates to 2d spherical
     static void CartesianToSpherical(const cartesian3DPoint& cartesianPoint, const double referenceLongitude, Point& sphericalPoint)
     {
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
@@ -97,11 +97,11 @@ namespace GridGeom
         sphericalPoint.x = angle + std::lround((referenceLongitude - angle) / 360.0) * 360.0;
     }
 
-    // IsLeft(): tests if a point is Left|On|Right of an infinite line.
-    //    Input:  three points leftPoint, rightPoint, and point
-    //    Return: >0 for point left of the line through leftPoint and rightPoint
-    //            =0 for point  on the line
-    //            <0 for point  right of the line
+    /// IsLeft(): tests if a point is Left|On|Right of an infinite line.
+    ///    Input:  three points leftPoint, rightPoint, and point
+    ///    Return: >0 for point left of the line through leftPoint and rightPoint
+    ///            =0 for point  on the line
+    ///            <0 for point  right of the line
     static double IsLeft(const Point& leftPoint, const Point& rightPoint, const Point& point)
     {
         double left = (rightPoint.x - leftPoint.x) * (point.y - leftPoint.y) - (point.x - leftPoint.x) * (rightPoint.y - leftPoint.y);
@@ -109,8 +109,8 @@ namespace GridGeom
     }
 
 
-    // check if a point is in polygon using the winding number method
-    // polygon: a closed polygon consisting in a vector of numberOfPolygonPoints+1 in counter clockwise order
+    /// Check if a point is in polygon using the winding number method
+    /// polygon: a closed polygon consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
     static bool IsPointInPolygon(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
     {
         if (numberOfPolygonPoints <= 0)
