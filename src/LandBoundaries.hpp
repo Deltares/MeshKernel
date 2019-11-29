@@ -1208,6 +1208,9 @@ namespace GridGeom
             return false;
         }
 
+        std::vector<int> m_meshNodesLandBoundarySegments; // lanseg_map mesh node to land boundary
+
+private:
 
         std::vector<Point> m_nodes;                       // XLAN, YLAN, ZLAN
         int m_numAllocatedNodes;                          // MAXLAN
@@ -1218,7 +1221,6 @@ namespace GridGeom
         int m_numSegments = 0;                            // Nlanseg
         std::vector<std::vector<int>> m_segmentIndices;   // lanseg_startend
         std::vector<std::vector<double>> m_nodesLand;     // !node to land boundary segment mapping
-        std::vector<int> m_meshNodesLandBoundarySegments; // lanseg_map mesh node to land boundary
 
         std::vector<int> m_nodeMask;                      // masking the net nodes
         std::vector<int> m_faceMask;                      // masking faces
