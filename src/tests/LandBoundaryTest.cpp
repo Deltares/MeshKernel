@@ -1,8 +1,8 @@
 #include "GridGeomTest.hpp"
-#include "../LandBoundaries.hpp"
 #include "../Mesh.cpp"
+#include "../LandBoundaries.hpp"
 
-TEST(LandBoundariesTests, LandBoundaryAdministration)
+TEST(LandBoundariesTests, OneLandBoundary)
 {
     // Prepare
     std::vector<GridGeom::Point> nodes;
@@ -65,31 +65,15 @@ TEST(LandBoundariesTests, LandBoundaryAdministration)
     landboundaries.Administrate(mesh, polygons);
     landboundaries.FindNearestMeshBoundary(mesh, polygons, true);
 
-    //check m_nodeLandBoundarySegments
-
-
-
-    //constexpr double tolerance = 1e-2;
-
-    //ASSERT_NEAR(325.590101919525, mesh.m_nodes[0].x, tolerance);
-    //ASSERT_NEAR(229.213730481198, mesh.m_nodes[1].x, tolerance);
-    //ASSERT_NEAR(263.439319753147, mesh.m_nodes[2].x, tolerance);
-    //ASSERT_NEAR(429.191105834504, mesh.m_nodes[3].x, tolerance);
-    //ASSERT_NEAR(535.865215426468, mesh.m_nodes[4].x, tolerance);
-    //ASSERT_NEAR(503.753784179688, mesh.m_nodes[5].x, tolerance);
-    //ASSERT_NEAR(354.048340705929, mesh.m_nodes[6].x, tolerance);
-    //ASSERT_NEAR(346.790050854504, mesh.m_nodes[7].x, tolerance);
-    //ASSERT_NEAR(315.030130405285, mesh.m_nodes[8].x, tolerance);
-    //ASSERT_NEAR(424.314957449766, mesh.m_nodes[9].x, tolerance);
-
-    //ASSERT_NEAR(455.319334078551, mesh.m_nodes[0].y, tolerance);
-    //ASSERT_NEAR(362.573521507281, mesh.m_nodes[1].y, tolerance);
-    //ASSERT_NEAR(241.096458631763, mesh.m_nodes[2].y, tolerance);
-    //ASSERT_NEAR(211.483073921775, mesh.m_nodes[3].y, tolerance);
-    //ASSERT_NEAR(311.401495506714, mesh.m_nodes[4].y, tolerance);
-    //ASSERT_NEAR(432.379974365234, mesh.m_nodes[5].y, tolerance);
-    //ASSERT_NEAR(458.064836627594, mesh.m_nodes[6].y, tolerance);
-    //ASSERT_NEAR(405.311585650679, mesh.m_nodes[7].y, tolerance);
-    //ASSERT_NEAR(319.612138503550, mesh.m_nodes[8].y, tolerance);
-    //ASSERT_NEAR(327.102805172725, mesh.m_nodes[9].y, tolerance);
+    // Checks
+    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[0]);
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[1]);
+    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[2]);
+    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[3]);
+    EXPECT_EQ(3, landboundaries.m_meshNodesLandBoundarySegments[4]);
+    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[5]);
+    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[6]);
+    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[9]);
 }
