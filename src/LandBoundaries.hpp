@@ -5,7 +5,6 @@
 #include "Constants.cpp"
 #include "Operations.cpp"
 #include "Polygons.hpp"
-#include "Polygons.hpp"
 
 namespace GridGeom
 {
@@ -40,9 +39,16 @@ namespace GridGeom
         };
 
 
-        bool FindNearestMeshBoundary(const Mesh& mesh, const Polygons& polygon, bool meshBoundOnly)
+        bool FindNearestMeshBoundary(const Mesh& mesh, const Polygons& polygon, int snapping)
         {
             bool successful = false;
+            bool meshBoundOnly = false;
+
+            if (snapping == 2 || snapping == 3) 
+            {
+                meshBoundOnly = true;
+            }
+
             m_nodeMask.resize(mesh.m_nodes.size(), intMissingValue);
             m_faceMask.resize(mesh.m_numFaces, intMissingValue);
             m_edgeMask.resize(mesh.m_edges.size(), intMissingValue);
@@ -60,7 +66,7 @@ namespace GridGeom
                 if (!successful)
                     return false;
 
-                if (meshBoundOnly && numRejectedPaths > 0) 
+                if (numRejectedPaths > 0 && snapping ==3)
                 {
                     successful = MakePath(mesh, polygon, n, false, numPaths, numRejectedPaths);
                     if (!successful)
@@ -77,7 +83,7 @@ namespace GridGeom
                 {
                     if (mesh.m_edgesNumFaces[e] != 1)
                         continue;
-                    successful = AssignAllBoundaryMeshNodesToLandBoundaries(mesh, e, true, connectedNodes, numConnectedNodes);
+                    successful = AssignSegmentsToAllMeshNodes(mesh, e, true, connectedNodes, numConnectedNodes);
                     if (!successful)
                         return false;
                 }            
@@ -88,7 +94,7 @@ namespace GridGeom
 
 
         /// connect_boundary_paths, build an additional boundary for not assigned nodes  
-        bool AssignAllBoundaryMeshNodesToLandBoundaries(const Mesh& mesh, int edgeIndex, bool initialize, std::vector<int>& nodes, int numNodes)
+        bool AssignSegmentsToAllMeshNodes(const Mesh& mesh, int edgeIndex, bool initialize, std::vector<int>& nodes, int numNodes)
         {
             bool successful = false;
             std::vector<int> nodesLoc;
@@ -215,7 +221,7 @@ namespace GridGeom
                 }
                 else
                 {
-                    AssignAllBoundaryMeshNodesToLandBoundaries(mesh, edge, false, nodesLoc, numNodesLoc + 1);
+                    AssignSegmentsToAllMeshNodes(mesh, edge, false, nodesLoc, numNodesLoc + 1);
                 }
             }
             return true;
@@ -577,6 +583,7 @@ namespace GridGeom
 
             // check if any of the land boundary node is inside a mesh face
             bool nodeInFace = false;
+            int crossedFaceIndex = -1;
             for (int i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
             {
                 for (int f = 0; f < mesh.m_numFaces; f++)
@@ -593,8 +600,11 @@ namespace GridGeom
                     polygonCache[numFaceNodes] = polygonCache[0];
 
                     nodeInFace = IsPointInPolygon(m_nodes[i], polygonCache, numFaceNodes);
-                    if (nodeInFace)
+                    if (nodeInFace) 
+                    {
+                        crossedFaceIndex = f;
                         break;
+                    }  
                 }
 
                 if (nodeInFace)
@@ -602,9 +612,9 @@ namespace GridGeom
             }
 
             // try to find a boundary cell that is crossed by the land boundary segment
-            int crossedFaceIndex = -1;
             if (!nodeInFace)
             {
+                crossedFaceIndex = -1;
                 for (int e = 0; e < mesh.m_edges.size(); e++)
                 {
                     if (mesh.m_edgesNumFaces[e] != 1)
@@ -685,16 +695,12 @@ namespace GridGeom
                     int endNode = 0;
                     for (int e = 0; e < mesh.m_edges.size(); e++)
                     {
-                        if (mesh.m_edgesNumFaces[e] != 1)
-                            continue;
-
-                        int otherFace = mesh.m_edgesFaces[e][0];
-
-                        if (mesh.m_edges[e].first < 0 || mesh.m_edges[e].second < 0)
+                        if (mesh.m_edgesNumFaces[e] != 1 || mesh.m_edges[e].first < 0 || mesh.m_edges[e].second < 0)
                             continue;
 
                         bool isClose = false;
                         int landBoundaryNode = 0;
+                        int otherFace = mesh.m_edgesFaces[e][0];
                         for (int ee = 0; ee < mesh.m_facesEdges[otherFace].size(); ee++)
                         {
                             int edge = mesh.m_facesEdges[otherFace][ee];
@@ -719,14 +725,14 @@ namespace GridGeom
                         continue;
 
                     int isFaceFound = 0;
-                    for (int e = 0; e <  mesh.m_facesEdges.size(); e++)
+                    for (int e = 0; e <  mesh.m_facesEdges[face].size(); e++)
                     {
                         // is a boundary edge, continue
                         int currentEdge = mesh.m_facesEdges[face][e];
                         if (mesh.m_edgesNumFaces[currentEdge] <= 1)
                             continue;
 
-                        int otherFace = mesh.m_edgesFaces[e][0] + mesh.m_edgesFaces[e][1] - face;
+                        int otherFace = mesh.m_edgesFaces[currentEdge][0] + mesh.m_edgesFaces[currentEdge][1] - face;
 
                         // already masked
                         if (m_faceMask[otherFace] != intMissingValue)
@@ -768,11 +774,11 @@ namespace GridGeom
                         {
                             m_numFacesMasked += 1;
                             numNextFaces += 1;
-                            if (numNextFaces > nextFaces.size())
+                            if (numNextFaces >= nextFaces.size())
                             {
                                 nextFaces.resize(std::max(int(numNextFaces *1.2), 10));
                             }
-                            nextFaces[numNextFaces] = otherFace;
+                            nextFaces[numNextFaces - 1] = otherFace;
                         }
                     }
                 }
@@ -1214,15 +1220,16 @@ private:
 
         std::vector<Point> m_nodes;                       // XLAN, YLAN, ZLAN
         int m_numAllocatedNodes;                          // MAXLAN
-        int m_numNodesLoc;                                // MXLAN_loc
         int m_numNode;                                    // actual MXLAN
+        int m_numNodesLoc;                                // MXLAN_loc
+
  
        // number of land boundary segments 
         int m_numSegments = 0;                            // Nlanseg
         std::vector<std::vector<int>> m_segmentIndices;   // lanseg_startend
         std::vector<std::vector<double>> m_nodesLand;     // !node to land boundary segment mapping
 
-        std::vector<int> m_nodeMask;                      // masking the net nodes
+        std::vector<int> m_nodeMask;                      // nodemask, masking the net nodes
         std::vector<int> m_faceMask;                      // masking faces
         std::vector<int> m_edgeMask;                      // masking edges
         
