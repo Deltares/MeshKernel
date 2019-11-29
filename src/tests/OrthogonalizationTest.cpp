@@ -1,9 +1,10 @@
 #include "GridGeomTest.hpp"
 #include "../Orthogonalization.cpp"
+#include <chrono>
+
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
-#include <chrono>
 
 TEST(OrthogonalizationTests, TestOrthogonalizationOneQuadOneTriangle)
 {
