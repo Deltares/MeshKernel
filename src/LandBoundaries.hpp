@@ -680,7 +680,7 @@ namespace GridGeom
 
         /// maskcells, mask the cells that are intersected by the land boundary
         bool MaskFaces(const Mesh& mesh, const bool& meshBoundOnly, 
-            std::vector<int>& landBoundaryFaces, int& startNodeLandBoundary, int &endNodeLandBoundary)
+            std::vector<int>& landBoundaryFaces,  int startNodeLandBoundaryIndex,  int endNodeLandBoundaryindex)
         {
             int numNextFaces = 0;
             std::vector<int> nextFaces(landBoundaryFaces.size(), intMissingValue);
@@ -704,7 +704,7 @@ namespace GridGeom
                         for (int ee = 0; ee < mesh.m_facesEdges[otherFace].size(); ee++)
                         {
                             int edge = mesh.m_facesEdges[otherFace][ee];
-                            isClose = IsEdgeCloseToLandBoundaries(mesh, edge, startNodeLandBoundary, endNodeLandBoundary, meshBoundOnly, landBoundaryNode);
+                            isClose = IsEdgeCloseToLandBoundaries(mesh, edge, startNodeLandBoundaryIndex, endNodeLandBoundaryindex, meshBoundOnly, landBoundaryNode);
 
                             if (isClose)
                             {
@@ -757,7 +757,7 @@ namespace GridGeom
                                 // visited edge
                                 m_edgeMask[edgeOtherFace] = 0;
                                 int landBoundaryNode = 0;
-                                bool isClose = IsEdgeCloseToLandBoundaries(mesh, edgeOtherFace, landBoundaryNode, startNodeLandBoundary, meshBoundOnly, endNodeLandBoundary);
+                                bool isClose = IsEdgeCloseToLandBoundaries(mesh, edgeOtherFace, startNodeLandBoundaryIndex, endNodeLandBoundaryindex, meshBoundOnly, landBoundaryNode);
 
                                 if (isClose)
                                 {
@@ -789,8 +789,8 @@ namespace GridGeom
             if (numNextFaces > 0)
             {
                 m_maskDepth += 1;
-                MaskFaces(mesh, meshBoundOnly, nextFaces, startNodeLandBoundary, endNodeLandBoundary);
-                m_maskDepth += 1;
+                MaskFaces(mesh, meshBoundOnly, nextFaces, startNodeLandBoundaryIndex, endNodeLandBoundaryindex);
+                m_maskDepth -= 1;
             }
 
             return true;
@@ -798,12 +798,12 @@ namespace GridGeom
 
         /// linkcrossedbyland, check if a mesh edge is close to a land boundary segment
         bool IsEdgeCloseToLandBoundaries(const Mesh& mesh,
-            int edgeIndex, int startNodeLandBoundary, int endNodeLandBoundary, bool meshBoundOnly, 
+            int edgeIndex, int startNodeLandBoundaryIndex, int endNodeLandBoundaryIndex, bool meshBoundOnly, 
             int& landBoundaryNode)
         {
             bool isClose = false;
 
-            const int startNode = std::max(std::min(landBoundaryNode, endNodeLandBoundary - 1), startNodeLandBoundary);
+            const int startNode = std::max(std::min(landBoundaryNode, endNodeLandBoundaryIndex - 1), startNodeLandBoundaryIndex);
 
             if (mesh.m_edges[edgeIndex].first < 0 || mesh.m_edges[edgeIndex].second < 0)
                 return false;
@@ -864,7 +864,7 @@ namespace GridGeom
 
                 // search the next land boundary edge if projections are not within is within the segment currentNode / currentNode + 1
                 searchIter = 0;
-                while ((searchIter == 0 || currentNode < startNodeLandBoundary || currentNode > endNodeLandBoundary - 1) && searchIter < 3)
+                while ((searchIter == 0 || currentNode < startNodeLandBoundaryIndex || currentNode > endNodeLandBoundaryIndex - 1) && searchIter < 3)
                 {
                     searchIter += 1;
                     if (stepNode < 0)

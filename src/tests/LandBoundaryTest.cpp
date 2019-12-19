@@ -229,13 +229,13 @@ TEST(LandBoundariesTests, OneCrossingLandBoundary)
     landboundaries.FindNearestMeshBoundary(mesh, polygons, 2);
 
     // Checks
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[0]);
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[1]);
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[2]);
-    EXPECT_EQ(3, landboundaries.m_meshNodesLandBoundarySegments[3]);
-    EXPECT_EQ(3, landboundaries.m_meshNodesLandBoundarySegments[4]);
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[5]);
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[6]);
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[0]);
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[1]);
+    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[2]);
+    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[3]);
+    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[4]);
+    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[5]);
+    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[6]);
     EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[7]);
     EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[8]);
     EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[9]);
