@@ -39,6 +39,130 @@ namespace GridGeom
         };
 
 
+        // admin_landboundary_segments
+        // The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary
+        // TODO: ? Why splitting in two segments is required?
+        bool Administrate(Mesh& mesh, Polygons& polygons)
+        {
+
+            std::vector<int> landBoundaryMask(m_numNode - 1, 0);
+            //mask the landboundary that is inside the selecting polygon
+            for (int n = 0; n < m_numNode - 1; n++)
+            {
+                if (m_nodes[n].x != doubleMissingValue && m_nodes[n + 1].x != doubleMissingValue)
+                {
+                    bool firstPointInPolygon = IsPointInPolygon(m_nodes[n], polygons.m_nodes, polygons.m_numNodes);
+                    bool secondPointInPolygon = IsPointInPolygon(m_nodes[n + 1], polygons.m_nodes, polygons.m_numNodes);
+
+                    if (firstPointInPolygon || secondPointInPolygon)
+                    {
+                        landBoundaryMask[n] = -1;
+                    }
+                }
+            }
+
+            // network boundary to polygon
+            int counterClockWise = 0;
+            int setMeshState = 0;
+            std::vector<Point> meshBoundaryPolygon;
+            int numNodesBoundaryPolygons;
+            const bool successful = polygons.MeshBoundaryToPolygon(mesh, counterClockWise, setMeshState, meshBoundaryPolygon, numNodesBoundaryPolygons);
+            if (!successful)
+            {
+                return false;
+            }
+
+            // Mask nodes close enough to land boundary segments 
+            for (int n = 0; n < m_numNode - 1; n++)
+            {
+                if (landBoundaryMask[n] != 0)
+                {
+
+                    Point firstPoint = m_nodes[n];
+                    Point secondPoint = m_nodes[n + 1];
+                    const double landBoundaryLength = Distance(firstPoint, secondPoint, mesh.m_projection);
+
+                    bool landBoundaryIsClose = false;
+                    for (int nn = 0; nn < numNodesBoundaryPolygons - 1; nn++)
+                    {
+                        Point firstMeshBoundaryNode = meshBoundaryPolygon[nn];
+                        Point secondMeshBoundaryNode = meshBoundaryPolygon[nn + 1];
+
+                        if (firstMeshBoundaryNode.x == doubleMissingValue || secondMeshBoundaryNode.x == doubleMissingValue)
+                        {
+                            continue;
+                        }
+
+                        const double edgeLength = Distance(firstMeshBoundaryNode, secondMeshBoundaryNode, mesh.m_projection);
+                        const double minDistance = m_closeToLandBoundaryFactor * edgeLength;
+
+                        Point normalPoint;
+                        double rlout;
+                        const double distanceFirstMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, mesh.m_projection);
+                        const double distanceSecondMeshNode = DistanceFromLine(secondMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, mesh.m_projection);
+
+                        if (distanceFirstMeshNode <= minDistance || distanceFirstMeshNode <= distanceSecondMeshNode)
+                        {
+                            landBoundaryIsClose = true;
+                            break;
+                        }
+                    }
+
+                    if (landBoundaryIsClose)
+                    {
+                        landBoundaryMask[n] = 1;
+                    }
+                }
+            }
+
+            // In m_segmentIndices: start and ending indexses of segments inside polygon
+            m_segmentIndices.resize(m_numNode, std::vector<int>(2, -1));
+            int begin = 0;
+            int end = m_numNode + 1;
+            while (begin < end)
+            {
+                int found = begin;
+                for (int n = begin; n < end; n++)
+                {
+                    if (m_nodes[n].x == doubleMissingValue)
+                    {
+                        found = n;
+                        break;
+                    }
+                }
+
+                int startInd = begin;
+                int endInd = found - 1;
+                if (endInd > startInd && landBoundaryMask[startInd] != 0)
+                {
+                    m_segmentIndices[m_numSegments] = { startInd, endInd };
+                    m_numSegments++;
+                }
+                begin = found + 1;
+            }
+
+            // Generate two segments for closed land boundaries
+            int numSegmentIndexsesBeforeSplitting = m_numSegments;
+            for (int i = 0; i < numSegmentIndexsesBeforeSplitting; i++)
+            {
+                int start = m_segmentIndices[i][0];
+                int end = m_segmentIndices[i][1];
+                if (end > start)
+                {
+                    int split = int(start + (end - start) / 2);
+                    m_segmentIndices[i][1] = split;
+                    m_segmentIndices[m_numSegments][0] = split;
+                    m_segmentIndices[m_numSegments][1] = end;
+                    m_numSegments++;
+                }
+            }
+
+            return true;
+        };
+
+
+        // find_nearest_meshline
+        // Find the mesh boundary line closest to the land boundary
         bool FindNearestMeshBoundary(const Mesh& mesh, const Polygons& polygon, int snapping)
         {
             bool successful = false;
@@ -292,140 +416,12 @@ namespace GridGeom
             return successful;
         }
 
-        // admin_landboundary_segments
-        bool Administrate(Mesh& mesh, Polygons& polygons)
-        {
-
-            std::vector<int> landBoundaryMask(m_numNode - 1, 0);
-            //mask the landboundary that is inside the selecting polygon
-            for (int n = 0; n < m_numNode - 1; n++)
-            {
-                if (m_nodes[n].x != doubleMissingValue && m_nodes[n + 1].x != doubleMissingValue)
-                {
-                    bool firstPointInPolygon = IsPointInPolygon(m_nodes[n], polygons.m_nodes, polygons.m_numNodes);
-                    bool secondPointInPolygon = IsPointInPolygon(m_nodes[n + 1], polygons.m_nodes, polygons.m_numNodes);
-
-                    if (firstPointInPolygon || secondPointInPolygon)
-                    {
-                        landBoundaryMask[n] = -1;
-                    }
-                }
-            }
-
-            // network boundary to polygon
-            int counterClockWise = 0;
-            int setMeshState = 0;
-            std::vector<Point> meshBoundaryPolygon;
-            int numNodesBoundaryPolygons;
-            const bool successful = polygons.MeshBoundaryToPolygon(mesh, counterClockWise, setMeshState, meshBoundaryPolygon, numNodesBoundaryPolygons);
-            if (!successful)
-            {
-                return false;
-            }
-
-            // Mask nodes close enough to land boundary segments 
-            for (int n = 0; n < m_numNode - 1; n++)
-            {
-                if (landBoundaryMask[n] != 0)
-                {
-
-                    Point firstPoint = m_nodes[n];
-                    Point secondPoint = m_nodes[n + 1];
-                    const double landBoundaryLength = Distance(firstPoint, secondPoint, mesh.m_projection);
-
-                    bool landBoundaryIsClose = false;
-                    for (int nn = 0; nn < numNodesBoundaryPolygons - 1; nn++)
-                    {
-                        Point firstMeshBoundaryNode = meshBoundaryPolygon[nn];
-                        Point secondMeshBoundaryNode = meshBoundaryPolygon[nn + 1];
-
-                        if (firstMeshBoundaryNode.x == doubleMissingValue || secondMeshBoundaryNode.x == doubleMissingValue)
-                        {
-                            continue;
-                        }
-
-                        const double edgeLength = Distance(firstMeshBoundaryNode, secondMeshBoundaryNode, mesh.m_projection);
-                        const double minDistance = m_closeToLandBoundaryFactor * edgeLength;
-
-                        Point normalPoint;
-                        double rlout;
-                        const double distanceFirstMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, mesh.m_projection);
-                        const double distanceSecondMeshNode = DistanceFromLine(secondMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, mesh.m_projection);
-
-                        if (distanceFirstMeshNode <= minDistance || distanceFirstMeshNode <= distanceSecondMeshNode)
-                        {
-                            landBoundaryIsClose = true;
-                            break;
-                        }
-                    }
-
-                    if (landBoundaryIsClose)
-                    {
-                        landBoundaryMask[n] = 1;
-                    }
-                }
-            }
-
-            // In m_segmentIndices store the starting and ending indexses of the land boundaries having
-            // 1. the same landBoundaryMask
-            // 2. are inside polygons
-            m_segmentIndices.resize(m_numNode, std::vector<int>(2, -1));
-            int begin = 0;
-            int end = m_numNode + 1;
-            while (begin < end)
-            {
-                int found = begin;
-                for (int n = begin; n < end; n++)
-                {
-                    if (m_nodes[n].x == doubleMissingValue)
-                    {
-                        found = n;
-                        break;
-                    }
-                }
-
-                int startInd = begin;
-                int endInd = found - 1;
-                if (endInd > startInd && landBoundaryMask[startInd] != 0)
-                {
-                    m_segmentIndices[m_numSegments] = { startInd, endInd };
-                    m_numSegments++;
-                }
-                begin = found + 1;
-            }
-
-            // Generate two segments for closed land boundaries
-            int numSegmentIndexsesBeforeSplitting = m_numSegments;
-            for (int i = 0; i < numSegmentIndexsesBeforeSplitting; i++)
-            {
-                int start = m_segmentIndices[i][0];
-                int end = m_segmentIndices[i][1];
-                if (end > start)
-                {
-                    int split = int(start + (end - start) / 2);
-                    m_segmentIndices[i][1] = split;
-                    m_segmentIndices[m_numSegments][0] = split;
-                    m_segmentIndices[m_numSegments][1] = end;
-                    m_numSegments++;
-                }
-            }
-
-            return true;
-        };
-
-
-        /// make_path, Assigns to each node a land boundary a segment index (m_nodeLandBoundarySegments) 
+        /// make_path, Assigns to each mesh node a land boundary a segment index (m_nodeLandBoundarySegments) 
         bool MakePath(const Mesh& mesh, const Polygons& polygons, 
             int landBoundarySegment, bool meshBoundOnly, int& numNodesInPath, int& numRejectedNodesInPath)
         {
             int startLandBoundaryIndex = m_segmentIndices[landBoundarySegment][0];
             int endLandBoundaryIndex = m_segmentIndices[landBoundarySegment][1];
-
-            // these values are updated and used in FindStartEndNodes
-            m_LeftIndex = endLandBoundaryIndex - 1;
-            m_RightIndex = startLandBoundaryIndex;
-            m_leftEdgeRatio = 1.0;
-            m_rightEdgeRatio = 0.0;
 
             if (startLandBoundaryIndex < 0 || startLandBoundaryIndex >= m_numNode || startLandBoundaryIndex >= endLandBoundaryIndex)
                 return false;
@@ -436,6 +432,11 @@ namespace GridGeom
 
             int startMeshNode;
             int endMeshNode;
+            // these values are updated and used in FindStartEndNodes
+            m_LeftIndex = endLandBoundaryIndex - 1;
+            m_RightIndex = startLandBoundaryIndex;
+            m_leftEdgeRatio = 1.0;
+            m_rightEdgeRatio = 0.0;
             successful = FindStartEndMeshNodes(mesh, polygons, startLandBoundaryIndex, endLandBoundaryIndex, startMeshNode, endMeshNode);
             if (!successful)
                 return false;
@@ -910,7 +911,8 @@ namespace GridGeom
             return isClose;
         }
 
-        /// get_kstartend2, find start and end nodes for a land boundary segment. These are nodes that are
+        /// get_kstartend2
+        /// finds start and end nodes for a land boundary segment. These are nodes that are
         /// on a edge that is closest to the start and end node of the boundary segment respectively
         bool FindStartEndMeshNodes(const Mesh& mesh, const Polygons& polygons, int startLandBoundaryIndex, int endLandBoundaryIndex, int& startLandBoundaryNode, int& endLandBoundaryNode)
         {
