@@ -6,6 +6,7 @@
 #include "OrthogonalizationParametersNative.hpp"
 #include "GeometryListNative.hpp"
 #include "LandBoundaries.hpp"
+#include "Polygons.hpp"
 
 namespace GridGeom
 {
@@ -13,13 +14,13 @@ namespace GridGeom
     {
     public:
         
-        bool Initialize(const Mesh& mesh,
+        bool Set(const Mesh& mesh,
             int& isTriangulationRequired,
             int& isAccountingForLandBoundariesRequired,
             int& projectToLandBoundaryOption,
             GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
-            GridGeomApi::GeometryListNative& geometryListNativePolygon,
-            GridGeomApi::GeometryListNative& geometryListNativeLandBoundaries);
+            std::vector<Point>& polygon,
+            std::vector<Point>& landBoundaries);
 
         bool Iterate(Mesh& mesh);
 
@@ -32,56 +33,56 @@ namespace GridGeom
         bool GetOrthogonality(const Mesh& mesh, double* orthogonality);
 
         bool GetSmoothness(const Mesh& mesh, double* smoothness);
-    
+
     private:
 
         /// orthonet_project_on_boundary: project boundary-nodes back to the boundary of an original net
-        bool projectOnBoundary(Mesh& mesh);
+        bool ProjectOnBoundary(Mesh& mesh);
 
         /// snapping nodes to land boundaries
         bool SnapToLandBoundary(Mesh& mesh, const LandBoundaries& landBoundaries);
 
         /// orthonet_compweights_smooth: inverse - mapping elliptic smoother
-        bool computeWeightsSmoother(const Mesh& mesh);
+        bool ComputeWeightsSmoother(const Mesh& mesh);
 
-        bool computeSmootherOperators(const Mesh& mesh);
+        bool ComputeSmootherOperators(const Mesh& mesh);
 
         /// orthonet_comp_operators, compute coefficient matrix G of gradient at link, compute coefficientmatrix Div of gradient in node, compute coefficientmatrix Az of cell - center in cell
-        bool computeOperatorsNode(const Mesh& mesh, const int currentNode, const std::size_t& numConnectedNodes, const std::vector<std::size_t>& connectedNodes, const std::size_t& numSharedFaces, const std::vector<int>& sharedFaces,
+        bool ComputeOperatorsNode(const Mesh& mesh, const int currentNode, const std::size_t& numConnectedNodes, const std::vector<std::size_t>& connectedNodes, const std::size_t& numSharedFaces, const std::vector<int>& sharedFaces,
             const std::vector<double>& xi, const std::vector<double>& eta, const std::vector<std::vector<std::size_t>>& faceNodeMapping);
 
         /// orthonet_assign_xieta: assign xiand eta to all nodes in the stencil
-        bool computeXiEta(const Mesh& mesh, int currentNode, const std::vector<int>& sharedFaces, const int& numSharedFaces, const std::vector<std::size_t>& connectedNodes,
+        bool ComputeXiEta(const Mesh& mesh, int currentNode, const std::vector<int>& sharedFaces, const int& numSharedFaces, const std::vector<std::size_t>& connectedNodes,
             const std::size_t& numConnectedNodes, const std::vector<std::vector<std::size_t>>& faceNodeMapping, std::vector<double>& xi, std::vector<double>& eta);
 
-        bool computeFacesNumEdges(const Mesh& mesh);
+        bool ComputeFacesNumEdges(const Mesh& mesh);
 
         ///  computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face.
-        bool orthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<std::size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<std::size_t>>& faceNodeMapping);
+        bool OrthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<std::size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<std::size_t>>& faceNodeMapping);
 
-        double optimalEdgeAngle(int numFaceNodes, double theta1 = -1.0, double theta2 = -1.0, bool isBoundaryEdge = false);
+        double OptimalEdgeAngle(int numFaceNodes, double theta1 = -1.0, double theta2 = -1.0, bool isBoundaryEdge = false);
 
         ///  orthonet_compute_aspect: compute link - based aspect ratios
-        bool aspectRatio(const Mesh& mesh);
+        bool AspectRatio(const Mesh& mesh);
 
         /// orthonet_compweights: compute weights wwand right - hand side rhs in orthogonalizer
-        bool computeWeightsOrthogonalizer(const Mesh& mesh);
+        bool ComputeWeightsOrthogonalizer(const Mesh& mesh);
 
-        double matrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents);
+        double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents);
 
-        bool initializeTopologies(const Mesh& mesh);
+        bool InitializeTopologies(const Mesh& mesh);
 
-        bool allocateNodeOperators(const int topologyIndex);
+        bool AllocateNodeOperators(const int topologyIndex);
 
         /// save only the unique topologies
-        bool saveTopology(int currentNode, const std::vector<int>& sharedFaces, int numSharedFaces, const std::vector<std::size_t>& connectedNodes, int numConnectedNodes,
+        bool SaveTopology(int currentNode, const std::vector<int>& sharedFaces, int numSharedFaces, const std::vector<std::size_t>& connectedNodes, int numConnectedNodes,
             const std::vector<std::vector<std::size_t>>& faceNodeMapping, const std::vector<double>& xi, const std::vector<double>& eta);
 
-        bool computeIncrements(const Mesh& mesh);
+        bool ComputeIncrements(const Mesh& mesh);
 
-        bool allocateCaches(const Mesh& mesh);
+        bool AllocateCaches(const Mesh& mesh);
 
-        bool deallocateCaches();
+        bool DeallocateCaches();
 
         enum class NodeTypes
         {
@@ -171,5 +172,16 @@ namespace GridGeom
         std::vector<double> m_nodeYErrors;
         std::vector<int>    m_nodeErrorCode;
 
+        // the land boundary
+        LandBoundaries m_landBoundaries;
+
+        // the polygons
+        Polygons m_polygons;
+
+        int m_isTriangulationRequired;
+
+        int m_isAccountingForLandBoundariesRequired;
+        
+        int m_projectToLandBoundaryOption;
     };
 }

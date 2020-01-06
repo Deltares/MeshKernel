@@ -2,7 +2,6 @@
 
 #include <utility>
 #include <vector>
-#include <algorithm>
 #include "Mesh.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
@@ -32,8 +31,8 @@ namespace GridGeom
             return true;
         }
 
-        // copynetboundstopol
-        bool MeshBoundaryToPolygon(Mesh& mesh,
+        /// copynetboundstopol
+        bool MeshBoundaryToPolygon(const Mesh& mesh,
             int counterClockWise,
             int setMeshState,
             std::vector<Point>& meshBoundaryPolygon,
@@ -124,6 +123,7 @@ namespace GridGeom
         std::vector<Point> m_nodes;             // Polygon nodes
         int m_numNodes;                         // NPL
         int m_numAllocatedNodes;                // MAXPOL
+
     private:
 
         bool WalkBoundary(const Mesh& mesh,
