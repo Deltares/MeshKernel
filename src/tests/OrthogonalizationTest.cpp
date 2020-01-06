@@ -9,7 +9,6 @@
 TEST(OrthogonalizationTests, TestOrthogonalizationOneQuadOneTriangle)
 {
     // Preparation
-
     std::vector<GridGeom::Point> nodes;
     nodes.push_back(GridGeom::Point{ 0.0,0.0 });
     nodes.push_back(GridGeom::Point{ 0.0,10.0 });
@@ -49,6 +48,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationOneQuadOneTriangle)
         orthogonalizationParametersNative,
         geometryListNativePolygon,
         geometryListNativeLandBoundaries);
+
     orthogonalization.Iterate(mesh);
 
     // Assert
