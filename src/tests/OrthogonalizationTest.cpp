@@ -41,13 +41,16 @@ TEST(OrthogonalizationTests, TestOrthogonalizationOneQuadOneTriangle)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     GridGeom::Orthogonalization orthogonalization;
-    orthogonalization.Initialize(mesh, 
+    std::vector<GridGeom::Point> polygon;
+    std::vector<GridGeom::Point> landBoundary;
+
+    orthogonalization.Set(mesh, 
         isTriangulationRequired, 
         isAccountingForLandBoundariesRequired, 
         projectToLandBoundaryOption,
         orthogonalizationParametersNative,
-        geometryListNativePolygon,
-        geometryListNativeLandBoundaries);
+        polygon,
+        landBoundary);
 
     orthogonalization.Iterate(mesh);
 
@@ -127,14 +130,16 @@ TEST(OrthogonalizationTests, TestOrthogonalizationSmallTriangularGrid)
     GridGeom::Mesh mesh;
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
+    std::vector<GridGeom::Point> polygon;
+    std::vector<GridGeom::Point> landBoundary;
 
-    orthogonalization.Initialize(mesh,
+    orthogonalization.Set(mesh,
         isTriangulationRequired,
         isAccountingForLandBoundariesRequired,
         projectToLandBoundaryOption,
         orthogonalizationParametersNative,
-        geometryListNativePolygon,
-        geometryListNativeLandBoundaries);
+        polygon,
+        landBoundary);
 
     orthogonalization.Iterate(mesh);
 
@@ -1023,13 +1028,16 @@ TEST(OrthogonalizationTests, TestOrthogonalizationMediumTriangularGrid)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
     GridGeom::Orthogonalization orthogonalization;
 
-    orthogonalization.Initialize(mesh,
+    std::vector<GridGeom::Point> polygon;
+    std::vector<GridGeom::Point> landBoundary;
+
+    orthogonalization.Set(mesh,
         isTriangulationRequired,
         isAccountingForLandBoundariesRequired,
         projectToLandBoundaryOption,
         orthogonalizationParametersNative,
-        geometryListNativePolygon,
-        geometryListNativeLandBoundaries);
+        polygon,
+        landBoundary);
 
     orthogonalization.Iterate(mesh);
 
@@ -1103,8 +1111,6 @@ TEST(OrthogonalizationTests, TestOrthogonalizationFourQuads)
     int isAccountingForLandBoundariesRequired = 0;
     int projectToLandBoundaryOption = 0;
     GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
-    GridGeomApi::GeometryListNative geometryListNativePolygon;
-    GridGeomApi::GeometryListNative geometryListNativeLandBoundaries;
     orthogonalizationParametersNative.InnerIterations = 2;
     orthogonalizationParametersNative.BoundaryIterations = 25;
     orthogonalizationParametersNative.OuterIterations = 25;
@@ -1114,13 +1120,127 @@ TEST(OrthogonalizationTests, TestOrthogonalizationFourQuads)
     // now build node-edge mapping
     GridGeom::Mesh mesh;
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    std::vector<GridGeom::Point> polygon;
+    std::vector<GridGeom::Point> landBoundary;
+
     GridGeom::Orthogonalization orthogonalization;
-    orthogonalization.Initialize(mesh,
+    orthogonalization.Set(mesh,
         isTriangulationRequired,
         isAccountingForLandBoundariesRequired,
         projectToLandBoundaryOption,
         orthogonalizationParametersNative,
-        geometryListNativePolygon,
-        geometryListNativeLandBoundaries);
+        polygon,
+        landBoundary);
 }
 
+TEST(OrthogonalizationTests, OrthogonalizeAndSnapToLandBoundaries)
+{
+    // Prepare
+    std::vector<GridGeom::Point> nodes;
+
+    nodes.push_back(GridGeom::Point{ 322.252624511719,454.880187988281 });
+    nodes.push_back(GridGeom::Point{ 227.002044677734,360.379241943359 });
+    nodes.push_back(GridGeom::Point{ 259.252227783203,241.878051757813 });
+    nodes.push_back(GridGeom::Point{ 428.003295898438,210.377746582031 });
+    nodes.push_back(GridGeom::Point{ 536.003967285156,310.878753662109 });
+    nodes.push_back(GridGeom::Point{ 503.753784179688,432.379974365234 });
+    nodes.push_back(GridGeom::Point{ 350.752807617188,458.630249023438 });
+    nodes.push_back(GridGeom::Point{ 343.15053976393,406.232256102912 });
+    nodes.push_back(GridGeom::Point{ 310.300984548069,319.41005739802 });
+    nodes.push_back(GridGeom::Point{ 423.569603308318,326.17986967523 });
+
+    std::vector<GridGeom::Edge> edges;
+    edges.push_back({ 3, 9 });
+    edges.push_back({ 9, 2 });
+    edges.push_back({ 2, 3 });
+    edges.push_back({ 3, 4 });
+    edges.push_back({ 4, 9 });
+    edges.push_back({ 2, 8 });
+    edges.push_back({ 8, 1 });
+    edges.push_back({ 1, 2 });
+    edges.push_back({ 9, 8 });
+    edges.push_back({ 8, 7 });
+    edges.push_back({ 7, 1 });
+    edges.push_back({ 9, 10 });
+    edges.push_back({ 10, 8 });
+    edges.push_back({ 4, 5 });
+    edges.push_back({ 5, 10 });
+    edges.push_back({ 10, 4 });
+    edges.push_back({ 8, 6 });
+    edges.push_back({ 6, 7 });
+    edges.push_back({ 10, 6 });
+    edges.push_back({ 5, 6 });
+
+    for (int i = 0; i < edges.size(); i++)
+    {
+        edges[i].first -= 1;
+        edges[i].second -= 1;
+    }
+
+    GridGeom::Mesh mesh;
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    // the land boundary to use
+    std::vector<GridGeom::Point> landBoundary
+    {
+        { 235.561218, 290.571899 },
+        { 265.953522, 436.515747 },
+        { 429.349854, 450.959656 },
+        { 535.271545, 386.262909 },
+        { GridGeom::doubleMissingValue, GridGeom::doubleMissingValue },
+        { 246.995941, 262.285858 },
+        { 351.112183, 237.309906 },
+        { 443.191895, 262.285858 },
+        { 553.627319, 327.283539 },
+    };
+
+    // no enclosing polygon
+    std::vector<GridGeom::Point> polygon;
+
+    int isTriangulationRequired = 0;
+    int isAccountingForLandBoundariesRequired = 1;
+    int projectToLandBoundaryOption = 2;
+    GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
+    orthogonalizationParametersNative.InnerIterations = 2;
+    orthogonalizationParametersNative.BoundaryIterations = 25;
+    orthogonalizationParametersNative.OuterIterations = 25;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.975;
+
+    GridGeom::Orthogonalization orthogonalization;
+    orthogonalization.Set(mesh,
+        isTriangulationRequired,
+        isAccountingForLandBoundariesRequired,
+        projectToLandBoundaryOption,
+        orthogonalizationParametersNative,
+        polygon,
+        landBoundary);
+
+    orthogonalization.Iterate(mesh);
+
+    constexpr double tolerance = 1.5;
+
+    // check the first 10 points
+    ASSERT_NEAR(68.771705432835475, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(169.49338272334273, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(262.80128484924921, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(361.60010033352023, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(468.13991812406925, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(549.89461192844624, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(653.02704974527421, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(747.81537706979441, mesh.m_nodes[7].x, tolerance);
+    ASSERT_NEAR(853.40641427112951, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(938.69752431820143, mesh.m_nodes[9].x, tolerance);
+
+    ASSERT_NEAR(1399.7751472360221, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(1426.5945287630802, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(1451.4398281457179, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(1477.7472050498141, mesh.m_nodes[3].y, tolerance);
+    ASSERT_NEAR(1506.1157955857589, mesh.m_nodes[4].y, tolerance);
+    ASSERT_NEAR(1527.8847968946166, mesh.m_nodes[5].y, tolerance);
+    ASSERT_NEAR(1555.3460969050145, mesh.m_nodes[6].y, tolerance);
+    ASSERT_NEAR(1580.5855923464549, mesh.m_nodes[7].y, tolerance);
+    ASSERT_NEAR(1608.7015489976982, mesh.m_nodes[8].y, tolerance);
+    ASSERT_NEAR(1631.412199601948, mesh.m_nodes[9].y, tolerance);
+}
