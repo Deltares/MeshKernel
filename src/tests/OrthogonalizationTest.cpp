@@ -1200,6 +1200,8 @@ TEST(OrthogonalizationTests, OrthogonalizeAndSnapToLandBoundaries)
 
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 1;
+
+    // snap to land boundaries
     int projectToLandBoundaryOption = 2;
     GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
     orthogonalizationParametersNative.InnerIterations = 2;
@@ -1219,28 +1221,27 @@ TEST(OrthogonalizationTests, OrthogonalizeAndSnapToLandBoundaries)
 
     orthogonalization.Iterate(mesh);
 
-    constexpr double tolerance = 1.5;
+    // check the values
+    constexpr double tolerance = 0.15;
+    ASSERT_NEAR(313.081472564480, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(253.641466857330, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(254.777224294204, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(443.191895000000, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(535.240231516760, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(480.436129612752, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(345.948240805397, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(342.668434889472, mesh.m_nodes[7].x, tolerance);
+    ASSERT_NEAR(318.414413615199, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(424.616311031376, mesh.m_nodes[9].x, tolerance);
 
-    // check the first 10 points
-    ASSERT_NEAR(68.771705432835475, mesh.m_nodes[0].x, tolerance);
-    ASSERT_NEAR(169.49338272334273, mesh.m_nodes[1].x, tolerance);
-    ASSERT_NEAR(262.80128484924921, mesh.m_nodes[2].x, tolerance);
-    ASSERT_NEAR(361.60010033352023, mesh.m_nodes[3].x, tolerance);
-    ASSERT_NEAR(468.13991812406925, mesh.m_nodes[4].x, tolerance);
-    ASSERT_NEAR(549.89461192844624, mesh.m_nodes[5].x, tolerance);
-    ASSERT_NEAR(653.02704974527421, mesh.m_nodes[6].x, tolerance);
-    ASSERT_NEAR(747.81537706979441, mesh.m_nodes[7].x, tolerance);
-    ASSERT_NEAR(853.40641427112951, mesh.m_nodes[8].x, tolerance);
-    ASSERT_NEAR(938.69752431820143, mesh.m_nodes[9].x, tolerance);
-
-    ASSERT_NEAR(1399.7751472360221, mesh.m_nodes[0].y, tolerance);
-    ASSERT_NEAR(1426.5945287630802, mesh.m_nodes[1].y, tolerance);
-    ASSERT_NEAR(1451.4398281457179, mesh.m_nodes[2].y, tolerance);
-    ASSERT_NEAR(1477.7472050498141, mesh.m_nodes[3].y, tolerance);
-    ASSERT_NEAR(1506.1157955857589, mesh.m_nodes[4].y, tolerance);
-    ASSERT_NEAR(1527.8847968946166, mesh.m_nodes[5].y, tolerance);
-    ASSERT_NEAR(1555.3460969050145, mesh.m_nodes[6].y, tolerance);
-    ASSERT_NEAR(1580.5855923464549, mesh.m_nodes[7].y, tolerance);
-    ASSERT_NEAR(1608.7015489976982, mesh.m_nodes[8].y, tolerance);
-    ASSERT_NEAR(1631.412199601948, mesh.m_nodes[9].y, tolerance);
+    ASSERT_NEAR(440.681763586650, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(377.393256506700, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(260.419242817573, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(262.285858000000, mesh.m_nodes[3].y, tolerance);
+    ASSERT_NEAR(316.461666783032, mesh.m_nodes[4].y, tolerance);
+    ASSERT_NEAR(419.756265860671, mesh.m_nodes[5].y, tolerance);
+    ASSERT_NEAR(443.587120174434, mesh.m_nodes[6].y, tolerance);
+    ASSERT_NEAR(402.913858250569, mesh.m_nodes[7].y, tolerance);
+    ASSERT_NEAR(336.831643075189, mesh.m_nodes[8].y, tolerance);
+    ASSERT_NEAR(340.875100904741, mesh.m_nodes[9].y, tolerance);
 }

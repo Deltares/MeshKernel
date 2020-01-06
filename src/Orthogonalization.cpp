@@ -60,22 +60,8 @@ bool GridGeom::Orthogonalization::Set(const Mesh& mesh,
     m_orthogonalizationToSmoothingFactorBoundary = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary;
     m_smoothorarea = orthogonalizationParametersNative.Smoothorarea;
 
-    // set polygon
-    //std::vector<Point> polygon(geometryListNativePolygon.numberOfCoordinates);
-    //for (int i=0; i<geometryListNativePolygon.numberOfCoordinates; i++)
-    //{
-    //    polygon[i].x = geometryListNativePolygon.xCoordinates[i];
-    //    polygon[i].y = geometryListNativePolygon.yCoordinates[i];
-    //}
     m_polygons.Set(polygon);
 
-    // set land boundary
-    //std::vector<Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
-    //for (int i = 0; i<geometryListNativeLandBoundaries.numberOfCoordinates; i++)
-    //{
-    //    landBoundaries[i].x = geometryListNativeLandBoundaries.xCoordinates[i];
-    //    landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
-    //}
     m_landBoundaries.Set(landBoundaries);
 
     m_isTriangulationRequired = isTriangulationRequired;
@@ -83,6 +69,14 @@ bool GridGeom::Orthogonalization::Set(const Mesh& mesh,
     m_isAccountingForLandBoundariesRequired = isAccountingForLandBoundariesRequired;
 
     m_projectToLandBoundaryOption = projectToLandBoundaryOption;
+
+    // project on land boundary
+    if (m_projectToLandBoundaryOption >= 1)
+    {
+        // account for enclosing polygon
+        m_landBoundaries.Administrate(mesh, m_polygons);
+        m_landBoundaries.FindNearestMeshBoundary(mesh, m_polygons, m_projectToLandBoundaryOption);
+    }
 
     return true;
 }
@@ -326,10 +320,8 @@ bool GridGeom::Orthogonalization::InnerIteration(Mesh& mesh)
     ProjectOnBoundary(mesh);
 
     // project on land boundary
-    if (m_projectToLandBoundaryOption > 0)
+    if (m_projectToLandBoundaryOption >= 1)
     {
-        m_landBoundaries.Administrate(mesh, m_polygons);
-        m_landBoundaries.FindNearestMeshBoundary(mesh, m_polygons, 2);
         m_landBoundaries.SnapMeshToLandBoundaries(mesh);
     }
 
