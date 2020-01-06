@@ -51,7 +51,7 @@ TEST(LandBoundariesTests, OneLandBoundary)
     GridGeom::Mesh mesh;
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
-    GridGeom::LandBoundaries landboundaries(mesh.m_projection);
+    GridGeom::LandBoundaries landboundaries;
     std::vector<GridGeom::Point> landBoundaryPolygon
     {
         { 222.621918, 382.651917 },
@@ -128,7 +128,7 @@ TEST(LandBoundariesTests, TwoLandBoundaries)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
 
-    GridGeom::LandBoundaries landboundaries(mesh.m_projection);
+    GridGeom::LandBoundaries landboundaries;
     std::vector<GridGeom::Point> landBoundaryPolygon
     {
         { 222.621918, 382.651917 },
@@ -211,7 +211,7 @@ TEST(LandBoundariesTests, OneCrossingLandBoundary)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
 
-    GridGeom::LandBoundaries landboundaries(mesh.m_projection);
+    GridGeom::LandBoundaries landboundaries;
     std::vector<GridGeom::Point> landBoundaryPolygon
     {
         { 221.418243, 315.848755 },
@@ -289,7 +289,7 @@ TEST(LandBoundariesTests, TwoCrossingLandBoundary)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
 
-    GridGeom::LandBoundaries landboundaries(mesh.m_projection);
+    GridGeom::LandBoundaries landboundaries;
     std::vector<GridGeom::Point> landBoundaryPolygon
     {
         { 235.561218, 290.571899 },
