@@ -478,6 +478,7 @@ src/Operations.cpp -text
 src/Orthogonalization.cpp -text
 src/Orthogonalization.hpp -text
 src/OrthogonalizationParametersNative.hpp -text
+src/Polygons.cpp -text
 src/Polygons.hpp -text
 src/main.cpp -text
 src/tests/GridGeomTest.hpp -text
