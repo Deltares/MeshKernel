@@ -31,6 +31,8 @@ namespace GridGeom
         /// snap netnodes to land boundary segment
         bool SnapMeshToLandBoundaries(Mesh& mesh);
 
+        std::vector<int> m_meshNodesLandBoundarySegments; // lanseg_map mesh nodes to land boundary
+
     private:
 
         /// connect_boundary_paths, build an additional boundary for not assigned nodes  
@@ -120,8 +122,6 @@ namespace GridGeom
         /// cellcrossedbyland
         /// TODO: it could be moved to generic operations
         bool IsFaceCrossedByLandBoundaries(const Mesh& mesh, int face, int startLandBoundaryIndex, int endLandBoundaryIndex);
-
-        std::vector<int> m_meshNodesLandBoundarySegments; // lanseg_map mesh nodes to land boundary
 
         std::vector<Point> m_nodes;                       // XLAN, YLAN, ZLAN
         int m_numAllocatedNodes;                          // MAXLAN
