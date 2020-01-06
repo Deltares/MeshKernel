@@ -50,12 +50,12 @@ namespace GridGeom
         std::vector<double> y;
     };
 
-    typedef std::pair<std::size_t, std::size_t> Edge;
-
     enum class Projections
     {
         cartesian,
         spherical
     };
+
+    typedef std::pair<std::size_t, std::size_t> Edge;
 
 }
