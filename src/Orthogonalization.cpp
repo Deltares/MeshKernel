@@ -301,6 +301,9 @@ bool GridGeom::Orthogonalization::InnerIteration(Mesh& mesh)
     // project on the original net boundary
     projectOnBoundary(mesh);
 
+    // project on land boundary
+    //m_landBoundaries->SnapMeshToLandBoundaries(mesh);
+
     return true;
 }
 
