@@ -1,6 +1,7 @@
 #include "GridGeomTest.hpp"
 #include "../Mesh.cpp"
-#include "../LandBoundaries.hpp"
+#include "../LandBoundaries.cpp"
+#include "../Polygons.cpp"
 #include "../Constants.cpp"
 #include <gtest/gtest.h>
 
