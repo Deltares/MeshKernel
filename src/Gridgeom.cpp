@@ -95,13 +95,30 @@ namespace GridGeomApi
         OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
     {
         GridGeom::Orthogonalization ortogonalization;
-        ortogonalization.Initialize(meshInstances[gridStateId],
+
+        // build enclosing polygon
+        std::vector<GridGeom::Point> polygon(geometryListNativePolygon.numberOfCoordinates);
+        for (int i=0; i<geometryListNativePolygon.numberOfCoordinates; i++)
+        {
+            polygon[i].x = geometryListNativePolygon.xCoordinates[i];
+            polygon[i].y = geometryListNativePolygon.yCoordinates[i];
+        }
+
+        // build land boundary
+        std::vector<GridGeom::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
+        for (int i = 0; i<geometryListNativeLandBoundaries.numberOfCoordinates; i++)
+        {
+            landBoundaries[i].x = geometryListNativeLandBoundaries.xCoordinates[i];
+            landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
+        }
+
+        ortogonalization.Set(meshInstances[gridStateId],
             isTriangulationRequired,
             isAccountingForLandBoundariesRequired,
             projectToLandBoundaryOption,
             orthogonalizationParametersNative,
-            geometryListNativePolygon,
-            geometryListNativeLandBoundaries);
+            polygon,
+            landBoundaries);
         ortogonalization.Iterate(meshInstances[gridStateId]);
         return 0;
     }
@@ -114,16 +131,29 @@ namespace GridGeomApi
         GeometryListNative& geometryListNativePolygon,
         GeometryListNative& geometryListNativeLandBoundaries)
     {
-        GridGeom::Orthogonalization ortogonalization;
-        ortogonalization.Initialize(meshInstances[gridStateId], 
+        // build enclosing polygon
+        std::vector<GridGeom::Point> polygon(geometryListNativePolygon.numberOfCoordinates);
+        for (int i = 0; i<geometryListNativePolygon.numberOfCoordinates; i++)
+        {
+            polygon[i].x = geometryListNativePolygon.xCoordinates[i];
+            polygon[i].y = geometryListNativePolygon.yCoordinates[i];
+        }
+
+        // build land boundary
+        std::vector<GridGeom::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
+        for (int i = 0; i<geometryListNativeLandBoundaries.numberOfCoordinates; i++)
+        {
+            landBoundaries[i].x = geometryListNativeLandBoundaries.xCoordinates[i];
+            landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
+        }
+
+        orthogonalizationInstances[gridStateId].Set(meshInstances[gridStateId],
             isTriangulationRequired,
             isAccountingForLandBoundariesRequired,
             projectToLandBoundaryOption,
             orthogonalizationParametersNative,
-            geometryListNativePolygon,
-            geometryListNativeLandBoundaries);
-
-        orthogonalizationInstances[gridStateId] = ortogonalization;
+            polygon,
+            landBoundaries);
         return 0;
     }
 
