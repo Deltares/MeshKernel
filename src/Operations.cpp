@@ -37,13 +37,11 @@ namespace GridGeom
     bool AllocateVector(int& newSize, std::vector<T>& vectorToResize, T fillValue = T(), int minSize = 10000)
     {
         const int currentSize = vectorToResize.size();
-        if (newSize < currentSize)
+        if (newSize < minSize || newSize > currentSize)
         {
-            newSize = currentSize;
-            return true;
+            newSize = std::max(minSize, int(5 * newSize));
+            vectorToResize.resize(newSize, fillValue);
         }
-        newSize = std::max(minSize, int(5 * newSize));
-        vectorToResize.resize(newSize, fillValue);
         return true;
     }
 
