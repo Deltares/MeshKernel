@@ -34,7 +34,7 @@ namespace GridGeom
     }
 
     template<typename T>
-    bool AllocateVector(int& newSize, std::vector<T>& vectorToResize, T fillValue = T())
+    bool AllocateVector(int& newSize, std::vector<T>& vectorToResize, T fillValue = T(), int minSize = 10000)
     {
         const int currentSize = vectorToResize.size();
         if (newSize < currentSize)
@@ -42,7 +42,7 @@ namespace GridGeom
             newSize = currentSize;
             return true;
         }
-        newSize = std::max(10000, int(5 * newSize));
+        newSize = std::max(minSize, int(5 * newSize));
         vectorToResize.resize(newSize, fillValue);
         return true;
     }
