@@ -79,6 +79,25 @@ namespace GridGeom
         return pos;
     }
 
+    static int FindIndexes(const std::vector<double>& vec, const double& separator, std::vector<std::vector<int>>& indexes)
+    {
+        int pos = 0;
+        for (int n = 0; n < vec.size(); n++)
+        {
+            if (vec[n] != separator && indexes[pos][0] == 0)
+            {
+                indexes[pos][0] = n;
+            }
+            else if (vec[n] == separator && indexes[pos][1] == 0)
+            {
+                indexes[pos][1] = n - 1;
+                pos++;
+            }
+        }
+        indexes.resize(pos);
+        return pos;
+    }
+
     // transform 2d spherical to 3d cartesian
     static void SphericalToCartesian(const Point& sphericalPoint, cartesian3DPoint& cartesianPoint)
     {
