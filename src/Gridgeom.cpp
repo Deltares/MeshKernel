@@ -198,6 +198,11 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int& number_of_points_between_vertices)
     {
 
+        if (geometry_list_out.xCoordinates == nullptr || geometry_list_out.yCoordinates == nullptr)
+        {
+            return -1;
+        }
+
         std::vector<GridGeom::Point> splines(geometryListIn.numberOfCoordinates);
         for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
@@ -207,33 +212,14 @@ namespace GridGeomApi
 
         std::vector<std::vector<int>> indexes(geometryListIn.numberOfCoordinates, std::vector<int>(2));
         int numSplines = FindIndexes(splines, GridGeom::doubleMissingValue, indexes);
-        std::vector<double> xCoordinatesDerivatives(geometryListIn.numberOfCoordinates);
-        std::vector<double> yCoordinatesDerivatives(geometryListIn.numberOfCoordinates);
-
-        // count the total number of output points
-        geometry_list_out.numberOfCoordinates = 0;
-        for (int s = 0; s < numSplines; s++)
-        {
-            // points for rendering
-            geometry_list_out.numberOfCoordinates = geometry_list_out.numberOfCoordinates + number_of_points_between_vertices * (indexes[s][1] - indexes[s][0]);
-            // add separator
-            geometry_list_out.numberOfCoordinates += 1;
-        }
-
-        if (geometry_list_out.xCoordinates == nullptr || geometry_list_out.yCoordinates == nullptr)
-        {
-            return -1;
-        }
+        std::vector<GridGeom::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
 
         int index = 0;
         for (int s = 0; s < numSplines; s++)
-        {
+        {            
+            std::vector<GridGeom::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + indexes[s][1]);
+            GridGeom::Splines::Derivative(coordinates, coordinatesDerivatives);
             int numNodes = indexes[s][1] - indexes[s][0];
-            std::vector<double> xCoordinates(geometryListIn.xCoordinates + indexes[s][0], geometryListIn.xCoordinates + indexes[s][1]);
-            std::vector<double> yCoordinates(geometryListIn.yCoordinates + indexes[s][0], geometryListIn.yCoordinates + indexes[s][1]);
-
-            GridGeom::Splines::SecondOrderDerivative(xCoordinates, xCoordinatesDerivatives);
-            GridGeom::Splines::SecondOrderDerivative(xCoordinates, yCoordinatesDerivatives);
 
             for (int n = 0; n < numNodes; n++)
             {
@@ -241,14 +227,10 @@ namespace GridGeomApi
                 {
 
                     double pointAdimensionalCoordinate = n + p / number_of_points_between_vertices;
-                    double xPointCoordinate;
-                    GridGeom::Splines::Interpolate(xCoordinates, xCoordinatesDerivatives, pointAdimensionalCoordinate, xPointCoordinate);
-                    geometry_list_out.xCoordinates[index] = xPointCoordinate;
-
-                    double yPointCoordinate;
-                    GridGeom::Splines::Interpolate(yCoordinates, yCoordinatesDerivatives, pointAdimensionalCoordinate, yPointCoordinate);
-                    geometry_list_out.yCoordinates[index] = yPointCoordinate;
-
+                    GridGeom::Point pointCoordinate;
+                    GridGeom::Splines::Interpolate(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+                    geometry_list_out.xCoordinates[index] = pointCoordinate.x;
+                    geometry_list_out.yCoordinates[index] = pointCoordinate.y;
                     geometry_list_out.zCoordinates[index] = GridGeom::doubleMissingValue;
                     index++;
                 }
@@ -259,6 +241,8 @@ namespace GridGeomApi
             geometry_list_out.zCoordinates[index] = GridGeom::doubleMissingValue;
             index++;
         }
+
+        geometry_list_out.numberOfCoordinates = index;
         return 0;
     }
 
