@@ -53,6 +53,10 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_orthogonalize_delete(int& gridStateId);
 
+        GRIDGEOM_API int ggeo_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int& number_of_points_between_vertices);
+
+        GRIDGEOM_API int ggeo_set_splines(int& gridStateId, GeometryListNative& geometryListIn);
+
 #ifdef __cplusplus
     }
 #endif
