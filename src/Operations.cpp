@@ -77,6 +77,7 @@ namespace GridGeom
                 pos++;
             }
         }
+        indexes.resize(pos);
         return pos;
     }
 
