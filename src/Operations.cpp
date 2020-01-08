@@ -63,38 +63,33 @@ namespace GridGeom
     static int FindIndexes(const std::vector<Point>& vec, const double& separator, std::vector<std::vector<int>>& indexes)
     {
         int pos = 0;
-        for (int n = 0; n < vec.size(); n++)
-        {
-            if (vec[n].x != separator && indexes[pos][0] == 0)
-            {
-                indexes[pos][0] = n;
-            }
-            else if (vec[n].x == separator && indexes[pos][1] == 0)
-            {
-                indexes[pos][1] = n - 1;
-                pos++;
-            }
-        }
-        indexes.resize(pos);
-        return pos;
-    }
 
-    static int FindIndexes(const std::vector<double>& vec, const double& separator, std::vector<std::vector<int>>& indexes)
-    {
-        int pos = 0;
+        // set an invalid index
+        for (int n = 0; n < indexes.size(); n++)
+        {
+            indexes[n][0] = -1;
+            indexes[n][1] = -1;
+        }
+
         for (int n = 0; n < vec.size(); n++)
         {
-            if (vec[n] != separator && indexes[pos][0] == 0)
+            if (vec[n].x != separator && indexes[pos][0] == -1)
             {
                 indexes[pos][0] = n;
             }
-            else if (vec[n] == separator && indexes[pos][1] == 0)
+            else if (vec[n].x == separator && indexes[pos][1] == -1)
             {
                 indexes[pos][1] = n - 1;
                 pos++;
             }
         }
-        indexes.resize(pos);
+
+        if(indexes[pos][1] == -1)
+        {
+            indexes[pos][1] = vec.size() - 1;
+            pos++;
+        }
+
         return pos;
     }
 
