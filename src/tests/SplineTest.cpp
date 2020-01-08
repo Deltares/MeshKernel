@@ -5,15 +5,10 @@ TEST(SplineTests, SetSpline)
 {
     //One gets the edges
     std::vector<GridGeom::Point> splineNodes;
-
-    splineNodes.push_back(GridGeom::Point{ 322.252624511719,454.880187988281 });
-    splineNodes.push_back(GridGeom::Point{ 227.002044677734,360.379241943359 });
-    splineNodes.push_back(GridGeom::Point{ 259.252227783203,241.878051757813 });
-    splineNodes.push_back(GridGeom::Point{ 428.003295898438,210.377746582031 });
-    splineNodes.push_back(GridGeom::Point{ 536.003967285156,310.878753662109 });
-    splineNodes.push_back(GridGeom::Point{ 503.753784179688,432.379974365234 });
-    splineNodes.push_back(GridGeom::Point{ 350.752807617188,458.630249023438 });
-    splineNodes.push_back(GridGeom::Point{ 343.15053976393,406.232256102912 });
+    splineNodes.push_back(GridGeom::Point{GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
+    splineNodes.push_back(GridGeom::Point{ GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
+    splineNodes.push_back(GridGeom::Point{ GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
+    splineNodes.push_back(GridGeom::Point{ GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
 
     GridGeom::Splines splines;
     bool success = splines.Set(splineNodes);
@@ -29,30 +24,38 @@ TEST(SplineTests, CubicSplineInterpolation)
 {
     //One gets the edges
     std::vector<GridGeom::Point> splineNodes;
+    
+    splineNodes.push_back(GridGeom::Point{ 212.001953125000, 155.627197265625 });
+    splineNodes.push_back(GridGeom::Point{ 529.253906250000, 432.379974365234 });
+    splineNodes.push_back(GridGeom::Point{ 930.506469726562, 453.380187988281 });
 
-    splineNodes.push_back(GridGeom::Point{ 322.252624511719,454.880187988281 });
-    splineNodes.push_back(GridGeom::Point{ 227.002044677734,360.379241943359 });
-    splineNodes.push_back(GridGeom::Point{ 259.252227783203,241.878051757813 });
-    splineNodes.push_back(GridGeom::Point{ 428.003295898438,210.377746582031 });
-    splineNodes.push_back(GridGeom::Point{ 536.003967285156,310.878753662109 });
-    splineNodes.push_back(GridGeom::Point{ 503.753784179688,432.379974365234 });
-    splineNodes.push_back(GridGeom::Point{ 350.752807617188,458.630249023438 });
-    splineNodes.push_back(GridGeom::Point{ 343.15053976393,406.232256102912 });
-
-    int number_of_points_between_vertices = 20;
+    int pointsBetweenVertices = 20;
     std::vector<GridGeom::Point> coordinatesDerivatives(splineNodes.size());
     GridGeom::Splines::Derivative(splineNodes, coordinatesDerivatives);
     std::vector<GridGeom::Point> splineCoordinates;
 
-    for (int n = 0; n < splineNodes.size(); n++)
+    for (int n = 0; n < splineNodes.size() - 1; n++)
     {
-        for (int p = 0; p < number_of_points_between_vertices; p++)
+        for (int p = 0; p < pointsBetweenVertices; p++)
         {
-            const double pointAdimensionalCoordinate = n + p / number_of_points_between_vertices;
+            const double pointAdimensionalCoordinate = n + (p + 1.0) / pointsBetweenVertices;
             GridGeom::Point pointCoordinate;
             GridGeom::Splines::Interpolate(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
             splineCoordinates.push_back({ pointCoordinate.x, pointCoordinate.y });
         }
     }
 
+    const double tolerance = 1e-3;
+    ASSERT_NEAR(226.817168170929, splineCoordinates[0].x, tolerance);
+    ASSERT_NEAR(241.648133331299, splineCoordinates[1].x, tolerance);
+    ASSERT_NEAR(256.510598720551, splineCoordinates[2].x, tolerance);
+    ASSERT_NEAR(271.420314453125, splineCoordinates[3].x, tolerance);
+    ASSERT_NEAR(286.393030643463, splineCoordinates[4].x, tolerance);
+    ASSERT_NEAR(930.506469726562, splineCoordinates.back().x, tolerance);
+
+    ASSERT_NEAR(172.653750896454, splineCoordinates[0].y, tolerance);
+    ASSERT_NEAR(189.632350921631, splineCoordinates[1].y, tolerance);
+    ASSERT_NEAR(206.515043735504, splineCoordinates[2].y, tolerance);
+    ASSERT_NEAR(223.253875732422, splineCoordinates[3].y, tolerance);
+    ASSERT_NEAR(453.380187988281, splineCoordinates.back().y, tolerance);
 }
