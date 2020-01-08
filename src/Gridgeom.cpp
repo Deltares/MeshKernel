@@ -217,16 +217,16 @@ namespace GridGeomApi
         int index = 0;
         for (int s = 0; s < numSplines; s++)
         {            
-            std::vector<GridGeom::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + indexes[s][1]);
+            std::vector<GridGeom::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + indexes[s][1] + 1);
             GridGeom::Splines::Derivative(coordinates, coordinatesDerivatives);
-            int numNodes = indexes[s][1] - indexes[s][0];
+            int numNodes = indexes[s][1] - indexes[s][0] + 1;
 
-            for (int n = 0; n < numNodes; n++)
+            for (int n = 0; n < numNodes - 1; n++)
             {
-                for (int p = 0; p < number_of_points_between_vertices; p++)
+                for (int p = 0; p <= number_of_points_between_vertices; p++)
                 {
 
-                    double pointAdimensionalCoordinate = n + p / number_of_points_between_vertices;
+                    double pointAdimensionalCoordinate = n + double(p)/ double(number_of_points_between_vertices);
                     GridGeom::Point pointCoordinate;
                     GridGeom::Splines::Interpolate(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
                     geometry_list_out.xCoordinates[index] = pointCoordinate.x;
@@ -242,7 +242,7 @@ namespace GridGeomApi
             index++;
         }
 
-        geometry_list_out.numberOfCoordinates = index;
+        geometry_list_out.numberOfCoordinates = index - 1;
         return 0;
     }
 

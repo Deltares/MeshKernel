@@ -83,7 +83,8 @@ namespace GridGeom
             for (int i = 1; i < coordinates.size() - 1; i++)
             {
                 const Point p =  coordinatesDerivatives[i - 1] * 0.5 + 2.0;
-                coordinatesDerivatives[i] = p / -0.5;
+                coordinatesDerivatives[i].x = -0.5 / p.x;
+                coordinatesDerivatives[i].y = -0.5 / p.y;
 
                 const Point delta = coordinates[i + 1] - coordinates[i] - (coordinates[i] - coordinates[i - 1]);
                 u[i] = (delta *6.0 / 2.0 - u[i - 1] * 0.5 ) / p;                

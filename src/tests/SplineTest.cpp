@@ -36,9 +36,9 @@ TEST(SplineTests, CubicSplineInterpolation)
 
     for (int n = 0; n < splineNodes.size() - 1; n++)
     {
-        for (int p = 0; p < pointsBetweenVertices; p++)
+        for (int p = 0; p <= pointsBetweenVertices; p++)
         {
-            const double pointAdimensionalCoordinate = n + (p + 1.0) / pointsBetweenVertices;
+            const double pointAdimensionalCoordinate = n + double(p) / double(pointsBetweenVertices);
             GridGeom::Point pointCoordinate;
             GridGeom::Splines::Interpolate(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
             splineCoordinates.push_back({ pointCoordinate.x, pointCoordinate.y });
@@ -46,16 +46,16 @@ TEST(SplineTests, CubicSplineInterpolation)
     }
 
     const double tolerance = 1e-3;
-    ASSERT_NEAR(226.817168170929, splineCoordinates[0].x, tolerance);
-    ASSERT_NEAR(241.648133331299, splineCoordinates[1].x, tolerance);
-    ASSERT_NEAR(256.510598720551, splineCoordinates[2].x, tolerance);
-    ASSERT_NEAR(271.420314453125, splineCoordinates[3].x, tolerance);
-    ASSERT_NEAR(286.393030643463, splineCoordinates[4].x, tolerance);
+    ASSERT_NEAR(226.817168170929, splineCoordinates[1].x, tolerance);
+    ASSERT_NEAR(241.648133331299, splineCoordinates[2].x, tolerance);
+    ASSERT_NEAR(256.510598720551, splineCoordinates[3].x, tolerance);
+    ASSERT_NEAR(271.420314453125, splineCoordinates[4].x, tolerance);
+    ASSERT_NEAR(286.393030643463, splineCoordinates[5].x, tolerance);
     ASSERT_NEAR(930.506469726562, splineCoordinates.back().x, tolerance);
 
-    ASSERT_NEAR(172.653750896454, splineCoordinates[0].y, tolerance);
-    ASSERT_NEAR(189.632350921631, splineCoordinates[1].y, tolerance);
-    ASSERT_NEAR(206.515043735504, splineCoordinates[2].y, tolerance);
-    ASSERT_NEAR(223.253875732422, splineCoordinates[3].y, tolerance);
+    ASSERT_NEAR(172.653750896454, splineCoordinates[1].y, tolerance);
+    ASSERT_NEAR(189.632350921631, splineCoordinates[2].y, tolerance);
+    ASSERT_NEAR(206.515043735504, splineCoordinates[3].y, tolerance);
+    ASSERT_NEAR(223.253875732422, splineCoordinates[4].y, tolerance);
     ASSERT_NEAR(453.380187988281, splineCoordinates.back().y, tolerance);
 }
