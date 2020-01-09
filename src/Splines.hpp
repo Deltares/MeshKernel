@@ -28,7 +28,7 @@ namespace GridGeom
         /// add a new spline
         bool Set(const std::vector<Point>& splines)
         {
-            AllocateVector(m_numAllocatedSplines, m_splines, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }),5);
+            AllocateVector(m_numAllocatedSplines, m_splines, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }), 5);
 
             m_numAllocatedSplineNodes.resize(m_numAllocatedSplines, 10);
             m_numSplineNodes.resize(m_numAllocatedSplines, 0);
@@ -46,7 +46,7 @@ namespace GridGeom
             {
                 return false;
             }
-            AllocateVector(m_numAllocatedSplineNodes[splineIndex], m_splines[splineIndex],{ doubleMissingValue, doubleMissingValue },10);
+            AllocateVector(m_numAllocatedSplineNodes[splineIndex], m_splines[splineIndex], { doubleMissingValue, doubleMissingValue }, 10);
 
             m_splines[splineIndex][m_numSplineNodes[splineIndex]] = point;
             m_numSplineNodes[splineIndex]++;
@@ -70,16 +70,16 @@ namespace GridGeom
             int high = low + 1;
             double a = high - pointAdimensionalCoordinate;
             double b = pointAdimensionalCoordinate - low;
-            
-            pointCoordinate = coordinates[low] * a  + coordinates[high] * b +
-                (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac ;
+
+            pointCoordinate = coordinates[low] * a + coordinates[high] * b +
+                (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;
 
             return true;
         }
 
 
         bool OrthogonalCurvilinearMeshFromSplines(
-            const GridGeomApi::CurvilinearParametersNative& curvilinearParametersNative, 
+            const GridGeomApi::CurvilinearParametersNative& curvilinearParametersNative,
             const GridGeomApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative,
             const GridGeom::Polygons& polygon)
         {
@@ -93,12 +93,12 @@ namespace GridGeom
             Splines oldSplines(*this);
 
             // Delete the splines that are not fully inside the polygons
-            for(int s=0; s< m_numSplines;s++)
+            for (int s = 0; s < m_numSplines; s++)
             {
                 for (int n = 0; n < m_numSplineNodes[s]; n++)
                 {
                     bool isInPolygons = IsPointInPolygons(m_splines[s][n], polygon.m_nodes, polygon.m_numNodes);
-                    if(!isInPolygons)
+                    if (!isInPolygons)
                     {
                         DeleteSpline(s);
                         break;
@@ -121,13 +121,13 @@ namespace GridGeom
 
         /// SECT3R
         /// compute the intersection of two splines
-        bool GetSplinesIntersection(int first, int second, 
-            const Projections& projection, 
-            double& crossProductIntersection, 
+        bool GetSplinesIntersection(int first, int second,
+            const Projections& projection,
+            double& crossProductIntersection,
             Point& dimensionalIntersection,
             Point& adimensionalIntersection)
         {
-            double minimumCrossingDistance=std::numeric_limits<double>::max();
+            double minimumCrossingDistance = std::numeric_limits<double>::max();
             double crossingDistance;
             int numCrossing = 0;
             double firstCrossingRatio;
@@ -135,7 +135,7 @@ namespace GridGeom
             int firstCrossingIndex = 0;
             int secondCrossingIndex = 0;
             Point closestIntersection;
-            for(int n=0;n<m_numSplineNodes[first] - 1;n++)
+            for (int n = 0; n < m_numSplineNodes[first] - 1; n++)
             {
                 for (int nn = 0; nn < m_numSplineNodes[second] - 1; nn++)
                 {
@@ -157,11 +157,11 @@ namespace GridGeom
 
                     if (areCrossing)
                     {
-                        if(m_numSplineNodes[first] ==2)
+                        if (m_numSplineNodes[first] == 2)
                         {
                             crossingDistance = std::min(minimumCrossingDistance, std::abs(firstRatio - 0.5));
                         }
-                        else if(m_numSplineNodes[second]==2)
+                        else if (m_numSplineNodes[second] == 2)
                         {
                             crossingDistance = std::abs(secondRatio - 0.5);
                         }
@@ -170,7 +170,7 @@ namespace GridGeom
                             crossingDistance = minimumCrossingDistance;
                         }
 
-                        if(crossingDistance<minimumCrossingDistance || numCrossing==0)
+                        if (crossingDistance < minimumCrossingDistance || numCrossing == 0)
                         {
                             minimumCrossingDistance = crossingDistance;
                             numCrossing = 1;
@@ -184,7 +184,7 @@ namespace GridGeom
                 }
             }
 
-            if(numCrossing==0)
+            if (numCrossing == 0)
             {
                 return false;
             }
@@ -200,26 +200,26 @@ namespace GridGeom
 
             // use bisection to find the intersection 
             double distanceBetweenCrossings = std::numeric_limits<double>::max();
-            double maxDistanceBetweenCrossings = 0.000001; 
+            double maxDistanceBetweenCrossings = 0.000001;
             double maxDistanceBetweenVertices = 0.0001;
             double firstRatioIterations = 1.0;
             double secondRatioIterations = 1.0;
             double previousFirstCrossing = firstCrossing;
             double previousSecondCrossing = secondCrossing;
             int numIterations = 0;
-            while(distanceBetweenCrossings > maxDistanceBetweenCrossings && numIterations < 20)
+            while (distanceBetweenCrossings > maxDistanceBetweenCrossings && numIterations < 20)
             {
                 numIterations++;
-                if(firstCrossingRatio>0 && firstCrossingRatio<1.0)
+                if (firstCrossingRatio > 0 && firstCrossingRatio < 1.0)
                 {
                     firstRatioIterations = 0.5 * firstRatioIterations;
                 }
-                if (secondCrossingRatio>0 && secondCrossingRatio<1.0)
+                if (secondCrossingRatio > 0 && secondCrossingRatio < 1.0)
                 {
                     secondRatioIterations = 0.5 * secondRatioIterations;
                 }
 
-                double firstLeft = std::min(m_numSplineNodes[first] -1.0, firstCrossing - firstRatioIterations / 2.0);
+                double firstLeft = std::min(m_numSplineNodes[first] - 1.0, firstCrossing - firstRatioIterations / 2.0);
                 double firstRight = std::min(m_numSplineNodes[first] - 1.0, firstCrossing + firstRatioIterations / 2.0);
 
                 double secondLeft = std::min(m_numSplineNodes[second] - 1.0, secondCrossing - secondRatioIterations / 2.0);
@@ -241,38 +241,38 @@ namespace GridGeom
                 double firstRatio;
                 double secondRatio;
                 bool areCrossing = AreLinesCrossing(firstLeftSplinePoint, firstRightSplinePoint,
-                    secondLeftSplinePoint,secondRightSplinePoint,
+                    secondLeftSplinePoint, secondRightSplinePoint,
                     true,
                     closestIntersection,
                     crossProduct,
                     firstRatio,
                     secondRatio,
                     projection);
-                
+
                 // outside the segments
-                if(-2.0 < firstRatio < 3.0 && -2.0 < secondRatio < 3.0)
+                if (-2.0 < firstRatio < 3.0 && -2.0 < secondRatio < 3.0)
                 {
                     previousFirstCrossing = firstCrossing;
                     previousSecondCrossing = secondCrossing;
 
                     firstCrossing = firstLeft + firstRatio * (firstRight - firstLeft);
-                    secondCrossing = secondLeft  + secondRatio * (secondRight - secondLeft);
+                    secondCrossing = secondLeft + secondRatio * (secondRight - secondLeft);
 
                     firstCrossing = std::max(0.0, std::min(m_numSplineNodes[first] - 1.0, firstCrossing));
                     secondCrossing = std::max(0.0, std::min(m_numSplineNodes[second] - 1.0, secondCrossing));
 
-                    if(areCrossing)
+                    if (areCrossing)
                     {
                         numCrossing = 1;
                         crossProductIntersection = crossProduct;
                     }
 
-                    if(std::abs(firstCrossing - previousFirstCrossing)>maxDistanceBetweenVertices ||
-                        std::abs(secondCrossing - previousSecondCrossing)>maxDistanceBetweenVertices)
+                    if (std::abs(firstCrossing - previousFirstCrossing) > maxDistanceBetweenVertices ||
+                        std::abs(secondCrossing - previousSecondCrossing) > maxDistanceBetweenVertices)
                     {
                         distanceBetweenCrossings = Distance(oldIntersection, closestIntersection, projection);
                     }
-                    else 
+                    else
                     {
                         break;
                     }
@@ -305,12 +305,12 @@ namespace GridGeom
 
             for (int i = 1; i < numNodes - 1; i++)
             {
-                const Point p =  coordinatesDerivatives[i - 1] * 0.5 + 2.0;
+                const Point p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
                 coordinatesDerivatives[i].x = -0.5 / p.x;
                 coordinatesDerivatives[i].y = -0.5 / p.y;
 
                 const Point delta = coordinates[i + 1] - coordinates[i] - (coordinates[i] - coordinates[i - 1]);
-                u[i] = (delta *6.0 / 2.0 - u[i - 1] * 0.5 ) / p;                
+                u[i] = (delta *6.0 / 2.0 - u[i - 1] * 0.5) / p;
             }
 
             coordinatesDerivatives[numNodes - 1] = { 0.0, 0.0 };
