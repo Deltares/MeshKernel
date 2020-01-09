@@ -31,7 +31,7 @@ TEST(SplineTests, CubicSplineInterpolation)
 
     int pointsBetweenVertices = 20;
     std::vector<GridGeom::Point> coordinatesDerivatives(splineNodes.size());
-    GridGeom::Splines::Derivative(splineNodes, coordinatesDerivatives);
+    GridGeom::Splines::Derivative(splineNodes, splineNodes.size(), coordinatesDerivatives);
     std::vector<GridGeom::Point> splineCoordinates;
 
     for (int n = 0; n < splineNodes.size() - 1; n++)

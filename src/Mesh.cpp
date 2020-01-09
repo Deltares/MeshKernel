@@ -383,7 +383,7 @@ void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
                     if (nextNode == numberOfFaceNodes) nextNode = 0;
                     middlePoints[n].x = 0.5 * (localFace[n].x + localFace[nextNode].x);
                     middlePoints[n].y = 0.5 * (localFace[n].y + localFace[nextNode].y);
-                    normalVector(localFace[n], localFace[nextNode], middlePoints[n], normals[n], m_projection);
+                    NormalVector(localFace[n], localFace[nextNode], middlePoints[n], normals[n], m_projection);
                 }
 
                 Point previousCircumCenter = estimatedCircumCenter;
@@ -437,8 +437,10 @@ void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
                     if (nextNode == numberOfFaceNodes) nextNode = 0;
                     Point intersection;
                     double crossProduct;
-                    bool isLineCrossing = AreLinesCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], false, intersection, crossProduct, m_projection);
-                    if (isLineCrossing)
+                    double firstRatio;
+                    double secondRatio;
+                    bool areLineCrossing = AreLinesCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], false, intersection, crossProduct, firstRatio, secondRatio, m_projection);
+                    if (areLineCrossing)
                     {
                         m_facesCircumcenters[f] = intersection;
                         break;
