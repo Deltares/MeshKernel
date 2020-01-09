@@ -8,6 +8,7 @@
 static std::vector<GridGeom::Mesh> meshInstances;
 static std::map<int, GridGeom::Orthogonalization> orthogonalizationInstances;
 static std::map<int, GridGeom::Splines> splinesInstances;
+static std::map<int, GridGeom::Polygons> polygonInstances;
 
 namespace GridGeomApi
 {
@@ -198,7 +199,7 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int& number_of_points_between_vertices)
     {
 
-        if (geometry_list_out.xCoordinates == nullptr || geometry_list_out.yCoordinates == nullptr)
+        if (geometryListIn.numberOfCoordinates == 0)
         {
             return -1;
         }
@@ -218,8 +219,8 @@ namespace GridGeomApi
         for (int s = 0; s < numSplines; s++)
         {            
             std::vector<GridGeom::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + indexes[s][1] + 1);
-            GridGeom::Splines::Derivative(coordinates, coordinatesDerivatives);
             int numNodes = indexes[s][1] - indexes[s][0] + 1;
+            GridGeom::Splines::Derivative(coordinates, numNodes, coordinatesDerivatives);
 
             for (int n = 0; n < numNodes - 1; n++)
             {
@@ -248,17 +249,22 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_set_splines(int& gridStateId, GeometryListNative& geometryListIn)
     {
+        if (geometryListIn.numberOfCoordinates == 0)
+        {
+            return -1;
+        }
+
+        // use the default constructor, no instance present
+        if (splinesInstances.count(gridStateId) == 0)
+        {
+            splinesInstances[gridStateId] = GridGeom::Splines();
+        }
+
         std::vector<GridGeom::Point> splines(geometryListIn.numberOfCoordinates);
         for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
             splines[i].x = geometryListIn.xCoordinates[i];
             splines[i].y = geometryListIn.yCoordinates[i];
-        }
-
-        // use the default constructor, no values are allocated
-        if (splinesInstances.count(gridStateId) ==0)
-        {
-            splinesInstances[gridStateId] = GridGeom::Splines();
         }
 
         std::vector<std::vector<int>> indexes(geometryListIn.numberOfCoordinates, std::vector<int>(2));
@@ -272,6 +278,29 @@ namespace GridGeomApi
             }
         }
 
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho(int& gridStateId, 
+        GeometryListNative& geometryListIn, 
+        CurvilinearParametersNative& curvilinearParameters, 
+        SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
+    {
+        // use the default constructor, no instance present
+        if (splinesInstances.count(gridStateId) == 0)
+        {
+            splinesInstances[gridStateId] = GridGeom::Splines();
+        }
+
+        // use the default constructor, no instance present
+        if (polygonInstances.count(gridStateId) == 0)
+        {
+            polygonInstances[gridStateId] = GridGeom::Polygons();
+        }
+
+        int success = ggeo_set_splines(gridStateId, geometryListIn);
+        splinesInstances[gridStateId].OrthogonalCurvilinearMeshFromSplines(curvilinearParameters, splineToCurvilinearParameters, polygonInstances[gridStateId]);
+        
         return 0;
     }
 

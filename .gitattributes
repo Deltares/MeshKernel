@@ -464,6 +464,7 @@ doc/gridgeomStructure.tif -text
 doc/sent/ProjectPlanGridGeom_Phase1.docx -text
 doc/sent/ProjectplanGridGeomInC++Phase2_V00.docx -text
 src/Constants.cpp -text
+src/CurvilinearParametersNative.hpp -text
 src/Entities.hpp -text
 src/GeometryListNative.hpp -text
 src/Gridgeom.cpp -text
@@ -481,6 +482,7 @@ src/OrthogonalizationParametersNative.hpp -text
 src/Polygons.cpp -text
 src/Polygons.hpp -text
 src/Splines.hpp -text
+src/SplinesToCurvilinearParametersNative.hpp -text
 src/main.cpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/LandBoundaryTest.cpp -text

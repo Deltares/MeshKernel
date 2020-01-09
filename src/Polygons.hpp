@@ -1,9 +1,7 @@
 #pragma once
 
-#include <utility>
 #include <vector>
 #include "Mesh.hpp"
-#include "Operations.cpp"
 
 namespace GridGeom
 {

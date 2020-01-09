@@ -1305,8 +1305,9 @@ namespace GridGeom
                 bool adimensional = false;
                 Point intersection;
                 double crossProduct;
-
-                bool areCrossing = AreLinesCrossing(firstMeshNode, secondMeshNode, firstNode, secondNode, adimensional, intersection, crossProduct, mesh.m_projection);
+                double firstRatio;
+                double secondRatio;
+                bool areCrossing = AreLinesCrossing(firstMeshNode, secondMeshNode, firstNode, secondNode, adimensional, intersection, crossProduct, firstRatio, secondRatio, mesh.m_projection);
 
                 if (areCrossing)
                 {

@@ -262,7 +262,7 @@ namespace GridGeom
     }
 
     //normalout, Creates the relative unit normal vector to edge 1->2
-    static void normalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, const Projections& projection)
+    static void NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -331,7 +331,7 @@ namespace GridGeom
     {
         if (projection == Projections::cartesian)
         {
-            normalVector(firstPoint, secondPoint, insidePoint, result, projection);
+            NormalVector(firstPoint, secondPoint, insidePoint, result, projection);
             flippedNormal = false;
             Point thirdPoint{ firstPoint.x + result.x, firstPoint.y + result.y };
 
@@ -727,11 +727,22 @@ namespace GridGeom
     }
 
     //CROSS
-    static bool AreLinesCrossing(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, bool adimensional, Point& intersection, double& crossProduct, const Projections& projection)
+    static bool AreLinesCrossing(const Point& firstSegmentFistPoint, 
+        const Point& firstSegmentSecondPoint, 
+        const Point& secondSegmentFistPoint, 
+        const Point& secondSegmentSecondPoint, 
+        bool adimensional, 
+        Point& intersection, 
+        double& crossProduct,
+        double& firstRatio,
+        double& secondRatio,
+        const Projections& projection)
     {
         bool isCrossing = false;
         if (projection == Projections::cartesian)
         {
+            firstRatio = doubleMissingValue;
+            secondRatio = doubleMissingValue;
             double x21 = getDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
             double y21 = getDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
 
@@ -751,14 +762,14 @@ namespace GridGeom
                 return isCrossing;
             }
 
-            double sm = (y31 * x21 - x31 * y21) / det;
-            double sl = (y31 * x43 - x31 * y43) / det;
-            if (sm >= 0.0 && sm <= 1.0 && sl >= 0.0 && sl <= 1.0)
+            firstRatio = (y31 * x21 - x31 * y21) / det;
+            secondRatio = (y31 * x43 - x31 * y43) / det;
+            if (firstRatio >= 0.0 && firstRatio <= 1.0 && secondRatio >= 0.0 && secondRatio <= 1.0)
             {
                 isCrossing = true;
             }
-            intersection.x = firstSegmentFistPoint.x + sl * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
-            intersection.y = firstSegmentFistPoint.y + sl * (firstSegmentSecondPoint.y - firstSegmentFistPoint.y);
+            intersection.x = firstSegmentFistPoint.x + secondRatio * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
+            intersection.y = firstSegmentFistPoint.y + secondRatio * (firstSegmentSecondPoint.y - firstSegmentFistPoint.y);
             crossProduct = -det;
             if (adimensional)
             {
