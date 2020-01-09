@@ -762,14 +762,14 @@ namespace GridGeom
                 return isCrossing;
             }
 
-            firstRatio = (y31 * x21 - x31 * y21) / det;
-            secondRatio = (y31 * x43 - x31 * y43) / det;
+            secondRatio = (y31 * x21 - x31 * y21) / det;
+            firstRatio = (y31 * x43 - x31 * y43) / det;
             if (firstRatio >= 0.0 && firstRatio <= 1.0 && secondRatio >= 0.0 && secondRatio <= 1.0)
             {
                 isCrossing = true;
             }
-            intersection.x = firstSegmentFistPoint.x + secondRatio * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
-            intersection.y = firstSegmentFistPoint.y + secondRatio * (firstSegmentSecondPoint.y - firstSegmentFistPoint.y);
+            intersection.x = firstSegmentFistPoint.x + firstRatio * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
+            intersection.y = firstSegmentFistPoint.y + firstRatio * (firstSegmentSecondPoint.y - firstSegmentFistPoint.y);
             crossProduct = -det;
             if (adimensional)
             {
