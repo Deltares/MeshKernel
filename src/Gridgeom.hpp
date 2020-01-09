@@ -3,6 +3,8 @@
 #include "MeshGeometry.hpp"
 #include "GeometryListNative.hpp"
 #include "OrthogonalizationParametersNative.hpp"
+#include "CurvilinearParametersNative.hpp"
+#include "SplinesToCurvilinearParametersNative.hpp"
 
 #if defined(_WIN32) 
 #if !defined(GRIDGEOM_API)
@@ -15,7 +17,6 @@
 // contains all mesh instances
 namespace GridGeomApi
 {
-
 #ifdef __cplusplus
     extern "C"
     {
@@ -56,6 +57,8 @@ namespace GridGeomApi
         GRIDGEOM_API int ggeo_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int& number_of_points_between_vertices);
 
         GRIDGEOM_API int ggeo_set_splines(int& gridStateId, GeometryListNative& geometryListIn);
+
+        GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho(int& gridStateId, GeometryListNative& geometryListIn, CurvilinearParametersNative& curvilinearParameters, SplinesToCurvilinearParametersNative& splineToCurvilinearParameters);
 
 #ifdef __cplusplus
     }
