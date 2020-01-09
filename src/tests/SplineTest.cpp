@@ -1,5 +1,6 @@
 #include "GridGeomTest.hpp"
 #include "../Splines.hpp"
+#include "../Entities.hpp"
 
 TEST(SplineTests, SetSpline)
 {
@@ -58,4 +59,34 @@ TEST(SplineTests, CubicSplineInterpolation)
     ASSERT_NEAR(206.515043735504, splineCoordinates[3].y, tolerance);
     ASSERT_NEAR(223.253875732422, splineCoordinates[4].y, tolerance);
     ASSERT_NEAR(453.380187988281, splineCoordinates.back().y, tolerance);
+}
+
+TEST(SplineTests, SplineIntersection)
+{
+    std::vector<GridGeom::Point> firstSpline;
+    firstSpline.push_back(GridGeom::Point{ 152.001571655273, 86.6264953613281 });
+    firstSpline.push_back(GridGeom::Point{ 374.752960205078, 336.378997802734 });
+    firstSpline.push_back(GridGeom::Point{ 850.255920410156, 499.130676269531 });
+    GridGeom::Splines splines;
+    bool success = splines.Set(firstSpline);
+
+    std::vector<GridGeom::Point> secondSpline;
+    secondSpline.push_back(GridGeom::Point{ 72.5010681152344,391.129577636719 });
+    secondSpline.push_back(GridGeom::Point{ 462.503479003906, 90.3765411376953 });
+    success = splines.Set(secondSpline);
+
+    double crossProductIntersection;
+    GridGeom::Point dimensionalIntersection;
+    GridGeom::Point adimensionalIntersection;
+
+    splines.GetSplinesIntersection(0, 1, GridGeom::Projections::cartesian,
+        crossProductIntersection, dimensionalIntersection, adimensionalIntersection);
+
+    const double tolerance = 1e-5;
+    ASSERT_NEAR(261.736770097059, dimensionalIntersection.x, tolerance);
+    ASSERT_NEAR(245.199166962145, dimensionalIntersection.y, tolerance);
+    ASSERT_NEAR(0.601498208554790, adimensionalIntersection.x, tolerance);
+    ASSERT_NEAR(0.485216749175026, adimensionalIntersection.y, tolerance);
+    ASSERT_NEAR(-0.996215079635043, crossProductIntersection, tolerance);
+
 }
