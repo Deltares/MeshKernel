@@ -220,7 +220,7 @@ namespace GridGeomApi
         {            
             std::vector<GridGeom::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + indexes[s][1] + 1);
             int numNodes = indexes[s][1] - indexes[s][0] + 1;
-            GridGeom::Splines::Derivative(coordinates, numNodes, coordinatesDerivatives);
+            GridGeom::Splines::SecondOrderDerivative(coordinates, numNodes, coordinatesDerivatives);
 
             for (int n = 0; n < numNodes - 1; n++)
             {
