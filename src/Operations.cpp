@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <numeric>
 #include "Entities.hpp"
 #include "Constants.cpp"
 
@@ -91,6 +92,32 @@ namespace GridGeom
         }
 
         return pos;
+    }
+
+    template <typename T>
+    std::vector<int> SortedIndexes(const std::vector<T> &v) 
+    {
+        std::vector<int> idx(v.size());
+        iota(idx.begin(), idx.end(), 0);
+        std::stable_sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) {return v[i1] < v[i2]; });
+        return std::move(idx);
+    }
+
+    //chmike's algorithm
+    template< class T >
+    void ReorderVector(std::vector<T> &v, std::vector<int> const &order) 
+    {
+        for (int s = 1, d; s < order.size(); ++s) 
+        {
+            for (d = order[s]; d < s; d = order[d]);
+            if (d == s)
+            {
+                while (d = order[d], d != s)
+                {
+                    std::swap(v[s], v[d]);
+                } 
+            }
+        }
     }
 
     // transform 2d spherical to 3d cartesian
