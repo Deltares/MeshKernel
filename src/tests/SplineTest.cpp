@@ -77,16 +77,17 @@ TEST(SplineTests, SplineIntersection)
 
     double crossProductIntersection;
     GridGeom::Point dimensionalIntersection;
-    GridGeom::Point adimensionalIntersection;
+    double firstSplineRatio;
+    double secondSplineRatio;
 
     splines.GetSplinesIntersection(0, 1, GridGeom::Projections::cartesian,
-        crossProductIntersection, dimensionalIntersection, adimensionalIntersection);
+        crossProductIntersection, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
 
     const double tolerance = 1e-5;
     ASSERT_NEAR(261.736770097059, dimensionalIntersection.x, tolerance);
     ASSERT_NEAR(245.199166962145, dimensionalIntersection.y, tolerance);
-    ASSERT_NEAR(0.601498208554790, adimensionalIntersection.x, tolerance);
-    ASSERT_NEAR(0.485216749175026, adimensionalIntersection.y, tolerance);
+    ASSERT_NEAR(0.601498208554790, firstSplineRatio, tolerance);
+    ASSERT_NEAR(0.485216749175026, secondSplineRatio, tolerance);
     ASSERT_NEAR(-0.996215079635043, crossProductIntersection, tolerance);
 
 }
