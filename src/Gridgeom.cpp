@@ -257,7 +257,8 @@ namespace GridGeomApi
         // use the default constructor, no instance present
         if (splinesInstances.count(gridStateId) == 0)
         {
-            splinesInstances[gridStateId] = GridGeom::Splines();
+            GridGeom::Splines splines;
+            splinesInstances[gridStateId] = splines;
         }
 
         std::vector<GridGeom::Point> splines(geometryListIn.numberOfCoordinates);
