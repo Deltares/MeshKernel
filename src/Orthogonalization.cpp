@@ -1025,7 +1025,7 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
     }
 
     // Compute internal angle
-    int numSquaredTriangles = 0.0;
+    int numSquaredTriangles = 0;
     int numTriangles = 0;
     double phiSquaredTriangles = 0.0;
     double phiQuads = 0.0;

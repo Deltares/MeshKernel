@@ -879,7 +879,7 @@ namespace GridGeom
             yCenterOfMass = yCenterOfMass + xds * yc;
         }
 
-        double fac = 1.0 / (3.0 * area);
+        double fac = 1.0 / (numberOfPolygonPoints * area);
         xCenterOfMass = fac * xCenterOfMass;
         yCenterOfMass = fac * yCenterOfMass;
 
