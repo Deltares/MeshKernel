@@ -5,7 +5,10 @@
 
 #if defined(_WIN32)
 #include <Windows.h>
+#if defined (GRIDGEOM_API)
+#undef GRIDGEOM_API
 #define GRIDGEOM_API __declspec(dllimport)
+#endif
 #endif
 
 #include <chrono>
@@ -79,7 +82,7 @@ int main()
     std::string mesh2dEdgeNodes{ "NetLink" };
     err = nc_inq_varid(ncidp, mesh2dEdgeNodes.c_str(), &varid);
 
-    std::vector<int> edge_nodes(num_edges * 2, 0.0);
+    std::vector<int> edge_nodes(num_edges * 2, 0);
     err = nc_get_var_int(ncidp, varid, &edge_nodes[0]);
 
 
