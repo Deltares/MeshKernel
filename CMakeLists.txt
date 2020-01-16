@@ -46,7 +46,10 @@ target_link_libraries(gridgeomStateful_dll LINK_PUBLIC)
 set(CMAKE_CXX_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C++ compiler flags for a Release build")
 
 # Add tests
-add_executable( GridGeomTest src/tests/MeshTest.cpp src/tests/OrthogonalizationTest.cpp)
+FILE( GLOB all_test_srcs src/tests/*.cpp)
+source_group(source FILES ${all_test_srcs})
+
+add_executable( GridGeomTest ${all_test_srcs})
 target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main )
 add_test( NAME GridGeomTest COMMAND GridGeomTest )
 
