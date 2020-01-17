@@ -1,34 +1,6 @@
 A
 dir
-/trunk/src/utils_lgpl/io_netcdf/packages/Deltares.UGrid.Tests
-
-
-
-
-A
-dir
-/trunk/src/utils_lgpl/io_netcdf/packages/Deltares.UGrid/Properties
-
-
-
-
-D
-dir
-/trunk/src/utils_lgpl/io_netcdf/packages/io_netcdf_managed_test
-
-
-
-
-A
-dir
-/trunk/src/utils_lgpl/io_netcdf/packages/Deltares.UGrid.Tests/Api
-
-
-
-
-A
-dir
-/trunk/src/utils_lgpl/io_netcdf/packages/Deltares.UGrid.Tests/Properties
+/trunk/src/utils_lgpl/io_netcdf/packages/Deltares.UGrid.Tests/Lib
 
 
 
