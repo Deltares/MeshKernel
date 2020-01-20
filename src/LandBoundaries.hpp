@@ -144,6 +144,7 @@ namespace GridGeom
         // caches
         std::vector<Point> polygonCache;                  // array of points (e.g. points of a face)
         std::vector<double> m_nodesMinDistances;
+        const int m_allocationSize = 10000;               // allocation size for allocateVector
 
         // Parameters
         const double m_closeToLandBoundaryFactor = 5.0;   // close - to - landboundary tolerance, measured in number of meshwidths

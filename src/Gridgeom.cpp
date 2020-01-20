@@ -257,7 +257,8 @@ namespace GridGeomApi
         // use the default constructor, no instance present
         if (splinesInstances.count(gridStateId) == 0)
         {
-            GridGeom::Splines splines(meshInstances[gridStateId].m_projection);
+            GridGeom::Splines splines;
+            splines.SetProjection(meshInstances[gridStateId].m_projection);
             splinesInstances[gridStateId] = splines;
         }
 
@@ -290,7 +291,8 @@ namespace GridGeomApi
         // use the default constructor, no instance present
         if (splinesInstances.count(gridStateId) == 0)
         {
-            GridGeom::Splines spline(meshInstances[gridStateId].m_projection);
+            GridGeom::Splines spline;
+            spline.SetProjection(meshInstances[gridStateId].m_projection);
             splinesInstances[gridStateId] = spline;
         }
 
