@@ -12,7 +12,8 @@ namespace GridGeom
 {
     Polygons::Polygons() : m_numNodes(0), m_numAllocatedNodes(0)
     {
-        AllocateVector(m_numAllocatedNodes, m_nodes);
+        AllocateVector(m_numAllocatedNodes, m_nodes, m_allocationSize);
+        m_numAllocatedNodes = m_nodes.size();
     }
 
     bool Polygons::Set(const std::vector<Point>& polygon)
@@ -116,10 +117,6 @@ namespace GridGeom
 
         return true;
     }
-
-    std::vector<Point> m_nodes;             // Polygon nodes
-    int m_numNodes;                         // NPL
-    int m_numAllocatedNodes;                // MAXPOL
 
 
     bool Polygons::WalkBoundary(const Mesh& mesh,

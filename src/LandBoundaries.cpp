@@ -12,18 +12,17 @@ namespace GridGeom
     LandBoundaries::LandBoundaries() :
         m_numAllocatedNodes(0)
     {
-        AllocateVector(m_numAllocatedNodes, m_nodes, { doubleMissingValue,doubleMissingValue });
+        AllocateVector(m_numAllocatedNodes, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
+        m_numAllocatedNodes = m_nodes.size();
         m_numNode = 0;
     }
 
     /// admin_landboundary_segments
     bool LandBoundaries::Set(const std::vector<Point>& landBoundary)
     {
-        int newSize = m_numNode + landBoundary.size();
 
-        bool successful = AllocateVector(newSize, m_nodes, { doubleMissingValue,doubleMissingValue });
-
-        m_numAllocatedNodes = newSize;
+        bool successful = AllocateVector(m_numNode + landBoundary.size(), m_nodes, m_allocationSize,{ doubleMissingValue,doubleMissingValue });
+        m_numAllocatedNodes = m_nodes.size();
 
         for (int i = 0; i < landBoundary.size(); i++)
         {
@@ -396,14 +395,14 @@ namespace GridGeom
 
         // Update  nodes
         int minSize = m_numNode + 3;
-        AllocateVector(minSize, m_nodes, { doubleMissingValue,doubleMissingValue });
+        AllocateVector(minSize, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
         m_numNode += 3;
         m_nodes[m_numNode - 2] = newNodeLeft;
         m_nodes[m_numNode - 1] = newNodeRight;
 
         // Update segment indexses
         minSize = m_numSegments + 1;
-        AllocateVector(minSize, m_segmentIndices, { -1, -1 });
+        AllocateVector(minSize, m_segmentIndices, m_allocationSize, { -1, -1 });
         m_segmentIndices[m_numSegments][0] = m_numNode - 2;
         m_segmentIndices[m_numSegments][1] = m_numNode - 1;
         m_numSegments++;
