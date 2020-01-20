@@ -446,8 +446,8 @@ namespace GridGeom
                 return false;
             }
 
-            std::vector<Point> gridLine(numCenterSplines*(m_maximumNumMeshNodesAlongM + 2));
-            std::vector<double> gridLineOnSplineCoordinate(numCenterSplines*(m_maximumNumMeshNodesAlongM + 2));
+            m_gridLine.resize(numCenterSplines*(m_maximumNumMeshNodesAlongM + 2));
+            m_gridLineCoordinates.resize(numCenterSplines*(m_maximumNumMeshNodesAlongM + 2));
 
             // allocate
             int gridLineIndex = 0;
@@ -459,26 +459,42 @@ namespace GridGeom
                     continue;
                 }
 
-                if (gridLineIndex > 0)
+                if (gridLineIndex > 0) 
                 {
-                    gridLine[gridLineIndex] = { doubleMissingValue,doubleMissingValue };
                     gridLineIndex++;
+                    m_gridLine[gridLineIndex] = {doubleMissingValue,doubleMissingValue};
+                    m_gridLineCoordinates[gridLineIndex] = doubleMissingValue;
                 }
 
-
                 m_leftGridLineIndex[s] = gridLineIndex;
-                int numMLayers = 0;
 
-                // add...
-                bool success = MakeGridLine(s, isSpacingCurvatureAdapeted, gridLineIndex, gridLine, gridLineOnSplineCoordinate);
+                int numM = 0;
+                bool success = MakeGridLine(s, isSpacingCurvatureAdapeted, gridLineIndex, m_gridLine, m_gridLineCoordinates, numM);
+                if (!success)
+                {
+                    return false;
+                }
 
-
-                gridLineIndex += numMLayers;
-                m_leftGridLineIndex[s] = gridLineIndex;
+                gridLineIndex = gridLineIndex + numM + 1;
+                m_gridLine[gridLineIndex] = Point{doubleMissingValue,  doubleMissingValue };
+                m_gridLineCoordinates[gridLineIndex] = doubleMissingValue;
                 gridLineIndex++;
+
+                //add other side of gridline
+                m_rightGridLineIndex[s] = gridLineIndex;
+                for (int i = m_rightGridLineIndex[s] - 1, j = m_rightGridLineIndex[s] - 1; j >= m_leftGridLineIndex[s]; ++i, --j)
+                {
+                    m_gridLine[i] = m_gridLine[j];
+                    m_gridLineCoordinates[i] = m_gridLineCoordinates[j];
+                }
+
+                gridLineIndex = gridLineIndex + numM + 1;
+                m_gridLine[gridLineIndex] = Point{ doubleMissingValue,  doubleMissingValue };
+                m_gridLineCoordinates[gridLineIndex] = doubleMissingValue;
+                m_mfac[s] = numM;
             }
 
-            return false;
+            return true;
         }
 
         /// make_gridline, generate a gridline on a spline with a prescribed maximum mesh width
@@ -489,10 +505,12 @@ namespace GridGeom
             const bool isSpacingCurvatureAdapeted,
             const int startingIndex,
             std::vector<Point>& gridLine,
-            std::vector<double>& centerLineCoordinates)
+            std::vector<double>& adimensionalCoordinates,
+            int& numM)
         {
-            int numNodesAlongM = 1 + std::floor(m_splinesLength[splineIndex] / m_averageMeshWidth);
-            numNodesAlongM = std::min(numNodesAlongM, m_maximumNumMeshNodesAlongM);
+            // first estimation of nodes along m
+            numM = 1 + std::floor(m_splinesLength[splineIndex] / m_averageMeshWidth);
+            numM = std::min(numM, m_maximumNumMeshNodesAlongM);
 
             double endSplineAdimensionalCoordinate = m_numSplineNodes[splineIndex] - 1;
             double splineLength = GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, isSpacingCurvatureAdapeted, m_maximumGridHeight[splineIndex]);
@@ -501,23 +519,22 @@ namespace GridGeom
             FuncDimensionalToAdimensionalDistance func(*this, splineIndex, isSpacingCurvatureAdapeted, m_maximumGridHeight[splineIndex]);
             
             double currentMaxWidth = std::numeric_limits<double>::max();
-            while (currentMaxWidth > m_averageMeshWidth && numNodesAlongM < m_maximumNumMeshNodesAlongM)
+            while (currentMaxWidth > m_averageMeshWidth && numM < m_maximumNumMeshNodesAlongM)
             {
                 currentMaxWidth = 0.0;
-                for (int n = 1; n < numNodesAlongM + 1; ++n)
+                for (int n = 1; n < numM + 1; ++n)
                 {
                     int index = startingIndex + n;
-                    centerLineCoordinates[index] = splineLength * double(n) / double(numNodesAlongM);
-                    func.SetDimensionalDistance(centerLineCoordinates[index]);
-                    double pointAdimensionalCoordinate = FindFunctionRootWithGoldenSearch(func, 0, endSplineAdimensionalCoordinate); //1.09068327269294;
-                    Interpolate(m_splineCornerPoints[splineIndex], m_splineDerivatives[splineIndex], pointAdimensionalCoordinate, gridLine[index]);
+                    func.SetDimensionalDistance(splineLength * double(n) / double(numM));
+                    adimensionalCoordinates[index] = FindFunctionRootWithGoldenSearch(func, 0, endSplineAdimensionalCoordinate);
+                    Interpolate(m_splineCornerPoints[splineIndex], m_splineDerivatives[splineIndex], adimensionalCoordinates[index], gridLine[index]);
                     currentMaxWidth = std::max(currentMaxWidth, Distance(gridLine[index - 1], gridLine[index], m_projection));
                 }
 
                 // room for sub-division
                 if (currentMaxWidth > m_averageMeshWidth)
                 {
-                    numNodesAlongM = std::min(std::max(int(m_maximumNumMeshNodesAlongM / m_maximumGridHeight[splineIndex] *numNodesAlongM), numNodesAlongM + 1), m_maximumNumMeshNodesAlongM);
+                    numM = std::min(std::max(int(m_maximumNumMeshNodesAlongM / m_maximumGridHeight[splineIndex] *numM), numM + 1), m_maximumNumMeshNodesAlongM);
                 }
             }
             return true;
@@ -930,6 +947,9 @@ namespace GridGeom
         std::vector<std::vector<int>> m_nfacR;                                          // nfacR number of grid layers in each subinterval at the right - hand side of the spline * not used yet*
         std::vector<int> m_leftGridLineIndex;                                           // iL index in the whole gridline array of the first grid point on the left - hand side of the spline
         std::vector<int> m_rightGridLineIndex;                                          // iR index in the whole gridline array of the first grid point on the right - hand side of the spline
-    };
+        std::vector<Point> m_gridLine;                                                  // xg1, yg1 coordinates of the first gridline
+        std::vector<double> m_gridLineCoordinates;                                       // sg1 center spline coordinates of the first gridline
+
+};
 
 }
