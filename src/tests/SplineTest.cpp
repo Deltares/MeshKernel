@@ -6,7 +6,7 @@ TEST(SplineTests, SetSpline)
 {
     //One gets the edges
     std::vector<GridGeom::Point> splineNodes;
-    splineNodes.push_back(GridGeom::Point{GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
+    splineNodes.push_back(GridGeom::Point{ GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
     splineNodes.push_back(GridGeom::Point{ GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
     splineNodes.push_back(GridGeom::Point{ GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
     splineNodes.push_back(GridGeom::Point{ GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
@@ -25,7 +25,7 @@ TEST(SplineTests, CubicSplineInterpolation)
 {
     //One gets the edges
     std::vector<GridGeom::Point> splineNodes;
-    
+
     splineNodes.push_back(GridGeom::Point{ 212.001953125000, 155.627197265625 });
     splineNodes.push_back(GridGeom::Point{ 529.253906250000, 432.379974365234 });
     splineNodes.push_back(GridGeom::Point{ 930.506469726562, 453.380187988281 });
@@ -111,10 +111,34 @@ TEST(SplineTests, ComputeSplinesProperties)
     success = splines.MakeAllGridLines(true);
     ASSERT_EQ(true, success);
 
-    
+
     const double tolerance = 1e-3;
     ASSERT_NEAR(253.52971595547601, splines.m_maximumGridHeight[0], tolerance);
     ASSERT_NEAR(0.0, splines.m_maximumGridHeight[1], tolerance);
+
+    ASSERT_NEAR(152.001571655273, splines.m_gridLine[0].x, tolerance);
+    ASSERT_NEAR(407.924702423872, splines.m_gridLine[1].x, tolerance);
+    ASSERT_NEAR(850.250753009544, splines.m_gridLine[2].x, tolerance);
+    ASSERT_NEAR(-999.000000000000, splines.m_gridLine[3].x, tolerance);
+    ASSERT_NEAR(850.250753009544, splines.m_gridLine[4].x, tolerance);
+    ASSERT_NEAR(407.924702423872, splines.m_gridLine[5].x, tolerance);
+    ASSERT_NEAR(152.001571655273, splines.m_gridLine[6].x, tolerance);
+
+    ASSERT_NEAR(86.6264953613281, splines.m_gridLine[0].y, tolerance);
+    ASSERT_NEAR(354.562246561336, splines.m_gridLine[1].y, tolerance);
+    ASSERT_NEAR(499.129323710654, splines.m_gridLine[2].y, tolerance);
+    ASSERT_NEAR(-999.000000000000, splines.m_gridLine[3].y, tolerance);
+    ASSERT_NEAR(499.129323710654, splines.m_gridLine[4].y, tolerance);
+    ASSERT_NEAR(354.562246561336, splines.m_gridLine[5].y, tolerance);
+    ASSERT_NEAR(86.6264953613281, splines.m_gridLine[6].y, tolerance);
+
+    ASSERT_NEAR(4.214936859441928e-14, splines.m_gridLineCoordinates[0], tolerance);
+    ASSERT_NEAR(1.09068327269294, splines.m_gridLineCoordinates[1], tolerance);
+    ASSERT_NEAR(1.99999040748403, splines.m_gridLineCoordinates[2], tolerance);
+    ASSERT_NEAR(-999.000000000000, splines.m_gridLineCoordinates[3], tolerance);
+    ASSERT_NEAR(1.99999040748403, splines.m_gridLineCoordinates[4], tolerance);
+    ASSERT_NEAR(1.09068327269294, splines.m_gridLineCoordinates[5], tolerance);
+    ASSERT_NEAR(4.214936859441928e-14, splines.m_gridLineCoordinates[6], tolerance);
 }
 
 TEST(SplineTests, ComputeBoundingBox)
@@ -139,7 +163,7 @@ TEST(SplineTests, ComputeBoundingBox)
     thirdpline.push_back(GridGeom::Point{ 350.752807617188, 73.8763732910156 });
     success = splines.Set(thirdpline);
     ASSERT_EQ(true, success);
-    
+
     std::vector<GridGeom::Point> fourthSpline;
     fourthSpline.push_back(GridGeom::Point{ 704.755004882812, 636.382019042969 });
     fourthSpline.push_back(GridGeom::Point{ 845.005859375000, 285.378509521484 });
