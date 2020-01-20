@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <vector>
+#include "Constants.cpp"
 
 namespace GridGeom
 {
@@ -96,6 +97,18 @@ namespace GridGeom
             return std::move(point);
         }
 
+        void TransformToSpherical() 
+        {
+            x = x * degrad_hp *earth_radius * std::cos(degrad_hp*y);
+            y = y * degrad_hp *earth_radius;
+        }
+
+    };
+
+    struct Vector
+    {
+        double x;
+        double y;
     };
 
     struct cartesian3DPoint
