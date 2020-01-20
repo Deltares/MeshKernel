@@ -120,7 +120,89 @@ namespace GridGeom
         }
     }
 
-    // transform 2d spherical to 3d cartesian
+    template<typename T>
+    bool MakeMonothonic(std::vector<T>& v)
+    {
+
+        bool isMonotonic = false;
+        int maxIter = 10;
+        int iter = 0;
+        while (!isMonotonic && iter < maxIter)
+        {
+            isMonotonic = true;
+            maxIter++;
+                for (int n = 0; n < v.size(); ++n)
+                {
+                    if (v[n + 1] - v[n] < 0.0)
+                    {
+                        isMonotonic = false;
+                        break;
+                    }
+                }
+            if (!isMonotonic)
+            {
+                for (int n = 1; n < v.size() - 1; ++n)
+                {
+                    v[n] = 0.5 *(v[n - 1] + v[n + 1]);
+                }
+            }
+        }
+        return true;
+    }
+
+
+    // algorithm performing the zero's search using the golden section algorithm's
+    template <class F>
+    double FindFunctionRootWithGoldenSearch(F func, double min, double max)
+    {
+        //golden distance factors
+        const double c = 0.38196602;
+        const double r = 0.61803399;
+        const double tollerance = 0.00001;
+
+        double left = min;
+        double middle = (min + max)*0.5;
+        double right = max;
+
+        double x0 = left;
+        double x1 = middle - c * (middle - left);
+        double x2 = middle;
+        double x3 = right;
+        if (std::abs(right - middle)>std::abs(middle - left))
+        {
+            x1 = middle;
+            x2 = middle + c * (middle - left);
+        }
+
+        double f1 = func(x1);
+        double f2 = func(x2);
+
+        while (std::abs(x3 - x0)>tollerance*std::max(std::abs(x1) + std::abs(x2), 1e-8))
+        {
+            if (f2<f1)
+            {
+                x0 = x1;
+                x1 = x2;
+                x2 = r*x1 + c*x3;
+
+                f1 = f2;
+                f2 = func(x2);
+            }
+            else
+            {
+                x3 = x2;
+                x2 = x1;
+                x1 = r*x2 + c*x0;
+
+                f2 = f1;
+                f1 = func(x1);
+            }
+        }
+           
+        return f1<f2? x1: x2;
+    }
+
+    ///sphertocart3D transform 2d spherical to 3d cartesian
     static void SphericalToCartesian(const Point& sphericalPoint, cartesian3DPoint& cartesianPoint)
     {
         cartesianPoint.z = earth_radius * sin(sphericalPoint.y * degrad_hp);
@@ -129,7 +211,7 @@ namespace GridGeom
         cartesianPoint.y = rr * sin(sphericalPoint.x * degrad_hp);
     }
 
-    /// Transform 3d cartesian coordinates to 2d spherical
+    ///Cart3Dtospher Transform 3d cartesian coordinates to 2d spherical
     static void CartesianToSpherical(const cartesian3DPoint& cartesianPoint, const double referenceLongitude, Point& sphericalPoint)
     {
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
@@ -288,7 +370,50 @@ namespace GridGeom
         return doubleMissingValue;
     }
 
-    //normalout, Creates the relative unit normal vector to edge 1->2
+    //out product of two segments
+    static double outerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
+    {
+        if (projection == Projections::cartesian)
+        {
+            double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment, projection);
+
+            double dy1 = getDy(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dy2 = getDy(firstPointSecondSegment, secondPointSecondSegment, projection);
+
+            return dx1 * dy2 - dy1 * dx2;
+        }
+        if (projection == Projections::spherical)
+        {
+            //TODO: IMPLEMENTATION IS MISSING
+        }
+        return doubleMissingValue;
+    }
+
+    static void MiddlePoint(const Point& firstPoint, const Point& secondPoint, Point& result, const Projections& projection)
+    {
+        if (projection == Projections::cartesian)
+        {
+            cartesian3DPoint firstPointCartesianCoordinates;
+            SphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
+            cartesian3DPoint secondPointCartesianCoordinates;
+            SphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
+
+            cartesian3DPoint middleCartesianPointCoordinate;
+            middleCartesianPointCoordinate.x = 0.5*(firstPointCartesianCoordinates.x + secondPointCartesianCoordinates.x);
+            middleCartesianPointCoordinate.y = 0.5*(firstPointCartesianCoordinates.y + secondPointCartesianCoordinates.y);
+            double referenceLongitude = std::max(firstPoint.x, secondPoint.x);
+
+            CartesianToSpherical(middleCartesianPointCoordinate, referenceLongitude, result);
+        }
+        if (projection == Projections::spherical)
+        {
+            result = { (firstPoint.x + secondPoint.x) / 2.0, (firstPoint.y + secondPoint.y) / 2.0 };
+        }
+    }
+
+    ///normaloutchk, Computes the normal vector to a line 1-2, which is *outward* w.r.t. an 'inside' point 3. Similar to normalout, except that the normal
+    ///vector may be flipped based on the 'inside' point.
     static void NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, const Projections& projection)
     {
         if (projection == Projections::cartesian)
@@ -333,28 +458,8 @@ namespace GridGeom
         }
     }
 
-    //out product of two segments
-    static double outerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
-    {
-        if (projection == Projections::cartesian)
-        {
-            double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment, projection);
-
-            double dy1 = getDy(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dy2 = getDy(firstPointSecondSegment, secondPointSecondSegment, projection);
-
-            return dx1 * dy2 - dy1 * dx2;
-        }
-        if (projection == Projections::spherical)
-        {
-            //TODO: IMPLEMENTATION IS MISSING
-        }
-        return doubleMissingValue;
-    }
-
-    //normaloutchk
-    static void normalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, bool& flippedNormal, const Projections& projection)
+    ///normaloutchk
+    static void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, bool& flippedNormal, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -377,6 +482,52 @@ namespace GridGeom
         {
             //if (JSFERIC.eq.1 . and .jasfer3D.eq.0) xn = xn * cos(dg2rd * 0.5d0 * (y0 + y1)) !normal vector needs to be in Cartesian coordinates
         }
+    }
+
+    ///normalout
+    static void NormalVectorOutside(const Point& firstPoint, const Point& secondPoint, Point& result, const Projections& projection)
+    {
+        if (projection == Projections::cartesian)
+        {
+            double dx = getDx(firstPoint, secondPoint, projection);
+            double dy = getDy(firstPoint, secondPoint, projection);
+            const double squaredDistance = dx * dx + dy * dy;
+            if (squaredDistance != 0.0)
+            {
+                const double distance = sqrt(squaredDistance);
+                result.x = dy / distance;
+                result.y = -dx / distance;
+            }
+        }
+        if (projection == Projections::spherical)
+        {
+            Point middlePoint;
+            MiddlePoint(firstPoint, secondPoint, middlePoint, projection);
+
+            cartesian3DPoint firstPointCartesianCoordinates;
+            SphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
+            cartesian3DPoint secondPointCartesianCoordinates;
+            SphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
+
+            //compute the base vectors at middle point
+            double lambda = middlePoint.x * degrad_hp;
+            double phi = middlePoint.y * degrad_hp;
+            double elambda[3] = { -sin(lambda), cos(lambda), 0.0 };
+            double ephi[3] = { -sin(phi)*cos(lambda), -sin(phi)*sin(lambda), cos(phi) };
+
+            // project vector in local base
+            double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
+                (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
+                (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
+
+            double dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
+                (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
+                (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
+
+            result.x = result.x / cos(degrad_hp*0.5*(firstPoint.y + secondPoint.y));
+            result.y = middlePoint.y;
+        }
+
     }
 
     static void add(Point& point, const Point& normal, const double increment, const Projections& projection)
@@ -896,5 +1047,8 @@ namespace GridGeom
 
         return true;
     }
+
+
+
 
 }

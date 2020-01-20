@@ -16,7 +16,7 @@ TEST(SplineTests, SetSpline)
 
     ASSERT_TRUE(success);
     EXPECT_EQ(splines.m_numSplines, 1);
-    EXPECT_EQ(splines.m_splines[0].size(), splineNodes.size());
+    EXPECT_EQ(splines.m_splineCornerPoints[0].size(), splineNodes.size());
     EXPECT_EQ(splines.m_numAllocatedSplines, 5);
     EXPECT_EQ(splines.m_numAllocatedSplineNodes[0], 10);
 }
@@ -108,6 +108,9 @@ TEST(SplineTests, ComputeSplinesProperties)
 
     success = splines.ComputeSplineProperties();
     ASSERT_EQ(true, success);
+    success = splines.MakeAllGridLines(true);
+    ASSERT_EQ(true, success);
+
     
     const double tolerance = 1e-3;
     ASSERT_NEAR(253.52971595547601, splines.m_maximumGridHeight[0], tolerance);
@@ -144,6 +147,7 @@ TEST(SplineTests, ComputeBoundingBox)
     ASSERT_EQ(true, success);
 
     success = splines.ComputeSplineProperties();
+
     ASSERT_EQ(true, success);
 
     const double tolerance = 1e-2;
