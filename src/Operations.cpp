@@ -152,13 +152,13 @@ namespace GridGeom
 
 
     // algorithm performing the zero's search using the golden section algorithm's
-    template <class F>
+    template <typename F>
     double FindFunctionRootWithGoldenSearch(F func, double min, double max)
     {
         //golden distance factors
         const double c = 0.38196602;
         const double r = 0.61803399;
-        const double tollerance = 0.00001;
+        const double tolerance = 0.00001;
 
         double left = min;
         double middle = (min + max)*0.5;
@@ -177,7 +177,7 @@ namespace GridGeom
         double f1 = func(x1);
         double f2 = func(x2);
 
-        while (std::abs(x3 - x0)>tollerance*std::max(std::abs(x1) + std::abs(x2), 1e-8))
+        while (std::abs(x3 - x0)>tolerance*std::max(std::abs(x1) + std::abs(x2), 1e-8))
         {
             if (f2<f1)
             {
