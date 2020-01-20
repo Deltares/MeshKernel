@@ -20,9 +20,11 @@ namespace GridGeom
             std::vector<Point>& meshBoundaryPolygon,
             int& numNodesBoundaryPolygons);
 
+
         std::vector<Point> m_nodes;             // Polygon nodes
         int m_numNodes;                         // NPL
         int m_numAllocatedNodes;                // MAXPOL
+        int m_allocationSize = 100;
 
     private:
 

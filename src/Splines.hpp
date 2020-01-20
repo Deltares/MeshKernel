@@ -15,86 +15,21 @@ namespace GridGeom
     {
     public:
 
-        Splines(const Splines& other)
-            : m_numSplines(other.m_numSplines),
-              m_numAllocatedSplines(other.m_numAllocatedSplines),
-              m_numSplineNodes(other.m_numSplineNodes),
-              m_numAllocatedSplineNodes(other.m_numAllocatedSplineNodes),
-              m_splineCornerPoints(other.m_splineCornerPoints),
-              m_projection(other.m_projection),
-              m_aspectRatioFirstLayer(other.m_aspectRatioFirstLayer),
-              m_maximumNumMeshNodesAlongM(other.m_maximumNumMeshNodesAlongM),
-              m_averageMeshWidth(other.m_averageMeshWidth),
-              m_maxNumHeights(other.m_maxNumHeights),
-              m_numLayers(other.m_numLayers),
-              m_numIntersectingSplines(other.m_numIntersectingSplines),
-              m_intersectingSplinesIndexses(other.m_intersectingSplinesIndexses),
-              m_splinesLength(other.m_splinesLength),
-              m_maximumGridHeight(other.m_maximumGridHeight),
-              m_isLeftOriented(other.m_isLeftOriented),
-              m_centerSplineCrossings(other.m_centerSplineCrossings),
-              m_cosCrossingAngle(other.m_cosCrossingAngle),
-              m_crossSplineLeftHeights(other.m_crossSplineLeftHeights),
-              m_crossSplineRightHeights(other.m_crossSplineRightHeights),
-              m_numHeightsCrossSplineLeft(other.m_numHeightsCrossSplineLeft),
-              m_numHeightsCrossSplineRight(other.m_numHeightsCrossSplineRight),
-              m_mfac(other.m_mfac),
-              m_nfacL(other.m_nfacL),
-              m_nfacR(other.m_nfacR),
-              m_leftGridLineIndex(other.m_leftGridLineIndex),
-              m_rightGridLineIndex(other.m_rightGridLineIndex)
-        {
-        }
-
-        Splines& operator=(const Splines& other)
-        {
-            if (this == &other)
-                return *this;
-            m_numSplines = other.m_numSplines;
-            m_numAllocatedSplines = other.m_numAllocatedSplines;
-            m_numSplineNodes = other.m_numSplineNodes;
-            m_numAllocatedSplineNodes = other.m_numAllocatedSplineNodes;
-            m_splineCornerPoints = other.m_splineCornerPoints;
-            m_projection = other.m_projection;
-            m_aspectRatioFirstLayer = other.m_aspectRatioFirstLayer;
-            m_maximumNumMeshNodesAlongM = other.m_maximumNumMeshNodesAlongM;
-            m_averageMeshWidth = other.m_averageMeshWidth;
-            m_numLayers = other.m_numLayers;
-            m_numIntersectingSplines = other.m_numIntersectingSplines;
-            m_intersectingSplinesIndexses = other.m_intersectingSplinesIndexses;
-            m_splinesLength = other.m_splinesLength;
-            m_maximumGridHeight = other.m_maximumGridHeight;
-            m_isLeftOriented = other.m_isLeftOriented;
-            m_centerSplineCrossings = other.m_centerSplineCrossings;
-            m_cosCrossingAngle = other.m_cosCrossingAngle;
-            m_crossSplineLeftHeights = other.m_crossSplineLeftHeights;
-            m_crossSplineRightHeights = other.m_crossSplineRightHeights;
-            m_numHeightsCrossSplineLeft = other.m_numHeightsCrossSplineLeft;
-            m_numHeightsCrossSplineRight = other.m_numHeightsCrossSplineRight;
-            m_mfac = other.m_mfac;
-            m_nfacL = other.m_nfacL;
-            m_nfacR = other.m_nfacR;
-            m_leftGridLineIndex = other.m_leftGridLineIndex;
-            m_rightGridLineIndex = other.m_rightGridLineIndex;
-            return *this;
-        }
-
-        Splines() : m_projection(Projections::cartesian), m_numAllocatedSplines(5), m_numSplines(0)
-        {
-        }
-
-        Splines(Projections projection) : m_projection(projection), m_numAllocatedSplines(0), m_numSplines(0)
-        {
-            AllocateSplines(5);
-            m_aspectRatioFirstLayer = 0.10;
-        }
-
         /// add a new spline
         bool Set(const std::vector<Point>& splines)
         {
-            AllocateSplines(m_numSplines + 1);
-            m_splineCornerPoints[m_numSplines] = splines;
+            AllocateVector(m_numSplines + 1, m_splineCornerPoints, m_allocationSize, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }));
+           
+            m_numAllocatedSplines = m_splineCornerPoints.size();
+            m_numAllocatedSplineNodes.resize(m_numAllocatedSplines, 10);
+
+            m_numSplineNodes.resize(m_numAllocatedSplines, 0);
             m_numSplineNodes[m_numSplines] = splines.size();
+
+            m_splineDerivatives.resize(m_numAllocatedSplines);
+            m_splineCornerPoints[m_numSplines] = splines;
+
+            m_splinesLength.resize(m_numAllocatedSplines);
 
             // compute basic properties
             SecondOrderDerivative(m_splineCornerPoints[m_numSplines], m_numSplineNodes[m_numSplines], m_splineDerivatives[m_numSplines]);
@@ -104,30 +39,31 @@ namespace GridGeom
             return true;
         }
 
-        bool AllocateSplines(int numSplines)
+        bool SetProjection(Projections projection) 
         {
-            AllocateVector(m_numAllocatedSplines, m_splineCornerPoints, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }), numSplines);
-            m_numAllocatedSplineNodes.resize(m_numAllocatedSplines, 10);
-            m_numSplineNodes.resize(m_numAllocatedSplines, 0);
+            m_projection = projection;
+            return true;
+        }
 
-            m_numLayers.resize(numSplines);
-            m_numIntersectingSplines.resize(numSplines);
-            m_splinesLength.resize(numSplines);
-            m_maximumGridHeight.resize(numSplines);
-            m_intersectingSplinesIndexses.resize(numSplines);
-            m_isLeftOriented.resize(numSplines);
-            m_centerSplineCrossings.resize(numSplines);
-            m_cosCrossingAngle.resize(numSplines);
-            m_crossSplineLeftHeights.resize(numSplines, std::vector<std::vector<double>>(numSplines));
-            m_crossSplineRightHeights.resize(numSplines, std::vector<std::vector<double>>(numSplines));
-            m_numHeightsCrossSplineLeft.resize(numSplines, std::vector<int>(numSplines));
-            m_numHeightsCrossSplineRight.resize(numSplines, std::vector<int>(numSplines));
-            m_mfac.resize(numSplines);
-            m_nfacL.resize(numSplines);
-            m_nfacR.resize(numSplines);
-            m_leftGridLineIndex.resize(numSplines);
-            m_rightGridLineIndex.resize(numSplines);
-            m_splineDerivatives.resize(m_numAllocatedSplines);
+        bool AllocateSplinesProperties()
+        {
+            m_numLayers.resize(m_numSplines);
+            m_numIntersectingSplines.resize(m_numSplines);
+            m_splinesLength.resize(m_numSplines);
+            m_maximumGridHeight.resize(m_numSplines);
+            m_intersectingSplinesIndexses.resize(m_numSplines);
+            m_isLeftOriented.resize(m_numSplines);
+            m_centerSplineCrossings.resize(m_numSplines);
+            m_cosCrossingAngle.resize(m_numSplines);
+            m_crossSplineLeftHeights.resize(m_numSplines, std::vector<std::vector<double>>(m_numSplines));
+            m_crossSplineRightHeights.resize(m_numSplines, std::vector<std::vector<double>>(m_numSplines));
+            m_numHeightsCrossSplineLeft.resize(m_numSplines, std::vector<int>(m_numSplines));
+            m_numHeightsCrossSplineRight.resize(m_numSplines, std::vector<int>(m_numSplines));
+            m_mfac.resize(m_numSplines);
+            m_nfacL.resize(m_numSplines);
+            m_nfacR.resize(m_numSplines);
+            m_leftGridLineIndex.resize(m_numSplines);
+            m_rightGridLineIndex.resize(m_numSplines);
 
             return true;
         }
@@ -149,7 +85,8 @@ namespace GridGeom
             {
                 return false;
             }
-            AllocateVector(m_numAllocatedSplineNodes[splineIndex], m_splineCornerPoints[splineIndex], { doubleMissingValue, doubleMissingValue }, 10);
+            AllocateVector(m_numSplineNodes[splineIndex] + 1, m_splineCornerPoints[splineIndex], m_allocationSize, { doubleMissingValue, doubleMissingValue });
+            m_numAllocatedSplineNodes[splineIndex] = m_splineCornerPoints[splineIndex].size();
 
             m_splineCornerPoints[splineIndex][m_numSplineNodes[splineIndex]] = point;
             m_numSplineNodes[splineIndex]++;
@@ -446,10 +383,10 @@ namespace GridGeom
                 return false;
             }
 
+            // allocate
             m_gridLine.resize(numCenterSplines*(m_maximumNumMeshNodesAlongM + 2));
             m_gridLineCoordinates.resize(numCenterSplines*(m_maximumNumMeshNodesAlongM + 2));
 
-            // allocate
             int gridLineIndex = 0;
             for (int s = 0; s < m_numSplines; ++s)
             {
@@ -576,9 +513,15 @@ namespace GridGeom
         bool ComputeSplineProperties()
         {
             // cross spline is a spline with only two points, others are non-cross splines
+            bool successful = AllocateSplinesProperties();
+            if (!successful)
+            {
+                return false;
+            }
+
             for (int s = 0; s < m_numSplines; ++s)
             {
-                bool successful = GetSplineIntersections(s, m_projection, m_numIntersectingSplines[s],
+                successful = GetSplineIntersections(s, m_projection, m_numIntersectingSplines[s],
                     m_intersectingSplinesIndexses[s], m_isLeftOriented[s], m_centerSplineCrossings[s], m_cosCrossingAngle[s]);
 
                 if(!successful)
@@ -917,19 +860,19 @@ namespace GridGeom
             return true;
         }
 
-        int m_numSplines;
-        int m_numAllocatedSplines;
+        int m_numSplines = 0;
+        int m_numAllocatedSplines = 0;
         std::vector<int> m_numSplineNodes;
         std::vector<int> m_numAllocatedSplineNodes;
         std::vector<std::vector<Point>> m_splineCornerPoints;
         std::vector<std::vector<Point>> m_splineDerivatives;
         Projections m_projection;
-        double m_aspectRatioFirstLayer;
+        double m_aspectRatioFirstLayer = 0.10;
         int m_maximumNumMeshNodesAlongM = 20;
         double m_averageMeshWidth = 500.0;
 
         // Spline properties (first index is the spline number)
-        const int m_maxNumHeights = 10;                                                 // Nsubmax maximum number of subintervals of grid layers, each having their own exponential grow factor
+        int m_maxNumHeights = 10;                                                       // Nsubmax maximum number of subintervals of grid layers, each having their own exponential grow factor
         std::vector<int> m_numLayers;                                                   // id number of layers ( >0 only for center spline)
         std::vector<int> m_numIntersectingSplines;                                      // ncs num of cross splines
         std::vector<std::vector<int>> m_intersectingSplinesIndexses;                    // ics for each cross spline, the indexses of the center splines
@@ -949,6 +892,10 @@ namespace GridGeom
         std::vector<int> m_rightGridLineIndex;                                          // iR index in the whole gridline array of the first grid point on the right - hand side of the spline
         std::vector<Point> m_gridLine;                                                  // xg1, yg1 coordinates of the first gridline
         std::vector<double> m_gridLineCoordinates;                                       // sg1 center spline coordinates of the first gridline
+
+        // caches
+        int m_allocationSize = 5;
+
 
 };
 
