@@ -15,6 +15,10 @@ namespace GridGeom
     {
     public:
 
+        Splines(Projections projection) : m_projection(projection) 
+        {
+        };
+
         /// add a new spline
         bool Set(const std::vector<Point>& splines)
         {
@@ -39,12 +43,7 @@ namespace GridGeom
             return true;
         }
 
-        bool SetProjection(Projections projection) 
-        {
-            m_projection = projection;
-            return true;
-        }
-
+        /// to be called after all splines have been stored
         bool AllocateSplinesProperties()
         {
             m_numLayers.resize(m_numSplines);
@@ -893,7 +892,7 @@ namespace GridGeom
         std::vector<Point> m_gridLine;                                                  // xg1, yg1 coordinates of the first gridline
         std::vector<double> m_gridLineCoordinates;                                       // sg1 center spline coordinates of the first gridline
 
-        // caches
+        // allocation cache size
         int m_allocationSize = 5;
 
 
