@@ -1518,7 +1518,7 @@ bool GridGeom::Orthogonalization::ComputeWeightsOrthogonalizer(const Mesh& mesh)
 
                     std::size_t leftFace = mesh.m_edgesFaces[edgeIndex][0];
                     bool flippedNormal;
-                    normalVectorInside(mesh.m_nodes[n], neighbouringNode, mesh.m_facesMassCenters[leftFace], normal, flippedNormal, mesh.m_projection);
+                    NormalVectorInside(mesh.m_nodes[n], neighbouringNode, mesh.m_facesMassCenters[leftFace], normal, flippedNormal, mesh.m_projection);
 
                     m_rightHandSide[n][0] += localOrthogonalizationToSmoothingFactor * neighbouringNodeDistance * normal.x / 2.0 +
                         localOrthogonalizationToSmoothingFactorSymmetric * aspectRatioByNodeDistance * normal.x * 0.5 / mu;
