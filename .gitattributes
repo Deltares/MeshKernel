@@ -455,8 +455,11 @@ build/post_build.bat -text
 buildGCC/bootstrap.sh -text
 doc/BudgetEstimateGridGeomInC++.xlsx -text
 doc/BudgetEstimateGridGeomInC++_phase2.xlsx -text
+doc/BudgetEstimateGridGeomInC++_phase3.xlsx -text
+doc/ProjectplanGridGeomInC++Phase3_V00.docx -text
 doc/ProjectplanGridGeomInC++_v00.docx -text
 doc/cf-arrays.jpeg -text
+doc/dflowfm_manual_oldInteracter.pdf -text
 doc/gridgeomC++.uxf -text
 doc/gridgeomFortranRevised.uxf -text
 doc/gridgeomInC++.ppt -text
