@@ -1,6 +1,7 @@
 #include "GridGeomTest.hpp"
 #include "../Orthogonalization.cpp"
 #include <chrono>
+#include "../GeometryListNative.hpp"
 
 #if defined(_WIN32)
 #include <Windows.h>

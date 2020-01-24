@@ -148,8 +148,8 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
                 firstNode = node;
             }
 
-            double deltaX = getDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
-            double deltaY = getDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
+            double deltaX = GetDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
+            double deltaY = GetDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
             if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
             {
                 if (deltaY < 0.0)
@@ -396,10 +396,10 @@ void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
                         {
                             int nextNode = n + 1;
                             if (nextNode == numberOfFaceNodes) nextNode = 0;
-                            double dx = getDx(middlePoints[n], estimatedCircumCenter, m_projection);
-                            double dy = getDy(middlePoints[n], estimatedCircumCenter, m_projection);
+                            double dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
+                            double dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);
                             double increment = -0.1 * DotProduct(dx, dy, normals[n].x, normals[n].y);
-                            add(estimatedCircumCenter, normals[n], increment, m_projection);
+                            Add(estimatedCircumCenter, normals[n], increment, m_projection);
                         }
                     }
                     if (iter > 0 &&
