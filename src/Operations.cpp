@@ -95,7 +95,7 @@ namespace GridGeom
     }
 
     template <typename T>
-    std::vector<int> SortedIndexes(const std::vector<T> &v) 
+    inline std::vector<int> SortedIndexes(const std::vector<T> &v) 
     {
         std::vector<int> idx(v.size());
         iota(idx.begin(), idx.end(), 0);
@@ -105,7 +105,7 @@ namespace GridGeom
 
     //chmike's algorithm
     template< class T >
-    void ReorderVector(std::vector<T> &v, std::vector<int> const &order) 
+    inline void ReorderVector(std::vector<T> &v, std::vector<int> const &order) 
     {
         for (int s = 1, d; s < order.size(); ++s) 
         {
@@ -121,7 +121,7 @@ namespace GridGeom
     }
 
     template<typename T>
-    bool MakeMonothonic(std::vector<T>& v)
+    inline bool MakeMonothonic(std::vector<T>& v)
     {
 
         bool isMonotonic = false;
@@ -150,10 +150,19 @@ namespace GridGeom
         return true;
     }
 
+    template <typename T>
+    void inline AddValueToVector(std::vector<T>& vec, const T value) 
+    {
+        for (auto& val : vec) 
+        {
+            val += value;
+        }
+    }
+
 
     // algorithm performing the zero's search using the golden section algorithm's
     template <typename F>
-    double FindFunctionRootWithGoldenSearch(F func, double min, double max)
+    double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
     {
         //golden distance factors
         const double c = 0.38196602;
@@ -318,7 +327,7 @@ namespace GridGeom
 
 
 
-    static double getDx(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    static double GetDx(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -354,7 +363,7 @@ namespace GridGeom
         return doubleMissingValue;
     }
 
-    static double getDy(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    static double GetDy(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -371,15 +380,15 @@ namespace GridGeom
     }
 
     //out product of two segments
-    static double outerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
+    static double OuterProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
-            double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment, projection);
+            double dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
 
-            double dy1 = getDy(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dy2 = getDy(firstPointSecondSegment, secondPointSecondSegment, projection);
+            double dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
 
             return dx1 * dy2 - dy1 * dx2;
         }
@@ -418,8 +427,8 @@ namespace GridGeom
     {
         if (projection == Projections::cartesian)
         {
-            double dx = getDx(firstPoint, secondPoint, projection);
-            double dy = getDy(firstPoint, secondPoint, projection);
+            double dx = GetDx(firstPoint, secondPoint, projection);
+            double dy = GetDy(firstPoint, secondPoint, projection);
             const double squaredDistance = dx * dx + dy * dy;
             if (squaredDistance != 0.0)
             {
@@ -467,7 +476,7 @@ namespace GridGeom
             flippedNormal = false;
             Point thirdPoint{ firstPoint.x + result.x, firstPoint.y + result.y };
 
-            if (outerProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint, projection) * outerProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint, projection) > 0.0)
+            if (OuterProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint, projection) * OuterProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint, projection) > 0.0)
             {
                 result.x = -result.x;
                 result.y = -result.y;
@@ -489,8 +498,8 @@ namespace GridGeom
     {
         if (projection == Projections::cartesian)
         {
-            double dx = getDx(firstPoint, secondPoint, projection);
-            double dy = getDy(firstPoint, secondPoint, projection);
+            double dx = GetDx(firstPoint, secondPoint, projection);
+            double dy = GetDy(firstPoint, secondPoint, projection);
             const double squaredDistance = dx * dx + dy * dy;
             if (squaredDistance != 0.0)
             {
@@ -530,7 +539,7 @@ namespace GridGeom
 
     }
 
-    static void add(Point& point, const Point& normal, const double increment, const Projections& projection)
+    static void Add(Point& point, const Point& normal, const double increment, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -546,7 +555,7 @@ namespace GridGeom
         }
     }
 
-    static void referencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projections& projection)
+    static void ReferencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -612,8 +621,8 @@ namespace GridGeom
 
         if (projection == Projections::cartesian)
         {
-            double dx = getDx(firstPoint, secondPoint, projection);
-            double dy = getDy(firstPoint, secondPoint, projection);
+            double dx = GetDx(firstPoint, secondPoint, projection);
+            double dy = GetDy(firstPoint, secondPoint, projection);
             const double squaredDistance = dx * dx + dy * dy;
             double distance = 0.0;
             if (squaredDistance != 0.0)
@@ -639,7 +648,7 @@ namespace GridGeom
             double r2 = Distance(secondNode, firstNode, projection);
             if (r2 != 0.0)
             {
-                ratio = (getDx(firstNode, point, projection) * getDx(firstNode, secondNode, projection) + getDy(firstNode, point, projection) * getDy(firstNode, secondNode, projection)) / (r2 * r2);
+                ratio = (GetDx(firstNode, point, projection) * GetDx(firstNode, secondNode, projection) + GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) / (r2 * r2);
                 double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
                 normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
                 normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
@@ -655,15 +664,15 @@ namespace GridGeom
     }
 
     //inner product of two segments
-    static double innerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
+    static double InnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
-            double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment, projection);
+            double dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
 
-            double dy1 = getDy(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dy2 = getDy(firstPointSecondSegment, secondPointSecondSegment, projection);
+            double dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
 
             return dx1 * dx2 + dy1 * dy2;
         }
@@ -694,15 +703,15 @@ namespace GridGeom
     }
 
     // dcosphi
-    static double normalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
+    static double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
-            double dx1 = getDx(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dx2 = getDx(firstPointSecondSegment, secondPointSecondSegment, projection);
+            double dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
 
-            double dy1 = getDy(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dy2 = getDy(firstPointSecondSegment, secondPointSecondSegment, projection);
+            double dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
 
             double r1 = dx1 * dx1 + dy1 * dy1;
             double r2 = dx2 * dx2 + dy2 * dy2;
@@ -724,7 +733,7 @@ namespace GridGeom
         return doubleMissingValue;
     }
 
-    static bool orthogonalizationComputeLocalCoordinates(const std::vector<std::size_t>& m_nodesNumEdges, const std::vector<std::size_t>& numConnectedNodes, std::vector<int>& localCoordinates, const Projections& projection)
+    static bool OrthogonalizationComputeLocalCoordinates(const std::vector<std::size_t>& m_nodesNumEdges, const std::vector<std::size_t>& numConnectedNodes, std::vector<int>& localCoordinates, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -864,11 +873,11 @@ namespace GridGeom
     {
         if (projection == Projections::cartesian)
         {
-            double dx2 = getDx(p1, p2, projection);
-            double dy2 = getDy(p1, p2, projection);
+            double dx2 = GetDx(p1, p2, projection);
+            double dy2 = GetDy(p1, p2, projection);
 
-            double dx3 = getDx(p1, p3, projection);
-            double dy3 = getDy(p1, p3, projection);
+            double dx3 = GetDx(p1, p3, projection);
+            double dy3 = GetDy(p1, p3, projection);
 
             double den = dy2 * dx3 - dy3 * dx2;
             double z = 0.0;
@@ -882,11 +891,11 @@ namespace GridGeom
         }
         if (projection == Projections::spherical)
         {
-            double dx2 = getDx(p1, p2, projection);
-            double dy2 = getDy(p1, p2, projection);
+            double dx2 = GetDx(p1, p2, projection);
+            double dy2 = GetDy(p1, p2, projection);
 
-            double dx3 = getDx(p1, p3, projection);
-            double dy3 = getDy(p1, p3, projection);
+            double dx3 = GetDx(p1, p3, projection);
+            double dy3 = GetDy(p1, p3, projection);
 
             double den = dy2 * dx3 - dy3 * dx2;
             double z = 0.0;
@@ -921,14 +930,14 @@ namespace GridGeom
         {
             firstRatio = doubleMissingValue;
             secondRatio = doubleMissingValue;
-            double x21 = getDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-            double y21 = getDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+            double x21 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+            double y21 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
 
-            double x43 = getDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-            double y43 = getDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+            double x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+            double y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
 
-            double x31 = getDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
-            double y31 = getDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+            double x31 = GetDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+            double y31 = GetDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
 
             double det = x43 * y21 - y43 * x21;
 
@@ -957,14 +966,14 @@ namespace GridGeom
 
         if (projection == Projections::spherical)
         {
-            double x21 = getDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-            double y21 = getDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+            double x21 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+            double y21 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
 
-            double x43 = getDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-            double y43 = getDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+            double x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+            double y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
 
-            double x31 = getDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
-            double y31 = getDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+            double x31 = GetDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+            double y31 = GetDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
 
             double det = x43 * y21 - y43 * x21;
 
@@ -1003,7 +1012,7 @@ namespace GridGeom
 
         double minX = std::numeric_limits<double>::max();
         double minY = std::numeric_limits<double>::max();
-        referencePoint(polygon, numberOfPolygonPoints, minX, minY, projection);
+        ReferencePoint(polygon, numberOfPolygonPoints, minX, minY, projection);
 
         Point reference{ minX, minY };
         area = 0.0;
@@ -1011,16 +1020,16 @@ namespace GridGeom
         double yCenterOfMass = 0.0;
         for (int p = 0; p < numberOfPolygonPoints; p++)
         {
-            double dx0 = getDx(reference, polygon[p], projection);
-            double dy0 = getDy(reference, polygon[p], projection);
-            double dx1 = getDx(reference, polygon[p + 1], projection);
-            double dy1 = getDy(reference, polygon[p + 1], projection);
+            double dx0 = GetDx(reference, polygon[p], projection);
+            double dy0 = GetDy(reference, polygon[p], projection);
+            double dx1 = GetDx(reference, polygon[p + 1], projection);
+            double dy1 = GetDy(reference, polygon[p + 1], projection);
 
             double xc = 0.5 * (dx0 + dx1);
             double yc = 0.5 * (dy0 + dy1);
 
-            dx0 = getDx(polygon[p], polygon[p + 1], projection);
-            dy0 = getDy(polygon[p], polygon[p + 1], projection);
+            dx0 = GetDx(polygon[p], polygon[p + 1], projection);
+            dy0 = GetDy(polygon[p], polygon[p + 1], projection);
             double dsx = dy0;
             double dsy = -dx0;
             double xds = xc * dsx + yc * dsy;
