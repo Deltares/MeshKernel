@@ -257,8 +257,7 @@ namespace GridGeomApi
         // use the default constructor, no instance present
         if (splinesInstances.count(gridStateId) == 0)
         {
-            GridGeom::Splines splines;
-            splines.SetProjection(meshInstances[gridStateId].m_projection);
+            GridGeom::Splines splines(meshInstances[gridStateId].m_projection);
             splinesInstances[gridStateId] = splines;
         }
 
@@ -275,7 +274,7 @@ namespace GridGeomApi
         {
             for (int p = indexes[s][0]; p <= indexes[s][1]; p++)
             {
-                const bool status = splinesInstances[gridStateId].Set(s, splines[p]);
+                const bool status = splinesInstances[gridStateId].AddPointInExistingSpline(s, splines[p]);
                 if (!status) return -1;
             }
         }
@@ -291,8 +290,7 @@ namespace GridGeomApi
         // use the default constructor, no instance present
         if (splinesInstances.count(gridStateId) == 0)
         {
-            GridGeom::Splines spline;
-            spline.SetProjection(meshInstances[gridStateId].m_projection);
+            GridGeom::Splines spline(meshInstances[gridStateId].m_projection);
             splinesInstances[gridStateId] = spline;
         }
 

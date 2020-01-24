@@ -633,7 +633,7 @@ bool GridGeom::Orthogonalization::ComputeSmootherOperators(const Mesh& mesh)
     //have side effects only for spherical coordinates
     if (state)
     {
-        state = orthogonalizationComputeLocalCoordinates(mesh.m_nodesNumEdges, m_numConnectedNodes, m_localCoordinates, mesh.m_projection);
+        state = OrthogonalizationComputeLocalCoordinates(mesh.m_nodesNumEdges, m_numConnectedNodes, m_localCoordinates, mesh.m_projection);
     }
 
     return state;
@@ -1393,7 +1393,7 @@ bool GridGeom::Orthogonalization::AspectRatio(const Mesh& mesh)
         else
         {
             //otherwise, make ghost node by imposing boundary condition
-            double dinry = innerProductTwoSegments(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_nodes[first], leftCenter, mesh.m_projection);
+            double dinry = InnerProductTwoSegments(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_nodes[first], leftCenter, mesh.m_projection);
             dinry = dinry / std::max(edgeLength * edgeLength, minimumEdgeLength);
 
             double x0_bc = (1.0 - dinry) * mesh.m_nodes[first].x + dinry * mesh.m_nodes[second].x;
@@ -1672,7 +1672,7 @@ bool GridGeom::Orthogonalization::GetOrthogonality(const Mesh& mesh, double* ort
         {
             if (e < mesh.m_edgesNumFaces.size() && mesh.m_edgesNumFaces[e]==2 )
             {
-                orthogonality[e] = normalizedInnerProductTwoSegments(mesh.m_nodes[firstVertex], mesh.m_nodes[secondVertex],
+                orthogonality[e] = NormalizedInnerProductTwoSegments(mesh.m_nodes[firstVertex], mesh.m_nodes[secondVertex],
                     mesh.m_facesCircumcenters[mesh.m_edgesFaces[e][0]], mesh.m_facesCircumcenters[mesh.m_edgesFaces[e][1]], mesh.m_projection);
                 if (orthogonality[e] != doubleMissingValue)
                 {
