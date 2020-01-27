@@ -105,19 +105,14 @@ namespace GridGeom
 
     //chmike's algorithm
     template< class T >
-    inline void ReorderVector(std::vector<T> &v, std::vector<int> const &order) 
+    void ReorderVector(std::vector<T> &v, std::vector<int> const &order) 
     {
-        for (int s = 1, d; s < order.size(); ++s) 
+        std::vector<T> ordered(v.size());
+        for (int i=0; i < order.size();++i)
         {
-            for (d = order[s]; d < s; d = order[d]);
-            if (d == s)
-            {
-                while (d = order[d], d != s)
-                {
-                    std::swap(v[s], v[d]);
-                } 
-            }
+            ordered[i] = v[order[i]];
         }
+        v = ordered;
     }
 
     template<typename T>
