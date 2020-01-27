@@ -257,7 +257,8 @@ namespace GridGeomApi
         // use the default constructor, no instance present
         if (splinesInstances.count(gridStateId) == 0)
         {
-            GridGeom::Splines splines(meshInstances[gridStateId].m_projection);
+            GridGeom::Polygons polygon;
+            GridGeom::Splines splines(meshInstances[gridStateId].m_projection, polygon);
             splinesInstances[gridStateId] = splines;
         }
 
@@ -290,7 +291,8 @@ namespace GridGeomApi
         // use the default constructor, no instance present
         if (splinesInstances.count(gridStateId) == 0)
         {
-            GridGeom::Splines spline(meshInstances[gridStateId].m_projection);
+            GridGeom::Polygons polygon;
+            GridGeom::Splines spline(meshInstances[gridStateId].m_projection, polygon);
             splinesInstances[gridStateId] = spline;
         }
 
@@ -301,7 +303,7 @@ namespace GridGeomApi
         }
 
         int success = ggeo_set_splines(gridStateId, geometryListIn);
-        splinesInstances[gridStateId].OrthogonalCurvilinearMeshFromSplines(curvilinearParameters, splineToCurvilinearParameters, polygonInstances[gridStateId]);
+        splinesInstances[gridStateId].OrthogonalCurvilinearMeshFromSplines();
         
         return 0;
     }
