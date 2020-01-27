@@ -277,18 +277,18 @@ namespace GridGeom
         {
 
             bool success = ComputeGridHeights();
-            if(!success)
+            if (!success)
             {
                 return false;
             }
 
             for (int s = 0; s < m_numSplines; s++)
             {
-               
+
                 double maxHeight = std::numeric_limits<double>::min();
                 for (int i = 0; i < m_maxNumHeights; ++i)
                 {
-                    if(m_gridHeights[0][i]!=doubleMissingValue && m_gridHeights[0][i]> maxHeight)
+                    if (m_gridHeights[0][i] != doubleMissingValue && m_gridHeights[0][i] > maxHeight)
                     {
                         maxHeight = m_gridHeights[0][i];
                     }
@@ -302,7 +302,7 @@ namespace GridGeom
                 int numTrueCrossings = 0;
                 for (int i = 0; i < m_numCrossingSplines[s]; ++i)
                 {
-                    if(m_numLayers[m_crossingSplinesIndexses[s][i]]!=1)
+                    if (m_numLayers[m_crossingSplinesIndexses[s][i]] != 1)
                     {
                         // true crossing splines only
                         continue;
@@ -313,7 +313,7 @@ namespace GridGeom
                 }
 
                 // no true cross splines: exponentially growing grid only
-                if(numTrueCrossings==0)
+                if (numTrueCrossings == 0)
                 {
                     numLeftHeights = 0;
                     numRightHeights = 0;
@@ -323,7 +323,7 @@ namespace GridGeom
                 int startHeightsLeft = m_leftGridLineIndex[s];
                 int endHeightsLeft = startHeightsLeft + m_mfac[s] - 1;
                 double hh0LeftMaxRatio;
-                
+
                 ComputeVelocitiesSubIntervals(s, startHeightsLeft, endHeightsLeft, numLeftHeights, numRightHeights, firstHeight,
                     m_leftGridLineIndex, m_rightGridLineIndex, numPerpendicularFacesOnSubintervalAndEdge, edgeVelocities, hh0LeftMaxRatio);
 
@@ -336,16 +336,16 @@ namespace GridGeom
 
                 // re-evaluate if growing grid outside is needed
 
-                if(numLeftHeights ==0 && numRightHeights<=1 || 
+                if (numLeftHeights == 0 && numRightHeights <= 1 ||
                     numRightHeights == 0 && numLeftHeights <= 1 ||
-                    numLeftHeights== numRightHeights==1)
+                    numLeftHeights == numRightHeights == 1)
                 {
                     m_growGridOutside = true;
                 }
 
                 // left part
                 int numNLeftExponential = 0;
-                if(m_growGridOutside)
+                if (m_growGridOutside)
                 {
                     numNLeftExponential = std::min(ComputeNumberExponentialIntervals(hh0LeftMaxRatio), m_maximumNumGridNodesAlongN);
                 }
@@ -366,7 +366,96 @@ namespace GridGeom
                 }
             }
 
+            // compute local grow factors
+            for (int s = 0; s < m_numSplines; s++)
+            {
+                if (m_mfac[s] < 1)
+                {
+                    continue;
+                }
+
+                for (int i = m_leftGridLineIndex[s]; i < m_rightGridLineIndex[s] + m_mfac[s] - 1; ++i)
+                {
+                    if (m_gridLine[i].x == doubleMissingValue || m_gridLine[i + 1].x == doubleMissingValue || numPerpendicularFacesOnSubintervalAndEdge[1][i] < 1)
+                    {
+                        continue;
+                    }
+                    bool successfull = ComputeGrowFactor(m_gridHeights[1][s],
+                        edgeVelocities[s],
+                        numPerpendicularFacesOnSubintervalAndEdge[1][s],
+                        growFactorOnSubintervalAndEdge[1][i]);
+                    if (!successfull)
+                    {
+                        growFactorOnSubintervalAndEdge[1][i] = 1.0;
+                    }
+                }
+            }
+
             return true;
+        }
+
+        ///comp_dgrow: this is another root finding algorithm, could go in the general part
+        bool ComputeGrowFactor(
+            const double totalGridHeight,
+            const int numGridLayers,
+            const double firstGridLayerHeight,
+            double& result)
+        {
+            // eheight m_gridHeights
+            double aspectRatioGrowFactor = 1.0;
+            double heightDifference = ComputeTotalExponentialHeight(aspectRatioGrowFactor, numGridLayers, firstGridLayerHeight) - totalGridHeight;
+
+            double deps = 0.01;
+            double aspectRatioGrowFactorIncremented = 1.0 + deps;
+            double heightDifferenceIncremented = ComputeTotalExponentialHeight(aspectRatioGrowFactorIncremented, numGridLayers, firstGridLayerHeight) - totalGridHeight;
+
+            const double tolerance = 1e-8;
+            const int numIterations = 1000;
+            const double relaxationFactor = 0.5;
+            double oldAspectRatio;
+            double oldHeightDifference;
+
+            if (std::abs(heightDifferenceIncremented) > tolerance && std::abs(heightDifferenceIncremented - heightDifference) > tolerance)
+            {
+                for (int i = 0; i < numIterations; ++i)
+                {
+                    oldAspectRatio = aspectRatioGrowFactor;
+                    oldHeightDifference = heightDifference;
+
+                    aspectRatioGrowFactor = aspectRatioGrowFactorIncremented;
+                    heightDifference = heightDifferenceIncremented;
+
+                    aspectRatioGrowFactorIncremented = aspectRatioGrowFactor + relaxationFactor * heightDifference / (heightDifference - oldHeightDifference) * (aspectRatioGrowFactor - oldAspectRatio);
+                    heightDifferenceIncremented = ComputeTotalExponentialHeight(aspectRatioGrowFactorIncremented, numGridLayers, firstGridLayerHeight) - totalGridHeight;
+
+                    if (oldHeightDifference < tolerance)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (oldHeightDifference > tolerance)
+            {
+                result = doubleMissingValue;
+                return false;
+            }
+
+            result = aspectRatioGrowFactorIncremented;
+            return true;
+        }
+
+        double ComputeTotalExponentialHeight(const double aspectRatioGrowFactor, const int numberOfGridLayers, const double firstGridLayerHeight)
+        {
+            double height;
+            if (aspectRatioGrowFactor - 1.0 > 1e-8)
+            {
+                height = (std::pow(aspectRatioGrowFactor, numberOfGridLayers) - 1.0) / (aspectRatioGrowFactor - 1.0) * firstGridLayerHeight;
+            }
+            else
+            {
+                height = numberOfGridLayers * firstGridLayerHeight;
+            }
         }
 
         ///comp_nfac
@@ -1454,7 +1543,7 @@ namespace GridGeom
         std::vector<int> m_rightGridLineIndex;                                          // iR index in the whole gridline array of the first grid point on the right - hand side of the spline
         std::vector<Point> m_gridLine;                                                  // xg1, yg1 coordinates of the first gridline
         std::vector<double> m_gridLineDimensionalCoordinates;                           // sg1 center spline coordinates of the first gridline
-        std::vector<std::vector<double>> m_gridHeights;
+        
 
 
         //original spline chaches
@@ -1464,7 +1553,7 @@ namespace GridGeom
         std::vector<int> m_mfacOriginal;
         std::vector<double> m_maximumGridHeightsOriginal;
         std::vector<int> m_numLayersOriginal;
-    
+        std::vector<std::vector<double>> m_gridHeights;                                 //eheight
     };
 
 }
