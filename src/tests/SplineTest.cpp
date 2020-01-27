@@ -1,6 +1,8 @@
 #include "GridGeomTest.hpp"
 #include "../Splines.hpp"
+#include "../Polygons.hpp"
 #include "../Entities.hpp"
+#include "../Constants.cpp"
 
 TEST(SplineTests, SetSpline)
 {
@@ -11,7 +13,8 @@ TEST(SplineTests, SetSpline)
     splineNodes.push_back(GridGeom::Point{ GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
     splineNodes.push_back(GridGeom::Point{ GridGeom::doubleMissingValue, GridGeom::doubleMissingValue });
 
-    GridGeom::Splines splines(GridGeom::Projections::cartesian);
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
     bool success = splines.AddSpline(splineNodes);
     ASSERT_TRUE(success);
 
@@ -67,7 +70,9 @@ TEST(SplineTests, SplineIntersection)
     firstSpline.push_back(GridGeom::Point{ 152.001571655273, 86.6264953613281 });
     firstSpline.push_back(GridGeom::Point{ 374.752960205078, 336.378997802734 });
     firstSpline.push_back(GridGeom::Point{ 850.255920410156, 499.130676269531 });
-    GridGeom::Splines splines(GridGeom::Projections::cartesian);
+
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
 
     bool success = splines.AddSpline(firstSpline);
     ASSERT_TRUE(success);
@@ -100,7 +105,8 @@ TEST(SplineTests, ComputeSplinesProperties)
     firstSpline.push_back(GridGeom::Point{ 374.752960205078, 336.378997802734 });
     firstSpline.push_back(GridGeom::Point{ 850.255920410156, 499.130676269531 });
 
-    GridGeom::Splines splines(GridGeom::Projections::cartesian);
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
     bool success = splines.AddSpline(firstSpline);
     ASSERT_TRUE(success);
 
@@ -109,10 +115,11 @@ TEST(SplineTests, ComputeSplinesProperties)
     secondSpline.push_back(GridGeom::Point{ 462.503479003906, 90.3765411376953 });
     success = splines.AddSpline(secondSpline);
 
-    success = splines.ComputeSplineProperties();
+    success = splines.ComputeSplineProperties(false);
     ASSERT_TRUE(success);
     success = splines.MakeAllGridLines(true);
     ASSERT_TRUE(success);
+    success = splines.OrthogonalCurvilinearMeshFromSplines();
 
 
     const double tolerance = 1e-3;
@@ -144,14 +151,56 @@ TEST(SplineTests, ComputeSplinesProperties)
     ASSERT_NEAR(4.214936859441928e-14, splines.m_gridLineDimensionalCoordinates[6], tolerance);
 }
 
+TEST(SplineTests, OrthogonalCurvilinearMeshFromSplines)
+{
+    std::vector<GridGeom::Point> firstSpline;
+    firstSpline.push_back(GridGeom::Point{ 152.001571655273, 86.6264953613281 });
+    firstSpline.push_back(GridGeom::Point{ 374.752960205078, 336.378997802734 });
+    firstSpline.push_back(GridGeom::Point{ 850.255920410156, 499.130676269531 });
+
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
+    bool success = splines.AddSpline(firstSpline);
+    ASSERT_TRUE(success);
+
+    std::vector<GridGeom::Point> secondSpline;
+    secondSpline.push_back(GridGeom::Point{ 72.5010681152344,391.129577636719 });
+    secondSpline.push_back(GridGeom::Point{ 462.503479003906, 90.3765411376953 });
+    success = splines.AddSpline(secondSpline);
+
+    success = splines.ComputeSplineProperties(false);
+    ASSERT_TRUE(success);
+    success = splines.MakeAllGridLines(true);
+    ASSERT_TRUE(success);
+    success = splines.OrthogonalCurvilinearMeshFromSplines();
+    ASSERT_TRUE(success);
+
+    ASSERT_EQ(0, splines.m_numCrossSplineLeftHeights[0][0]);
+    ASSERT_EQ(1, splines.m_numCrossSplineLeftHeights[0][1]);
+    ASSERT_EQ(0, splines.m_numCrossSplineLeftHeights[0][2]);
+    ASSERT_EQ(GridGeom::intMissingValue, splines.m_numCrossSplineLeftHeights[0][3]);
+
+    for (int s = 1; s < splines.m_numSplines; ++s)
+    {
+        for (int ss = 0; ss < splines.m_numSplines; ++ss)
+        {
+            ASSERT_EQ(GridGeom::intMissingValue, splines.m_numCrossSplineLeftHeights[s][ss]);
+        }
+    }
+
+
+}
+
+
 TEST(SplineTests, ComputeBoundingBox)
 {
     std::vector<GridGeom::Point> firstSpline;
     firstSpline.push_back(GridGeom::Point{ 91.2511901855469, 299.628631591797 });
     firstSpline.push_back(GridGeom::Point{ 354.502838134766, 518.630859375000 });
     firstSpline.push_back(GridGeom::Point{ 770.755432128906, 607.881774902344 });
-    
-    GridGeom::Splines splines(GridGeom::Projections::cartesian);
+
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
     bool success = splines.AddSpline(firstSpline);
     ASSERT_TRUE(success);
 
@@ -174,7 +223,7 @@ TEST(SplineTests, ComputeBoundingBox)
     success = splines.AddSpline(fourthSpline);
     ASSERT_TRUE(success);
 
-    success = splines.ComputeSplineProperties();
+    success = splines.ComputeSplineProperties(false);
     ASSERT_TRUE(success);
 
     const double tolerance = 1e-2;
