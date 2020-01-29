@@ -276,8 +276,8 @@ namespace GridGeom
             }
 
             // Compute edge velocity
-            std::vector<double> edgeVelocities(m_numGridLines -1, 0.0);
-            std::vector<std::vector<double>> growFactorOnSubintervalAndEdge(m_maxNumHeights, std::vector<double>(m_numGridLines -1,0.0));
+            std::vector<double> edgeVelocities(m_numGridLines -1, doubleMissingValue);
+            std::vector<std::vector<double>> growFactorOnSubintervalAndEdge(m_maxNumHeights, std::vector<double>(m_numGridLines -1,doubleMissingValue));
             std::vector<std::vector<int>> numPerpendicularFacesOnSubintervalAndEdge(m_maxNumHeights, std::vector<int>(m_numGridLines - 1, 0));
 
             success = ComputeEdgeVelocities(edgeVelocities, growFactorOnSubintervalAndEdge, numPerpendicularFacesOnSubintervalAndEdge);
@@ -308,7 +308,6 @@ namespace GridGeom
 
             for (int s = 0; s < m_numSplines; s++)
             {
-
                 double maxHeight = std::numeric_limits<double>::min();
                 for (int i = 0; i < m_gridHeights[0].size(); ++i)
                 {
@@ -345,18 +344,21 @@ namespace GridGeom
 
 
                 int startHeightsLeft = m_leftGridLineIndex[s];
-                int endHeightsLeft = startHeightsLeft + m_numM[s] - 1;
-                double hh0LeftMaxRatio;
-
-                ComputeVelocitiesSubIntervals(s, startHeightsLeft, endHeightsLeft, numLeftHeights, numRightHeights, firstHeight,
-                    m_leftGridLineIndex, m_rightGridLineIndex, numPerpendicularFacesOnSubintervalAndEdge, edgeVelocities, hh0LeftMaxRatio);
-
+                int endHeightsLeft = startHeightsLeft + m_numM[s];
                 int startHeightsRight = m_rightGridLineIndex[s];
-                int endHeightsRight = startHeightsRight + m_numM[s] - 1;
-                double hh0RightMaxRatio;
+                int endHeightsRight = startHeightsRight + m_numM[s];
 
-                ComputeVelocitiesSubIntervals(s, startHeightsRight, endHeightsRight, numLeftHeights, numRightHeights, firstHeight,
-                    m_rightGridLineIndex, m_leftGridLineIndex, numPerpendicularFacesOnSubintervalAndEdge, edgeVelocities, hh0RightMaxRatio);
+                double hh0LeftMaxRatio;
+                double hh0RightMaxRatio;
+                const int numIterations = 2;
+                for (int iter = 0; iter < numIterations; ++iter)
+                {
+                    ComputeVelocitiesSubIntervals(s, startHeightsLeft, endHeightsLeft, numLeftHeights, numRightHeights, firstHeight,
+                        m_leftGridLineIndex, m_rightGridLineIndex, numPerpendicularFacesOnSubintervalAndEdge, edgeVelocities, hh0LeftMaxRatio);
+
+                    ComputeVelocitiesSubIntervals(s, startHeightsRight, endHeightsRight, numLeftHeights, numRightHeights, firstHeight,
+                        m_rightGridLineIndex, m_leftGridLineIndex, numPerpendicularFacesOnSubintervalAndEdge, edgeVelocities, hh0RightMaxRatio);
+                }
 
                 // re-evaluate if growing grid outside is needed
 
@@ -375,7 +377,7 @@ namespace GridGeom
                 }
                 for (int i = startHeightsLeft; i < endHeightsLeft; ++i)
                 {
-                    numPerpendicularFacesOnSubintervalAndEdge[2][i] = numNLeftExponential;
+                    numPerpendicularFacesOnSubintervalAndEdge[1][i] = numNLeftExponential;
                 }
 
                 // right part
@@ -386,7 +388,7 @@ namespace GridGeom
                 }
                 for (int i = startHeightsRight; i < endHeightsRight; ++i)
                 {
-                    numPerpendicularFacesOnSubintervalAndEdge[2][i] = numNRightExponential;
+                    numPerpendicularFacesOnSubintervalAndEdge[1][i] = numNRightExponential;
                 }
             }
 
@@ -398,15 +400,15 @@ namespace GridGeom
                     continue;
                 }
 
-                for (int i = m_leftGridLineIndex[s]; i < m_rightGridLineIndex[s] + m_numM[s] - 1; ++i)
+                for (int i = m_leftGridLineIndex[s]; i < m_rightGridLineIndex[s] + m_numM[s]; ++i)
                 {
                     if (m_gridLine[i].x == doubleMissingValue || m_gridLine[i + 1].x == doubleMissingValue || numPerpendicularFacesOnSubintervalAndEdge[1][i] < 1)
                     {
                         continue;
                     }
-                    bool successfull = ComputeGrowFactor(m_gridHeights[1][s],
-                        edgeVelocities[s],
-                        numPerpendicularFacesOnSubintervalAndEdge[1][s],
+                    bool successfull = ComputeGrowFactor(m_gridHeights[1][i],
+                        edgeVelocities[i],
+                        numPerpendicularFacesOnSubintervalAndEdge[1][i],
                         growFactorOnSubintervalAndEdge[1][i]);
                     if (!successfull)
                     {
@@ -449,10 +451,10 @@ namespace GridGeom
                     aspectRatioGrowFactor = aspectRatioGrowFactorIncremented;
                     heightDifference = heightDifferenceIncremented;
 
-                    aspectRatioGrowFactorIncremented = aspectRatioGrowFactor + relaxationFactor * heightDifference / (heightDifference - oldHeightDifference) * (aspectRatioGrowFactor - oldAspectRatio);
+                    aspectRatioGrowFactorIncremented = aspectRatioGrowFactor - relaxationFactor * heightDifference / (heightDifference - oldHeightDifference + 1e-16) * (aspectRatioGrowFactor - oldAspectRatio);
                     heightDifferenceIncremented = ComputeTotalExponentialHeight(aspectRatioGrowFactorIncremented, numGridLayers, firstGridLayerHeight) - totalGridHeight;
 
-                    if (oldHeightDifference < tolerance)
+                    if (std::abs(oldHeightDifference) < tolerance)
                     {
                         break;
                     }
@@ -474,7 +476,7 @@ namespace GridGeom
             double height;
             if (aspectRatioGrowFactor - 1.0 > 1e-8)
             {
-                height = (std::pow(aspectRatioGrowFactor, numberOfGridLayers) - 1.0) / (aspectRatioGrowFactor - 1.0) * firstGridLayerHeight;
+                height = (std::pow(aspectRatioGrowFactor, firstGridLayerHeight) - 1.0) / (aspectRatioGrowFactor - 1.0) * numberOfGridLayers;
             }
             else
             {
@@ -539,7 +541,7 @@ namespace GridGeom
                     edgeVelocities[i] = firstHeight;
 
                     //compare with other side of spline
-                    int otherSideIndex = gridLineIndex[s] + m_numM[s] - (i - otherGridLineIndex[s] + 1);
+                    int otherSideIndex = otherGridLineIndex[s] + m_numM[s] - (i - gridLineIndex[s] + 1);
 
                     if (edgeVelocities[otherSideIndex] != doubleMissingValue)
                     {
