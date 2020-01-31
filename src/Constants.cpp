@@ -30,6 +30,7 @@ namespace GridGeom
     static constexpr double curvilinearToOrthogonalRatio= 0.5; //curvi - linear - like(0.0) or pure(1.0) orthogonalisation
     static constexpr double orthogonalizationToSmoothingFactor = 0.975; //Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
     static constexpr double relaxationFactorOrthogonalizationUpdate = 0.75;
+
 }
 
 #endif

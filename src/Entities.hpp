@@ -103,6 +103,11 @@ namespace GridGeom
             y = y * degrad_hp *earth_radius;
         }
 
+        bool IsValid() const
+        {
+            return x != doubleMissingValue && y != doubleMissingValue ? true : false;
+        }
+
     };
 
     struct Vector
