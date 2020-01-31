@@ -8,6 +8,7 @@
 #include "Polygons.hpp"
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
+#include <cassert>
 
 namespace GridGeom
 {
@@ -113,10 +114,10 @@ namespace GridGeom
                 std::fill(m_cosCrossingAngle[s].begin(), m_cosCrossingAngle[s].end(), doubleMissingValue);
 
                 m_crossSplineLeftHeights[s].resize(m_numSplines);
-                std::fill(m_crossSplineLeftHeights[s].begin(), m_crossSplineLeftHeights[s].end(), std::vector<double>(m_maxNumHeights, doubleMissingValue));
+                std::fill(m_crossSplineLeftHeights[s].begin(), m_crossSplineLeftHeights[s].end(), std::vector<double>(m_maxNumCenterSplineHeights, doubleMissingValue));
 
                 m_crossSplineRightHeights[s].resize(m_numSplines);
-                std::fill(m_crossSplineRightHeights[s].begin(), m_crossSplineRightHeights[s].end(), std::vector<double>(m_maxNumHeights, doubleMissingValue));
+                std::fill(m_crossSplineRightHeights[s].begin(), m_crossSplineRightHeights[s].end(), std::vector<double>(m_maxNumCenterSplineHeights, doubleMissingValue));
 
                 m_numCrossSplineLeftHeights[s].resize(m_numSplines);
                 std::fill(m_numCrossSplineLeftHeights[s].begin(), m_numCrossSplineLeftHeights[s].end(), 0);
@@ -131,8 +132,8 @@ namespace GridGeom
                 std::fill(m_nfacR[s].begin(), m_nfacR[s].end(), 0);
             }
 
-            m_numM.resize(m_numSplines);
-            std::fill(m_numM.begin(), m_numM.end(), 0);
+            m_numMSpline.resize(m_numSplines);
+            std::fill(m_numMSpline.begin(), m_numMSpline.end(), 0);
             m_leftGridLineIndex.resize(m_numSplines);
             std::fill(m_leftGridLineIndex.begin(), m_leftGridLineIndex.end(), intMissingValue);
             m_rightGridLineIndex.resize(m_numSplines);
@@ -157,6 +158,13 @@ namespace GridGeom
         }
 
         /// spline2curvi
+        /// 1. Eliminate spline that are not in polygon
+        /// 2. Compute the properties
+        /// 3. Make all grid lines of the central spline
+        /// 4. Add artificial splines
+        /// 5. Compute properties with artificial spline added
+        /// 6. Compute edge velocities
+        /// 7. Grow layers
         bool OrthogonalCurvilinearMeshFromSplines()
         {
             // no splines
@@ -187,38 +195,38 @@ namespace GridGeom
             }
 
             // get the properties of the center splines
-            m_numGridLines = 0;
+            m_numM = 0;
             success = MakeAllGridLines(true);
             if (!success)
             {
                 return false;
             }
-            
+
             // Store original number of splines
             std::vector<Point> newCrossSpline(2);
             m_numOriginalSplines = m_numSplines;
             for (int s = 0; s < m_numOriginalSplines; ++s)
             {
                 // mirrow only center splines
-                if (m_numLayers[s] != 0.0) 
+                if (m_numLayers[s] != 0.0)
                 {
                     continue;
                 }
 
                 // construct the cross splines through the edges, along m discretization
-                for (int i = m_leftGridLineIndex[s]; i < m_leftGridLineIndex[s] + m_numM[s]; ++i)
+                for (int i = m_leftGridLineIndex[s]; i < m_leftGridLineIndex[s] + m_numMSpline[s]; ++i)
                 {
                     Point normal;
                     NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], normal, m_projection);
-                    
+
                     double xMiddle = (m_gridLine[i].x + m_gridLine[i + 1].x)*0.5;
                     double yMiddle = (m_gridLine[i].y + m_gridLine[i + 1].y)*0.5;
                     double xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x;
                     double xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x;
                     double ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y;
                     double ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y;
-                    
-                    if (m_projection == Projections::spherical) 
+
+                    if (m_projection == Projections::spherical)
                     {
                         const double factor = 1.0 / (earth_radius *degrad_hp);
                         xs1 = xs1 * factor;
@@ -245,7 +253,7 @@ namespace GridGeom
             {
                 m_leftGridLineIndexOriginal[s] = m_leftGridLineIndex[s];
                 m_rightGridLineIndexOriginal[s] = m_rightGridLineIndex[s];
-                m_mfacOriginal[s] = m_numM[s];
+                m_mfacOriginal[s] = m_numMSpline[s];
                 m_maximumGridHeightsOriginal[s] = m_maximumGridHeights[s];
                 m_numLayersOriginal[s] = m_numLayers[s];
             }
@@ -258,7 +266,7 @@ namespace GridGeom
             for (int s = 0; s < m_numOriginalSplines; ++s)
             {
                 // Remove the last part of the sub-intervals
-                if (m_numLayers[s] != 0) 
+                if (m_numLayers[s] != 0)
                 {
                     continue;
                 }
@@ -276,9 +284,9 @@ namespace GridGeom
             }
 
             // Compute edge velocity
-            std::vector<double> edgeVelocities(m_numGridLines -1, doubleMissingValue);
-            std::vector<std::vector<double>> growFactorOnSubintervalAndEdge(m_maxNumHeights, std::vector<double>(m_numGridLines -1,doubleMissingValue));
-            std::vector<std::vector<int>> numPerpendicularFacesOnSubintervalAndEdge(m_maxNumHeights, std::vector<int>(m_numGridLines - 1, 0));
+            std::vector<double> edgeVelocities(m_numM - 1, doubleMissingValue);
+            std::vector<std::vector<double>> growFactorOnSubintervalAndEdge(m_maxNumCenterSplineHeights, std::vector<double>(m_numM - 1, doubleMissingValue));
+            std::vector<std::vector<int>> numPerpendicularFacesOnSubintervalAndEdge(m_maxNumCenterSplineHeights, std::vector<int>(m_numM, 0));
 
             success = ComputeEdgeVelocities(edgeVelocities, growFactorOnSubintervalAndEdge, numPerpendicularFacesOnSubintervalAndEdge);
             if (!success)
@@ -286,12 +294,452 @@ namespace GridGeom
                 return false;
             }
 
-            // do increase grid
-            // increasegrid
+            // Increase curvilinear grid
+            int maxNumPoints = std::max(m_numM + 1, m_maxNumN + 1);
+            // The layer by coordinate to grow
+            std::vector<std::vector<Point>> gridPoints(m_maxNumN + 1, std::vector<Point>(m_numM + 1, { doubleMissingValue, doubleMissingValue }));
+            std::vector<int> validFrontNodes(m_numM, 1);
+
+            // Copy the first n
+            for (int n = 0; n < m_numM; ++n)
+            {
+                gridPoints[0][n] = m_gridLine[n];
+                if (m_gridLine[n].x == doubleMissingValue)
+                {
+                    validFrontNodes[n] = 0;
+                }
+                int sumLeft = 0;
+                int sumRight = 0;
+                int leftColumn = std::max(n - 1, 0);
+                int rightColumn = std::min(n, m_numM - 2);
+                for (int j = 0; j < m_maxNumCenterSplineHeights; ++j)
+                {
+                    sumLeft += numPerpendicularFacesOnSubintervalAndEdge[j][leftColumn];
+                    sumRight += numPerpendicularFacesOnSubintervalAndEdge[j][rightColumn];
+                }
+                if (sumLeft == 0 && sumRight == 0)
+                {
+                    validFrontNodes[n] = 0;
+                }
+            }
+
+            //compute maximum mesh width and get dtolLR in the proper dimension
+            double maximumGridWidth = 0.0;
+            for (int i = 0; i < gridPoints[0].size() - 1; i++)
+            {
+                if (!gridPoints[0][i].IsValid() || !gridPoints[0][i + 1].IsValid())
+                {
+                    continue;
+                }
+                maximumGridWidth = std::max(maximumGridWidth, Distance(gridPoints[0][i], gridPoints[0][i + 1], m_projection));
+            }
+            m_onTopOfEachOtherTolerance = m_onTopOfEachOtherTolerance * maximumGridWidth;
+
+            // grow grid, from second n
+            for (int n = 1; n < m_maxNumN + 1; ++n)
+            {
+                success = GrowLayer(n, validFrontNodes, edgeVelocities, gridPoints);
+                if (!success)
+                {
+                    return false;
+                }
+            }
 
             return true;
         }
 
+        /// growlayer
+        bool GrowLayer(const int layerIndex,
+            const std::vector<int>& validFrontNodes,
+            const std::vector<double>& edgeVelocities,
+            std::vector<std::vector<Point>>& gridPoints)
+        {
+            //std::vector<int> currentValidFrontNodes(validFrontNodes);
+
+            assert(layerIndex - 1 >= 0);
+            
+            std::vector<Point> velocityVector(validFrontNodes.size());
+            bool success = ComputeVelocities(gridPoints[layerIndex - 1], edgeVelocities, velocityVector);
+            if (!success) 
+            {
+                return false;
+            }
+
+            std::vector<Point> activeLayerPoints(gridPoints[layerIndex - 1]);
+            for (int m = 0; m < velocityVector.size(); ++m)
+            {
+                if (!velocityVector[m].IsValid())
+                {
+                    gridPoints[layerIndex - 1][m] = {doubleMissingValue, doubleMissingValue};
+                    activeLayerPoints[m] = { doubleMissingValue, doubleMissingValue };
+                }
+            }
+
+            // FindFront
+            int numGridPoints = gridPoints.size() * gridPoints[0].size();
+            std::vector<std::vector<int>> gridPointsIndexses(numGridPoints,std::vector<int>(2, - 1));
+            std::vector<Point> frontGridPoints(numGridPoints);
+            int numFrontPoints;
+            success = FindFront(gridPoints, gridPointsIndexses, frontGridPoints, numFrontPoints);
+            if (!success)
+            {
+                return false;
+            }
+
+            std::vector<Point> frontVelocities(numGridPoints);
+            success = CopyVelocitiesToFront(layerIndex - 1, validFrontNodes, velocityVector, numFrontPoints, 
+                gridPointsIndexses, frontGridPoints, frontVelocities);
+
+            if (!success)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        /// copy growth velocities to the front, and add points in the front at corners
+        /// copy_vel_to_front
+        bool CopyVelocitiesToFront(
+            const int layerIndex,
+            const std::vector<int>& validFrontNodes,
+            const std::vector<Point>& previousVelocities,
+            int& numFrontPoints,
+            std::vector<std::vector<int>>& gridPointsIndexses,
+            std::vector<Point>& frontGridPoints,
+            std::vector<Point>& velocities)
+        {
+            int numCornerNodes = 0;
+            int p = -1;
+            while(p<numFrontPoints)
+            {
+                p = p + 1;
+                if (gridPointsIndexses[p][1] == layerIndex && validFrontNodes[gridPointsIndexses[p][0]] == 1)
+                {
+                    velocities[p] = previousVelocities[gridPointsIndexses[p][0]];
+                    if (!velocities[p].IsValid())
+                    {
+                        velocities[p] = { 0.0,0.0 };
+                    }
+
+                    // Check for cornernodes
+                    int previous = std::max(p - 1, 0);
+                    std::vector<int> previousIndexses = gridPointsIndexses[previous];
+                    int next = std::min(p + 1, numFrontPoints);
+                    std::vector<int> nextIndexses = gridPointsIndexses[next];
+
+                    // Check corner nodes
+                    bool ll = previousIndexses[0] == gridPointsIndexses[p][0] - 1 &&
+                        previousIndexses[1] == gridPointsIndexses[p][1] &&
+                        validFrontNodes[previousIndexses[0]] == 0;
+
+                    bool lr = nextIndexses[0] == gridPointsIndexses[p][0] + 1 &&
+                        nextIndexses[1] == gridPointsIndexses[p][1] &&
+                        validFrontNodes[nextIndexses[0]] == 0;
+
+                    ll = ll || previousIndexses[0] == gridPointsIndexses[p][0] && previousIndexses[1] < gridPointsIndexses[p][1];
+                    lr = lr || nextIndexses[0] == gridPointsIndexses[p][0] && nextIndexses[1] < gridPointsIndexses[p][1];
+                    if (ll || lr)
+                    {
+                        numCornerNodes++;
+                        if (numFrontPoints + 1 > frontGridPoints.size())
+                        {
+                            continue;
+                        }
+                        for (int i = numFrontPoints; i >= p; --i)
+                        {
+                            frontGridPoints[i + 1] = frontGridPoints[i];
+                            velocities[i + 1] = velocities[i];
+                            gridPointsIndexses[i + 1] = gridPointsIndexses[i];
+                        }
+                        numFrontPoints++;
+
+                        if (ll)
+                        {
+                            velocities[p] = { 0.0,0.0 };
+                        }
+                        else
+                        {
+                            velocities[p + 1] = { 0.0,0.0 };
+                        }
+                        p = p + 1;
+                    }
+                }
+            }
+            return true;
+        }
+
+
+        ///find the frontline of the old (static) grid
+        ///findfront
+        bool FindFront(
+            const std::vector<std::vector<Point>>& allGridPoints,
+            std::vector<std::vector<int>>& gridPointsIndexses,
+            std::vector<Point>& frontGridPoints,
+            int& numFrontPoints)
+        {
+
+            std::vector<int> frontPosition(allGridPoints[0].size(), allGridPoints.size());
+            for (int m = 0; m < allGridPoints[0].size(); ++m)
+            {
+                for (int n = 0; n < allGridPoints.size() - 1; ++n)
+                {
+                    if (!allGridPoints[n][m].IsValid() || !allGridPoints[n][m + 1].IsValid())
+                    {
+                        frontPosition[m] = n - 1;
+                        break;
+                    }
+                }
+            }
+
+            numFrontPoints = 0;
+            // check for circular connectivity
+            int currentLeftIndex;
+            int currentRightIndex;
+            int previousFrontPosition = 0;
+            GetNeighbours(allGridPoints[0], 0, currentLeftIndex, currentRightIndex);
+            if (currentLeftIndex == 0)
+            {
+                frontGridPoints[0] = allGridPoints[0][0];
+                // store front index
+                gridPointsIndexses[numFrontPoints][0] = 0;
+                gridPointsIndexses[numFrontPoints][1] = 0;
+                numFrontPoints++;
+            }
+            else
+            {
+                previousFrontPosition = frontPosition[currentLeftIndex];
+                frontGridPoints[numFrontPoints] = allGridPoints[0][frontPosition[0]];
+                gridPointsIndexses[numFrontPoints][0] = frontPosition[0];
+                gridPointsIndexses[numFrontPoints][1] = 0;
+                numFrontPoints++;
+            }
+
+            for (int m = 0; m < allGridPoints[0].size() - 2; ++m)
+            {
+                GetNeighbours(allGridPoints[0], m, currentLeftIndex, currentRightIndex);
+                int currentFrontPosition = frontPosition[m];
+                if (currentFrontPosition >= 0)
+                {
+                    if (previousFrontPosition == -1)
+                    {
+                        frontGridPoints[numFrontPoints] = allGridPoints[0][m];
+                        gridPointsIndexses[numFrontPoints][0] = m;
+                        gridPointsIndexses[numFrontPoints][1] = 0;
+                        numFrontPoints++;
+                    }
+                    for (int i = previousFrontPosition + 1; i <= currentFrontPosition; ++i)
+                    {
+                        frontGridPoints[numFrontPoints] = allGridPoints[i][m];
+                        gridPointsIndexses[numFrontPoints][0] = m;
+                        gridPointsIndexses[numFrontPoints][1] = i;
+                        numFrontPoints++;
+                    }
+                    for (int i = previousFrontPosition; i > currentFrontPosition; --i)
+                    {
+                        frontGridPoints[numFrontPoints] = allGridPoints[i][m];
+                        gridPointsIndexses[numFrontPoints][0] = m;
+                        gridPointsIndexses[numFrontPoints][1] = i;
+                        numFrontPoints++;
+                    }
+
+                    frontGridPoints[numFrontPoints] = allGridPoints[currentFrontPosition][m + 1];
+                    gridPointsIndexses[numFrontPoints][0] = m + 1;
+                    gridPointsIndexses[numFrontPoints][1] = currentFrontPosition;
+                    numFrontPoints++;
+                }
+                else if (previousFrontPosition >= 0)
+                {
+                    for (int i = previousFrontPosition - 1; i >= 0; --i)
+                    {
+                        frontGridPoints[numFrontPoints] = allGridPoints[i][m];
+                        gridPointsIndexses[numFrontPoints][0] = m;
+                        gridPointsIndexses[numFrontPoints][1] = i;
+                        numFrontPoints++;
+                    }
+
+                    frontGridPoints[numFrontPoints] = { doubleMissingValue,doubleMissingValue };
+                    gridPointsIndexses[numFrontPoints][0] = m;
+                    gridPointsIndexses[numFrontPoints][1] = -1;
+                    numFrontPoints++;
+                }
+
+                previousFrontPosition = currentFrontPosition;
+            }
+
+            // add last j-edge, check for circular connectivity
+            int lastPoint = allGridPoints[0].size() - 2;
+            GetNeighbours(allGridPoints[0], lastPoint, currentLeftIndex, currentRightIndex);
+            if(currentRightIndex == allGridPoints[0].size() - 2)
+            {
+                for (int i = previousFrontPosition; i >= 0; --i)
+                {
+                    frontGridPoints[numFrontPoints] = allGridPoints[i][lastPoint];
+                    gridPointsIndexses[numFrontPoints][0] = lastPoint;
+                    gridPointsIndexses[numFrontPoints][1] = i;
+                    numFrontPoints++;
+                }
+
+            }
+
+            return true;
+        }
+
+
+        //comp_vel
+        bool ComputeVelocities
+        (
+            const std::vector<Point>& gridPoints, 
+            const std::vector<double>& edgeVelocities,  
+            std::vector<Point>& velocityVector
+        )
+        {
+            std::fill(velocityVector.begin(), velocityVector.end(), Point{ doubleMissingValue,doubleMissingValue });
+            Point normalVectorLeft;
+            Point normalVectorRight;
+            const double cosTolerance = 1e-8;
+            double eps = std::numeric_limits<double>::min();
+            for (int m = 0; m < velocityVector.size(); ++m)
+            {
+                if (!gridPoints[m].IsValid())
+                {
+                    continue;
+                }
+                int currentLeftIndex;
+                int currentRightIndex;
+                GetNeighbours(gridPoints, m, currentLeftIndex, currentRightIndex);
+
+                double leftRightDistance = Distance(gridPoints[currentLeftIndex], gridPoints[currentRightIndex], m_projection);
+                double leftDistance = Distance(gridPoints[currentLeftIndex], gridPoints[m], m_projection);
+                double rightDistance = Distance(gridPoints[currentRightIndex], gridPoints[m], m_projection);
+
+                if (leftRightDistance <= m_onTopOfEachOtherTolerance)
+                {
+                    continue;
+                }
+
+                if (leftDistance <= m_onTopOfEachOtherTolerance || rightDistance <= m_onTopOfEachOtherTolerance)
+                {
+                    NormalVectorOutside(gridPoints[currentRightIndex], gridPoints[currentLeftIndex], normalVectorLeft, m_projection);
+                    if (m_projection == Projections::spherical)
+                    {
+                        normalVectorLeft.x = normalVectorLeft.x * std::cos(degrad_hp * 0.5 *(gridPoints[currentLeftIndex].y + gridPoints[currentRightIndex].y));
+                    }
+                    normalVectorRight = normalVectorLeft;
+                }
+                else
+                {
+                    NormalVectorOutside(gridPoints[m], gridPoints[currentLeftIndex], normalVectorLeft, m_projection);
+                    NormalVectorOutside(gridPoints[currentRightIndex], gridPoints[m], normalVectorRight, m_projection);
+
+                    if (m_projection == Projections::spherical)
+                    {
+                        normalVectorLeft.x = normalVectorLeft.x * std::cos(degrad_hp * 0.5 *(gridPoints[currentLeftIndex].y + gridPoints[m].y));
+                        normalVectorRight.x = normalVectorRight.x * std::cos(degrad_hp * 0.5 *(gridPoints[currentRightIndex].y + gridPoints[m].y));
+                    }
+                }
+
+                if (currentLeftIndex == velocityVector.size() - 1)
+                {
+                    continue;
+                }
+
+                double cosphi = DotProduct(normalVectorLeft.x, normalVectorRight.x, normalVectorLeft.y, normalVectorRight.y);
+                Point leftVelocity = normalVectorLeft * edgeVelocities[currentLeftIndex];
+                Point rightVelocity = normalVectorRight * edgeVelocities[currentRightIndex - 1];
+                double rightLeftVelocityRatio = edgeVelocities[currentRightIndex - 1] / edgeVelocities[currentLeftIndex];
+
+                if (cosphi -(cosTolerance - 1.0) < eps)
+                {
+                    continue;
+                }
+
+                if (rightLeftVelocityRatio - cosphi > eps  && 1.0 / rightLeftVelocityRatio - cosphi > eps || cosphi<= cosTolerance)
+                {
+                    velocityVector[m] = (leftVelocity * (1.0 - rightLeftVelocityRatio * cosphi) +
+                        rightVelocity * (1.0 - 1.0 / rightLeftVelocityRatio*cosphi)) / (1.0 - cosphi*cosphi);
+                }
+                else if (rightLeftVelocityRatio - cosphi < eps)
+                {
+                    velocityVector[m] = leftVelocity * rightLeftVelocityRatio / cosphi;
+                }
+                else 
+                {
+                    velocityVector[m] = rightVelocity * 1.0 / (rightLeftVelocityRatio * cosphi);
+                }
+
+                if (m_projection == Projections::spherical)
+                {
+                    // use to spherical?
+                    velocityVector[m].TransformToSpherical();
+                    // TODO: check the results
+                    //vel(1, i) = vel(1, i) * Rai*rd2dg / cos(dg2rd*yc(i));
+                    //vel(2, i) = vel(2, i) * Rai*rd2dg; 
+                }
+            }
+            return true;
+        }
+
+
+        bool GetNeighbours(
+            const std::vector<Point>& gridPoints, 
+            const int index,
+            int& currentLeftIndex,
+            int& currentRightIndex)
+        {
+            bool circularConnection = false;
+            currentLeftIndex = index; 
+            currentRightIndex = index;
+            int start = 0;
+            int end = gridPoints.size() - 1;
+
+            // left
+            while (Distance(gridPoints[currentLeftIndex], gridPoints[index], m_projection) < m_onTopOfEachOtherTolerance) 
+            {
+                if (!circularConnection)
+                {
+                    if (currentLeftIndex - 1 < 0) 
+                    {
+                        break;
+                    }
+                }
+                else if (currentLeftIndex - 1 < 0)
+                {
+                    currentLeftIndex = end + 1;
+                    circularConnection = false;
+                }
+                if(currentLeftIndex - 1 < 0 || !gridPoints[currentLeftIndex -1 ].IsValid())
+                {
+                    break;
+                }
+                currentLeftIndex--;
+            }
+
+            // right
+            while (Distance(gridPoints[currentRightIndex], gridPoints[index], m_projection) < m_onTopOfEachOtherTolerance)
+            {
+                if (!circularConnection)
+                {
+                    if (currentRightIndex + 1 > gridPoints.size())
+                    {
+                        break;
+                    }
+                }
+                else if (currentRightIndex + 1 > gridPoints.size())
+                {
+                    currentRightIndex = start - 1;
+                    circularConnection = false;
+                }
+                if (currentRightIndex + 1>= gridPoints.size() || !gridPoints[currentRightIndex + 1].IsValid())
+                {
+                    break;
+                }
+                currentRightIndex++;
+            }
+            return true;
+        }
+    
         ///comp_edgevel
         bool ComputeEdgeVelocities(
             std::vector<double>& edgeVelocities, // edgevel
@@ -320,8 +768,8 @@ namespace GridGeom
                 double firstHeight = std::min(maxHeight, m_aspectRatio * m_averageMeshWidth);
 
                 // Get true crossing splines heights
-                int numLeftHeights = m_maxNumHeights;
-                int numRightHeights = m_maxNumHeights;
+                int numLeftHeights = m_maxNumCenterSplineHeights;
+                int numRightHeights = m_maxNumCenterSplineHeights;
                 int numTrueCrossings = 0;
                 for (int i = 0; i < m_numCrossingSplines[s]; ++i)
                 {
@@ -343,20 +791,20 @@ namespace GridGeom
                 }
 
 
-                int startHeightsLeft = m_leftGridLineIndex[s];
-                int endHeightsLeft = startHeightsLeft + m_numM[s];
-                int startHeightsRight = m_rightGridLineIndex[s];
-                int endHeightsRight = startHeightsRight + m_numM[s];
+                int startGridLineLeft = m_leftGridLineIndex[s];
+                int endGridLineLeft = startGridLineLeft + m_numMSpline[s];
+                int startGridLineRight = m_rightGridLineIndex[s];
+                int endGridLineRight = startGridLineRight + m_numMSpline[s];
 
                 double hh0LeftMaxRatio;
                 double hh0RightMaxRatio;
                 const int numIterations = 2;
                 for (int iter = 0; iter < numIterations; ++iter)
                 {
-                    ComputeVelocitiesSubIntervals(s, startHeightsLeft, endHeightsLeft, numLeftHeights, numRightHeights, firstHeight,
+                    ComputeVelocitiesSubIntervals(s, startGridLineLeft, endGridLineLeft, numLeftHeights, numRightHeights, firstHeight,
                         m_leftGridLineIndex, m_rightGridLineIndex, numPerpendicularFacesOnSubintervalAndEdge, edgeVelocities, hh0LeftMaxRatio);
 
-                    ComputeVelocitiesSubIntervals(s, startHeightsRight, endHeightsRight, numLeftHeights, numRightHeights, firstHeight,
+                    ComputeVelocitiesSubIntervals(s, startGridLineRight, endGridLineRight, numLeftHeights, numRightHeights, firstHeight,
                         m_rightGridLineIndex, m_leftGridLineIndex, numPerpendicularFacesOnSubintervalAndEdge, edgeVelocities, hh0RightMaxRatio);
                 }
 
@@ -375,7 +823,7 @@ namespace GridGeom
                 {
                     numNLeftExponential = std::min(ComputeNumberExponentialIntervals(hh0LeftMaxRatio), m_maxNumN);
                 }
-                for (int i = startHeightsLeft; i < endHeightsLeft; ++i)
+                for (int i = startGridLineLeft; i < endGridLineLeft; ++i)
                 {
                     numPerpendicularFacesOnSubintervalAndEdge[1][i] = numNLeftExponential;
                 }
@@ -386,7 +834,7 @@ namespace GridGeom
                 {
                     numNRightExponential = std::min(ComputeNumberExponentialIntervals(hh0RightMaxRatio), m_maxNumN);
                 }
-                for (int i = startHeightsRight; i < endHeightsRight; ++i)
+                for (int i = startGridLineRight; i < endGridLineRight; ++i)
                 {
                     numPerpendicularFacesOnSubintervalAndEdge[1][i] = numNRightExponential;
                 }
@@ -395,12 +843,12 @@ namespace GridGeom
             // compute local grow factors
             for (int s = 0; s < m_numSplines; s++)
             {
-                if (m_numM[s] < 1)
+                if (m_numMSpline[s] < 1)
                 {
                     continue;
                 }
 
-                for (int i = m_leftGridLineIndex[s]; i < m_rightGridLineIndex[s] + m_numM[s]; ++i)
+                for (int i = m_leftGridLineIndex[s]; i < m_rightGridLineIndex[s] + m_numMSpline[s]; ++i)
                 {
                     if (m_gridLine[i].x == doubleMissingValue || m_gridLine[i + 1].x == doubleMissingValue || numPerpendicularFacesOnSubintervalAndEdge[1][i] < 1)
                     {
@@ -505,8 +953,8 @@ namespace GridGeom
 
         bool ComputeVelocitiesSubIntervals(
             const int s,
-            const int startHeights,
-            const int endHeights,
+            const int startGridLineIndex,
+            const int endGridLineIndex,
             const int numHeights,
             const int numOtherSideHeights,
             const double firstHeight,
@@ -519,12 +967,12 @@ namespace GridGeom
             hh0MaxRatio = 0.0;
             if (numHeights > 1 && numHeights == numOtherSideHeights || numHeights > numOtherSideHeights)
             {
-                double maxHeight = *std::max_element(m_gridHeights[0].begin() + startHeights, m_gridHeights[0].begin() + endHeights);
+                double maxHeight = *std::max_element(m_gridHeights[0].begin() + startGridLineIndex, m_gridHeights[0].begin() + endGridLineIndex);
 
                 int numNUniformPart = std::floor(maxHeight / firstHeight + 0.99999);
                 numNUniformPart = std::min(numNUniformPart, m_maxNUniformPart);
 
-                for (int i = startHeights; i < endHeights; ++i)
+                for (int i = startGridLineIndex; i < endGridLineIndex; ++i)
                 {
                     numPerpendicularFacesOnSubintervalAndEdge[0][i] = numNUniformPart;
                     edgeVelocities[i] = m_gridHeights[0][i] / numNUniformPart;
@@ -535,13 +983,13 @@ namespace GridGeom
             {
                 // only one subinterval: no uniform part
                 int numNUniformPart = 0;
-                for (int i = startHeights; i < endHeights; ++i)
+                for (int i = startGridLineIndex; i < endGridLineIndex; ++i)
                 {
                     numPerpendicularFacesOnSubintervalAndEdge[0][i] = numNUniformPart;
                     edgeVelocities[i] = firstHeight;
 
                     //compare with other side of spline
-                    int otherSideIndex = otherGridLineIndex[s] + m_numM[s] - (i - gridLineIndex[s] + 1);
+                    int otherSideIndex = otherGridLineIndex[s] + m_numMSpline[s] - (i - gridLineIndex[s] + 1);
 
                     if (edgeVelocities[otherSideIndex] != doubleMissingValue)
                     {
@@ -555,12 +1003,12 @@ namespace GridGeom
                         }
                     }
 
-                    for (int j = 1; j < m_maxNumHeights; ++j)
+                    for (int j = 1; j < m_maxNumCenterSplineHeights; ++j)
                     {
                         m_gridHeights[j][i] = m_gridHeights[j - 1][i];
                     }
 
-                    for (int j = startHeights; j < endHeights; ++j)
+                    for (int j = startGridLineIndex; j < endGridLineIndex; ++j)
                     {
 
                         hh0MaxRatio = std::max(hh0MaxRatio, m_gridHeights[1][j] / edgeVelocities[j]);
@@ -575,11 +1023,11 @@ namespace GridGeom
         ///comp_gridheights
         bool ComputeGridHeights()
         {
-            m_gridHeights.resize(m_maxNumHeights, std::vector<double>(m_numGridLines - 1 ));
-            std::fill(m_gridHeights.begin(), m_gridHeights.end(), std::vector<double>(m_numGridLines - 1, doubleMissingValue));
+            m_gridHeights.resize(m_maxNumCenterSplineHeights, std::vector<double>(m_numM - 1 ));
+            std::fill(m_gridHeights.begin(), m_gridHeights.end(), std::vector<double>(m_numM - 1, doubleMissingValue));
 
-            std::vector<std::vector<double>> heightsLeft(m_maxNumHeights, std::vector<double>(m_maxNumM, 0.0));
-            std::vector<std::vector<double>> heightsRight(m_maxNumHeights, std::vector<double>(m_maxNumM, 0.0));
+            std::vector<std::vector<double>> heightsLeft(m_maxNumCenterSplineHeights, std::vector<double>(m_maxNumM, 0.0));
+            std::vector<std::vector<double>> heightsRight(m_maxNumCenterSplineHeights, std::vector<double>(m_maxNumM, 0.0));
             int maxNumCornerPoints = *std::max_element(m_numSplineNodes.begin(), m_numSplineNodes.end());
             std::vector<double> edgesCenterPoints(maxNumCornerPoints, 0.0);
             std::vector<double> crossingSplinesDimensionalCoordinates(m_numSplines, 0.0);
@@ -595,7 +1043,7 @@ namespace GridGeom
                     continue;
                 }
 
-                int numM = m_numM[s];
+                int numM = m_numMSpline[s];
 
                 // Get the minimum number of sub-intervals in the cross splines for this center spline
                 int minNumLeftIntervals = *std::min_element(m_numCrossSplineLeftHeights[s].begin(), m_numCrossSplineLeftHeights[s].end());
@@ -643,7 +1091,7 @@ namespace GridGeom
                     }
 
 
-                    for (int j = 0; j < m_maxNumHeights; ++j)
+                    for (int j = 0; j < m_maxNumCenterSplineHeights; ++j)
                     {
                         AddValueToVector(numHeightsLeft, -1);
                         AddValueToVector(numHeightsRight, -1);
@@ -670,12 +1118,12 @@ namespace GridGeom
 
                 
                 // store grid height
-                for (int j = 0; j < m_maxNumHeights; ++j)
+                for (int j = 0; j < m_maxNumCenterSplineHeights; ++j)
                 {
-                    for (int i = 0; i < m_numM[s]; ++i)
+                    for (int i = 0; i < m_numMSpline[s]; ++i)
                     {
                         m_gridHeights[j][m_leftGridLineIndex[s] + i] = heightsLeft[j][i];
-                        m_gridHeights[j][m_rightGridLineIndex[s] + m_numM[s] - i - 1] = heightsRight[j][i];
+                        m_gridHeights[j][m_rightGridLineIndex[s] + m_numMSpline[s] - i - 1] = heightsRight[j][i];
                     }
                 }
             }
@@ -702,7 +1150,7 @@ namespace GridGeom
                 return false;
             }
 
-            int numM = m_numM[s];
+            int numM = m_numMSpline[s];
             std::vector<double> localCornerPoints(numValid);
             
             // TODO: strided memory access
@@ -1067,8 +1515,8 @@ namespace GridGeom
 
                 m_gridLine[gridLineIndex] = Point{ doubleMissingValue,  doubleMissingValue };
                 m_gridLineDimensionalCoordinates[gridLineIndex] = doubleMissingValue;
-                m_numM[s] = numM;
-                m_numGridLines = gridLineIndex;
+                m_numMSpline[s] = numM;
+                m_numM = gridLineIndex;
             }
 
             return true;
@@ -1222,7 +1670,7 @@ namespace GridGeom
                 {
                     m_leftGridLineIndex[s] = m_leftGridLineIndexOriginal[s];
                     m_rightGridLineIndex[s] = m_rightGridLineIndexOriginal[s];
-                    m_numM[s] = m_mfacOriginal[s];
+                    m_numMSpline[s] = m_mfacOriginal[s];
                     m_maximumGridHeights[s] = m_maximumGridHeightsOriginal[s];
                     m_numLayers[s] = m_numLayersOriginal[s];
                 }
@@ -1309,10 +1757,10 @@ namespace GridGeom
             int numSubIntervalsRight = 0;
             int rightCenterSplineIndex = centerSplineLocalIndex;
             int leftCenterSplineIndex;
-            m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex].resize(m_maxNumHeights, 0);
+            m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex].resize(m_maxNumCenterSplineHeights, 0);
             for (int s = centerSplineLocalIndex; s <  m_numCrossingSplines[crossingSplineIndex] - 1; ++s)
             {
-                if (numSubIntervalsRight >= m_maxNumHeights)
+                if (numSubIntervalsRight >= m_maxNumCenterSplineHeights)
                 {
                     break;
                 }
@@ -1337,10 +1785,10 @@ namespace GridGeom
             // left part
             int numSubIntervalsLeft = 0;
             leftCenterSplineIndex = centerSplineLocalIndex;
-            m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex].resize(m_maxNumHeights, 0);
+            m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex].resize(m_maxNumCenterSplineHeights, 0);
             for (int s = centerSplineLocalIndex; s >= 1; --s)
             {
-                if (numSubIntervalsLeft >= m_maxNumHeights)
+                if (numSubIntervalsLeft >= m_maxNumCenterSplineHeights)
                 {
                     break;
                 }
@@ -1551,8 +1999,9 @@ namespace GridGeom
         Projections m_projection;
         double m_aspectRatioFirstLayer = 0.10;
         int m_maxNumM = 20;                                                             // mfacmax
+        int m_numM = 0;                                                                 // mc
         int m_maxNumN = 40;                                                             //  N - refinement factor for regular grid generation.
-        int m_maxNumHeights = 10;                                                       // Nsubmax maximum number of subintervals of grid layers, each having their own exponential grow factor
+        int m_maxNumCenterSplineHeights = 10;                                           // Nsubmax, naz number of different heights a cross spline can have (is determined by how many crossing spline the user can input).
         double m_averageMeshWidth = 500.0;
         double m_dtolcos = 0.95;                                                        // minimum allowed absolute value of crossing - angle cosine
         double m_aspectRatio = 0.1;                                                     // daspect aspect ratio
@@ -1561,7 +2010,8 @@ namespace GridGeom
         double m_maxaspect = 1.0;                                                       // maxaspect maximum cell aspect ratio *inoperative*
         int m_maxNUniformPart = 5;                                                      // maximum number of layers in the uniform part
         bool m_growGridOutside = true;                                                  // grow the grid outside the prescribed grid height
-        
+        double m_onTopOfEachOtherTolerance = 1e-4;                                      // On - top - of - each - other tolerance *IMPORTANT*
+
         Polygons m_polygon;                                                             // selecting polygon
 
         // Spline properties (first index is the spline number)                 
@@ -1577,7 +2027,7 @@ namespace GridGeom
         std::vector<std::vector<std::vector<double>>> m_crossSplineRightHeights;        // hR right - hand side grid heights at cross spline locations for each grid layer subinterval, hR(1, :) being the height of the first subinterval, etc.
         std::vector<std::vector<int>>   m_numCrossSplineLeftHeights;                    // NsubL number of subintervals of grid layers at cross spline locations at the left - hand side of the spline, each having their own exponential grow factor
         std::vector<std::vector<int>>  m_numCrossSplineRightHeights;                    // NsubR number of subintervals of grid layers at cross spline locations at the right - hand side of the spline, each having their own exponential grow factor
-        std::vector<int> m_numM;                                                        // mfac number of grid intervals on the spline
+        std::vector<int> m_numMSpline;                                                  // mfac number of grid intervals on the spline
         std::vector<std::vector<int>> m_nfacL;                                          // nfacL number of grid layers in each subinterval at the left - hand side of the spline * not used yet*
         std::vector<std::vector<int>> m_nfacR;                                          // nfacR number of grid layers in each subinterval at the right - hand side of the spline * not used yet*
         std::vector<int> m_leftGridLineIndex;                                           // iL index in the whole gridline array of the first grid point on the left - hand side of the spline
@@ -1590,7 +2040,7 @@ namespace GridGeom
 
         //original spline chaches
         int m_numOriginalSplines = 0;
-        int m_numGridLines = 0;
+        
         std::vector<int> m_leftGridLineIndexOriginal;
         std::vector<int> m_rightGridLineIndexOriginal;
         std::vector<int> m_mfacOriginal;

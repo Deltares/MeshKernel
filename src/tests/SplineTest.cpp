@@ -119,7 +119,7 @@ TEST(SplineTests, ComputeSplinesProperties)
     ASSERT_TRUE(success);
     success = splines.MakeAllGridLines(true);
     ASSERT_TRUE(success);
-    ASSERT_EQ(7, splines.m_numGridLines);
+    ASSERT_EQ(7, splines.m_numM);
 
     const double tolerance = 1e-3;
     ASSERT_NEAR(253.52971595547601, splines.m_maximumGridHeights[0], tolerance);
