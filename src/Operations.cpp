@@ -658,7 +658,7 @@ namespace GridGeom
         return -1.0;
     }
 
-    //inner product of two segments
+    /// dprodin inner product of two segments
     static double InnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
         if (projection == Projections::cartesian)
