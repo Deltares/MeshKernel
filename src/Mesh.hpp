@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Entities.hpp"
+#include "CurvilinearGrid.hpp"
 
 namespace GridGeom 
 {
@@ -12,9 +13,13 @@ namespace GridGeom
 
         Mesh(){}
 
+        //gridtonet
+        Mesh(const CurvilinearGrid& curvilinearGrid);
         bool Set(const std::vector<Edge>& edges, 
             const std::vector<Point>& nodes, 
             Projections projection);
+        
+        bool Administrate();
         
         bool SetFlatCopies();
         

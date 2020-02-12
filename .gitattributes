@@ -467,7 +467,7 @@ doc/gridgeomStructure.tif -text
 doc/sent/ProjectPlanGridGeom_Phase1.docx -text
 doc/sent/ProjectplanGridGeomInC++Phase2_V00.docx -text
 src/Constants.cpp -text
-src/CurvilinearMesh.hpp -text
+src/CurvilinearGrid.hpp -text
 src/CurvilinearParametersNative.hpp -text
 src/Entities.hpp -text
 src/GeometryListNative.hpp -text

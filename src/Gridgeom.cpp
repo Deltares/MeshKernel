@@ -3,6 +3,7 @@
 #include "Gridgeom.hpp"
 #include "Mesh.hpp"
 #include "Orthogonalization.hpp"
+#include "CurvilinearGrid.hpp"
 #include "Splines.hpp"
 
 static std::vector<GridGeom::Mesh> meshInstances;
@@ -212,7 +213,7 @@ namespace GridGeomApi
         }
 
         std::vector<std::vector<int>> indexes(geometryListIn.numberOfCoordinates, std::vector<int>(2));
-        int numSplines = FindIndexes(splines, GridGeom::doubleMissingValue, indexes);
+        int numSplines = FindIndexes(splines, 0, splines.size(), GridGeom::doubleMissingValue, indexes);
         std::vector<GridGeom::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
 
         int index = 0;
@@ -270,7 +271,7 @@ namespace GridGeomApi
         }
 
         std::vector<std::vector<int>> indexes(geometryListIn.numberOfCoordinates, std::vector<int>(2));
-        int numSplines = FindIndexes(splines, GridGeom::doubleMissingValue, indexes);
+        int numSplines = FindIndexes(splines, 0, splines.size(), GridGeom::doubleMissingValue, indexes);
         for (int s = 0; s < numSplines; s++)
         {
             for (int p = indexes[s][0]; p <= indexes[s][1]; p++)
@@ -303,7 +304,9 @@ namespace GridGeomApi
         }
 
         int success = ggeo_set_splines(gridStateId, geometryListIn);
-        splinesInstances[gridStateId].OrthogonalCurvilinearMeshFromSplines();
+        GridGeom::CurvilinearGrid curvilinearGrid;
+        splinesInstances[gridStateId].OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
+        meshInstances[gridStateId] = GridGeom::Mesh(curvilinearGrid);
         
         return 0;
     }

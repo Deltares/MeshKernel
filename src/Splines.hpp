@@ -10,7 +10,7 @@
 #include "Polygons.hpp"
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
-#include "CurvilinearMesh.hpp"
+#include "CurvilinearGrid.hpp"
 
 
 namespace GridGeom
@@ -168,7 +168,7 @@ namespace GridGeom
         /// 5. Compute properties with artificial spline added
         /// 6. Compute edge velocities
         /// 7. Grow layers
-        bool OrthogonalCurvilinearMeshFromSplines()
+        bool OrthogonalCurvilinearGridFromSplines(CurvilinearGrid& curvilinearGrid)
         {
             // no splines
             if (m_numSplines < 1)
@@ -342,9 +342,9 @@ namespace GridGeom
             std::vector<int> subLayerGridPoints(numPerpendicularFacesOnSubintervalAndEdge.size());
             for (int layer = 1; layer < m_maxNumN + 1; ++layer)
             {
-                if (layer == 5) 
+                if (layer == 4) 
                 {
-                    std::cout << "debug " << std::endl;
+                    std::cout << "debug" << std::endl; 
                 }
 
                 success = GrowLayer(layer, edgeVelocities, validFrontNodes, gridPoints, timeStep);
@@ -394,16 +394,125 @@ namespace GridGeom
                 }
             }
 
-            return true;
+            bool successful = ConvertSplineMeshToCurvilinearMesh(gridPoints, curvilinearGrid);
+            return successful;
         }
 
-        bool ConvertSplineMeshToCurvilinearMesh(const std::vector<std::vector<Point>>& gridPoints, CurvilinearMesh& curvilinearMesh)
+        bool ConvertSplineMeshToCurvilinearMesh(const std::vector<std::vector<Point>>& gridPoints, CurvilinearGrid& curvilinearGrid)
         {
+            
+            std::vector<std::vector<int>> mIndexsesThisSide(1, std::vector<int>(2));
+            std::vector<std::vector<int>> mIndexsesOtherSide(1, std::vector<int>(2));
+            std::vector<std::vector<int>> nIndexsesThisSide(1, std::vector<int>(2));
+            std::vector<std::vector<int>> nIndexsesOtherSide(1, std::vector<int>(2));
+            std::vector<std::vector<Point>> gridPointsNDirection(gridPoints[0].size(), std::vector<Point>(gridPoints.size()));
+            std::vector<std::vector<Point>> curvilinearMeshPoints;
+            double distanceTolerance = 1e-6;
 
+            // get the grid sizes in j-direction
+            for (int i = 0; i < gridPoints[0].size(); i++)
+            {
+                for (int j = 0; j < gridPoints.size(); j++)
+                {
+                    gridPointsNDirection[i][j] = gridPoints[j][i];
+                    
+                }
+            }
 
+            int startIndex = 0;
+            int startGridLine = 0;
+            while ( startIndex < m_numM)
+            {
+                int pos = FindIndexes(gridPoints[0], startIndex, m_numM, doubleMissingValue, mIndexsesThisSide);
+                if (pos > m_numM) 
+                {
+                    return false;
+                }
+                mIndexsesOtherSide[0][0] = mIndexsesThisSide[0][1] + 2;
+                mIndexsesOtherSide[0][1] = mIndexsesOtherSide[0][0] +(mIndexsesThisSide[0][1] - mIndexsesThisSide[0][0]);
+                bool isConnected = true;
 
+                int minN = m_maxNumN;
+                int maxN = 0;
+                int minNOther = m_maxNumN;
+                int maxNOther = 0;
+                //check if this part is connected to another part
+                for (int i = mIndexsesThisSide[0][0]; i < mIndexsesThisSide[0][1] + 1; ++i)
+                {
+                    pos = FindIndexes(gridPointsNDirection[i], 0, gridPointsNDirection[i].size(), doubleMissingValue, nIndexsesThisSide);
+                    minN = std::min(minN, nIndexsesThisSide[0][0]);
+                    maxN = std::max(maxN, nIndexsesThisSide[0][1]);
 
+                    int mOther = mIndexsesThisSide[0][1] + 2 + (mIndexsesThisSide[0][1] - i);
 
+                    if (mOther > m_numM)
+                    {
+                        // no more grid available
+                        isConnected = false;
+                    }
+                    else
+                    {
+                        double distance = Distance(gridPoints[0][i], gridPoints[0][mOther], m_projection);
+                        if (distance > distanceTolerance)
+                        {
+                            isConnected = false;
+                        }
+                        else
+                        {
+                            pos = FindIndexes(gridPointsNDirection[mOther], 0, gridPointsNDirection[mOther].size(), doubleMissingValue, nIndexsesOtherSide);
+                            minNOther = std::min(minNOther, nIndexsesOtherSide[0][0]);
+                            maxNOther = std::max(maxNOther, nIndexsesOtherSide[0][1]);
+                        }
+                    }
+                }
+
+                int endGridlineIndex = startGridLine + mIndexsesThisSide[0][1] - mIndexsesThisSide[0][0];
+                if (isConnected) 
+                {
+                    startIndex = mIndexsesOtherSide[0][1] + 2;
+                }
+                else 
+                {
+                    maxNOther = 1;
+                    startIndex = mIndexsesThisSide[0][1] + 2;
+                }
+
+                // increment points
+                int oldMSize = curvilinearMeshPoints.size();
+                curvilinearMeshPoints.resize(endGridlineIndex + 1);
+                int NSize = std::max(int(curvilinearMeshPoints[0].size()), maxN + maxNOther);
+                for (int i = 0; i < curvilinearMeshPoints.size(); i++)
+                {
+                    curvilinearMeshPoints[i].resize(NSize);
+                }
+
+                // fill first part
+                int columnIncrement = 0;
+                for (int i = startGridLine; i < endGridlineIndex + 1; ++i)
+                {
+                    for (int j = 0; j < maxN; ++j)
+                    {
+                        curvilinearMeshPoints[i][j + mIndexsesOtherSide[0][0] + 1] = gridPoints[j][nIndexsesThisSide[0][0] + columnIncrement];
+                    }
+                    columnIncrement++;
+                }
+
+                columnIncrement = 0;
+                for (int i = startGridLine; i < endGridlineIndex + 1; ++i)
+                {
+                    for (int j = 0; j < maxNOther; ++j)
+                    {
+                        curvilinearMeshPoints[i][maxNOther - 1 - j] = gridPoints[j][nIndexsesOtherSide[0][1] + 1 - columnIncrement];
+                    }
+                    columnIncrement++;
+                }
+
+                startGridLine = endGridlineIndex + 2;
+            }
+
+            curvilinearGrid.IncreaseGrid(curvilinearMeshPoints.size(), curvilinearMeshPoints[0].size());
+            curvilinearGrid.Set(curvilinearMeshPoints);
+            
             return true;
         }
 
@@ -414,7 +523,7 @@ namespace GridGeom
 
             gridLayer = layer - 1;
             int sum = std::accumulate(subLayersFirstGridPoints.begin(), subLayersFirstGridPoints.end(), 0);
-            if (layer >= sum) 
+            if (layer > sum) 
             {
                 subLayerIndex = -1;
                 return true;
@@ -2238,7 +2347,7 @@ namespace GridGeom
             {
                 coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
             }
-
+             
             return true;
         }
 
