@@ -61,10 +61,10 @@ namespace GridGeom
         return index;
     }
 
-    static int FindIndexes(const std::vector<Point>& vec, const double& separator, std::vector<std::vector<int>>& indexes)
+    static int FindIndexes(const std::vector<Point>& vec, const int start, const int end, const double& separator, std::vector<std::vector<int>>& indexes)
     {
-        int pos = 0;
-
+        
+        
         // set an invalid index
         for (int n = 0; n < indexes.size(); n++)
         {
@@ -72,8 +72,20 @@ namespace GridGeom
             indexes[n][1] = -1;
         }
 
-        for (int n = 0; n < vec.size(); n++)
+        if (start > vec.size() || end > vec.size()) 
         {
+            return -1;
+        
+        }
+
+        int pos = 0;
+        for (int n = start; n <end; n++)
+        {
+            if (pos >= indexes.size())
+            {
+                return -1;
+            }
+
             if (vec[n].x != separator && indexes[pos][0] == -1)
             {
                 indexes[pos][0] = n;
@@ -282,7 +294,7 @@ namespace GridGeom
         // Split input polygons in parts 
         std::vector<std::vector<int>> indexes(numberOfPolygonPoints, std::vector<int>(2));
         std::vector<Point> subpolygon(numberOfPolygonPoints);
-        int numPolygons = FindIndexes(polygon, doubleMissingValue, indexes);
+        int numPolygons = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue, indexes);
 
         bool inPolygon = false;
         auto compareX = [](const auto&p1, const auto&p2) { return p1->x > p2->x; };

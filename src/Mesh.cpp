@@ -15,7 +15,12 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
     m_nodes = nodes;
     m_projection = projection;
 
-    m_nodesEdges.resize(m_nodes.size(), 
+    return true;
+};
+
+bool GridGeom::Mesh::Administrate() 
+{
+    m_nodesEdges.resize(m_nodes.size(),
         std::vector<std::size_t>(maximumNumberOfEdgesPerNode, 0));
     m_nodesNumEdges.resize(m_nodes.size());
     m_edgesNumFaces.resize(m_edges.size());
@@ -27,9 +32,9 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
     m_facesMassCenters.resize(0);
     m_faceArea.resize(0);
 
-    m_edgesFaces.resize(edges.size(), std::vector<int>(2, -1));
+    m_edgesFaces.resize(m_edges.size(), std::vector<int>(2, -1));
 
-    if( edges.size()==0 || nodes.size() == 0)
+    if (m_edges.size() == 0 || m_nodes.size() == 0)
     {
         return true;
     }
@@ -52,7 +57,55 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
 
     // return value
     return true;
-};
+
+
+}
+
+GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid) 
+{
+    if (curvilinearGrid.m_grid.size() == 0) 
+    {
+        return;
+    }
+
+    m_nodes.resize(curvilinearGrid.m_grid.size()*curvilinearGrid.m_grid[0].size());
+    m_edges.resize(curvilinearGrid.m_grid.size() * (curvilinearGrid.m_grid[0].size() - 1) + (curvilinearGrid.m_grid.size() - 1) * curvilinearGrid.m_grid[0].size());
+    std::vector<std::vector<int>> indexses(curvilinearGrid.m_grid.size(), std::vector<int>(curvilinearGrid.m_grid[0].size()));
+
+    int ind = 0;
+    for (int m = 0; m < curvilinearGrid.m_grid.size(); m++)
+    {
+        for (int n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
+        {
+            m_nodes[ind] = curvilinearGrid.m_grid[m][n];
+            indexses[m][n] = ind;
+            ind++;
+        }
+    }
+
+    ind = 0;
+    for (int m = 0; m < curvilinearGrid.m_grid.size(); m++)
+    {
+        for (int n = 0; n < curvilinearGrid.m_grid[0].size() - 1; n++)
+        {
+            m_edges[ind].first = indexses[m][n];
+            m_edges[ind].second = indexses[m][n + 1];
+            ind++;
+        }
+    }
+
+    for (int n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
+    {
+        for (int m = 0; m < curvilinearGrid.m_grid.size()-1; m++)
+        {
+            m_edges[ind].first = indexses[m][n];
+            m_edges[ind].second = indexses[m+1][n];
+            ind++;
+        }
+    }
+
+    Administrate();
+}
 
 
 bool GridGeom::Mesh::SetFlatCopies()
