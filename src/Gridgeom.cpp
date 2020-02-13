@@ -263,21 +263,25 @@ namespace GridGeomApi
             splinesInstances[gridStateId] = splines;
         }
 
-        std::vector<GridGeom::Point> splines(geometryListIn.numberOfCoordinates);
+        std::vector<GridGeom::Point> spline(geometryListIn.numberOfCoordinates);
+        int ind = 0;
         for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
-            splines[i].x = geometryListIn.xCoordinates[i];
-            splines[i].y = geometryListIn.yCoordinates[i];
-        }
-
-        std::vector<std::vector<int>> indexes(geometryListIn.numberOfCoordinates, std::vector<int>(2));
-        int numSplines = FindIndexes(splines, 0, splines.size(), GridGeom::doubleMissingValue, indexes);
-        for (int s = 0; s < numSplines; s++)
-        {
-            for (int p = indexes[s][0]; p <= indexes[s][1]; p++)
+            if (geometryListIn.xCoordinates[i] == GridGeom::doubleMissingValue)
             {
-                const bool status = splinesInstances[gridStateId].AddPointInExistingSpline(s, splines[p]);
-                if (!status) return -1;
+                splinesInstances[gridStateId].AddSpline(spline, 0, ind + 1);
+                ind = 0;
+                continue;
+            }
+            if (i == geometryListIn.numberOfCoordinates - 1) 
+            {
+                spline[ind] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
+                splinesInstances[gridStateId].AddSpline(spline, 0, ind + 1);
+            }
+            else 
+            {
+                spline[ind] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
+                ind++;
             }
         }
 
@@ -305,6 +309,7 @@ namespace GridGeomApi
 
         int success = ggeo_set_splines(gridStateId, geometryListIn);
         GridGeom::CurvilinearGrid curvilinearGrid;
+        splinesInstances[gridStateId].SetParameters(curvilinearParameters, splineToCurvilinearParameters);
         splinesInstances[gridStateId].OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
         meshInstances[gridStateId] = GridGeom::Mesh(curvilinearGrid);
         

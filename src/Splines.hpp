@@ -10,6 +10,7 @@
 #include "Polygons.hpp"
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
+#include "CurvilinearParametersNative.hpp"
 #include "CurvilinearGrid.hpp"
 
 
@@ -27,7 +28,7 @@ namespace GridGeom
         };
 
         /// add a new spline, return the index
-        bool AddSpline(const std::vector<Point>& splines)
+        bool AddSpline(const std::vector<Point>& splines, const int start, const int size)
         {
             AllocateVector(m_numSplines + 1, m_splineCornerPoints, m_allocationSize, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }));
            
@@ -35,10 +36,10 @@ namespace GridGeom
             m_numAllocatedSplineNodes.resize(m_numAllocatedSplines, 10);
 
             m_numSplineNodes.resize(m_numAllocatedSplines, 0);
-            m_numSplineNodes[m_numSplines] = splines.size();
+            m_numSplineNodes[m_numSplines] = size;
 
             m_splineDerivatives.resize(m_numAllocatedSplines);
-            for (int n = 0; n < m_numSplineNodes[m_numSplines]; ++n)
+            for (int n = start; n < size; ++n)
             {
                 m_splineCornerPoints[m_numSplines][n] = splines[n];
             }
@@ -58,7 +59,13 @@ namespace GridGeom
         //Run-time settings
         bool SetParameters(const GridGeomApi::CurvilinearParametersNative& curvilinearParametersNative,
                            const GridGeomApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
-        {
+        {            
+            //m_aspectRatio = splinesToCurvilinearParametersNative.AspectRatio;
+            m_maxNumM = curvilinearParametersNative.MRefinement;                                                               
+            m_maxNumN = curvilinearParametersNative.NRefinement;                            
+            //m_averageMeshWidth = splinesToCurvilinearParametersNative.AverageWidth;                                                    
+            //m_growGridOutside = splinesToCurvilinearParametersNative.GrowGridOutside;                                   
+            //m_checkFrontCollisions = splinesToCurvilinearParametersNative.CheckFrontCollisions;
             return true;
         }
 
@@ -148,7 +155,7 @@ namespace GridGeom
         /// add a new spline point in an existing spline
         bool AddPointInExistingSpline(const int splineIndex, const Point& point)
         {
-            if (splineIndex >= m_numSplines)
+            if (splineIndex > m_numSplines)
             {
                 return false;
             }
@@ -240,7 +247,7 @@ namespace GridGeom
 
                     newCrossSpline[0] = { xs1, ys1 };
                     newCrossSpline[1] = { xs2, ys2 };
-                    AddSpline(newCrossSpline);
+                    AddSpline(newCrossSpline, 0, 1);
                     // flag the cross spline as artificially added
                     m_numLayers[m_numSplines - 1] = 3;
                 }
@@ -342,11 +349,6 @@ namespace GridGeom
             std::vector<int> subLayerGridPoints(numPerpendicularFacesOnSubintervalAndEdge.size());
             for (int layer = 1; layer < m_maxNumN + 1; ++layer)
             {
-                if (layer == 4) 
-                {
-                    std::cout << "debug" << std::endl; 
-                }
-
                 success = GrowLayer(layer, edgeVelocities, validFrontNodes, gridPoints, timeStep);
 
                 for (int j = 0; j < subLayerGridPoints.size(); ++j)
@@ -702,7 +704,7 @@ namespace GridGeom
                 for (int i = 1; i < m_numM - 1; ++i)
                 {
 
-                    if (!frontGridPoints[i].IsValid())
+                    if (!activeLayerPoints[i].IsValid())
                     {
                         continue;
                     }
@@ -716,7 +718,7 @@ namespace GridGeom
                         int currentLeftIndex;
                         int currentRightIndex;
                         GetNeighbours(frontGridPoints, i, currentLeftIndex, currentRightIndex);
-                        for (int j = 0; currentLeftIndex < currentRightIndex; ++j)
+                        for (int j = currentLeftIndex +1; j < currentRightIndex; ++j)
                         {
                             newValidFrontNodes[j] = 0;
                             gridPoints[layerIndex - 1][j] = { doubleMissingValue, doubleMissingValue };
@@ -1784,9 +1786,9 @@ namespace GridGeom
         {
             m_numCrossingSplines[index] = 0;
             std::fill(m_crossingSplinesIndexses[index].begin(), m_crossingSplinesIndexses[index].end(), -1);
-            std::fill(m_isLeftOriented[index].begin(), m_isLeftOriented[index].end(), false);
+            std::fill(m_isLeftOriented[index].begin(), m_isLeftOriented[index].end(), true);
             std::fill(m_crossSplineCoordinates[index].begin(), m_crossSplineCoordinates[index].end(), std::numeric_limits<double>::max());
-            std::fill(m_cosCrossingAngle[index].begin(), m_cosCrossingAngle[index].end(), -1);
+            std::fill(m_cosCrossingAngle[index].begin(), m_cosCrossingAngle[index].end(), doubleMissingValue);
 
             for (int s = 0; s < m_numSplines; ++s)
             {
@@ -1813,7 +1815,6 @@ namespace GridGeom
                 {
                     m_numCrossingSplines[index]++;
                     m_crossingSplinesIndexses[index][s] = s;
-                    m_isLeftOriented[index][s] = true;
                     if (crossProductIntersection > 0.0)
                     {
                         m_isLeftOriented[index][s] = false;
@@ -1827,7 +1828,6 @@ namespace GridGeom
             ReorderVector(m_crossSplineCoordinates[index], sortedIndexses);
             ReorderVector(m_crossingSplinesIndexses[index], sortedIndexses);
             ReorderVector(m_isLeftOriented[index], sortedIndexses);
-            ReorderVector(m_cosCrossingAngle[index], sortedIndexses);
 
             return true;
         }
@@ -2385,8 +2385,8 @@ namespace GridGeom
         Projections m_projection;
         double m_aspectRatioFirstLayer = 0.10;
         int m_maxNumM = 20;                                                             // mfacmax
+        int m_maxNumN = 40;                                                             // N - refinement factor for regular grid generation.
         int m_numM = 0;                                                                 // mc
-        int m_maxNumN = 40;                                                             //  N - refinement factor for regular grid generation.
         int m_maxNumCenterSplineHeights = 10;                                           // Nsubmax, naz number of different heights a cross spline can have (is determined by how many crossing spline the user can input).
         double m_averageMeshWidth = 500.0;
         double m_dtolcos = 0.95;                                                        // minimum allowed absolute value of crossing - angle cosine
