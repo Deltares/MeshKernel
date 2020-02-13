@@ -21,7 +21,7 @@ namespace GridGeom
             m_grid.resize(mMax);
             for (int i = 0; i < m_grid.size(); ++i)
             {
-                m_grid[i].resize(nMax);
+                m_grid[i].resize(nMax,{doubleMissingValue,doubleMissingValue});
             }
 
             return true;

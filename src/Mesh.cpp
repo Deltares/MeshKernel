@@ -15,6 +15,8 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
     m_nodes = nodes;
     m_projection = projection;
 
+    Administrate();
+
     return true;
 };
 
@@ -60,7 +62,7 @@ bool GridGeom::Mesh::Administrate()
 
 
 }
-
+//gridtonet
 GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid) 
 {
     if (curvilinearGrid.m_grid.size() == 0) 
@@ -84,6 +86,16 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid)
     }
 
     ind = 0;
+    for (int n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
+    {
+        for (int m = 0; m < curvilinearGrid.m_grid.size() - 1; m++)
+        {
+            m_edges[ind].first = indexses[m][n];
+            m_edges[ind].second = indexses[m + 1][n];
+            ind++;
+        }
+    }
+
     for (int m = 0; m < curvilinearGrid.m_grid.size(); m++)
     {
         for (int n = 0; n < curvilinearGrid.m_grid[0].size() - 1; n++)
@@ -94,15 +106,7 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid)
         }
     }
 
-    for (int n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
-    {
-        for (int m = 0; m < curvilinearGrid.m_grid.size()-1; m++)
-        {
-            m_edges[ind].first = indexses[m][n];
-            m_edges[ind].second = indexses[m+1][n];
-            ind++;
-        }
-    }
+
 
     Administrate();
 }
