@@ -15,7 +15,7 @@ TEST(SplineTests, SetSpline)
 
     GridGeom::Polygons polygon;
     GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
-    bool success = splines.AddSpline(splineNodes);
+    bool success = splines.AddSpline(splineNodes, 0, splineNodes.size());
     ASSERT_TRUE(success);
 
     ASSERT_EQ(1, splines.m_numSplines);
@@ -74,13 +74,13 @@ TEST(SplineTests, SplineIntersection)
     GridGeom::Polygons polygon;
     GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
 
-    bool success = splines.AddSpline(firstSpline);
+    bool success = splines.AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
     std::vector<GridGeom::Point> secondSpline;
     secondSpline.push_back(GridGeom::Point{ 72.5010681152344,391.129577636719 });
     secondSpline.push_back(GridGeom::Point{ 462.503479003906, 90.3765411376953 });
-    success = splines.AddSpline(secondSpline);
+    success = splines.AddSpline(secondSpline, 0, secondSpline.size());
 
     double crossProductIntersection;
     GridGeom::Point dimensionalIntersection;
@@ -107,13 +107,13 @@ TEST(SplineTests, ComputeSplinesProperties)
 
     GridGeom::Polygons polygon;
     GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
-    bool success = splines.AddSpline(firstSpline);
+    bool success = splines.AddSpline(firstSpline,0, firstSpline.size());
     ASSERT_TRUE(success);
 
     std::vector<GridGeom::Point> secondSpline;
     secondSpline.push_back(GridGeom::Point{ 72.5010681152344,391.129577636719 });
     secondSpline.push_back(GridGeom::Point{ 462.503479003906, 90.3765411376953 });
-    success = splines.AddSpline(secondSpline);
+    success = splines.AddSpline(secondSpline,0, secondSpline.size());
 
     success = splines.ComputeSplineProperties(false);
     ASSERT_TRUE(success);
@@ -159,26 +159,26 @@ TEST(SplineTests, ComputeBoundingBox)
 
     GridGeom::Polygons polygon;
     GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
-    bool success = splines.AddSpline(firstSpline);
+    bool success = splines.AddSpline(firstSpline,0, firstSpline.size());
     ASSERT_TRUE(success);
 
     std::vector<GridGeom::Point> secondSpline;
     secondSpline.push_back(GridGeom::Point{ 273.502319335938, 86.6264953613281 });
     secondSpline.push_back(GridGeom::Point{ 557.004089355469, 316.128814697266 });
     secondSpline.push_back(GridGeom::Point{ 847.255920410156, 409.129730224609 });
-    success = splines.AddSpline(secondSpline);
+    success = splines.AddSpline(secondSpline,0, secondSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> thirdpline;
-    thirdpline.push_back(GridGeom::Point{ 62.7510070800781, 396.379608154297 });
-    thirdpline.push_back(GridGeom::Point{ 350.752807617188, 73.8763732910156 });
-    success = splines.AddSpline(thirdpline);
+    std::vector<GridGeom::Point> thirdSpline;
+    thirdSpline.push_back(GridGeom::Point{ 62.7510070800781, 396.379608154297 });
+    thirdSpline.push_back(GridGeom::Point{ 350.752807617188, 73.8763732910156 });
+    success = splines.AddSpline(thirdSpline, 0, thirdSpline.size());
     ASSERT_TRUE(success);
 
     std::vector<GridGeom::Point> fourthSpline;
     fourthSpline.push_back(GridGeom::Point{ 704.755004882812, 636.382019042969 });
     fourthSpline.push_back(GridGeom::Point{ 845.005859375000, 285.378509521484 });
-    success = splines.AddSpline(fourthSpline);
+    success = splines.AddSpline(fourthSpline,0, fourthSpline.size());
     ASSERT_TRUE(success);
 
     success = splines.ComputeSplineProperties(false);
@@ -200,14 +200,20 @@ TEST(SplineTests, OrthogonalCurvilinearMeshFromSplines)
 
     GridGeom::Polygons polygon;
     GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
-    bool success = splines.AddSpline(firstSpline);
+    bool success = splines.AddSpline(firstSpline,0, firstSpline.size());
     ASSERT_TRUE(success);
 
     std::vector<GridGeom::Point> secondSpline;
     secondSpline.push_back(GridGeom::Point{ 72.5010681152344,391.129577636719 });
     secondSpline.push_back(GridGeom::Point{ 462.503479003906, 90.3765411376953 });
-    success = splines.AddSpline(secondSpline);
+    success = splines.AddSpline(secondSpline,0, secondSpline.size());
 
+    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
+    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    curvilinearParametersNative.MRefinement = 20;
+    curvilinearParametersNative.NRefinement = 40;
+    success = splines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    ASSERT_TRUE(success);
     GridGeom::CurvilinearGrid curvilinearGrid;
     success = splines.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
     ASSERT_TRUE(success);
@@ -247,4 +253,32 @@ TEST(SplineTests, OrthogonalCurvilinearMeshFromSplines)
     //{x = 776.01243236440098 y = 726.27356733380986 }
 
     //ASSERT_NEAR(238.968273342307, splines.m_gridHeights[0][0], tolerance);
+}
+
+
+TEST(SplineTests, OrthogonalCurvilinearMeshFromSplinesSecondTest)
+{
+    std::vector<GridGeom::Point> firstSpline;
+    firstSpline.push_back(GridGeom::Point{ -308.537744061683,  386.273429868505 });
+    firstSpline.push_back(GridGeom::Point{ -6.56749543206411, 1004.19403123097 });
+    firstSpline.push_back(GridGeom::Point{ 1383.05485242831, 1532.6419663328 });
+
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
+    bool success = splines.AddSpline(firstSpline, 0, firstSpline.size());
+    ASSERT_TRUE(success);
+
+    std::vector<GridGeom::Point> secondSpline;
+    secondSpline.push_back(GridGeom::Point{ -613.304013511947,1194.3234470348 });
+    secondSpline.push_back(GridGeom::Point{ 334.54704468658, 397.457513151084 });
+    success = splines.AddSpline(secondSpline, 0, secondSpline.size());
+
+    ASSERT_TRUE(success);
+    GridGeom::CurvilinearGrid curvilinearGrid;
+    success = splines.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
+    ASSERT_TRUE(success);
+    GridGeom::Mesh mesh(curvilinearGrid);
+
+    const double tolerance = 1e-3;
+
 }
