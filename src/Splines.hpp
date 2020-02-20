@@ -247,7 +247,7 @@ namespace GridGeom
 
                     newCrossSpline[0] = { xs1, ys1 };
                     newCrossSpline[1] = { xs2, ys2 };
-                    AddSpline(newCrossSpline, 0, 1);
+                    AddSpline(newCrossSpline, 0, newCrossSpline.size());
                     // flag the cross spline as artificially added
                     m_numLayers[m_numSplines - 1] = 3;
                 }
@@ -349,6 +349,12 @@ namespace GridGeom
             std::vector<int> subLayerGridPoints(numPerpendicularFacesOnSubintervalAndEdge.size());
             for (int layer = 1; layer < m_maxNumN + 1; ++layer)
             {
+                if (layer == 9)
+                {
+                    std::cout << " dummy " << std::endl;
+                }
+
+
                 success = GrowLayer(layer, edgeVelocities, validFrontNodes, gridPoints, timeStep);
 
                 for (int j = 0; j < subLayerGridPoints.size(); ++j)
@@ -358,6 +364,9 @@ namespace GridGeom
 
                 int gridLayer;
                 int subLayerRightIndex;
+
+
+
                 success = GetSubIntervalAndGridLayer(layer, subLayerGridPoints, gridLayer, subLayerRightIndex);
                 if (!success)
                 {
@@ -430,6 +439,10 @@ namespace GridGeom
                 {
                     return false;
                 }
+
+                mIndexsesThisSide[0][0] += startIndex;
+                mIndexsesThisSide[0][1] += startIndex;
+
                 mIndexsesOtherSide[0][0] = mIndexsesThisSide[0][1] + 2;
                 mIndexsesOtherSide[0][1] = mIndexsesOtherSide[0][0] +(mIndexsesThisSide[0][1] - mIndexsesThisSide[0][0]);
                 bool isConnected = true;
@@ -494,7 +507,7 @@ namespace GridGeom
                 {
                     for (int j = 0; j < maxN; ++j)
                     {
-                        curvilinearMeshPoints[i][j + mIndexsesOtherSide[0][0] + 1] = gridPoints[j][nIndexsesThisSide[0][0] + columnIncrement];
+                        curvilinearMeshPoints[i][j + mIndexsesOtherSide[0][0] + 1] = gridPoints[j][mIndexsesThisSide[0][0] + columnIncrement];
                     }
                     columnIncrement++;
                 }
@@ -502,9 +515,9 @@ namespace GridGeom
                 columnIncrement = 0;
                 for (int i = startGridLine; i < endGridlineIndex + 1; ++i)
                 {
-                    for (int j = 0; j < maxNOther; ++j)
+                    for (int j = 0; j < maxNOther + 1; ++j)
                     {
-                        curvilinearMeshPoints[i][maxNOther - 1 - j] = gridPoints[j][nIndexsesOtherSide[0][1] + 1 - columnIncrement];
+                        curvilinearMeshPoints[i][maxNOther - j] = gridPoints[j][mIndexsesOtherSide[0][1] - columnIncrement];
                     }
                     columnIncrement++;
                 }
@@ -525,7 +538,7 @@ namespace GridGeom
 
             gridLayer = layer - 1;
             int sum = std::accumulate(subLayersFirstGridPoints.begin(), subLayersFirstGridPoints.end(), 0);
-            if (layer > sum) 
+            if (layer >= sum) 
             {
                 subLayerIndex = -1;
                 return true;
@@ -982,12 +995,16 @@ namespace GridGeom
             Point normalVectorLeft;
             Point normalVectorRight;
             const double cosTolerance = 1e-8;
-            double eps = std::numeric_limits<double>::min();
+            double eps = 1e-10;
             for (int m = 0; m < velocityVector.size(); ++m)
             {
                 if (!gridPoints[m].IsValid())
                 {
                     continue;
+                }
+                if (m == 12)
+                {
+                    std::cout << " dummy " << std::endl;
                 }
                 int currentLeftIndex;
                 int currentRightIndex;
@@ -1043,7 +1060,7 @@ namespace GridGeom
                     velocityVector[m] = (leftVelocity * (1.0 - rightLeftVelocityRatio * cosphi) +
                         rightVelocity * (1.0 - 1.0 / rightLeftVelocityRatio*cosphi)) / (1.0 - cosphi*cosphi);
                 }
-                else if (rightLeftVelocityRatio - cosphi < eps)
+                else if (cosphi - rightLeftVelocityRatio > eps)
                 {
                     velocityVector[m] = leftVelocity * rightLeftVelocityRatio / cosphi;
                 }
@@ -1416,8 +1433,7 @@ namespace GridGeom
 
             std::vector<std::vector<double>> heightsLeft(m_maxNumCenterSplineHeights, std::vector<double>(m_maxNumM, 0.0));
             std::vector<std::vector<double>> heightsRight(m_maxNumCenterSplineHeights, std::vector<double>(m_maxNumM, 0.0));
-            int maxNumCornerPoints = *std::max_element(m_numSplineNodes.begin(), m_numSplineNodes.end());
-            std::vector<double> edgesCenterPoints(maxNumCornerPoints, 0.0);
+            std::vector<double> edgesCenterPoints(m_numM, 0.0);
             std::vector<double> crossingSplinesDimensionalCoordinates(m_numSplines, 0.0);
             std::vector<int> numHeightsLeft(m_numSplines, 0.0);
             std::vector<int> numHeightsRight(m_numSplines, 0.0);
@@ -1924,7 +1940,8 @@ namespace GridGeom
             numM = std::min(numM, m_maxNumM);
 
             double endSplineAdimensionalCoordinate = m_numSplineNodes[splineIndex] - 1;
-            double splineLength = GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, isSpacingCurvatureAdapeted, m_maximumGridHeights[splineIndex]);
+            //double splineLength = GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 100, false, m_maximumGridHeights[splineIndex]);
+            double splineLength = GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, true, m_maximumGridHeights[splineIndex]);
             
             gridLine[startingIndex] = m_splineCornerPoints[splineIndex][0];
             FuncDimensionalToAdimensionalDistance func(*this, splineIndex, isSpacingCurvatureAdapeted, m_maximumGridHeights[splineIndex]);
@@ -1968,10 +1985,10 @@ namespace GridGeom
                 m_DimensionalDistance = distance;
             }
 
-            // this is the fancion we want to find the root
+            // this is the function we want to find the root
             double operator()(double const& adimensionalDistancereferencePoint)
             {
-                double distanceFromReferencePoint = m_spline.GetSplineLength(m_splineIndex, 0, adimensionalDistancereferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h);
+                double distanceFromReferencePoint = m_spline.GetSplineLength(m_splineIndex, 0, adimensionalDistancereferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
                 distanceFromReferencePoint = std::abs(distanceFromReferencePoint - m_DimensionalDistance);
                 return distanceFromReferencePoint;
             }
@@ -2211,17 +2228,23 @@ namespace GridGeom
         }
 
         ///splinelength
+        /// TODO: remove special treatment assign delta and calculate number of points 
         double GetSplineLength(int index, 
             double beginFactor, 
             double endFactor, 
             int numSamples = 100, 
             bool accountForCurvature = false, 
-            double height = 1.0 )
+            double height = 1.0,
+            double assignedDelta = -1)
         {
-
-            double delta = 1.0 / numSamples;
-            double numPoints = std::max(std::floor( 0.9999 + (endFactor - beginFactor) / delta), 10.0);
-            delta = (endFactor - beginFactor) / numPoints;
+            double delta = assignedDelta;
+            int numPoints = endFactor / delta + 1;
+            if (delta < 0.0)
+            {
+                delta = 1.0 / numSamples;
+                numPoints = std::max(std::floor(0.9999 + (endFactor - beginFactor) / delta), 10.0);
+                delta = (endFactor - beginFactor) / numPoints;            
+            }
 
             // first point
             Point leftPoint;
@@ -2235,6 +2258,11 @@ namespace GridGeom
             {
                 leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
                 rightPointCoordinateOnSpline += delta;
+                if (rightPointCoordinateOnSpline > endFactor)
+                {
+                    rightPointCoordinateOnSpline = endFactor;
+                }
+
                 Point rightPoint;
                 Interpolate(m_splineCornerPoints[index], m_splineDerivatives[index], rightPointCoordinateOnSpline, rightPoint);
                 double curvatureFactor = 0.0;
