@@ -10,13 +10,13 @@ namespace GridGeom
 {
     // coordinate reference independent operations
     template<typename T>
-    T DotProduct(T& dx1, T& dx2)
+    T DotProduct(const T& dx1, const T& dx2)
     {
         return dx1 * dx2;
     }
 
     template<typename T, typename... Args>
-    T DotProduct(T& dx1, T& dx2, Args&... args)
+    T DotProduct(const T& dx1, const T& dx2, Args&... args)
     {
         return dx1 * dx2 + DotProduct(args...);
     }
