@@ -14,7 +14,7 @@ namespace GridGeom
         Mesh(){}
 
         //gridtonet
-        Mesh(const CurvilinearGrid& curvilinearGrid);
+        Mesh(const CurvilinearGrid& curvilinearGrid, const  Projections& projection);
         bool Set(const std::vector<Edge>& edges, 
             const std::vector<Point>& nodes, 
             Projections projection);

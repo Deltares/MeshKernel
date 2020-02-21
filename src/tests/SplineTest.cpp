@@ -191,7 +191,7 @@ TEST(SplineTests, ComputeBoundingBox)
     ASSERT_NEAR(0.0, splines.m_maximumGridHeights[3], tolerance);
 }
 
-TEST(SplineTests, OrthogonalCurvilinearMeshFromSplines)
+TEST(SplineTests, OrthogonalCurvilinearMeshTwoCrossingFirst)
 {
     std::vector<GridGeom::Point> firstSpline;
     firstSpline.push_back(GridGeom::Point{ 152.001571655273, 86.6264953613281 });
@@ -217,46 +217,13 @@ TEST(SplineTests, OrthogonalCurvilinearMeshFromSplines)
     GridGeom::CurvilinearGrid curvilinearGrid;
     success = splines.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
     ASSERT_TRUE(success);
-    GridGeom::Mesh mesh(curvilinearGrid);
+    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
 
     const double tolerance = 1e-3;
-
-    //{x = 335.33670929654500 y = -88.489306830568154 }
-    //{x = 278.81879242320252 y = -34.505218025639330 }
-    //{x = 230.11982957821934 y = 12.010458424769524 }
-    //{x = 188.15810994350915 y = 52.090937757442298 }
-    //{x = 152.00157165527301 y = 86.626495361328097 }
-    //{x = 152.00157165527301 y = 86.626495361328097 }
-    //{x = 115.84503336703688 y = 121.16205296521389 }
-    //{x = 75.349517048975912 y = 159.84206224465640 }
-    //{x = 29.994322124247887 y = 203.16387957328175 }
-    //{x = -20.803738838926265 y = 251.68454675037691 }
-    //{x = 547.25118159813246 y = 133.37170434770775 }
-    //{x = 504.30036823467736 y = 201.55968999258548 }
-    //{x = 467.29157208891445 y = 260.31422949261434 }
-    //{x = 435.40274659523914 y = 310.94039008692971 }
-    //{x = 407.92557097026275 y = 354.56268988421010 }
-    //{x = 407.92557097026275 y = 354.56268988421010 }
-    //{x = 380.44839534528637 y = 398.18498968149049 }
-    //{x = 349.67381164412808 y = 447.04219883104190 }
-    //{x = 315.20611325671740 y = 501.76253446157705 }
-    //{x = 276.60210666276959 y = 563.04960311817695 }
-    //{x = 929.01275803595217 y = 258.14413031596553 }
-    //{x = 904.73228179920147 y = 332.43420532950336 }
-    //{x = 883.81088066614359 y = 396.44664249952416 }
-    //{x = 865.78384441271908 y = 451.60329850908073 }
-    //{x = 850.25075300954393 y = 499.12932371065432 }
-    //{x = 850.25075300954393 y = 499.12932371065432 }
-    //{x = 834.71766160636878 y = 546.65534891222785 }
-    //{x = 817.32051613373733 y = 599.88475139927630 }
-    //{x = 797.83562013074129 y = 659.50196695877128 }
-    //{x = 776.01243236440098 y = 726.27356733380986 }
-
-    //ASSERT_NEAR(238.968273342307, splines.m_gridHeights[0][0], tolerance);
 }
 
 
-TEST(SplineTests, OrthogonalCurvilinearMeshFromSplinesSecondTest)
+TEST(SplineTests, OrthogonalCurvilinearMeshTwoCrossingSecond)
 {
     std::vector<GridGeom::Point> firstSpline;
     firstSpline.push_back(GridGeom::Point{ -308.537744061683,  386.273429868505 });
@@ -277,8 +244,42 @@ TEST(SplineTests, OrthogonalCurvilinearMeshFromSplinesSecondTest)
     GridGeom::CurvilinearGrid curvilinearGrid;
     success = splines.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
     ASSERT_TRUE(success);
-    GridGeom::Mesh mesh(curvilinearGrid);
+    GridGeom::Mesh mesh(curvilinearGrid,GridGeom::Projections::cartesian);
 
-    const double tolerance = 1e-3;
+    const double tolerance = 1e-2;
+    //ASSERT_NEAR(345.967070088532, mesh.m_nodes[0], tolerance);
+    //ASSERT_NEAR(370.339417298715, splines.m_maximumGridHeights[1], tolerance);
+    //ASSERT_NEAR(0.0, splines.m_maximumGridHeights[2], tolerance);
+    //ASSERT_NEAR(0.0, splines.m_maximumGridHeights[3], tolerance);
+}
 
+
+TEST(SplineTests, OrthogonalCurvilinearMeshTwoCrossingThird)
+{
+    std::vector<GridGeom::Point> firstSpline;
+    firstSpline.push_back(GridGeom::Point{ 26.9847544156713,  327.556992634968 });
+    firstSpline.push_back(GridGeom::Point{ 340.139086327869, 819.656657068422 });
+    firstSpline.push_back(GridGeom::Point{ 2048.50780774173, 1644.48279915859 });
+
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
+    bool success = splines.AddSpline(firstSpline, 0, firstSpline.size());
+    ASSERT_TRUE(success);
+
+    std::vector<GridGeom::Point> secondSpline;
+    secondSpline.push_back(GridGeom::Point{ -179.920786312031,1068.50251010579 });
+    secondSpline.push_back(GridGeom::Point{ 600.169022647819, 321.964950993679 });
+    success = splines.AddSpline(secondSpline, 0, secondSpline.size());
+
+    ASSERT_TRUE(success);
+    GridGeom::CurvilinearGrid curvilinearGrid;
+    success = splines.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
+    ASSERT_TRUE(success);
+    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
+
+    const double tolerance = 1e-2;
+    //ASSERT_NEAR(345.967070088532, mesh.m_nodes[0], tolerance);
+    //ASSERT_NEAR(370.339417298715, splines.m_maximumGridHeights[1], tolerance);
+    //ASSERT_NEAR(0.0, splines.m_maximumGridHeights[2], tolerance);
+    //ASSERT_NEAR(0.0, splines.m_maximumGridHeights[3], tolerance);
 }

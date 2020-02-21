@@ -63,8 +63,10 @@ bool GridGeom::Mesh::Administrate()
 
 }
 //gridtonet
-GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid) 
+GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, const  Projections& projection)
 {
+    m_projection = projection;
+
     if (curvilinearGrid.m_grid.size() == 0) 
     {
         return;
@@ -105,8 +107,6 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid)
             ind++;
         }
     }
-
-
 
     Administrate();
 }
