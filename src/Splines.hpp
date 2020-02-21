@@ -178,7 +178,7 @@ namespace GridGeom
         bool OrthogonalCurvilinearGridFromSplines(CurvilinearGrid& curvilinearGrid)
         {
             // no splines
-            if (m_numSplines < 1)
+            if (m_numSplines < 2)
             {
                 return false;
             }
@@ -349,12 +349,6 @@ namespace GridGeom
             std::vector<int> subLayerGridPoints(numPerpendicularFacesOnSubintervalAndEdge.size());
             for (int layer = 1; layer < m_maxNumN + 1; ++layer)
             {
-                if (layer == 9)
-                {
-                    std::cout << " dummy " << std::endl;
-                }
-
-
                 success = GrowLayer(layer, edgeVelocities, validFrontNodes, gridPoints, timeStep);
 
                 for (int j = 0; j < subLayerGridPoints.size(); ++j)
@@ -364,8 +358,6 @@ namespace GridGeom
 
                 int gridLayer;
                 int subLayerRightIndex;
-
-
 
                 success = GetSubIntervalAndGridLayer(layer, subLayerGridPoints, gridLayer, subLayerRightIndex);
                 if (!success)
@@ -507,7 +499,7 @@ namespace GridGeom
                 {
                     for (int j = 0; j < maxN; ++j)
                     {
-                        curvilinearMeshPoints[i][j + mIndexsesOtherSide[0][0] + 1] = gridPoints[j][mIndexsesThisSide[0][0] + columnIncrement];
+                        curvilinearMeshPoints[i][j + maxNOther] = gridPoints[j][mIndexsesThisSide[0][0] + columnIncrement];
                     }
                     columnIncrement++;
                 }
@@ -680,7 +672,7 @@ namespace GridGeom
 
                 if(totalTimeStep < timeStep)
                 {
-                    success = ComputeVelocitiesAtGridPoints(gridPoints[layerIndex - 1], edgeVelocities, velocityVectorAtGridPoints);
+                    success = ComputeVelocitiesAtGridPoints(gridPoints[layerIndex], edgeVelocities, velocityVectorAtGridPoints);
                     if( !success )
                     {
                         return false;
@@ -1869,9 +1861,6 @@ namespace GridGeom
                 return false;
             }
 
-            // allocate
-            m_gridLine.resize(numCenterSplines*(m_maxNumM + 2));
-            m_gridLineDimensionalCoordinates.resize(numCenterSplines*(m_maxNumM + 2));
 
             int gridLineIndex = 0;
             for (int s = 0; s < m_numSplines; ++s)
@@ -1881,6 +1870,11 @@ namespace GridGeom
                 {
                     continue;
                 }
+
+                int sizeGridLine = gridLineIndex + 2 * (m_maxNumM + 1) * 2;
+                // increase size
+                m_gridLine.resize(sizeGridLine);
+                m_gridLineDimensionalCoordinates.resize(sizeGridLine);
 
                 if (gridLineIndex > 0) 
                 {

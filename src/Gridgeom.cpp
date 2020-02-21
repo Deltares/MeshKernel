@@ -8,7 +8,6 @@
 
 static std::vector<GridGeom::Mesh> meshInstances;
 static std::map<int, GridGeom::Orthogonalization> orthogonalizationInstances;
-static std::map<int, GridGeom::Splines> splinesInstances;
 static std::map<int, GridGeom::Polygons> polygonInstances;
 
 namespace GridGeomApi
@@ -248,39 +247,31 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_set_splines(int& gridStateId, GeometryListNative& geometryListIn)
+    int ggeo_set_splines(int& gridStateId, GeometryListNative& geometryListIn, GridGeom::Splines& spline)
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
             return -1;
         }
 
-        // use the default constructor, no instance present
-        if (splinesInstances.count(gridStateId) == 0)
-        {
-            GridGeom::Polygons polygon;
-            GridGeom::Splines splines(meshInstances[gridStateId].m_projection, polygon);
-            splinesInstances[gridStateId] = splines;
-        }
-
-        std::vector<GridGeom::Point> spline(geometryListIn.numberOfCoordinates);
+        std::vector<GridGeom::Point> splineCornerPoints(geometryListIn.numberOfCoordinates);
         int ind = 0;
         for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
             if (geometryListIn.xCoordinates[i] == GridGeom::doubleMissingValue)
             {
-                splinesInstances[gridStateId].AddSpline(spline, 0, ind + 1);
+                spline.AddSpline(splineCornerPoints, 0, ind + 1);
                 ind = 0;
                 continue;
             }
             if (i == geometryListIn.numberOfCoordinates - 1) 
             {
-                spline[ind] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
-                splinesInstances[gridStateId].AddSpline(spline, 0, ind + 1);
+                splineCornerPoints[ind] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
+                spline.AddSpline(splineCornerPoints, 0, ind + 1);
             }
             else 
             {
-                spline[ind] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
+                splineCornerPoints[ind] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
                 ind++;
             }
         }
@@ -294,25 +285,15 @@ namespace GridGeomApi
         SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
     {
         // use the default constructor, no instance present
-        if (splinesInstances.count(gridStateId) == 0)
-        {
-            GridGeom::Polygons polygon;
-            GridGeom::Splines spline(meshInstances[gridStateId].m_projection, polygon);
-            splinesInstances[gridStateId] = spline;
-        }
+        GridGeom::Polygons polygon;
+        GridGeom::Splines spline(meshInstances[gridStateId].m_projection, polygon);
 
-        // use the default constructor, no instance present
-        if (polygonInstances.count(gridStateId) == 0)
-        {
-            polygonInstances[gridStateId] = GridGeom::Polygons();
-        }
-
-        int success = ggeo_set_splines(gridStateId, geometryListIn);
+        int success = ggeo_set_splines(gridStateId, geometryListIn, spline);
+        spline.SetParameters(curvilinearParameters, splineToCurvilinearParameters);
         GridGeom::CurvilinearGrid curvilinearGrid;
-        splinesInstances[gridStateId].SetParameters(curvilinearParameters, splineToCurvilinearParameters);
-        splinesInstances[gridStateId].OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
-        meshInstances[gridStateId] = GridGeom::Mesh(curvilinearGrid);
-        
+        spline.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
+        meshInstances[gridStateId] = GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
+
         return 0;
     }
 
