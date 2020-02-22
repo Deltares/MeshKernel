@@ -260,14 +260,14 @@ namespace GridGeomApi
         {
             if (geometryListIn.xCoordinates[i] == GridGeom::doubleMissingValue)
             {
-                spline.AddSpline(splineCornerPoints, 0, ind + 1);
+                spline.AddSpline(splineCornerPoints, 0, ind);
                 ind = 0;
                 continue;
             }
             if (i == geometryListIn.numberOfCoordinates - 1) 
             {
                 splineCornerPoints[ind] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
-                spline.AddSpline(splineCornerPoints, 0, ind + 1);
+                spline.AddSpline(splineCornerPoints, 0, ind);
             }
             else 
             {

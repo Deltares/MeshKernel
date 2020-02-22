@@ -74,27 +74,34 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, const  Projections&
 
     m_nodes.resize(curvilinearGrid.m_grid.size()*curvilinearGrid.m_grid[0].size());
     m_edges.resize(curvilinearGrid.m_grid.size() * (curvilinearGrid.m_grid[0].size() - 1) + (curvilinearGrid.m_grid.size() - 1) * curvilinearGrid.m_grid[0].size());
-    std::vector<std::vector<int>> indexses(curvilinearGrid.m_grid.size(), std::vector<int>(curvilinearGrid.m_grid[0].size()));
+    std::vector<std::vector<int>> indexses(curvilinearGrid.m_grid.size(), std::vector<int>(curvilinearGrid.m_grid[0].size(), intMissingValue));
 
     int ind = 0;
     for (int m = 0; m < curvilinearGrid.m_grid.size(); m++)
     {
         for (int n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
         {
-            m_nodes[ind] = curvilinearGrid.m_grid[m][n];
-            indexses[m][n] = ind;
-            ind++;
+            if (curvilinearGrid.m_grid[m][n].IsValid())
+            {
+                m_nodes[ind] = curvilinearGrid.m_grid[m][n];
+                indexses[m][n] = ind;
+                ind++;
+            }
         }
     }
+    m_nodes.resize(ind);
 
     ind = 0;
-    for (int n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
+    for (int m = 0; m < curvilinearGrid.m_grid.size() - 1; m++)
     {
-        for (int m = 0; m < curvilinearGrid.m_grid.size() - 1; m++)
+        for (int n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
         {
-            m_edges[ind].first = indexses[m][n];
-            m_edges[ind].second = indexses[m + 1][n];
-            ind++;
+            if (indexses[m][n] != intMissingValue && indexses[m + 1][n] != intMissingValue)
+            {
+                m_edges[ind].first = indexses[m][n];
+                m_edges[ind].second = indexses[m + 1][n];
+                ind++;
+            }
         }
     }
 
@@ -102,11 +109,15 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, const  Projections&
     {
         for (int n = 0; n < curvilinearGrid.m_grid[0].size() - 1; n++)
         {
-            m_edges[ind].first = indexses[m][n];
-            m_edges[ind].second = indexses[m][n + 1];
-            ind++;
+            if (indexses[m][n] != intMissingValue && indexses[m][n + 1] != intMissingValue)
+            {
+                m_edges[ind].first = indexses[m][n];
+                m_edges[ind].second = indexses[m][n + 1];
+                ind++;
+            }
         }
     }
+    m_edges.resize(ind);
 
     Administrate();
 }
