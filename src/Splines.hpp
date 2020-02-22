@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <functional>
 #include <cassert>
 #include <iostream>
 #include "Operations.cpp"
@@ -10,7 +9,6 @@
 #include "Polygons.hpp"
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
-#include "CurvilinearParametersNative.hpp"
 #include "CurvilinearGrid.hpp"
 
 
@@ -60,12 +58,17 @@ namespace GridGeom
         bool SetParameters(const GridGeomApi::CurvilinearParametersNative& curvilinearParametersNative,
                            const GridGeomApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
         {            
-            //m_aspectRatio = splinesToCurvilinearParametersNative.AspectRatio;
+            m_aspectRatio = splinesToCurvilinearParametersNative.AspectRatio;
+            m_aspectRatioGrowFactor = splinesToCurvilinearParametersNative.AspectRatioGrowFactor;
+            m_averageMeshWidth = splinesToCurvilinearParametersNative.AverageWidth;
+            m_onTopOfEachOtherTolerance = splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance;
+            m_dtolcos = splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles;
+            m_checkFrontCollisions = splinesToCurvilinearParametersNative.CheckFrontCollisions;
+            m_isSpacingCurvatureAdapted = splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing;
+
+            // curvature adapted grid spacing? to add
             m_maxNumM = curvilinearParametersNative.MRefinement;                                                               
-            m_maxNumN = curvilinearParametersNative.NRefinement;                            
-            //m_averageMeshWidth = splinesToCurvilinearParametersNative.AverageWidth;                                                    
-            //m_growGridOutside = splinesToCurvilinearParametersNative.GrowGridOutside;                                   
-            //m_checkFrontCollisions = splinesToCurvilinearParametersNative.CheckFrontCollisions;
+            m_maxNumN = curvilinearParametersNative.NRefinement;
             return true;
         }
 
@@ -169,7 +172,7 @@ namespace GridGeom
 
         /// spline2curvi
         /// 1. Eliminate spline that are not in polygon
-        /// 2. Compute the properties
+        /// 2. Compute properties (crossings)
         /// 3. Make all grid lines of the central spline
         /// 4. Add artificial splines
         /// 5. Compute properties with artificial spline added
@@ -293,7 +296,7 @@ namespace GridGeom
                 }
             }
 
-            // Compute edge velocity
+            // Compute edge velocities
             std::vector<double> edgeVelocities(m_numM - 1, doubleMissingValue);
             std::vector<std::vector<double>> growFactorOnSubintervalAndEdge(m_maxNumCenterSplineHeights, std::vector<double>(m_numM - 1, doubleMissingValue));
             std::vector<std::vector<int>> numPerpendicularFacesOnSubintervalAndEdge(m_maxNumCenterSplineHeights, std::vector<int>(m_numM - 1, 0));
@@ -424,16 +427,9 @@ namespace GridGeom
 
             int startIndex = 0;
             int startGridLine = 0;
-            while ( startIndex < m_numM)
+            while ( startIndex < gridPoints[0].size())
             {
                 int pos = FindIndexes(gridPoints[0], startIndex, m_numM, doubleMissingValue, mIndexsesThisSide);
-                if (pos > m_numM) 
-                {
-                    return false;
-                }
-
-                mIndexsesThisSide[0][0] += startIndex;
-                mIndexsesThisSide[0][1] += startIndex;
 
                 mIndexsesOtherSide[0][0] = mIndexsesThisSide[0][1] + 2;
                 mIndexsesOtherSide[0][1] = mIndexsesOtherSide[0][0] +(mIndexsesThisSide[0][1] - mIndexsesThisSide[0][0]);
@@ -452,7 +448,7 @@ namespace GridGeom
 
                     int mOther = mIndexsesThisSide[0][1] + 2 + (mIndexsesThisSide[0][1] - i);
 
-                    if (mOther > m_numM)
+                    if (mOther > m_numM - 1)
                     {
                         // no more grid available
                         isConnected = false;
@@ -487,7 +483,7 @@ namespace GridGeom
                 // increment points
                 int oldMSize = curvilinearMeshPoints.size();
                 curvilinearMeshPoints.resize(endGridlineIndex + 1);
-                int NSize = std::max(int(curvilinearMeshPoints[0].size()), maxN + maxNOther);
+                int NSize = std::max(int(curvilinearMeshPoints[0].size()), maxN + maxNOther + 1);
                 for (int i = 0; i < curvilinearMeshPoints.size(); i++)
                 {
                     curvilinearMeshPoints[i].resize(NSize);
@@ -497,7 +493,7 @@ namespace GridGeom
                 int columnIncrement = 0;
                 for (int i = startGridLine; i < endGridlineIndex + 1; ++i)
                 {
-                    for (int j = 0; j < maxN; ++j)
+                    for (int j = 0; j < maxN + 1; ++j)
                     {
                         curvilinearMeshPoints[i][j + maxNOther] = gridPoints[j][mIndexsesThisSide[0][0] + columnIncrement];
                     }
@@ -1492,7 +1488,7 @@ namespace GridGeom
                         AddValueToVector(numHeightsLeft, -1);
                         AddValueToVector(numHeightsRight, -1);
 
-                        FindNearestCrossSplines(s, j,
+                        bool success = FindNearestCrossSplines(s, j,
                             numHeightsLeft,
                             edgesCenterPoints,
                             m_crossSplineLeftHeights[s],
@@ -1501,7 +1497,12 @@ namespace GridGeom
                             crossingSplinesDimensionalCoordinates,
                             heightsLeft);
 
-                        FindNearestCrossSplines(s, j,
+                        if(!success)
+                        {
+                            return false;
+                        }
+
+                        success = FindNearestCrossSplines(s, j,
                             numHeightsRight,
                             edgesCenterPoints,
                             m_crossSplineRightHeights[s],
@@ -1509,6 +1510,11 @@ namespace GridGeom
                             localSplineDerivatives,
                             crossingSplinesDimensionalCoordinates,
                             heightsRight);
+
+                        if (!success)
+                        {
+                            return false;
+                        }
                     }
                 }
 
@@ -1543,7 +1549,7 @@ namespace GridGeom
             // no sub-heights to compute 
             if (numValid == 0)
             {
-                return false;
+                return true;
             }
 
             int numM = m_numMSpline[s];
@@ -1590,7 +1596,11 @@ namespace GridGeom
 
                 factor = std::max(std::min(double(leftIndex) + factor - 1.0, double(numValid - 1)), 0.0);
 
-                Interpolate(localCornerPoints, localSplineDerivatives, factor, heights[j][i]);
+                bool success = Interpolate(localCornerPoints, localSplineDerivatives, factor, heights[j][i]);
+                if(!success)
+                {
+                    return false;
+                }
             }
 
             return true;
@@ -1871,7 +1881,7 @@ namespace GridGeom
                     continue;
                 }
 
-                int sizeGridLine = gridLineIndex + 2 * (m_maxNumM + 1) * 2;
+                int sizeGridLine = gridLineIndex + 2 * (m_maxNumM + 1) + 2;
                 // increase size
                 m_gridLine.resize(sizeGridLine);
                 m_gridLineDimensionalCoordinates.resize(sizeGridLine);
@@ -1886,7 +1896,7 @@ namespace GridGeom
                 m_leftGridLineIndex[s] = gridLineIndex;
 
                 int numM = 0;
-                bool success = MakeGridLine(s, isSpacingCurvatureAdapeted, gridLineIndex, m_gridLine, m_gridLineDimensionalCoordinates, numM);
+                bool success = MakeGridLine(s, gridLineIndex, m_gridLine, m_gridLineDimensionalCoordinates, numM);
                 if (!success)
                 {
                     return false;
@@ -1920,10 +1930,7 @@ namespace GridGeom
 
         /// make_gridline, generate a gridline on a spline with a prescribed maximum mesh width
         /// generate a gridline on a spline with a prescribed maximum mesh width
-        /// call makespl(startstop, xsp, ysp, max(mc,num), num, 2, mc-1, xc, yc, kmax, sc, h)
-        ///     MAKESPL(        T,   X,   Y,        imax,   N,NT,MNFAC,  XH,YH, KMAX, TT, H)
         bool MakeGridLine(const int splineIndex,
-            const bool isSpacingCurvatureAdapeted,
             const int startingIndex,
             std::vector<Point>& gridLine,
             std::vector<double>& adimensionalCoordinates,
@@ -1938,7 +1945,7 @@ namespace GridGeom
             double splineLength = GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, true, m_maximumGridHeights[splineIndex]);
             
             gridLine[startingIndex] = m_splineCornerPoints[splineIndex][0];
-            FuncDimensionalToAdimensionalDistance func(*this, splineIndex, isSpacingCurvatureAdapeted, m_maximumGridHeights[splineIndex]);
+            FuncDimensionalToAdimensionalDistance func(*this, splineIndex, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
             
             double currentMaxWidth = std::numeric_limits<double>::max();
             while (currentMaxWidth > m_averageMeshWidth && numM < m_maxNumM)
@@ -2322,7 +2329,7 @@ namespace GridGeom
         /// these functions are used in the gridgeom api, made them static
         /// SPLINE
         /// second order derivative of spline coordinates
-        static inline bool SecondOrderDerivative(const std::vector<Point>& coordinates, int numNodes, std::vector<Point>& coordinatesDerivatives)
+        static bool SecondOrderDerivative(const std::vector<Point>& coordinates, int numNodes, std::vector<Point>& coordinatesDerivatives)
         {
             std::vector<Point> u(numNodes);
             u[0] = { 0.0, 0.0 };
@@ -2377,6 +2384,10 @@ namespace GridGeom
         template<typename T>
         static bool Interpolate(const std::vector<T>& coordinates, const std::vector<T>& coordinatesDerivatives, double pointAdimensionalCoordinate, T& pointCoordinate)
         {
+            if(pointAdimensionalCoordinate<0)
+            {
+                return false;
+            }
 
             const double eps = 1e-5;
             const double splFac = 1.0;
@@ -2405,6 +2416,9 @@ namespace GridGeom
         std::vector<std::vector<Point>> m_splineCornerPoints;
         std::vector<std::vector<Point>> m_splineDerivatives;
         Projections m_projection;
+        Polygons m_polygon; 
+        
+        // OrthogonalCurvilinearGridFromSplines parameters
         double m_aspectRatioFirstLayer = 0.10;
         int m_maxNumM = 20;                                                             // mfacmax
         int m_maxNumN = 40;                                                             // N - refinement factor for regular grid generation.
@@ -2419,9 +2433,9 @@ namespace GridGeom
         int m_maxNUniformPart = 5;                                                      // maximum number of layers in the uniform part
         bool m_growGridOutside = true;                                                  // grow the grid outside the prescribed grid height
         double m_onTopOfEachOtherTolerance = 1e-4;                                      // On - top - of - each - other tolerance *IMPORTANT*
-        bool m_checkFrontCollisions = false;                                            // Checj front collisions
+        bool m_checkFrontCollisions = false;                                            // check front collisions
+        bool m_isSpacingCurvatureAdapted = true;                                        // is curvature adapted
 
-        Polygons m_polygon;                                                             // selecting polygon
 
         // Spline properties (first index is the spline number)                 
         std::vector<int> m_numLayers;                                                   // id number of layers ( >0 only for center spline)
@@ -2443,19 +2457,19 @@ namespace GridGeom
         std::vector<int> m_rightGridLineIndex;                                          // iR index in the whole gridline array of the first grid point on the right - hand side of the spline
         std::vector<Point> m_gridLine;                                                  // xg1, yg1 coordinates of the first gridline
         std::vector<double> m_gridLineDimensionalCoordinates;                           // sg1 center spline coordinates of the first gridline
+        std::vector<std::vector<double>> m_gridHeights;                                 // heights of all grid elements        
+
         
-
-        int m_allocationSize = 5;                                                       // allocation cache size
-
         //original spline chaches
         int m_numOriginalSplines = 0;
-        
+        int m_allocationSize = 5;                                                       // allocation cache size
+
         std::vector<int> m_leftGridLineIndexOriginal;
         std::vector<int> m_rightGridLineIndexOriginal;
         std::vector<int> m_mfacOriginal;
         std::vector<double> m_maximumGridHeightsOriginal;
         std::vector<int> m_numLayersOriginal;
-        std::vector<std::vector<double>> m_gridHeights;                                 // heights of all grid elements
+
     };
 
 }

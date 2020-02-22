@@ -103,9 +103,9 @@ namespace GridGeom
             y = y * degrad_hp *earth_radius;
         }
 
-        bool IsValid() const
+        bool IsValid(const double missingValue = doubleMissingValue) const
         {
-            return x != doubleMissingValue && y != doubleMissingValue ? true : false;
+            return x != missingValue && y != missingValue ? true : false;
         }
 
     };
