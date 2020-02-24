@@ -504,6 +504,7 @@ tests/TestOrthogonalizationLargeTriangularGrid_net.nc -text
 tests/TestOrthogonalizationSmallTriangularGrid_landBoundary.ldb -text
 tests/TestOrthogonalizationSmallTriangularGrid_net.nc -text
 tests/ThreeNodesSpline.spl -text
+thirdParty/CMakeLists.txt -text
 thirdParty/eigen/.hg_archival.txt -text
 thirdParty/eigen/.hgeol -text
 thirdParty/eigen/.hgignore -text
@@ -2168,3 +2169,9 @@ thirdParty/netcdf/lib/pkgconfig/netcdf.pc -text
 thirdParty/netcdf/lib/xdr.lib -text
 thirdParty/netcdf/lib/zlib.lib -text
 thirdParty/netcdf/lib/zlibstatic.lib -text
+thirdParty/triangle/CMakeLists.txt -text
+thirdParty/triangle/src/f2c.h -text
+thirdParty/triangle/src/triangle.c -text
+thirdParty/triangle/src/triangle.h -text
+thirdParty/triangle/src/triangle_license_info.txt -text
+thirdParty/triangle/src/tricall2.c -text
