@@ -72,7 +72,7 @@ namespace GridGeom
             indexes[n][1] = -1;
         }
 
-        if (start > vec.size() || end > vec.size()) 
+        if (start > vec.size() || end > vec.size() || indexes.size() == 0)
         {
             return -1;
         
@@ -81,10 +81,6 @@ namespace GridGeom
         int pos = 0;
         for (int n = start; n <end; n++)
         {
-            if (pos >= indexes.size())
-            {
-                return -1;
-            }
 
             if (vec[n].x != separator && indexes[pos][0] == -1)
             {
@@ -95,9 +91,13 @@ namespace GridGeom
                 indexes[pos][1] = n - 1;
                 pos++;
             }
+            if (pos >= indexes.size())
+            {
+                return -1;
+            }
         }
 
-        if(indexes[pos][1] == -1)
+        if(pos< indexes.size() && indexes[pos][1] == -1)
         {
             indexes[pos][1] = vec.size() - 1;
             pos++;

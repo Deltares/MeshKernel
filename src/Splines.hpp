@@ -1,5 +1,9 @@
 #pragma once
 
+/// TODO: CHECK FOR FRONT COLLISION
+/// OrthogonalCurvilinearMeshTwoCrossingCurvatureNotAdapted when tested in the grid editor gives different results
+/// error is probably in FindFront 
+
 #include <vector>
 #include <algorithm>
 #include <cassert>
@@ -544,8 +548,6 @@ namespace GridGeom
             return true;
         }
 
-
-
         /// growlayer
         bool GrowLayer(const int layerIndex,
             const std::vector<double>& edgeVelocities,
@@ -573,8 +575,7 @@ namespace GridGeom
                     activeLayerPoints[m] = { doubleMissingValue, doubleMissingValue };
                 }
             }
-
-            // FindFront
+            
             int numGridPoints = gridPoints.size() * gridPoints[0].size();
             std::vector<std::vector<int>> gridPointsIndexses(numGridPoints,std::vector<int>(2, - 1));
             std::vector<Point> frontGridPoints(numGridPoints);
@@ -664,7 +665,7 @@ namespace GridGeom
                 // update the time step
                 totalTimeStep += localTimeStep;
 
-                //TODO: here split the api and convert to grid if needed
+                //TODO: here split and convert to grid if needed
 
                 if(totalTimeStep < timeStep)
                 {
@@ -730,6 +731,12 @@ namespace GridGeom
 
             validFrontNodes = newValidFrontNodes;
 
+
+            return true;
+        }
+
+        bool ComputeMaximumGridLayerGrowTimeOtherFront()
+        {
 
             return true;
         }
@@ -864,10 +871,10 @@ namespace GridGeom
             int& numFrontPoints)
         {
 
-            std::vector<int> frontPosition(allGridPoints[0].size(), allGridPoints.size());
-            for (int m = 0; m < allGridPoints[0].size(); ++m)
+            std::vector<int> frontPosition(allGridPoints[0].size() - 2, allGridPoints.size());
+            for (int m = 0; m < frontPosition.size(); ++m)
             {
-                for (int n = 0; n < allGridPoints.size() - 1; ++n)
+                for (int n = 0; n < allGridPoints.size(); ++n)
                 {
                     if (!allGridPoints[n][m].IsValid() || !allGridPoints[n][m + 1].IsValid())
                     {
@@ -990,10 +997,7 @@ namespace GridGeom
                 {
                     continue;
                 }
-                if (m == 12)
-                {
-                    std::cout << " dummy " << std::endl;
-                }
+
                 int currentLeftIndex;
                 int currentRightIndex;
                 GetNeighbours(gridPoints, m, currentLeftIndex, currentRightIndex);
@@ -1705,8 +1709,8 @@ namespace GridGeom
             double maxDistanceBetweenVertices = 0.0001;
             double firstRatioIterations = 1.0;
             double secondRatioIterations = 1.0;
-            double previousFirstCrossing = firstCrossing;
-            double previousSecondCrossing = secondCrossing;
+            double previousFirstCrossing;
+            double previousSecondCrossing;
             int numIterations = 0;
             while (distanceBetweenCrossings > maxDistanceBetweenCrossings && numIterations < 20)
             {
@@ -1799,7 +1803,6 @@ namespace GridGeom
 
         /// get_crosssplines
         /// compute the intersection of two splines, one must have only two nodes
-
         bool GetSplineIntersections(const int index)
         {
             m_numCrossingSplines[index] = 0;
@@ -1851,7 +1854,7 @@ namespace GridGeom
         }
 
 
-        //make_wholegridline
+        ///make_wholegridline
         bool MakeAllGridLines(const bool isSpacingCurvatureAdapeted)
         {
 
@@ -1941,14 +1944,13 @@ namespace GridGeom
             numM = std::min(numM, m_maxNumM);
 
             double endSplineAdimensionalCoordinate = m_numSplineNodes[splineIndex] - 1;
-            //double splineLength = GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 100, false, m_maximumGridHeights[splineIndex]);
-            double splineLength = GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, true, m_maximumGridHeights[splineIndex]);
+            double splineLength = GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
             
             gridLine[startingIndex] = m_splineCornerPoints[splineIndex][0];
             FuncDimensionalToAdimensionalDistance func(*this, splineIndex, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
             
             double currentMaxWidth = std::numeric_limits<double>::max();
-            while (currentMaxWidth > m_averageMeshWidth && numM < m_maxNumM)
+            while (currentMaxWidth > m_averageMeshWidth)
             {
                 currentMaxWidth = 0.0;
                 for (int n = 1; n < numM + 1; ++n)
@@ -1958,6 +1960,12 @@ namespace GridGeom
                     adimensionalCoordinates[index] = FindFunctionRootWithGoldenSectionSearch(func, 0, endSplineAdimensionalCoordinate);
                     Interpolate(m_splineCornerPoints[splineIndex], m_splineDerivatives[splineIndex], adimensionalCoordinates[index], gridLine[index]);
                     currentMaxWidth = std::max(currentMaxWidth, Distance(gridLine[index - 1], gridLine[index], m_projection));
+                }
+
+                // a gridline is computed
+                if(currentMaxWidth < m_averageMeshWidth || numM == m_maxNumM)
+                {
+                    break;
                 }
 
                 // room for sub-division
