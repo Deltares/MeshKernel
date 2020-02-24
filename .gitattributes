@@ -487,6 +487,7 @@ src/Polygons.cpp -text
 src/Polygons.hpp -text
 src/Splines.hpp -text
 src/SplinesToCurvilinearParametersNative.hpp -text
+src/Triangulation.hpp -text
 src/main.cpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/LandBoundaryTest.cpp -text
