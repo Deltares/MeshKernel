@@ -300,45 +300,88 @@ TEST(SplineTests, OrthogonalCurvilinearMeshTwoCrossingCurvatureNotAdapted)
     GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
 
     const double tolerance = 1e-5;
-    ASSERT_NEAR(588.142743143705, mesh.m_nodes[0].x, tolerance);
-    ASSERT_NEAR(469.414124846559, mesh.m_nodes[1].x, tolerance);
-    ASSERT_NEAR(366.687368582373, mesh.m_nodes[2].x, tolerance);
-    ASSERT_NEAR(277.805794755322, mesh.m_nodes[3].x, tolerance);
-    ASSERT_NEAR(200.903394122161, mesh.m_nodes[4].x, tolerance);
-    ASSERT_NEAR(134.365652175209, mesh.m_nodes[5].x, tolerance);
-    ASSERT_NEAR(76.7956534892387, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(548.641052099198, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(438.270117898728, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(342.774623898401, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(260.149706020995, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(188.660709333624, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(126.806770126691, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(73.2893062833241, mesh.m_nodes[6].x, tolerance);
     ASSERT_NEAR(26.9847544156713, mesh.m_nodes[7].x, tolerance);
-    ASSERT_NEAR(-22.8261446578961, mesh.m_nodes[8].x, tolerance);
-    ASSERT_NEAR(-78.9948453544669, mesh.m_nodes[9].x, tolerance);
-    ASSERT_NEAR(-142.332849618982, mesh.m_nodes[10].x, tolerance);
-    ASSERT_NEAR(-213.755238502133, mesh.m_nodes[11].x, tolerance);
-    ASSERT_NEAR(-294.293892869459, mesh.m_nodes[12].x, tolerance);
-    ASSERT_NEAR(-385.112401585425, mesh.m_nodes[13].x, tolerance);
-    ASSERT_NEAR(-487.522872559699, mesh.m_nodes[14].x, tolerance);
-    ASSERT_NEAR(589.751674409702, mesh.m_nodes[15].x, tolerance);
-    ASSERT_NEAR(475.485400123041, mesh.m_nodes[16].x, tolerance);
-    ASSERT_NEAR(375.293682537274, mesh.m_nodes[17].x, tolerance);
-    ASSERT_NEAR(288.605483013514, mesh.m_nodes[18].x, tolerance);
-    ASSERT_NEAR(213.600840736189, mesh.m_nodes[19].x, tolerance);
+    ASSERT_NEAR(-19.3197974519815, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(-71.5346051169009, mesh.m_nodes[9].x, tolerance);
+    ASSERT_NEAR(-130.414046327714, mesh.m_nodes[10].x, tolerance);
+    ASSERT_NEAR(-196.808786676951, mesh.m_nodes[11].x, tolerance);
+    ASSERT_NEAR(-271.678069662485, mesh.m_nodes[12].x, tolerance);
+    ASSERT_NEAR(-356.103575437243, mesh.m_nodes[13].x, tolerance);
+    ASSERT_NEAR(-451.305048472597, mesh.m_nodes[14].x, tolerance);
+    ASSERT_NEAR(634.363749815992, mesh.m_nodes[15].x, tolerance);
+    ASSERT_NEAR(537.793931651381, mesh.m_nodes[16].x, tolerance);
+    ASSERT_NEAR(454.239483571770, mesh.m_nodes[17].x, tolerance);
+    ASSERT_NEAR(381.946235778882, mesh.m_nodes[18].x, tolerance);
+    ASSERT_NEAR(319.396439848637, mesh.m_nodes[19].x, tolerance);
 
-    ASSERT_NEAR(278.613317010633, mesh.m_nodes[0].y, tolerance);
-    ASSERT_NEAR(288.968716199430, mesh.m_nodes[1].y, tolerance);
-    ASSERT_NEAR(297.928447928333, mesh.m_nodes[2].y, tolerance);
-    ASSERT_NEAR(305.680615777235, mesh.m_nodes[3].y, tolerance);
-    ASSERT_NEAR(312.387971329374, mesh.m_nodes[4].y, tolerance);
-    ASSERT_NEAR(318.191331032065, mesh.m_nodes[5].y, tolerance);
-    ASSERT_NEAR(323.212532543900, mesh.m_nodes[6].y, tolerance);
+
+    ASSERT_NEAR(115.028220973275, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(159.994608184438, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(198.900570077816, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(232.562911322639, mesh.m_nodes[3].y, tolerance);
+    ASSERT_NEAR(261.688350276912, mesh.m_nodes[4].y, tolerance);
+    ASSERT_NEAR(286.888356067050, mesh.m_nodes[5].y, tolerance);
+    ASSERT_NEAR(308.691985973537, mesh.m_nodes[6].y, tolerance);
     ASSERT_NEAR(327.556992634968, mesh.m_nodes[7].y, tolerance);
-    ASSERT_NEAR(331.901452726036, mesh.m_nodes[8].y, tolerance);
-    ASSERT_NEAR(336.800434336126, mesh.m_nodes[9].y, tolerance);
-    ASSERT_NEAR(342.324715906886, mesh.m_nodes[10].y, tolerance);
-    ASSERT_NEAR(348.554109952822, mesh.m_nodes[11].y, tolerance);
-    ASSERT_NEAR(355.578616159194, mesh.m_nodes[12].y, tolerance);
-    ASSERT_NEAR(363.499721659902, mesh.m_nodes[13].y, tolerance);
-    ASSERT_NEAR(372.431867281248, mesh.m_nodes[14].y, tolerance);
-    ASSERT_NEAR(297.060330270498, mesh.m_nodes[15].y, tolerance);
-    ASSERT_NEAR(358.578212823972, mesh.m_nodes[16].y, tolerance);
-    ASSERT_NEAR(396.603134038195, mesh.m_nodes[17].y, tolerance);
-    ASSERT_NEAR(429.503178438293, mesh.m_nodes[18].y, tolerance);
-    ASSERT_NEAR(457.969060469458, mesh.m_nodes[19].y, tolerance);
+    ASSERT_NEAR(346.421999296400, mesh.m_nodes[8].y, tolerance);
+    ASSERT_NEAR(367.694912102887, mesh.m_nodes[9].y, tolerance);
+    ASSERT_NEAR(391.683073220138, mesh.m_nodes[10].y, tolerance);
+    ASSERT_NEAR(418.733053588210, mesh.m_nodes[11].y, tolerance);
+    ASSERT_NEAR(449.235660033806, mesh.m_nodes[12].y, tolerance);
+    ASSERT_NEAR(483.631581484201, mesh.m_nodes[13].y, tolerance);
+    ASSERT_NEAR(522.417755856934, mesh.m_nodes[14].y, tolerance);
+    ASSERT_NEAR(325.436368391402, mesh.m_nodes[15].y, tolerance);
+    ASSERT_NEAR(404.277882433049, mesh.m_nodes[16].y, tolerance);
+    ASSERT_NEAR(472.493390308208, mesh.m_nodes[17].y, tolerance);
+    ASSERT_NEAR(531.515031016526, mesh.m_nodes[18].y, tolerance);
+    ASSERT_NEAR(582.581924460712, mesh.m_nodes[19].y, tolerance);
+}
+
+TEST(SplineTests, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedLargeMRefinement)
+{
+    std::vector<GridGeom::Point> firstSpline;
+    firstSpline.push_back(GridGeom::Point{ 26.9847544156713,  327.556992634968 });
+    firstSpline.push_back(GridGeom::Point{ 340.139086327869, 819.656657068422 });
+    firstSpline.push_back(GridGeom::Point{ 2048.50780774173, 1644.48279915859 });
+
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
+    bool success = splines.AddSpline(firstSpline, 0, firstSpline.size());
+    ASSERT_TRUE(success);
+
+    std::vector<GridGeom::Point> secondSpline;
+    secondSpline.push_back(GridGeom::Point{ -179.920786312031,1068.50251010579 });
+    secondSpline.push_back(GridGeom::Point{ 600.169022647819, 321.964950993679 });
+    success = splines.AddSpline(secondSpline, 0, secondSpline.size());
+    ASSERT_TRUE(success);
+
+    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
+    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+
+    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
+    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParametersNative.AverageWidth = 100.0;
+    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
+    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    curvilinearParametersNative.MRefinement = 10;
+    curvilinearParametersNative.NRefinement = 20;
+
+    splines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
+
+    GridGeom::CurvilinearGrid curvilinearGrid;
+    success = splines.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
+    ASSERT_TRUE(success);
+
+    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
+
+    const double tolerance = 1e-5;
 }
