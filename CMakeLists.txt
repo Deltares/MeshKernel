@@ -18,7 +18,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} --build .
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
 if(result)
-message(FATAL_ERROR "Build step for googletest failed: ${result}")
+  message(FATAL_ERROR "Build step for googletest failed: ${result}")
 endif()
 # Prevent overriding the parent project's compiler/linker settings on Windows
 if (MSVC)
@@ -31,7 +31,8 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
                  ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
                  EXCLUDE_FROM_ALL)
 
-#-----------------------------------------------------------------------------------------------------------------#
+# third party directory
+add_subdirectory(thirdParty)
 
 #add all headers and cpp files
 FILE( GLOB all_headers src/*.hpp )
@@ -41,7 +42,7 @@ FILE( GLOB all_srcs src/*.cpp)
 source_group(source FILES ${all_srcs})
 
 add_library( gridgeomStateful_dll SHARED ${all_srcs} ${all_headers})
-target_link_libraries(gridgeomStateful_dll LINK_PUBLIC)
+target_link_libraries(gridgeomStateful_dll LINK_PUBLIC triangle)
 
 set(CMAKE_CXX_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C++ compiler flags for a Release build")
 
