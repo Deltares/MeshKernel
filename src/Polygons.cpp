@@ -6,7 +6,7 @@
 #include "Polygons.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
-
+#include "../thirdParty/triangle/src/tricall2.c"
 
 namespace GridGeom
 {
@@ -168,4 +168,118 @@ namespace GridGeom
         }
         return true;
     }
+
+    bool Polygons::CreatePointsInPolygons(std::vector<std::vector<GridGeom::Point>> generatedPoints)
+    {        
+        std::vector<std::vector<int>> indexes(m_numNodes, std::vector<int>(2));
+        int pos = FindIndexes(m_nodes, 0, m_numNodes, doubleMissingValue, indexes);
+        indexes.resize(pos);
+
+        std::vector<Point> localPolygon(m_numNodes);
+        std::vector<double> xLocalPolygon(m_numNodes);
+        std::vector<double> yLocalPolygon(m_numNodes);
+        std::vector<int> faceNodes;
+        std::vector<int> edgeNodes;
+        std::vector<int> faceEdges;
+        std::vector<double> xPoint;
+        std::vector<double> yPoint;
+        const int safetySize = 11;
+        for (int i = 0; i < indexes.size(); ++i)
+        {
+            int numLocalPoints = 0;
+            for (int j = indexes[i][0]; j <= indexes[i][1]; ++j)
+            {
+                localPolygon[numLocalPoints] = m_nodes[j];
+                xLocalPolygon[numLocalPoints] = m_nodes[j].x;
+                yLocalPolygon[numLocalPoints] = m_nodes[j].y;
+                numLocalPoints++;
+            }
+            localPolygon[numLocalPoints]= m_nodes[indexes[i][0]];
+            numLocalPoints++;
+
+            double localPolygonArea = 0.0;
+            Point centerOfMass;
+            bool success = faceAreaAndCenterOfMass(localPolygon, numLocalPoints, localPolygonArea, centerOfMass, m_projection);
+            if(!success)
+            {
+                return false;
+            }
+
+            double perimeter;
+            success = PerimeterClosedPolygon(localPolygon, numLocalPoints, perimeter);
+            if (!success)
+            {
+                return false;
+            }
+
+            double maximumEdgeLength;
+            success = MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
+            if (!success)
+            {
+                return false;
+            }
+
+            // average edge size 
+            double averageEdgeLength = perimeter / numLocalPoints;
+
+            // average triangle size
+            double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
+
+            int numberOfTriangles =  safetySize * localPolygonArea / averageTriangleArea;
+            
+            faceNodes.resize(numberOfTriangles*3);
+            edgeNodes.resize(numberOfTriangles * 2);
+            faceEdges.resize(numberOfTriangles * 3);
+            int jatri = 2;
+            int numtri = 0;
+            int numedge = 0;
+            int numPoints = 0;
+
+            // call triangle.c
+            TRICALL(&jatri, &xLocalPolygon[0], &yLocalPolygon[0], &numLocalPoints, &faceNodes[0], &numtri, &edgeNodes[0], &numedge, &faceEdges[0], &xPoint[0], &yPoint[0], &numPoints, &averageTriangleArea);
+
+         }
+
+        return true;
+    }
+
+    bool Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, const int numPoints, double& perimeter)
+    {
+
+        if(numPoints < 0 || localPolygon[0].x != localPolygon[numPoints - 1].x)
+        {
+            return false;
+        }
+
+        perimeter = 0.0;
+        for (int p = 0; p < numPoints; ++p)
+        {
+            double edgeLength = Distance(localPolygon[p], localPolygon[p + 1], m_projection);
+            perimeter += perimeter + edgeLength;
+        }
+
+        return true;
+    }
+
+    bool Polygons::MaximumEdgeLength(const std::vector<Point>& localPolygon, const int numPoints, double& maximumEdgeLength)
+    {
+
+        if (numPoints < 0 || localPolygon[0].x != localPolygon[numPoints - 1].x)
+        {
+            return false;
+        }
+
+        maximumEdgeLength = std::numeric_limits<double>::min();
+        for (int p = 0; p < numPoints; ++p)
+        {
+            double edgeLength = Distance(m_nodes[p], m_nodes[p + 1], m_projection);
+            maximumEdgeLength = std::max(maximumEdgeLength, edgeLength);
+        }
+
+        return true;
+    }
+
+
+
+
 };
