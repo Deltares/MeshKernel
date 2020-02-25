@@ -128,7 +128,7 @@ namespace GridGeom
     }
 
     template<typename T>
-    inline bool MakeMonothonic(std::vector<T>& v)
+    bool MakeMonothonic(std::vector<T>& v)
     {
 
         bool isMonotonic = false;
@@ -158,7 +158,7 @@ namespace GridGeom
     }
 
     template <typename T>
-    void inline AddValueToVector(std::vector<T>& vec, const T value) 
+    void AddValueToVector(std::vector<T>& vec, const T value) 
     {
         for (auto& val : vec) 
         {
@@ -331,8 +331,6 @@ namespace GridGeom
 
         return false;
     }
-
-
 
     static double GetDx(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
