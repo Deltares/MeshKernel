@@ -487,7 +487,7 @@ src/Polygons.cpp -text
 src/Polygons.hpp -text
 src/Splines.hpp -text
 src/SplinesToCurvilinearParametersNative.hpp -text
-src/Triangulation.hpp -text
+src/TriangleFacade.c -text
 src/main.cpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/LandBoundaryTest.cpp -text
@@ -504,6 +504,7 @@ tests/TestOrthogonalizationLargeTriangularGrid_net.nc -text
 tests/TestOrthogonalizationSmallTriangularGrid_landBoundary.ldb -text
 tests/TestOrthogonalizationSmallTriangularGrid_net.nc -text
 tests/ThreeNodesSpline.spl -text
+thirdParty/CMakeLists.txt -text
 thirdParty/eigen/.hg_archival.txt -text
 thirdParty/eigen/.hgeol -text
 thirdParty/eigen/.hgignore -text
@@ -2168,3 +2169,6 @@ thirdParty/netcdf/lib/pkgconfig/netcdf.pc -text
 thirdParty/netcdf/lib/xdr.lib -text
 thirdParty/netcdf/lib/zlib.lib -text
 thirdParty/netcdf/lib/zlibstatic.lib -text
+thirdParty/triangle/CMakeLists.txt -text
+thirdParty/triangle/src/triangle.c -text
+thirdParty/triangle/src/triangle.h -text

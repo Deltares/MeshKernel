@@ -4,12 +4,14 @@
 #ifndef M_PI
 #define M_PI (3.14159265358979323846)
 #endif
+#include <math.h> 
 
 namespace GridGeom
 {
     // missing value
     static constexpr double doubleMissingValue = -999.0;
     static constexpr int    intMissingValue  = -999;
+    static constexpr double squareRootOfThree = 1.73205080756887729352;
 
     //geometric constants
     static constexpr double degrad_hp = M_PI / 180.0; // conversion factor from degrees to radians(pi / 180)
