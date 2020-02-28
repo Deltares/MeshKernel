@@ -475,6 +475,7 @@ src/Gridgeom.cpp -text
 src/Gridgeom.hpp -text
 src/LandBoundaries.cpp -text
 src/LandBoundaries.hpp -text
+src/MakeGridParametersNative.hpp -text
 src/Mesh.cpp -text
 src/Mesh.hpp -text
 src/MeshGeometry.hpp -text
@@ -487,7 +488,6 @@ src/Polygons.cpp -text
 src/Polygons.hpp -text
 src/Splines.hpp -text
 src/SplinesToCurvilinearParametersNative.hpp -text
-src/TriangleFacade.c -text
 src/main.cpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/LandBoundaryTest.cpp -text

@@ -297,4 +297,23 @@ namespace GridGeomApi
         return 0;
     }
 
+
+    GRIDGEOM_API int ggeo_make_net(int& gridStateId, MakeGridParametersNative& makeGridParameters, GeometryListNative& disposableGeometryListIn)
+    {
+        GridGeom::Polygons polygon;
+
+        bool successful = polygon.Set(disposableGeometryListIn);
+        if(!successful)
+        {
+            return -1;
+        }
+
+        successful = meshInstances[gridStateId].MakeMesh(makeGridParameters, polygon);
+        if (!successful)
+        {
+            return -1;
+        }
+        return 0;
+    }
+
 }

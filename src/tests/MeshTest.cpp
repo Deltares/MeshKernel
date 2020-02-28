@@ -70,6 +70,40 @@ TEST(TestMesh, OneQuadTestConstructor)
     EXPECT_EQ(-1, mesh.m_edgesFaces[3][1]);
 }
 
+TEST(TestMesh, MakeMeshInPolygon)
+{
+    //1 Setup
+    GridGeom::Polygons polygons;
+    std::vector<GridGeom::Point> nodes;
+
+    nodes.push_back(GridGeom::Point{ 302.002502,472.130371 });
+    nodes.push_back(GridGeom::Point{ 144.501526, 253.128174 });
+    nodes.push_back(GridGeom::Point{ 368.752930, 112.876755 });
+    nodes.push_back(GridGeom::Point{ 707.755005, 358.879242 });
+    nodes.push_back(GridGeom::Point{ 301.252502, 471.380371 });
+    nodes.push_back(GridGeom::Point{ 302.002502, 472.130371 });
+
+    polygons.Set(nodes);
+    
+    GridGeom::Mesh mesh;
+    mesh.m_projection = GridGeom::Projections::cartesian;
+    GridGeomApi::MakeGridParametersNative makeGridParametersNative;
+    makeGridParametersNative.GridType = 0;
+    makeGridParametersNative.GridAngle = 0.0;
+    makeGridParametersNative.OriginXCoordinate = 0.0;
+    makeGridParametersNative.OriginYCoordinate = 0.0;
+    makeGridParametersNative.OriginZCoordinate = 0.0;
+    makeGridParametersNative.NumberOfColumns = 3;
+    makeGridParametersNative.NumberOfRows = 3;
+    makeGridParametersNative.XGridBlockSize = 100.0;
+    makeGridParametersNative.YGridBlockSize = 100.0;
+
+    // 2 Execution
+    mesh.MakeMesh(makeGridParametersNative, polygons);
+    EXPECT_EQ(17, mesh.m_numFaces);
+
+}
+
 TEST(PerformanceTest, MillionQuads)
 {
     const int n = 11; //x

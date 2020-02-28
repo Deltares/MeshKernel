@@ -6,7 +6,7 @@
 #include "Polygons.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
-#include "../thirdParty/triangle/src/tricall2.c"
+//#include "../thirdParty/triangle/src/TriangleFacade.c"
 
 namespace GridGeom
 {
@@ -19,13 +19,54 @@ namespace GridGeom
     bool Polygons::Set(const std::vector<Point>& polygon)
     {
         // resize if necessary
-        ResizeVector(m_numNodes + 1 + polygon.size(), m_nodes);
+        int startNewNodes = m_numNodes;
+        if (startNewNodes != 0)
+        {
+            ResizeVector(m_numNodes + 1 + polygon.size(), m_nodes);
+            m_nodes[startNewNodes] = { doubleMissingValue,doubleMissingValue };
+            startNewNodes += 1;
+        }
+        else
+        {
+            ResizeVector(polygon.size(), m_nodes);
+        }
+        m_numAllocatedNodes = m_nodes.size();
+        m_numNodes = m_nodes.size();
 
-        m_nodes[m_numNodes] = { doubleMissingValue,doubleMissingValue };
-        for (int n = m_numNodes + 1, nn = 0; nn < polygon.size(); nn++)
+        for (int n = startNewNodes, nn = 0; nn < startNewNodes + polygon.size(); ++n, ++nn)
         {
             m_nodes[n] = polygon[nn];
         }
+        return true;
+    }
+
+    bool Polygons::Set(const GridGeomApi::GeometryListNative& geometryListNative)
+    {
+        if(geometryListNative.numberOfCoordinates == 0)
+        {
+            return true;
+        }
+
+        // resize if necessary
+        int startNewNodes = m_numNodes;
+        if (startNewNodes != 0)
+        {
+            ResizeVector(m_numNodes + 1 + geometryListNative.numberOfCoordinates, m_nodes);
+            m_nodes[startNewNodes] = { doubleMissingValue,doubleMissingValue };
+            startNewNodes += 1;
+        }
+        else
+        {
+            ResizeVector(geometryListNative.numberOfCoordinates, m_nodes);
+        }
+        m_numAllocatedNodes = m_nodes.size();
+        m_numNodes = m_nodes.size();
+        for (int n = startNewNodes, nn = 0; n < startNewNodes + geometryListNative.numberOfCoordinates; ++n, ++nn)
+        {
+            m_nodes[n].x = geometryListNative.xCoordinates[nn];
+            m_nodes[n].y = geometryListNative.yCoordinates[nn];
+        }
+
         return true;
     }
 
@@ -169,6 +210,7 @@ namespace GridGeom
         return true;
     }
 
+
     bool Polygons::CreatePointsInPolygons(std::vector<std::vector<GridGeom::Point>> generatedPoints)
     {        
         std::vector<std::vector<int>> indexes(m_numNodes, std::vector<int>(2));
@@ -236,7 +278,7 @@ namespace GridGeom
             int numPoints = 0;
 
             // call triangle.c
-            TRICALL(&jatri, &xLocalPolygon[0], &yLocalPolygon[0], &numLocalPoints, &faceNodes[0], &numtri, &edgeNodes[0], &numedge, &faceEdges[0], &xPoint[0], &yPoint[0], &numPoints, &averageTriangleArea);
+            // TRICALL(&jatri, &xLocalPolygon[0], &yLocalPolygon[0], &numLocalPoints, &faceNodes[0], &numtri, &edgeNodes[0], &numedge, &faceEdges[0], &xPoint[0], &yPoint[0], &numPoints, &averageTriangleArea);
 
          }
 

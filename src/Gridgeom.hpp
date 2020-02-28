@@ -5,6 +5,7 @@
 #include "OrthogonalizationParametersNative.hpp"
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
+#include "MakeGridParametersNative.hpp"
 
 #if defined(_WIN32) 
 #if !defined(GRIDGEOM_API)
@@ -59,6 +60,8 @@ namespace GridGeomApi
         GRIDGEOM_API int ggeo_set_splines(int& gridStateId, GeometryListNative& geometryListIn);
 
         GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho(int& gridStateId, GeometryListNative& geometryListIn, CurvilinearParametersNative& curvilinearParameters, SplinesToCurvilinearParametersNative& splineToCurvilinearParameters);
+
+        GRIDGEOM_API int ggeo_make_net(int& gridStateId, MakeGridParametersNative& makeGridParameters, GeometryListNative& disposableGeometryListIn);
 
 #ifdef __cplusplus
     }

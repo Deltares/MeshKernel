@@ -38,10 +38,15 @@ add_subdirectory(thirdParty)
 FILE( GLOB all_headers src/*.hpp )
 source_group(include FILES ${all_headers})
 
-FILE( GLOB all_srcs src/*.cpp)
-source_group(source FILES ${all_srcs})
+FILE( GLOB all_cpp_srcs src/*.cpp)
+source_group(source FILES ${all_cpp_srcs})
 
-add_library( gridgeomStateful_dll SHARED ${all_srcs} ${all_headers})
+# definitation for triangle
+add_definitions(-DTRILIBRARY)
+add_definitions(-DCPU86)
+add_definitions(-DNO_TIMER)
+add_definitions( -w )
+add_library( gridgeomStateful_dll SHARED ${all_c_srcs} ${all_headers}  ${all_cpp_srcs})
 target_link_libraries(gridgeomStateful_dll LINK_PUBLIC triangle)
 
 set(CMAKE_CXX_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C++ compiler flags for a Release build")
