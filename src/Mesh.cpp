@@ -7,6 +7,7 @@
 #include "Mesh.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
+#include "Polygons.hpp"
 
 bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
 {
@@ -594,5 +595,152 @@ bool GridGeom::Mesh::ClassifyNodes()
             m_nodesTypes[n] = -1;
         }
     }
+    return true;
+}
+
+
+bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons)
+{
+    CurvilinearGrid CurvilinearGrid;
+    if(makeGridParametersNative.GridType==0)
+    {
+        // regular grid
+        int numM = makeGridParametersNative.NumberOfRows + 1;
+        int numN = makeGridParametersNative.NumberOfColumns + 1;
+        double XGridBlockSize = makeGridParametersNative.XGridBlockSize;
+        double YGridBlockSize = makeGridParametersNative.YGridBlockSize;
+        double cosineAngle = std::cos(makeGridParametersNative.GridAngle*degrad_hp);
+        double sinAngle = std::sin(makeGridParametersNative.GridAngle*degrad_hp);
+        double OriginXCoordinate = makeGridParametersNative.OriginXCoordinate;
+        double OriginYCoordinate = makeGridParametersNative.OriginYCoordinate;
+
+        // in case a polygon is there, re-compute parameters
+        if(polygons.m_numNodes>=3)
+        {
+            Point referencePoint;
+            // rectangular grid in polygon
+            for (int i = 0; i < polygons.m_numNodes; ++i)
+            {
+                if(polygons.m_nodes[i].IsValid())
+                {
+                    referencePoint = polygons.m_nodes[i];
+                    break;
+                }
+            }
+
+            // get polygon min/max in rotated (xi,eta) coordinates
+            double xmin = std::numeric_limits<double>::max();
+            double xmax = -xmin;
+            double etamin = std::numeric_limits<double>::max();
+            double etamax = -etamin;
+            for (int i = 0; i < polygons.m_numNodes; ++i)
+            {
+                if (polygons.m_nodes[i].IsValid())
+                {
+                    double dx = GetDx(referencePoint, polygons.m_nodes[i], m_projection);
+                    double dy = GetDy(referencePoint, polygons.m_nodes[i], m_projection);
+                    double xi = dx * cosineAngle + dy * sinAngle;
+                    double eta = -dx * sinAngle + dy * cosineAngle;
+                    xmin = std::min(xmin, xi);
+                    xmax = std::max(xmax, xi);
+                    etamin = std::min(etamin, eta);
+                    etamax = std::max(etamax, eta);
+                }
+            }
+
+            double xShift = xmin*cosineAngle - etamin * sinAngle;
+            double yShift = xmin*sinAngle + etamin* cosineAngle;
+            if(m_projection==Projections::spherical)
+            {
+                xShift = xShift / earth_radius *raddeg_hp;
+                yShift = yShift / (earth_radius *std::cos(referencePoint.y*degrad_hp)) * raddeg_hp;
+            }
+
+            OriginXCoordinate = referencePoint.x + xShift;
+            OriginYCoordinate = referencePoint.y + yShift;
+            numN = std::ceil((etamax - etamin) / XGridBlockSize) + 1;
+            numM = std::ceil((xmax - xmin) / YGridBlockSize) + 1;
+        }
+
+        
+        CurvilinearGrid.IncreaseGrid(numN, numM);
+        for (int n = 0; n < numN; ++n)
+        {
+            for (int m = 0; m < numM; ++m)
+            {
+                CurvilinearGrid.m_grid[n][m] = Point
+                {
+                    OriginXCoordinate + m*XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle,
+                    OriginYCoordinate + m*XGridBlockSize * sinAngle    + n * YGridBlockSize * cosineAngle
+                };
+            }
+        }
+
+        // in case a polygon is there, remove nodes outside
+        if (polygons.m_numNodes >= 3)
+        {
+            std::vector<std::vector<bool>> nodeBasedMask(numN, std::vector<bool>(numM, false));
+            std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, false));
+            // mark points inside a polygon
+            for (int n = 0; n < numN; ++n)
+            {
+                for (int m = 0; m < numM; ++m)
+                {
+                    bool isInPolygon = IsPointInPolygon(CurvilinearGrid.m_grid[n][m], polygons.m_nodes, polygons.m_numNodes - 1);
+                    if(isInPolygon)
+                    {
+                        nodeBasedMask[n][m] = true;
+                    }
+                }
+            }
+            
+            // mark faces when at least one node is inside
+            for (int n = 0; n < numN-1; ++n)
+            {
+                for (int m = 0; m < numM-1; ++m)
+                {
+                    if (nodeBasedMask[n][m] || nodeBasedMask[n+1][m] || nodeBasedMask[n][m+1] || nodeBasedMask[n + 1][m + 1])
+                    {
+                        faceBasedMask[n][m] = true;
+                    }
+                }
+            }
+
+            //mark nodes that are member of a cell inside the polygon(s)
+            for (int n = 0; n < numN - 1; ++n)
+            {
+                for (int m = 0; m < numM - 1; ++m)
+                {
+                    if (faceBasedMask[n][m])
+                    {
+                        nodeBasedMask[n][m] = true;
+                        nodeBasedMask[n + 1][m] = true;
+                        nodeBasedMask[n][m + 1] = true;
+                        nodeBasedMask[n + 1][m + 1] = true;
+                    }
+                }
+            }
+
+            // mark points inside a polygon
+            for (int n = 0; n < numN; ++n)
+            {
+                for (int m = 0; m < numM; ++m)
+                {
+                    if (!nodeBasedMask[n][m])
+                    {
+                        CurvilinearGrid.m_grid[n][m].x = doubleMissingValue;
+                        CurvilinearGrid.m_grid[n][m].y = doubleMissingValue; 
+                    }
+                }
+            }
+        }
+
+        
+
+    }
+
+    // Assign mesh
+    *this = Mesh(CurvilinearGrid, m_projection);
+
     return true;
 }
