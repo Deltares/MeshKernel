@@ -35,18 +35,14 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 add_subdirectory(thirdParty)
 
 #add all headers and cpp files
-FILE( GLOB all_headers src/*.hpp )
-source_group(include FILES ${all_headers})
+FILE( GLOB all_cpp_headers src/*.hpp )
+source_group(include FILES ${all_cpp_headers})
 
 FILE( GLOB all_cpp_srcs src/*.cpp)
 source_group(source FILES ${all_cpp_srcs})
 
 # definitation for triangle
-add_definitions(-DTRILIBRARY)
-add_definitions(-DCPU86)
-add_definitions(-DNO_TIMER)
-add_definitions( -w )
-add_library( gridgeomStateful_dll SHARED ${all_c_srcs} ${all_headers}  ${all_cpp_srcs})
+add_library( gridgeomStateful_dll SHARED ${all_cpp_headers}  ${all_cpp_srcs})
 target_link_libraries(gridgeomStateful_dll LINK_PUBLIC triangle)
 
 set(CMAKE_CXX_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C++ compiler flags for a Release build")
@@ -56,7 +52,7 @@ FILE( GLOB all_test_srcs src/tests/*.cpp)
 source_group(source FILES ${all_test_srcs})
 
 add_executable( GridGeomTest ${all_test_srcs})
-target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main )
+target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main triangle )
 add_test( NAME GridGeomTest COMMAND GridGeomTest )
 
 find_package(OpenMP)

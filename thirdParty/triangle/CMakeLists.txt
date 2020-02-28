@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(triangle)
-set( TRIANGLE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.c ${CMAKE_CURRENT_SOURCE_DIR}/src/TriangleFacade.c)
+set( TRIANGLE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.c ${CMAKE_CURRENT_SOURCE_DIR}/src/TriangleFacade.c ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.h)
 
 add_definitions(-DTRILIBRARY )
 add_definitions(-DCPU86)
@@ -11,4 +11,3 @@ add_library(triangle STATIC ${TRIANGLE_SOURCES})
 
 set(TRIANGLE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(TRIANGLE_LIBRARIES triangle)
-

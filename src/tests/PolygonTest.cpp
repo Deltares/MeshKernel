@@ -1,5 +1,9 @@
-#include "GridGeomTest.hpp"
-#include "../Polygons.hpp"
+#include "../Mesh.hpp"
+#include "../Entities.hpp"
+#include "../Polygons.cpp"
+#include "../Orthogonalization.hpp"
+#include "../Splines.hpp"
+#include <gtest/gtest.h>
 
 TEST(PolygonTests, MeshBoundaryToPolygon)
 {

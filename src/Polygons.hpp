@@ -2,6 +2,10 @@
 
 #include <vector>
 #include "Mesh.hpp"
+extern "C"
+{
+    void TRICALL(int *jatri, double* xs, double* ys, int* ns, int* indx, int* numtri, int* edgeidx, int* numedge, int* triedge, double* xs3, double* ys3, int* ns3, double* trisize);
+}
 
 namespace GridGeom
 {

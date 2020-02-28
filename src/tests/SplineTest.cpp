@@ -1,8 +1,9 @@
-#include "GridGeomTest.hpp"
-#include "../Splines.hpp"
-#include "../Polygons.hpp"
+#include "../Mesh.hpp"
 #include "../Entities.hpp"
+#include "../Polygons.hpp"
 #include "../Constants.cpp"
+#include "../Splines.hpp"
+#include <gtest/gtest.h>
 
 TEST(SplineTests, SetSpline)
 {

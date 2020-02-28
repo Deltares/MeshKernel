@@ -1,4 +1,7 @@
-#include "GridGeomTest.hpp"
+#include "../Mesh.cpp"
+#include "../Entities.hpp"
+#include "../Polygons.hpp"
+#include <gtest/gtest.h>
 #include <chrono>
 
 TEST(TestMesh, OneQuadTestConstructor) 
