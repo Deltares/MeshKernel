@@ -3,9 +3,13 @@
 #include <vector>
 #include "Entities.hpp"
 #include "CurvilinearGrid.hpp"
+#include "MakeGridParametersNative.hpp"
+#include "GeometryListNative.hpp"
 
 namespace GridGeom 
 {
+    class Polygons;
+
     class Mesh
     {
 
@@ -30,6 +34,8 @@ namespace GridGeom
         void FaceCircumcenters(const double& weightCircumCenter);
 
         void FindFaces();
+
+        bool MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
 
         std::vector<Edge>  m_edges;                                 // KN
         std::vector<Point> m_nodes;                                 // KN

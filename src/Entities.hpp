@@ -102,6 +102,11 @@ namespace GridGeom
             return x==rhs.x && y == rhs.y;
         }
 
+        bool operator!=(const Point& rhs) const
+        {
+            return x != rhs.x || y != rhs.y;
+        }
+
         void TransformToSpherical() 
         {
             x = x * degrad_hp *earth_radius * std::cos(degrad_hp*y);

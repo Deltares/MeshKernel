@@ -255,6 +255,14 @@ namespace GridGeom
         {
             return true;
         }
+        if (polygon.size() < numberOfPolygonPoints + 1)
+        {
+            return false;
+        }
+        if (polygon[numberOfPolygonPoints] != polygon[0])
+        {
+            return false;
+        }
 
         int windingNumber = 0;
         for (int n = 0; n < numberOfPolygonPoints; n++)
