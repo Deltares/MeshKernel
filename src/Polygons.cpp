@@ -6,7 +6,6 @@
 #include "Polygons.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
-//#include "../thirdParty/triangle/src/TriangleFacade.c"
 
 namespace GridGeom
 {
@@ -277,8 +276,7 @@ namespace GridGeom
             int numedge = 0;
             int numPoints = 0;
 
-            // call triangle.c
-            // TRICALL(&jatri, &xLocalPolygon[0], &yLocalPolygon[0], &numLocalPoints, &faceNodes[0], &numtri, &edgeNodes[0], &numedge, &faceEdges[0], &xPoint[0], &yPoint[0], &numPoints, &averageTriangleArea);
+            TRICALL(&jatri, &xLocalPolygon[0], &yLocalPolygon[0], &numLocalPoints, &faceNodes[0], &numtri, &edgeNodes[0], &numedge, &faceEdges[0], &xPoint[0], &yPoint[0], &numPoints, &averageTriangleArea);
 
          }
 

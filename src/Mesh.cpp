@@ -734,9 +734,6 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
                 }
             }
         }
-
-        
-
     }
 
     // Assign mesh

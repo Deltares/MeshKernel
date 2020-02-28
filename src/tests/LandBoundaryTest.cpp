@@ -1,8 +1,8 @@
-#include "GridGeomTest.hpp"
-#include "../Mesh.cpp"
-#include "../LandBoundaries.cpp"
-#include "../Polygons.cpp"
+#include "../Mesh.hpp"
+#include "../Entities.hpp"
+#include "../Polygons.hpp"
 #include "../Constants.cpp"
+#include "../LandBoundaries.cpp"
 #include <gtest/gtest.h>
 
 TEST(LandBoundariesTests, OneLandBoundary)

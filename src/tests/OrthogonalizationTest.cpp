@@ -1,7 +1,12 @@
-#include "GridGeomTest.hpp"
+#include "../Mesh.hpp"
+#include "../Entities.hpp"
+#include "../Polygons.hpp"
+#include "../Constants.cpp"
 #include "../Orthogonalization.cpp"
-#include <chrono>
 #include "../GeometryListNative.hpp"
+#include "../Splines.hpp"
+#include <gtest/gtest.h>
+#include <chrono>
 
 #if defined(_WIN32)
 #include <Windows.h>
