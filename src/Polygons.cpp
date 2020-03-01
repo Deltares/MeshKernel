@@ -15,8 +15,9 @@ namespace GridGeom
         m_numAllocatedNodes = m_nodes.size();
     }
 
-    bool Polygons::Set(const std::vector<Point>& polygon)
+    bool Polygons::Set(const std::vector<Point>& polygon, Projections projection)
     {
+        m_projection = projection;
         // resize if necessary
         int startNewNodes = m_numNodes;
         if (startNewNodes != 0)
@@ -39,8 +40,9 @@ namespace GridGeom
         return true;
     }
 
-    bool Polygons::Set(const GridGeomApi::GeometryListNative& geometryListNative)
+    bool Polygons::Set(const GridGeomApi::GeometryListNative& geometryListNative, Projections projection)
     {
+        m_projection = projection;
         if(geometryListNative.numberOfCoordinates == 0)
         {
             return true;
@@ -209,13 +211,14 @@ namespace GridGeom
         return true;
     }
 
-
-    bool Polygons::CreatePointsInPolygons(std::vector<std::vector<GridGeom::Point>> generatedPoints)
+    /// triangulate..
+    bool Polygons::CreatePointsInPolygons(std::vector<std::vector<GridGeom::Point>>& generatedPoints)
     {        
         std::vector<std::vector<int>> indexes(m_numNodes, std::vector<int>(2));
         int pos = FindIndexes(m_nodes, 0, m_numNodes, doubleMissingValue, indexes);
         indexes.resize(pos);
 
+        generatedPoints.resize(pos);
         std::vector<Point> localPolygon(m_numNodes);
         std::vector<double> xLocalPolygon(m_numNodes);
         std::vector<double> yLocalPolygon(m_numNodes);
@@ -235,12 +238,16 @@ namespace GridGeom
                 yLocalPolygon[numLocalPoints] = m_nodes[j].y;
                 numLocalPoints++;
             }
-            localPolygon[numLocalPoints]= m_nodes[indexes[i][0]];
-            numLocalPoints++;
+
+            // not a closed polygon
+            if(localPolygon[numLocalPoints - 1] != localPolygon[0])
+            {
+                continue;
+            }
 
             double localPolygonArea = 0.0;
             Point centerOfMass;
-            bool success = faceAreaAndCenterOfMass(localPolygon, numLocalPoints, localPolygonArea, centerOfMass, m_projection);
+            bool success = faceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, localPolygonArea, centerOfMass, m_projection);
             if(!success)
             {
                 return false;
@@ -261,23 +268,56 @@ namespace GridGeom
             }
 
             // average edge size 
-            double averageEdgeLength = perimeter / numLocalPoints;
+            double averageEdgeLength = perimeter / (numLocalPoints-1);
 
             // average triangle size
             double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
             int numberOfTriangles =  safetySize * localPolygonArea / averageTriangleArea;
-            
-            faceNodes.resize(numberOfTriangles*3);
-            edgeNodes.resize(numberOfTriangles * 2);
-            faceEdges.resize(numberOfTriangles * 3);
+
+            if(numberOfTriangles<=0)
+            {
+                return false;
+            }
+
+            int numtri = -1;
             int jatri = 2;
-            int numtri = 0;
             int numedge = 0;
             int numPoints = 0;
-
-            TRICALL(&jatri, &xLocalPolygon[0], &yLocalPolygon[0], &numLocalPoints, &faceNodes[0], &numtri, &edgeNodes[0], &numedge, &faceEdges[0], &xPoint[0], &yPoint[0], &numPoints, &averageTriangleArea);
-
+            int numLocalPointsOpenPolygon = numLocalPoints - 1;
+            // if the number of estimated triangles is not sufficent, tricall must be repeated
+            while(numtri < 0)
+            {
+                numtri = numberOfTriangles;
+                faceNodes.resize(numberOfTriangles * 3);
+                edgeNodes.resize(numberOfTriangles * 2);
+                faceEdges.resize(numberOfTriangles * 3);
+                xPoint.resize(numberOfTriangles * 3);
+                yPoint.resize(numberOfTriangles * 3);
+                TRICALL(&jatri,
+                    &xLocalPolygon[0],
+                    &yLocalPolygon[0],
+                    &numLocalPointsOpenPolygon,
+                    &faceNodes[0],
+                    &numtri,
+                    &edgeNodes[0],
+                    &numedge,
+                    &faceEdges[0],
+                    &xPoint[0],
+                    &yPoint[0],
+                    &numPoints,
+                    &averageTriangleArea);
+                if (numberOfTriangles)
+                {
+                    numberOfTriangles = -numtri;
+                }
+            }
+            generatedPoints[i].resize(numPoints);
+            for (int j = 0; j < numPoints; ++j)
+            {
+                generatedPoints[i][j] = { xPoint[j], yPoint[j] };
+            }
+            //TODO: CHECK POINTS ARE INSIDE THE POLYGON?
          }
 
         return true;
@@ -292,10 +332,10 @@ namespace GridGeom
         }
 
         perimeter = 0.0;
-        for (int p = 0; p < numPoints; ++p)
+        for (int p = 0; p < numPoints - 1; ++p)
         {
             double edgeLength = Distance(localPolygon[p], localPolygon[p + 1], m_projection);
-            perimeter += perimeter + edgeLength;
+            perimeter += edgeLength;
         }
 
         return true;
@@ -310,7 +350,7 @@ namespace GridGeom
         }
 
         maximumEdgeLength = std::numeric_limits<double>::min();
-        for (int p = 0; p < numPoints; ++p)
+        for (int p = 0; p < numPoints - 1; ++p)
         {
             double edgeLength = Distance(m_nodes[p], m_nodes[p + 1], m_projection);
             maximumEdgeLength = std::max(maximumEdgeLength, edgeLength);

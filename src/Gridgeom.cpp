@@ -302,7 +302,7 @@ namespace GridGeomApi
     {
         GridGeom::Polygons polygon;
 
-        bool successful = polygon.Set(disposableGeometryListIn);
+        bool successful = polygon.Set(disposableGeometryListIn, meshInstances[gridStateId].m_projection);
         if(!successful)
         {
             return -1;
@@ -314,6 +314,28 @@ namespace GridGeomApi
             return -1;
         }
         return 0;
+    }
+
+    GRIDGEOM_API int ggeo_mesh_from_polygon(int& gridStateId, GeometryListNative& disposableGeometryListIn)
+    {
+        GridGeom::Polygons polygon;
+
+        bool successful = polygon.Set(disposableGeometryListIn, meshInstances[gridStateId].m_projection);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        std::vector<std::vector<GridGeom::Point>> generatedPoints;
+        successful = polygon.CreatePointsInPolygons(generatedPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Mesh mesh(generatedPoints[0], polygon, meshInstances[gridStateId].m_projection);
+        meshInstances[gridStateId] = mesh;
+        return 1;
     }
 
 }

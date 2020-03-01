@@ -64,7 +64,7 @@ bool GridGeom::Mesh::Administrate()
 
 }
 //gridtonet
-GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, const  Projections& projection)
+GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
 {
     m_projection = projection;
 
@@ -122,6 +122,169 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, const  Projections&
 
     Administrate();
 }
+
+GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& polygons, Projections projection)
+{
+    m_projection = projection;
+    std::vector<double> xLocalPolygon(inputNodes.size());
+    std::vector<double> yLocalPolygon(inputNodes.size());
+    for (int i =0; i < inputNodes.size(); ++i)
+    {
+        xLocalPolygon[i] = inputNodes[i].x;
+        yLocalPolygon[i] = inputNodes[i].y;
+    }
+
+    int numtri = -1;
+    int jatri = 3;
+    int numPointsIn = inputNodes.size();
+    int numPointsOut = 0;
+    int numberOfTriangles = numPointsIn * 6 + 10;
+    double averageTriangleArea = 0.0;
+    int numedge = 0;
+    std::vector<int> faceNodesFlat;
+    std::vector<int> edgeNodesFlat;
+    std::vector<int> faceEdgesFlat;
+    std::vector<double> xNodesFlat;
+    std::vector<double> yNodesFlat;
+    // if the number of estimated triangles is not sufficent, tricall must be repeated
+    while (numtri < 0)
+    {
+        numtri = numberOfTriangles;
+        faceNodesFlat.resize(numberOfTriangles * 3);
+        edgeNodesFlat.resize(numberOfTriangles * 2);
+        faceEdgesFlat.resize(numberOfTriangles * 3);
+        xNodesFlat.resize(numberOfTriangles * 3, doubleMissingValue);
+        yNodesFlat.resize(numberOfTriangles * 3, doubleMissingValue);
+        TRICALL(&jatri,
+            &xLocalPolygon[0],
+            &yLocalPolygon[0],
+            &numPointsIn,
+            &faceNodesFlat[0],   // INDX
+            &numtri,
+            &edgeNodesFlat[0], // EDGEINDX
+            &numedge,
+            &faceEdgesFlat[0], // TRIEDGE
+            &xNodesFlat[0],
+            &yNodesFlat[0],
+            &numPointsOut,
+            &averageTriangleArea);
+        if (numberOfTriangles)
+        {
+            numberOfTriangles = -numtri;
+        }
+    }
+
+    // create face nodes
+    std::vector<std::vector<int>> faceNodes(numtri, std::vector<int>(3,-1));
+    std::vector<std::vector<int>> faceEdges(numtri, std::vector<int>(3, -1));
+    int index = 0;
+    for (int i = 0; i < numtri; ++i)
+    {
+        faceNodes[i][0] = faceNodesFlat[index] - 1;
+        faceEdges[i][0] = faceEdgesFlat[index] - 1;
+        index++;
+        faceNodes[i][1] = faceNodesFlat[index] - 1;
+        faceEdges[i][1] = faceEdgesFlat[index] - 1;
+        index++;
+        faceNodes[i][2] = faceNodesFlat[index] - 1;
+        faceEdges[i][2] = faceEdgesFlat[index] - 1;
+        index++;
+    }
+
+    // create edges
+    std::vector<std::vector<int>> edgeNodes(numedge, std::vector<int>(2, 0));
+    index = 0;
+    for (int i = 0; i < numedge; ++i)
+    {
+        edgeNodes[i][0] = edgeNodesFlat[index] - 1;
+        index++;
+        edgeNodes[i][1] = edgeNodesFlat[index] - 1;
+        index++;
+    }
+
+
+    // for each triangle we have to check
+    // 1. validity of its internal angles
+    // 2. is inside the polygon
+    // if so we mark the edges and we add them to kn table
+    std::vector<bool> edgeNodesFlag(numedge, false);
+    for (int i = 0; i < numtri; ++i)
+    {
+        bool goodTriangle = CheckTriangle(faceNodes[i], inputNodes);
+
+        if(!goodTriangle)
+        {
+            continue;
+        }
+        Point approximateCenter = (inputNodes[faceNodes[i][0]]+ inputNodes[faceNodes[i][1]]+ inputNodes[faceNodes[i][2]]) * oneThird;
+
+        bool isTriangleInPolygon = IsPointInPolygon(approximateCenter, polygons.m_nodes, polygons.m_numNodes - 1);
+        if (!isTriangleInPolygon)
+        {
+            continue;
+        }
+
+        // mark all edges of this triangle as good ones
+        for (int j = 0; j < 3; ++j)
+        {
+            edgeNodesFlag[faceEdges[i][j]] = true;
+        }
+    }
+
+    // now add all points and all valid edges
+    m_nodes = inputNodes;
+    int validEdges = 0;
+    for (int i = 0; i < numedge; ++i)
+    {
+        if(!edgeNodesFlag[i])
+            continue;
+        validEdges++;
+    }
+
+    m_edges.resize(validEdges);
+    validEdges = 0;
+    for (int i = 0; i < numedge; ++i)
+    {
+        if (!edgeNodesFlag[i])
+            continue;
+
+        m_edges[validEdges].first = std::abs(edgeNodes[i][0]);
+        m_edges[validEdges].second = edgeNodes[i][1];
+        validEdges++;
+    }
+
+    Administrate();
+
+}
+
+bool GridGeom::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes)
+{
+    double phiMin = 1e3;
+    double phiMax = 0.0;
+    static std::vector<std::vector<int>> nodePermutations
+    {
+        {2,0,1}, {0,1,2}, {1,2,0}
+    };
+
+    for (int i = 0; i < faceNodes.size(); ++i)
+    {
+        Point x0 = nodes[faceNodes[nodePermutations[i][0]]];
+        Point x1 = nodes[faceNodes[nodePermutations[i][1]]];
+        Point x2 = nodes[faceNodes[nodePermutations[i][2]]];
+
+        double cosphi = NormalizedInnerProductTwoSegments(x1,  x0,  x1, x2, m_projection);
+        double phi =std::acos(std::min(std::max(cosphi, -1.0), 1.0)) * raddeg_hp;
+        phiMin = std::min(phiMin, phi);
+        phiMax = std::max(phiMax, phi);
+        if(phi < m_triangleMinimumAngle || phi > m_triangleMaximumAngle)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+
 
 
 bool GridGeom::Mesh::SetFlatCopies()
@@ -602,6 +765,7 @@ bool GridGeom::Mesh::ClassifyNodes()
 bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons)
 {
     CurvilinearGrid CurvilinearGrid;
+    m_projection = polygons.m_projection;
     if(makeGridParametersNative.GridType==0)
     {
         // regular grid

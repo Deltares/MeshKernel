@@ -58,7 +58,7 @@ TEST(PolygonTests, MeshBoundaryToPolygon)
     const std::vector<GridGeom::Point> polygon;
     std::vector<GridGeom::Point> meshBoundaryPolygon;
     int numNodesBoundaryPolygons;
-    polygons.Set(polygon);
+    polygons.Set(polygon, GridGeom::Projections::cartesian);
     polygons.MeshBoundaryToPolygon(mesh, 0, 1, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
 
@@ -85,4 +85,43 @@ TEST(PolygonTests, MeshBoundaryToPolygon)
     //ASSERT_NEAR(405.311585650679, mesh.m_nodes[7].y, tolerance);
     //ASSERT_NEAR(319.612138503550, mesh.m_nodes[8].y, tolerance);
     //ASSERT_NEAR(327.102805172725, mesh.m_nodes[9].y, tolerance);
+}
+
+TEST(PolygonTests, CreatePointsInPolygons)
+{
+    // Prepare
+    GridGeom::Polygons polygons;
+    std::vector<GridGeom::Point> nodes;
+
+    nodes.push_back(GridGeom::Point{ 302.002502,472.130371 });
+    nodes.push_back(GridGeom::Point{ 144.501526, 253.128174 });
+    nodes.push_back(GridGeom::Point{ 368.752930, 112.876755 });
+    nodes.push_back(GridGeom::Point{ 707.755005, 358.879242 });
+    nodes.push_back(GridGeom::Point{ 301.252502, 471.380371 });
+    nodes.push_back(GridGeom::Point{ 302.002502, 472.130371 });
+
+    polygons.Set(nodes, GridGeom::Projections::cartesian);
+
+    // Execute
+    std::vector<std::vector<GridGeom::Point>> generatedPoints;
+    bool success = polygons.CreatePointsInPolygons(generatedPoints);
+    ASSERT_TRUE(success);
+
+    // Assert
+    constexpr double tolerance = 1e-5;
+
+    ASSERT_NEAR(302.00250199999999, generatedPoints[0][0].x, tolerance);
+    ASSERT_NEAR(472.13037100000003, generatedPoints[0][0].y, tolerance);
+
+    ASSERT_NEAR(144.50152600000001, generatedPoints[0][1].x, tolerance);
+    ASSERT_NEAR(253.12817400000000, generatedPoints[0][1].y, tolerance);
+
+    ASSERT_NEAR(368.75292999999999, generatedPoints[0][2].x, tolerance);
+    ASSERT_NEAR(112.87675500000000, generatedPoints[0][2].y, tolerance);
+
+    ASSERT_NEAR(707.75500499999998, generatedPoints[0][3].x, tolerance);
+    ASSERT_NEAR(358.87924199999998, generatedPoints[0][3].y, tolerance);
+
+    ASSERT_NEAR(301.25250199999999, generatedPoints[0][4].x, tolerance);
+    ASSERT_NEAR(471.38037100000003, generatedPoints[0][4].y, tolerance);
 }
