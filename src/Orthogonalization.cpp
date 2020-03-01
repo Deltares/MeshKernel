@@ -60,7 +60,7 @@ bool GridGeom::Orthogonalization::Set(const Mesh& mesh,
     m_orthogonalizationToSmoothingFactorBoundary = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary;
     m_smoothorarea = orthogonalizationParametersNative.Smoothorarea;
 
-    m_polygons.Set(polygon);
+    m_polygons.Set(polygon, mesh.m_projection);
 
     m_landBoundaries.Set(landBoundaries);
 

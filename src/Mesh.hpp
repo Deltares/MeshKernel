@@ -4,11 +4,11 @@
 #include "Entities.hpp"
 #include "CurvilinearGrid.hpp"
 #include "MakeGridParametersNative.hpp"
+#include "Polygons.hpp"
 #include "GeometryListNative.hpp"
 
 namespace GridGeom 
 {
-    class Polygons;
 
     class Mesh
     {
@@ -18,10 +18,13 @@ namespace GridGeom
         Mesh(){}
 
         //gridtonet
-        Mesh(const CurvilinearGrid& curvilinearGrid, const  Projections& projection);
-        bool Set(const std::vector<Edge>& edges, 
-            const std::vector<Point>& nodes, 
-            Projections projection);
+        Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection);
+        
+        // triangulatesamplestonetwork
+        Mesh(std::vector<Point>& nodes, const Polygons& polygons, Projections projection);
+
+        
+        bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
         
         bool Administrate();
         
@@ -57,11 +60,15 @@ namespace GridGeom
         
         std::vector<int> m_nodesTypes;                              // Node types,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
 
-        //Used for internal state
+        // Used for internal state
         std::vector<double> m_nodex;
         std::vector<double> m_nodey;
         std::vector<double> m_nodez;
         std::vector<int>    m_edgeNodes;
+
+        // Used for triangular grids
+        double m_triangleMinimumAngle = 5.0;                       // minimum angle of created triangles. If minimum angle > maximum angle, no check 
+        double m_triangleMaximumAngle = 150.0;                     // maximum angle of created triangles
 
         Projections m_projection;
 
@@ -78,6 +85,9 @@ namespace GridGeom
 
         /// @brief makenetnodescoding: computes node types
         bool ClassifyNodes();
+
+        /// CHECKTRIANGLE
+        bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes);
 
         double m_dcenterinside = 1.0;
 
