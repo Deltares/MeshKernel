@@ -1,7 +1,7 @@
 #pragma once
+#include "GeometryListNative.hpp"
 
 #include <vector>
-#include "Mesh.hpp"
 extern "C"
 {
     void TRICALL(int *jatri, double* xs, double* ys, int* ns, int* indx, int* numtri, int* edgeidx, int* numedge, int* triedge, double* xs3, double* ys3, int* ns3, double* trisize);
@@ -9,15 +9,17 @@ extern "C"
 
 namespace GridGeom
 {
+    class Mesh;
+
     class Polygons
     {
     public:
 
         Polygons();
 
-        bool Set(const std::vector<Point>& polygon);
+        bool Set(const std::vector<Point>& polygon, Projections projection);
 
-        bool Set(const GridGeomApi::GeometryListNative& geometryListNative);
+        bool Set(const GridGeomApi::GeometryListNative& geometryListNative, Projections projection);
 
         /// copynetboundstopol
         bool MeshBoundaryToPolygon(const Mesh& mesh,
@@ -27,7 +29,7 @@ namespace GridGeom
             int& numNodesBoundaryPolygons);
 
         /// create a set of points in a polygon 
-        bool CreatePointsInPolygons(std::vector<std::vector<Point>>);
+        bool CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints);
 
         std::vector<Point> m_nodes;             // Polygon nodes
         int m_numNodes;                         // NPL

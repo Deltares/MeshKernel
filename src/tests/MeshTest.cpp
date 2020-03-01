@@ -21,7 +21,6 @@ TEST(TestMesh, OneQuadTestConstructor)
     GridGeom::Mesh mesh;
 
     // 2 Execution
-    
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     // 3 Validation
@@ -86,10 +85,9 @@ TEST(TestMesh, MakeMeshInPolygon)
     nodes.push_back(GridGeom::Point{ 301.252502, 471.380371 });
     nodes.push_back(GridGeom::Point{ 302.002502, 472.130371 });
 
-    polygons.Set(nodes);
+    polygons.Set(nodes, GridGeom::Projections::cartesian);
     
     GridGeom::Mesh mesh;
-    mesh.m_projection = GridGeom::Projections::cartesian;
     GridGeomApi::MakeGridParametersNative makeGridParametersNative;
     makeGridParametersNative.GridType = 0;
     makeGridParametersNative.GridAngle = 0.0;
@@ -104,6 +102,53 @@ TEST(TestMesh, MakeMeshInPolygon)
     // 2 Execution
     mesh.MakeMesh(makeGridParametersNative, polygons);
     EXPECT_EQ(17, mesh.m_numFaces);
+
+}
+
+TEST(TestMesh, TriangulateSamples)
+{
+    // Prepare
+    GridGeom::Polygons polygons;
+    std::vector<GridGeom::Point> nodes;
+
+    nodes.push_back(GridGeom::Point{ 302.002502,472.130371 });
+    nodes.push_back(GridGeom::Point{ 144.501526, 253.128174 });
+    nodes.push_back(GridGeom::Point{ 368.752930, 112.876755 });
+    nodes.push_back(GridGeom::Point{ 707.755005, 358.879242 });
+    nodes.push_back(GridGeom::Point{ 301.252502, 471.380371 });
+    nodes.push_back(GridGeom::Point{ 302.002502, 472.130371 });
+
+    polygons.Set(nodes, GridGeom::Projections::cartesian);
+
+    // Execute
+    std::vector<std::vector<GridGeom::Point>> generatedPoints;
+    bool success = polygons.CreatePointsInPolygons(generatedPoints);
+    ASSERT_TRUE(success);
+
+    GridGeom::Mesh mesh(generatedPoints[0], polygons, GridGeom::Projections::cartesian);
+
+    //// Assert
+    constexpr double tolerance = 1e-5;
+
+    EXPECT_EQ(6, mesh.m_edges.size());
+
+    EXPECT_EQ(4, mesh.m_edges[0].first);
+    EXPECT_EQ(1, mesh.m_edges[0].second);
+
+    EXPECT_EQ(1, mesh.m_edges[1].first);
+    EXPECT_EQ(2, mesh.m_edges[1].second);
+
+    EXPECT_EQ(2, mesh.m_edges[2].first);
+    EXPECT_EQ(4, mesh.m_edges[2].second);
+
+    EXPECT_EQ(0, mesh.m_edges[3].first);
+    EXPECT_EQ(2, mesh.m_edges[3].second);
+
+    EXPECT_EQ(2, mesh.m_edges[4].first);
+    EXPECT_EQ(3, mesh.m_edges[4].second);
+
+    EXPECT_EQ(3, mesh.m_edges[5].first);
+    EXPECT_EQ(0, mesh.m_edges[5].second);
 
 }
 

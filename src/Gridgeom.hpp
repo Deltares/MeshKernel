@@ -63,6 +63,8 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_make_net(int& gridStateId, MakeGridParametersNative& makeGridParameters, GeometryListNative& disposableGeometryListIn);
 
+        GRIDGEOM_API int ggeo_mesh_from_polygon(int& gridStateId, GeometryListNative& disposableGeometryListIn);
+
 #ifdef __cplusplus
     }
 #endif
