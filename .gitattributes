@@ -496,8 +496,9 @@ src/tests/OrthogonalizationTest.cpp -text
 src/tests/PolygonTest.cpp -text
 src/tests/SplineTest.cpp -text
 tests/FourSplinesBox.spl -text
-tests/OrthogonalCurvilinearMeshTwoCrossingFirst.spl -text
-tests/OrthogonalCurvilinearMeshTwoCrossingSecond.spl -text
+tests/MakeNetPolygon.pol -text
+tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
+tests/SamplesToTriangulate.xyz -text
 tests/SmallTriangularGrid_oneCrossingLandBoundaries.ldb -text
 tests/SmallTriangularGrid_twoCrossingLandBoundaries.ldb -text
 tests/TestOrthogonalizationLargeTriangularGrid_net.nc -text

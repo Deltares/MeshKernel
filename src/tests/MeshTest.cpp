@@ -105,7 +105,7 @@ TEST(TestMesh, MakeMeshInPolygon)
 
 }
 
-TEST(TestMesh, TriangulateSamples)
+TEST(TestMesh, TriangulateSamplesWithSkinnyTriangle)
 {
     // Prepare
     GridGeom::Polygons polygons;
@@ -151,6 +151,57 @@ TEST(TestMesh, TriangulateSamples)
     EXPECT_EQ(0, mesh.m_edges[5].second);
 
 }
+
+TEST(TestMesh, TriangulateSamples)
+{
+    // Prepare
+    GridGeom::Polygons polygons;
+    std::vector<GridGeom::Point> nodes;
+
+    nodes.push_back(GridGeom::Point{ 498.503152894023, 1645.82297461613 });
+    nodes.push_back(GridGeom::Point{ -5.90937355559299, 814.854361678898 });
+    nodes.push_back(GridGeom::Point{ 851.30035347439, 150.079471329115 });
+    nodes.push_back(GridGeom::Point{ 1411.11078745316, 1182.22995897746 });
+    nodes.push_back(GridGeom::Point{ 501.418832237663, 1642.90729527249 });
+    nodes.push_back(GridGeom::Point{ 498.503152894023, 1645.82297461613 });
+
+    polygons.Set(nodes, GridGeom::Projections::cartesian);
+
+    // Execute
+    std::vector<std::vector<GridGeom::Point>> generatedPoints;
+    bool success = polygons.CreatePointsInPolygons(generatedPoints);
+    ASSERT_TRUE(success);
+
+    GridGeom::Mesh mesh(generatedPoints[0], polygons, GridGeom::Projections::cartesian);
+}
+
+
+TEST(TestMesh, TwoTriangles)
+{
+    //1 Setup
+    std::vector<GridGeom::Point> nodes;
+    nodes.push_back(GridGeom::Point{ -5.90937355559299, 814.854361678898 });
+    nodes.push_back(GridGeom::Point{ 851.30035347439, 150.079471329115 });
+    nodes.push_back(GridGeom::Point{ 1411.11078745316, 1182.22995897746 });
+    nodes.push_back(GridGeom::Point{ 501.418832237663, 1642.90729527249 });
+    nodes.push_back(GridGeom::Point{ 498.503152894023, 1645.82297461613 });
+    std::vector<GridGeom::Edge> edges;
+    edges.push_back({ 0, 3 });
+    edges.push_back({ 0, 2 });
+    edges.push_back({ 2, 3 });
+    edges.push_back({ 0, 1 });
+    edges.push_back({ 1, 2 });
+    edges.push_back({ 3, 0 });
+
+
+    GridGeom::Mesh mesh;
+
+    // 2 Execution
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    // 3 Validation
+}
+
 
 TEST(PerformanceTest, MillionQuads)
 {

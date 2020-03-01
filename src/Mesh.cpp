@@ -347,10 +347,40 @@ void GridGeom::Mesh::NodeAdministration()
     {
         const std::size_t firstNode = m_edges[e].first;
         const std::size_t secondNode = m_edges[e].second;
-        m_nodesEdges[firstNode][m_nodesNumEdges[firstNode]] = e;
-        m_nodesEdges[secondNode][m_nodesNumEdges[secondNode]] = e;
-        m_nodesNumEdges[firstNode]++;
-        m_nodesNumEdges[secondNode]++;
+
+        // Search for previously connected edges
+        bool alreadyAddedEdge = false;
+        for (int i = 0; i < m_nodesNumEdges[firstNode]; ++i)
+        {
+            auto currentEdge = m_edges[m_nodesEdges[firstNode][i]];
+            if(currentEdge.first == secondNode || currentEdge.second == secondNode)
+            {
+                alreadyAddedEdge = true;
+                break;
+            }
+        }
+        if(!alreadyAddedEdge)
+        {
+            m_nodesEdges[firstNode][m_nodesNumEdges[firstNode]] = e;
+            m_nodesNumEdges[firstNode]++;
+        }
+
+        // Search for previously connected edges
+        alreadyAddedEdge = false;
+        for (int i = 0; i < m_nodesNumEdges[secondNode]; ++i)
+        {
+            auto currentEdge = m_edges[m_nodesEdges[secondNode][i]];
+            if (currentEdge.first == firstNode || currentEdge.second == firstNode)
+            {
+                alreadyAddedEdge = true;
+                break;
+            }
+        }
+        if (!alreadyAddedEdge)
+        {
+            m_nodesEdges[secondNode][m_nodesNumEdges[secondNode]] = e;
+            m_nodesNumEdges[secondNode]++;
+        }
     }
 
     // resize

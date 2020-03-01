@@ -12,6 +12,67 @@ static std::map<int, GridGeom::Polygons> polygonInstances;
 
 namespace GridGeomApi
 {
+    static bool ConvertGeometryListNativeToPointVector(GeometryListNative& geometryListIn, std::vector<GridGeom::Point>& result)
+    {
+        if (geometryListIn.numberOfCoordinates == 0)
+        {
+            return false;
+        }
+        result.resize(geometryListIn.numberOfCoordinates);
+
+        for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
+        {
+            result[i] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
+        }
+        return true;
+    }
+
+    static bool ConvertPointVectorToGeometryListNative(std::vector<GridGeom::Point> pointVector, GeometryListNative& result)
+    {
+        // invalid memory allocation
+        if (pointVector.size()!= result.numberOfCoordinates)
+        {
+            return -1;
+        }
+
+        for (int i = 0; i < pointVector.size(); i++)
+        {
+            result.xCoordinates[i] = pointVector[i].x;
+            result.yCoordinates[i] = pointVector[i].y;
+        }
+        return true;
+    }
+
+    static int SetSplines(GeometryListNative& geometryListIn, GridGeom::Splines& spline)
+    {
+        if (geometryListIn.numberOfCoordinates == 0)
+        {
+            return -1;
+        }
+
+        std::vector<GridGeom::Point> splineCornerPoints;
+        bool success = ConvertGeometryListNativeToPointVector(geometryListIn, splineCornerPoints);
+        if (!success)
+        {
+            return -1;
+        }
+
+        std::vector<std::vector<int>> indexes(splineCornerPoints.size(), std::vector<int>(2,0));
+        int pos = FindIndexes(splineCornerPoints, 0, splineCornerPoints.size(), GridGeom::doubleMissingValue, indexes);
+        indexes.resize(pos);
+
+        for (int i = 0; i < indexes.size(); i++)
+        {
+            int size = indexes[i][1] - indexes[i][0] + 1;
+            if (size > 0)
+            {
+                spline.AddSpline(splineCornerPoints, indexes[i][0], size);
+            }
+        }
+
+        return 0;
+    }
+
     GRIDGEOM_API int ggeo_new_grid(int& gridStateId)
     {
         int instanceSize = meshInstances.size();
@@ -247,38 +308,6 @@ namespace GridGeomApi
         return 0;
     }
 
-    int ggeo_set_splines(int& gridStateId, GeometryListNative& geometryListIn, GridGeom::Splines& spline)
-    {
-        if (geometryListIn.numberOfCoordinates == 0)
-        {
-            return -1;
-        }
-
-        std::vector<GridGeom::Point> splineCornerPoints(geometryListIn.numberOfCoordinates);
-        int ind = 0;
-        for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
-        {
-            if (geometryListIn.xCoordinates[i] == GridGeom::doubleMissingValue)
-            {
-                spline.AddSpline(splineCornerPoints, 0, ind);
-                ind = 0;
-                continue;
-            }
-            if (i == geometryListIn.numberOfCoordinates - 1) 
-            {
-                splineCornerPoints[ind] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
-                spline.AddSpline(splineCornerPoints, 0, ind);
-            }
-            else 
-            {
-                splineCornerPoints[ind] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
-                ind++;
-            }
-        }
-
-        return 0;
-    }
-
     GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho(int& gridStateId, 
         GeometryListNative& geometryListIn, 
         CurvilinearParametersNative& curvilinearParameters, 
@@ -288,7 +317,7 @@ namespace GridGeomApi
         GridGeom::Polygons polygon;
         GridGeom::Splines spline(meshInstances[gridStateId].m_projection, polygon);
 
-        int success = ggeo_set_splines(gridStateId, geometryListIn, spline);
+        int success = SetSplines(geometryListIn, spline);
         spline.SetParameters(curvilinearParameters, splineToCurvilinearParameters);
         GridGeom::CurvilinearGrid curvilinearGrid;
         spline.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
@@ -335,7 +364,52 @@ namespace GridGeomApi
 
         GridGeom::Mesh mesh(generatedPoints[0], polygon, meshInstances[gridStateId].m_projection);
         meshInstances[gridStateId] = mesh;
-        return 1;
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_mesh_from_samples(int& gridStateId, GeometryListNative& disposableGeometryListIn)
+    {
+        std::vector<GridGeom::Point> samplePoints;
+        bool successful = ConvertGeometryListNativeToPointVector(disposableGeometryListIn, samplePoints);
+        if (!successful)
+        {
+            return -1;
+        }
+        GridGeom::Polygons polygon;
+        GridGeom::Mesh mesh(samplePoints, polygon, meshInstances[gridStateId].m_projection);
+        meshInstances[gridStateId] = mesh;
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon_count_edges(int& gridStateId, int& numberOfPolygonVertices)
+    {
+        GridGeom::Polygons polygon;
+        std::vector<GridGeom::Point> meshBoundaryPolygon;
+
+        int counterClockWise =0;
+        int setMeshState = 0;
+        polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, setMeshState, meshBoundaryPolygon, numberOfPolygonVertices);
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon(int& gridStateId, GeometryListNative& disposableGeometryListInOut)
+    {
+        GridGeom::Polygons polygon;
+        std::vector<GridGeom::Point> meshBoundaryPolygon;
+
+        int counterClockWise = 0;
+        int setMeshState = 0;
+        int numNodesBoundaryPolygons;
+        polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, setMeshState, meshBoundaryPolygon, numNodesBoundaryPolygons);
+
+        bool successful = ConvertPointVectorToGeometryListNative(meshBoundaryPolygon, disposableGeometryListInOut);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        return 0;
     }
 
 }
