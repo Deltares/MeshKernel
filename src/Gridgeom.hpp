@@ -71,6 +71,10 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon(int& gridStateId, GeometryListNative& disposableGeometryListInOut);
 
+        GRIDGEOM_API int ggeo_refine_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices);
+
+        GRIDGEOM_API int ggeo_refine_polygon(int& gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut);
+
 #ifdef __cplusplus
     }
 #endif

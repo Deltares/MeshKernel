@@ -331,7 +331,14 @@ namespace GridGeomApi
     {
         GridGeom::Polygons polygon;
 
-        bool successful = polygon.Set(disposableGeometryListIn, meshInstances[gridStateId].m_projection);
+        std::vector<GridGeom::Point> result;
+        bool successful = ConvertGeometryListNativeToPointVector(disposableGeometryListIn, result);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        successful = polygon.Set(result, meshInstances[gridStateId].m_projection);
         if(!successful)
         {
             return -1;
@@ -349,7 +356,14 @@ namespace GridGeomApi
     {
         GridGeom::Polygons polygon;
 
-        bool successful = polygon.Set(disposableGeometryListIn, meshInstances[gridStateId].m_projection);
+        std::vector<GridGeom::Point> result;
+        bool successful = ConvertGeometryListNativeToPointVector(disposableGeometryListIn, result);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        successful = polygon.Set(result, meshInstances[gridStateId].m_projection);
         if (!successful)
         {
             return -1;
@@ -410,6 +424,59 @@ namespace GridGeomApi
         }
 
         return 0;
+    }
+
+    GRIDGEOM_API int ggeo_refine_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices)
+    {
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons polygon;
+        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+
+        std::vector<GridGeom::Point> refinedPolygon;
+        successful = polygon.RefinePart(firstIndex, secondIndex, distance, refinedPolygon);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        numberOfPolygonVertices = refinedPolygon.size();
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_refine_polygon(int& gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut)
+    {
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons polygon;
+        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+
+        std::vector<GridGeom::Point> refinedPolygon;
+        successful = polygon.RefinePart(firstIndex, secondIndex, distance, refinedPolygon);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        successful = ConvertPointVectorToGeometryListNative(refinedPolygon, geometryListOut);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        return 0;
+        
     }
 
 }
