@@ -83,6 +83,9 @@ namespace GridGeom
         // find cells
         void FindFaces(const int& numEdges);
 
+        // find cells
+        void DepthFirstFindAllFaces(const int& numEdges, int maxDistance);
+
         /// @brief makenetnodescoding: computes node types
         bool ClassifyNodes();
 
