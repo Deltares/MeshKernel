@@ -40,37 +40,6 @@ namespace GridGeom
         return true;
     }
 
-    bool Polygons::Set(const GridGeomApi::GeometryListNative& geometryListNative, Projections projection)
-    {
-        m_projection = projection;
-        if(geometryListNative.numberOfCoordinates == 0)
-        {
-            return true;
-        }
-
-        // resize if necessary
-        int startNewNodes = m_numNodes;
-        if (startNewNodes != 0)
-        {
-            ResizeVector(m_numNodes + 1 + geometryListNative.numberOfCoordinates, m_nodes);
-            m_nodes[startNewNodes] = { doubleMissingValue,doubleMissingValue };
-            startNewNodes += 1;
-        }
-        else
-        {
-            ResizeVector(geometryListNative.numberOfCoordinates, m_nodes);
-        }
-        m_numAllocatedNodes = m_nodes.size();
-        m_numNodes = m_nodes.size();
-        for (int n = startNewNodes, nn = 0; n < startNewNodes + geometryListNative.numberOfCoordinates; ++n, ++nn)
-        {
-            m_nodes[n].x = geometryListNative.xCoordinates[nn];
-            m_nodes[n].y = geometryListNative.yCoordinates[nn];
-        }
-
-        return true;
-    }
-
     /// copynetboundstopol
     bool Polygons::MeshBoundaryToPolygon(const Mesh& mesh,
         int counterClockWise,
@@ -294,7 +263,7 @@ namespace GridGeom
                 faceEdges.resize(numberOfTriangles * 3);
                 xPoint.resize(numberOfTriangles * 3);
                 yPoint.resize(numberOfTriangles * 3);
-                TRICALL(&jatri,
+                Triangulation(&jatri,
                     &xLocalPolygon[0],
                     &yLocalPolygon[0],
                     &numLocalPointsOpenPolygon,
@@ -323,19 +292,137 @@ namespace GridGeom
         return true;
     }
 
+    bool Polygons::RefinePart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon)
+    {
+        std::vector<std::vector<int>> indexes(m_numNodes, std::vector<int>(2));
+        int pos = FindIndexes(m_nodes, 0, m_numNodes, doubleMissingValue, indexes);
+        indexes.resize(pos);
+
+        if(startIndex==0 && endIndex==0)
+        {
+            startIndex = indexes[0][0];
+            endIndex = indexes[0][1];
+        }
+
+        if (endIndex <= startIndex)
+        {
+            return false;
+        }
+
+        bool polygonFound = false;
+        int polygonIndex;
+        for (int i = 0; i < indexes.size(); ++i)
+        {
+            if (startIndex >= indexes[i][0] && endIndex <= indexes[i][1])
+            {
+                polygonFound = true;
+                polygonIndex = i;
+                break;
+            }
+        }
+
+        if (!polygonFound)
+        {
+            return false;
+        }
+
+        std::vector<double> edgeLengths;
+        EdgeLengths(m_nodes, edgeLengths);
+        std::vector<double> nodeLengthCoordinate(edgeLengths.size());
+        nodeLengthCoordinate[0] = 0.0;
+        for (int i = 1; i < edgeLengths.size(); ++i)
+        {
+            nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i-1];
+        }
+
+        int numNodesRefinedPart = std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex);
+        int numNodesNotRefinedPart = startIndex - indexes[polygonIndex][0] + indexes[polygonIndex][1] - endIndex;
+        int totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
+        refinedPolygon.resize(totalNumNodes);
+
+        // before refinement
+        int refinedNodeIndex = 0;
+        for (int i = indexes[polygonIndex][0]; i <= startIndex; ++i)
+        {
+            refinedPolygon[refinedNodeIndex] = m_nodes[i];
+            refinedNodeIndex++;
+        }
+
+        // refined part
+        int nodeIndex = startIndex;
+        int nextNodeIndex = nodeIndex + 1;
+        Point p0 = m_nodes[nodeIndex];
+        Point p1 = m_nodes[nodeIndex + 1];
+        double pointLengthCoordinate = nodeLengthCoordinate[startIndex];
+        while (nodeIndex < endIndex)
+        {
+            pointLengthCoordinate += refinementDistance;
+            if (pointLengthCoordinate > nodeLengthCoordinate[nextNodeIndex])
+            {
+                // find next point 
+                bool nextNodeFound = false;
+                for (int i = nextNodeIndex + 1; i <= endIndex; ++i)
+                {
+                    if(nodeLengthCoordinate[i]>pointLengthCoordinate)
+                    {
+                        nextNodeFound = true;
+                        nodeIndex = i - 1;
+                        nextNodeIndex = i;
+                        break;
+                    }
+                }
+                if (nextNodeIndex > endIndex || !nextNodeFound)
+                {
+                    break;
+                }
+                p0 = m_nodes[nodeIndex];
+                p1 = m_nodes[nextNodeIndex];
+            }
+            double distanceFromLastNode = pointLengthCoordinate - nodeLengthCoordinate[nodeIndex];
+            Point p = p0 + (p1 - p0) *  distanceFromLastNode / edgeLengths[nodeIndex];
+            refinedPolygon[refinedNodeIndex] = p;
+            refinedNodeIndex++;
+        }
+
+        // after refinement
+        for (int i = endIndex + 1; i <= indexes[polygonIndex][1]; ++i)
+        {
+            refinedPolygon[refinedNodeIndex] = m_nodes[i];
+            refinedNodeIndex++;
+        }
+        refinedPolygon.resize(refinedNodeIndex);
+
+        return true;
+    }
+
     bool Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, const int numPoints, double& perimeter)
     {
 
-        if(numPoints < 0 || localPolygon[0].x != localPolygon[numPoints - 1].x)
+        if(numPoints < 0 || localPolygon[0] != localPolygon[numPoints - 1])
         {
             return false;
         }
 
         perimeter = 0.0;
-        for (int p = 0; p < numPoints - 1; ++p)
+        std::vector<double> edgeLengths;
+        EdgeLengths(localPolygon, edgeLengths);
+        perimeter = std::accumulate(edgeLengths.begin(), edgeLengths.end(), 0.0);
+        return true;
+    }
+
+    bool Polygons::EdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths)
+    {
+        edgeLengths.resize(localPolygon.size());
+        for (int p = 0; p < localPolygon.size(); ++p)
         {
-            double edgeLength = Distance(localPolygon[p], localPolygon[p + 1], m_projection);
-            perimeter += edgeLength;
+            int firstNode = p;
+            int secondNode = p + 1;
+            if (secondNode == localPolygon.size())
+            {
+                secondNode = 0;
+            }
+            double edgeLength = Distance(localPolygon[firstNode], localPolygon[secondNode], m_projection);
+            edgeLengths[p] = edgeLength;
         }
 
         return true;

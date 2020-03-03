@@ -1,10 +1,9 @@
 #pragma once
-#include "GeometryListNative.hpp"
 
 #include <vector>
 extern "C"
 {
-    void TRICALL(int *jatri, double* xs, double* ys, int* ns, int* indx, int* numtri, int* edgeidx, int* numedge, int* triedge, double* xs3, double* ys3, int* ns3, double* trisize);
+    void Triangulation(int *jatri, double* xs, double* ys, int* ns, int* indx, int* numtri, int* edgeidx, int* numedge, int* triedge, double* xs3, double* ys3, int* ns3, double* trisize);
 }
 
 namespace GridGeom
@@ -18,8 +17,6 @@ namespace GridGeom
         Polygons();
 
         bool Set(const std::vector<Point>& polygon, Projections projection);
-
-        bool Set(const GridGeomApi::GeometryListNative& geometryListNative, Projections projection);
 
         /// copynetboundstopol
         bool MeshBoundaryToPolygon(const Mesh& mesh,
@@ -39,6 +36,12 @@ namespace GridGeom
 
         /// perimeter closed polygon
         bool PerimeterClosedPolygon(const std::vector<Point>& localPolygon, int numPoints, double& perimeter);
+
+        /// refinepolygonpart
+        bool RefinePart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon);
+
+        /// refinepolygonpart
+        bool EdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths );
 
     private:
 

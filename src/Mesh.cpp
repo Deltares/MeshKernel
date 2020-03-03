@@ -8,10 +8,11 @@
 #include "Constants.cpp"
 #include "Operations.cpp"
 #include "Polygons.hpp"
+#include <stack>
 
 bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
 {
-     // copy edges and nodes
+    // copy edges and nodes
     m_edges = edges;
     m_nodes = nodes;
     m_projection = projection;
@@ -21,7 +22,7 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
     return true;
 };
 
-bool GridGeom::Mesh::Administrate() 
+bool GridGeom::Mesh::Administrate()
 {
     m_nodesEdges.resize(m_nodes.size(),
         std::vector<std::size_t>(maximumNumberOfEdgesPerNode, 0));
@@ -68,7 +69,7 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections project
 {
     m_projection = projection;
 
-    if (curvilinearGrid.m_grid.size() == 0) 
+    if (curvilinearGrid.m_grid.size() == 0)
     {
         return;
     }
@@ -128,7 +129,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
     m_projection = projection;
     std::vector<double> xLocalPolygon(inputNodes.size());
     std::vector<double> yLocalPolygon(inputNodes.size());
-    for (int i =0; i < inputNodes.size(); ++i)
+    for (int i = 0; i < inputNodes.size(); ++i)
     {
         xLocalPolygon[i] = inputNodes[i].x;
         yLocalPolygon[i] = inputNodes[i].y;
@@ -155,7 +156,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
         faceEdgesFlat.resize(numberOfTriangles * 3);
         xNodesFlat.resize(numberOfTriangles * 3, doubleMissingValue);
         yNodesFlat.resize(numberOfTriangles * 3, doubleMissingValue);
-        TRICALL(&jatri,
+        Triangulation(&jatri,
             &xLocalPolygon[0],
             &yLocalPolygon[0],
             &numPointsIn,
@@ -175,7 +176,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
     }
 
     // create face nodes
-    std::vector<std::vector<int>> faceNodes(numtri, std::vector<int>(3,-1));
+    std::vector<std::vector<int>> faceNodes(numtri, std::vector<int>(3, -1));
     std::vector<std::vector<int>> faceEdges(numtri, std::vector<int>(3, -1));
     int index = 0;
     for (int i = 0; i < numtri; ++i)
@@ -212,11 +213,11 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
     {
         bool goodTriangle = CheckTriangle(faceNodes[i], inputNodes);
 
-        if(!goodTriangle)
+        if (!goodTriangle)
         {
             continue;
         }
-        Point approximateCenter = (inputNodes[faceNodes[i][0]]+ inputNodes[faceNodes[i][1]]+ inputNodes[faceNodes[i][2]]) * oneThird;
+        Point approximateCenter = (inputNodes[faceNodes[i][0]] + inputNodes[faceNodes[i][1]] + inputNodes[faceNodes[i][2]]) * oneThird;
 
         bool isTriangleInPolygon = IsPointInPolygon(approximateCenter, polygons.m_nodes, polygons.m_numNodes - 1);
         if (!isTriangleInPolygon)
@@ -236,7 +237,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
     int validEdges = 0;
     for (int i = 0; i < numedge; ++i)
     {
-        if(!edgeNodesFlag[i])
+        if (!edgeNodesFlag[i])
             continue;
         validEdges++;
     }
@@ -272,11 +273,11 @@ bool GridGeom::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std:
         Point x1 = nodes[faceNodes[nodePermutations[i][1]]];
         Point x2 = nodes[faceNodes[nodePermutations[i][2]]];
 
-        double cosphi = NormalizedInnerProductTwoSegments(x1,  x0,  x1, x2, m_projection);
-        double phi =std::acos(std::min(std::max(cosphi, -1.0), 1.0)) * raddeg_hp;
+        double cosphi = NormalizedInnerProductTwoSegments(x1, x0, x1, x2, m_projection);
+        double phi = std::acos(std::min(std::max(cosphi, -1.0), 1.0)) * raddeg_hp;
         phiMin = std::min(phiMin, phi);
         phiMax = std::max(phiMax, phi);
-        if(phi < m_triangleMinimumAngle || phi > m_triangleMaximumAngle)
+        if (phi < m_triangleMinimumAngle || phi > m_triangleMaximumAngle)
         {
             return false;
         }
@@ -290,7 +291,7 @@ bool GridGeom::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std:
 bool GridGeom::Mesh::SetFlatCopies()
 {
     // Used for internal state
-    if (m_nodes.size() >0)
+    if (m_nodes.size() > 0)
     {
         m_nodex.resize(m_nodes.size());
         m_nodey.resize(m_nodes.size());
@@ -308,14 +309,14 @@ bool GridGeom::Mesh::SetFlatCopies()
             ei++;
             m_edgeNodes[ei] = m_edges[e].second;
             ei++;
-        }    
+        }
     }
     else
     {
         m_nodex.resize(1);
         m_nodey.resize(1);
         m_nodez.resize(1);
-        m_edgeNodes.resize(1);    
+        m_edgeNodes.resize(1);
     }
 
     return true;
@@ -343,6 +344,7 @@ bool GridGeom::Mesh::DeleteFlatCopies()
 void GridGeom::Mesh::NodeAdministration()
 {
     // assume no duplicated links
+    // you cold use std::sort + std::unique instead
     for (std::size_t e = 0; e < m_edges.size(); e++)
     {
         const std::size_t firstNode = m_edges[e].first;
@@ -353,13 +355,13 @@ void GridGeom::Mesh::NodeAdministration()
         for (int i = 0; i < m_nodesNumEdges[firstNode]; ++i)
         {
             auto currentEdge = m_edges[m_nodesEdges[firstNode][i]];
-            if(currentEdge.first == secondNode || currentEdge.second == secondNode)
+            if (currentEdge.first == secondNode || currentEdge.second == secondNode)
             {
                 alreadyAddedEdge = true;
                 break;
             }
         }
-        if(!alreadyAddedEdge)
+        if (!alreadyAddedEdge)
         {
             m_nodesEdges[firstNode][m_nodesNumEdges[firstNode]] = e;
             m_nodesNumEdges[firstNode]++;
@@ -455,11 +457,146 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
 }
 
 // find cells
+void GridGeom::Mesh::DepthFirstFindAllFaces(const int& numEdges, const int maxDistance)
+{
+    std::vector<int> distanceFromNode(m_nodes.size(), -1);
+    std::vector<std::vector<int>> edgesDepthFirst(maximumNumberOfEdgesPerNode, std::vector<int>(maxDistance, -1));
+    std::vector<std::vector<int>> nodesDepthFirst(maximumNumberOfEdgesPerNode, std::vector<int>(maxDistance, -1));
+    std::vector<std::size_t> foundEdges(maxDistance);
+    std::vector<std::size_t> foundNodes(maxDistance);
+
+    for (int n = 0; n < m_nodes.size(); n++)
+    {
+        std::stack<int> nodes;
+        std::fill(edgesDepthFirst.begin(), edgesDepthFirst.end(), std::vector<int>(maximumNumberOfEdgesPerFace, -1));
+        std::fill(nodesDepthFirst.begin(), nodesDepthFirst.end(), std::vector<int>(maximumNumberOfEdgesPerFace, -1));
+        std::fill(distanceFromNode.begin(), distanceFromNode.end(), -1);
+        std::vector<int> nodeToPush(maximumNumberOfEdgesPerNode + 1, -1);
+        nodes.push(n);
+        distanceFromNode[n] = 0;
+        int faceRow = 0;
+        while (!nodes.empty())
+        {
+            int node = nodes.top();
+            nodes.pop();
+            int currentDistance = distanceFromNode[n];
+
+            if (currentDistance > maxDistance)
+            {
+                // max distance reached
+                break;
+            }
+            for (int e = 0; e < m_nodesNumEdges[node]; ++e)
+            {
+                int edge = m_nodesEdges[node][e];
+                if (m_edgesNumFaces[edge] >= 2)
+                {
+                    continue;
+                }
+
+                int otherNode = m_edges[edge].first + m_edges[edge].second - node;
+                edgesDepthFirst[e][distanceFromNode[n]] = edge;
+                nodesDepthFirst[e][distanceFromNode[n]] = otherNode;
+                if (distanceFromNode[otherNode] == -1)
+                {
+                    distanceFromNode[otherNode] = distanceFromNode[n] + 1;
+                    nodes.emplace(otherNode);
+                }
+                else if (distanceFromNode[otherNode] == 1)
+                {
+                    // find closing edge containing the start node
+                    for (int e = 0; e < m_nodesNumEdges[otherNode]; ++e)
+                    {
+                        int edgeCandidate = m_nodesEdges[otherNode][e];
+                        int otherNodeEdgeCandidate = m_edges[edgeCandidate].first + m_edges[edgeCandidate].second - node;
+                        if (otherNodeEdgeCandidate == n)
+                        {
+                            foundEdges[0] = edgeCandidate;
+                            break;
+                        }
+                    }
+                    // we have found a face: build the edge list
+                    for (int d = maxDistance - 2, i = 1; d >= 0; --d, ++i)
+                    {
+                        foundEdges[i] = edgesDepthFirst[faceRow][d];
+                    }
+
+                    foundNodes[0] = n;
+                    foundNodes[1] = otherNode;
+                    for (int d = maxDistance - 3, i = 2; d >= 0; --d, ++i)
+                    {
+                        foundEdges[i] = nodesDepthFirst[faceRow][d];
+                    }
+                    // increment 
+                    faceRow++;
+
+                    // do all extra administration
+                    bool isFaceAlreadyFound = false;
+                    for (int i = 0; i < maxDistance; i++)
+                    {
+                        if (m_edgesNumFaces[foundEdges[i]] >= 2)
+                        {
+                            isFaceAlreadyFound = true;
+                            break;
+                        }
+                    }
+                    if (isFaceAlreadyFound)
+                    {
+                        continue;
+                    }
+
+                    bool allEdgesHaveAFace = true;
+                    for (int i = 0; i <= maxDistance; i++)
+                    {
+                        if (m_edgesNumFaces[foundEdges[i]] < 1)
+                        {
+                            allEdgesHaveAFace = false;
+                            break;
+                        }
+                    }
+
+                    bool isAnAlreadyFoundBoundaryFace = true;
+                    for (int i = 0; i <= maxDistance - 1; i++)
+                    {
+                        if (m_edgesFaces[foundEdges[i]][0] != m_edgesFaces[foundEdges[i + 1]][0])
+                        {
+                            isAnAlreadyFoundBoundaryFace = false;
+                            break;
+                        }
+                    }
+
+                    if (allEdgesHaveAFace && isAnAlreadyFoundBoundaryFace)
+                    {
+                        continue;
+                    }
+
+                    // increase m_edgesNumFaces 
+                    m_numFaces += 1;
+                    for (int i = 0; i < maxDistance; i++)
+                    {
+                        m_edgesNumFaces[foundEdges[i]] += 1;
+                        const int numFace = m_edgesNumFaces[foundEdges[i]];
+                        m_edgesFaces[foundEdges[i]][numFace - 1] = m_numFaces - 1;
+                    }
+
+                    // store the result
+                    m_facesNodes.push_back(foundNodes);
+                    m_facesEdges.push_back(foundEdges);
+
+                }
+            }
+        }
+    }
+}
+
+
+
+// find cells
 void GridGeom::Mesh::FindFaces(const int& numEdges)
 {
 
     std::vector<std::size_t> foundEdges(numEdges);
-    std::vector<std::size_t> foundNodes(numEdges); 
+    std::vector<std::size_t> foundNodes(numEdges);
 
     for (std::size_t node = 0; node < m_nodes.size(); node++)
     {
@@ -796,7 +933,7 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
 {
     CurvilinearGrid CurvilinearGrid;
     m_projection = polygons.m_projection;
-    if(makeGridParametersNative.GridType==0)
+    if (makeGridParametersNative.GridType == 0)
     {
         // regular grid
         int numM = makeGridParametersNative.NumberOfRows + 1;
@@ -809,13 +946,13 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
         double OriginYCoordinate = makeGridParametersNative.OriginYCoordinate;
 
         // in case a polygon is there, re-compute parameters
-        if(polygons.m_numNodes>=3)
+        if (polygons.m_numNodes >= 3)
         {
             Point referencePoint;
             // rectangular grid in polygon
             for (int i = 0; i < polygons.m_numNodes; ++i)
             {
-                if(polygons.m_nodes[i].IsValid())
+                if (polygons.m_nodes[i].IsValid())
                 {
                     referencePoint = polygons.m_nodes[i];
                     break;
@@ -844,7 +981,7 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
 
             double xShift = xmin*cosineAngle - etamin * sinAngle;
             double yShift = xmin*sinAngle + etamin* cosineAngle;
-            if(m_projection==Projections::spherical)
+            if (m_projection == Projections::spherical)
             {
                 xShift = xShift / earth_radius *raddeg_hp;
                 yShift = yShift / (earth_radius *std::cos(referencePoint.y*degrad_hp)) * raddeg_hp;
@@ -856,7 +993,7 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
             numM = std::ceil((xmax - xmin) / YGridBlockSize) + 1;
         }
 
-        
+
         CurvilinearGrid.IncreaseGrid(numN, numM);
         for (int n = 0; n < numN; ++n)
         {
@@ -865,7 +1002,7 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
                 CurvilinearGrid.m_grid[n][m] = Point
                 {
                     OriginXCoordinate + m*XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle,
-                    OriginYCoordinate + m*XGridBlockSize * sinAngle    + n * YGridBlockSize * cosineAngle
+                    OriginYCoordinate + m*XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle
                 };
             }
         }
@@ -881,19 +1018,19 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
                 for (int m = 0; m < numM; ++m)
                 {
                     bool isInPolygon = IsPointInPolygon(CurvilinearGrid.m_grid[n][m], polygons.m_nodes, polygons.m_numNodes - 1);
-                    if(isInPolygon)
+                    if (isInPolygon)
                     {
                         nodeBasedMask[n][m] = true;
                     }
                 }
             }
-            
+
             // mark faces when at least one node is inside
-            for (int n = 0; n < numN-1; ++n)
+            for (int n = 0; n < numN - 1; ++n)
             {
-                for (int m = 0; m < numM-1; ++m)
+                for (int m = 0; m < numM - 1; ++m)
                 {
-                    if (nodeBasedMask[n][m] || nodeBasedMask[n+1][m] || nodeBasedMask[n][m+1] || nodeBasedMask[n + 1][m + 1])
+                    if (nodeBasedMask[n][m] || nodeBasedMask[n + 1][m] || nodeBasedMask[n][m + 1] || nodeBasedMask[n + 1][m + 1])
                     {
                         faceBasedMask[n][m] = true;
                     }
@@ -923,7 +1060,7 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
                     if (!nodeBasedMask[n][m])
                     {
                         CurvilinearGrid.m_grid[n][m].x = doubleMissingValue;
-                        CurvilinearGrid.m_grid[n][m].y = doubleMissingValue; 
+                        CurvilinearGrid.m_grid[n][m].y = doubleMissingValue;
                     }
                 }
             }

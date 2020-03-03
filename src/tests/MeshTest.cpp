@@ -176,7 +176,7 @@ TEST(TestMesh, TriangulateSamples)
 }
 
 
-TEST(TestMesh, TwoTriangles)
+TEST(TestMesh, TwoTrianglesDuplicatedEdges)
 {
     //1 Setup
     std::vector<GridGeom::Point> nodes;
