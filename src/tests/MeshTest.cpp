@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <chrono>
 
-TEST(TestMesh, OneQuadTestConstructor) 
+TEST(Mesh, OneQuadTestConstructor) 
 {
     //1 Setup
     std::vector<GridGeom::Point> nodes;
@@ -25,54 +25,54 @@ TEST(TestMesh, OneQuadTestConstructor)
 
     // 3 Validation
     // expect nodesEdges to be sorted ccw
-    EXPECT_EQ(0, mesh.m_nodesEdges[0][0]);
-    EXPECT_EQ(2, mesh.m_nodesEdges[0][1]);
+    ASSERT_EQ(0, mesh.m_nodesEdges[0][0]);
+    ASSERT_EQ(2, mesh.m_nodesEdges[0][1]);
 
-    EXPECT_EQ(1, mesh.m_nodesEdges[1][0]);
-    EXPECT_EQ(2, mesh.m_nodesEdges[1][1]);
+    ASSERT_EQ(1, mesh.m_nodesEdges[1][0]);
+    ASSERT_EQ(2, mesh.m_nodesEdges[1][1]);
 
-    EXPECT_EQ(0, mesh.m_nodesEdges[2][0]);
-    EXPECT_EQ(3, mesh.m_nodesEdges[2][1]);
+    ASSERT_EQ(0, mesh.m_nodesEdges[2][0]);
+    ASSERT_EQ(3, mesh.m_nodesEdges[2][1]);
 
-    EXPECT_EQ(1, mesh.m_nodesEdges[3][0]);
-    EXPECT_EQ(3, mesh.m_nodesEdges[3][1]);
+    ASSERT_EQ(1, mesh.m_nodesEdges[3][0]);
+    ASSERT_EQ(3, mesh.m_nodesEdges[3][1]);
 
     // each node has two edges int this case
-    EXPECT_EQ(2, mesh.m_nodesNumEdges[0]);
-    EXPECT_EQ(2, mesh.m_nodesNumEdges[1]);
-    EXPECT_EQ(2, mesh.m_nodesNumEdges[2]);
-    EXPECT_EQ(2, mesh.m_nodesNumEdges[3]);
+    ASSERT_EQ(2, mesh.m_nodesNumEdges[0]);
+    ASSERT_EQ(2, mesh.m_nodesNumEdges[1]);
+    ASSERT_EQ(2, mesh.m_nodesNumEdges[2]);
+    ASSERT_EQ(2, mesh.m_nodesNumEdges[3]);
 
     // the nodes composing the face, in ccw order
-    EXPECT_EQ(0, mesh.m_facesNodes[0][0]);
-    EXPECT_EQ(2, mesh.m_facesNodes[0][1]);
-    EXPECT_EQ(3, mesh.m_facesNodes[0][2]);
-    EXPECT_EQ(1, mesh.m_facesNodes[0][3]);
+    ASSERT_EQ(0, mesh.m_facesNodes[0][0]);
+    ASSERT_EQ(2, mesh.m_facesNodes[0][1]);
+    ASSERT_EQ(3, mesh.m_facesNodes[0][2]);
+    ASSERT_EQ(1, mesh.m_facesNodes[0][3]);
 
     // the edges composing the face, in ccw order
-    EXPECT_EQ(0, mesh.m_facesEdges[0][0]);
-    EXPECT_EQ(3, mesh.m_facesEdges[0][1]);
-    EXPECT_EQ(1, mesh.m_facesEdges[0][2]);
-    EXPECT_EQ(2, mesh.m_facesEdges[0][3]);
+    ASSERT_EQ(0, mesh.m_facesEdges[0][0]);
+    ASSERT_EQ(3, mesh.m_facesEdges[0][1]);
+    ASSERT_EQ(1, mesh.m_facesEdges[0][2]);
+    ASSERT_EQ(2, mesh.m_facesEdges[0][3]);
 
     // the found circumcenter for the face
-    EXPECT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].x);
-    EXPECT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].y);
+    ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].x);
+    ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].y);
 
     // each edge has only one face in this case
-    EXPECT_EQ(1, mesh.m_edgesNumFaces[0]);
-    EXPECT_EQ(1, mesh.m_edgesNumFaces[1]);
-    EXPECT_EQ(1, mesh.m_edgesNumFaces[2]);
-    EXPECT_EQ(1, mesh.m_edgesNumFaces[3]);
+    ASSERT_EQ(1, mesh.m_edgesNumFaces[0]);
+    ASSERT_EQ(1, mesh.m_edgesNumFaces[1]);
+    ASSERT_EQ(1, mesh.m_edgesNumFaces[2]);
+    ASSERT_EQ(1, mesh.m_edgesNumFaces[3]);
 
     //each edge is a boundary edge, so the second entry of edgesFaces is an invalid index (in C++, -1)
-    EXPECT_EQ(-1, mesh.m_edgesFaces[0][1]);
-    EXPECT_EQ(-1, mesh.m_edgesFaces[1][1]);
-    EXPECT_EQ(-1, mesh.m_edgesFaces[2][1]);
-    EXPECT_EQ(-1, mesh.m_edgesFaces[3][1]);
+    ASSERT_EQ(-1, mesh.m_edgesFaces[0][1]);
+    ASSERT_EQ(-1, mesh.m_edgesFaces[1][1]);
+    ASSERT_EQ(-1, mesh.m_edgesFaces[2][1]);
+    ASSERT_EQ(-1, mesh.m_edgesFaces[3][1]);
 }
 
-TEST(TestMesh, MakeMeshInPolygon)
+TEST(Mesh, MakeMeshInPolygon)
 {
     //1 Setup
     GridGeom::Polygons polygons;
@@ -101,11 +101,10 @@ TEST(TestMesh, MakeMeshInPolygon)
 
     // 2 Execution
     mesh.MakeMesh(makeGridParametersNative, polygons);
-    EXPECT_EQ(17, mesh.m_numFaces);
-
+    ASSERT_EQ(17, mesh.m_numFaces);
 }
 
-TEST(TestMesh, TriangulateSamplesWithSkinnyTriangle)
+TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
 {
     // Prepare
     GridGeom::Polygons polygons;
@@ -130,29 +129,29 @@ TEST(TestMesh, TriangulateSamplesWithSkinnyTriangle)
     //// Assert
     constexpr double tolerance = 1e-5;
 
-    EXPECT_EQ(6, mesh.m_edges.size());
+    ASSERT_EQ(6, mesh.m_edges.size());
 
-    EXPECT_EQ(4, mesh.m_edges[0].first);
-    EXPECT_EQ(1, mesh.m_edges[0].second);
+    ASSERT_EQ(4, mesh.m_edges[0].first);
+    ASSERT_EQ(1, mesh.m_edges[0].second);
 
-    EXPECT_EQ(1, mesh.m_edges[1].first);
-    EXPECT_EQ(2, mesh.m_edges[1].second);
+    ASSERT_EQ(1, mesh.m_edges[1].first);
+    ASSERT_EQ(2, mesh.m_edges[1].second);
 
-    EXPECT_EQ(2, mesh.m_edges[2].first);
-    EXPECT_EQ(4, mesh.m_edges[2].second);
+    ASSERT_EQ(2, mesh.m_edges[2].first);
+    ASSERT_EQ(4, mesh.m_edges[2].second);
 
-    EXPECT_EQ(0, mesh.m_edges[3].first);
-    EXPECT_EQ(2, mesh.m_edges[3].second);
+    ASSERT_EQ(0, mesh.m_edges[3].first);
+    ASSERT_EQ(2, mesh.m_edges[3].second);
 
-    EXPECT_EQ(2, mesh.m_edges[4].first);
-    EXPECT_EQ(3, mesh.m_edges[4].second);
+    ASSERT_EQ(2, mesh.m_edges[4].first);
+    ASSERT_EQ(3, mesh.m_edges[4].second);
 
-    EXPECT_EQ(3, mesh.m_edges[5].first);
-    EXPECT_EQ(0, mesh.m_edges[5].second);
-
+    ASSERT_EQ(3, mesh.m_edges[5].first);
+    ASSERT_EQ(0, mesh.m_edges[5].second);
 }
 
-TEST(TestMesh, TriangulateSamples)
+
+TEST(Mesh, TriangulateSamples)
 {
     // Prepare
     GridGeom::Polygons polygons;
@@ -176,37 +175,95 @@ TEST(TestMesh, TriangulateSamples)
 }
 
 
-TEST(TestMesh, TwoTrianglesDuplicatedEdges)
+TEST(Mesh, TwoTrianglesDuplicatedEdges)
 {
     //1 Setup
     std::vector<GridGeom::Point> nodes;
-    nodes.push_back(GridGeom::Point{ -5.90937355559299, 814.854361678898 });
-    nodes.push_back(GridGeom::Point{ 851.30035347439, 150.079471329115 });
-    nodes.push_back(GridGeom::Point{ 1411.11078745316, 1182.22995897746 });
-    nodes.push_back(GridGeom::Point{ 501.418832237663, 1642.90729527249 });
-    nodes.push_back(GridGeom::Point{ 498.503152894023, 1645.82297461613 });
+    nodes.push_back(GridGeom::Point{ 0.0, 0.0 });
+    nodes.push_back(GridGeom::Point{ 5.0, -5.0 });
+    nodes.push_back(GridGeom::Point{ 10.0, 0.0 });
+    nodes.push_back(GridGeom::Point{ 5.0, 5.0 });
     std::vector<GridGeom::Edge> edges;
     edges.push_back({ 0, 3 });
     edges.push_back({ 0, 2 });
     edges.push_back({ 2, 3 });
     edges.push_back({ 0, 1 });
-    edges.push_back({ 1, 2 });
-    edges.push_back({ 3, 0 });
-
+    edges.push_back({ 2, 1 });
 
     GridGeom::Mesh mesh;
-
     // 2 Execution
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     // 3 Validation
+    ASSERT_EQ(2, mesh.m_facesNodes.size());
 }
 
-
-TEST(PerformanceTest, MillionQuads)
+TEST(Mesh, MeshBoundaryToPolygon)
 {
-    const int n = 11; //x
-    const int m = 11; //y
+    //1 Setup
+    std::vector<GridGeom::Point> nodes;
+    nodes.push_back(GridGeom::Point{ 0.0, 0.0 });
+    nodes.push_back(GridGeom::Point{ 5.0, -5.0 });
+    nodes.push_back(GridGeom::Point{ 10.0, 0.0 });
+    nodes.push_back(GridGeom::Point{ 5.0, 5.0 });
+    std::vector<GridGeom::Edge> edges;
+    edges.push_back({ 0, 3 });
+    edges.push_back({ 0, 2 });
+    edges.push_back({ 2, 3 });
+    edges.push_back({ 0, 1 });
+    edges.push_back({ 2, 1 });
+
+    GridGeom::Mesh mesh;
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    GridGeom::Polygons polygons;
+
+    int counterClockWise = 0;
+    int setMeshState = 0;
+    std::vector<GridGeom::Point> meshBoundaryPolygon;
+    int numNodesBoundaryPolygons = 0;
+    polygons.MeshBoundaryToPolygon(mesh, counterClockWise, setMeshState, meshBoundaryPolygon, numNodesBoundaryPolygons);
+
+    const double tolerance = 1e-5;
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);
+    ASSERT_NEAR(5.0, meshBoundaryPolygon[1].x, tolerance);
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[2].x, tolerance);
+    ASSERT_NEAR(5.0, meshBoundaryPolygon[3].x, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[4].x, tolerance);
+
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[0].y, tolerance);
+    ASSERT_NEAR(5.0, meshBoundaryPolygon[1].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[2].y, tolerance);
+    ASSERT_NEAR(-5.0, meshBoundaryPolygon[3].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[4].y, tolerance);
+}
+
+TEST(Mesh, HangingEdge)
+{
+    //1 Setup
+    std::vector<GridGeom::Point> nodes;
+    nodes.push_back(GridGeom::Point{ 0.0, 0.0 });
+    nodes.push_back(GridGeom::Point{ 5.0, 0.0 });
+    nodes.push_back(GridGeom::Point{ 3.0, 2.0 });
+    nodes.push_back(GridGeom::Point{ 3.0, 4.0 });
+
+    std::vector<GridGeom::Edge> edges;
+    edges.push_back({ 0, 1 });
+    edges.push_back({ 1, 3 });
+    edges.push_back({ 3, 0 });
+    edges.push_back({ 2, 1 });
+
+
+    GridGeom::Mesh mesh;
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    ASSERT_EQ(1, mesh.m_numFaces);
+}
+
+TEST(Mesh, MillionQuads)
+{
+    const int n = 3; // x
+    const int m = 3; // y
 
     //std::cout << "start adding edges " << std::endl;
     auto start(std::chrono::steady_clock::now());
@@ -264,5 +321,5 @@ TEST(PerformanceTest, MillionQuads)
     //std::cout << "Second face " << faces[1][0] << " " << faces[1][1] << " " << faces[1][2] << " " << faces[1][3] << std::endl;
 
     // to beat fortran interactor, we need to perform the entire administration in less than 1.5 seconds
-    EXPECT_LE(elapsedTime, 1.5);
+    EXPECT_LE(elapsedTime, 2.0);
 }

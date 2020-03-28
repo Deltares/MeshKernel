@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 #include "Mesh.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
@@ -321,6 +322,12 @@ namespace GridGeom
                     //TODO: maybe this is not completly correct
                     if (landboundarySegmentIndex == -1)
                         return false;
+
+                    if (meshNode == 0) 
+                    {
+                        std::cout << "D";
+                    
+                    }
 
                     if ((nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][0] && edgeRatio < 0.0) ||
                         (nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][1] - 1 && edgeRatio > 1.0))

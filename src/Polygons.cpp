@@ -132,7 +132,7 @@ namespace GridGeom
 
     bool Polygons::WalkBoundary(const Mesh& mesh,
         std::vector<bool>& isVisited,
-        int& numNodesBoundaryPolygon,
+        int& nodeIndex,
         int& currentNode,
         int meshBoundaryPolygonSize,
         std::vector<Point>& meshBoundaryPolygon)
@@ -155,25 +155,25 @@ namespace GridGeom
                 continue;
             }
 
-            const int firstCurrentEdge = mesh.m_edges[currentEdge].first;
-            const int secondCurrentEdge = mesh.m_edges[currentEdge].second;
+            const int firstNode = mesh.m_edges[currentEdge].first;
+            const int secondNode = mesh.m_edges[currentEdge].second;
 
-            if (secondCurrentEdge == currentNode)
+            if (secondNode == currentNode)
             {
-                currentNode = firstCurrentEdge;
+                currentNode = firstNode;
                 ee = 0;
             }
             else
             {
-                currentNode = secondCurrentEdge;
+                currentNode = secondNode;
                 ee = 0;
             }
 
-            numNodesBoundaryPolygon++;
+            nodeIndex++;
 
-            ResizeVector(numNodesBoundaryPolygon, meshBoundaryPolygon);
+            ResizeVector(nodeIndex + 1, meshBoundaryPolygon);
 
-            meshBoundaryPolygon[numNodesBoundaryPolygon] = mesh.m_nodes[currentNode];
+            meshBoundaryPolygon[nodeIndex] = mesh.m_nodes[currentNode];
 
             isVisited[currentEdge] = true;
         }

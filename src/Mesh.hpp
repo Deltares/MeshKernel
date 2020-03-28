@@ -83,8 +83,12 @@ namespace GridGeom
         // find cells
         void FindFaces(const int& numEdges);
 
-        // find cells
-        void DepthFirstFindAllFaces(const int& numEdges, int maxDistance);
+        // find cells recursive
+        bool FindFacesRecursive(int startingNode, int node, int numEdges, int previousEdge, 
+            std::vector<size_t>& edges, 
+            std::vector<size_t>& nodes,
+            std::vector<size_t>& sortedEdges,
+            std::vector<size_t>& sortedNodes);
 
         /// @brief makenetnodescoding: computes node types
         bool ClassifyNodes();
