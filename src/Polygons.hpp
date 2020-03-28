@@ -50,7 +50,7 @@ namespace GridGeom
 
         bool WalkBoundary(const Mesh& mesh,
             std::vector<bool>& isVisited,
-            int& numNodesBoundaryPolygon,
+            int& nodeIndex,
             int& currentNode,
             int meshBoundaryPolygonSize,
             std::vector<Point>& meshBoundaryPolygon);

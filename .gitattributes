@@ -495,6 +495,7 @@ src/tests/MeshTest.cpp -text
 src/tests/OrthogonalizationTest.cpp -text
 src/tests/PolygonTest.cpp -text
 src/tests/SplineTest.cpp -text
+tests/FindFaces.pol -text
 tests/FourSplinesBox.spl -text
 tests/MakeNetPolygon.pol -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
@@ -502,9 +503,11 @@ tests/SamplesToTriangulate.xyz -text
 tests/SmallTriangularGrid_oneCrossingLandBoundaries.ldb -text
 tests/SmallTriangularGrid_twoCrossingLandBoundaries.ldb -text
 tests/TestOrthogonalizationLargeTriangularGrid_net.nc -text
+tests/TestOrthogonalizationMediumTriangularGrid_net.nc -text
 tests/TestOrthogonalizationSmallTriangularGrid_landBoundary.ldb -text
 tests/TestOrthogonalizationSmallTriangularGrid_net.nc -text
 tests/ThreeNodesSpline.spl -text
+tests/refinePolygonTest.pol -text
 thirdParty/CMakeLists.txt -text
 thirdParty/eigen/.hg_archival.txt -text
 thirdParty/eigen/.hgeol -text
@@ -2171,5 +2174,6 @@ thirdParty/netcdf/lib/xdr.lib -text
 thirdParty/netcdf/lib/zlib.lib -text
 thirdParty/netcdf/lib/zlibstatic.lib -text
 thirdParty/triangle/CMakeLists.txt -text
+thirdParty/triangle/src/TriangleFacade.c -text
 thirdParty/triangle/src/triangle.c -text
 thirdParty/triangle/src/triangle.h -text
