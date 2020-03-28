@@ -456,142 +456,135 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
     }
 }
 
-// find cells
-void GridGeom::Mesh::DepthFirstFindAllFaces(const int& numEdges, const int maxDistance)
+bool GridGeom::Mesh::FindFacesRecursive(
+    int startingNode, 
+    int node, 
+    int index, 
+    int previusEdge,
+    std::vector<size_t>& edges,
+    std::vector<size_t>& nodes,
+    std::vector<size_t>& sortedEdgesFaces,
+    std::vector<size_t>& sortedNodes)
 {
-    std::vector<int> distanceFromNode(m_nodes.size(), -1);
-    std::vector<std::vector<int>> edgesDepthFirst(maximumNumberOfEdgesPerNode, std::vector<int>(maxDistance, -1));
-    std::vector<std::vector<int>> nodesDepthFirst(maximumNumberOfEdgesPerNode, std::vector<int>(maxDistance, -1));
-    std::vector<std::size_t> foundEdges(maxDistance);
-    std::vector<std::size_t> foundNodes(maxDistance);
-
-    for (int n = 0; n < m_nodes.size(); n++)
+    if (index >= edges.size())
     {
-        std::stack<int> nodes;
-        std::fill(edgesDepthFirst.begin(), edgesDepthFirst.end(), std::vector<int>(maximumNumberOfEdgesPerFace, -1));
-        std::fill(nodesDepthFirst.begin(), nodesDepthFirst.end(), std::vector<int>(maximumNumberOfEdgesPerFace, -1));
-        std::fill(distanceFromNode.begin(), distanceFromNode.end(), -1);
-        std::vector<int> nodeToPush(maximumNumberOfEdgesPerNode + 1, -1);
-        nodes.push(n);
-        distanceFromNode[n] = 0;
-        int faceRow = 0;
-        while (!nodes.empty())
-        {
-            int node = nodes.top();
-            nodes.pop();
-            int currentDistance = distanceFromNode[n];
+        return false;
+    }
 
-            if (currentDistance > maxDistance)
+    if (m_edgesNumFaces[previusEdge] >= 2)
+    {
+        return false;
+    }
+
+
+    edges[index] = previusEdge;
+    nodes[index] = node;
+
+    const int otherNode = m_edges[previusEdge].first + m_edges[previusEdge].second - node;
+
+    // enclosure found
+    if (otherNode == startingNode && index == edges.size() - 1)
+    {
+        // all nodes must be unique
+        sortedNodes = nodes;
+        std::sort(sortedNodes.begin(), sortedNodes.end());
+        for (int n = 0; n < sortedNodes.size() - 1; n++)
+        {
+            if (sortedNodes[n + 1] == sortedNodes[n])
             {
-                // max distance reached
+                return false;
+            }
+        }
+        // we need to add a face when at least one edge has no faces
+        bool oneEdgeHasNoFace = false;
+        for (int ee = 0; ee < edges.size(); ee++)
+        {
+            if (m_edgesNumFaces[edges[ee]] == 0)
+            {
+                oneEdgeHasNoFace = true;
                 break;
             }
-            for (int e = 0; e < m_nodesNumEdges[node]; ++e)
+        }
+
+        if (!oneEdgeHasNoFace)
+        {
+            // is an internal face only if all edges have a different face
+            for (int ee = 0; ee < edges.size(); ee++)
             {
-                int edge = m_nodesEdges[node][e];
-                if (m_edgesNumFaces[edge] >= 2)
+                sortedEdgesFaces[ee] = m_edgesFaces[edges[ee]][0];
+            }
+            std::sort(sortedEdgesFaces.begin(), sortedEdgesFaces.end());
+            for (int n = 0; n < sortedEdgesFaces.size() - 1; n++)
+            {
+                if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
                 {
-                    continue;
+                    return false;
                 }
+            }
+        }
 
-                int otherNode = m_edges[edge].first + m_edges[edge].second - node;
-                edgesDepthFirst[e][distanceFromNode[n]] = edge;
-                nodesDepthFirst[e][distanceFromNode[n]] = otherNode;
-                if (distanceFromNode[otherNode] == -1)
-                {
-                    distanceFromNode[otherNode] = distanceFromNode[n] + 1;
-                    nodes.emplace(otherNode);
-                }
-                else if (distanceFromNode[otherNode] == 1)
-                {
-                    // find closing edge containing the start node
-                    for (int e = 0; e < m_nodesNumEdges[otherNode]; ++e)
-                    {
-                        int edgeCandidate = m_nodesEdges[otherNode][e];
-                        int otherNodeEdgeCandidate = m_edges[edgeCandidate].first + m_edges[edgeCandidate].second - node;
-                        if (otherNodeEdgeCandidate == n)
-                        {
-                            foundEdges[0] = edgeCandidate;
-                            break;
-                        }
-                    }
-                    // we have found a face: build the edge list
-                    for (int d = maxDistance - 2, i = 1; d >= 0; --d, ++i)
-                    {
-                        foundEdges[i] = edgesDepthFirst[faceRow][d];
-                    }
+        // increase m_edgesNumFaces 
+        m_numFaces += 1;
+        for (int ee = 0; ee < edges.size(); ee++)
+        {
+            m_edgesNumFaces[edges[ee]] += 1;
+            const int numFace = m_edgesNumFaces[edges[ee]];
+            m_edgesFaces[edges[ee]][numFace - 1] = m_numFaces - 1;
+        }
 
-                    foundNodes[0] = n;
-                    foundNodes[1] = otherNode;
-                    for (int d = maxDistance - 3, i = 2; d >= 0; --d, ++i)
-                    {
-                        foundEdges[i] = nodesDepthFirst[faceRow][d];
-                    }
-                    // increment 
-                    faceRow++;
+        // store the result
+        m_facesNodes.push_back(nodes);
+        m_facesEdges.push_back(edges);
+        return true;
+    }
+    else
+    {
+        int edgeIndexOtherNode = 0;
+        for (int e = 0; e < m_nodesNumEdges[otherNode]; e++)
+        {
+            if (m_nodesEdges[otherNode][e] == previusEdge)
+            {
+                edgeIndexOtherNode = e;
+                break;
+            }
+        }
 
-                    // do all extra administration
-                    bool isFaceAlreadyFound = false;
-                    for (int i = 0; i < maxDistance; i++)
-                    {
-                        if (m_edgesNumFaces[foundEdges[i]] >= 2)
-                        {
-                            isFaceAlreadyFound = true;
-                            break;
-                        }
-                    }
-                    if (isFaceAlreadyFound)
-                    {
-                        continue;
-                    }
+        edgeIndexOtherNode = edgeIndexOtherNode - 1;
+        if (edgeIndexOtherNode < 0)
+        {
+            edgeIndexOtherNode = edgeIndexOtherNode + m_nodesNumEdges[otherNode];
+        }
+        if (edgeIndexOtherNode > m_nodesNumEdges[otherNode] - 1)
+        {
+            edgeIndexOtherNode = edgeIndexOtherNode - m_nodesNumEdges[otherNode];
+        }
 
-                    bool allEdgesHaveAFace = true;
-                    for (int i = 0; i <= maxDistance; i++)
-                    {
-                        if (m_edgesNumFaces[foundEdges[i]] < 1)
-                        {
-                            allEdgesHaveAFace = false;
-                            break;
-                        }
-                    }
+        const int edge = m_nodesEdges[otherNode][edgeIndexOtherNode];
+        FindFacesRecursive(startingNode, otherNode, index + 1, edge, edges, nodes, sortedEdgesFaces, sortedNodes);
+    }
 
-                    bool isAnAlreadyFoundBoundaryFace = true;
-                    for (int i = 0; i <= maxDistance - 1; i++)
-                    {
-                        if (m_edgesFaces[foundEdges[i]][0] != m_edgesFaces[foundEdges[i + 1]][0])
-                        {
-                            isAnAlreadyFoundBoundaryFace = false;
-                            break;
-                        }
-                    }
+}
 
-                    if (allEdgesHaveAFace && isAnAlreadyFoundBoundaryFace)
-                    {
-                        continue;
-                    }
-
-                    // increase m_edgesNumFaces 
-                    m_numFaces += 1;
-                    for (int i = 0; i < maxDistance; i++)
-                    {
-                        m_edgesNumFaces[foundEdges[i]] += 1;
-                        const int numFace = m_edgesNumFaces[foundEdges[i]];
-                        m_edgesFaces[foundEdges[i]][numFace - 1] = m_numFaces - 1;
-                    }
-
-                    // store the result
-                    m_facesNodes.push_back(foundNodes);
-                    m_facesEdges.push_back(foundEdges);
-
-                }
+void GridGeom::Mesh::FindFaces()
+{
+    for (int numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
+    {
+        std::vector<size_t> edges(numEdgesPerFace);
+        std::vector<size_t> nodes(numEdgesPerFace);
+        std::vector<size_t> sortedEdgesFaces(numEdgesPerFace);
+        std::vector<size_t> sortedNodes(numEdgesPerFace);
+        for (int n = 0; n < m_nodes.size(); n++)
+        {
+            for (int e = 0; e < m_nodesNumEdges[n]; e++)
+            {
+                // find faces for edges with no faces
+                FindFacesRecursive(n, n, 0, m_nodesEdges[n][e], edges, nodes, sortedEdgesFaces, sortedNodes);
             }
         }
     }
 }
 
-
-
-// find cells
+// Find cells, needs to be corrected, for example look at sub_findelemcontours in IrregularGridClass.f90
 void GridGeom::Mesh::FindFaces(const int& numEdges)
 {
 
@@ -722,15 +715,6 @@ void GridGeom::Mesh::FindFaces(const int& numEdges)
         }
     }
 }
-
-void GridGeom::Mesh::FindFaces()
-{
-    for (int numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
-    {
-        FindFaces(numEdgesPerFace);
-    }
-}
-
 
 void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
 {
