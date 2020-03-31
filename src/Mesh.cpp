@@ -476,10 +476,8 @@ bool GridGeom::Mesh::FindFacesRecursive(
         return false;
     }
 
-
     edges[index] = previusEdge;
     nodes[index] = node;
-
     const int otherNode = m_edges[previusEdge].first + m_edges[previusEdge].second - node;
 
     // enclosure found
@@ -577,7 +575,6 @@ void GridGeom::Mesh::FindFaces()
         {
             for (int e = 0; e < m_nodesNumEdges[n]; e++)
             {
-                // find faces for edges with no faces
                 FindFacesRecursive(n, n, 0, m_nodesEdges[n][e], edges, nodes, sortedEdgesFaces, sortedNodes);
             }
         }
