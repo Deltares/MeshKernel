@@ -41,9 +41,11 @@ namespace GridGeom
             m_numSplineNodes[m_numSplines] = size;
 
             m_splineDerivatives.resize(m_numAllocatedSplines);
-            for (int n = start; n < size; ++n)
+            int index = 0;
+            for (int n = start; n < start + size; ++n)
             {
-                m_splineCornerPoints[m_numSplines][n] = splines[n];
+                m_splineCornerPoints[m_numSplines][index] = splines[n];
+                index++;
             }
             
 
@@ -1953,10 +1955,11 @@ namespace GridGeom
             while (currentMaxWidth > m_averageMeshWidth)
             {
                 currentMaxWidth = 0.0;
-                for (int n = 1; n < numM + 1; ++n)
+                for (int n = 1; n <= numM; ++n)
                 {
                     int index = startingIndex + n;
-                    func.SetDimensionalDistance(splineLength * double(n) / double(numM));
+                    double dimensionalDistance = splineLength * double(n) / double(numM);
+                    func.SetDimensionalDistance(dimensionalDistance);
                     adimensionalCoordinates[index] = FindFunctionRootWithGoldenSectionSearch(func, 0, endSplineAdimensionalCoordinate);
                     Interpolate(m_splineCornerPoints[splineIndex], m_splineDerivatives[splineIndex], adimensionalCoordinates[index], gridLine[index]);
                     currentMaxWidth = std::max(currentMaxWidth, Distance(gridLine[index - 1], gridLine[index], m_projection));
