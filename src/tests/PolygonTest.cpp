@@ -5,7 +5,7 @@
 #include "../Splines.hpp"
 #include <gtest/gtest.h>
 
-TEST(PolygonTests, MeshBoundaryToPolygon)
+TEST(Polygons, MeshBoundaryToPolygon)
 {
     //One gets the edges
     std::vector<GridGeom::Point> nodes;
@@ -87,7 +87,7 @@ TEST(PolygonTests, MeshBoundaryToPolygon)
     //ASSERT_NEAR(327.102805172725, mesh.m_nodes[9].y, tolerance);
 }
 
-TEST(PolygonTests, CreatePointsInPolygons)
+TEST(Polygons, CreatePointsInPolygons)
 {
     // Prepare
     GridGeom::Polygons polygons;
@@ -126,7 +126,7 @@ TEST(PolygonTests, CreatePointsInPolygons)
     ASSERT_NEAR(471.38037100000003, generatedPoints[0][4].y, tolerance);
 }
 
-TEST(PolygonTests, RefinePolygon)
+TEST(Polygons, RefinePolygon)
 {
     // Prepare
     GridGeom::Polygons polygons;
@@ -178,7 +178,7 @@ TEST(PolygonTests, RefinePolygon)
     ASSERT_NEAR(0, refinedPolygon[12].y, tolerance);
 }
 
-TEST(PolygonTests, RefinePolygonLongerSquare)
+TEST(Polygons, RefinePolygonLongerSquare)
 {
     // Prepare
     GridGeom::Polygons polygons;
