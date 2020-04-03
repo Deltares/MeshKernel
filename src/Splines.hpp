@@ -805,7 +805,7 @@ namespace GridGeom
         {
             int numCornerNodes = 0;
             int p = -1;
-            while(p<numFrontPoints)
+            while(p < numFrontPoints)
             {
                 p = p + 1;
                 if (gridPointsIndexses[p][1] == layerIndex && validFrontNodes[gridPointsIndexses[p][0]] == 1)
@@ -825,11 +825,11 @@ namespace GridGeom
                     // Check corner nodes
                     bool ll = previousIndexses[0] == gridPointsIndexses[p][0] - 1 &&
                         previousIndexses[1] == gridPointsIndexses[p][1] &&
-                        validFrontNodes[previousIndexses[0]] == 0;
+                        validFrontNodes[previousIndexses[0]] == -1;
 
                     bool lr = nextIndexses[0] == gridPointsIndexses[p][0] + 1 &&
                         nextIndexses[1] == gridPointsIndexses[p][1] &&
-                        validFrontNodes[nextIndexses[0]] == 0;
+                        validFrontNodes[nextIndexses[0]] == -1;
 
                     ll = ll || previousIndexses[0] == gridPointsIndexses[p][0] && previousIndexses[1] < gridPointsIndexses[p][1];
                     lr = lr || nextIndexses[0] == gridPointsIndexses[p][0] && nextIndexses[1] < gridPointsIndexses[p][1];
@@ -1044,7 +1044,7 @@ namespace GridGeom
                 Point rightVelocity = normalVectorRight * edgeVelocities[currentRightIndex - 1];
                 double rightLeftVelocityRatio = edgeVelocities[currentRightIndex - 1] / edgeVelocities[currentLeftIndex];
 
-                if (cosphi < 0.0)
+                if (cosphi < -1.0 + cosTolerance) 
                 {
                     continue;
                 }
@@ -1321,7 +1321,7 @@ namespace GridGeom
         double ComputeTotalExponentialHeight(const double aspectRatioGrowFactor, const int numberOfGridLayers, const double firstGridLayerHeight)
         {
             double height;
-            if (aspectRatioGrowFactor - 1.0 > 1e-8)
+            if (std::abs(aspectRatioGrowFactor - 1.0) > 1e-8)
             {
                 height = (std::pow(aspectRatioGrowFactor, firstGridLayerHeight) - 1.0) / (aspectRatioGrowFactor - 1.0) * numberOfGridLayers;
             }
@@ -1484,6 +1484,10 @@ namespace GridGeom
                     for (int i = 0; i < m_numCrossingSplines[s] - 1; ++i)
                     {
                         crossingSplinesDimensionalCoordinates[i + 1] = crossingSplinesDimensionalCoordinates[i] + GetSplineLength(s, m_crossSplineCoordinates[s][i], m_crossSplineCoordinates[s][i + 1]);
+                    }
+
+                    for (int i = 0; i < m_numCrossingSplines[s]; ++i)
+                    {
                         numHeightsLeft[i] = m_numCrossSplineLeftHeights[s][i];
                         numHeightsRight[i] = m_numCrossSplineRightHeights[s][i];
                     }
@@ -1573,34 +1577,34 @@ namespace GridGeom
             crossingSplinesDimensionalCoordinates[0] = GetSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
             for (int i = 0; i < numM; ++i)
             {
-                double leftCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndexes[0]];
+                int leftIndex = 0;
+                double leftCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndexes[leftIndex]];
                 int rightIndex = std::min(1, numValid - 1);
                 double rightCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndexes[rightIndex]];
-                int leftIndex = 1;
                 // Find two nearest cross splines
-                for (int k = leftIndex; k < numValid; k++)
+                while (rightCoordinate < edgesCenterPoints[i] && rightIndex < numValid)
                 {
-                    leftIndex = k;
-                    leftCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndexes[k]];
+                    leftIndex = rightIndex;
+                    leftCoordinate = rightCoordinate;
                     rightIndex++;
                     rightCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndexes[rightIndex]];
-                    if (rightIndex >= numValid || rightCoordinate >= edgesCenterPoints[i])
+                    if (rightIndex == numValid - 1)
                     {
                         break;
                     }
                 }
 
                 double factor = 0.0;
-                if (rightCoordinate - leftCoordinate > 1e-8)
+                if (std::abs(rightCoordinate - leftCoordinate) > 1e-8)
                 {
-                    factor = (crossingSplinesDimensionalCoordinates[i] - leftCoordinate) / (rightCoordinate - leftCoordinate);
+                    factor = (edgesCenterPoints[i] - leftCoordinate) / (rightCoordinate - leftCoordinate);
                 }
                 else
                 {
                     rightIndex = leftIndex;
                 }
 
-                factor = std::max(std::min(double(leftIndex) + factor - 1.0, double(numValid - 1)), 0.0);
+                factor = std::max(std::min(double(leftIndex + 1) + factor - 1.0, double(numValid - 1)), 0.0);
 
                 bool success = Interpolate(localCornerPoints, localSplineDerivatives, factor, heights[j][i]);
                 if(!success)
@@ -1736,6 +1740,9 @@ namespace GridGeom
 
                 double secondLeft = std::max(0.0, std::min(double(m_numSplineNodes[second]-1), secondCrossing - secondRatioIterations / 2.0));
                 double secondRight = std::max(0.0, std::min(double(m_numSplineNodes[second]-1), secondCrossing + secondRatioIterations / 2.0));
+
+                firstRatioIterations = firstRight - firstLeft;
+                secondRatioIterations = secondRight - secondLeft;
 
                 Point firstLeftSplinePoint;
                 Interpolate(m_splineCornerPoints[first], m_splineDerivatives[first], firstLeft, firstLeftSplinePoint);
