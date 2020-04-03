@@ -12,7 +12,7 @@
 #include <Windows.h>
 #endif
 
-TEST(OrthogonalizationTests, TestOrthogonalizationOneQuadOneTriangle)
+TEST(Orthogonalization, TestOrthogonalizationOneQuadOneTriangle)
 {
     // Preparation
     std::vector<GridGeom::Point> nodes;
@@ -75,7 +75,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationOneQuadOneTriangle)
     ASSERT_NEAR(0.0, mesh.m_nodes[4].y, tolerance);
 }
 
-TEST(OrthogonalizationTests, TestOrthogonalizationSmallTriangularGrid)
+TEST(Orthogonalization, TestOrthogonalizationSmallTriangularGrid)
 {
     //One gets the edges
     std::vector<GridGeom::Point> nodes;
@@ -174,7 +174,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationSmallTriangularGrid)
     ASSERT_NEAR(327.102805172725, mesh.m_nodes[9].y, tolerance);
 }
 
-TEST(OrthogonalizationTests, TestOrthogonalizationMediumTriangularGrid)
+TEST(Orthogonalization, TestOrthogonalizationMediumTriangularGrid)
 {
     std::vector<double> xCoordinates{ 62.7625648300453, 161.949072158728, 261.069585881221,
     360.172666249972, 459.142369029805, 558.084265626781, 656.824528757364,
@@ -1074,7 +1074,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationMediumTriangularGrid)
 
 }
 
-TEST(OrthogonalizationTests, TestOrthogonalizationFourQuads)
+TEST(Orthogonalization, TestOrthogonalizationFourQuads)
 {
 
     const int n = 3; //x
@@ -1140,7 +1140,7 @@ TEST(OrthogonalizationTests, TestOrthogonalizationFourQuads)
         landBoundary);
 }
 
-TEST(OrthogonalizationTests, OrthogonalizeAndSnapToLandBoundaries)
+TEST(Orthogonalization, OrthogonalizeAndSnapToLandBoundaries)
 {
     // Prepare
     std::vector<GridGeom::Point> nodes;
