@@ -5,7 +5,7 @@
 #include "../LandBoundaries.cpp"
 #include <gtest/gtest.h>
 
-TEST(LandBoundariesTests, OneLandBoundary)
+TEST(LandBoundaries, OneLandBoundary)
 {
     // Prepare
     std::vector<GridGeom::Point> nodes;
@@ -81,7 +81,7 @@ TEST(LandBoundariesTests, OneLandBoundary)
     EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[9]);
 }
 
-TEST(LandBoundariesTests, TwoLandBoundaries)
+TEST(LandBoundaries, TwoLandBoundaries)
 {
     // Prepare
     std::vector<GridGeom::Point> nodes;
@@ -164,7 +164,7 @@ TEST(LandBoundariesTests, TwoLandBoundaries)
     EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[9]);
 }
 
-TEST(LandBoundariesTests, OneCrossingLandBoundary)
+TEST(LandBoundaries, OneCrossingLandBoundary)
 {
     // Prepare
     std::vector<GridGeom::Point> nodes;
@@ -242,7 +242,7 @@ TEST(LandBoundariesTests, OneCrossingLandBoundary)
     EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[9]);
 }
 
-TEST(LandBoundariesTests, TwoCrossingLandBoundary)
+TEST(LandBoundaries, TwoCrossingLandBoundary)
 {
     // Prepare
     std::vector<GridGeom::Point> nodes;
