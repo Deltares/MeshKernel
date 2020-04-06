@@ -1053,3 +1053,13 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
 
     return true;
 }
+
+bool GridGeom::Mesh::MergeNodes() 
+{
+
+
+
+
+
+    return true;
+}
