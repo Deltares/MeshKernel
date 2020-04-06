@@ -38,6 +38,8 @@ namespace GridGeom
 
         void FindFaces();
 
+        bool MergeNodes();
+
         bool MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
 
         std::vector<Edge>  m_edges;                                 // KN
