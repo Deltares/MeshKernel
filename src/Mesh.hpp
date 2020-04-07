@@ -38,7 +38,11 @@ namespace GridGeom
 
         void FindFaces();
 
-        bool MergeNodes();
+        ///MERGENODESINPOLYGON
+        bool MergeNodesInPolygon(const Polygons& polygons);
+
+        ///mergenodes
+        bool MergeTwoNodes(const int firstNode, const int secondNode);
 
         bool MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
 

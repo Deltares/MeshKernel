@@ -1,8 +1,10 @@
 #include "../Mesh.cpp"
 #include "../Entities.hpp"
 #include "../Polygons.hpp"
+#include "../Constants.cpp"
 #include <gtest/gtest.h>
 #include <chrono>
+#include <random>
 
 TEST(Mesh, OneQuadTestConstructor) 
 {
@@ -258,6 +260,91 @@ TEST(Mesh, HangingEdge)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     ASSERT_EQ(1, mesh.m_numFaces);
+}
+
+TEST(Mesh, NodeMerging)
+{
+    // 1. Setup
+    const int n = 3; // x
+    const int m = 3; // y
+
+    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
+    std::vector<GridGeom::Point> nodes(n * m);
+    std::size_t nodeIndex = 0;
+    for (int j = 0; j < m; ++j)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            indexesValues[i][j] = i + j * n;
+            nodes[nodeIndex] = { (double)i, (double)j };
+            nodeIndex++;
+        }
+    }
+
+    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::size_t edgeIndex = 0;
+    for (int j = 0; j < m; ++j)
+    {
+        for (int i = 0; i < n - 1; ++i)
+        {
+            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
+            edgeIndex++;
+        }
+    }
+
+    for (int j = 0; j < m - 1; ++j)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
+            edgeIndex++;
+        }
+    }
+
+    GridGeom::Mesh mesh;
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    // Add overlapping nodes
+    std::uniform_real_distribution<double>  xDistrution(0.0, double(GridGeom::mergingDistance));
+    std::uniform_real_distribution<double>  yDistrution(0.0, double(GridGeom::mergingDistance));
+    std::random_device                      rand_dev;
+    std::mt19937                            generator(rand_dev());
+    
+    nodes.resize(nodes.size()*2);
+    edges.resize(edges.size()+ nodes.size() * 2);
+    int originalNodeIndex = 0;
+    for (int j = 0; j < m; ++j)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            nodes[nodeIndex] = { i + xDistrution(generator), j + yDistrution(generator)};
+            
+            // add artificial edges
+            auto edge = mesh.m_edges[mesh.m_nodesEdges[originalNodeIndex][0]];
+            auto otherNode = edge.first + edge.second - originalNodeIndex;
+
+            edges[edgeIndex] = { nodeIndex, otherNode };
+            edgeIndex++;
+            edges[edgeIndex] = { nodeIndex, originalNodeIndex };
+            edgeIndex++;
+
+            nodeIndex++;
+            originalNodeIndex++;
+        }
+    }
+
+    nodes.resize(nodeIndex);
+    edges.resize(edgeIndex);
+
+    // re set with augmented nodes
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    // 2. Act
+    GridGeom::Polygons polygon;
+    mesh.MergeNodesInPolygon(polygon);
+
+    // 3. Assert
+    ASSERT_EQ(mesh.m_nodes.size(), n*m);
 }
 
 TEST(Mesh, MillionQuads)

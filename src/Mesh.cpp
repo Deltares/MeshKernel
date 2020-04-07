@@ -8,7 +8,7 @@
 #include "Constants.cpp"
 #include "Operations.cpp"
 #include "Polygons.hpp"
-#include <stack>
+#include "RTree.hpp"
 
 bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
 {
@@ -24,10 +24,14 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
 
 bool GridGeom::Mesh::Administrate()
 {
-    m_nodesEdges.resize(m_nodes.size(),
-        std::vector<std::size_t>(maximumNumberOfEdgesPerNode, 0));
+    m_nodesEdges.resize(m_nodes.size(),std::vector<std::size_t>(maximumNumberOfEdgesPerNode, 0));
+    std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<std::size_t>(maximumNumberOfEdgesPerNode, 0));
+    
     m_nodesNumEdges.resize(m_nodes.size());
+    std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(),0);
+        
     m_edgesNumFaces.resize(m_edges.size());
+    std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
 
     m_numFaces = 0;
     m_facesNodes.resize(0);
@@ -457,9 +461,9 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
 }
 
 bool GridGeom::Mesh::FindFacesRecursive(
-    int startingNode, 
-    int node, 
-    int index, 
+    int startingNode,
+    int node,
+    int index,
     int previusEdge,
     std::vector<size_t>& edges,
     std::vector<size_t>& nodes,
@@ -1054,12 +1058,126 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
     return true;
 }
 
-bool GridGeom::Mesh::MergeNodes() 
+///MERGENODESINPOLYGON
+bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 {
+    // first filter the nodes in polygon
+    std::vector<Point> filteredPoints(m_nodes.size());
+    int index = 0;
+    for (int i = 0; i < m_nodes.size(); i++)
+    {
+        bool inPolygon = IsPointInPolygon(m_nodes[i], polygon.m_nodes, polygon.m_numNodes - 1);
+        if (inPolygon)
+        {
+            filteredPoints[index] = m_nodes[i];
+            index++;
+        }
+    }
+    filteredPoints.resize(index - 1);
+
+    // build the R-Tree
+    GridGeom::SpatialTrees::RTree rtree;
+    rtree.BuildTree(filteredPoints, m_projection);
+
+    // merge the closest nodes
+    for (int i = 0; i < filteredPoints.size(); i++)
+    {
+        auto result = rtree.NearestNeighbours(filteredPoints[i], mergingDistance);
+
+        if (result.size() > 1)
+        {
+            for (int j = 0; j < result.size(); j++)
+            {
+                if (result[j] != i)
+                {
+                    rtree.RemoveNode(result[j]);
+                    MergeTwoNodes(i, result[j]);
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+///mergenodes
+bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNodeIndex)
+{
+    Edge edge{ firstNodeIndex , secondNodeIndex };
+    int edgeIndex = 0;
+    for (auto e = 0; e < m_edges.size(); e++)
+    {
+        if (edge == m_edges[e])
+        {
+            m_edges[e].first = -1;
+            m_edges[e].second = -1;
+            break;
+        }
+    }
 
 
+    // check if there is another edge starting at firstEdgeOtherNode and ending at secondNode
+    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
+    {
+        auto firstEdgeIndex = m_nodesEdges[firstNodeIndex][n];
+        auto firstEdge = m_edges[firstEdgeIndex];
+        auto firstEdgeOtherNode = firstEdge.first + firstEdge.second - firstNodeIndex;
+        if (firstEdgeOtherNode != -1 && firstEdgeOtherNode != secondNodeIndex)
+        {
+            for (int nn = 0; nn < m_nodesNumEdges[firstEdgeOtherNode]; nn++)
+            {
+                auto secondEdgeIndex = m_nodesEdges[firstEdgeOtherNode][nn];
+                auto secondEdge = m_edges[secondEdgeIndex];
+                auto secondEdgeOtherNode = secondEdge.first + secondEdge.second - firstEdgeOtherNode;
+                if (secondEdgeOtherNode == secondNodeIndex)
+                {
+                    m_edges[secondEdgeIndex].first = -1;
+                    m_edges[secondEdgeIndex].second = -1;
+                }
+            }
+        }
+    }
 
+    // add all valid edges starting at secondNode
+    std::vector<int> secondNodeEdges(maximumNumberOfEdgesPerNode);
+    int numSecondNodeEdges = 0;
+    for (auto n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
+    {
+        edgeIndex= m_nodesEdges[secondNodeIndex][n];
+        if (m_edges[edgeIndex].first != 0) 
+        {
+            secondNodeEdges[numSecondNodeEdges] = edgeIndex;
+            numSecondNodeEdges++;
+        }
+    }
 
+    // add all valid edges starting at firstNode
+    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
+    {
+        edgeIndex = m_nodesEdges[firstNodeIndex][n];
+        if (m_edges[edgeIndex].first != 0)
+        {
+            secondNodeEdges[numSecondNodeEdges] = edgeIndex;
+            if (m_edges[edgeIndex].first == firstNodeIndex)
+            {
+                m_edges[edgeIndex].first = secondNodeIndex;
+            }
+            if (m_edges[edgeIndex].second == firstNodeIndex)
+            {
+                m_edges[edgeIndex].second = secondNodeIndex;
+            }
+            numSecondNodeEdges++; 
+        }
+    }
+
+    // re-assign edges to second node
+    m_nodesEdges[secondNodeIndex] = std::vector<std::size_t>(secondNodeEdges.begin(), secondNodeEdges.begin() + numSecondNodeEdges - 1);
+    m_nodesNumEdges[secondNodeIndex] = numSecondNodeEdges;
+
+    // remove edges to first node
+    m_nodesEdges[firstNodeIndex] = std::vector<std::size_t>(0);
+    m_nodesNumEdges[firstNodeIndex] = 0;
+    m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
 
     return true;
 }
