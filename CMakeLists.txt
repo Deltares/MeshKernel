@@ -2,6 +2,10 @@ project( gridgeomStateful_dll )
 cmake_minimum_required(VERSION 2.8)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+#Boost
+FIND_PACKAGE( Boost )
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+
 #-----------------------------------------------------------------------------------------------------------------#
 # Google tests 
 # https://crascit.com/2015/07/25/cmake-gtest/
@@ -43,7 +47,7 @@ source_group(source FILES ${all_cpp_srcs})
 
 # definitation for triangle
 add_library( gridgeomStateful_dll SHARED ${all_cpp_headers}  ${all_cpp_srcs})
-target_link_libraries(gridgeomStateful_dll LINK_PUBLIC triangle)
+target_link_libraries(gridgeomStateful_dll LINK_PUBLIC ${Boost_LIBRARIES} triangle)
 
 set(CMAKE_CXX_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C++ compiler flags for a Release build")
 
@@ -52,18 +56,18 @@ FILE( GLOB all_test_srcs src/tests/*.cpp)
 source_group(source FILES ${all_test_srcs})
 
 add_executable( GridGeomTest ${all_test_srcs})
-target_link_libraries(GridGeomTest LINK_PUBLIC gtest_main triangle )
+target_link_libraries(GridGeomTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main triangle )
 add_test( NAME GridGeomTest COMMAND GridGeomTest )
 
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(gridgeomStateful_dll PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(gridgeomStateful_dll PUBLIC OpenMP::OpenMP_CXX )
 endif()
 
 if(WIN32)
    # Add main executable
    add_executable( GridGeomMainTest src/main.cpp )
-   target_link_libraries(GridGeomMainTest LINK_PUBLIC gridgeomStateful_dll )
+   target_link_libraries(GridGeomMainTest LINK_PUBLIC gridgeomStateful_dll ${Boost_LIBRARIES})
    if(OpenMP_CXX_FOUND)
       target_link_libraries(GridGeomMainTest PUBLIC OpenMP::OpenMP_CXX)
    endif()

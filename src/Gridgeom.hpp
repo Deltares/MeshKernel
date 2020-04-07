@@ -75,6 +75,8 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_refine_polygon(int& gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut);
 
+        GRIDGEOM_API int ggeo_merge_nodes(int& gridStateId, GeometryListNative& geometryListIn);
+
 #ifdef __cplusplus
     }
 #endif

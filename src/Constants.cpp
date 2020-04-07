@@ -33,4 +33,6 @@ namespace GridGeom
     static constexpr double orthogonalizationToSmoothingFactor = 0.975; //Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
     static constexpr double relaxationFactorOrthogonalizationUpdate = 0.75;
 
+    // merging distance
+    static constexpr double mergingDistance = 0.001;
 }

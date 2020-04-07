@@ -148,4 +148,9 @@ namespace GridGeom
 
     typedef std::pair<std::size_t, std::size_t> Edge;
 
+    inline bool operator==(const Edge& lhs, const Edge& rhs) 
+    { 
+        return (lhs.first == rhs.first && lhs.second == rhs.second) || (lhs.first == rhs.second && lhs.second == rhs.first);
+    }
+
 }
