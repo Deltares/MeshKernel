@@ -97,7 +97,7 @@ namespace GridGeom
 
         if(pos< indexes.size() && indexes[pos][1] == -1)
         {
-            indexes[pos][1] = vec.size() - 1;
+            indexes[pos][1] = int(vec.size()) - 1;
             pos++;
         }
 
@@ -744,7 +744,7 @@ namespace GridGeom
         return doubleMissingValue;
     }
 
-    static bool OrthogonalizationComputeLocalCoordinates(const std::vector<std::size_t>& m_nodesNumEdges, const std::vector<std::size_t>& numConnectedNodes, std::vector<int>& localCoordinates, const Projections& projection)
+    static bool OrthogonalizationComputeLocalCoordinates(const std::vector<int>& m_nodesNumEdges, const std::vector<int>& numConnectedNodes, std::vector<int>& localCoordinates, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {

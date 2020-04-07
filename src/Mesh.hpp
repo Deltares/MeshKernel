@@ -48,18 +48,18 @@ namespace GridGeom
 
         std::vector<Edge>  m_edges;                                 // KN
         std::vector<Point> m_nodes;                                 // KN
-        std::vector<std::vector<std::size_t>> m_nodesEdges;         // NOD
-        std::vector<std::size_t> m_nodesNumEdges;                   // NMK
+        std::vector<std::vector<int>> m_nodesEdges;                 // NOD
+        std::vector<int> m_nodesNumEdges;                           // NMK
 
         //edges
-        std::vector<std::size_t> m_edgesNumFaces;                   // LNN
+        std::vector<int> m_edgesNumFaces;                           // LNN
         std::vector<std::vector<int>> m_edgesFaces;                 // LNE
 
         // faces
-        std::vector<std::vector<std::size_t>> m_facesNodes;         // netcell%Nod, the nodes composing the faces, in ccw order
-        std::vector<std::vector<std::size_t>> m_facesEdges;         // netcell%lin
+        std::vector<std::vector<int>> m_facesNodes;                 // netcell%Nod, the nodes composing the faces, in ccw order
+        std::vector<std::vector<int>> m_facesEdges;                 // netcell%lin
         std::vector<Point>            m_facesCircumcenters;         // xz  the face circumcenter
-        std::vector<Point>              m_facesMassCenters;         // xzw the faces canters of mass
+        std::vector<Point>            m_facesMassCenters;           // xzw the faces canters of mass
 
         std::size_t m_numFaces;                                     // NUMP
         std::vector<double> m_faceArea;                             // Face area
@@ -91,10 +91,10 @@ namespace GridGeom
 
         // find cells recursive
         bool FindFacesRecursive(int startingNode, int node, int numEdges, int previousEdge, 
-            std::vector<size_t>& edges, 
-            std::vector<size_t>& nodes,
-            std::vector<size_t>& sortedEdges,
-            std::vector<size_t>& sortedNodes);
+            std::vector<int>& edges, 
+            std::vector<int>& nodes,
+            std::vector<int>& sortedEdges,
+            std::vector<int>& sortedNodes);
 
         /// @brief makenetnodescoding: computes node types
         bool ClassifyNodes();

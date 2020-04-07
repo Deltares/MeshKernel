@@ -305,8 +305,8 @@ TEST(Mesh, NodeMerging)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     // Add overlapping nodes
-    std::uniform_real_distribution<double>  xDistrution(0.0, double(GridGeom::mergingDistance));
-    std::uniform_real_distribution<double>  yDistrution(0.0, double(GridGeom::mergingDistance));
+    std::uniform_real_distribution<double>  xDistrution(0.0, GridGeom::mergingDistance*0.9);
+    std::uniform_real_distribution<double>  yDistrution(0.0, GridGeom::mergingDistance*0.9);
     std::random_device                      rand_dev;
     std::mt19937                            generator(rand_dev());
     
@@ -343,8 +343,9 @@ TEST(Mesh, NodeMerging)
     GridGeom::Polygons polygon;
     mesh.MergeNodesInPolygon(polygon);
 
+
     // 3. Assert
-    ASSERT_EQ(mesh.m_nodes.size(), n*m);
+    ASSERT_EQ(mesh.m_facesNodes.size(), (n-1)*(m-1));
 }
 
 TEST(Mesh, MillionQuads)

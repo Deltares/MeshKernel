@@ -671,7 +671,7 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, const i
         if (numFaceNodes == 3)
         {
             // determine the index of the current stencil node
-            int nodeIndex = FindIndex(mesh.m_facesNodes[sharedFaces[f]], std::size_t(currentNode));
+            int nodeIndex = FindIndex(mesh.m_facesNodes[sharedFaces[f]], currentNode);
 
             int nodeLeft = nodeIndex - 1; if (nodeLeft < 0)nodeLeft += numFaceNodes;
             int nodeRight = nodeIndex + 1; if (nodeRight >= numFaceNodes) nodeRight -= numFaceNodes;
@@ -1155,7 +1155,7 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
         phi0 = phi0 + 0.5 * dPhi;
 
         // determine the index of the current stencil node
-        int nodeIndex = FindIndex(mesh.m_facesNodes[sharedFaces[f]], std::size_t(currentNode));
+        int nodeIndex = FindIndex(mesh.m_facesNodes[sharedFaces[f]], currentNode);
 
         // optimal angle
         dTheta = 2.0 * M_PI / double(numFaceNodes);
@@ -1222,8 +1222,8 @@ bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& me
         if (mesh.m_edgesNumFaces[firstEdge] < 1 || mesh.m_edgesNumFaces[secondEdge] < 1) continue;
 
         // find the face that the first and the second edge share
-        int firstFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[firstEdge], std::size_t(2)), std::size_t(1)) - 1;
-        int secondFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[secondEdge], std::size_t(2)), std::size_t(1)) - 1;
+        int firstFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[firstEdge], int(2)), int(1)) - 1;
+        int secondFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[secondEdge], int(2)), int(1)) - 1;
 
         if (mesh.m_edgesFaces[firstEdge][0] != newFaceIndex &&
             (mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][0] || mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
