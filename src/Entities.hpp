@@ -146,7 +146,7 @@ namespace GridGeom
         spherical
     };
 
-    typedef std::pair<std::size_t, std::size_t> Edge;
+    typedef std::pair<int, int> Edge;
 
     inline bool operator==(const Edge& lhs, const Edge& rhs) 
     { 

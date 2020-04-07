@@ -16,7 +16,7 @@ TEST(Splines, SetSpline)
 
     GridGeom::Polygons polygon;
     GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
-    bool success = splines.AddSpline(splineNodes, 0, splineNodes.size());
+    bool success = splines.AddSpline(splineNodes, 0, int(splineNodes.size()));
     ASSERT_TRUE(success);
 
     ASSERT_EQ(1, splines.m_numSplines);

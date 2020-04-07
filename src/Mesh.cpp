@@ -24,8 +24,8 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
 
 bool GridGeom::Mesh::Administrate()
 {
-    m_nodesEdges.resize(m_nodes.size(),std::vector<std::size_t>(maximumNumberOfEdgesPerNode, 0));
-    std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<std::size_t>(maximumNumberOfEdgesPerNode, 0));
+    m_nodesEdges.resize(m_nodes.size(),std::vector<int>(maximumNumberOfEdgesPerNode, 0));
+    std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<int>(maximumNumberOfEdgesPerNode, 0));
     
     m_nodesNumEdges.resize(m_nodes.size());
     std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(),0);
@@ -349,10 +349,15 @@ void GridGeom::Mesh::NodeAdministration()
 {
     // assume no duplicated links
     // you cold use std::sort + std::unique instead
-    for (std::size_t e = 0; e < m_edges.size(); e++)
+    for (int e = 0; e < m_edges.size(); e++)
     {
-        const std::size_t firstNode = m_edges[e].first;
-        const std::size_t secondNode = m_edges[e].second;
+        const auto firstNode = m_edges[e].first;
+        const auto secondNode = m_edges[e].second;
+
+        if (firstNode < 0 || secondNode < 0) 
+        {
+            continue;
+        }
 
         // Search for previously connected edges
         bool alreadyAddedEdge = false;
@@ -400,16 +405,26 @@ void GridGeom::Mesh::NodeAdministration()
 void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
 {
     std::vector<double> edgesAngles(GridGeom::maximumNumberOfEdgesPerNode, 0.0);
-    for (std::size_t node = 0; node < m_nodes.size(); node++)
+    for (auto node = 0; node < m_nodes.size(); node++)
     {
+        if (!m_nodes[node].IsValid()) 
+        {
+            continue;
+        }
+
         double phi0 = 0.0;
         double phi;
         std::fill(edgesAngles.begin(), edgesAngles.end(), 0.0);
-        for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
+        for (auto edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
         {
 
             auto firstNode = m_edges[m_nodesEdges[node][edgeIndex]].first;
             auto secondNode = m_edges[m_nodesEdges[node][edgeIndex]].second;
+            if (firstNode < 0 || secondNode < 0)
+            {
+                continue;
+            }
+
             if (secondNode == node)
             {
                 secondNode = firstNode;
@@ -449,7 +464,7 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
 
         // Performing sorting
         std::vector<std::size_t> indexes(m_nodesNumEdges[node]);
-        std::vector<std::size_t> edgeNodeCopy{ m_nodesEdges[node] };
+        std::vector<int> edgeNodeCopy{ m_nodesEdges[node] };
         iota(indexes.begin(), indexes.end(), 0);
         sort(indexes.begin(), indexes.end(), [&edgesAngles](std::size_t i1, std::size_t i2) {return edgesAngles[i1] < edgesAngles[i2]; });
 
@@ -460,15 +475,16 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
     }
 }
 
+// look at sub_findelemcontours in IrregularGridClass.f90 for a similar implementation
 bool GridGeom::Mesh::FindFacesRecursive(
     int startingNode,
     int node,
     int index,
     int previusEdge,
-    std::vector<size_t>& edges,
-    std::vector<size_t>& nodes,
-    std::vector<size_t>& sortedEdgesFaces,
-    std::vector<size_t>& sortedNodes)
+    std::vector<int>& edges,
+    std::vector<int>& nodes,
+    std::vector<int>& sortedEdgesFaces,
+    std::vector<int>& sortedNodes)
 {
     if (index >= edges.size())
     {
@@ -476,6 +492,11 @@ bool GridGeom::Mesh::FindFacesRecursive(
     }
 
     if (m_edgesNumFaces[previusEdge] >= 2)
+    {
+        return false;
+    }
+
+    if (m_edges[previusEdge].first < 0 || m_edges[previusEdge].second < 0) 
     {
         return false;
     }
@@ -571,147 +592,20 @@ void GridGeom::Mesh::FindFaces()
 {
     for (int numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
-        std::vector<size_t> edges(numEdgesPerFace);
-        std::vector<size_t> nodes(numEdgesPerFace);
-        std::vector<size_t> sortedEdgesFaces(numEdgesPerFace);
-        std::vector<size_t> sortedNodes(numEdgesPerFace);
+        std::vector<int> edges(numEdgesPerFace);
+        std::vector<int> nodes(numEdgesPerFace);
+        std::vector<int> sortedEdgesFaces(numEdgesPerFace);
+        std::vector<int> sortedNodes(numEdgesPerFace);
         for (int n = 0; n < m_nodes.size(); n++)
         {
+            if (!m_nodes[n].IsValid()) 
+            {
+                continue;
+            }
+
             for (int e = 0; e < m_nodesNumEdges[n]; e++)
             {
                 FindFacesRecursive(n, n, 0, m_nodesEdges[n][e], edges, nodes, sortedEdgesFaces, sortedNodes);
-            }
-        }
-    }
-}
-
-// Find cells, needs to be corrected, for example look at sub_findelemcontours in IrregularGridClass.f90
-void GridGeom::Mesh::FindFaces(const int& numEdges)
-{
-
-    std::vector<std::size_t> foundEdges(numEdges);
-    std::vector<std::size_t> foundNodes(numEdges);
-
-    for (std::size_t node = 0; node < m_nodes.size(); node++)
-    {
-        for (std::size_t firstEdgeLocalIndex = 0; firstEdgeLocalIndex < m_nodesNumEdges[node]; firstEdgeLocalIndex++)
-        {
-            std::size_t indexFoundNodes = 0;
-            std::size_t indexFoundEdges = 0;
-
-            std::size_t currentEdge = m_nodesEdges[node][firstEdgeLocalIndex];
-            std::size_t currentNode = node;
-            foundEdges[indexFoundEdges] = currentEdge;
-            foundNodes[indexFoundNodes] = currentNode;
-            int numFoundEdges = 1;
-
-            if (m_edgesNumFaces[currentEdge] >= 2)
-            {
-                continue;
-            }
-
-            while (numFoundEdges < numEdges)
-            {
-
-                // the new node index
-                if (m_edgesNumFaces[currentEdge] >= 2)
-                {
-                    break;
-                }
-
-                currentNode = m_edges[currentEdge].first + m_edges[currentEdge].second - currentNode;
-                indexFoundNodes++;
-                foundNodes[indexFoundNodes] = currentNode;
-
-                int edgeIndex = 0;
-                for (std::size_t localEdgeIndex = 0; localEdgeIndex < m_nodesNumEdges[currentNode]; localEdgeIndex++)
-                {
-                    if (m_nodesEdges[currentNode][localEdgeIndex] == currentEdge)
-                    {
-                        edgeIndex = localEdgeIndex;
-                        break;
-                    }
-                }
-
-                edgeIndex = edgeIndex - 1;
-                if (edgeIndex < 0)
-                {
-                    edgeIndex = edgeIndex + m_nodesNumEdges[currentNode];
-                }
-                if (edgeIndex > m_nodesNumEdges[currentNode] - 1)
-                {
-                    edgeIndex = edgeIndex - m_nodesNumEdges[currentNode];
-                }
-                currentEdge = m_nodesEdges[currentNode][edgeIndex];
-                indexFoundEdges++;
-                foundEdges[indexFoundEdges] = currentEdge;
-
-                numFoundEdges++;
-            }
-
-            // now check if the last node coincides
-            if (m_edgesNumFaces[currentEdge] >= 2)
-            {
-                continue;
-            }
-            currentNode = m_edges[currentEdge].first + m_edges[currentEdge].second - currentNode;
-            //indexFoundNodes++;
-            //foundNodes[indexFoundNodes] = currentNode;
-
-            if (currentNode == foundNodes[0])
-            {
-                // a cell has been found
-                bool isFaceAlreadyFound = false;
-                for (std::size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
-                {
-                    if (m_edgesNumFaces[foundEdges[localEdgeIndex]] >= 2)
-                    {
-                        isFaceAlreadyFound = true;
-                        break;
-                    }
-                }
-                if (isFaceAlreadyFound)
-                {
-                    continue;
-                }
-
-                bool allEdgesHaveAFace = true;
-                for (std::size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
-                {
-                    if (m_edgesNumFaces[foundEdges[localEdgeIndex]] < 1)
-                    {
-                        allEdgesHaveAFace = false;
-                        break;
-                    }
-                }
-
-                bool isAnAlreadyFoundBoundaryFace = true;
-                for (std::size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges - 1; localEdgeIndex++)
-                {
-                    if (m_edgesFaces[foundEdges[localEdgeIndex]][0] != m_edgesFaces[foundEdges[localEdgeIndex + 1]][0])
-                    {
-                        isAnAlreadyFoundBoundaryFace = false;
-                        break;
-                    }
-                }
-
-                if (allEdgesHaveAFace && isAnAlreadyFoundBoundaryFace)
-                {
-                    continue;
-                }
-
-                // increase m_edgesNumFaces 
-                m_numFaces += 1;
-                for (std::size_t localEdgeIndex = 0; localEdgeIndex <= indexFoundEdges; localEdgeIndex++)
-                {
-                    m_edgesNumFaces[foundEdges[localEdgeIndex]] += 1;
-                    const int numFace = m_edgesNumFaces[foundEdges[localEdgeIndex]];
-                    m_edgesFaces[foundEdges[localEdgeIndex]][numFace - 1] = m_numFaces - 1;
-                }
-
-                // store the result
-                m_facesNodes.push_back(foundNodes);
-                m_facesEdges.push_back(foundEdges);
             }
         }
     }
@@ -867,18 +761,23 @@ bool GridGeom::Mesh::ClassifyNodes()
 
     for (int e = 0; e < m_edges.size(); e++)
     {
-        std::size_t first = m_edges[e].first;
-        std::size_t second = m_edges[e].second;
+        const auto firstNode = m_edges[e].first;
+        const auto secondNode = m_edges[e].second;
+
+        if (firstNode < 0 || secondNode < 0)
+        {
+            continue;
+        }
 
         if (m_edgesNumFaces[e] == 0)
         {
-            m_nodesTypes[first] = -1;
-            m_nodesTypes[second] = -1;
+            m_nodesTypes[firstNode] = -1;
+            m_nodesTypes[secondNode] = -1;
         }
         else if (m_edgesNumFaces[e] == 1)
         {
-            m_nodesTypes[first] += 1;
-            m_nodesTypes[second] += 1;
+            m_nodesTypes[firstNode] += 1;
+            m_nodesTypes[secondNode] += 1;
         }
     }
 
@@ -1073,7 +972,7 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
             index++;
         }
     }
-    filteredPoints.resize(index - 1);
+    filteredPoints.resize(index);
 
     // build the R-Tree
     GridGeom::SpatialTrees::RTree rtree;
@@ -1096,6 +995,8 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
             }
         }
     }
+
+    Administrate();
 
     return true;
 }
@@ -1122,7 +1023,7 @@ bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNod
         auto firstEdgeIndex = m_nodesEdges[firstNodeIndex][n];
         auto firstEdge = m_edges[firstEdgeIndex];
         auto firstEdgeOtherNode = firstEdge.first + firstEdge.second - firstNodeIndex;
-        if (firstEdgeOtherNode != -1 && firstEdgeOtherNode != secondNodeIndex)
+        if (firstEdgeOtherNode >=0 && firstEdgeOtherNode != secondNodeIndex)
         {
             for (int nn = 0; nn < m_nodesNumEdges[firstEdgeOtherNode]; nn++)
             {
@@ -1144,7 +1045,7 @@ bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNod
     for (auto n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
         edgeIndex= m_nodesEdges[secondNodeIndex][n];
-        if (m_edges[edgeIndex].first != 0) 
+        if (m_edges[edgeIndex].first >= 0) 
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
             numSecondNodeEdges++;
@@ -1155,7 +1056,7 @@ bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNod
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         edgeIndex = m_nodesEdges[firstNodeIndex][n];
-        if (m_edges[edgeIndex].first != 0)
+        if (m_edges[edgeIndex].first >= 0)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
             if (m_edges[edgeIndex].first == firstNodeIndex)
@@ -1171,11 +1072,11 @@ bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNod
     }
 
     // re-assign edges to second node
-    m_nodesEdges[secondNodeIndex] = std::vector<std::size_t>(secondNodeEdges.begin(), secondNodeEdges.begin() + numSecondNodeEdges - 1);
+    m_nodesEdges[secondNodeIndex] = std::vector<int>(secondNodeEdges.begin(), secondNodeEdges.begin() + numSecondNodeEdges);
     m_nodesNumEdges[secondNodeIndex] = numSecondNodeEdges;
 
     // remove edges to first node
-    m_nodesEdges[firstNodeIndex] = std::vector<std::size_t>(0);
+    m_nodesEdges[firstNodeIndex] = std::vector<int>(0);
     m_nodesNumEdges[firstNodeIndex] = 0;
     m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
 
