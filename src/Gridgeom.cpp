@@ -476,7 +476,23 @@ namespace GridGeomApi
         }
 
         return 0;
-        
+    }
+
+
+    GRIDGEOM_API int ggeo_merge_nodes(int& gridStateId, GeometryListNative& geometryListIn) 
+    {
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons polygon;
+        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+
+
+        return 0;
     }
 
 }

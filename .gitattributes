@@ -486,6 +486,7 @@ src/Orthogonalization.hpp -text
 src/OrthogonalizationParametersNative.hpp -text
 src/Polygons.cpp -text
 src/Polygons.hpp -text
+src/RTree.hpp -text
 src/Splines.hpp -text
 src/SplinesToCurvilinearParametersNative.hpp -text
 src/main.cpp -text
@@ -494,6 +495,7 @@ src/tests/LandBoundaryTest.cpp -text
 src/tests/MeshTest.cpp -text
 src/tests/OrthogonalizationTest.cpp -text
 src/tests/PolygonTest.cpp -text
+src/tests/SpatialTreesTest.cpp -text
 src/tests/SplineTest.cpp -text
 tests/FindFaces.pol -text
 tests/FourSplinesBox.spl -text
