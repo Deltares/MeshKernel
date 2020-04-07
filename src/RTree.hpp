@@ -70,6 +70,16 @@ namespace GridGeom
 
             bool RemoveNode(int position) 
             {
+                //int index = 0;
+                //for (int i = 0; i < m_points.size(); i++)
+                //{
+                //    if (m_points[i].second == position) 
+                //    {
+                //        index = i;
+                //        break;
+                //    }
+                //}
+
                 int numberRemoved = m_rtree2D.remove(m_points[position]);
                 if (numberRemoved != 1) 
                 {
@@ -77,7 +87,7 @@ namespace GridGeom
                 }
 
                 // expensive
-                m_points.erase(m_points.begin() + position);
+                //m_points.erase(m_points.begin() + index);
                 return true;
             }
 
