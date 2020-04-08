@@ -42,7 +42,7 @@ namespace GridGeom
         bool MergeNodesInPolygon(const Polygons& polygons);
 
         ///mergenodes
-        bool MergeTwoNodes(const int firstNode, const int secondNode);
+        inline bool MergeTwoNodes(const int firstNode, const int secondNode);
 
         bool MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
 
