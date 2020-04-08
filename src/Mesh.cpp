@@ -586,6 +586,8 @@ bool GridGeom::Mesh::FindFacesRecursive(
         FindFacesRecursive(startingNode, otherNode, index + 1, edge, edges, nodes, sortedEdgesFaces, sortedNodes);
     }
 
+    return true;
+
 }
 
 void GridGeom::Mesh::FindFaces()
@@ -1004,14 +1006,14 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 ///mergenodes
 bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNodeIndex)
 {
-    Edge edge{ firstNodeIndex , secondNodeIndex };
-    int edgeIndex = 0;
-    for (auto e = 0; e < m_edges.size(); e++)
+    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
-        if (edge == m_edges[e])
+        auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
+        auto firstEdgeOtherNode = m_edges[edgeIndex].first + m_edges[edgeIndex].second - firstNodeIndex;
+        if (firstEdgeOtherNode == secondNodeIndex)
         {
-            m_edges[e].first = -1;
-            m_edges[e].second = -1;
+            m_edges[edgeIndex].first = -1;
+            m_edges[edgeIndex].second = -1;
             break;
         }
     }
@@ -1044,7 +1046,7 @@ bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNod
     int numSecondNodeEdges = 0;
     for (auto n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
-        edgeIndex= m_nodesEdges[secondNodeIndex][n];
+        auto edgeIndex= m_nodesEdges[secondNodeIndex][n];
         if (m_edges[edgeIndex].first >= 0) 
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
@@ -1055,7 +1057,7 @@ bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNod
     // add all valid edges starting at firstNode
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
-        edgeIndex = m_nodesEdges[firstNodeIndex][n];
+        auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
         if (m_edges[edgeIndex].first >= 0)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
@@ -1072,11 +1074,11 @@ bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNod
     }
 
     // re-assign edges to second node
-    m_nodesEdges[secondNodeIndex] = std::vector<int>(secondNodeEdges.begin(), secondNodeEdges.begin() + numSecondNodeEdges);
+    m_nodesEdges[secondNodeIndex] = std::move(std::vector<int>(secondNodeEdges.begin(), secondNodeEdges.begin() + numSecondNodeEdges));
     m_nodesNumEdges[secondNodeIndex] = numSecondNodeEdges;
 
     // remove edges to first node
-    m_nodesEdges[firstNodeIndex] = std::vector<int>(0);
+    m_nodesEdges[firstNodeIndex] = std::move(std::vector<int>(0));
     m_nodesNumEdges[firstNodeIndex] = 0;
     m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
 
