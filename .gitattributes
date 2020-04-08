@@ -486,7 +486,7 @@ src/Orthogonalization.hpp -text
 src/OrthogonalizationParametersNative.hpp -text
 src/Polygons.cpp -text
 src/Polygons.hpp -text
-src/RTree.hpp -text
+src/SpatialTrees.hpp -text
 src/Splines.hpp -text
 src/SplinesToCurvilinearParametersNative.hpp -text
 src/main.cpp -text
