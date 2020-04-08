@@ -57,7 +57,7 @@ namespace GridGeom
                 Point2D nodeSought = Point2D(node.x, node.y);
                 m_rtree2D.query(
                     bgi::within(box) &&
-                    bgi::satisfies([&](value2D const& v) {return bg::comparable_distance(v.first, nodeSought) < searchRadius*searchRadius; }),
+                    bgi::satisfies([&](value2D const& v) {return bg::distance(v.first, nodeSought) < searchRadius; }),
                     std::back_inserter(queryResult));
 
                 std::vector<int> result(queryResult.size());
@@ -70,24 +70,11 @@ namespace GridGeom
 
             bool RemoveNode(int position) 
             {
-                //int index = 0;
-                //for (int i = 0; i < m_points.size(); i++)
-                //{
-                //    if (m_points[i].second == position) 
-                //    {
-                //        index = i;
-                //        break;
-                //    }
-                //}
-
                 int numberRemoved = m_rtree2D.remove(m_points[position]);
                 if (numberRemoved != 1) 
                 {
                     return false;
                 }
-
-                // expensive
-                //m_points.erase(m_points.begin() + index);
                 return true;
             }
 

@@ -1,6 +1,6 @@
 #include "../Mesh.cpp"
 #include "../Entities.hpp"
-#include "../Polygons.hpp"
+#include "../Polygons.cpp"
 #include "../Constants.cpp"
 #include <gtest/gtest.h>
 #include <chrono>
@@ -265,8 +265,8 @@ TEST(Mesh, HangingEdge)
 TEST(Mesh, NodeMerging)
 {
     // 1. Setup
-    const int n = 3; // x
-    const int m = 3; // y
+    const int n = 10; // x
+    const int m = 10; // y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
     std::vector<GridGeom::Point> nodes(n * m);
@@ -305,8 +305,9 @@ TEST(Mesh, NodeMerging)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     // Add overlapping nodes
-    std::uniform_real_distribution<double>  xDistrution(0.0, GridGeom::mergingDistance*0.9);
-    std::uniform_real_distribution<double>  yDistrution(0.0, GridGeom::mergingDistance*0.9);
+    double generatingDistance = std::sqrt(std::pow(GridGeom::mergingDistance*0.9, 2) / 2.0);
+    std::uniform_real_distribution<double>  xDistrution(0.0, generatingDistance);
+    std::uniform_real_distribution<double>  yDistrution(0.0, generatingDistance);
     std::random_device                      rand_dev;
     std::mt19937                            generator(rand_dev());
     
@@ -341,8 +342,12 @@ TEST(Mesh, NodeMerging)
 
     // 2. Act
     GridGeom::Polygons polygon;
+    //auto start(std::chrono::steady_clock::now());
     mesh.MergeNodesInPolygon(polygon);
+    //auto end(std::chrono::steady_clock::now());
 
+    //double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
+    //std::cout << "Elapsed time NodeMerging " << elapsedTime << " s " << std::endl;
 
     // 3. Assert
     ASSERT_EQ(mesh.m_facesNodes.size(), (n-1)*(m-1));
@@ -352,9 +357,6 @@ TEST(Mesh, MillionQuads)
 {
     const int n = 3; // x
     const int m = 3; // y
-
-    //std::cout << "start adding edges " << std::endl;
-    auto start(std::chrono::steady_clock::now());
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
     std::vector<GridGeom::Point> nodes(n * m);
@@ -388,16 +390,16 @@ TEST(Mesh, MillionQuads)
             edgeIndex++;
         }
     }
-    auto end(std::chrono::steady_clock::now());
+
     //std::cout << "Elapsed time " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << std::endl;
 
     //std::cout << "start finding cells " << std::endl;
-    start = std::chrono::steady_clock::now();
+    auto start(std::chrono::steady_clock::now());
     // now build node-edge mapping
     GridGeom::Mesh mesh;
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
-    end = std::chrono::steady_clock::now();
+    auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
     std::cout << "Elapsed time " << elapsedTime << " s " << std::endl;
