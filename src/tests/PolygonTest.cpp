@@ -1,6 +1,6 @@
 #include "../Mesh.hpp"
 #include "../Entities.hpp"
-#include "../Polygons.cpp"
+#include "../Polygons.hpp"
 #include "../Orthogonalization.hpp"
 #include "../Splines.hpp"
 #include <gtest/gtest.h>
@@ -10,16 +10,16 @@ TEST(Polygons, MeshBoundaryToPolygon)
     //One gets the edges
     std::vector<GridGeom::Point> nodes;
 
-    nodes.push_back(GridGeom::Point{ 322.252624511719,454.880187988281 });
-    nodes.push_back(GridGeom::Point{ 227.002044677734,360.379241943359 });
-    nodes.push_back(GridGeom::Point{ 259.252227783203,241.878051757813 });
-    nodes.push_back(GridGeom::Point{ 428.003295898438,210.377746582031 });
-    nodes.push_back(GridGeom::Point{ 536.003967285156,310.878753662109 });
-    nodes.push_back(GridGeom::Point{ 503.753784179688,432.379974365234 });
-    nodes.push_back(GridGeom::Point{ 350.752807617188,458.630249023438 });
-    nodes.push_back(GridGeom::Point{ 343.15053976393,406.232256102912 });
-    nodes.push_back(GridGeom::Point{ 310.300984548069,319.41005739802 });
-    nodes.push_back(GridGeom::Point{ 423.569603308318,326.17986967523 });
+    nodes.push_back({ 322.252624511719,454.880187988281 });
+    nodes.push_back({ 227.002044677734,360.379241943359 });
+    nodes.push_back({ 259.252227783203,241.878051757813 });
+    nodes.push_back({ 428.003295898438,210.377746582031 });
+    nodes.push_back({ 536.003967285156,310.878753662109 });
+    nodes.push_back({ 503.753784179688,432.379974365234 });
+    nodes.push_back({ 350.752807617188,458.630249023438 });
+    nodes.push_back({ 343.15053976393,406.232256102912 });
+    nodes.push_back({ 310.300984548069,319.41005739802 });
+    nodes.push_back({ 423.569603308318,326.17986967523 });
 
     std::vector<GridGeom::Edge> edges;
     // Local edges
@@ -93,22 +93,22 @@ TEST(Polygons, CreatePointsInPolygons)
     GridGeom::Polygons polygons;
     std::vector<GridGeom::Point> nodes;
 
-    nodes.push_back(GridGeom::Point{ 302.002502,472.130371 });
-    nodes.push_back(GridGeom::Point{ 144.501526, 253.128174 });
-    nodes.push_back(GridGeom::Point{ 368.752930, 112.876755 });
-    nodes.push_back(GridGeom::Point{ 707.755005, 358.879242 });
-    nodes.push_back(GridGeom::Point{ 301.252502, 471.380371 });
-    nodes.push_back(GridGeom::Point{ 302.002502, 472.130371 });
+    nodes.push_back({ 302.002502,472.130371 });
+    nodes.push_back({ 144.501526, 253.128174 });
+    nodes.push_back({ 368.752930, 112.876755 });
+    nodes.push_back({ 707.755005, 358.879242 });
+    nodes.push_back({ 301.252502, 471.380371 });
+    nodes.push_back({ 302.002502, 472.130371 });
 
     polygons.Set(nodes, GridGeom::Projections::cartesian);
 
     // Execute
     std::vector<std::vector<GridGeom::Point>> generatedPoints;
-    bool success = polygons.CreatePointsInPolygons(generatedPoints);
-    ASSERT_TRUE(success);
+    bool successful = polygons.CreatePointsInPolygons(generatedPoints);
+    ASSERT_TRUE(successful);
 
     // Assert
-    constexpr double tolerance = 1e-5;
+    const double tolerance = 1e-5;
 
     ASSERT_NEAR(302.00250199999999, generatedPoints[0][0].x, tolerance);
     ASSERT_NEAR(472.13037100000003, generatedPoints[0][0].y, tolerance);
@@ -132,22 +132,22 @@ TEST(Polygons, RefinePolygon)
     GridGeom::Polygons polygons;
     std::vector<GridGeom::Point> nodes;
 
-    nodes.push_back(GridGeom::Point{ 0,0 });
-    nodes.push_back(GridGeom::Point{ 3, 0 });
-    nodes.push_back(GridGeom::Point{ 3, 3 });
-    nodes.push_back(GridGeom::Point{ 0, 3 });
-    nodes.push_back(GridGeom::Point{ 0, 0 });
+    nodes.push_back({ 0,0 });
+    nodes.push_back({ 3, 0 });
+    nodes.push_back({ 3, 3 });
+    nodes.push_back({ 0, 3 });
+    nodes.push_back({ 0, 0 });
 
     polygons.Set(nodes, GridGeom::Projections::cartesian);
 
     // Execute
     std::vector<std::vector<GridGeom::Point>> generatedPoints;
     std::vector<GridGeom::Point> refinedPolygon;
-    bool success = polygons.RefinePart(0, 0, 1.0, refinedPolygon);
-    ASSERT_TRUE(success);
+    bool successful = polygons.RefinePart(0, 0, 1.0, refinedPolygon);
+    ASSERT_TRUE(successful);
 
     ASSERT_EQ(13, refinedPolygon.size());
-    constexpr double tolerance = 1e-5;
+    const double tolerance = 1e-5;
 
     ASSERT_NEAR(0, refinedPolygon[0].x, tolerance);
     ASSERT_NEAR(1, refinedPolygon[1].x, tolerance);
@@ -184,22 +184,22 @@ TEST(Polygons, RefinePolygonLongerSquare)
     GridGeom::Polygons polygons;
     std::vector<GridGeom::Point> nodes;
 
-    nodes.push_back(GridGeom::Point{ 0,0 });
-    nodes.push_back(GridGeom::Point{ 3, 0 });
-    nodes.push_back(GridGeom::Point{ 3, 3 });
-    nodes.push_back(GridGeom::Point{ 0, 3.5 });
-    nodes.push_back(GridGeom::Point{ 0, 0 });
+    nodes.push_back({ 0, 0 });
+    nodes.push_back({ 3, 0 });
+    nodes.push_back({ 3, 3 });
+    nodes.push_back({ 0, 3.5 });
+    nodes.push_back({ 0, 0 });
 
     polygons.Set(nodes, GridGeom::Projections::cartesian);
 
     // Execute
     std::vector<std::vector<GridGeom::Point>> generatedPoints;
     std::vector<GridGeom::Point> refinedPolygon;
-    bool success = polygons.RefinePart(0, 0, 1.0, refinedPolygon);
-    ASSERT_TRUE(success);
+    bool successful = polygons.RefinePart(0, 0, 1.0, refinedPolygon);
+    ASSERT_TRUE(successful);
 
     ASSERT_EQ(13, refinedPolygon.size());
-    constexpr double tolerance = 1e-5;
+    const double tolerance = 1e-5;
 
     ASSERT_NEAR(0, refinedPolygon[0].x, tolerance);
     ASSERT_NEAR(1, refinedPolygon[1].x, tolerance);
@@ -228,4 +228,41 @@ TEST(Polygons, RefinePolygonLongerSquare)
     ASSERT_NEAR(2.5413812651491092, refinedPolygon[10].y, tolerance);
     ASSERT_NEAR(1.5413812651491092, refinedPolygon[11].y, tolerance);
     ASSERT_NEAR(0.54138126514910923, refinedPolygon[12].y, tolerance);
+}
+
+TEST(Polygon, OffsetCopy)
+{
+    std::vector<GridGeom::Point> nodes;
+    nodes.push_back({ 296.752472, 397.879639 });
+    nodes.push_back({ 294.502472, 256.128204 });
+    nodes.push_back({ 578.754211, 244.128082 });
+    nodes.push_back({ 587.754272, 400.129639 });
+    nodes.push_back({ 308.002533, 397.879639 });
+    nodes.push_back({ 296.752472, 397.879639 });
+
+    GridGeom::Polygons polygon;
+    bool successful = polygon.Set(nodes, GridGeom::Projections::cartesian);
+    ASSERT_TRUE(successful);
+
+    GridGeom::Polygons newPolygon;
+    double distance = 10.0;
+    bool innerAndOuter = false;
+    successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
+
+    const double tolerance = 1e-5;
+
+    ASSERT_NEAR(newPolygon.m_nodes[0].x, 286.75373149966771, tolerance);
+    ASSERT_NEAR(newPolygon.m_nodes[1].x, 284.34914611880089, tolerance);
+    ASSERT_NEAR(newPolygon.m_nodes[2].x, 588.17047010011993, tolerance);
+    ASSERT_NEAR(newPolygon.m_nodes[3].x, 598.35275776004642, tolerance);
+    ASSERT_NEAR(newPolygon.m_nodes[4].x, 307.96231942308754, tolerance);
+    ASSERT_NEAR(newPolygon.m_nodes[5].x, 296.75247200000001, tolerance);
+
+    ASSERT_NEAR(newPolygon.m_nodes[0].y, 398.03834755999270, tolerance);
+    ASSERT_NEAR(newPolygon.m_nodes[1].y, 246.54793497426144, tolerance);
+    ASSERT_NEAR(newPolygon.m_nodes[2].y, 233.72165300742589, tolerance);
+    ASSERT_NEAR(newPolygon.m_nodes[3].y, 410.21520441451258, tolerance);
+    ASSERT_NEAR(newPolygon.m_nodes[4].y, 407.87963900000000, tolerance);
+    ASSERT_NEAR(newPolygon.m_nodes[5].y, 407.87963900000000, tolerance);
+    
 }
