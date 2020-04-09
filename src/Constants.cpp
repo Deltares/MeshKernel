@@ -9,9 +9,9 @@ namespace GridGeom
 {
     // missing value
     static constexpr double doubleMissingValue = -999.0;
-    static constexpr int    intMissingValue  = -999;
-    static constexpr double squareRootOfThree = 1.73205080756887729352;
-    static constexpr double oneThird          = 0.33333333333333333333;
+    static constexpr int    intMissingValue    = -999;
+    static constexpr double squareRootOfThree  = 1.73205080756887729352;
+    static constexpr double oneThird           = 0.33333333333333333333;
 
     //geometric constants
     static constexpr double degrad_hp = M_PI / 180.0; // conversion factor from degrees to radians(pi / 180)

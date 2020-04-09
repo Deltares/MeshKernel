@@ -43,6 +43,9 @@ namespace GridGeom
         /// refinepolygonpart
         bool EdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths );
 
+        ///copypol, copy and move a polygon orthogonally
+        bool OffsetCopy(int nodeIndex, double distance, bool Inner, Polygons& newPolygon);
+
     private:
 
         /// maximum edge length of a given polygon

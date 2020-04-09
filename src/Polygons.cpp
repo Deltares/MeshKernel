@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <vector>
+#include <iostream>
 #include "Mesh.hpp"
 #include "Polygons.hpp"
 #include "Constants.cpp"
@@ -446,6 +447,100 @@ namespace GridGeom
         return true;
     }
 
+    //copypol: look how the layer thickness is determined when the input distance is not given, but th coordinate of another point
+    bool Polygons::OffsetCopy(int nodeIndex, double distance, bool innerAndOuter, Polygons& newPolygon)
+    {
+        std::vector<std::vector<int>> indexes(m_numNodes, std::vector<int>(2));
+        int pos = FindIndexes(m_nodes, 0, m_numNodes, doubleMissingValue, indexes);
+        indexes.resize(pos);
+
+        
+        int sizenewPolygon = m_numNodes;
+        if (innerAndOuter) 
+        {
+            sizenewPolygon += m_numNodes + 1;
+        }
+        
+        std::vector<Point> normalVectors(sizenewPolygon);
+        double dxNormalPreviusEdge;
+        double dyNormalPreviusEdge;
+        double dxNormalNodeIndex;
+        double dyNormalNodeIndex;
+        double dxNormalPreviusEdgeNodeIndex;
+        double dyNormalPreviusEdgeNodeIndex;
+        Point normalVectorNodeIndex;
+        for (int n = 0; n < m_numNodes; n++)
+        {
+            double dxNormal;
+            double dyNormal;
+            if (n < m_numNodes - 1)
+            {
+                auto dx = GetDx(m_nodes[n], m_nodes[n + 1], m_projection);
+                auto dy = GetDy(m_nodes[n], m_nodes[n + 1], m_projection);
+                auto distance = std::sqrt(dx*dx + dy*dy);
+                dxNormal = -dy / distance;
+                dyNormal = dx / distance;
+            }
+            else
+            {
+                dxNormal = dxNormalPreviusEdge;
+                dyNormal = dyNormalPreviusEdge;
+            }
+
+            if (n == 0)
+            {
+                dxNormalPreviusEdge = dxNormal;
+                dyNormalPreviusEdge = dyNormal;
+            }
+
+            double factor = 1.0 / (1.0 + dxNormalPreviusEdge*dxNormal + dyNormalPreviusEdge*dyNormal);
+            normalVectors[n].x = factor *(dxNormalPreviusEdge + dxNormal);
+            normalVectors[n].y = factor *(dyNormalPreviusEdge + dyNormal);
+
+            if (n == nodeIndex) 
+            {
+                dxNormalNodeIndex = dxNormal;
+                dyNormalNodeIndex = dyNormal;
+                dxNormalPreviusEdgeNodeIndex = dxNormalPreviusEdge;
+                dyNormalPreviusEdgeNodeIndex = dyNormalPreviusEdge;
+                normalVectorNodeIndex = normalVectors[n];
+            }
+
+            dxNormalPreviusEdge = dxNormal;
+            dyNormalPreviusEdge = dyNormal;
+        }
+
+        // negative sign introduced because normal vector pointing inward
+        distance = -distance;
+        if (m_projection == Projections::spherical) 
+        {
+            distance = distance / (earth_radius * degrad_hp);
+        }
+
+        std::vector<Point> newPolygonPoints(sizenewPolygon, {doubleMissingValue, doubleMissingValue});
+        for (int i = 0; i < m_nodes.size(); i++)
+        {
+            auto dx = normalVectors[i].x * distance;
+            auto dy = normalVectors[i].y * distance;
+            if (m_projection== Projections::spherical)
+            {
+                dx = dx / std::cos((m_nodes[i].y + 0.5 *dy)*degrad_hp);
+            }
+            newPolygonPoints[i].x = m_nodes[i].x + dx;
+            newPolygonPoints[i].y = m_nodes[i].y + dy;
+            
+            if (innerAndOuter)
+            {
+                newPolygonPoints[i + m_numNodes + 1].x = m_nodes[i].x - dx;
+                newPolygonPoints[i + m_numNodes + 1].y = m_nodes[i].y - dy;
+            }
+        }
+
+        // set the new polygon
+        newPolygon.Set(newPolygonPoints, m_projection);
+
+        return true;
+    }
 
 
 

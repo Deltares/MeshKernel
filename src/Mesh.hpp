@@ -25,6 +25,8 @@ namespace GridGeom
 
         
         bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
+
+        bool IsSet();
         
         bool Administrate();
         
@@ -42,9 +44,26 @@ namespace GridGeom
         bool MergeNodesInPolygon(const Polygons& polygons);
 
         ///mergenodes
-        inline bool MergeTwoNodes(const int firstNode, const int secondNode);
+        inline bool MergeTwoNodes(int startNode, int endNode);
 
+        ///makenet
         bool MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
+
+        ///connectdbn
+        bool ConnectNodes(int startNode, int endNode, int& newEdgeIndex);
+
+        ///setnewpoint
+        bool InsertNode(double xCoordinate, double yCoordinate, int& newNodeIndex);
+
+        ///setnewpoint
+        bool DeleteNode(int nodeIndex);
+
+        ///DELELEM
+        bool DeleteEdge(int startNode, int endNode);
+
+        // find an edge
+        bool FindEdge(const int firstNodeIndex, const int secondNodeIndex, int& edgeIndex);
+
 
         std::vector<Edge>  m_edges;                                 // KN
         std::vector<Point> m_nodes;                                 // KN
@@ -87,7 +106,7 @@ namespace GridGeom
         void SortEdgesInCounterClockWiseOrder();
 
         // find cells
-        void FindFaces(const int& numEdges);
+        void FindFaces(const int numEdges);
 
         // find cells recursive
         bool FindFacesRecursive(int startingNode, int node, int numEdges, int previousEdge, 

@@ -8,7 +8,7 @@
 #include "Constants.cpp"
 #include "Operations.cpp"
 #include "Polygons.hpp"
-#include "RTree.hpp"
+#include "SpatialTrees.hpp"
 
 bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
 {
@@ -1004,20 +1004,15 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 }
 
 ///mergenodes
-bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNodeIndex)
+bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
 {
-    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
+    int edgeIndex;
+    FindEdge(firstNodeIndex, secondNodeIndex, edgeIndex);
+    if (edgeIndex >=0) 
     {
-        auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
-        auto firstEdgeOtherNode = m_edges[edgeIndex].first + m_edges[edgeIndex].second - firstNodeIndex;
-        if (firstEdgeOtherNode == secondNodeIndex)
-        {
-            m_edges[edgeIndex].first = -1;
-            m_edges[edgeIndex].second = -1;
-            break;
-        }
+        m_edges[edgeIndex].first = -1;
+        m_edges[edgeIndex].second = -1;
     }
-
 
     // check if there is another edge starting at firstEdgeOtherNode and ending at secondNode
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
@@ -1081,6 +1076,121 @@ bool GridGeom::Mesh::MergeTwoNodes(const int firstNodeIndex, const int secondNod
     m_nodesEdges[firstNodeIndex] = std::move(std::vector<int>(0));
     m_nodesNumEdges[firstNodeIndex] = 0;
     m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
+
+    return true;
+}
+
+bool GridGeom::Mesh::IsSet() 
+{
+    return m_facesNodes.size()>0;
+}
+
+bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
+{
+    int edgeIndex;
+    FindEdge(startNode, endNode, edgeIndex);
+    if (edgeIndex >= 0)
+    {
+        return true;
+    }
+    else
+    {
+        // increment the edges container
+        newEdgeIndex = m_edges.size();
+        m_edges.resize(newEdgeIndex + 1);
+        m_edges[newEdgeIndex].first = startNode;
+        m_edges[newEdgeIndex].first = endNode;
+        
+        // add the new edge to the nodes
+        m_nodesNumEdges[startNode] = m_nodesNumEdges[startNode] + 1;
+        m_nodesEdges[startNode].push_back(newEdgeIndex);
+
+        m_nodesNumEdges[endNode] = m_nodesNumEdges[endNode] + 1;
+        m_nodesEdges[endNode].push_back(newEdgeIndex);
+
+
+    }
+    return true;
+}
+
+bool GridGeom::Mesh::FindEdge(const int firstNodeIndex, const int secondNodeIndex, int& edgeIndex)
+{
+    edgeIndex = -1;
+    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
+    {
+        int localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
+        auto firstEdgeOtherNode = m_edges[localEdgeIndex].first + m_edges[localEdgeIndex].second - firstNodeIndex;
+        if (firstEdgeOtherNode == secondNodeIndex)
+        {
+            edgeIndex = localEdgeIndex;
+            break;
+        }
+    }
+    return true;
+}
+
+
+bool GridGeom::Mesh::InsertNode(double xCoordinate, double yCoordinate, int& newNodeIndex) 
+{
+    newNodeIndex = m_nodes.size();
+    m_nodes.resize(newNodeIndex + 1);
+    m_nodes[newNodeIndex].x = xCoordinate;
+    m_nodes[newNodeIndex].y = yCoordinate;
+
+    return true;
+}
+
+bool GridGeom::Mesh::DeleteNode(int nodeIndex) 
+{
+    //TODO
+    for (int e = 0; e < m_nodesNumEdges[nodeIndex]; e++)
+    {
+        auto edgeIndex = m_nodesEdges[nodeIndex][e];
+        auto startNode = m_edges[edgeIndex].first;
+        auto endNode = m_edges[edgeIndex].second;
+        DeleteEdge(startNode, endNode);
+    }
+    m_nodesNumEdges[nodeIndex] = 0;
+    m_nodes[nodeIndex] = { doubleMissingValue,doubleMissingValue };
+
+    return true;
+}
+
+//to do: check if accessing after remove if works
+bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
+{
+    auto isNotValidIndex = [](const int& v) { return v < 0; };
+    for (int e = 0; e < m_nodesNumEdges[startNode]; e++)
+    {
+        auto firstEdgeIndex = m_nodesEdges[startNode][e];
+        for (int ee = 0; ee < m_nodesNumEdges[endNode]; ee++)
+        {
+            auto secondEdgeIndex = m_nodesEdges[endNode][ee];
+            if (firstEdgeIndex == secondEdgeIndex)
+            {
+                m_nodesEdges[startNode][e] = -1;
+                m_nodesEdges[endNode][ee]= -1;
+
+                std::remove_if(m_nodesEdges[startNode].begin(), m_nodesEdges[startNode].end(), isNotValidIndex);
+                std::remove_if(m_nodesEdges[endNode].begin(), m_nodesEdges[endNode].end(), isNotValidIndex);
+                m_nodesNumEdges[startNode]--;
+                m_nodesNumEdges[endNode]--;
+            }
+        }
+    }
+
+    // remove startNode
+    if (m_nodesNumEdges[startNode] == 0) 
+    {
+        m_nodes[startNode] = { doubleMissingValue, doubleMissingValue };
+    }
+    
+    // remove endNode
+    if (m_nodesNumEdges[endNode] == 0)
+    {
+        m_nodes[endNode] = { doubleMissingValue, doubleMissingValue };
+    }
+
 
     return true;
 }
