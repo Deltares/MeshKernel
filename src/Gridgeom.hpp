@@ -7,6 +7,8 @@
 #include "SplinesToCurvilinearParametersNative.hpp"
 #include "MakeGridParametersNative.hpp"
 
+#include <vector>
+
 #if defined(_WIN32) 
 #if !defined(GRIDGEOM_API)
 #define GRIDGEOM_API __declspec(dllexport)
@@ -76,6 +78,20 @@ namespace GridGeomApi
         GRIDGEOM_API int ggeo_refine_polygon(int& gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut);
 
         GRIDGEOM_API int ggeo_merge_nodes(int& gridStateId, GeometryListNative& geometryListIn);
+
+        GRIDGEOM_API int ggeo_count_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, int& inside, int& numberOfMeshVertices);
+
+        GRIDGEOM_API int ggeo_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, int& inside, int& numberOfMeshVertices, int* selectedVertices);
+ 
+        GRIDGEOM_API int ggeo_insert_edge(int& gridStateId, int& start_node, int& end_node, int& new_edge_index);
+
+        GRIDGEOM_API int ggeo_insert_node(int& gridStateId, double& xCoordinate, double& yCoordinate, double& zCoordinate, int& vertexIndex);
+
+        GRIDGEOM_API int ggeo_delete_node(int& gridStateId, int& nodeIndex);
+
+        GRIDGEOM_API int ggeo_offsetted_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, int& numberOfPolygonVertices);
+
+        GRIDGEOM_API int ggeo_offsetted_polygon(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, GeometryListNative& geometryListOut);
 
 #ifdef __cplusplus
     }

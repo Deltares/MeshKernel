@@ -73,6 +73,15 @@ namespace GridGeomApi
         return 0;
     }
 
+    static bool IsValidInstance(int gridStateId)
+    {
+        if (gridStateId >= meshInstances.size() || !meshInstances[gridStateId].IsSet())
+        {
+            return false;
+        }
+        return true;
+    }
+
     GRIDGEOM_API int ggeo_new_grid(int& gridStateId)
     {
         int instanceSize = meshInstances.size();
@@ -481,6 +490,17 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_merge_nodes(int& gridStateId, GeometryListNative& geometryListIn) 
     {
+
+        if (!IsValidInstance(gridStateId)) 
+        {
+            return 0;
+        }
+
+        if (!meshInstances[gridStateId].IsSet())
+        {
+            return 0;
+        }
+
         std::vector<GridGeom::Point> polygonPoints;
         bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
         if (!successful)
@@ -491,8 +511,199 @@ namespace GridGeomApi
         GridGeom::Polygons polygon;
         polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
 
+        successful = meshInstances[gridStateId].MergeNodesInPolygon(polygon);
+        if (!successful)
+        {
+            return -1;
+        }
+        return 0;
+    }
+
+
+    GRIDGEOM_API int ggeo_count_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, int& inside, int& numberOfMeshVertices) 
+    {
+        if (!IsValidInstance(gridStateId))
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons polygon;
+        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        
+        numberOfMeshVertices = 0;
+        for (auto i = 0; i < meshInstances[gridStateId].m_nodes.size(); ++i) 
+        {
+            bool isInPolygon = IsPointInPolygon(meshInstances[gridStateId].m_nodes[i], polygon.m_nodes, polygon.m_numNodes - 1);
+            if (inside == false) 
+            {
+                isInPolygon = !isInPolygon;
+            }
+            if (isInPolygon) 
+            {
+                numberOfMeshVertices++;
+            }
+        }
 
         return 0;
     }
+
+    GRIDGEOM_API int ggeo_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, int& inside, int& numberOfMeshVertices, int* selectedVertices)
+    {
+        if (!IsValidInstance(gridStateId))
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons polygon;
+        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+
+        numberOfMeshVertices = 0;
+        for (int i = 0; i < meshInstances[gridStateId].m_nodes.size(); ++i)
+        {
+            bool isInPolygon = IsPointInPolygon(meshInstances[gridStateId].m_nodes[i], polygon.m_nodes, polygon.m_numNodes - 1);
+            if (inside == false)
+            {
+                isInPolygon = !isInPolygon;
+            }
+
+            if (isInPolygon)
+            {
+                selectedVertices[numberOfMeshVertices] = i;
+                numberOfMeshVertices++;
+            }
+        }
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_insert_edge(int& gridStateId, int& start_node, int& end_node, int& new_edge_index)
+    {
+        if (!IsValidInstance(gridStateId))
+        {
+            return 0;
+        }
+
+        bool successful = meshInstances[gridStateId].ConnectNodes(start_node, end_node, new_edge_index);
+        if (!successful)
+        {
+            return -1;
+        }
+
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_insert_node(int& gridStateId, double& xCoordinate, double& yCoordinate, double& zCoordinate, int& vertexIndex)
+    {
+        if (!IsValidInstance(gridStateId))
+        {
+            return 0;
+        }
+
+
+        bool successful = meshInstances[gridStateId].InsertNode(xCoordinate, yCoordinate, vertexIndex);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        return 0;
+    }
+
+
+    GRIDGEOM_API int ggeo_delete_node(int& gridStateId, int& nodeIndex)
+    {
+        if (!IsValidInstance(gridStateId))
+        {
+            return 0;
+        }
+
+        bool successful = meshInstances[gridStateId].DeleteNode(nodeIndex);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_offsetted_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, int& numberOfPolygonVertices)
+    {
+        if (!IsValidInstance(gridStateId))
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons polygon;
+        successful = polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons newPolygon;
+        successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        numberOfPolygonVertices = newPolygon.m_nodes.size();
+    
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_offsetted_polygon(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, GeometryListNative& geometryListOut)
+    {
+        if (!IsValidInstance(gridStateId))
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons polygon;
+        successful = polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons newPolygon;
+        successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
+        if (!successful)
+        {
+            return -1;
+        }
+    
+        return 0;
+    }
+
+
 
 }

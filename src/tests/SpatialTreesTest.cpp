@@ -1,6 +1,6 @@
 # pragma once
 #include "../Entities.hpp"
-#include "../RTree.hpp"
+#include "../SpatialTrees.hpp"
 #include <gtest/gtest.h>
 #include <chrono>
 #include <random>
