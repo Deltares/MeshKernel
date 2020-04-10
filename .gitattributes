@@ -473,6 +473,7 @@ src/Entities.hpp -text
 src/GeometryListNative.hpp -text
 src/Gridgeom.cpp -text
 src/Gridgeom.hpp -text
+src/InterpolationParametersNative.hpp -text
 src/LandBoundaries.cpp -text
 src/LandBoundaries.hpp -text
 src/MakeGridParametersNative.hpp -text
@@ -480,12 +481,15 @@ src/Mesh.cpp -text
 src/Mesh.hpp -text
 src/MeshGeometry.hpp -text
 src/MeshGeometryDimensions.hpp -text
+src/MeshRefinement.cpp -text
+src/MeshRefinement.hpp -text
 src/Operations.cpp -text
 src/Orthogonalization.cpp -text
 src/Orthogonalization.hpp -text
 src/OrthogonalizationParametersNative.hpp -text
 src/Polygons.cpp -text
 src/Polygons.hpp -text
+src/SampleRefineParametersNative.hpp -text
 src/SpatialTrees.hpp -text
 src/Splines.hpp -text
 src/SplinesToCurvilinearParametersNative.hpp -text
@@ -500,6 +504,7 @@ src/tests/SplineTest.cpp -text
 tests/FindFaces.pol -text
 tests/FourSplinesBox.spl -text
 tests/MakeNetPolygon.pol -text
+tests/OffsetAPolygonTest.pli -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
 tests/SamplesToTriangulate.xyz -text
 tests/SmallTriangularGrid_oneCrossingLandBoundaries.ldb -text

@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include "Mesh.hpp"
+#include "Entities.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
 #include "Polygons.hpp"

@@ -1,4 +1,3 @@
-// TODO: duplicated face detection issue for large number of edges
 #include <vector>
 #include <cmath>
 #include <numeric>
@@ -9,6 +8,10 @@
 #include "Operations.cpp"
 #include "Polygons.hpp"
 #include "SpatialTrees.hpp"
+#include "CurvilinearGrid.hpp"
+#include "Entities.hpp"
+#include "MakeGridParametersNative.hpp"
+#include "GeometryListNative.hpp"
 
 bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
 {
@@ -1190,7 +1193,6 @@ bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
     {
         m_nodes[endNode] = { doubleMissingValue, doubleMissingValue };
     }
-
 
     return true;
 }

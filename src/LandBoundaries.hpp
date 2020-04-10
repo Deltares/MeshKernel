@@ -1,11 +1,11 @@
 #pragma once
 
 #include <vector>
+#include "Entities.hpp"
 
 namespace GridGeom
 {
     class Polygons;
-
     class Mesh;
 
     class LandBoundaries

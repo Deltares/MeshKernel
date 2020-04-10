@@ -1,14 +1,16 @@
 #pragma once
 
 #include <vector>
-#include "Entities.hpp"
-#include "Mesh.hpp"
-#include "OrthogonalizationParametersNative.hpp"
 #include "LandBoundaries.hpp"
+#include "OrthogonalizationParametersNative.hpp"
 #include "Polygons.hpp"
 
 namespace GridGeom
 {
+    struct Point;
+    enum class Projections;
+    class Mesh;
+
     class Orthogonalization
     {
     public:
