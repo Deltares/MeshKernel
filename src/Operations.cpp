@@ -1068,7 +1068,11 @@ namespace GridGeom
         return true;
     }
 
-
-
+    // todo: implement comp_middle_latitude
+    static bool ComputeMiddleLatitude(double firstLatitude, double secondLatitude, double& middlelatitude)
+    {
+    
+        return false;    
+    }
 
 }

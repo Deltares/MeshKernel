@@ -1,14 +1,17 @@
 #pragma once
 
 #include <vector>
-#include "Entities.hpp"
-#include "CurvilinearGrid.hpp"
 #include "MakeGridParametersNative.hpp"
-#include "Polygons.hpp"
 #include "GeometryListNative.hpp"
+#include "Entities.hpp"
 
 namespace GridGeom 
 {
+
+    class CurvilinearGrid;
+    class Polygons;
+    class MakeGridParametersNative;
+    class GeometryListNative;
 
     class Mesh
     {

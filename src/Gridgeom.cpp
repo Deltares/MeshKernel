@@ -5,6 +5,7 @@
 #include "Orthogonalization.hpp"
 #include "CurvilinearGrid.hpp"
 #include "Splines.hpp"
+#include "Entities.hpp"
 
 static std::vector<GridGeom::Mesh> meshInstances;
 static std::map<int, GridGeom::Orthogonalization> orthogonalizationInstances;
@@ -704,6 +705,10 @@ namespace GridGeomApi
         return 0;
     }
 
+    GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int& gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative) 
+    {
 
+        return 0;
+    }
 
 }
