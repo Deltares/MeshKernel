@@ -1,6 +1,9 @@
 #pragma once
 
 #include <vector>
+
+#include "Entities.hpp"
+
 extern "C"
 {
     void Triangulation(int *jatri, double* xs, double* ys, int* ns, int* indx, int* numtri, int* edgeidx, int* numedge, int* triedge, double* xs3, double* ys3, int* ns3, double* trisize);

@@ -134,6 +134,13 @@ namespace GridGeom
         double z;
     };
 
+    struct Sample 
+    {
+        double x;
+        double y;
+        double z;
+    };
+
     struct Nodes
     {
         std::vector<double> x;

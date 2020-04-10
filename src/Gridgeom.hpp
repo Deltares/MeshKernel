@@ -6,6 +6,8 @@
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
 #include "MakeGridParametersNative.hpp"
+#include "InterpolationParametersNative.hpp"
+#include "SampleRefineParametersNative.hpp"
 
 #include <vector>
 
@@ -92,6 +94,8 @@ namespace GridGeomApi
         GRIDGEOM_API int ggeo_offsetted_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, int& numberOfPolygonVertices);
 
         GRIDGEOM_API int ggeo_offsetted_polygon(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, GeometryListNative& geometryListOut);
+
+        GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int& gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative);
 
 #ifdef __cplusplus
     }

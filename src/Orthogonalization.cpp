@@ -5,6 +5,8 @@
 
 #include "Operations.cpp"
 #include "Orthogonalization.hpp"
+#include "Entities.hpp"
+#include "Mesh.hpp"
 
 bool GridGeom::Orthogonalization::Set(const Mesh& mesh,
     int& isTriangulationRequired,
