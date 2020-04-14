@@ -49,7 +49,7 @@ namespace GridGeom
                 return true;
             }
 
-            std::vector<int> NearestNeighbours(Point node, const double searchRadius)
+            std::vector<int> NearestNeighbours(Point node, const double searchRadius) const
             {
                   
                 std::vector<value2D> queryResult;

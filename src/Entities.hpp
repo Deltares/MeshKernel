@@ -117,8 +117,6 @@ namespace GridGeom
         {
             return x != missingValue && y != missingValue ? true : false;
         }
-
-
     };
 
     struct Vector

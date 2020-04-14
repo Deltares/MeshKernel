@@ -5,9 +5,11 @@
 #include <numeric>
 #include "Entities.hpp"
 #include "Constants.cpp"
+#include "SpatialTrees.hpp"
 
 namespace GridGeom
 {
+
     // coordinate reference independent operations
     template<typename T>
     T DotProduct(const T& dx1, const T& dx2)
@@ -1071,8 +1073,115 @@ namespace GridGeom
     // todo: implement comp_middle_latitude
     static bool ComputeMiddleLatitude(double firstLatitude, double secondLatitude, double& middlelatitude)
     {
-    
         return false;    
+    }
+
+    static bool Averaging(const std::vector<Sample>& samples,
+        int numNodes,
+        const std::vector<Point>& polygon,
+        const Point centerOfMass,
+        const Projections& projection,
+        const SpatialTrees::RTree& rtree,
+        int averagingMethod,
+        double& result)
+    {
+        std::vector<Point> searchPolygon(numNodes);
+
+
+        // averaging settings
+        const double relativeFaceSearchSize = 1e-4;
+        double minx = std::numeric_limits<double>::max();
+        double maxx = std::numeric_limits<double>::min();
+        double miny = std::numeric_limits<double>::max();
+        double maxy = std::numeric_limits<double>::min();
+        for (int i = 0; i < numNodes; i++)
+        {
+            searchPolygon[i] = polygon[i] * relativeFaceSearchSize + centerOfMass * (1 - relativeFaceSearchSize);
+            minx = std::min(minx, searchPolygon[i].x);
+            maxx = std::max(maxx, searchPolygon[i].x);
+            miny = std::min(miny, searchPolygon[i].y);
+            maxy = std::max(maxy, searchPolygon[i].y);
+        }
+
+        if (projection == Projections::spherical && maxx - minx > 180.0)
+        {
+
+            double xmean = 0.5 *(maxx + minx);
+            minx = std::numeric_limits<double>::max();
+            maxx = std::numeric_limits<double>::min();
+            for (int i = 0; i < numNodes; i++)
+            {
+                if (searchPolygon[i].x < xmean)
+                {
+                    searchPolygon[i].x = searchPolygon[i].x + 360.0;
+                    minx = std::min(minx, searchPolygon[i].x);
+                    maxx = std::max(maxx, searchPolygon[i].x);
+                }
+            }
+        }
+
+        double searchRadius = std::numeric_limits<double>::min();
+        for (int i = 0; i < numNodes; i++)
+        {
+            double distance = Distance(centerOfMass, searchPolygon[i], projection);
+            searchRadius = std::max(searchRadius, distance);
+        }
+
+        auto sampleIndexses = rtree.NearestNeighbours(centerOfMass, searchRadius);
+        result = doubleMissingValue;
+        if (sampleIndexses.size() == 0)
+        {
+            return true;
+        }
+
+        result = 0;
+        int numValidSamplesInPolygon = 0;
+        double wall = 0;
+        for (int i = 0; i < sampleIndexses.size(); i++)
+        {
+            //do stuff based on the averaging method
+            auto sampleIndex = sampleIndexses[i];
+            if (samples[sampleIndex].z == doubleMissingValue) 
+            {
+                continue;
+            }
+
+            Point samplePoint{ samples[sampleIndex].x, samples[sampleIndex].y };
+            bool isInPolygon = IsPointInPolygon(samplePoint, polygon, numNodes);
+            if (isInPolygon) 
+            {
+                if (averagingMethod == AveragingMethod::SimpleAveraging)
+                {
+                    result += samples[sampleIndex].z;
+                    numValidSamplesInPolygon++;
+                }
+                if (averagingMethod == AveragingMethod::KdTree) 
+                {
+                    result = std::min(std::abs(result), std::abs(samples[sampleIndex].z));
+                }
+                if (averagingMethod == AveragingMethod::InverseWeightDistance)
+                {
+                    double distance = std::max(0.01,Distance(centerOfMass, samplePoint, projection));
+                    double weight = 1.0 / distance;
+                    wall += weight;
+                    numValidSamplesInPolygon++;
+                    result += weight * samples[sampleIndex].z;
+                }
+            }
+        }
+
+        
+        if (averagingMethod == AveragingMethod::SimpleAveraging && numValidSamplesInPolygon>=1)
+        {
+            result /= numValidSamplesInPolygon;
+        }
+
+        if (averagingMethod == AveragingMethod::InverseWeightDistance && numValidSamplesInPolygon >= 1)
+        {
+            result /= wall;
+        }
+
+        return true;
     }
 
 }
