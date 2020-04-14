@@ -35,4 +35,17 @@ namespace GridGeom
 
     // merging distance
     static constexpr double mergingDistance = 0.001;
+
+    // Operations averaging methods
+    enum AveragingMethod 
+    {
+        SimpleAveraging = 1,
+        ClosestPoint= 2,
+        Max = 3,
+        Min = 4,
+        InverseWeightDistance = 5,
+        MinAbs = 6,
+        KdTree = 7
+    };
+
 }

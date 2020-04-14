@@ -29,7 +29,7 @@ namespace GridGeom
         
         bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
 
-        bool IsSet();
+        bool IsSet() const;
         
         bool Administrate();
         
@@ -65,8 +65,15 @@ namespace GridGeom
         bool DeleteEdge(int startNode, int endNode);
 
         // find an edge
-        bool FindEdge(const int firstNodeIndex, const int secondNodeIndex, int& edgeIndex);
+        bool FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
 
+        ///get_cellpolygon
+        //need to account for spherical coordinates. Build a polygon around a face
+        bool FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const;
+
+        bool FindBrotherEdges();
+
+        bool FindHangingNodes(int faceIndex, const std::vector<int>& edgeMask, int& numHangingEdges, int& numHangingNodes, std::vector<bool>& isHangingNode);
 
         std::vector<Edge>  m_edges;                                 // KN
         std::vector<Point> m_nodes;                                 // KN
@@ -76,6 +83,8 @@ namespace GridGeom
         //edges
         std::vector<int> m_edgesNumFaces;                           // LNN
         std::vector<std::vector<int>> m_edgesFaces;                 // LNE
+        std::vector<int> m_brotherEdges;
+        std::vector<int> m_hangingNodes;
 
         // faces
         std::vector<std::vector<int>> m_facesNodes;                 // netcell%Nod, the nodes composing the faces, in ccw order

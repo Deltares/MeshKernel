@@ -9,7 +9,7 @@
 #include "Operations.cpp"
 
 
-bool GridGeom::MeshRefinement::RefineMeshBasedOnPoints(std::vector<Point>& points, 
+bool GridGeom::MeshRefinement::RefineMeshBasedOnPoints(std::vector<Sample>& sample,
     GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
     GridGeomApi::InterpolationParametersNative& interpolationParametersNative)
 {
@@ -17,108 +17,32 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnPoints(std::vector<Point>& point
     bool courantNetwork = true;
     bool waveCourantRefinementType = true;
     // triangular interpolation
-
-
     m_mesh.FindFaces();
+
+    // compute all edges lengths
+    ComputeEdgeLengths();
 
     // build the R-Tree
     GridGeom::SpatialTrees::RTree rtree;
+    std::vector<Point> points;
     rtree.BuildTree(points, m_mesh.m_projection);
 
     //get mesh bounds
 
     //find_link_broders
-    std::vector<int> brotherEdges;
-    FindBrotherEdges(brotherEdges);
+    m_mesh.FindBrotherEdges();
 
     const int level = 10;
     for (int l = 0; l < level; l++)
     {
-
-
+        ComputeRefinementFromSamples(sample);
     }
 
     return true;
 }
 
-bool GridGeom::MeshRefinement::FindBrotherEdges(std::vector<int>& brotherEdges)
-{
 
-    //resize brotherEdges
-    brotherEdges.resize(m_mesh.m_edges.size(), -1);
-
-    for (int n = 0; n < m_mesh.m_nodes.size(); n++)
-    {
-        int ee = 0;
-        for (int e = 0; e < m_mesh.m_nodesNumEdges[n]; e++)
-        {
-            ee = e + 1;
-            if (ee >= m_mesh.m_nodesNumEdges[n]) 
-            {
-                ee = ee - m_mesh.m_nodesNumEdges[n];
-            }
-
-            int firstEdgeIndex = m_mesh.m_nodesEdges[n][e];
-            if (m_mesh.m_edgesNumFaces[firstEdgeIndex]<1)
-            {
-                continue;
-            }
-
-            int secondEdgeIndex = m_mesh.m_nodesEdges[n][ee];
-            if (m_mesh.m_edgesNumFaces[secondEdgeIndex]<1)
-            {
-                continue;
-            }
-
-            auto firstEdgeLeftFace = m_mesh.m_edgesFaces[firstEdgeIndex][0];
-            auto firstEdgeRighFace = m_mesh.m_edgesFaces[firstEdgeIndex].size() == 1 ? firstEdgeLeftFace : m_mesh.m_edgesFaces[firstEdgeIndex][1];
-
-            auto secondEdgeLeftFace = m_mesh.m_edgesFaces[secondEdgeIndex][0];
-            auto secondEdgeRighFace = m_mesh.m_edgesFaces[secondEdgeIndex].size() == 1 ? secondEdgeLeftFace : m_mesh.m_edgesFaces[secondEdgeIndex][1];
-         
-            if (firstEdgeLeftFace!=secondEdgeLeftFace && 
-                firstEdgeLeftFace!=secondEdgeRighFace &&
-                firstEdgeRighFace!=secondEdgeLeftFace &&
-                firstEdgeRighFace!=secondEdgeRighFace)
-            {
-                continue;
-            }
-
-            //check if node k is in the middle
-            auto firstEdgeOtherNode = m_mesh.m_edges[firstEdgeIndex].first + m_mesh.m_edges[firstEdgeIndex].second - n;
-            auto secondEdgeOtherNode = m_mesh.m_edges[secondEdgeIndex].first + m_mesh.m_edges[secondEdgeIndex].second - n;
-            auto centre = (m_mesh.m_nodes[firstEdgeOtherNode] + m_mesh.m_nodes[secondEdgeOtherNode])*0.5;
-
-            if (m_mesh.m_projection == Projections::spherical) 
-            {
-                double middleLatitude;
-                bool successful = ComputeMiddleLatitude(m_mesh.m_nodes[firstEdgeOtherNode].y, m_mesh.m_nodes[secondEdgeOtherNode].y, middleLatitude);
-                if (!successful) 
-                {
-                    return false;
-                }
-
-                //TODO: FINISH FOR SPHERICAL
-            }
-
-            //compute tolerance
-            auto firstEdgeLength = Distance(m_mesh.m_nodes[firstEdgeOtherNode], m_mesh.m_nodes[n], m_mesh.m_projection);
-            auto secondEdgeLength = Distance(m_mesh.m_nodes[secondEdgeOtherNode], m_mesh.m_nodes[n], m_mesh.m_projection);
-            auto tolerance = 0.0001 * std::max(firstEdgeLength, secondEdgeLength);
-
-            auto distanceFromCentre = Distance(centre, m_mesh.m_nodes[n], m_mesh.m_projection);
-            if (distanceFromCentre<tolerance)
-            {
-                brotherEdges[firstEdgeIndex] = secondEdgeIndex;
-                brotherEdges[secondEdgeIndex] = firstEdgeIndex;
-            }
-        }
-    }
-
-    return true;
-}
-
-bool GridGeom::MeshRefinement::ComputeInitialRefinementMask(std::vector<int>& brotherEdges) 
+bool GridGeom::MeshRefinement::ComputeInitialRefinementMask()
 {
     bool repeat = true;
 
@@ -142,7 +66,7 @@ bool GridGeom::MeshRefinement::ComputeInitialRefinementMask(std::vector<int>& br
                 int firstEdgeIndex = m_mesh.m_facesEdges[f][n];
                 int secondEdgeIndex = m_mesh.m_facesEdges[f][nn];
 
-                if (brotherEdges[firstEdgeIndex] == secondEdgeIndex || brotherEdges[secondEdgeIndex] == firstEdgeIndex)
+                if (m_mesh.m_brotherEdges[firstEdgeIndex] == secondEdgeIndex || m_mesh.m_brotherEdges[secondEdgeIndex] == firstEdgeIndex)
                 {
                     hanging = true;
                 }
@@ -176,39 +100,64 @@ bool GridGeom::MeshRefinement::ComputeInitialRefinementMask(std::vector<int>& br
 ///compute_jarefine
 bool GridGeom::MeshRefinement::ComputeRefinementFromSamples(std::vector<Sample>& samples)
 {
+    std::vector<Point> polygonNodesCache;
+    for (int f = 0; f < m_mesh.m_numFaces; f++)
+    {
+        m_mesh.FacePolygon(f, polygonNodesCache);
 
-
-
+    
+    }
     return true;
 };
 
-///comp_jalink
-bool GridGeom::MeshRefinement::ComputeEdgesRefinementMask(std::vector<Point>& polygon)
+
+bool GridGeom::MeshRefinement::ComputeRefinementInPolygon(int numPolygonNodes, 
+    const std::vector<Sample>& samples, 
+    std::vector<Point>& polygon,
+    const SpatialTrees::RTree& rtree,
+    double deltaCourant, 
+    int refineType)
 {
-    return true;
-};
+    Point centerOfMass;
+    double area;
+    bool successful = faceAreaAndCenterOfMass(polygon, numPolygonNodes, area, centerOfMass, m_mesh.m_projection);
 
-///split_cells
-bool GridGeom::MeshRefinement::SplitFaces()
+    std::vector<double> edgesLengths(numPolygonNodes);
+    for (int i = 0; i < numPolygonNodes; i++)
+    {
+        int nextNode = i + 1; if (nextNode >= numPolygonNodes) nextNode -= numPolygonNodes;
+        double distance = Distance(polygon[i], polygon[nextNode], m_mesh.m_projection);
+        edgesLengths[i] = distance;
+    }
+    auto minmax = std::minmax_element(edgesLengths.begin(), edgesLengths.end());
+    double minLenght = *minmax.first;
+    double maxLenght = *minmax.second;
+
+    if (deltaCourant > 0 || refineType == RefinementType::WaveCourant)
+    {
+        double result;
+        bool success = Averaging(samples, numPolygonNodes, polygon, centerOfMass, m_mesh.m_projection, rtree, AveragingMethod::KdTree, result);
+
+        if (result == doubleMissingValue || success == false) 
+        {
+            return true;
+        }
+
+    }
+
+
+    return true;
+}
+
+bool GridGeom::MeshRefinement::ComputeEdgeLengths()
 {
+    auto numEdges = m_mesh.m_edges.size();
+    edgeLengths.resize(numEdges, doubleMissingValue);
+    for (int e = 0; e < numEdges; e++)
+    {
+        int first = m_mesh.m_edges[e].first;
+        int second = m_mesh.m_edges[e].second;
+        edgeLengths[e] = Distance(m_mesh.m_nodes[first], m_mesh.m_nodes[second], m_mesh.m_projection);
+    }
     return true;
-};
-
-///refine_cells
-bool GridGeom::MeshRefinement::RefineFaces()
-{
-    return true;
-};
-
-/// remove isolated hanging nodes
-bool GridGeom::MeshRefinement::RemoveHangingNodes()
-{
-    return true;
-};
-
-/// connect hanging nodes
-bool GridGeom::MeshRefinement::ConnectHangingNodes()
-{
-    return true;
-};
-
+}

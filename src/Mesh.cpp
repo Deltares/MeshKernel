@@ -1083,7 +1083,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     return true;
 }
 
-bool GridGeom::Mesh::IsSet() 
+bool GridGeom::Mesh::IsSet()  const
 {
     return m_facesNodes.size()>0;
 }
@@ -1116,7 +1116,7 @@ bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
     return true;
 }
 
-bool GridGeom::Mesh::FindEdge(const int firstNodeIndex, const int secondNodeIndex, int& edgeIndex)
+bool GridGeom::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const
 {
     edgeIndex = -1;
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
@@ -1192,6 +1192,166 @@ bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
     if (m_nodesNumEdges[endNode] == 0)
     {
         m_nodes[endNode] = { doubleMissingValue, doubleMissingValue };
+    }
+
+    return true;
+}
+
+bool GridGeom::Mesh::FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const 
+{
+    if (polygonNodesCache.size() < m_facesNodes[faceIndex].size() + 1)
+    {
+        polygonNodesCache.resize(m_facesNodes[faceIndex].size() + 1);
+    }
+
+    auto numFaceNodes = m_facesNodes[faceIndex].size();
+    for (int n = 0; n < numFaceNodes; n++)
+    {
+        polygonNodesCache[n] = m_nodes[m_facesNodes[faceIndex][n]];
+    }
+    polygonNodesCache[numFaceNodes] = polygonNodesCache[0];
+
+    return true;
+}
+
+bool GridGeom::Mesh::FindBrotherEdges()
+{
+
+    m_brotherEdges.resize(m_edges.size(), intMissingValue);
+
+    for (int n = 0; n < m_nodes.size(); n++)
+    {
+        int ee = 0;
+        for (int e = 0; e < m_nodesNumEdges[n]; e++)
+        {
+            ee = e + 1;
+            if (ee >= m_nodesNumEdges[n])
+            {
+                ee = ee - m_nodesNumEdges[n];
+            }
+
+            int firstEdgeIndex = m_nodesEdges[n][e];
+            if (m_edgesNumFaces[firstEdgeIndex]<1)
+            {
+                continue;
+            }
+
+            int secondEdgeIndex = m_nodesEdges[n][ee];
+            if (m_edgesNumFaces[secondEdgeIndex]<1)
+            {
+                continue;
+            }
+
+            auto firstEdgeLeftFace = m_edgesFaces[firstEdgeIndex][0];
+            auto firstEdgeRighFace = m_edgesFaces[firstEdgeIndex].size() == 1 ? firstEdgeLeftFace : m_edgesFaces[firstEdgeIndex][1];
+
+            auto secondEdgeLeftFace = m_edgesFaces[secondEdgeIndex][0];
+            auto secondEdgeRighFace = m_edgesFaces[secondEdgeIndex].size() == 1 ? secondEdgeLeftFace : m_edgesFaces[secondEdgeIndex][1];
+
+            if (firstEdgeLeftFace != secondEdgeLeftFace &&
+                firstEdgeLeftFace != secondEdgeRighFace &&
+                firstEdgeRighFace != secondEdgeLeftFace &&
+                firstEdgeRighFace != secondEdgeRighFace)
+            {
+                continue;
+            }
+
+            //check if node k is in the middle
+            auto firstEdgeOtherNode = m_edges[firstEdgeIndex].first + m_edges[firstEdgeIndex].second - n;
+            auto secondEdgeOtherNode = m_edges[secondEdgeIndex].first + m_edges[secondEdgeIndex].second - n;
+            auto centre = (m_nodes[firstEdgeOtherNode] + m_nodes[secondEdgeOtherNode])*0.5;
+
+            if (m_projection == Projections::spherical)
+            {
+                double middleLatitude;
+                bool successful = ComputeMiddleLatitude(m_nodes[firstEdgeOtherNode].y, m_nodes[secondEdgeOtherNode].y, middleLatitude);
+                if (!successful)
+                {
+                    return false;
+                }
+                //TODO: FINISH FOR SPHERICAL
+            }
+
+            //compute tolerance
+            auto firstEdgeLength = Distance(m_nodes[firstEdgeOtherNode], m_nodes[n], m_projection);
+            auto secondEdgeLength = Distance(m_nodes[secondEdgeOtherNode], m_nodes[n], m_projection);
+            auto tolerance = 0.0001 * std::max(firstEdgeLength, secondEdgeLength);
+
+            auto distanceFromCentre = Distance(centre, m_nodes[n], m_projection);
+            if (distanceFromCentre<tolerance)
+            {
+                m_brotherEdges[firstEdgeIndex] = secondEdgeIndex;
+                m_brotherEdges[secondEdgeIndex] = firstEdgeIndex;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool GridGeom::Mesh::FindHangingNodes(int faceIndex, const std::vector<int>& edgeMask, int& numHangingEdges, int& numHangingNodes, std::vector<bool>& isHangingNode)
+{
+    auto numFaceNodes = m_facesNodes[faceIndex].size();
+    int numrefine = 0;
+    
+    std::vector<bool> hangingNode(numFaceNodes, 0);
+    std::vector<bool> hangingEdge(numFaceNodes, 0);
+    numHangingEdges = 0;
+    numHangingNodes = 0;
+    int kknod = 0;
+    
+    for (int n = 0; n < numFaceNodes; n++)
+    {
+        auto edgeIndex = m_facesEdges[faceIndex][n];
+        if (edgeMask[edgeIndex] != 0)
+        {
+            numrefine += 1;
+        }
+
+        // check if the brother link is in the cell
+        if (m_brotherEdges[edgeIndex] != intMissingValue)
+        {
+            int e = n - 1;
+            if (e < 0)
+            {
+                e = e + numFaceNodes;
+            }
+            int ee = n + 1;
+            if (ee >= numFaceNodes)
+            {
+                e = e - numFaceNodes;
+            }
+
+            int commonNode = intMissingValue;
+            if (m_brotherEdges[edgeIndex] == m_facesEdges[faceIndex][e])
+            {
+
+            }
+            else if (m_brotherEdges[edgeIndex] == m_facesEdges[faceIndex][ee])
+            {
+
+            }
+
+            if (commonNode != intMissingValue)
+            {
+                hangingEdge[n] = true;
+                numHangingEdges++;
+                for (int nn = 0; nn < numFaceNodes; nn++)
+                {
+                    kknod = kknod + 1;
+                    if (kknod >= numFaceNodes)
+                    {
+                        kknod = kknod - numFaceNodes;
+                    }
+
+                    if (m_facesNodes[faceIndex][n] == commonNode && hangingNode[kknod] == 0)
+                    {
+                        numHangingNodes++;
+                        hangingNode[kknod] = true;
+                    }
+                }
+            }
+        }
     }
 
     return true;

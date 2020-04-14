@@ -7,6 +7,7 @@
 #include "InterpolationParametersNative.hpp"
 #include "Entities.hpp"
 #include "Mesh.hpp"
+#include "SpatialTrees.hpp"
 
 namespace GridGeom 
 {
@@ -31,7 +32,7 @@ namespace GridGeom
         };
 
         ///refinecellsandfaces2
-        bool RefineMeshBasedOnPoints(std::vector<Point>& points,
+        bool RefineMeshBasedOnPoints(std::vector<Sample>& sample,
             GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
             GridGeomApi::InterpolationParametersNative& interpolationParametersNative);
 
@@ -45,7 +46,7 @@ namespace GridGeom
         //    cells with hanging nodes
         //    cells that are crossed by the selecting polygon
         //    ensure that no crossed cells have hanging nodes
-        bool ComputeInitialRefinementMask(std::vector<int>& brotherEdges);
+        bool ComputeInitialRefinementMask();
 
         ///compute_jarefine_poly
         bool ComputeRefinementFromSamples(std::vector<Sample>& polygon);
@@ -53,21 +54,27 @@ namespace GridGeom
         ///comp_jalink
         bool ComputeEdgesRefinementMask(std::vector<Point>& polygon);
 
-        ///split_cells
-        bool SplitFaces();
+        ///compute_jarefine_poly
+        bool ComputeRefinementInPolygon(int numPolygonNodes,
+            const std::vector<Sample>& samples,
+            std::vector<Point>& polygon,
+            const SpatialTrees::RTree& rtree,
+            double deltaCourant,
+            int refineType);
 
-        ///refine_cells
-        bool RefineFaces();
-
-        /// remove isolated hanging nodes
-        bool RemoveHangingNodes();
-
-        /// connect hanging nodes
-        bool ConnectHangingNodes();
+        bool ComputeEdgeLengths();
 
         Mesh& m_mesh;
         std::vector<int> m_faceMask;
         std::vector<int> m_nodeMask;
+        std::vector<double> edgeLengths;
+
+        enum RefinementType 
+        {
+            RidgeRefinement = 1,
+            WaveCourant = 2,
+            MeshWidth = 3
+        };
 
 
     };
