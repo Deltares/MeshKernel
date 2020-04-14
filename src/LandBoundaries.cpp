@@ -172,7 +172,6 @@ namespace GridGeom
         m_nodeMask.resize(mesh.m_nodes.size(), intMissingValue);
         m_faceMask.resize(mesh.m_numFaces, intMissingValue);
         m_edgeMask.resize(mesh.m_edges.size(), intMissingValue);
-        polygonCache.resize(maximumNumberOfNodesPerFace + 1);
         m_meshNodesLandBoundarySegments.resize(mesh.m_nodes.size(), -1);
         m_nodesMinDistances.resize(mesh.m_nodes.size(), doubleMissingValue);
 
@@ -632,13 +631,9 @@ namespace GridGeom
                 if (numFaceNodes == 0)
                     continue;
 
-                for (int n = 0; n < numFaceNodes; n++)
-                {
-                    polygonCache[n] = mesh.m_nodes[mesh.m_facesNodes[f][n]];
-                }
-                polygonCache[numFaceNodes] = polygonCache[0];
+                mesh.FacePolygon(f, m_polygonNodesCache);
 
-                nodeInFace = IsPointInPolygon(m_nodes[i], polygonCache, numFaceNodes);
+                nodeInFace = IsPointInPolygon(m_nodes[i], m_polygonNodesCache, numFaceNodes);
                 if (nodeInFace)
                 {
                     crossedFaceIndex = f;

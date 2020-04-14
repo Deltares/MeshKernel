@@ -142,7 +142,7 @@ namespace GridGeom
         int m_maskDepth = 0;
 
         // caches
-        std::vector<Point> polygonCache;                  // array of points (e.g. points of a face)
+        std::vector<Point> m_polygonNodesCache;                  // array of points (e.g. points of a face)
         std::vector<double> m_nodesMinDistances;
         const int m_allocationSize = 10000;               // allocation size for allocateVector
 
