@@ -398,9 +398,9 @@ void GridGeom::Mesh::NodeAdministration()
     }
 
     // resize
-    for (int node = 0; node < m_nodesEdges.size(); node++)
+    for (auto n = 0; n < GetNumNodes(); n++)
     {
-        m_nodesEdges[node].resize(m_nodesNumEdges[node]);
+        m_nodesEdges[n].resize(m_nodesNumEdges[n]);
     }
 };
 
@@ -618,13 +618,13 @@ void GridGeom::Mesh::FindFaces()
 
 void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
 {
-    m_facesCircumcenters.resize(m_facesNodes.size());
+    m_facesCircumcenters.resize(GetNumFaces());
     std::vector<Point> middlePoints(GridGeom::maximumNumberOfNodesPerFace);
     std::vector<Point> normals(GridGeom::maximumNumberOfNodesPerFace);
     std::vector<Point> localFace(GridGeom::maximumNumberOfNodesPerFace + 1); //closed face
     Point centerOfMass;
     const int maximumNumberCircumcenterIterations = 100;
-    for (int f = 0; f < m_facesNodes.size(); f++)
+    for (int f = 0; f < GetNumFaces(); f++)
     {
 
         // for triangles, for now assume cartesian kernel
@@ -738,12 +738,12 @@ void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
 void GridGeom::Mesh::FacesAreasAndMassCenters()
 {
     // polygon coordinates 
-    m_faceArea.resize(m_facesNodes.size());
-    m_facesMassCenters.resize(m_facesNodes.size());
+    m_faceArea.resize(GetNumFaces());
+    m_facesMassCenters.resize(GetNumFaces());
     std::vector<Point> localFace(maximumNumberOfNodesPerFace + 1);
     Point centerOfMass;
     double area = 0.0;
-    for (int f = 0; f < m_facesNodes.size(); f++)
+    for (int f = 0; f < GetNumFaces(); f++)
     {
         std::size_t numberOfFaceNodes = m_facesNodes[f].size();
 
@@ -1085,7 +1085,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
 
 bool GridGeom::Mesh::IsSet()  const
 {
-    return m_facesNodes.size()>0;
+    return GetNumFaces()>0;
 }
 
 bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)

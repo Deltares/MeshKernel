@@ -784,7 +784,7 @@ namespace GridGeom
             else
             {
                 // face is crossed
-                if (mesh.m_facesEdges.size() < 3)
+                if (mesh.GetNumFaces() < 3)
                     continue;
 
                 int isFaceFound = 0;
