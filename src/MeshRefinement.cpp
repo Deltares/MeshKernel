@@ -168,7 +168,7 @@ bool GridGeom::MeshRefinement::ComputeRefinementFromSamples(std::vector<Sample>&
             return false;
         }
 
-        int numPolygonNodes = m_mesh.m_facesNodes.size();
+        int numPolygonNodes = m_mesh.GetNumFaces();
 
         bool performRefinement;
         ComputeRefinementInPolygon(numPolygonNodes, samples, RefinementType::WaveCourant, performRefinement);

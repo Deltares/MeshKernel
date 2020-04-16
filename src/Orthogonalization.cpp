@@ -1408,7 +1408,7 @@ bool GridGeom::Orthogonalization::AspectRatio(const Mesh& mesh)
     }
 
     // Compute normal length
-    for (int f = 0; f < mesh.m_facesNodes.size(); f++)
+    for (int f = 0; f < mesh.GetNumFaces(); f++)
     {
         auto numberOfFaceNodes = mesh.m_facesNodes[f].size();
         if (numberOfFaceNodes < 3) continue;
@@ -1672,7 +1672,7 @@ bool GridGeom::Orthogonalization::GetOrthogonality(const Mesh& mesh, double* ort
 
         if (firstVertex!=0 && secondVertex !=0)
         {
-            if (e < mesh.m_edgesNumFaces.size() && mesh.m_edgesNumFaces[e]==2 )
+            if (e < mesh.GetNumEdges() && mesh.m_edgesNumFaces[e]==2 )
             {
                 orthogonality[e] = NormalizedInnerProductTwoSegments(mesh.m_nodes[firstVertex], mesh.m_nodes[secondVertex],
                     mesh.m_facesCircumcenters[mesh.m_edgesFaces[e][0]], mesh.m_facesCircumcenters[mesh.m_edgesFaces[e][1]], mesh.m_projection);
@@ -1697,7 +1697,7 @@ bool GridGeom::Orthogonalization::GetSmoothness(const Mesh& mesh, double* smooth
 
         if (firstVertex != 0 && secondVertex != 0)
         {
-            if (e < mesh.m_edgesNumFaces.size() && mesh.m_edgesNumFaces[e] == 2)
+            if (e < mesh.GetNumEdges() && mesh.m_edgesNumFaces[e] == 2)
             {
                 int leftFace = mesh.m_edgesFaces[e][0];
                 int rightFace = mesh.m_edgesFaces[e][1];

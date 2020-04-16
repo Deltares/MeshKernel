@@ -670,7 +670,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        numberOfPolygonVertices = newPolygon.m_nodes.size();
+        numberOfPolygonVertices = newPolygon.GetNumNodes();
     
         return 0;
     }

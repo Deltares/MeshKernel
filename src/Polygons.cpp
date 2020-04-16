@@ -20,10 +20,10 @@ namespace GridGeom
     {
         m_projection = projection;
         // resize if necessary
-        int startNewNodes = m_numNodes;
+        int startNewNodes = GetNumNodes();
         if (startNewNodes != 0)
         {
-            ResizeVector(m_numNodes + 1 + polygon.size(), m_nodes);
+            ResizeVector(GetNumNodes() + 1 + polygon.size(), m_nodes);
             m_nodes[startNewNodes] = { doubleMissingValue,doubleMissingValue };
             startNewNodes += 1;
         }
@@ -68,8 +68,8 @@ namespace GridGeom
             const auto firstPoint = mesh.m_nodes[first];
             const auto secondPoint = mesh.m_nodes[second];
 
-            bool inHullFirst = IsPointInPolygon(mesh.m_nodes[first], m_nodes, m_numNodes);
-            bool inHullSecond = IsPointInPolygon(mesh.m_nodes[second], m_nodes, m_numNodes);
+            bool inHullFirst = IsPointInPolygon(mesh.m_nodes[first], m_nodes, GetNumNodes());
+            bool inHullSecond = IsPointInPolygon(mesh.m_nodes[second], m_nodes, GetNumNodes());
 
             if (!inHullFirst && !inHullSecond)
             {
@@ -141,7 +141,7 @@ namespace GridGeom
         int ee = 0;
         while (ee < mesh.m_nodesNumEdges[currentNode])
         {
-            bool inHull = IsPointInPolygon(mesh.m_nodes[currentNode], m_nodes, m_numNodes);
+            bool inHull = IsPointInPolygon(mesh.m_nodes[currentNode], m_nodes, GetNumNodes());
 
             if (!inHull)
             {
@@ -184,14 +184,14 @@ namespace GridGeom
     /// triangulate..
     bool Polygons::CreatePointsInPolygons(std::vector<std::vector<GridGeom::Point>>& generatedPoints)
     {        
-        std::vector<std::vector<int>> indexes(m_numNodes, std::vector<int>(2));
-        int pos = FindIndexes(m_nodes, 0, m_numNodes, doubleMissingValue, indexes);
+        std::vector<std::vector<int>> indexes(GetNumNodes(), std::vector<int>(2));
+        int pos = FindIndexes(m_nodes, 0, GetNumNodes(), doubleMissingValue, indexes);
         indexes.resize(pos);
 
         generatedPoints.resize(pos);
-        std::vector<Point> localPolygon(m_numNodes);
-        std::vector<double> xLocalPolygon(m_numNodes);
-        std::vector<double> yLocalPolygon(m_numNodes);
+        std::vector<Point> localPolygon(GetNumNodes());
+        std::vector<double> xLocalPolygon(GetNumNodes());
+        std::vector<double> yLocalPolygon(GetNumNodes());
         std::vector<int> faceNodes;
         std::vector<int> edgeNodes;
         std::vector<int> faceEdges;
@@ -295,8 +295,8 @@ namespace GridGeom
 
     bool Polygons::RefinePart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon)
     {
-        std::vector<std::vector<int>> indexes(m_numNodes, std::vector<int>(2));
-        int pos = FindIndexes(m_nodes, 0, m_numNodes, doubleMissingValue, indexes);
+        std::vector<std::vector<int>> indexes(GetNumNodes(), std::vector<int>(2));
+        int pos = FindIndexes(m_nodes, 0, GetNumNodes(), doubleMissingValue, indexes);
         indexes.resize(pos);
 
         if(startIndex==0 && endIndex==0)
@@ -450,15 +450,15 @@ namespace GridGeom
     //copypol: look how the layer thickness is determined when the input distance is not given, but th coordinate of another point
     bool Polygons::OffsetCopy(int nodeIndex, double distance, bool innerAndOuter, Polygons& newPolygon)
     {
-        std::vector<std::vector<int>> indexes(m_numNodes, std::vector<int>(2));
-        int pos = FindIndexes(m_nodes, 0, m_numNodes, doubleMissingValue, indexes);
+        std::vector<std::vector<int>> indexes(GetNumNodes(), std::vector<int>(2));
+        int pos = FindIndexes(m_nodes, 0, GetNumNodes(), doubleMissingValue, indexes);
         indexes.resize(pos);
 
         
-        int sizenewPolygon = m_numNodes;
+        int sizenewPolygon = GetNumNodes();
         if (innerAndOuter) 
         {
-            sizenewPolygon += m_numNodes + 1;
+            sizenewPolygon += GetNumNodes() + 1;
         }
         
         std::vector<Point> normalVectors(sizenewPolygon);
@@ -469,11 +469,11 @@ namespace GridGeom
         double dxNormalPreviusEdgeNodeIndex;
         double dyNormalPreviusEdgeNodeIndex;
         Point normalVectorNodeIndex;
-        for (int n = 0; n < m_numNodes; n++)
+        for (int n = 0; n < GetNumNodes(); n++)
         {
             double dxNormal;
             double dyNormal;
-            if (n < m_numNodes - 1)
+            if (n < GetNumNodes() - 1)
             {
                 auto dx = GetDx(m_nodes[n], m_nodes[n + 1], m_projection);
                 auto dy = GetDy(m_nodes[n], m_nodes[n + 1], m_projection);
@@ -518,7 +518,7 @@ namespace GridGeom
         }
 
         std::vector<Point> newPolygonPoints(sizenewPolygon, {doubleMissingValue, doubleMissingValue});
-        for (int i = 0; i < m_nodes.size(); i++)
+        for (auto i = 0; i < GetNumNodes(); i++)
         {
             auto dx = normalVectors[i].x * distance;
             auto dy = normalVectors[i].y * distance;
@@ -531,8 +531,8 @@ namespace GridGeom
             
             if (innerAndOuter)
             {
-                newPolygonPoints[i + m_numNodes + 1].x = m_nodes[i].x - dx;
-                newPolygonPoints[i + m_numNodes + 1].y = m_nodes[i].y - dy;
+                newPolygonPoints[i + GetNumNodes() + 1].x = m_nodes[i].x - dx;
+                newPolygonPoints[i + GetNumNodes() + 1].y = m_nodes[i].y - dy;
             }
         }
 
