@@ -615,8 +615,8 @@ namespace GridGeomApi
             return 0;
         }
 
-
-        bool successful = meshInstances[gridStateId].InsertNode(xCoordinate, yCoordinate, vertexIndex);
+        GridGeom::Point newNode{ xCoordinate, yCoordinate };
+        bool successful = meshInstances[gridStateId].InsertNode(newNode, vertexIndex);
         if (!successful)
         {
             return -1;

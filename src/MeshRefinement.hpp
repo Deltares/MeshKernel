@@ -31,6 +31,8 @@ namespace GridGeom
             m_isHangingNodeCache.resize(maximumNumberOfNodesPerFace, false);
             m_isHangingEdgeCache.resize(maximumNumberOfEdgesPerFace, false);
             m_polygonNodesCache.resize(maximumNumberOfNodesPerFace); 
+            m_localNodeIndexsesCache.resize(maximumNumberOfNodesPerFace,intMissingValue);
+            m_edgeIndexsesCache.resize(maximumNumberOfEdgesPerFace, intMissingValue);
         };
 
         ///refinecellsandfaces2
@@ -54,25 +56,27 @@ namespace GridGeom
         ///compute_jarefine_poly
         bool ComputeRefinementFromSamples(std::vector<Sample>& polygon);
 
-        ///comp_jalink
-        bool ComputeEdgesRefinementMask(std::vector<Point>& polygon);
-
         ///compute_jarefine_poly
         bool ComputeRefinementInPolygon(int numPolygonNodes,
             const std::vector<Sample>& samples,
             int refineType,
             bool& performRefinement);
 
+        ///comp_jalink
+        bool ComputeEdgesRefinementMask();
+
         ///find_hangingnodes
         bool FindHangingNodes(int faceIndex,
             int& numHangingEdges,
-            int& numHangingNodes);
+            int& numHangingNodes,
+            int& numEdgesToRefine);
 
         ///TODO: smooth_jarefine
 
         ///split_cells
         bool SplitFaces();
 
+        bool RefineFaces();
 
         Mesh& m_mesh;
         double m_deltaTimeMaxCourant;
@@ -83,12 +87,15 @@ namespace GridGeom
         std::vector<bool> m_isHangingNodeCache;
         std::vector<bool> m_isHangingEdgeCache;
         std::vector<Point> m_polygonNodesCache;
+        std::vector<int> m_localNodeIndexsesCache;
+        std::vector<int> m_edgeIndexsesCache;
         
 
         GridGeom::SpatialTrees::RTree m_rtree;
 
         double m_minimumFaceSize = 5e4;
         bool m_directionalRefinement = false;
+        int m_maxNumEdges = 6;
 
         enum RefinementType 
         {

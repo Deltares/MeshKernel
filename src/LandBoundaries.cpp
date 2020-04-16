@@ -17,6 +17,7 @@ namespace GridGeom
         AllocateVector(m_numAllocatedNodes, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
         m_numAllocatedNodes = m_nodes.size();
         m_numNode = 0;
+        m_polygonNodesCache.resize(maximumNumberOfNodesPerFace);
     }
 
     /// admin_landboundary_segments
@@ -626,7 +627,7 @@ namespace GridGeom
         {
             for (int f = 0; f < mesh.GetNumFaces(); f++)
             {
-                auto numFaceNodes = mesh.m_facesNodes[f].size();
+                auto numFaceNodes = mesh.GetNumFaceNodes(f);
 
                 if (numFaceNodes == 0)
                     continue;
@@ -696,7 +697,7 @@ namespace GridGeom
             {
                 if (m_faceMask[f] == 1)
                 {
-                    for (int n = 0; n < mesh.m_facesNodes[f].size(); n++)
+                    for (int n = 0; n < mesh.GetNumFaceNodes(f); n++)
                     {
                         m_nodeMask[mesh.m_facesNodes[f][n]] = segmentIndex;
                     }
