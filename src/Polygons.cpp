@@ -48,15 +48,15 @@ namespace GridGeom
         std::vector<Point>& meshBoundaryPolygon,
         int& numNodesBoundaryPolygons)
     {
-        std::vector<bool> isVisited(mesh.m_edges.size());
-        std::vector<int> boundaryPolygonStarts(mesh.m_edges.size());
+        std::vector<bool> isVisited(mesh.GetNumEdges());
+        std::vector<int> boundaryPolygonStarts(mesh.GetNumEdges());
         int numBoundaryPolygons = 0;
         numNodesBoundaryPolygons = 0;
 
-        meshBoundaryPolygon.resize(mesh.m_nodes.size(), { doubleMissingValue ,doubleMissingValue });
+        meshBoundaryPolygon.resize(mesh.GetNumNodes() , { doubleMissingValue ,doubleMissingValue });
         int meshBoundaryPolygonSize = meshBoundaryPolygon.size();
 
-        for (int e = 0; e < mesh.m_edges.size(); e++)
+        for (int e = 0; e < mesh.GetNumEdges(); e++)
         {
             if (isVisited[e] || mesh.m_edgesNumFaces[e] != 1)
             {

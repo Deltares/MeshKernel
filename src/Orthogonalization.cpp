@@ -18,18 +18,18 @@ bool GridGeom::Orthogonalization::Set(const Mesh& mesh,
 {
     m_maxNumNeighbours = *(std::max_element(mesh.m_nodesNumEdges.begin(), mesh.m_nodesNumEdges.end()));
     m_maxNumNeighbours += 1;
-    m_nodesNodes.resize(mesh.m_nodes.size(), std::vector<int>(m_maxNumNeighbours, intMissingValue));
-    m_weights.resize(mesh.m_nodes.size(), std::vector<double>(m_maxNumNeighbours, 0.0));
-    m_rightHandSide.resize(mesh.m_nodes.size(), std::vector<double>(2, 0.0));
-    m_aspectRatios.resize(mesh.m_edges.size(), 0.0);
+    m_nodesNodes.resize(mesh.GetNumNodes() , std::vector<int>(m_maxNumNeighbours, intMissingValue));
+    m_weights.resize(mesh.GetNumNodes() , std::vector<double>(m_maxNumNeighbours, 0.0));
+    m_rightHandSide.resize(mesh.GetNumNodes() , std::vector<double>(2, 0.0));
+    m_aspectRatios.resize(mesh.GetNumEdges(), 0.0);
 
     //for each node, determine the neighbouring nodes
-    for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
+    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
-        for (std::size_t nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
+        for (auto nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
         {
             Edge edge = mesh.m_edges[mesh.m_nodesEdges[n][nn]];
-            std::size_t neighbour = edge.first == n ? edge.second : edge.first;
+            auto neighbour = edge.first == n ? edge.second : edge.first;
             m_nodesNodes[n][nn] = neighbour;
         }
     }
@@ -40,17 +40,17 @@ bool GridGeom::Orthogonalization::Set(const Mesh& mesh,
     // before iteration
     if (m_smoothorarea != 1)
     {
-        m_ww2x.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
-        m_ww2y.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
+        m_ww2x.resize(mesh.GetNumNodes() , std::vector<double>(m_maximumNumConnectedNodes, 0.0));
+        m_ww2y.resize(mesh.GetNumNodes() , std::vector<double>(m_maximumNumConnectedNodes, 0.0));
         // TODO: calculate volume weights
     }
 
     m_mumax = (1.0 - m_smoothorarea) * 0.5;
     m_mu = std::min(1e-2, m_mumax);
-    m_orthogonalCoordinates.resize(mesh.m_nodes.size());
+    m_orthogonalCoordinates.resize(mesh.GetNumNodes() );
 
     // in this case the nearest point is the point itself
-    m_nearestPoints.resize(mesh.m_nodes.size());
+    m_nearestPoints.resize(mesh.GetNumNodes() );
     std::iota(m_nearestPoints.begin(), m_nearestPoints.end(), 0);
 
     // back-up original nodes, for projection on original mesh boundary
@@ -87,15 +87,15 @@ bool GridGeom::Orthogonalization::Iterate(Mesh& mesh)
 {
     bool state = true;
 
-    for (std::size_t outerIter = 0; outerIter < m_orthogonalizationOuterIterations; outerIter++)
+    for (auto outerIter = 0; outerIter < m_orthogonalizationOuterIterations; outerIter++)
     {
         if (state)
         {
             state = PrapareOuterIteration(mesh);
         }
-        for (std::size_t boundaryIter = 0; boundaryIter < m_orthogonalizationBoundaryIterations; boundaryIter++)
+        for (auto boundaryIter = 0; boundaryIter < m_orthogonalizationBoundaryIterations; boundaryIter++)
         {
-            for (std::size_t innerIter = 0; innerIter < m_orthogonalizationInnerIterations; innerIter++)
+            for (auto innerIter = 0; innerIter < m_orthogonalizationInnerIterations; innerIter++)
             {
                 if (state)
                 {
@@ -168,12 +168,12 @@ bool GridGeom::Orthogonalization::AllocateCaches(const Mesh& mesh)
     // reallocate caches
     if (state && m_cacheSize == 0)
     {
-        m_increments.resize(mesh.m_nodes.size() * 2);
-        m_rightHandSideCache.resize(mesh.m_nodes.size() * 2);
-        m_startCacheIndex.resize(mesh.m_nodes.size());
-        m_endCacheIndex.resize(mesh.m_nodes.size());
+        m_increments.resize(mesh.GetNumNodes()  * 2);
+        m_rightHandSideCache.resize(mesh.GetNumNodes()  * 2);
+        m_startCacheIndex.resize(mesh.GetNumNodes() );
+        m_endCacheIndex.resize(mesh.GetNumNodes() );
 
-        for (int n = 0; n < mesh.m_nodes.size(); n++)
+        for (int n = 0; n < mesh.GetNumNodes() ; n++)
         {
             m_startCacheIndex[n] = m_cacheSize;
             m_cacheSize += std::max(mesh.m_nodesNumEdges[n] + 1, m_numConnectedNodes[n]);
@@ -220,7 +220,7 @@ bool GridGeom::Orthogonalization::ComputeIncrements(const Mesh& mesh)
     double max_aptf = std::max(m_orthogonalizationToSmoothingFactorBoundary, m_orthogonalizationToSmoothingFactor);
     
 #pragma omp parallel for
-	for (int n = 0; n < mesh.m_nodes.size(); n++)
+	for (int n = 0; n < mesh.GetNumNodes() ; n++)
     {
         int firstCacheIndex = n * 2;
         double increments[2]{ 0.0, 0.0 };
@@ -295,7 +295,7 @@ bool GridGeom::Orthogonalization::ComputeIncrements(const Mesh& mesh)
 bool GridGeom::Orthogonalization::InnerIteration(Mesh& mesh)
 {
 #pragma omp parallel for
-	for (int n = 0; n < mesh.m_nodes.size(); n++)
+	for (int n = 0; n < mesh.GetNumNodes() ; n++)
     {
         double dx0 = 0.0;
         double dy0 = 0.0;
@@ -348,7 +348,7 @@ bool GridGeom::Orthogonalization::ProjectOnBoundary(Mesh& mesh)
     int leftNode;
     int rightNode;
 
-    for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
+    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
         int nearestPointIndex = m_nearestPoints[n];
         if (mesh.m_nodesTypes[n] == 2 && mesh.m_nodesNumEdges[n] > 0 && mesh.m_nodesNumEdges[nearestPointIndex] > 0)
@@ -356,7 +356,7 @@ bool GridGeom::Orthogonalization::ProjectOnBoundary(Mesh& mesh)
             firstPoint = mesh.m_nodes[n];
             int numEdges = mesh.m_nodesNumEdges[nearestPointIndex];
             int numNodes = 0;
-            for (std::size_t nn = 0; nn < numEdges; nn++)
+            for (auto nn = 0; nn < numEdges; nn++)
             {
                 auto edgeIndex = mesh.m_nodesEdges[nearestPointIndex][nn];
                 if (mesh.m_edgesNumFaces[edgeIndex] == 1)
@@ -414,10 +414,10 @@ bool GridGeom::Orthogonalization::ProjectOnBoundary(Mesh& mesh)
 
 bool GridGeom::Orthogonalization::ComputeWeightsSmoother(const Mesh& mesh)
 {
-    std::vector<std::vector<double>> J(mesh.m_nodes.size(), std::vector<double>(4, 0)); //Jacobian
-    std::vector<std::vector<double>> Ginv(mesh.m_nodes.size(), std::vector<double>(4, 0)); //mesh monitor matrices
+    std::vector<std::vector<double>> J(mesh.GetNumNodes() , std::vector<double>(4, 0)); //Jacobian
+    std::vector<std::vector<double>> Ginv(mesh.GetNumNodes() , std::vector<double>(4, 0)); //mesh monitor matrices
 
-    for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
+    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
         if (mesh.m_nodesTypes[n] != 1 && mesh.m_nodesTypes[n] != 2 && mesh.m_nodesTypes[n] != 4) continue;
         int currentTopology = m_nodeTopologyMapping[n];
@@ -425,7 +425,7 @@ bool GridGeom::Orthogonalization::ComputeWeightsSmoother(const Mesh& mesh)
     }
 
     // TODO: Account for samples: call orthonet_comp_Ginv(u, ops, J, Ginv)
-    for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
+    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
         Ginv[n][0] = 1.0;
         Ginv[n][1] = 0.0;
@@ -433,7 +433,7 @@ bool GridGeom::Orthogonalization::ComputeWeightsSmoother(const Mesh& mesh)
         Ginv[n][3] = 1.0;
     }
 
-    m_ww2Global.resize(mesh.m_nodes.size(), std::vector<double>(m_maximumNumConnectedNodes, 0));
+    m_ww2Global.resize(mesh.GetNumNodes() , std::vector<double>(m_maximumNumConnectedNodes, 0));
     std::vector<double> a1(2);
     std::vector<double> a2(2);
 
@@ -445,7 +445,7 @@ bool GridGeom::Orthogonalization::ComputeWeightsSmoother(const Mesh& mesh)
     std::vector<double> GxiByDiveta(m_maximumNumConnectedNodes, 0.0);
     std::vector<double> GetaByDivxi(m_maximumNumConnectedNodes, 0.0);
     std::vector<double> GetaByDiveta(m_maximumNumConnectedNodes, 0.0);
-    for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
+    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
 
         if (mesh.m_nodesNumEdges[n] < 2) continue;
@@ -554,10 +554,10 @@ bool GridGeom::Orthogonalization::ComputeSmootherOperators(const Mesh& mesh)
     std::vector<double> xi(maximumNumberOfConnectedNodes, 0.0);
     std::vector<double> eta(maximumNumberOfConnectedNodes, 0.0);
 
-    m_numConnectedNodes.resize(mesh.m_nodes.size(), 0.0);
-    m_connectedNodes.resize(mesh.m_nodes.size(), std::vector<std::size_t>(maximumNumberOfConnectedNodes));
+    m_numConnectedNodes.resize(mesh.GetNumNodes() , 0.0);
+    m_connectedNodes.resize(mesh.GetNumNodes() , std::vector<std::size_t>(maximumNumberOfConnectedNodes));
     bool state = InitializeTopologies(mesh);
-    for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
+    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
         int numSharedFaces = 0;
         int numConnectedNodes = 0;
@@ -609,7 +609,7 @@ bool GridGeom::Orthogonalization::ComputeSmootherOperators(const Mesh& mesh)
     m_etas.resize(maximumNumberOfEdgesPerNode, 0.0);
 
     std::vector<bool> isNewTopology(m_numTopologies, true);
-    for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
+    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
         int currentTopology = m_nodeTopologyMapping[n];
 
@@ -710,7 +710,7 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, const i
 
     for (int f = 0; f < numSharedFaces; f++)
     {
-        std::size_t edgeIndex = mesh.m_nodesEdges[currentNode][f];
+        auto edgeIndex = mesh.m_nodesEdges[currentNode][f];
         int otherNode = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
         int leftFace = mesh.m_edgesFaces[edgeIndex][0];
         faceLeftIndex = FindIndex(sharedFaces, leftFace);
@@ -943,8 +943,8 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
     //loop over the connected edges
     for (int f = 0; f < numSharedFaces; f++)
     {
-        std::size_t edgeIndex = mesh.m_nodesEdges[currentNode][f];
-        std::size_t nextNode = connectedNodes[f + 1]; // the first entry is always the stencil node 
+        auto edgeIndex = mesh.m_nodesEdges[currentNode][f];
+        auto nextNode = connectedNodes[f + 1]; // the first entry is always the stencil node 
         int faceLeft = mesh.m_edgesFaces[edgeIndex][0];
         int faceRigth = faceLeft;
 
@@ -955,10 +955,10 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
         bool isSquare = true;
         for (int e = 0; e < mesh.m_nodesNumEdges[nextNode]; e++)
         {
-            std::size_t edge = mesh.m_nodesEdges[nextNode][e];
+            auto edge = mesh.m_nodesEdges[nextNode][e];
             for (int ff = 0; ff < mesh.m_edgesNumFaces[edge]; ff++)
             {
-                std::size_t face = mesh.m_edgesFaces[edge][ff];
+                auto face = mesh.m_edgesFaces[edge][ff];
                 if (face != faceLeft && face != faceRigth)
                 {
                     isSquare = isSquare && mesh.m_facesNodes[face].size() == 4;
@@ -1192,8 +1192,8 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
 bool GridGeom::Orthogonalization::ComputeFacesNumEdges(const Mesh& mesh)
 {
     // Cache the result for later calls.
-    m_faceNumNodes.resize(mesh.m_numFaces, false);
-    for (int f = 0; f < mesh.m_numFaces; f++)
+    m_faceNumNodes.resize(mesh.GetNumFaces(), false);
+    for (int f = 0; f < mesh.GetNumFaces(); f++)
     {
         m_faceNumNodes[f] = mesh.m_facesNodes[f].size();
     }
@@ -1212,14 +1212,14 @@ bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& me
     numSharedFaces = 0;
     for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
     {
-        std::size_t firstEdge = mesh.m_nodesEdges[currentNode][e];
+        auto firstEdge = mesh.m_nodesEdges[currentNode][e];
 
         int secondEdgeIndex = e + 1;
 
         if (secondEdgeIndex >= mesh.m_nodesNumEdges[currentNode])
             secondEdgeIndex = 0;
 
-        std::size_t secondEdge = mesh.m_nodesEdges[currentNode][secondEdgeIndex];
+        auto secondEdge = mesh.m_nodesEdges[currentNode][secondEdgeIndex];
 
         if (mesh.m_edgesNumFaces[firstEdge] < 1 || mesh.m_edgesNumFaces[secondEdge] < 1) continue;
 
@@ -1260,8 +1260,8 @@ bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& me
     // edge connected nodes
     for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
     {
-        std::size_t edgeIndex = mesh.m_nodesEdges[currentNode][e];
-        std::size_t node = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
+        auto edgeIndex = mesh.m_nodesEdges[currentNode][e];
+        auto node = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
         connectedNodesIndex++;
         connectedNodes[connectedNodesIndex] = node;
         if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
@@ -1284,8 +1284,8 @@ bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& me
         if (faceIndex < 0) continue;
 
         // find the stencil node position  in the current face
-        std::size_t faceNodeIndex = 0;
-        std::size_t numFaceNodes = m_faceNumNodes[faceIndex];
+        int faceNodeIndex = 0;
+        auto numFaceNodes = m_faceNumNodes[faceIndex];
         for (int n = 0; n < numFaceNodes; n++)
         {
             if (mesh.m_facesNodes[faceIndex][n] == currentNode)
@@ -1362,15 +1362,15 @@ double GridGeom::Orthogonalization::OptimalEdgeAngle(int numFaceNodes, double th
 
 bool GridGeom::Orthogonalization::AspectRatio(const Mesh& mesh)
 {
-    std::vector<std::vector<double>> averageEdgesLength(mesh.m_edges.size(), std::vector<double>(2, doubleMissingValue));
-    std::vector<double> averageFlowEdgesLength(mesh.m_edges.size(), doubleMissingValue);
-    std::vector<bool> curvilinearGridIndicator(mesh.m_nodes.size(), true);
-    std::vector<double> edgesLength(mesh.m_edges.size(), 0.0);
+    std::vector<std::vector<double>> averageEdgesLength(mesh.GetNumEdges(), std::vector<double>(2, doubleMissingValue));
+    std::vector<double> averageFlowEdgesLength(mesh.GetNumEdges(), doubleMissingValue);
+    std::vector<bool> curvilinearGridIndicator(mesh.GetNumNodes() , true);
+    std::vector<double> edgesLength(mesh.GetNumEdges(), 0.0);
 
-    for (std::size_t e = 0; e < mesh.m_edges.size(); e++)
+    for (auto e = 0; e < mesh.GetNumEdges(); e++)
     {
-        std::size_t first = mesh.m_edges[e].first;
-        std::size_t second = mesh.m_edges[e].second;
+        auto first = mesh.m_edges[e].first;
+        auto second = mesh.m_edges[e].second;
 
         if (first == second) continue;
         double edgeLength = Distance(mesh.m_nodes[first], mesh.m_nodes[second], mesh.m_projection);
@@ -1410,13 +1410,13 @@ bool GridGeom::Orthogonalization::AspectRatio(const Mesh& mesh)
     // Compute normal length
     for (int f = 0; f < mesh.m_facesNodes.size(); f++)
     {
-        std::size_t numberOfFaceNodes = mesh.m_facesNodes[f].size();
+        auto numberOfFaceNodes = mesh.m_facesNodes[f].size();
         if (numberOfFaceNodes < 3) continue;
 
         for (int n = 0; n < numberOfFaceNodes; n++)
         {
             if (numberOfFaceNodes != 4) curvilinearGridIndicator[mesh.m_facesNodes[f][n]] = false;
-            std::size_t edgeIndex = mesh.m_facesEdges[f][n];
+            auto edgeIndex = mesh.m_facesEdges[f][n];
 
             if (mesh.m_edgesNumFaces[edgeIndex] < 1) continue;
 
@@ -1439,7 +1439,7 @@ bool GridGeom::Orthogonalization::AspectRatio(const Mesh& mesh)
             if (numberOfFaceNodes == 4)
             {
                 int kkp2 = n + 2; if (kkp2 >= numberOfFaceNodes) kkp2 = kkp2 - numberOfFaceNodes;
-                std::size_t klinkp2 = mesh.m_facesEdges[f][kkp2];
+                auto klinkp2 = mesh.m_facesEdges[f][kkp2];
                 edgeLength = 0.5 * (edgesLength[edgeIndex] + edgesLength[klinkp2]);
             }
 
@@ -1457,10 +1457,10 @@ bool GridGeom::Orthogonalization::AspectRatio(const Mesh& mesh)
     if (curvilinearToOrthogonalRatio == 1.0)
         return true;
 
-    for (std::size_t e = 0; e < mesh.m_edges.size(); e++)
+    for (auto e = 0; e < mesh.GetNumEdges(); e++)
     {
-        std::size_t first = mesh.m_edges[e].first;
-        std::size_t second = mesh.m_edges[e].second;
+        auto first = mesh.m_edges[e].first;
+        auto second = mesh.m_edges[e].second;
 
         if (first < 0 || second < 0) continue;
         if (mesh.m_edgesNumFaces[e] < 1) continue;
@@ -1495,16 +1495,16 @@ bool GridGeom::Orthogonalization::ComputeWeightsOrthogonalizer(const Mesh& mesh)
     Point normal;
 
     std::fill(m_rightHandSide.begin(), m_rightHandSide.end(), std::vector<double>(2, 0.0));
-    for (std::size_t n = 0; n < mesh.m_nodes.size(); n++)
+    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
         if (mesh.m_nodesTypes[n] != 1 && mesh.m_nodesTypes[n] != 2)
         {
             continue;
         }
 
-        for (std::size_t nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
+        for (auto nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
         {
-            std::size_t edgeIndex = mesh.m_nodesEdges[n][nn];
+            auto edgeIndex = mesh.m_nodesEdges[n][nn];
             double aspectRatio = m_aspectRatios[edgeIndex];
 
             if (aspectRatio != doubleMissingValue)
@@ -1518,7 +1518,7 @@ bool GridGeom::Orthogonalization::ComputeWeightsOrthogonalizer(const Mesh& mesh)
                     double neighbouringNodeDistance = Distance(neighbouringNode, mesh.m_nodes[n], mesh.m_projection);
                     double aspectRatioByNodeDistance = aspectRatio * neighbouringNodeDistance;
 
-                    std::size_t leftFace = mesh.m_edgesFaces[edgeIndex][0];
+                    auto leftFace = mesh.m_edgesFaces[edgeIndex][0];
                     bool flippedNormal;
                     NormalVectorInside(mesh.m_nodes[n], neighbouringNode, mesh.m_facesMassCenters[leftFace], normal, flippedNormal, mesh.m_projection);
 
@@ -1565,7 +1565,7 @@ bool GridGeom::Orthogonalization::InitializeTopologies(const Mesh& mesh)
 {
     // topology 
     m_numTopologies = 0;
-    m_nodeTopologyMapping.resize(mesh.m_nodes.size(), -1);
+    m_nodeTopologyMapping.resize(mesh.GetNumNodes() , -1);
     m_numTopologyNodes.resize(m_topologyInitialSize, -1);
     m_numTopologyFaces.resize(m_topologyInitialSize, -1);
     m_topologyXi.resize(m_topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
@@ -1664,7 +1664,7 @@ bool GridGeom::Orthogonalization::SaveTopology(int currentNode,
 
 bool GridGeom::Orthogonalization::GetOrthogonality(const Mesh& mesh, double* orthogonality)
 {
-    for(int e=0; e < mesh.m_edges.size() ; e++)
+    for(int e=0; e < mesh.GetNumEdges() ; e++)
     {
         orthogonality[e] = doubleMissingValue;
         int firstVertex = mesh.m_edges[e].first;
@@ -1689,7 +1689,7 @@ bool GridGeom::Orthogonalization::GetOrthogonality(const Mesh& mesh, double* ort
 
 bool GridGeom::Orthogonalization::GetSmoothness(const Mesh& mesh, double* smoothness)
 {
-    for (int e = 0; e < mesh.m_edges.size(); e++)
+    for (int e = 0; e < mesh.GetNumEdges(); e++)
     {
         smoothness[e] = doubleMissingValue;
         int firstVertex = mesh.m_edges[e].first;

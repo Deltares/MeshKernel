@@ -103,7 +103,7 @@ TEST(Mesh, MakeMeshInPolygon)
 
     // 2 Execution
     mesh.MakeMesh(makeGridParametersNative, polygons);
-    ASSERT_EQ(17, mesh.m_numFaces);
+    ASSERT_EQ(17, mesh.GetNumFaces());
 }
 
 TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
@@ -131,7 +131,7 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     //// Assert
     constexpr double tolerance = 1e-5;
 
-    ASSERT_EQ(6, mesh.m_edges.size());
+    ASSERT_EQ(6, mesh.GetNumEdges());
 
     ASSERT_EQ(4, mesh.m_edges[0].first);
     ASSERT_EQ(1, mesh.m_edges[0].second);
@@ -259,7 +259,7 @@ TEST(Mesh, HangingEdge)
     GridGeom::Mesh mesh;
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
-    ASSERT_EQ(1, mesh.m_numFaces);
+    ASSERT_EQ(1, mesh.GetNumFaces());
 }
 
 TEST(Mesh, NodeMerging)
