@@ -1289,70 +1289,51 @@ bool GridGeom::Mesh::FindBrotherEdges()
     return true;
 }
 
-bool GridGeom::Mesh::FindHangingNodes(int faceIndex, const std::vector<int>& edgeMask, int& numHangingEdges, int& numHangingNodes, std::vector<bool>& isHangingNode)
+bool GridGeom::Mesh::SelectNodesInPolygon(const Polygons& polygon, int inside)
 {
-    auto numFaceNodes = m_facesNodes[faceIndex].size();
-    int numrefine = 0;
-    
-    std::vector<bool> hangingNode(numFaceNodes, 0);
-    std::vector<bool> hangingEdge(numFaceNodes, 0);
-    numHangingEdges = 0;
-    numHangingNodes = 0;
-    int kknod = 0;
-    
-    for (int n = 0; n < numFaceNodes; n++)
+
+    int numberOfMeshVertices = 0;
+    for (int i = 0; i < m_nodes.size(); ++i)
     {
-        auto edgeIndex = m_facesEdges[faceIndex][n];
-        if (edgeMask[edgeIndex] != 0)
+        bool isInPolygon = IsPointInPolygon(m_nodes[i], polygon.m_nodes, polygon.m_numNodes - 1);
+        if (inside == false)
         {
-            numrefine += 1;
+            isInPolygon = !isInPolygon;
         }
-
-        // check if the brother link is in the cell
-        if (m_brotherEdges[edgeIndex] != intMissingValue)
+        if (isInPolygon)
         {
-            int e = n - 1;
-            if (e < 0)
-            {
-                e = e + numFaceNodes;
-            }
-            int ee = n + 1;
-            if (ee >= numFaceNodes)
-            {
-                e = e - numFaceNodes;
-            }
-
-            int commonNode = intMissingValue;
-            if (m_brotherEdges[edgeIndex] == m_facesEdges[faceIndex][e])
-            {
-
-            }
-            else if (m_brotherEdges[edgeIndex] == m_facesEdges[faceIndex][ee])
-            {
-
-            }
-
-            if (commonNode != intMissingValue)
-            {
-                hangingEdge[n] = true;
-                numHangingEdges++;
-                for (int nn = 0; nn < numFaceNodes; nn++)
-                {
-                    kknod = kknod + 1;
-                    if (kknod >= numFaceNodes)
-                    {
-                        kknod = kknod - numFaceNodes;
-                    }
-
-                    if (m_facesNodes[faceIndex][n] == commonNode && hangingNode[kknod] == 0)
-                    {
-                        numHangingNodes++;
-                        hangingNode[kknod] = true;
-                    }
-                }
-            }
+            m_nodeMask[i] = 1;
         }
     }
 
     return true;
+}
+
+bool GridGeom::Mesh::ComputeEdgeLengths()
+{
+    auto numEdges = m_edges.size();
+    m_edgeLengths.resize(numEdges, doubleMissingValue);
+    for (int e = 0; e < numEdges; e++)
+    {
+        int first = m_edges[e].first;
+        int second = m_edges[e].second;
+        m_edgeLengths[e] = Distance(m_nodes[first], m_nodes[second], m_projection);
+    }
+    return true;
+}
+
+int GridGeom::Mesh::GetNumNodes() 
+{
+    return m_nodes.size();
+
+}
+
+int GridGeom::Mesh::GetNumEdges()
+{
+    return m_edges.size();
+}
+
+int GridGeom::Mesh::GetNumFaces()
+{
+    return m_numFaces;
 }

@@ -43,6 +43,12 @@ namespace GridGeom
 
         void FindFaces();
 
+        inline int GetNumNodes();
+
+        inline int GetNumEdges();
+
+        inline int GetNumFaces();
+
         ///MERGENODESINPOLYGON
         bool MergeNodesInPolygon(const Polygons& polygons);
 
@@ -73,18 +79,21 @@ namespace GridGeom
 
         bool FindBrotherEdges();
 
-        bool FindHangingNodes(int faceIndex, const std::vector<int>& edgeMask, int& numHangingEdges, int& numHangingNodes, std::vector<bool>& isHangingNode);
+        bool SelectNodesInPolygon(const Polygons& polygons, int inside);
+
+        bool ComputeEdgeLengths();
 
         std::vector<Edge>  m_edges;                                 // KN
         std::vector<Point> m_nodes;                                 // KN
         std::vector<std::vector<int>> m_nodesEdges;                 // NOD
         std::vector<int> m_nodesNumEdges;                           // NMK
+        std::vector<int> m_nodeMask;                                // KC
 
         //edges
         std::vector<int> m_edgesNumFaces;                           // LNN
         std::vector<std::vector<int>> m_edgesFaces;                 // LNE
         std::vector<int> m_brotherEdges;
-        std::vector<int> m_hangingNodes;
+        std::vector<double> m_edgeLengths;
 
         // faces
         std::vector<std::vector<int>> m_facesNodes;                 // netcell%Nod, the nodes composing the faces, in ccw order
