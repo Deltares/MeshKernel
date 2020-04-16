@@ -57,9 +57,9 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnPoints(std::vector<Sample>& samp
         if (level > 0)
         {
             //first level: disable cells with all nodes inactive only
-            for (int f = 0; f < m_mesh.m_numFaces; f++)
+            for (int f = 0; f < m_mesh.GetNumFaces(); f++)
             {
-                for (int n = 0; n < m_mesh.m_numFaces; n++)
+                for (int n = 0; n < m_mesh.GetNumFaces(); n++)
                 {
                     int nodeIndex = m_mesh.m_facesNodes[f][n];
                     if (m_mesh.m_nodeMask[nodeIndex] != 1)
@@ -72,10 +72,10 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnPoints(std::vector<Sample>& samp
         }
         else 
         {
-            for (int f = 0; f < m_mesh.m_numFaces; f++)
+            for (int f = 0; f < m_mesh.GetNumFaces(); f++)
             {
                 bool activeNodeFound = false;
-                for (int n = 0; n < m_mesh.m_numFaces; n++)
+                for (int n = 0; n < m_mesh.GetNumFaces(); n++)
                 {
                     int nodeIndex = m_mesh.m_facesNodes[f][n];
                     if (m_mesh.m_nodeMask[nodeIndex] != 0 && m_mesh.m_nodeMask[nodeIndex] != -2)
@@ -110,7 +110,7 @@ bool GridGeom::MeshRefinement::ComputeInitialRefinementMask()
         repeat = false;
         bool hanging = false;
         bool crossing = false;
-        for (int f = 0; f < m_mesh.m_numFaces; f++)
+        for (int f = 0; f < m_mesh.GetNumFaces(); f++)
         {
             int numnodes = m_mesh.m_facesNodes[f].size();
             for (int n = 0; n < numnodes; n++)
@@ -156,7 +156,7 @@ bool GridGeom::MeshRefinement::ComputeInitialRefinementMask()
 ///compute_jarefine
 bool GridGeom::MeshRefinement::ComputeRefinementFromSamples(std::vector<Sample>& samples)
 {
-    for (int f = 0; f < m_mesh.m_numFaces; f++)
+    for (int f = 0; f < m_mesh.GetNumFaces(); f++)
     {
         m_mesh.FacePolygon(f, m_polygonNodesCache);
 
@@ -381,7 +381,7 @@ bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask(std::vector<Point>& p
         repeat = false;
         iter++;
 
-        for (int f = 0; f < m_mesh.m_numFaces; f++)
+        for (int f = 0; f < m_mesh.GetNumFaces(); f++)
         {
             if (m_faceMask[f] == 0)
             {

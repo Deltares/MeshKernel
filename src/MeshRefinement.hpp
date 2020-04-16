@@ -25,8 +25,8 @@ namespace GridGeom
             m_mesh(mesh)
         {
             // all gets refined
-            m_faceMask.resize(m_mesh.m_numFaces, 1);
-            m_edgeMask.resize(m_mesh.m_edges.size(), -1);
+            m_faceMask.resize(m_mesh.GetNumFaces(), 1);
+            m_edgeMask.resize(m_mesh.GetNumEdges(), -1);
             m_refineEdgeCache.resize(maximumNumberOfEdgesPerFace);
             m_isHangingNodeCache.resize(maximumNumberOfNodesPerFace, false);
             m_isHangingEdgeCache.resize(maximumNumberOfEdgesPerFace, false);

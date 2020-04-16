@@ -43,11 +43,11 @@ namespace GridGeom
 
         void FindFaces();
 
-        inline int GetNumNodes();
+        inline int GetNumNodes() const { return m_nodes.size(); }
 
-        inline int GetNumEdges();
+        inline int GetNumEdges() const { return m_edges.size(); }
 
-        inline int GetNumFaces();
+        inline int GetNumFaces() const { return m_numFaces; }
 
         ///MERGENODESINPOLYGON
         bool MergeNodesInPolygon(const Polygons& polygons);
@@ -101,7 +101,7 @@ namespace GridGeom
         std::vector<Point>            m_facesCircumcenters;         // xz  the face circumcenter
         std::vector<Point>            m_facesMassCenters;           // xzw the faces canters of mass
 
-        std::size_t m_numFaces;                                     // NUMP
+        int m_numFaces;                                             // NUMP
         std::vector<double> m_faceArea;                             // Face area
         
         std::vector<int> m_nodesTypes;                              // Node types,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
