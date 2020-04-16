@@ -36,6 +36,9 @@ namespace GridGeom
     // merging distance
     static constexpr double mergingDistance = 0.001;
 
+    // physical constants
+    static constexpr double gravity = 9.81;
+
     // Operations averaging methods
     enum AveragingMethod 
     {

@@ -537,16 +537,17 @@ namespace GridGeomApi
 
         GridGeom::Polygons polygon;
         polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+
+        successful = meshInstances[gridStateId].SelectNodesInPolygon(polygon, inside);
+        if (!successful)
+        {
+            return -1;
+        }
         
         numberOfMeshVertices = 0;
         for (auto i = 0; i < meshInstances[gridStateId].m_nodes.size(); ++i) 
         {
-            bool isInPolygon = IsPointInPolygon(meshInstances[gridStateId].m_nodes[i], polygon.m_nodes, polygon.m_numNodes - 1);
-            if (inside == false) 
-            {
-                isInPolygon = !isInPolygon;
-            }
-            if (isInPolygon) 
+            if (meshInstances[gridStateId].m_nodeMask[i])
             {
                 numberOfMeshVertices++;
             }
@@ -572,16 +573,16 @@ namespace GridGeomApi
         GridGeom::Polygons polygon;
         polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
 
+        successful = meshInstances[gridStateId].SelectNodesInPolygon(polygon,inside);
+        if (!successful)
+        {
+            return -1;
+        }
+
         numberOfMeshVertices = 0;
         for (int i = 0; i < meshInstances[gridStateId].m_nodes.size(); ++i)
         {
-            bool isInPolygon = IsPointInPolygon(meshInstances[gridStateId].m_nodes[i], polygon.m_nodes, polygon.m_numNodes - 1);
-            if (inside == false)
-            {
-                isInPolygon = !isInPolygon;
-            }
-
-            if (isInPolygon)
+            if (meshInstances[gridStateId].m_nodeMask[i]) 
             {
                 selectedVertices[numberOfMeshVertices] = i;
                 numberOfMeshVertices++;
