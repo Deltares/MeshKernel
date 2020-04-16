@@ -56,8 +56,6 @@ namespace GridGeom
         bool ComputeXiEta(const Mesh& mesh, int currentNode, const std::vector<int>& sharedFaces, const int& numSharedFaces, const std::vector<std::size_t>& connectedNodes,
             const std::size_t& numConnectedNodes, const std::vector<std::vector<std::size_t>>& faceNodeMapping, std::vector<double>& xi, std::vector<double>& eta);
 
-        bool ComputeFacesNumEdges(const Mesh& mesh);
-
         ///  computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face.
         bool OrthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<std::size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<std::size_t>>& faceNodeMapping);
 
@@ -133,7 +131,6 @@ namespace GridGeom
 
         std::vector<std::vector<double>>  m_weights;
         std::vector<std::vector<double>>  m_rightHandSide;
-        std::vector<int> m_faceNumNodes;                                         //number of face nodes
 
         int m_maximumNumConnectedNodes = 0;
         int m_maximumNumSharedFaces = 0;
