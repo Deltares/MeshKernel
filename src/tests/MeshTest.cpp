@@ -197,7 +197,7 @@ TEST(Mesh, TwoTrianglesDuplicatedEdges)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     // 3 Validation
-    ASSERT_EQ(2, mesh.m_facesNodes.size());
+    ASSERT_EQ(2, mesh.GetNumFaces());
 }
 
 TEST(Mesh, MeshBoundaryToPolygon)
@@ -350,7 +350,7 @@ TEST(Mesh, NodeMerging)
     //std::cout << "Elapsed time NodeMerging " << elapsedTime << " s " << std::endl;
 
     // 3. Assert
-    ASSERT_EQ(mesh.m_facesNodes.size(), (n-1)*(m-1));
+    ASSERT_EQ(mesh.GetNumFaces(), (n-1)*(m-1));
 }
 
 TEST(Mesh, MillionQuads)
@@ -406,7 +406,7 @@ TEST(Mesh, MillionQuads)
 
     // the number of found faces is
     //auto faces = mesh.m_facesNodes;
-    std::cout << "Number of found cells " << mesh.m_facesNodes.size() << std::endl;
+    std::cout << "Number of found cells " << mesh.GetNumFaces() << std::endl;
     //std::cout << "First face " << faces[0][0] << " " << faces[0][1] << " " << faces[0][2] << " " << faces[0][3] << std::endl;
     //std::cout << "Second face " << faces[1][0] << " " << faces[1][1] << " " << faces[1][2] << " " << faces[1][3] << std::endl;
 

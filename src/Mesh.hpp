@@ -101,7 +101,6 @@ namespace GridGeom
         std::vector<Point>            m_facesCircumcenters;         // xz  the face circumcenter
         std::vector<Point>            m_facesMassCenters;           // xzw the faces canters of mass
 
-        int m_numFaces;                                             // NUMP
         std::vector<double> m_faceArea;                             // Face area
         
         std::vector<int> m_nodesTypes;                              // Node types,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
@@ -143,6 +142,8 @@ namespace GridGeom
         bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes);
 
         double m_dcenterinside = 1.0;
+
+        int m_numFaces;                                             // NUMP
 
     };
 }
