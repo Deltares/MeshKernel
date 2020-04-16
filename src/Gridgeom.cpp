@@ -147,7 +147,7 @@ namespace GridGeomApi
         meshGeometry.nodez = &meshInstances[gridStateId].m_nodez[0];
         meshGeometry.edge_nodes = &meshInstances[gridStateId].m_edgeNodes[0];
 
-        if (meshInstances[gridStateId].m_nodex.size() == 1)
+        if (meshInstances[gridStateId].GetNumNodes() == 1)
         {
             meshGeometryDimensions.numnode = 0;
             meshGeometryDimensions.numedge = 0;
@@ -156,9 +156,9 @@ namespace GridGeomApi
         }
         else
         {
-            meshGeometryDimensions.numnode = meshInstances[gridStateId].m_nodex.size();
-            meshGeometryDimensions.numedge = meshInstances[gridStateId].m_edgeNodes.size() / 2;
-            meshGeometryDimensions.numface = meshInstances[gridStateId].m_numFaces;
+            meshGeometryDimensions.numnode = meshInstances[gridStateId].GetNumNodes();
+            meshGeometryDimensions.numedge = meshInstances[gridStateId].GetNumEdges();
+            meshGeometryDimensions.numface = meshInstances[gridStateId].GetNumFaces();
             meshGeometryDimensions.maxnumfacenodes = 4;
         }
 
@@ -545,7 +545,7 @@ namespace GridGeomApi
         }
         
         numberOfMeshVertices = 0;
-        for (auto i = 0; i < meshInstances[gridStateId].m_nodes.size(); ++i) 
+        for (auto i = 0; i < meshInstances[gridStateId].GetNumNodes() ; ++i) 
         {
             if (meshInstances[gridStateId].m_nodeMask[i])
             {
@@ -580,7 +580,7 @@ namespace GridGeomApi
         }
 
         numberOfMeshVertices = 0;
-        for (int i = 0; i < meshInstances[gridStateId].m_nodes.size(); ++i)
+        for (int i = 0; i < meshInstances[gridStateId].GetNumNodes() ; ++i)
         {
             if (meshInstances[gridStateId].m_nodeMask[i]) 
             {

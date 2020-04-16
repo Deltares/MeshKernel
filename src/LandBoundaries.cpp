@@ -169,11 +169,11 @@ namespace GridGeom
             meshBoundOnly = true;
         }
 
-        m_nodeMask.resize(mesh.m_nodes.size(), intMissingValue);
-        m_faceMask.resize(mesh.m_numFaces, intMissingValue);
-        m_edgeMask.resize(mesh.m_edges.size(), intMissingValue);
-        m_meshNodesLandBoundarySegments.resize(mesh.m_nodes.size(), -1);
-        m_nodesMinDistances.resize(mesh.m_nodes.size(), doubleMissingValue);
+        m_nodeMask.resize(mesh.GetNumNodes() , intMissingValue);
+        m_faceMask.resize(mesh.GetNumFaces(), intMissingValue);
+        m_edgeMask.resize(mesh.GetNumEdges(), intMissingValue);
+        m_meshNodesLandBoundarySegments.resize(mesh.GetNumNodes() , -1);
+        m_nodesMinDistances.resize(mesh.GetNumNodes() , doubleMissingValue);
 
         //landBoundarySegment
         for (int landBoundarySegment = 0; landBoundarySegment < m_numSegments; landBoundarySegment++)
@@ -198,7 +198,7 @@ namespace GridGeom
         {
             std::vector<int> connectedNodes;
             int numConnectedNodes = 0;
-            for (int e = 0; e < mesh.m_edges.size(); e++)
+            for (int e = 0; e < mesh.GetNumEdges(); e++)
             {
                 if (mesh.m_edgesNumFaces[e] != 1)
                     continue;
@@ -582,14 +582,14 @@ namespace GridGeom
             }
 
             int nextEdgeIndex = connectedNodes[currentNode];
-            if (nextEdgeIndex < 0 || nextEdgeIndex >= mesh.m_edges.size())
+            if (nextEdgeIndex < 0 || nextEdgeIndex >= mesh.GetNumEdges())
             {
                 break;
             }
 
             currentNode = mesh.m_edges[nextEdgeIndex].first + mesh.m_edges[nextEdgeIndex].second - currentNode;
 
-            if (currentNode < 0 || currentNode >= mesh.m_nodes.size())
+            if (currentNode < 0 || currentNode >= mesh.GetNumNodes() )
             {
                 break;
             }
@@ -624,7 +624,7 @@ namespace GridGeom
         int crossedFaceIndex = -1;
         for (int i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
         {
-            for (int f = 0; f < mesh.m_numFaces; f++)
+            for (int f = 0; f < mesh.GetNumFaces(); f++)
             {
                 auto numFaceNodes = mesh.m_facesNodes[f].size();
 
@@ -649,7 +649,7 @@ namespace GridGeom
         if (!nodeInFace)
         {
             crossedFaceIndex = -1;
-            for (int e = 0; e < mesh.m_edges.size(); e++)
+            for (int e = 0; e < mesh.GetNumEdges(); e++)
             {
                 if (mesh.m_edgesNumFaces[e] != 1)
                     continue;
@@ -672,7 +672,7 @@ namespace GridGeom
             std::fill(m_faceMask.begin(), m_faceMask.end(), intMissingValue);
             std::fill(m_edgeMask.begin(), m_edgeMask.end(), intMissingValue);
             //m_faceMask assumes crossedFace has already been done.
-            if (crossedFaceIndex >= 0 && crossedFaceIndex < mesh.m_numFaces)
+            if (crossedFaceIndex >= 0 && crossedFaceIndex < mesh.GetNumFaces())
             {
                 m_faceMask[crossedFaceIndex] = 1;
             }
@@ -692,7 +692,7 @@ namespace GridGeom
                 rightEdgeRatio);
 
             // Mask all nodes of the masked faces
-            for (int f = 0; f < mesh.m_numFaces; f++)
+            for (int f = 0; f < mesh.GetNumFaces(); f++)
             {
                 if (m_faceMask[f] == 1)
                 {
@@ -709,7 +709,7 @@ namespace GridGeom
                 e = segmentIndex;
         }
 
-        for (int n = 0; n < mesh.m_nodes.size(); n++)
+        for (int n = 0; n < mesh.GetNumNodes() ; n++)
         {
             if (m_nodeMask[n] > 0)
             {
@@ -747,7 +747,7 @@ namespace GridGeom
             if (face < 0)
             {
                 int endNode = 0;
-                for (int e = 0; e < mesh.m_edges.size(); e++)
+                for (int e = 0; e < mesh.GetNumEdges(); e++)
                 {
                     if (mesh.m_edgesNumFaces[e] != 1 || mesh.m_edges[e].first < 0 || mesh.m_edges[e].second < 0)
                         continue;
@@ -1051,7 +1051,7 @@ namespace GridGeom
         int startEdge = -1;
         int endEdge = -1;
 
-        for (int e = 0; e < mesh.m_edges.size(); e++)
+        for (int e = 0; e < mesh.GetNumEdges(); e++)
         {
             if (mesh.m_edges[e].first < 0 || mesh.m_edges[e].second < 0)
                 continue;
@@ -1119,10 +1119,10 @@ namespace GridGeom
     bool LandBoundaries::ShortestPath(const Mesh& mesh, const Polygons& polygons, int landBoundarySegment,
         int startLandBoundaryIndex, int endLandBoundaryIndex, int startMeshNode, bool meshBoundOnly, std::vector<int>& connectedNodes)
     {
-        connectedNodes.resize(mesh.m_nodes.size(), -1);
+        connectedNodes.resize(mesh.GetNumNodes() , -1);
         // infinite distance for all nodes
-        std::vector<double> nodeDistances(mesh.m_nodes.size(), std::numeric_limits<double>::max());
-        std::vector<bool> isVisited(mesh.m_nodes.size(), false);
+        std::vector<double> nodeDistances(mesh.GetNumNodes() , std::numeric_limits<double>::max());
+        std::vector<bool> isVisited(mesh.GetNumNodes() , false);
 
         int currentNodeIndex = startMeshNode;
         nodeDistances[startMeshNode] = 0.0;
@@ -1229,7 +1229,7 @@ namespace GridGeom
             // linear search with masking
             currentNodeIndex = 0;
             double minValue = std::numeric_limits<double>::max();
-            for (int n = 0; n < mesh.m_nodes.size(); n++)
+            for (int n = 0; n < mesh.GetNumNodes() ; n++)
             {
                 if (m_nodeMask[n] == landBoundarySegment && !isVisited[n] && nodeDistances[n] < minValue)
                 {
@@ -1240,7 +1240,7 @@ namespace GridGeom
             }
 
             if (currentNodeIndex < 0 ||
-                currentNodeIndex >= mesh.m_nodes.size() ||
+                currentNodeIndex >= mesh.GetNumNodes()  ||
                 nodeDistances[currentNodeIndex] == std::numeric_limits<double>::max() ||
                 isVisited[currentNodeIndex])
             {
@@ -1326,7 +1326,7 @@ namespace GridGeom
     bool LandBoundaries::SnapMeshToLandBoundaries(Mesh& mesh)
     {
 
-        for (int n = 0; n < mesh.m_nodes.size(); n++)
+        for (int n = 0; n < mesh.GetNumNodes() ; n++)
         {
             if (mesh.m_nodesTypes[n] == 1 || mesh.m_nodesTypes[n] == 2 || mesh.m_nodesTypes[n] == 3)
             {
