@@ -21,18 +21,21 @@ namespace GridGeom
 
     public:
 
-        MeshRefinement(Mesh& mesh, Polygons& polygons): m_mesh(mesh)
+        MeshRefinement(Mesh& mesh): 
+            m_mesh(mesh)
         {
             // all gets refined
             m_faceMask.resize(m_mesh.m_numFaces, 1);
-            m_nodeMask.resize(m_mesh.m_nodes.size(), 1);
-
-            //polygons.
-
+            m_edgeMask.resize(m_mesh.m_edges.size(), -1);
+            m_refineEdgeCache.resize(maximumNumberOfEdgesPerFace);
+            m_isHangingNodeCache.resize(maximumNumberOfNodesPerFace, false);
+            m_isHangingEdgeCache.resize(maximumNumberOfEdgesPerFace, false);
+            m_polygonNodesCache.resize(maximumNumberOfNodesPerFace); 
         };
 
         ///refinecellsandfaces2
         bool RefineMeshBasedOnPoints(std::vector<Sample>& sample,
+            const Polygons& polygon,
             GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
             GridGeomApi::InterpolationParametersNative& interpolationParametersNative);
 
@@ -57,17 +60,35 @@ namespace GridGeom
         ///compute_jarefine_poly
         bool ComputeRefinementInPolygon(int numPolygonNodes,
             const std::vector<Sample>& samples,
-            std::vector<Point>& polygon,
-            const SpatialTrees::RTree& rtree,
-            double deltaCourant,
-            int refineType);
+            int refineType,
+            bool& performRefinement);
 
-        bool ComputeEdgeLengths();
+        ///find_hangingnodes
+        bool FindHangingNodes(int faceIndex,
+            int& numHangingEdges,
+            int& numHangingNodes);
+
+        ///TODO: smooth_jarefine
+
+        ///split_cells
+        bool SplitFaces();
+
 
         Mesh& m_mesh;
+        double m_deltaTimeMaxCourant;
+
         std::vector<int> m_faceMask;
-        std::vector<int> m_nodeMask;
-        std::vector<double> edgeLengths;
+        std::vector<int> m_edgeMask;
+        std::vector<int> m_refineEdgeCache;
+        std::vector<bool> m_isHangingNodeCache;
+        std::vector<bool> m_isHangingEdgeCache;
+        std::vector<Point> m_polygonNodesCache;
+        
+
+        GridGeom::SpatialTrees::RTree m_rtree;
+
+        double m_minimumFaceSize = 5e4;
+        bool m_directionalRefinement = false;
 
         enum RefinementType 
         {

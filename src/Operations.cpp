@@ -1184,4 +1184,24 @@ namespace GridGeom
         return true;
     }
 
+    inline static int NextCircularForwardIndex(int currentIndex, int size) 
+    {
+        int index = currentIndex + 1;
+        if (currentIndex >= size)
+        {
+            currentIndex = currentIndex - size;
+        }
+        return index;
+    }
+
+    inline static int NextCircularBackwardIndex(int currentIndex, int size)
+    {
+        int index = currentIndex - 1;
+        if (currentIndex < 0)
+        {
+            currentIndex = currentIndex + size;
+        }
+        return index;
+    }
+
 }
