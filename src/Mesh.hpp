@@ -49,6 +49,8 @@ namespace GridGeom
 
         inline int GetNumFaces() const { return m_numFaces; }
 
+        inline int GetNumFaceNodes(const int faceIndex) const { return m_facesNodes[faceIndex].size(); }
+
         ///MERGENODESINPOLYGON
         bool MergeNodesInPolygon(const Polygons& polygons);
 
@@ -62,7 +64,7 @@ namespace GridGeom
         bool ConnectNodes(int startNode, int endNode, int& newEdgeIndex);
 
         ///setnewpoint
-        bool InsertNode(double xCoordinate, double yCoordinate, int& newNodeIndex);
+        bool InsertNode(const Point& newPoint, int& newNodeIndex);
 
         ///setnewpoint
         bool DeleteNode(int nodeIndex);
@@ -75,13 +77,20 @@ namespace GridGeom
 
         ///get_cellpolygon
         //need to account for spherical coordinates. Build a polygon around a face
+        bool FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache, std::vector<int>& localNodeIndexsesCache, std::vector<int>& nodeIndexsesCache) const;
+
         bool FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const;
+
+        bool IsFullFaceNotInPolygon(int faceIndex) const;
 
         bool FindBrotherEdges();
 
         bool SelectNodesInPolygon(const Polygons& polygons, int inside);
 
         bool ComputeEdgeLengths();
+
+        bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
+
 
         std::vector<Edge>  m_edges;                                 // KN
         std::vector<Point> m_nodes;                                 // KN
@@ -144,6 +153,8 @@ namespace GridGeom
         double m_dcenterinside = 1.0;
 
         int m_numFaces;                                             // NUMP
+        int m_numNodes;                                             // valid nodes
+        int m_numEdges;                                             // valid edges
 
     };
 }

@@ -34,9 +34,6 @@ bool GridGeom::Orthogonalization::Set(const Mesh& mesh,
         }
     }
 
-    // computes the number of nodes for each face
-    ComputeFacesNumEdges(mesh);
-
     // before iteration
     if (m_smoothorarea != 1)
     {
@@ -667,8 +664,7 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, const i
         double edgeRightSquaredDistance = std::sqrt(xi[edgeRight] * xi[edgeRight] + eta[edgeRight] * eta[edgeRight] + 1e-16);
         double cDPhi = (xi[edgeLeft] * xi[edgeRight] + eta[edgeLeft] * eta[edgeRight]) / (edgeLeftSquaredDistance * edgeRightSquaredDistance);
 
-        int numFaceNodes = m_faceNumNodes[sharedFaces[f]];
-
+        auto numFaceNodes = mesh.GetNumFaceNodes(sharedFaces[f]);
 
         if (numFaceNodes == 3)
         {
@@ -777,8 +773,8 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, const i
 
             if (faceRightIndex < 0) continue;
 
-            int faceLeft = sharedFaces[faceLeftIndex];
-            int faceRight = sharedFaces[faceRightIndex];
+            auto faceLeft = sharedFaces[faceLeftIndex];
+            auto faceRight = sharedFaces[faceRightIndex];
 
             if ((faceLeft != mesh.m_edgesFaces[edgeIndex][0] && faceLeft != mesh.m_edgesFaces[edgeIndex][1]) ||
                 (faceRight != mesh.m_edgesFaces[edgeIndex][0] && faceRight != mesh.m_edgesFaces[edgeIndex][1]))
@@ -786,8 +782,8 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, const i
                 return false;
             }
 
-            int numNodesLeftFace = m_faceNumNodes[faceLeft];
-            int numNodesRightFace = m_faceNumNodes[faceRight];
+            auto numNodesLeftFace = mesh.GetNumFaceNodes(faceLeft);
+            auto numNodesRightFace = mesh.GetNumFaceNodes(faceRight);
 
             for (int i = 0; i < numConnectedNodes; i++)
             {
@@ -961,7 +957,7 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
                 auto face = mesh.m_edgesFaces[edge][ff];
                 if (face != faceLeft && face != faceRigth)
                 {
-                    isSquare = isSquare && mesh.m_facesNodes[face].size() == 4;
+                    isSquare = isSquare && mesh.GetNumFaceNodes(face) == 4;
                 }
             }
             if (!isSquare)
@@ -994,11 +990,11 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
 
             if (sharedFaces[f] > 1)
             {
-                if (m_faceNumNodes[sharedFaces[f]] == 4) numNonStencilQuad += 1;
+                if (mesh.GetNumFaceNodes(sharedFaces[f]) == 4) numNonStencilQuad += 1;
             }
             if (sharedFaces[leftFaceIndex] > 1)
             {
-                if (m_faceNumNodes[sharedFaces[leftFaceIndex]] == 4) numNonStencilQuad += 1;
+                if (mesh.GetNumFaceNodes(sharedFaces[leftFaceIndex]) == 4) numNonStencilQuad += 1;
             }
             if (numNonStencilQuad > 3)
             {
@@ -1016,9 +1012,9 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
         if (sharedFaces[f] < 0) continue;
 
         // non boundary face 
-        if (m_faceNumNodes[sharedFaces[f]] == 4)
+        if (mesh.GetNumFaceNodes(sharedFaces[f]) == 4)
         {
-            for (int n = 0; n < m_faceNumNodes[sharedFaces[f]]; n++)
+            for (int n = 0; n < mesh.GetNumFaceNodes(sharedFaces[f]); n++)
             {
                 if (faceNodeMapping[f][n] <= numSharedFaces) continue;
                 thetaSquare[faceNodeMapping[f][n]] = 0.5 * M_PI;
@@ -1039,7 +1035,7 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
         // boundary face
         if (sharedFaces[f] < 0) continue;
 
-        int numFaceNodes = m_faceNumNodes[sharedFaces[f]];
+        auto numFaceNodes = mesh.GetNumFaceNodes(sharedFaces[f]);
         double phi = OptimalEdgeAngle(numFaceNodes);
 
         if (isSquareFace[f] || numFaceNodes == 4)
@@ -1130,7 +1126,7 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
             continue;
         }
 
-        int numFaceNodes = m_faceNumNodes[sharedFaces[f]];
+        int numFaceNodes = mesh.GetNumFaceNodes(sharedFaces[f]);
         if (numFaceNodes > maximumNumberOfEdgesPerNode)
         {
             //TODO: error
@@ -1187,19 +1183,6 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
 
     return true;
 }
-
-
-bool GridGeom::Orthogonalization::ComputeFacesNumEdges(const Mesh& mesh)
-{
-    // Cache the result for later calls.
-    m_faceNumNodes.resize(mesh.GetNumFaces(), false);
-    for (int f = 0; f < mesh.GetNumFaces(); f++)
-    {
-        m_faceNumNodes[f] = mesh.m_facesNodes[f].size();
-    }
-    return true;
-}
-
 
 bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<std::size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<std::size_t>>& faceNodeMapping)
 {
@@ -1285,7 +1268,7 @@ bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& me
 
         // find the stencil node position  in the current face
         int faceNodeIndex = 0;
-        auto numFaceNodes = m_faceNumNodes[faceIndex];
+        auto numFaceNodes = mesh.GetNumFaceNodes(faceIndex);
         for (int n = 0; n < numFaceNodes; n++)
         {
             if (mesh.m_facesNodes[faceIndex][n] == currentNode)
@@ -1410,7 +1393,7 @@ bool GridGeom::Orthogonalization::AspectRatio(const Mesh& mesh)
     // Compute normal length
     for (int f = 0; f < mesh.GetNumFaces(); f++)
     {
-        auto numberOfFaceNodes = mesh.m_facesNodes[f].size();
+        auto numberOfFaceNodes = mesh.GetNumFaceNodes(f);
         if (numberOfFaceNodes < 3) continue;
 
         for (int n = 0; n < numberOfFaceNodes; n++)
