@@ -632,7 +632,8 @@ namespace GridGeom
                 if (numFaceNodes == 0)
                     continue;
 
-                mesh.FacePolygon(f, m_polygonNodesCache);
+                int numPolygonPoints;
+                mesh.FacePolygon(f, m_polygonNodesCache, numPolygonPoints);
 
                 nodeInFace = IsPointInPolygon(m_nodes[i], m_polygonNodesCache, numFaceNodes);
                 if (nodeInFace)

@@ -217,7 +217,7 @@ namespace GridGeom
 
             double localPolygonArea = 0.0;
             Point centerOfMass;
-            bool success = faceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, localPolygonArea, centerOfMass, m_projection);
+            bool success = FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
             if(!success)
             {
                 return false;

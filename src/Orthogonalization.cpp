@@ -205,8 +205,7 @@ bool GridGeom::Orthogonalization::FinalizeOuterIteration(Mesh& mesh)
     //compute new faces circumcenters
     if (m_keepCircumcentersAndMassCenters != true)
     {
-        mesh.FaceCircumcenters(1.0);
-        mesh.FacesAreasAndMassCenters();
+        mesh.ComputeFaceCircumcentersMassCentersAreas(1.0);
     }
 
     return true;

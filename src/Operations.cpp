@@ -350,7 +350,7 @@ namespace GridGeom
         {
             double  firstPointYDiff = abs(abs(firstPoint.y) - 90.0);
             double  secondPointYDiff = abs(abs(secondPoint.y) - 90.0);
-            if (firstPointYDiff <= dtol_pole && secondPointYDiff > dtol_pole || firstPointYDiff > dtol_pole && secondPointYDiff <= dtol_pole)
+            if (firstPointYDiff <= absLatitudeAtPoles && secondPointYDiff > absLatitudeAtPoles || firstPointYDiff > absLatitudeAtPoles && secondPointYDiff <= absLatitudeAtPoles)
             {
                 return 0.0;
             }
@@ -882,7 +882,7 @@ namespace GridGeom
         return true;
     }
 
-    static bool circumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Point& circumcenter, const Projections& projection)
+    static bool CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, const Projections projection, Point& circumcenter)
     {
         if (projection == Projections::cartesian)
         {
@@ -1016,9 +1016,9 @@ namespace GridGeom
     }
 
     //faceAreaAndCenterOfMass: for cartesian, spherical point and spherical3dPoint
-    static bool faceAreaAndCenterOfMass(std::vector<Point>& polygon, const int numberOfPolygonPoints, double& area, Point& centerOfMass, const Projections& projection)
+    static bool FaceAreaAndCenterOfMass(std::vector<Point>& polygon, int numberOfPolygonPoints, Projections projection, double& area, Point& centerOfMass)
     {
-        if (numberOfPolygonPoints < 1)
+        if (numberOfPolygonPoints <= 0)
         {
             return false;
         }
@@ -1031,6 +1031,7 @@ namespace GridGeom
         area = 0.0;
         double xCenterOfMass = 0.0;
         double yCenterOfMass = 0.0;
+        const double minArea = 1e-8;
         for (int p = 0; p < numberOfPolygonPoints; p++)
         {
             double dx0 = GetDx(reference, polygon[p], projection);
@@ -1051,21 +1052,133 @@ namespace GridGeom
             xCenterOfMass = xCenterOfMass + xds * xc;
             yCenterOfMass = yCenterOfMass + xds * yc;
         }
+        area = std::abs(area) < minArea ? minArea : area;
 
-        double fac = 1.0 / (numberOfPolygonPoints * area);
+        double fac = 1.0 / (3.0 * area);
         xCenterOfMass = fac * xCenterOfMass;
         yCenterOfMass = fac * yCenterOfMass;
 
-        //if constexpr (operationType == sphericalOperations)
-        //{
-        //    yCenterOfMass = yCenterOfMass / (earth_radius * degrad_hp);
-        //    xCenterOfMass = xCenterOfMass / (earth_radius * degrad_hp * cos((yCenterOfMass + minY) * degrad_hp));
-        //}
+        if (projection == Projections::spherical)
+        {
+            yCenterOfMass = yCenterOfMass / (earth_radius * degrad_hp);
+            xCenterOfMass = xCenterOfMass / (earth_radius * degrad_hp * std::cos((yCenterOfMass + minY) * degrad_hp));
+        }
 
         centerOfMass.x = xCenterOfMass + minX;
         centerOfMass.y = yCenterOfMass + minY;
 
         area = std::abs(area);
+
+        return true;
+    }
+
+    static bool ComputePolygonCircumenter(std::vector<Point>& polygon, 
+        std::vector<Point>& middlePoints, 
+        std::vector<Point>& normals, 
+        int numNodes, 
+        const std::vector<int>& edgesNumFaces, 
+        Projections projection, 
+        const double weightCircumCenter,
+        Point& result)
+    {
+        const int maximumNumberCircumcenterIterations = 100;
+
+        Point centerOfMass;
+        double area;
+        bool successful = FaceAreaAndCenterOfMass(polygon, numNodes, projection, area, centerOfMass);
+
+        double xCenter = 0;
+        double yCenter = 0;
+        for (int n = 0; n < numNodes; n++)
+        {
+            xCenter += polygon[n].x;
+            yCenter += polygon[n].y;
+        }
+        centerOfMass.x = xCenter / numNodes;
+        centerOfMass.y = yCenter / numNodes;
+
+        // for triangles, for now assume cartesian kernel
+        if (numNodes == 3)
+        {
+            CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], projection, result);
+        }
+        else
+        {
+
+            Point estimatedCircumCenter = centerOfMass;
+            const double eps = 1e-3;
+            for (int n = 0; n < numNodes; n++)
+            {
+                int nextNode = n + 1;
+                if (nextNode == numNodes) nextNode = 0;
+                middlePoints[n].x = 0.5 * (polygon[n].x + polygon[nextNode].x);
+                middlePoints[n].y = 0.5 * (polygon[n].y + polygon[nextNode].y);
+                NormalVector(polygon[n], polygon[nextNode], middlePoints[n], normals[n], projection);
+            }
+
+            Point previousCircumCenter = estimatedCircumCenter;
+            for (int iter = 0; iter < maximumNumberCircumcenterIterations; iter++)
+            {
+                previousCircumCenter = estimatedCircumCenter;
+                for (int n = 0; n < numNodes; n++)
+                {
+                    if (edgesNumFaces[n] == 2 || numNodes ==3)
+                    {
+                        int nextNode = n + 1;
+                        if (nextNode == numNodes) nextNode = 0;
+                        double dx = GetDx(middlePoints[n], estimatedCircumCenter, projection);
+                        double dy = GetDy(middlePoints[n], estimatedCircumCenter, projection);
+                        double increment = -0.1 * DotProduct(dx, dy, normals[n].x, normals[n].y);
+                        Add(estimatedCircumCenter, normals[n], increment, projection);
+                    }
+                }
+                if (iter > 0 &&
+                    abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
+                    abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
+                {
+                    result = estimatedCircumCenter;
+                    break;
+                }
+            }
+        }
+
+
+        if (weightCircumCenter <= 1.0 && weightCircumCenter >= 0.0)
+        {
+            double localWeightCircumCenter = 1.0;
+            if (numNodes > 3)
+            {
+                localWeightCircumCenter = weightCircumCenter;
+            }
+
+            for (int n = 0; n < numNodes; n++)
+            {
+                polygon[n].x = localWeightCircumCenter * polygon[n].x + (1.0 - localWeightCircumCenter) * centerOfMass.x;
+                polygon[n].y = localWeightCircumCenter * polygon[n].y + (1.0 - localWeightCircumCenter) * centerOfMass.y;
+            }
+            polygon[numNodes] = polygon[0];
+
+            bool isCircumcenterInside = IsPointInPolygon(result, polygon, numNodes);
+
+            if (!isCircumcenterInside)
+            {
+                for (int n = 0; n < numNodes; n++)
+                {
+                    int nextNode = n + 1;
+                    if (nextNode == numNodes) nextNode = 0;
+                    Point intersection;
+                    double crossProduct;
+                    double firstRatio;
+                    double secondRatio;
+                    bool areLineCrossing = AreLinesCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, intersection, crossProduct, firstRatio, secondRatio, projection);
+                    if (areLineCrossing)
+                    {
+                        result = intersection;
+                        break;
+                    }
+                }
+            }
+        }
 
         return true;
     }
@@ -1086,7 +1199,6 @@ namespace GridGeom
         double& result)
     {
         std::vector<Point> searchPolygon(numNodes);
-
 
         // averaging settings
         const double relativeFaceSearchSize = 1e-4;
@@ -1129,7 +1241,7 @@ namespace GridGeom
 
         auto sampleIndexses = rtree.NearestNeighbours(centerOfMass, searchRadius);
         result = doubleMissingValue;
-        if (sampleIndexses.size() == 0)
+        if (sampleIndexses.empty())
         {
             return true;
         }
@@ -1150,16 +1262,16 @@ namespace GridGeom
             bool isInPolygon = IsPointInPolygon(samplePoint, polygon, numNodes);
             if (isInPolygon) 
             {
-                if (averagingMethod == AveragingMethod::SimpleAveraging)
+                if (averagingMethod == SimpleAveraging)
                 {
                     result += samples[sampleIndex].z;
                     numValidSamplesInPolygon++;
                 }
-                if (averagingMethod == AveragingMethod::KdTree) 
+                if (averagingMethod == KdTree) 
                 {
                     result = std::min(std::abs(result), std::abs(samples[sampleIndex].z));
                 }
-                if (averagingMethod == AveragingMethod::InverseWeightDistance)
+                if (averagingMethod == InverseWeightDistance)
                 {
                     double distance = std::max(0.01,Distance(centerOfMass, samplePoint, projection));
                     double weight = 1.0 / distance;
@@ -1171,12 +1283,12 @@ namespace GridGeom
         }
 
         
-        if (averagingMethod == AveragingMethod::SimpleAveraging && numValidSamplesInPolygon>=1)
+        if (averagingMethod == SimpleAveraging && numValidSamplesInPolygon>=1)
         {
             result /= numValidSamplesInPolygon;
         }
 
-        if (averagingMethod == AveragingMethod::InverseWeightDistance && numValidSamplesInPolygon >= 1)
+        if (averagingMethod == InverseWeightDistance && numValidSamplesInPolygon >= 1)
         {
             result /= wall;
         }
