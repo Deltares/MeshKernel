@@ -43,8 +43,7 @@ namespace GridGeom
 
     private:
 
-
-        bool FindBrotherEdges(std::vector<int>& brotherEdges);
+        bool FindBrotherEdges();
 
         ///set_initial_mask
         // do not refine, based on the criterion :
@@ -83,6 +82,7 @@ namespace GridGeom
 
         std::vector<int> m_faceMask;
         std::vector<int> m_edgeMask;
+        std::vector<int> m_brotherEdges;
         std::vector<int> m_refineEdgeCache;
         std::vector<bool> m_isHangingNodeCache;
         std::vector<bool> m_isHangingEdgeCache;

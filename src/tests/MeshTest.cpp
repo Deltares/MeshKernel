@@ -10,10 +10,10 @@ TEST(Mesh, OneQuadTestConstructor)
 {
     //1 Setup
     std::vector<GridGeom::Point> nodes;
-    nodes.push_back(GridGeom::Point{ 0.0,0.0 });
-    nodes.push_back(GridGeom::Point{ 0.0,10.0 });
-    nodes.push_back(GridGeom::Point{ 10.0,0.0 });
-    nodes.push_back(GridGeom::Point{ 10.0,10.0 });
+    nodes.push_back({ 0.0,0.0 });
+    nodes.push_back({ 0.0,10.0 });
+    nodes.push_back({ 10.0,0.0 });
+    nodes.push_back({ 10.0,10.0 });
     std::vector<GridGeom::Edge> edges;
     edges.push_back({ 0, 2 });
     edges.push_back({ 1, 3 });
@@ -80,12 +80,12 @@ TEST(Mesh, MakeMeshInPolygon)
     GridGeom::Polygons polygons;
     std::vector<GridGeom::Point> nodes;
 
-    nodes.push_back(GridGeom::Point{ 302.002502,472.130371 });
-    nodes.push_back(GridGeom::Point{ 144.501526, 253.128174 });
-    nodes.push_back(GridGeom::Point{ 368.752930, 112.876755 });
-    nodes.push_back(GridGeom::Point{ 707.755005, 358.879242 });
-    nodes.push_back(GridGeom::Point{ 301.252502, 471.380371 });
-    nodes.push_back(GridGeom::Point{ 302.002502, 472.130371 });
+    nodes.push_back({ 302.002502,472.130371 });
+    nodes.push_back({ 144.501526, 253.128174 });
+    nodes.push_back({ 368.752930, 112.876755 });
+    nodes.push_back({ 707.755005, 358.879242 });
+    nodes.push_back({ 301.252502, 471.380371 });
+    nodes.push_back({ 302.002502, 472.130371 });
 
     polygons.Set(nodes, GridGeom::Projections::cartesian);
     
@@ -112,12 +112,12 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     GridGeom::Polygons polygons;
     std::vector<GridGeom::Point> nodes;
 
-    nodes.push_back(GridGeom::Point{ 302.002502,472.130371 });
-    nodes.push_back(GridGeom::Point{ 144.501526, 253.128174 });
-    nodes.push_back(GridGeom::Point{ 368.752930, 112.876755 });
-    nodes.push_back(GridGeom::Point{ 707.755005, 358.879242 });
-    nodes.push_back(GridGeom::Point{ 301.252502, 471.380371 });
-    nodes.push_back(GridGeom::Point{ 302.002502, 472.130371 });
+    nodes.push_back({ 302.002502,472.130371 });
+    nodes.push_back({ 144.501526, 253.128174 });
+    nodes.push_back({ 368.752930, 112.876755 });
+    nodes.push_back({ 707.755005, 358.879242 });
+    nodes.push_back({ 301.252502, 471.380371 });
+    nodes.push_back({ 302.002502, 472.130371 });
 
     polygons.Set(nodes, GridGeom::Projections::cartesian);
 
@@ -159,12 +159,12 @@ TEST(Mesh, TriangulateSamples)
     GridGeom::Polygons polygons;
     std::vector<GridGeom::Point> nodes;
 
-    nodes.push_back(GridGeom::Point{ 498.503152894023, 1645.82297461613 });
-    nodes.push_back(GridGeom::Point{ -5.90937355559299, 814.854361678898 });
-    nodes.push_back(GridGeom::Point{ 851.30035347439, 150.079471329115 });
-    nodes.push_back(GridGeom::Point{ 1411.11078745316, 1182.22995897746 });
-    nodes.push_back(GridGeom::Point{ 501.418832237663, 1642.90729527249 });
-    nodes.push_back(GridGeom::Point{ 498.503152894023, 1645.82297461613 });
+    nodes.push_back({ 498.503152894023, 1645.82297461613 });
+    nodes.push_back({ -5.90937355559299, 814.854361678898 });
+    nodes.push_back({ 851.30035347439, 150.079471329115 });
+    nodes.push_back({ 1411.11078745316, 1182.22995897746 });
+    nodes.push_back({ 501.418832237663, 1642.90729527249 });
+    nodes.push_back({ 498.503152894023, 1645.82297461613 });
 
     polygons.Set(nodes, GridGeom::Projections::cartesian);
 
@@ -181,10 +181,10 @@ TEST(Mesh, TwoTrianglesDuplicatedEdges)
 {
     //1 Setup
     std::vector<GridGeom::Point> nodes;
-    nodes.push_back(GridGeom::Point{ 0.0, 0.0 });
-    nodes.push_back(GridGeom::Point{ 5.0, -5.0 });
-    nodes.push_back(GridGeom::Point{ 10.0, 0.0 });
-    nodes.push_back(GridGeom::Point{ 5.0, 5.0 });
+    nodes.push_back({ 0.0, 0.0 });
+    nodes.push_back({ 5.0, -5.0 });
+    nodes.push_back({ 10.0, 0.0 });
+    nodes.push_back({ 5.0, 5.0 });
     std::vector<GridGeom::Edge> edges;
     edges.push_back({ 0, 3 });
     edges.push_back({ 0, 2 });
@@ -204,10 +204,10 @@ TEST(Mesh, MeshBoundaryToPolygon)
 {
     //1 Setup
     std::vector<GridGeom::Point> nodes;
-    nodes.push_back(GridGeom::Point{ 0.0, 0.0 });
-    nodes.push_back(GridGeom::Point{ 5.0, -5.0 });
-    nodes.push_back(GridGeom::Point{ 10.0, 0.0 });
-    nodes.push_back(GridGeom::Point{ 5.0, 5.0 });
+    nodes.push_back({ 0.0, 0.0 });
+    nodes.push_back({ 5.0, -5.0 });
+    nodes.push_back({ 10.0, 0.0 });
+    nodes.push_back({ 5.0, 5.0 });
     std::vector<GridGeom::Edge> edges;
     edges.push_back({ 0, 3 });
     edges.push_back({ 0, 2 });
@@ -244,10 +244,10 @@ TEST(Mesh, HangingEdge)
 {
     //1 Setup
     std::vector<GridGeom::Point> nodes;
-    nodes.push_back(GridGeom::Point{ 0.0, 0.0 });
-    nodes.push_back(GridGeom::Point{ 5.0, 0.0 });
-    nodes.push_back(GridGeom::Point{ 3.0, 2.0 });
-    nodes.push_back(GridGeom::Point{ 3.0, 4.0 });
+    nodes.push_back({ 0.0, 0.0 });
+    nodes.push_back({ 5.0, 0.0 });
+    nodes.push_back({ 3.0, 2.0 });
+    nodes.push_back({ 3.0, 4.0 });
 
     std::vector<GridGeom::Edge> edges;
     edges.push_back({ 0, 1 });

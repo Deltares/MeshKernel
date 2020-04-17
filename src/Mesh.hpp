@@ -37,19 +37,19 @@ namespace GridGeom
         
         bool DeleteFlatCopies();
 
-        void FacesAreasAndMassCenters();
-
-        void FaceCircumcenters(const double& weightCircumCenter);
+        void ComputeFaceCircumcentersMassCentersAreas(const double& weightCircumCenter);
 
         void FindFaces();
 
-        inline int GetNumNodes() const { return m_nodes.size(); }
+        int GetNumNodes() const { return m_nodes.size(); }
 
-        inline int GetNumEdges() const { return m_edges.size(); }
+        int GetNumEdges() const { return m_edges.size(); }
 
-        inline int GetNumFaces() const { return m_numFaces; }
+        int GetNumFaces() const { return m_numFaces; }
 
-        inline int GetNumFaceNodes(const int faceIndex) const { return m_facesNodes[faceIndex].size(); }
+        int GetNumFaceNodes(const int faceIndex) const { return m_facesNodes[faceIndex].size(); }
+
+        int GetNumNodeEdges(const int nodeIndex) const { return m_nodesNumEdges[nodeIndex]; }
 
         ///MERGENODESINPOLYGON
         bool MergeNodesInPolygon(const Polygons& polygons);
@@ -79,11 +79,9 @@ namespace GridGeom
         //need to account for spherical coordinates. Build a polygon around a face
         bool FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache, std::vector<int>& localNodeIndexsesCache, std::vector<int>& nodeIndexsesCache) const;
 
-        bool FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const;
+        bool FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numPolygonPoints) const;
 
         bool IsFullFaceNotInPolygon(int faceIndex) const;
-
-        bool FindBrotherEdges();
 
         bool SelectNodesInPolygon(const Polygons& polygons, int inside);
 
@@ -101,7 +99,6 @@ namespace GridGeom
         //edges
         std::vector<int> m_edgesNumFaces;                           // LNN
         std::vector<std::vector<int>> m_edgesFaces;                 // LNE
-        std::vector<int> m_brotherEdges;
         std::vector<double> m_edgeLengths;
 
         // faces
@@ -110,8 +107,7 @@ namespace GridGeom
         std::vector<Point>            m_facesCircumcenters;         // xz  the face circumcenter
         std::vector<Point>            m_facesMassCenters;           // xzw the faces canters of mass
 
-        std::vector<double> m_faceArea;                             // Face area
-        
+        std::vector<double> m_faceArea;                             // Face area   
         std::vector<int> m_nodesTypes;                              // Node types,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
 
         // Used for internal state
@@ -120,9 +116,11 @@ namespace GridGeom
         std::vector<double> m_nodez;
         std::vector<int>    m_edgeNodes;
 
+        std::vector<Point> m_polygonNodesCache;                     // polygon cache
+
         // Used for triangular grids
-        double m_triangleMinimumAngle = 5.0;                       // minimum angle of created triangles. If minimum angle > maximum angle, no check 
-        double m_triangleMaximumAngle = 150.0;                     // maximum angle of created triangles
+        double m_triangleMinimumAngle = 5.0;                        // minimum angle of created triangles. If minimum angle > maximum angle, no check 
+        double m_triangleMaximumAngle = 150.0;                      // maximum angle of created triangles
 
         Projections m_projection;
 
@@ -135,7 +133,7 @@ namespace GridGeom
         void SortEdgesInCounterClockWiseOrder();
 
         // find cells
-        void FindFaces(const int numEdges);
+        void FindFaces(int numEdges);
 
         // find cells recursive
         bool FindFacesRecursive(int startingNode, int node, int numEdges, int previousEdge, 

@@ -20,9 +20,6 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
     m_nodes = nodes;
     m_projection = projection;
 
-    //by default if polygon has not been provided, all nodes are in
-    m_nodeMask.resize(m_nodes.size(), 1);
-
     Administrate();
 
     return true;
@@ -30,12 +27,12 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
 
 bool GridGeom::Mesh::Administrate()
 {
-    m_nodesEdges.resize(GetNumNodes(),std::vector<int>(maximumNumberOfEdgesPerNode, 0));
+    m_nodesEdges.resize(GetNumNodes(), std::vector<int>(maximumNumberOfEdgesPerNode, 0));
     std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<int>(maximumNumberOfEdgesPerNode, 0));
-    
+
     m_nodesNumEdges.resize(GetNumNodes());
-    std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(),0);
-        
+    std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(), 0);
+
     m_edgesNumFaces.resize(GetNumEdges());
     std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
 
@@ -46,6 +43,9 @@ bool GridGeom::Mesh::Administrate()
     m_facesMassCenters.resize(0);
     m_faceArea.resize(0);
 
+    //by default if polygon has not been provided, all nodes are in
+    m_nodeMask.resize(m_nodes.size(), 1);
+
     m_edgesFaces.resize(GetNumEdges(), std::vector<int>(2, -1));
 
     if (GetNumEdges() == 0 || GetNumNodes() == 0)
@@ -55,16 +55,14 @@ bool GridGeom::Mesh::Administrate()
 
     // run administration and find the faces    
     NodeAdministration();
+
     SortEdgesInCounterClockWiseOrder();
 
     // find faces
     FindFaces();
 
     // find mesh circumcenters
-    FaceCircumcenters(1.0);
-
-    // compute faces areas and centers of mass
-    FacesAreasAndMassCenters();
+    ComputeFaceCircumcentersMassCentersAreas(1.0);
 
     // classify node types
     ClassifyNodes();
@@ -360,7 +358,7 @@ void GridGeom::Mesh::NodeAdministration()
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
 
-        if (firstNode < 0 || secondNode < 0) 
+        if (firstNode < 0 || secondNode < 0)
         {
             continue;
         }
@@ -413,7 +411,7 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
     std::vector<double> edgesAngles(GridGeom::maximumNumberOfEdgesPerNode, 0.0);
     for (auto node = 0; node < GetNumNodes(); node++)
     {
-        if (!m_nodes[node].IsValid()) 
+        if (!m_nodes[node].IsValid())
         {
             continue;
         }
@@ -502,7 +500,7 @@ bool GridGeom::Mesh::FindFacesRecursive(
         return false;
     }
 
-    if (m_edges[previusEdge].first < 0 || m_edges[previusEdge].second < 0) 
+    if (m_edges[previusEdge].first < 0 || m_edges[previusEdge].second < 0)
     {
         return false;
     }
@@ -606,7 +604,7 @@ void GridGeom::Mesh::FindFaces()
         std::vector<int> sortedNodes(numEdgesPerFace);
         for (int n = 0; n < GetNumNodes(); n++)
         {
-            if (!m_nodes[n].IsValid()) 
+            if (!m_nodes[n].IsValid())
             {
                 continue;
             }
@@ -619,147 +617,71 @@ void GridGeom::Mesh::FindFaces()
     }
 }
 
-void GridGeom::Mesh::FaceCircumcenters(const double& weightCircumCenter)
+void GridGeom::Mesh::ComputeFaceCircumcentersMassCentersAreas(const double& weightCircumCenter)
 {
     m_facesCircumcenters.resize(GetNumFaces());
-    std::vector<Point> middlePoints(GridGeom::maximumNumberOfNodesPerFace);
-    std::vector<Point> normals(GridGeom::maximumNumberOfNodesPerFace);
-    std::vector<Point> localFace(GridGeom::maximumNumberOfNodesPerFace + 1); //closed face
+    m_faceArea.resize(GetNumFaces());
+    m_facesMassCenters.resize(GetNumFaces());
     Point centerOfMass;
     const int maximumNumberCircumcenterIterations = 100;
+    std::vector<Point> middlePointsCache(maximumNumberOfNodesPerFace);
+    std::vector<Point> normalsCache(maximumNumberOfNodesPerFace);
+    std::vector<int> numEdgeFacesCache(maximumNumberOfEdgesPerFace);
+    m_polygonNodesCache.resize(maximumNumberOfNodesPerFace + 1);
     for (int f = 0; f < GetNumFaces(); f++)
     {
+        //need to account for spherical coordinates. Build a polygon around a face
+        int numPolygonPoints;
+        bool successful = FacePolygon(f, m_polygonNodesCache, numPolygonPoints);
+        if (!successful)
+        {
+            return;
+        }
 
-        // for triangles, for now assume cartesian kernel
         auto numberOfFaceNodes = GetNumFaceNodes(f);
-        double xCenter = 0.0;
-        double yCenter = 0.0;
-        std::size_t numberOfInteriorEdges = 0;
+        double area;
+        Point centerOfMass;
+        successful = FaceAreaAndCenterOfMass(m_polygonNodesCache, numberOfFaceNodes, m_projection, area, centerOfMass);
+        if (!successful)
+        {
+            return;
+        }
+
+        m_faceArea[f] = area;
+        m_facesMassCenters[f] = centerOfMass;
+
+        int numberOfInteriorEdges = 0;
         for (int n = 0; n < numberOfFaceNodes; n++)
         {
-            localFace[n] = m_nodes[m_facesNodes[f][n]];
-            xCenter += m_nodes[m_facesNodes[f][n]].x;
-            yCenter += m_nodes[m_facesNodes[f][n]].y;
             if (m_edgesNumFaces[m_facesEdges[f][n]] == 2)
             {
                 numberOfInteriorEdges += 1;
             }
         }
-        centerOfMass.x = xCenter / numberOfFaceNodes;
-        centerOfMass.y = yCenter / numberOfFaceNodes;
-        localFace[numberOfFaceNodes] = localFace[0];
-        if (numberOfFaceNodes == 3)
+        if (numberOfInteriorEdges == 0)
         {
-            circumcenterOfTriangle(m_nodes[m_facesNodes[f][0]], m_nodes[m_facesNodes[f][1]], m_nodes[m_facesNodes[f][2]], m_facesCircumcenters[f], m_projection);
+            m_facesCircumcenters[f] = centerOfMass;
+            continue;
         }
-        else
-        {
-            if (numberOfInteriorEdges == 0)
-            {
-                m_facesCircumcenters[f] = centerOfMass;
-            }
-            else
-            {
-                Point estimatedCircumCenter = centerOfMass;
-                const double eps = 1e-3;
-
-                for (int n = 0; n < numberOfFaceNodes; n++)
-                {
-                    int nextNode = n + 1;
-                    if (nextNode == numberOfFaceNodes) nextNode = 0;
-                    middlePoints[n].x = 0.5 * (localFace[n].x + localFace[nextNode].x);
-                    middlePoints[n].y = 0.5 * (localFace[n].y + localFace[nextNode].y);
-                    NormalVector(localFace[n], localFace[nextNode], middlePoints[n], normals[n], m_projection);
-                }
-
-                Point previousCircumCenter = estimatedCircumCenter;
-                for (int iter = 0; iter < maximumNumberCircumcenterIterations; iter++)
-                {
-                    previousCircumCenter = estimatedCircumCenter;
-                    for (int n = 0; n < numberOfFaceNodes; n++)
-                    {
-                        if (m_edgesNumFaces[m_facesEdges[f][n]] == 2 || numberOfFaceNodes == 3)
-                        {
-                            int nextNode = n + 1;
-                            if (nextNode == numberOfFaceNodes) nextNode = 0;
-                            double dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
-                            double dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);
-                            double increment = -0.1 * DotProduct(dx, dy, normals[n].x, normals[n].y);
-                            Add(estimatedCircumCenter, normals[n], increment, m_projection);
-                        }
-                    }
-                    if (iter > 0 &&
-                        abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
-                        abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
-                    {
-                        m_facesCircumcenters[f] = estimatedCircumCenter;
-                        break;
-                    }
-                }
-            }
-        }
-        if (weightCircumCenter <= 1.0 && weightCircumCenter >= 0.0)
-        {
-            double localWeightCircumCenter = 1.0;
-            if (numberOfFaceNodes > 3)
-            {
-                localWeightCircumCenter = weightCircumCenter;
-            }
-
-            for (int n = 0; n < numberOfFaceNodes; n++)
-            {
-                localFace[n].x = localWeightCircumCenter * localFace[n].x + (1.0 - localWeightCircumCenter) * centerOfMass.x;
-                localFace[n].y = localWeightCircumCenter * localFace[n].y + (1.0 - localWeightCircumCenter) * centerOfMass.y;
-            }
-            localFace[numberOfFaceNodes] = localFace[0];
-
-            bool isCircumcenterInside = IsPointInPolygon(m_facesCircumcenters[f], localFace, numberOfFaceNodes);
-
-            if (!isCircumcenterInside)
-            {
-                for (int n = 0; n < numberOfFaceNodes; n++)
-                {
-                    int nextNode = n + 1;
-                    if (nextNode == numberOfFaceNodes) nextNode = 0;
-                    Point intersection;
-                    double crossProduct;
-                    double firstRatio;
-                    double secondRatio;
-                    bool areLineCrossing = AreLinesCrossing(centerOfMass, m_facesCircumcenters[f], localFace[n], localFace[nextNode], false, intersection, crossProduct, firstRatio, secondRatio, m_projection);
-                    if (areLineCrossing)
-                    {
-                        m_facesCircumcenters[f] = intersection;
-                        break;
-                    }
-                }
-            }
-        }
-
-    }
-}
-
-void GridGeom::Mesh::FacesAreasAndMassCenters()
-{
-    // polygon coordinates 
-    m_faceArea.resize(GetNumFaces());
-    m_facesMassCenters.resize(GetNumFaces());
-    std::vector<Point> localFace(maximumNumberOfNodesPerFace + 1);
-    Point centerOfMass;
-    double area = 0.0;
-    for (int f = 0; f < GetNumFaces(); f++)
-    {
-        auto numberOfFaceNodes = GetNumFaceNodes(f);
 
         for (int n = 0; n < numberOfFaceNodes; n++)
         {
-            localFace[n] = m_nodes[m_facesNodes[f][n]];
+            numEdgeFacesCache[n] = m_edgesNumFaces[m_facesEdges[f][n]];
         }
-        localFace[numberOfFaceNodes] = localFace[0];
-        area = 0.0;
-        faceAreaAndCenterOfMass(localFace, numberOfFaceNodes, area, centerOfMass, m_projection);
-        m_faceArea[f] = area;
-        m_facesMassCenters[f].x = centerOfMass.x;
-        m_facesMassCenters[f].y = centerOfMass.y;
+
+        successful = ComputePolygonCircumenter(m_polygonNodesCache,
+            middlePointsCache,
+            normalsCache,
+            numberOfFaceNodes,
+            numEdgeFacesCache,
+            m_projection,
+            weightCircumCenter,
+            m_facesCircumcenters[f]);
+
+        if (!successful)
+        {
+            return;
+        }
     }
 }
 
@@ -1014,7 +936,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
 {
     int edgeIndex;
     FindEdge(firstNodeIndex, secondNodeIndex, edgeIndex);
-    if (edgeIndex >=0) 
+    if (edgeIndex >= 0)
     {
         m_edges[edgeIndex].first = -1;
         m_edges[edgeIndex].second = -1;
@@ -1026,7 +948,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
         auto firstEdgeIndex = m_nodesEdges[firstNodeIndex][n];
         auto firstEdge = m_edges[firstEdgeIndex];
         auto firstEdgeOtherNode = firstEdge.first + firstEdge.second - firstNodeIndex;
-        if (firstEdgeOtherNode >=0 && firstEdgeOtherNode != secondNodeIndex)
+        if (firstEdgeOtherNode >= 0 && firstEdgeOtherNode != secondNodeIndex)
         {
             for (int nn = 0; nn < m_nodesNumEdges[firstEdgeOtherNode]; nn++)
             {
@@ -1047,8 +969,8 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     int numSecondNodeEdges = 0;
     for (auto n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
-        auto edgeIndex= m_nodesEdges[secondNodeIndex][n];
-        if (m_edges[edgeIndex].first >= 0) 
+        auto edgeIndex = m_nodesEdges[secondNodeIndex][n];
+        if (m_edges[edgeIndex].first >= 0)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
             numSecondNodeEdges++;
@@ -1070,7 +992,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
             {
                 m_edges[edgeIndex].second = secondNodeIndex;
             }
-            numSecondNodeEdges++; 
+            numSecondNodeEdges++;
         }
     }
 
@@ -1088,7 +1010,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
 
 bool GridGeom::Mesh::IsSet()  const
 {
-    return GetNumFaces()>0;
+    return GetNumFaces() > 0;
 }
 
 bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
@@ -1106,7 +1028,7 @@ bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
         m_edges.resize(newEdgeIndex + 1);
         m_edges[newEdgeIndex].first = startNode;
         m_edges[newEdgeIndex].first = endNode;
-        
+
         // add the new edge to the nodes
         m_nodesNumEdges[startNode] = m_nodesNumEdges[startNode] + 1;
         m_nodesEdges[startNode].push_back(newEdgeIndex);
@@ -1119,7 +1041,7 @@ bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
     return true;
 }
 
-bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex) 
+bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
 {
     newNodeIndex = GetNumNodes();
 
@@ -1132,10 +1054,10 @@ bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
     return true;
 }
 
-bool GridGeom::Mesh::DeleteNode(int nodeIndex) 
+bool GridGeom::Mesh::DeleteNode(int nodeIndex)
 {
     //TODO
-    for (int e = 0; e < m_nodesNumEdges[nodeIndex]; e++)
+    for (int e = 0; e < GetNumNodeEdges(nodeIndex); e++)
     {
         auto edgeIndex = m_nodesEdges[nodeIndex][e];
         auto startNode = m_edges[edgeIndex].first;
@@ -1152,16 +1074,16 @@ bool GridGeom::Mesh::DeleteNode(int nodeIndex)
 bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
 {
     auto isNotValidIndex = [](const int& v) { return v < 0; };
-    for (int e = 0; e < m_nodesNumEdges[startNode]; e++)
+    for (int e = 0; e < GetNumNodeEdges(startNode); e++)
     {
         auto firstEdgeIndex = m_nodesEdges[startNode][e];
-        for (int ee = 0; ee < m_nodesNumEdges[endNode]; ee++)
+        for (int ee = 0; ee < GetNumNodeEdges(endNode); ee++)
         {
             auto secondEdgeIndex = m_nodesEdges[endNode][ee];
             if (firstEdgeIndex == secondEdgeIndex)
             {
                 m_nodesEdges[startNode][e] = -1;
-                m_nodesEdges[endNode][ee]= -1;
+                m_nodesEdges[endNode][ee] = -1;
 
                 std::remove_if(m_nodesEdges[startNode].begin(), m_nodesEdges[startNode].end(), isNotValidIndex);
                 std::remove_if(m_nodesEdges[endNode].begin(), m_nodesEdges[endNode].end(), isNotValidIndex);
@@ -1172,13 +1094,13 @@ bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
     }
 
     // remove startNode
-    if (m_nodesNumEdges[startNode] == 0) 
+    if (GetNumNodeEdges(startNode) == 0)
     {
         m_nodes[startNode] = { doubleMissingValue, doubleMissingValue };
     }
-    
+
     // remove endNode
-    if (m_nodesNumEdges[endNode] == 0)
+    if (GetNumNodeEdges(endNode) == 0)
     {
         m_nodes[endNode] = { doubleMissingValue, doubleMissingValue };
     }
@@ -1187,14 +1109,21 @@ bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
 }
 
 
-bool GridGeom::Mesh::FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const
+bool GridGeom::Mesh::FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numPolygonPoints) const
 {
     auto numFaceNodes = GetNumFaceNodes(faceIndex);
+    if (polygonNodesCache.size() < numFaceNodes + 1)
+    {
+        polygonNodesCache.resize(numFaceNodes + 1);
+    }
+
     for (int n = 0; n < numFaceNodes; n++)
     {
         polygonNodesCache[n] = m_nodes[m_facesNodes[faceIndex][n]];
     }
     polygonNodesCache[numFaceNodes] = polygonNodesCache[0];
+
+    numPolygonPoints = numFaceNodes + 1;
 
     return true;
 }
@@ -1229,80 +1158,6 @@ bool GridGeom::Mesh::FacePolygon(int faceIndex, std::vector<Point>& polygonNodes
     return true;
 }
 
-bool GridGeom::Mesh::FindBrotherEdges()
-{
-
-    m_brotherEdges.resize(GetNumEdges(), intMissingValue);
-
-    for (int n = 0; n < GetNumNodes(); n++)
-    {
-        int ee = 0;
-        for (int e = 0; e < m_nodesNumEdges[n]; e++)
-        {
-            ee = e + 1;
-            if (ee >= m_nodesNumEdges[n])
-            {
-                ee = ee - m_nodesNumEdges[n];
-            }
-
-            int firstEdgeIndex = m_nodesEdges[n][e];
-            if (m_edgesNumFaces[firstEdgeIndex]<1)
-            {
-                continue;
-            }
-
-            int secondEdgeIndex = m_nodesEdges[n][ee];
-            if (m_edgesNumFaces[secondEdgeIndex]<1)
-            {
-                continue;
-            }
-
-            auto firstEdgeLeftFace = m_edgesFaces[firstEdgeIndex][0];
-            auto firstEdgeRighFace = m_edgesFaces[firstEdgeIndex].size() == 1 ? firstEdgeLeftFace : m_edgesFaces[firstEdgeIndex][1];
-
-            auto secondEdgeLeftFace = m_edgesFaces[secondEdgeIndex][0];
-            auto secondEdgeRighFace = m_edgesFaces[secondEdgeIndex].size() == 1 ? secondEdgeLeftFace : m_edgesFaces[secondEdgeIndex][1];
-
-            if (firstEdgeLeftFace != secondEdgeLeftFace &&
-                firstEdgeLeftFace != secondEdgeRighFace &&
-                firstEdgeRighFace != secondEdgeLeftFace &&
-                firstEdgeRighFace != secondEdgeRighFace)
-            {
-                continue;
-            }
-
-            //check if node k is in the middle
-            auto firstEdgeOtherNode = m_edges[firstEdgeIndex].first + m_edges[firstEdgeIndex].second - n;
-            auto secondEdgeOtherNode = m_edges[secondEdgeIndex].first + m_edges[secondEdgeIndex].second - n;
-            auto centre = (m_nodes[firstEdgeOtherNode] + m_nodes[secondEdgeOtherNode])*0.5;
-
-            if (m_projection == Projections::spherical)
-            {
-                double middleLatitude;
-                bool successful = ComputeMiddleLatitude(m_nodes[firstEdgeOtherNode].y, m_nodes[secondEdgeOtherNode].y, middleLatitude);
-                if (!successful)
-                {
-                    return false;
-                }
-                //TODO: FINISH FOR SPHERICAL
-            }
-
-            //compute tolerance
-            auto firstEdgeLength = Distance(m_nodes[firstEdgeOtherNode], m_nodes[n], m_projection);
-            auto secondEdgeLength = Distance(m_nodes[secondEdgeOtherNode], m_nodes[n], m_projection);
-            auto tolerance = 0.0001 * std::max(firstEdgeLength, secondEdgeLength);
-
-            auto distanceFromCentre = Distance(centre, m_nodes[n], m_projection);
-            if (distanceFromCentre<tolerance)
-            {
-                m_brotherEdges[firstEdgeIndex] = secondEdgeIndex;
-                m_brotherEdges[secondEdgeIndex] = firstEdgeIndex;
-            }
-        }
-    }
-
-    return true;
-}
 
 bool GridGeom::Mesh::SelectNodesInPolygon(const Polygons& polygon, int inside)
 {
@@ -1341,7 +1196,7 @@ bool GridGeom::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
 {
     for (int n = 0; n < GetNumFaceNodes(faceIndex); n++)
     {
-        if (m_nodeMask[m_facesNodes[faceIndex][n]] != 1) 
+        if (m_nodeMask[m_facesNodes[faceIndex][n]] != 1)
         {
             return true;
         }
@@ -1357,7 +1212,7 @@ bool GridGeom::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int
     auto secondEdgeFirstNode = m_edges[secondEdgeIndex].first;
     auto secondEdgeSecondNode = m_edges[secondEdgeIndex].second;
 
-    if (firstEdgeFirstNode < 0 || firstEdgeEdgeSecondNode < 0 || secondEdgeFirstNode < 0 || secondEdgeSecondNode < 0) 
+    if (firstEdgeFirstNode < 0 || firstEdgeEdgeSecondNode < 0 || secondEdgeFirstNode < 0 || secondEdgeSecondNode < 0)
     {
         return true;
     }
@@ -1367,7 +1222,7 @@ bool GridGeom::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int
         node = firstEdgeFirstNode;
         return true;
     }
-    
+
     if (firstEdgeEdgeSecondNode == secondEdgeFirstNode || firstEdgeEdgeSecondNode == secondEdgeSecondNode)
     {
         node = firstEdgeEdgeSecondNode;
