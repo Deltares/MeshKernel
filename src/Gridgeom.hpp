@@ -9,8 +9,6 @@
 #include "InterpolationParametersNative.hpp"
 #include "SampleRefineParametersNative.hpp"
 
-#include <vector>
-
 #if defined(_WIN32) 
 #if !defined(GRIDGEOM_API)
 #define GRIDGEOM_API __declspec(dllexport)

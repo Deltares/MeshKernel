@@ -136,7 +136,7 @@ namespace GridGeom
     {
         double x;
         double y;
-        double z;
+        double value;
     };
 
     struct Nodes

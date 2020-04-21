@@ -2,7 +2,6 @@
 
 #include <utility>
 #include <vector>
-#include <iostream>
 #include "Mesh.hpp"
 #include "Polygons.hpp"
 #include "Constants.cpp"
@@ -23,13 +22,13 @@ namespace GridGeom
         int startNewNodes = GetNumNodes();
         if (startNewNodes != 0)
         {
-            ResizeVector(GetNumNodes() + 1 + polygon.size(), m_nodes);
+            ResizeVectorIfNeeded(GetNumNodes() + 1 + polygon.size(), m_nodes);
             m_nodes[startNewNodes] = { doubleMissingValue,doubleMissingValue };
             startNewNodes += 1;
         }
         else
         {
-            ResizeVector(polygon.size(), m_nodes);
+            ResizeVectorIfNeeded(polygon.size(), m_nodes);
         }
         m_numAllocatedNodes = m_nodes.size();
         m_numNodes = m_nodes.size();
@@ -76,7 +75,7 @@ namespace GridGeom
                 continue;
             }
 
-            ResizeVector(numNodesBoundaryPolygons + 3, meshBoundaryPolygon);
+            ResizeVectorIfNeeded(numNodesBoundaryPolygons + 3, meshBoundaryPolygon);
 
             //Start a new polyline
             if (numNodesBoundaryPolygons > 0)
@@ -172,7 +171,7 @@ namespace GridGeom
 
             nodeIndex++;
 
-            ResizeVector(nodeIndex + 1, meshBoundaryPolygon);
+            ResizeVectorIfNeeded(nodeIndex + 1, meshBoundaryPolygon);
 
             meshBoundaryPolygon[nodeIndex] = mesh.m_nodes[currentNode];
 

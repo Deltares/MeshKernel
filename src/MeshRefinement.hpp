@@ -1,12 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "MakeGridParametersNative.hpp"
-#include "GeometryListNative.hpp"
 #include "SampleRefineParametersNative.hpp"
 #include "InterpolationParametersNative.hpp"
 #include "Entities.hpp"
-#include "Mesh.hpp"
 #include "SpatialTrees.hpp"
 
 namespace GridGeom 
@@ -14,35 +11,23 @@ namespace GridGeom
 
     class Mesh;
     class Polygons;
-    class Sample;
 
     class MeshRefinement
     {
 
     public:
 
-        MeshRefinement(Mesh& mesh): 
-            m_mesh(mesh)
-        {
-            // all gets refined
-            m_faceMask.resize(m_mesh.GetNumFaces(), 1);
-            m_edgeMask.resize(m_mesh.GetNumEdges(), -1);
-            m_refineEdgeCache.resize(maximumNumberOfEdgesPerFace);
-            m_isHangingNodeCache.resize(maximumNumberOfNodesPerFace, false);
-            m_isHangingEdgeCache.resize(maximumNumberOfEdgesPerFace, false);
-            m_polygonNodesCache.resize(maximumNumberOfNodesPerFace); 
-            m_localNodeIndexsesCache.resize(maximumNumberOfNodesPerFace,intMissingValue);
-            m_edgeIndexsesCache.resize(maximumNumberOfEdgesPerFace, intMissingValue);
-        };
+        MeshRefinement(Mesh& mesh);
 
         ///refinecellsandfaces2
-        bool RefineMeshBasedOnPoints(std::vector<Sample>& sample,
+        bool RefineMeshBasedOnSamples(std::vector<Sample>& sample,
             const Polygons& polygon,
             GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
             GridGeomApi::InterpolationParametersNative& interpolationParametersNative);
 
     private:
 
+        ///find_linkbrothers
         bool FindBrotherEdges();
 
         ///set_initial_mask
@@ -53,13 +38,14 @@ namespace GridGeom
         bool ComputeInitialRefinementMask();
 
         ///compute_jarefine_poly
-        bool ComputeRefinementFromSamples(std::vector<Sample>& polygon);
+        bool ComputeEdgeAndFaceRefinementMaskFromSamples(std::vector<Sample>& polygon);
 
         ///compute_jarefine_poly
-        bool ComputeRefinementInPolygon(int numPolygonNodes,
+        bool ComputeLocalEdgeRefinementFromSamples(int faceindex, 
+            int numPolygonNodes,
             const std::vector<Sample>& samples,
             int refineType,
-            bool& performRefinement);
+            int& numEdgesToBeRefined);
 
         ///comp_jalink
         bool ComputeEdgesRefinementMask();
@@ -70,17 +56,24 @@ namespace GridGeom
             int& numHangingNodes,
             int& numEdgesToRefine);
 
+        ///remove_isolated_hanging_nodes
+        bool RemoveIsolatedHangingnodes(int& numRemovedIsolatedHangingNodes);
+
+        ///connect_hanging_nodes
+        bool ConnectHangingNodes();
+
         ///TODO: smooth_jarefine
+        bool SmoothEdgeRefinementMask();
 
         ///split_cells
         bool SplitFaces();
 
-        bool RefineFaces();
+        bool RefineFaces(int numEdgesBeforeRefinemet);
 
         Mesh& m_mesh;
         double m_deltaTimeMaxCourant;
 
-        std::vector<int> m_faceMask;
+        std::vector<int> m_faceMask; //refine cell without hanging nodes (1), refine cell with hanging nodes (2), do not refine cell at all (0) or refine cell outside polygon (-2)
         std::vector<int> m_edgeMask;
         std::vector<int> m_brotherEdges;
         std::vector<int> m_refineEdgeCache;
@@ -89,13 +82,14 @@ namespace GridGeom
         std::vector<Point> m_polygonNodesCache;
         std::vector<int> m_localNodeIndexsesCache;
         std::vector<int> m_edgeIndexsesCache;
+        std::vector<double> m_polygonEdgesLengthsCache;
         
 
         GridGeom::SpatialTrees::RTree m_rtree;
 
         double m_minimumFaceSize = 5e4;
         bool m_directionalRefinement = false;
-        int m_maxNumEdges = 6;
+        bool m_refineOutsideFace = false;
 
         enum RefinementType 
         {
