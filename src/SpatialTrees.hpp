@@ -15,6 +15,8 @@
 
 // r-tree
 // https://gist.github.com/logc/10272165
+// boost queries
+// https://www.boost.org/doc/libs/1_66_0/libs/geometry/doc/html/geometry/spatial_indexes/queries.html
 
 namespace GridGeom
 {
@@ -66,6 +68,20 @@ namespace GridGeom
                     result[i] = queryResult[i].second;
                 }
                 return std::move(result);
+            }
+
+            int NearestNeighbour(Point node) const
+            {
+                int result = -1;
+                std::vector<value2D> queryResult;
+                Point2D nodeSought = Point2D(node.x, node.y);
+                m_rtree2D.query(bgi::nearest(nodeSought,1),std::back_inserter(queryResult));
+                
+                if(!queryResult.empty())
+                {
+                    result = queryResult[0].second;
+                }
+                return result;
             }
 
             bool RemoveNode(int position) 
