@@ -627,7 +627,7 @@ namespace GridGeom
         {
             for (int f = 0; f < mesh.GetNumFaces(); f++)
             {
-                auto numFaceNodes = mesh.GetNumFaceNodes(f);
+                auto numFaceNodes = mesh.GetNumFaceEdges(f);
 
                 if (numFaceNodes == 0)
                     continue;
@@ -698,7 +698,7 @@ namespace GridGeom
             {
                 if (m_faceMask[f] == 1)
                 {
-                    for (int n = 0; n < mesh.GetNumFaceNodes(f); n++)
+                    for (int n = 0; n < mesh.GetNumFaceEdges(f); n++)
                     {
                         m_nodeMask[mesh.m_facesNodes[f][n]] = segmentIndex;
                     }

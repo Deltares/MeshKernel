@@ -355,8 +355,8 @@ TEST(Mesh, NodeMerging)
 
 TEST(Mesh, MillionQuads)
 {
-    const int n = 3; // x
-    const int m = 3; // y
+    const int n = 1001; // x
+    const int m = 1001; // y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
     std::vector<GridGeom::Point> nodes(n * m);

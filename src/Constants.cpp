@@ -26,6 +26,8 @@ namespace GridGeom
     static constexpr int maximumNumberOfNodesPerFace = 8;
     static constexpr int maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4;
     static constexpr double minimumCellArea = 1e-12;
+    static constexpr double weightCircumCenter = 1.0;
+    static constexpr int numNodesQuads = 4;
 
     //orthogonalization 
     static constexpr double minimumEdgeLength = 1e-4;

@@ -25,7 +25,7 @@ namespace GridGeom
 
 
     template<typename T>
-    bool ResizeVector(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
+    bool ResizeVectorIfNeeded(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
     {
         const int currentSize = vectorToResize.size();
         if (newSize > currentSize)
@@ -1098,46 +1098,58 @@ namespace GridGeom
         centerOfMass.y = yCenter / numNodes;
 
         // for triangles, for now assume cartesian kernel
+        result = centerOfMass;
         if (numNodes == 3)
         {
             CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], projection, result);
         }
-        else
+        else if(!edgesNumFaces.empty())
         {
-
             Point estimatedCircumCenter = centerOfMass;
-            const double eps = 1e-3;
-            for (int n = 0; n < numNodes; n++)
+
+            int numValidEdges = 0;
+            for (int n = 0; n < numNodes; ++n)
             {
-                int nextNode = n + 1;
-                if (nextNode == numNodes) nextNode = 0;
-                middlePoints[n].x = 0.5 * (polygon[n].x + polygon[nextNode].x);
-                middlePoints[n].y = 0.5 * (polygon[n].y + polygon[nextNode].y);
-                NormalVector(polygon[n], polygon[nextNode], middlePoints[n], normals[n], projection);
+                if (edgesNumFaces[n] == 2)
+                {
+                    numValidEdges++;
+                }
             }
 
-            Point previousCircumCenter = estimatedCircumCenter;
-            for (int iter = 0; iter < maximumNumberCircumcenterIterations; iter++)
+            if(numValidEdges>0)
             {
-                previousCircumCenter = estimatedCircumCenter;
+                const double eps = 1e-3;
                 for (int n = 0; n < numNodes; n++)
                 {
-                    if (edgesNumFaces[n] == 2 || numNodes ==3)
-                    {
-                        int nextNode = n + 1;
-                        if (nextNode == numNodes) nextNode = 0;
-                        double dx = GetDx(middlePoints[n], estimatedCircumCenter, projection);
-                        double dy = GetDy(middlePoints[n], estimatedCircumCenter, projection);
-                        double increment = -0.1 * DotProduct(dx, dy, normals[n].x, normals[n].y);
-                        Add(estimatedCircumCenter, normals[n], increment, projection);
-                    }
+                    int nextNode = n + 1;
+                    if (nextNode == numNodes) nextNode = 0;
+                    middlePoints[n].x = 0.5 * (polygon[n].x + polygon[nextNode].x);
+                    middlePoints[n].y = 0.5 * (polygon[n].y + polygon[nextNode].y);
+                    NormalVector(polygon[n], polygon[nextNode], middlePoints[n], normals[n], projection);
                 }
-                if (iter > 0 &&
-                    abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
-                    abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
+
+                Point previousCircumCenter = estimatedCircumCenter;
+
+                for (int iter = 0; iter < maximumNumberCircumcenterIterations; iter++)
                 {
-                    result = estimatedCircumCenter;
-                    break;
+                    previousCircumCenter = estimatedCircumCenter;
+                    for (int n = 0; n < numNodes; n++)
+                    {
+                        if (edgesNumFaces[n] == 2)
+                        {
+                            double dx = GetDx(middlePoints[n], estimatedCircumCenter, projection);
+                            double dy = GetDy(middlePoints[n], estimatedCircumCenter, projection);
+                            double increment = -0.1 * DotProduct(dx, dy, normals[n].x, normals[n].y);
+                            Add(estimatedCircumCenter, normals[n], increment, projection);
+                        }
+                    }
+                    if (iter > 0 &&
+                        abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
+                        abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
+                    {
+                        result = estimatedCircumCenter;
+                        break;
+                    }
                 }
             }
         }
@@ -1201,7 +1213,7 @@ namespace GridGeom
         std::vector<Point> searchPolygon(numNodes);
 
         // averaging settings
-        const double relativeFaceSearchSize = 1e-4;
+        const double relativeFaceSearchSize = 1.01;
         double minx = std::numeric_limits<double>::max();
         double maxx = std::numeric_limits<double>::min();
         double miny = std::numeric_limits<double>::max();
@@ -1246,14 +1258,15 @@ namespace GridGeom
             return true;
         }
 
-        result = 0;
         int numValidSamplesInPolygon = 0;
         double wall = 0;
+        auto minSampleValue = std::min_element(samples.begin(), samples.end(), [](auto const& s1, auto const& s2) { return s1.value < s2.value; })->value;
+        result = doubleMissingValue;
         for (int i = 0; i < sampleIndexses.size(); i++)
         {
             //do stuff based on the averaging method
             auto sampleIndex = sampleIndexses[i];
-            if (samples[sampleIndex].z == doubleMissingValue) 
+            if (samples[sampleIndex].value == doubleMissingValue) 
             {
                 continue;
             }
@@ -1264,12 +1277,17 @@ namespace GridGeom
             {
                 if (averagingMethod == SimpleAveraging)
                 {
-                    result += samples[sampleIndex].z;
+                    result += samples[sampleIndex].value;
                     numValidSamplesInPolygon++;
                 }
                 if (averagingMethod == KdTree) 
                 {
-                    result = std::min(std::abs(result), std::abs(samples[sampleIndex].z));
+                    if(result== doubleMissingValue)
+                    {
+                        result = std::min(minSampleValue, std::abs(samples[sampleIndex].value));
+                        
+                    }
+                    result = std::min(std::abs(result), std::abs(samples[sampleIndex].value));
                 }
                 if (averagingMethod == InverseWeightDistance)
                 {
@@ -1277,41 +1295,43 @@ namespace GridGeom
                     double weight = 1.0 / distance;
                     wall += weight;
                     numValidSamplesInPolygon++;
-                    result += weight * samples[sampleIndex].z;
+                    result += weight * samples[sampleIndex].value;
                 }
             }
         }
 
-        
-        if (averagingMethod == SimpleAveraging && numValidSamplesInPolygon>=1)
+        if (averagingMethod == SimpleAveraging && numValidSamplesInPolygon > 0)
         {
             result /= numValidSamplesInPolygon;
+            return true;
         }
 
-        if (averagingMethod == InverseWeightDistance && numValidSamplesInPolygon >= 1)
+        if (averagingMethod == InverseWeightDistance && numValidSamplesInPolygon > 0)
         {
             result /= wall;
+            return true;
         }
+
 
         return true;
     }
 
-    inline static int NextCircularForwardIndex(int currentIndex, int size) 
+    static int NextCircularForwardIndex(int currentIndex, int size) 
     {
         int index = currentIndex + 1;
-        if (currentIndex >= size)
+        if (index >= size)
         {
-            currentIndex = currentIndex - size;
+            index = index - size;
         }
         return index;
     }
 
-    inline static int NextCircularBackwardIndex(int currentIndex, int size)
+    static int NextCircularBackwardIndex(int currentIndex, int size)
     {
         int index = currentIndex - 1;
-        if (currentIndex < 0)
+        if (index < 0)
         {
-            currentIndex = currentIndex + size;
+            index = index + size;
         }
         return index;
     }

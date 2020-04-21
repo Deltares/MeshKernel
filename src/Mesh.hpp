@@ -2,7 +2,6 @@
 
 #include <vector>
 #include "MakeGridParametersNative.hpp"
-#include "GeometryListNative.hpp"
 #include "Entities.hpp"
 
 namespace GridGeom 
@@ -37,7 +36,7 @@ namespace GridGeom
         
         bool DeleteFlatCopies();
 
-        void ComputeFaceCircumcentersMassCentersAreas(const double& weightCircumCenter);
+        void ComputeFaceCircumcentersMassCentersAreas();
 
         void FindFaces();
 
@@ -47,9 +46,13 @@ namespace GridGeom
 
         int GetNumFaces() const { return m_numFaces; }
 
-        int GetNumFaceNodes(const int faceIndex) const { return m_facesNodes[faceIndex].size(); }
+        int GetNumFaceEdges(const int faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
-        int GetNumNodeEdges(const int nodeIndex) const { return m_nodesNumEdges[nodeIndex]; }
+        int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+
+        bool GetBoundingBox(Point& lowerLeft, Point& upperRight) const;
+
+        bool OffsetSphericalCoordinates(double minx, double miny);
 
         ///MERGENODESINPOLYGON
         bool MergeNodesInPolygon(const Polygons& polygons);
@@ -103,6 +106,7 @@ namespace GridGeom
 
         // faces
         std::vector<std::vector<int>> m_facesNodes;                 // netcell%Nod, the nodes composing the faces, in ccw order
+        std::vector<int>              m_numFacesNodes;              // netcell%N
         std::vector<std::vector<int>> m_facesEdges;                 // netcell%lin
         std::vector<Point>            m_facesCircumcenters;         // xz  the face circumcenter
         std::vector<Point>            m_facesMassCenters;           // xzw the faces canters of mass
