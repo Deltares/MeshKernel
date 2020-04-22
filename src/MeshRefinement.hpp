@@ -90,6 +90,8 @@ namespace GridGeom
         double m_minimumFaceSize = 5e4;
         bool m_directionalRefinement = false;
         bool m_refineOutsideFace = false;
+        bool m_connectHangingNodes = true;
+        int m_maxNumberOfRefinementIterations = 10;
 
         enum RefinementType 
         {

@@ -21,12 +21,11 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
     GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
     GridGeomApi::InterpolationParametersNative& interpolationParametersNative)
 {
-
-    bool courantNetwork = true;
-    bool waveCourantRefinementType = true;
     m_deltaTimeMaxCourant = sampleRefineParametersNative.MaximumTimeStepInCourantGrid;
     m_refineOutsideFace = bool(sampleRefineParametersNative.AccountForSamplesOutside);
     m_minimumFaceSize = sampleRefineParametersNative.MinimumCellSize;
+    m_maxNumberOfRefinementIterations = 1; //sampleRefineParametersNative.MaxNumberOfRefinementIterations;
+    m_connectHangingNodes = sampleRefineParametersNative.ConnectHangingNodes;
 
     // find faces
     m_mesh.FindFaces();
@@ -61,9 +60,8 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
     //set_initial_mask
     ComputeInitialRefinementMask();
 
-    const int numLevels = 10;
     auto numFacesAfterRefinement = m_mesh.GetNumFaces();
-    for (int level = 0; level < numLevels; level++)
+    for (int level = 0; level < m_maxNumberOfRefinementIterations; level++)
     {
         if (level > 0) 
         {
@@ -186,17 +184,20 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
     m_mesh.Administrate();
 
     //remove isolated hanging nodes and update netcell administration (no need for setnodadm)
-    int numRemovedIsolatedHangingNodes = 0;
-    bool successful = RemoveIsolatedHangingnodes(numRemovedIsolatedHangingNodes);
-    if (!successful)
+    if(m_connectHangingNodes)
     {
-        return false;
-    }
+        int numRemovedIsolatedHangingNodes = 0;
+        bool successful = RemoveIsolatedHangingnodes(numRemovedIsolatedHangingNodes);
+        if (!successful)
+        {
+            return false;
+        }
 
-    successful = ConnectHangingNodes();
-    if (!successful)
-    {
-        return false;
+        successful = ConnectHangingNodes();
+        if (!successful)
+        {
+            return false;
+        }
     }
 
     return true;
@@ -321,9 +322,9 @@ bool GridGeom::MeshRefinement::ConnectHangingNodes()
             auto e = NextCircularBackwardIndex(n, numEdges);
             auto ee = NextCircularForwardIndex(n, numEdges);
 
-            auto edgeIndex = m_mesh.m_facesEdges[e][n];
-            auto firstEdgeIndex = m_mesh.m_facesEdges[e][e];
-            auto secondEdgeIndex = m_mesh.m_facesEdges[e][ee];
+            auto edgeIndex = m_mesh.m_facesEdges[f][n];
+            auto firstEdgeIndex = m_mesh.m_facesEdges[f][e];
+            auto secondEdgeIndex = m_mesh.m_facesEdges[f][ee];
             if (m_brotherEdges[edgeIndex] != secondEdgeIndex)
             {
 
@@ -350,53 +351,70 @@ bool GridGeom::MeshRefinement::ConnectHangingNodes()
         }
 
         // Quads
-        if (numNonHangingNodes == 4)
+        if (numNonHangingNodes == numNodesQuads)
         {
             switch (numHangingNodes)
             {
             case 1: // one hanging node
-                for (int n = 0; n < numHangingNodes; ++n)
+                for (int n = 0; n < numNonHangingNodes; ++n)
                 {
                     if (hangingNodeCache[n] < 0)
                     {
                         continue;
                     }
-                    auto ee = NextCircularBackwardIndex(n - 1, numEdges);
-                    auto eee = NextCircularForwardIndex(n, numEdges);
+
+                    auto ee = NextCircularBackwardIndex(n - 1, numNonHangingNodes);
+                    auto eee = NextCircularForwardIndex(n, numNonHangingNodes);
                     int newEdgeIndex;
-                    m_mesh.ConnectNodes(edgeEndNodeCache[ee], hangingNodeCache[n], newEdgeIndex);
-                    m_mesh.ConnectNodes(edgeEndNodeCache[eee], hangingNodeCache[n], newEdgeIndex);
+                    successful = m_mesh.ConnectNodes(edgeEndNodeCache[ee], hangingNodeCache[n], newEdgeIndex);
+                    successful = successful && m_mesh.ConnectNodes(edgeEndNodeCache[eee], hangingNodeCache[n], newEdgeIndex);
+                    if (!successful)
+                    {
+                        return false;
+                    }
                     break;
                 }
                 break;
             case 2: // two hanging node
-                for (int n = 0; n < numHangingNodes; ++n)
+                for (int n = 0; n < numNonHangingNodes; ++n)
                 {
                     if (hangingNodeCache[n] < 0)
                     {
                         continue;
                     }
-                    auto e = NextCircularBackwardIndex(n, numEdges);
-                    auto ee = NextCircularBackwardIndex(n - 1, numEdges);
-                    auto eee = NextCircularForwardIndex(n, numEdges);
+                    auto e = NextCircularBackwardIndex(n, numNonHangingNodes);
+                    auto ee = NextCircularForwardIndex(n, numNonHangingNodes);
+                    auto eee = NextCircularBackwardIndex(n + 2, numNonHangingNodes);
                     if (hangingNodeCache[e] >= 0) // left neighbor
                     {
                         int newEdgeIndex;
-                        m_mesh.ConnectNodes(hangingNodeCache[e], hangingNodeCache[n], newEdgeIndex);
-                        m_mesh.ConnectNodes(hangingNodeCache[n], edgeEndNodeCache[ee], newEdgeIndex);
-                        m_mesh.ConnectNodes(edgeEndNodeCache[ee], hangingNodeCache[e], newEdgeIndex);
+                        successful = m_mesh.ConnectNodes(hangingNodeCache[e], hangingNodeCache[n], newEdgeIndex);
+                        successful = successful && m_mesh.ConnectNodes(hangingNodeCache[n], edgeEndNodeCache[ee], newEdgeIndex);
+                        successful = successful && m_mesh.ConnectNodes(edgeEndNodeCache[ee], hangingNodeCache[e], newEdgeIndex);
+                        if (!successful)
+                        {
+                            return false;
+                        }
                     }
                     else if (hangingNodeCache[ee] >= 0) // right neighbor
                     {
                         int newEdgeIndex;
-                        m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[ee], newEdgeIndex);
-                        m_mesh.ConnectNodes(hangingNodeCache[ee], edgeEndNodeCache[eee], newEdgeIndex);
-                        m_mesh.ConnectNodes(edgeEndNodeCache[eee], hangingNodeCache[n], newEdgeIndex);
+                        successful = m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[ee], newEdgeIndex);
+                        successful = successful && m_mesh.ConnectNodes(hangingNodeCache[ee], edgeEndNodeCache[eee], newEdgeIndex);
+                        successful = successful && m_mesh.ConnectNodes(edgeEndNodeCache[eee], hangingNodeCache[n], newEdgeIndex);
+                        if (!successful)
+                        {
+                            return false;
+                        }
                     }
                     else if (hangingNodeCache[eee] >= 0) // hanging nodes must be opposing
                     {
                         int newEdgeIndex;
-                        m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[eee], newEdgeIndex);
+                        successful = m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[eee], newEdgeIndex);
+                        if (!successful)
+                        {
+                            return false;
+                        }
                     }
                     break;
                 }
@@ -408,28 +426,48 @@ bool GridGeom::MeshRefinement::ConnectHangingNodes()
             switch (numHangingNodes)
             {
             case 1: // one hanging node
-
-
-
-                break;
-            case 2: // two hanging node
-                for (int n = 0; n < numHangingNodes; ++n)
+                for (int n = 0; n < numNonHangingNodes; ++n)
                 {
                     if (hangingNodeCache[n] < 0)
                     {
                         continue;
                     }
-                    auto e = NextCircularBackwardIndex(n, numEdges);
-                    auto ee = NextCircularForwardIndex(n, numEdges);
+                    auto e = NextCircularForwardIndex(n, numNonHangingNodes);
+                    int newEdgeIndex;
+                    successful = m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[e], newEdgeIndex);
+                    if (!successful)
+                    {
+                        return false;
+                    }
+                    break;
+                }
+                break;
+            case 2: // two hanging node
+                for (int n = 0; n < numNonHangingNodes; ++n)
+                {
+                    if (hangingNodeCache[n] < 0)
+                    {
+                        continue;
+                    }
+                    auto e = NextCircularBackwardIndex(n, numNonHangingNodes);
+                    auto ee = NextCircularForwardIndex(n, numNonHangingNodes);
                     if (hangingNodeCache[e] >= 0) // left neighbor
                     {
                         int newEdgeIndex;
-                        m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[e], newEdgeIndex);
+                        successful = m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[e], newEdgeIndex);
+                        if (!successful)
+                        {
+                            return false;
+                        }
                     }
                     else
                     {
                         int newEdgeIndex;
-                        m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[ee], newEdgeIndex);
+                        successful = m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[ee], newEdgeIndex);
+                        if (!successful)
+                        {
+                            return false;
+                        }
                     }
                     break;
                 }

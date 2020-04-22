@@ -6,6 +6,7 @@
 #include "CurvilinearGrid.hpp"
 #include "Splines.hpp"
 #include "Entities.hpp"
+#include "MeshRefinement.hpp"
 
 static std::vector<GridGeom::Mesh> meshInstances;
 static std::map<int, GridGeom::Orthogonalization> orthogonalizationInstances;
@@ -17,13 +18,30 @@ namespace GridGeomApi
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
-            return false;
+            // empty polygon
+            return true;
         }
         result.resize(geometryListIn.numberOfCoordinates);
 
         for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
             result[i] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i] };
+        }
+        return true;
+    }
+
+    static bool ConvertGeometryListNativeToSampleVector(GeometryListNative& geometryListIn, std::vector<GridGeom::Sample>& result)
+    {
+        if (geometryListIn.numberOfCoordinates == 0)
+        {
+            // empty samples
+            return true;
+        }
+        result.resize(geometryListIn.numberOfCoordinates);
+
+        for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
+        {
+            result[i] = { geometryListIn.xCoordinates[i] , geometryListIn.yCoordinates[i], geometryListIn.zCoordinates[i] };
         }
         return true;
     }
@@ -706,8 +724,35 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int& gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative) 
+    GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int& gridStateId, GeometryListNative& geometryListIn, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative)
     {
+        if (!IsValidInstance(gridStateId))
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Sample> samples;
+        bool successful = ConvertGeometryListNativeToSampleVector(geometryListIn, samples);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        if (samples.empty())
+        {
+            return 0;
+        }
+
+        GridGeom::MeshRefinement meshRefinement(meshInstances[gridStateId]);
+
+        // polygon could be passed as api parameter
+        GridGeom::Polygons polygon;
+
+        successful = meshRefinement.RefineMeshBasedOnSamples(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+        if (!successful)
+        {
+            return -1;
+        }
 
         return 0;
     }

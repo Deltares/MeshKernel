@@ -2,6 +2,7 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
+#include <iostream>
 
 #include "Mesh.hpp"
 #include "Constants.cpp"
@@ -1020,36 +1021,40 @@ bool GridGeom::Mesh::IsSet()  const
 bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
 {
     int edgeIndex;
-    FindEdge(startNode, endNode, edgeIndex);
+    bool successful = FindEdge(startNode, endNode, edgeIndex);
+    if (!successful)
+    {
+        return false;
+    }
     if (edgeIndex >= 0)
     {
         return true;
     }
-    else
+
+
+    // increment the edges container
+    newEdgeIndex = GetNumEdges();
+    m_edges.resize(newEdgeIndex + 1);
+    m_edges[newEdgeIndex].first = startNode;
+    m_edges[newEdgeIndex].second = endNode;
+
+    // add the new edge to the nodes
+    if (m_nodesNumEdges[startNode] + 1 > maximumNumberOfEdgesPerNode)
     {
-        // increment the edges container
-        newEdgeIndex = GetNumEdges();
-        m_edges.resize(newEdgeIndex + 1);
-        m_edges[newEdgeIndex].first = startNode;
-        m_edges[newEdgeIndex].second = endNode;
-
-        // add the new edge to the nodes
-        if (m_nodesNumEdges[startNode] + 1 > maximumNumberOfEdgesPerNode) 
-        {
-            return false;
-        }
-        m_nodesNumEdges[startNode] = m_nodesNumEdges[startNode] + 1;
-        m_nodesEdges[startNode].push_back(newEdgeIndex);
-
-
-        if (m_nodesNumEdges[endNode] + 1 > maximumNumberOfEdgesPerNode)
-        {
-            return false;
-        }
-        m_nodesNumEdges[endNode] = m_nodesNumEdges[endNode] + 1;
-        m_nodesEdges[endNode].push_back(newEdgeIndex);
-
+        return false;
     }
+    m_nodesNumEdges[startNode] = m_nodesNumEdges[startNode] + 1;
+    m_nodesEdges[startNode].push_back(newEdgeIndex);
+
+
+    if (m_nodesNumEdges[endNode] + 1 > maximumNumberOfEdgesPerNode)
+    {
+        return false;
+    }
+    m_nodesNumEdges[endNode] = m_nodesNumEdges[endNode] + 1;
+    m_nodesEdges[endNode].push_back(newEdgeIndex);
+
+
     return true;
 }
 
@@ -1233,7 +1238,7 @@ bool GridGeom::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int
 
     if (firstEdgeFirstNode < 0 || firstEdgeEdgeSecondNode < 0 || secondEdgeFirstNode < 0 || secondEdgeSecondNode < 0)
     {
-        return true;
+        return false;
     }
 
     if (firstEdgeFirstNode == secondEdgeFirstNode || firstEdgeFirstNode == secondEdgeSecondNode)
@@ -1253,6 +1258,11 @@ bool GridGeom::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int
 
 bool GridGeom::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const
 {
+    if (firstNodeIndex < 0 || secondNodeIndex < 0)
+    {
+        return false;
+    }
+
     edgeIndex = -1;
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
