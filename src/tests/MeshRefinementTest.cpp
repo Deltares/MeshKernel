@@ -63,13 +63,66 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
     sampleRefineParametersNative.MinimumCellSize = 1.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
+    sampleRefineParametersNative.MaxNumberOfRefinementIterations = 1;
+    sampleRefineParametersNative.ConnectHangingNodes = 1;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     
     meshRefinement.RefineMeshBasedOnSamples(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
        
-    // 3 Validation
-    // expect nodesEdges to be sorted ccw
-    ASSERT_EQ(0, mesh.m_nodesEdges[0][0]);
-  
+    // 3 Validation edges connecting hanging nodes
+
+    //bottom side
+    ASSERT_EQ(5, mesh.m_edges[73].first);
+    ASSERT_EQ(25, mesh.m_edges[73].second);
+
+    ASSERT_EQ(10, mesh.m_edges[72].first);
+    ASSERT_EQ(25, mesh.m_edges[72].second);
+
+    ASSERT_EQ(10, mesh.m_edges[77].first);
+    ASSERT_EQ(28, mesh.m_edges[77].second);
+
+    ASSERT_EQ(15, mesh.m_edges[76].first);
+    ASSERT_EQ(28, mesh.m_edges[76].second);
+
+    //right side
+    ASSERT_EQ(21, mesh.m_edges[81].first);
+    ASSERT_EQ(35, mesh.m_edges[81].second);
+
+    ASSERT_EQ(22, mesh.m_edges[80].first);
+    ASSERT_EQ(35, mesh.m_edges[80].second);
+
+    ASSERT_EQ(22, mesh.m_edges[83].first);
+    ASSERT_EQ(36, mesh.m_edges[83].second);
+
+    ASSERT_EQ(23, mesh.m_edges[82].first);
+    ASSERT_EQ(36, mesh.m_edges[82].second);
+
+    //upper side
+    ASSERT_EQ(19, mesh.m_edges[79].first);
+    ASSERT_EQ(30, mesh.m_edges[79].second);
+
+    ASSERT_EQ(14, mesh.m_edges[78].first);
+    ASSERT_EQ(30, mesh.m_edges[78].second);
+
+    ASSERT_EQ(14, mesh.m_edges[75].first);
+    ASSERT_EQ(27, mesh.m_edges[75].second);
+
+    ASSERT_EQ(9, mesh.m_edges[74].first);
+    ASSERT_EQ(27, mesh.m_edges[74].second);
+
+
+    //left side
+    ASSERT_EQ(3, mesh.m_edges[71].first);
+    ASSERT_EQ(32, mesh.m_edges[71].second);
+
+    ASSERT_EQ(2, mesh.m_edges[70].first);
+    ASSERT_EQ(32, mesh.m_edges[70].second);
+
+    ASSERT_EQ(2, mesh.m_edges[69].first);
+    ASSERT_EQ(31, mesh.m_edges[69].second);
+
+    ASSERT_EQ(1, mesh.m_edges[68].first);
+    ASSERT_EQ(31, mesh.m_edges[68].second);
+
 }
