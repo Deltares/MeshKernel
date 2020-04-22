@@ -507,13 +507,14 @@ tests/FourSplinesBox.spl -text
 tests/MakeNetPolygon.pol -text
 tests/OffsetAPolygonTest.pli -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
+tests/SamplesForRefinementFourByFourMesh.xyz -text
 tests/SamplesToTriangulate.xyz -text
+tests/SmallTriangularGrid_net.nc -text
 tests/SmallTriangularGrid_oneCrossingLandBoundaries.ldb -text
 tests/SmallTriangularGrid_twoCrossingLandBoundaries.ldb -text
 tests/TestOrthogonalizationLargeTriangularGrid_net.nc -text
 tests/TestOrthogonalizationMediumTriangularGrid_net.nc -text
 tests/TestOrthogonalizationSmallTriangularGrid_landBoundary.ldb -text
-tests/TestOrthogonalizationSmallTriangularGrid_net.nc -text
 tests/ThreeNodesSpline.spl -text
 tests/refinePolygonTest.pol -text
 thirdParty/CMakeLists.txt -text

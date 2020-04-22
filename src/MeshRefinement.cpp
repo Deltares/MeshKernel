@@ -7,6 +7,7 @@
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
 #include "Operations.cpp"
+#include <iostream>
 
 GridGeom::MeshRefinement::MeshRefinement(Mesh& mesh) :
     m_mesh(mesh)
@@ -328,7 +329,7 @@ bool GridGeom::MeshRefinement::ConnectHangingNodes()
             if (m_brotherEdges[edgeIndex] != secondEdgeIndex)
             {
 
-                if (numNonHangingNodes > maximumNumberOfNodesPerFace)
+                if (numNonHangingNodes > maximumNumberOfNodesPerFace - 1)
                 {
                     return true;
                 }
@@ -434,7 +435,7 @@ bool GridGeom::MeshRefinement::ConnectHangingNodes()
                     }
                     auto e = NextCircularForwardIndex(n, numNonHangingNodes);
                     int newEdgeIndex;
-                    successful = m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[e], newEdgeIndex);
+                    successful = m_mesh.ConnectNodes(hangingNodeCache[n], edgeEndNodeCache[e], newEdgeIndex);
                     if (!successful)
                     {
                         return false;

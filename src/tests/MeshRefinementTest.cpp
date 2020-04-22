@@ -111,7 +111,6 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     ASSERT_EQ(9, mesh.m_edges[74].first);
     ASSERT_EQ(27, mesh.m_edges[74].second);
 
-
     //left side
     ASSERT_EQ(3, mesh.m_edges[71].first);
     ASSERT_EQ(32, mesh.m_edges[71].second);
@@ -124,5 +123,94 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 
     ASSERT_EQ(1, mesh.m_edges[68].first);
     ASSERT_EQ(31, mesh.m_edges[68].second);
+
+    // total number of edges
+    ASSERT_EQ(84, mesh.GetNumEdges()); 
+}
+
+
+TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
+{
+    // Prepare
+    std::vector<GridGeom::Point> nodes;
+
+    nodes.push_back(GridGeom::Point{ 322.252624511719,454.880187988281 });
+    nodes.push_back(GridGeom::Point{ 227.002044677734,360.379241943359 });
+    nodes.push_back(GridGeom::Point{ 259.252227783203,241.878051757813 });
+    nodes.push_back(GridGeom::Point{ 428.003295898438,210.377746582031 });
+    nodes.push_back(GridGeom::Point{ 536.003967285156,310.878753662109 });
+    nodes.push_back(GridGeom::Point{ 503.753784179688,432.379974365234 });
+    nodes.push_back(GridGeom::Point{ 350.752807617188,458.630249023438 });
+    nodes.push_back(GridGeom::Point{ 343.15053976393,406.232256102912 });
+    nodes.push_back(GridGeom::Point{ 310.300984548069,319.41005739802 });
+    nodes.push_back(GridGeom::Point{ 423.569603308318,326.17986967523 });
+
+    std::vector<GridGeom::Edge> edges;
+    edges.push_back({ 3, 9 });
+    edges.push_back({ 9, 2 });
+    edges.push_back({ 2, 3 });
+    edges.push_back({ 3, 4 });
+    edges.push_back({ 4, 9 });
+    edges.push_back({ 2, 8 });
+    edges.push_back({ 8, 1 });
+    edges.push_back({ 1, 2 });
+    edges.push_back({ 9, 8 });
+    edges.push_back({ 8, 7 });
+    edges.push_back({ 7, 1 });
+    edges.push_back({ 9, 10 });
+    edges.push_back({ 10, 8 });
+    edges.push_back({ 4, 5 });
+    edges.push_back({ 5, 10 });
+    edges.push_back({ 10, 4 });
+    edges.push_back({ 8, 6 });
+    edges.push_back({ 6, 7 });
+    edges.push_back({ 10, 6 });
+    edges.push_back({ 5, 6 });
+
+    for (int i = 0; i < edges.size(); i++)
+    {
+        edges[i].first -= 1;
+        edges[i].second -= 1;
+    }
+
+    GridGeom::Mesh mesh;
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    //sample points
+    std::vector<GridGeom::Sample> samples;
+    samples.push_back({ 359.8657532,350.3144836, 1.0000000 });
+    samples.push_back({ 387.5152588 ,299.2614746, 1.0000000 });
+
+
+    GridGeom::MeshRefinement  meshRefinement(mesh);
+    GridGeom::Polygons polygon;
+    GridGeomApi::SampleRefineParametersNative sampleRefineParametersNative;
+    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 15.97;
+    sampleRefineParametersNative.MinimumCellSize = 50.0;
+    sampleRefineParametersNative.AccountForSamplesOutside = false;
+    sampleRefineParametersNative.MaxNumberOfRefinementIterations = 1;
+    sampleRefineParametersNative.ConnectHangingNodes = 1;
+
+    GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+
+    meshRefinement.RefineMeshBasedOnSamples(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+
+    // edges connecting hanging nodes
+    ASSERT_EQ(10, mesh.m_edges[32].first);
+    ASSERT_EQ(2, mesh.m_edges[32].second);
+
+    ASSERT_EQ(14, mesh.m_edges[33].first);
+    ASSERT_EQ(4, mesh.m_edges[33].second);
+
+    ASSERT_EQ(13, mesh.m_edges[34].first);
+    ASSERT_EQ(5, mesh.m_edges[34].second);
+
+    ASSERT_EQ(11, mesh.m_edges[31].first);
+    ASSERT_EQ(1, mesh.m_edges[31].second);
+
+
+    // total number of edges
+    ASSERT_EQ(35, mesh.GetNumEdges());
+
 
 }

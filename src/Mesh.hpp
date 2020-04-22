@@ -156,7 +156,6 @@ namespace GridGeom
 
         int m_numFaces;                                             // NUMP
         int m_numNodes;                                             // valid nodes
-        int m_numEdges;                                             // valid edges
 
     };
 }
