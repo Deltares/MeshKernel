@@ -5,6 +5,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #Boost
 FIND_PACKAGE( Boost )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+ 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc") 
 
 #-----------------------------------------------------------------------------------------------------------------#
 # Google tests 
