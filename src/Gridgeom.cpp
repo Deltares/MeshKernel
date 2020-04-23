@@ -575,7 +575,7 @@ namespace GridGeomApi
     }
 
     //https://www.mono-project.com/docs/advanced/pinvoke/#memory-management
-    GRIDGEOM_API int ggeo_vertices_in_polygons(const int& gridStateId, GeometryListNative& geometryListIn, const int& inside, const int& numberOfMeshVertices, int* selectedVertices)
+    GRIDGEOM_API int ggeo_vertices_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int* selectedVertices)
     {
         if (!IsValidInstance(gridStateId))
         {

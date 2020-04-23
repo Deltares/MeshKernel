@@ -772,7 +772,7 @@ bool GridGeom::MeshRefinement::ComputeInitialRefinementMask()
                     int nodeIndex = m_mesh.m_facesNodes[f][n];
                     if (m_mesh.m_nodeMask[nodeIndex] == 1)
                     {
-                        m_mesh.m_nodeMask[nodeIndex] == -2;
+                        m_mesh.m_nodeMask[nodeIndex] = -2;
                         repeat = true;;
                     }
 
