@@ -539,7 +539,7 @@ namespace GridGeomApi
     }
 
 
-    GRIDGEOM_API int ggeo_count_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, int& inside, int& numberOfMeshVertices) 
+    GRIDGEOM_API int ggeo_count_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, const int& inside, int& numberOfMeshVertices) 
     {
         if (!IsValidInstance(gridStateId))
         {
@@ -565,7 +565,7 @@ namespace GridGeomApi
         numberOfMeshVertices = 0;
         for (auto i = 0; i < meshInstances[gridStateId].GetNumNodes() ; ++i) 
         {
-            if (meshInstances[gridStateId].m_nodeMask[i])
+            if (meshInstances[gridStateId].m_nodeMask[i]>0)
             {
                 numberOfMeshVertices++;
             }
@@ -574,7 +574,8 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, int& inside, int& numberOfMeshVertices, int* selectedVertices)
+    //https://www.mono-project.com/docs/advanced/pinvoke/#memory-management
+    GRIDGEOM_API int ggeo_vertices_in_polygons(const int& gridStateId, GeometryListNative& geometryListIn, const int& inside, const int& numberOfMeshVertices, int* selectedVertices)
     {
         if (!IsValidInstance(gridStateId))
         {
@@ -597,13 +598,13 @@ namespace GridGeomApi
             return -1;
         }
 
-        numberOfMeshVertices = 0;
+        int index = 0;
         for (int i = 0; i < meshInstances[gridStateId].GetNumNodes() ; ++i)
         {
-            if (meshInstances[gridStateId].m_nodeMask[i]) 
+            if (meshInstances[gridStateId].m_nodeMask[i]>0) 
             {
-                selectedVertices[numberOfMeshVertices] = i;
-                numberOfMeshVertices++;
+                selectedVertices[index] = i;
+                index++;
             }
         }
         return 0;
