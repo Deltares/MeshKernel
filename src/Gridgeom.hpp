@@ -79,9 +79,9 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_merge_nodes(int& gridStateId, GeometryListNative& geometryListIn);
 
-        GRIDGEOM_API int ggeo_count_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, int& inside, int& numberOfMeshVertices);
+        GRIDGEOM_API int ggeo_count_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, const int& inside, int& numberOfMeshVertices);
 
-        GRIDGEOM_API int ggeo_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, int& inside, int& numberOfMeshVertices, int* selectedVertices);
+        GRIDGEOM_API int ggeo_vertices_in_polygons(const int& gridStateId, GeometryListNative& geometryListIn, const int& inside, const int& numberOfMeshVertices, int* selectedVertices);
  
         GRIDGEOM_API int ggeo_insert_edge(int& gridStateId, int& start_node, int& end_node, int& new_edge_index);
 

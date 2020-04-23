@@ -512,6 +512,7 @@ tests/SamplesToTriangulate.xyz -text
 tests/SmallTriangularGrid_net.nc -text
 tests/SmallTriangularGrid_oneCrossingLandBoundaries.ldb -text
 tests/SmallTriangularGrid_twoCrossingLandBoundaries.ldb -text
+tests/SmallTriangularMeshSamplesForRefinement.xyz -text
 tests/TestOrthogonalizationLargeTriangularGrid_net.nc -text
 tests/TestOrthogonalizationMediumTriangularGrid_net.nc -text
 tests/TestOrthogonalizationSmallTriangularGrid_landBoundary.ldb -text
