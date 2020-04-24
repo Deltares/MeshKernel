@@ -103,6 +103,7 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_deallocate_state(int& gridStateId)
     {
+        meshInstances[gridStateId].DeleteMesh();
         meshInstances[gridStateId].DeleteFlatCopies();
         return 0;
     }

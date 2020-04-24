@@ -49,7 +49,7 @@ namespace GridGeom
         ///copypol, copy and move a polygon orthogonally
         bool OffsetCopy(int nodeIndex, double distance, bool Inner, Polygons& newPolygon);
 
-        inline int GetNumNodes() const { return m_numNodes; }
+        int GetNumNodes() const { return m_numNodes; }
 
     private:
 

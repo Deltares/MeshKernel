@@ -184,6 +184,12 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
     //connect hanging nodes
     m_mesh.Administrate();
 
+    bool successful = FindBrotherEdges();
+    if (!successful)
+    {
+        return false;
+    }
+
     //remove isolated hanging nodes and update netcell administration (no need for setnodadm)
     if(m_connectHangingNodes)
     {
@@ -287,11 +293,11 @@ bool GridGeom::MeshRefinement::RemoveIsolatedHangingnodes(int& numRemovedIsolate
             }
 
             //delete node
-            m_mesh.m_nodesNumEdges[commonNode] = 0;
+            //m_mesh.m_nodesNumEdges[commonNode] = 0;
+            m_mesh.DeleteNode(commonNode);
 
-            m_mesh.m_edges[brotherEdgeIndex].first = intMissingValue;
-            m_mesh.m_edges[brotherEdgeIndex].second = intMissingValue;
-            m_mesh.m_edgesNumFaces[brotherEdgeIndex] = 0;
+            m_mesh.DeleteEdge(brotherEdgeIndex);
+
             m_brotherEdges[brotherEdgeIndex] = intMissingValue;
 
             numRemovedIsolatedHangingNodes++;

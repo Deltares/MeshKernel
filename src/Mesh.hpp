@@ -42,9 +42,9 @@ namespace GridGeom
 
         void FindFaces();
 
-        int GetNumNodes() const { return m_nodes.size(); }
+        int GetNumNodes() const { return m_numNodes; }
 
-        int GetNumEdges() const { return m_edges.size(); }
+        int GetNumEdges() const { return m_numEdges; }
 
         int GetNumFaces() const { return m_numFaces; }
 
@@ -78,6 +78,12 @@ namespace GridGeom
 
         ///DELELEM
         bool DeleteEdge(int startNode, int endNode);
+
+        ///Delete an edge based on the index
+        bool DeleteEdge(int edgeIndex);
+
+        /// Delete the mesh
+        bool DeleteMesh();
 
         // find an edge
         bool FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
@@ -171,7 +177,8 @@ namespace GridGeom
         double m_dcenterinside = 1.0;
 
         int m_numFaces;                                             // NUMP
-        int m_numNodes;                                             // valid nodes
+        int m_numNodes;                                             // Number of valid nodes in m_nodes
+        int m_numEdges;                                             // Number of valid edges in m_edges
 
     };
 }
