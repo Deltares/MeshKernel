@@ -82,8 +82,8 @@ namespace GridGeom
         ///Delete an edge based on the index
         bool DeleteEdge(int edgeIndex);
 
-        /// Delete the mesh
-        bool DeleteMesh();
+        ///// Delete the mesh
+        //bool DeleteMesh();
 
         // find an edge
         bool FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
@@ -176,9 +176,9 @@ namespace GridGeom
 
         double m_dcenterinside = 1.0;
 
-        int m_numFaces;                                             // NUMP
-        int m_numNodes;                                             // Number of valid nodes in m_nodes
-        int m_numEdges;                                             // Number of valid edges in m_edges
+        int m_numFaces  =0;                                             // NUMP
+        int m_numNodes = 0;                                             // Number of valid nodes in m_nodes
+        int m_numEdges = 0;                                             // Number of valid edges in m_edges
 
     };
 }
