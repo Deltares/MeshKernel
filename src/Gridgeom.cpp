@@ -7,7 +7,6 @@
 #include "Splines.hpp"
 #include "Entities.hpp"
 #include "MeshRefinement.hpp"
-#include <urlmon.h>
 
 static std::vector<GridGeom::Mesh> meshInstances;
 static std::map<int, GridGeom::Orthogonalization> orthogonalizationInstances;
@@ -103,19 +102,32 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_deallocate_state(int& gridStateId)
     {
-        meshInstances[gridStateId].DeleteMesh();
-        meshInstances[gridStateId].DeleteFlatCopies();
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        meshInstances.pop_back();
         return 0;
     }
 
     GRIDGEOM_API int ggeo_delete_mesh(int& gridStateId, GeometryListNative& geometryListNativePolygon, int& deletionOption)
     {
-        meshInstances[gridStateId].DeleteFlatCopies();
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+        // implement delete mesh
+
         return 0;
     }
 
     GRIDGEOM_API int ggeo_set_state(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool IsGeographic)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
 
         std::vector<GridGeom::Edge> edges(meshGeometryDimensions.numedge);
         int ei = 0;
