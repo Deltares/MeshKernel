@@ -2,7 +2,6 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
-#include <iostream>
 
 #include "Mesh.hpp"
 #include "Constants.cpp"
@@ -27,31 +26,56 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
 
 bool GridGeom::Mesh::Administrate()
 {
-    m_nodesEdges.resize(GetNumNodes(), std::vector<int>(maximumNumberOfEdgesPerNode, 0));
-    std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<int>(maximumNumberOfEdgesPerNode, 0));
+    //Nodes, edges and faces indexses. Shift valid values up
+    m_nodeMask.resize(m_nodes.size());
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
+    int validIndex = 0;
+    for (int n = 0; n < m_nodes.size(); ++n)
+    {
+        if(m_nodes[n].IsValid())
+        {
+            m_nodeMask[n] = validIndex;
+            validIndex++;
+        }
+    }
 
-    m_nodesNumEdges.resize(GetNumNodes());
-    std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(), 0);
+    auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) {return !n.IsValid(); });
+    m_numNodes = endNodeVector - m_nodes.begin();
 
-    m_edgesNumFaces.resize(GetNumEdges());
-    std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
+    auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) {return e.first < 0 || e.second < 0; });
+    m_numEdges = endEdgeVector - m_edges.begin();
+
+    if (m_numNodes == 0 || m_numEdges == 0)
+    {
+        return true;
+    }
+
+    for (int e = 0; e < m_numEdges; ++e)
+    {
+        m_edges[e].first = m_nodeMask[m_edges[e].first];
+        m_edges[e].second = m_nodeMask[m_edges[e].second];
+    }
 
     m_numFaces = 0;
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
+
+    ResizeVectorIfNeeded(m_nodes.size(), m_nodesEdges);
+    std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<int>(maximumNumberOfEdgesPerNode, 0));
+
+    ResizeVectorIfNeeded(m_nodes.size(), m_nodesNumEdges);
+    std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(), 0);
+
+    ResizeVectorIfNeeded(m_edges.size(), m_edgesNumFaces);
+    std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
+
+    ResizeVectorIfNeeded(m_edges.size(), m_edgesFaces);
+    std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<int>(2, -1));
+
     m_facesNodes.resize(0);
     m_facesEdges.resize(0);
     m_facesCircumcenters.resize(0);
     m_facesMassCenters.resize(0);
     m_faceArea.resize(0);
-
-    //by default if polygon has not been provided, all nodes are in
-    m_nodeMask.resize(m_nodes.size(), 1);
-
-    m_edgesFaces.resize(GetNumEdges(), std::vector<int>(2, -1));
-
-    if (GetNumEdges() == 0 || GetNumNodes() == 0)
-    {
-        return true;
-    }
 
     // run administration and find the faces    
     NodeAdministration();
@@ -322,16 +346,13 @@ bool GridGeom::Mesh::SetFlatCopies()
     }
     else
     {
-        m_nodex.resize(1);
-        m_nodey.resize(1);
-        m_nodez.resize(1);
-        m_edgeNodes.resize(1);
+        DeleteFlatCopies();
     }
 
     return true;
 }
 
-bool GridGeom::Mesh::DeleteFlatCopies()
+bool GridGeom::Mesh::DeleteMesh()
 {
     //Used for internal state
     m_edges.resize(0);
@@ -345,7 +366,19 @@ bool GridGeom::Mesh::DeleteFlatCopies()
     m_facesCircumcenters.resize(0);
     m_facesMassCenters.resize(0);
     m_faceArea.resize(0);
-    SetFlatCopies();
+
+    m_isAdministrationDone = false;
+
+    return true;
+}
+
+bool GridGeom::Mesh::DeleteFlatCopies()
+{
+    //Used for internal state
+    m_nodex.resize(1);
+    m_nodey.resize(1);
+    m_nodez.resize(1);
+    m_edgeNodes.resize(1);
 
     return true;
 }
@@ -946,6 +979,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     {
         m_edges[edgeIndex].first = -1;
         m_edges[edgeIndex].second = -1;
+        m_numEdges--;
     }
 
     // check if there is another edge starting at firstEdgeOtherNode and ending at secondNode
@@ -965,6 +999,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
                 {
                     m_edges[secondEdgeIndex].first = -1;
                     m_edges[secondEdgeIndex].second = -1;
+                    m_numEdges--;
                 }
             }
         }
@@ -1007,9 +1042,13 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     m_nodesNumEdges[secondNodeIndex] = numSecondNodeEdges;
 
     // remove edges to first node
-    m_nodesEdges[firstNodeIndex] = std::move(std::vector<int>(0));
-    m_nodesNumEdges[firstNodeIndex] = 0;
-    m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
+    //m_nodesEdges[firstNodeIndex] = std::move(std::vector<int>(0));
+    //m_nodesNumEdges[firstNodeIndex] = 0;
+    //m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
+    //m_numNodes--;
+    DeleteNode(firstNodeIndex);
+
+    m_isAdministrationDone = false;
 
     return true;
 }
@@ -1032,12 +1071,12 @@ bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
         return true;
     }
 
-
     // increment the edges container
     newEdgeIndex = GetNumEdges();
-    m_edges.resize(newEdgeIndex + 1);
+    ResizeVectorIfNeeded(newEdgeIndex + 1, m_edges, std::make_pair(intMissingValue,intMissingValue));
     m_edges[newEdgeIndex].first = startNode;
     m_edges[newEdgeIndex].second = endNode;
+    m_numEdges++;
 
     // add the new edge to the nodes
     if (m_nodesNumEdges[startNode] + 1 > maximumNumberOfEdgesPerNode)
@@ -1065,10 +1104,11 @@ bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
     int newSize = GetNumNodes() + 1;
     newNodeIndex = GetNumNodes();
 
-    m_nodes.resize(newSize);
-    m_nodeMask.resize(newSize);
-    m_nodesNumEdges.resize(newSize);
-    m_nodesEdges.resize(newSize);
+    ResizeVectorIfNeeded(newSize, m_nodes);
+    ResizeVectorIfNeeded(newSize, m_nodeMask);
+    ResizeVectorIfNeeded(newSize, m_nodesNumEdges);
+    ResizeVectorIfNeeded(newSize, m_nodesEdges);
+    m_numNodes++;
 
     m_nodes[newNodeIndex] = newPoint;
     m_nodeMask[newNodeIndex] = newNodeIndex;
@@ -1091,6 +1131,7 @@ bool GridGeom::Mesh::DeleteNode(int nodeIndex)
     }
     m_nodesNumEdges[nodeIndex] = 0;
     m_nodes[nodeIndex] = { doubleMissingValue,doubleMissingValue };
+    m_numNodes--;
 
     m_isAdministrationDone = false;
 
@@ -1100,6 +1141,11 @@ bool GridGeom::Mesh::DeleteNode(int nodeIndex)
 //to do: check if accessing after remove if works
 bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
 {
+    if (startNode < 0 || endNode < 0)
+    {
+        return true; 
+    }
+
     auto isNotValidIndex = [](const int& v) { return v < 0; };
     for (int e = 0; e <  m_nodesNumEdges[startNode]; e++)
     {
@@ -1116,6 +1162,7 @@ bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
                 std::remove_if(m_nodesEdges[endNode].begin(), m_nodesEdges[endNode].end(), isNotValidIndex);
                 m_nodesNumEdges[startNode]--;
                 m_nodesNumEdges[endNode]--;
+                m_numEdges--;
             }
         }
     }
@@ -1124,17 +1171,37 @@ bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
     if (m_nodesNumEdges[startNode] == 0)
     {
         m_nodes[startNode] = { doubleMissingValue, doubleMissingValue };
+        m_numNodes--;
     }
 
     // remove endNode
     if (m_nodesNumEdges[endNode] == 0)
     {
         m_nodes[endNode] = { doubleMissingValue, doubleMissingValue };
+        m_numNodes--;
     }
 
     m_isAdministrationDone = false;
 
     return true;
+}
+
+
+bool GridGeom::Mesh::DeleteEdge(int edgeIndex)
+{
+    if(edgeIndex<0)
+    {
+        return true;
+    }
+
+    m_edges[edgeIndex].first = intMissingValue;
+    m_edges[edgeIndex].second = intMissingValue;
+    m_edgesNumFaces[edgeIndex] = 0;
+    m_numEdges--;
+
+    m_isAdministrationDone = false;
+
+    return false;
 }
 
 
