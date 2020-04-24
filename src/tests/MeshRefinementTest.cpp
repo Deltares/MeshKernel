@@ -134,16 +134,16 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     // Prepare
     std::vector<GridGeom::Point> nodes;
 
-    nodes.push_back(GridGeom::Point{ 322.252624511719,454.880187988281 });
-    nodes.push_back(GridGeom::Point{ 227.002044677734,360.379241943359 });
-    nodes.push_back(GridGeom::Point{ 259.252227783203,241.878051757813 });
-    nodes.push_back(GridGeom::Point{ 428.003295898438,210.377746582031 });
-    nodes.push_back(GridGeom::Point{ 536.003967285156,310.878753662109 });
-    nodes.push_back(GridGeom::Point{ 503.753784179688,432.379974365234 });
-    nodes.push_back(GridGeom::Point{ 350.752807617188,458.630249023438 });
-    nodes.push_back(GridGeom::Point{ 343.15053976393,406.232256102912 });
-    nodes.push_back(GridGeom::Point{ 310.300984548069,319.41005739802 });
-    nodes.push_back(GridGeom::Point{ 423.569603308318,326.17986967523 });
+    nodes.push_back({ 322.252624511719,454.880187988281 });
+    nodes.push_back({ 227.002044677734,360.379241943359 });
+    nodes.push_back({ 259.252227783203,241.878051757813 });
+    nodes.push_back({ 428.003295898438,210.377746582031 });
+    nodes.push_back({ 536.003967285156,310.878753662109 });
+    nodes.push_back({ 503.753784179688,432.379974365234 });
+    nodes.push_back({ 350.752807617188,458.630249023438 });
+    nodes.push_back({ 343.15053976393,406.232256102912 });
+    nodes.push_back({ 310.300984548069,319.41005739802 });
+    nodes.push_back({ 423.569603308318,326.17986967523 });
 
     std::vector<GridGeom::Edge> edges;
     edges.push_back({ 3, 9 });
