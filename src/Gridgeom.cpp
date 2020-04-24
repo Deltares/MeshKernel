@@ -7,6 +7,7 @@
 #include "Splines.hpp"
 #include "Entities.hpp"
 #include "MeshRefinement.hpp"
+#include <urlmon.h>
 
 static std::vector<GridGeom::Mesh> meshInstances;
 static std::map<int, GridGeom::Orthogonalization> orthogonalizationInstances;
@@ -92,15 +93,6 @@ namespace GridGeomApi
         return 0;
     }
 
-    static bool IsValidInstance(int gridStateId)
-    {
-        if (gridStateId >= meshInstances.size() || !meshInstances[gridStateId].IsSet())
-        {
-            return false;
-        }
-        return true;
-    }
-
     GRIDGEOM_API int ggeo_new_grid(int& gridStateId)
     {
         int instanceSize = meshInstances.size();
@@ -157,6 +149,15 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_get_mesh(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
+        if(gridStateId>= meshInstances.size())
+        {
+            return false;
+        }
+
+        if(!meshInstances[gridStateId].IsAdministrationDone())
+        {
+            meshInstances[gridStateId].Administrate();
+        }
 
         meshInstances[gridStateId].SetFlatCopies();
 
@@ -510,12 +511,12 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_merge_nodes(int& gridStateId, GeometryListNative& geometryListIn) 
     {
 
-        if (!IsValidInstance(gridStateId)) 
+        if (gridStateId>=meshInstances.size()) 
         {
             return 0;
         }
 
-        if (!meshInstances[gridStateId].IsSet())
+        if (!meshInstances[gridStateId].IsAdministrationDone())
         {
             return 0;
         }
@@ -541,7 +542,7 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_count_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, const int& inside, int& numberOfMeshVertices) 
     {
-        if (!IsValidInstance(gridStateId))
+        if (gridStateId >= meshInstances.size())
         {
             return 0;
         }
@@ -575,9 +576,9 @@ namespace GridGeomApi
     }
 
     //https://www.mono-project.com/docs/advanced/pinvoke/#memory-management
-    GRIDGEOM_API int ggeo_vertices_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int* selectedVertices)
+    GRIDGEOM_API int ggeo_vertices_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices)
     {
-        if (!IsValidInstance(gridStateId))
+        if (gridStateId >= meshInstances.size())
         {
             return 0;
         }
@@ -603,16 +604,17 @@ namespace GridGeomApi
         {
             if (meshInstances[gridStateId].m_nodeMask[i]>0) 
             {
-                selectedVertices[index] = i;
+                (*selectedVertices)[index] = i;
                 index++;
             }
         }
+
         return 0;
     }
 
     GRIDGEOM_API int ggeo_insert_edge(int& gridStateId, int& start_node, int& end_node, int& new_edge_index)
     {
-        if (!IsValidInstance(gridStateId))
+        if (gridStateId >= meshInstances.size())
         {
             return 0;
         }
@@ -629,9 +631,11 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_insert_node(int& gridStateId, double& xCoordinate, double& yCoordinate, double& zCoordinate, int& vertexIndex)
     {
-        if (!IsValidInstance(gridStateId))
+        if (gridStateId >= meshInstances.size())
         {
-            return 0;
+            //create a valid instance, by default cartesian
+            meshInstances[gridStateId] = GridGeom::Mesh();
+            meshInstances[gridStateId].m_projection = GridGeom::Projections::cartesian;
         }
 
         GridGeom::Point newNode{ xCoordinate, yCoordinate };
@@ -647,7 +651,7 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_delete_node(int& gridStateId, int& nodeIndex)
     {
-        if (!IsValidInstance(gridStateId))
+        if (gridStateId >= meshInstances.size())
         {
             return 0;
         }
@@ -663,7 +667,7 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_offsetted_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, int& numberOfPolygonVertices)
     {
-        if (!IsValidInstance(gridStateId))
+        if (gridStateId >= meshInstances.size())
         {
             return 0;
         }
@@ -696,7 +700,7 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_offsetted_polygon(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, GeometryListNative& geometryListOut)
     {
-        if (!IsValidInstance(gridStateId))
+        if (gridStateId >= meshInstances.size())
         {
             return 0;
         }
@@ -727,7 +731,7 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int& gridStateId, GeometryListNative& geometryListIn, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative)
     {
-        if (!IsValidInstance(gridStateId))
+        if (gridStateId >= meshInstances.size())
         {
             return 0;
         }
@@ -750,6 +754,29 @@ namespace GridGeomApi
         GridGeom::Polygons polygon;
 
         successful = meshRefinement.RefineMeshBasedOnSamples(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_get_vertex_index(int& gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful || polygonPoints.empty())
+        {
+            return -1;
+        }
+
+        successful = meshInstances[gridStateId].GetNodeIndex(polygonPoints[0], searchRadius, vertexIndex);
         if (!successful)
         {
             return -1;

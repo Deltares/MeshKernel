@@ -3,6 +3,7 @@
 #include <vector>
 #include "MakeGridParametersNative.hpp"
 #include "Entities.hpp"
+#include "SpatialTrees.hpp"
 
 namespace GridGeom 
 {
@@ -11,6 +12,7 @@ namespace GridGeom
     class Polygons;
     class MakeGridParametersNative;
     class GeometryListNative;
+
 
     class Mesh
     {
@@ -28,7 +30,7 @@ namespace GridGeom
         
         bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
 
-        bool IsSet() const;
+        bool IsAdministrationDone() const;
         
         bool Administrate();
         
@@ -49,6 +51,8 @@ namespace GridGeom
         int GetNumFaceEdges(const int faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
         int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+
+        int GetRTreeSize() const { return m_rtree.Size(); }
 
         bool GetBoundingBox(Point& lowerLeft, Point& upperRight) const;
 
@@ -88,9 +92,13 @@ namespace GridGeom
 
         bool SelectNodesInPolygon(const Polygons& polygons, int inside);
 
-        bool ComputeEdgeLengths();
-
         bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
+
+        bool GetNodeIndex(Point point, double searchRadius, int& vertexIndex);
+
+        bool BuildRTree();
+
+        bool InsertMissingNodesInRTree();
 
 
         std::vector<Edge>  m_edges;                                 // KN
@@ -126,6 +134,12 @@ namespace GridGeom
         double m_triangleMinimumAngle = 5.0;                        // minimum angle of created triangles. If minimum angle > maximum angle, no check 
         double m_triangleMaximumAngle = 150.0;                      // maximum angle of created triangles
 
+        // spatial tree to inquire node vertices
+        SpatialTrees::RTree m_rtree;
+
+        bool m_isAdministrationDone = false;
+
+
         Projections m_projection;
 
     private:
@@ -151,6 +165,8 @@ namespace GridGeom
 
         /// CHECKTRIANGLE
         bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes);
+
+        bool ComputeEdgeLengths();
 
         double m_dcenterinside = 1.0;
 

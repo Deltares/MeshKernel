@@ -13,6 +13,9 @@
 #if !defined(GRIDGEOM_API)
 #define GRIDGEOM_API __declspec(dllexport)
 #endif
+#if !defined(GRIDGEOM_CONVENTION)
+#define GRIDGEOM_CONVENTION __cdecl
+#endif
 #else  
 #define GRIDGEOM_API __attribute__((visibility("default")))
 #endif 
@@ -81,7 +84,7 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_count_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, const int& inside, int& numberOfMeshVertices);
 
-        GRIDGEOM_API int ggeo_vertices_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int* selectedVertices);
+        GRIDGEOM_API  int ggeo_vertices_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices);
  
         GRIDGEOM_API int ggeo_insert_edge(int& gridStateId, int& start_node, int& end_node, int& new_edge_index);
 
@@ -94,6 +97,10 @@ namespace GridGeomApi
         GRIDGEOM_API int ggeo_offsetted_polygon(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, GeometryListNative& geometryListOut);
 
         GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int& gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative);
+
+        GRIDGEOM_API int ggeo_get_vertex_index(int& gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex);
+
+
 
 #ifdef __cplusplus
     }
