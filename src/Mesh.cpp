@@ -45,6 +45,8 @@ bool GridGeom::Mesh::Administrate()
     auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) {return e.first < 0 || e.second < 0; });
     m_numEdges = endEdgeVector - m_edges.begin();
 
+    m_numFaces = 0;
+
     if (m_numNodes == 0 || m_numEdges == 0)
     {
         return true;
@@ -56,7 +58,6 @@ bool GridGeom::Mesh::Administrate()
         m_edges[e].second = m_nodeMask[m_edges[e].second];
     }
 
-    m_numFaces = 0;
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 
     ResizeVectorIfNeeded(m_nodes.size(), m_nodesEdges);
@@ -328,11 +329,12 @@ bool GridGeom::Mesh::SetFlatCopies()
     {
         m_nodex.resize(GetNumNodes());
         m_nodey.resize(GetNumNodes());
-        m_nodez.resize(GetNumNodes(), 0.0);
+        m_nodez.resize(GetNumNodes());
         for (int n = 0; n < GetNumNodes(); n++)
         {
             m_nodex[n] = m_nodes[n].x;
             m_nodey[n] = m_nodes[n].y;
+            m_nodez[n] = 0.0;
         }
         m_edgeNodes.resize(GetNumEdges() * 2);
         int ei = 0;
@@ -352,25 +354,35 @@ bool GridGeom::Mesh::SetFlatCopies()
     return true;
 }
 
-bool GridGeom::Mesh::DeleteMesh()
-{
-    //Used for internal state
-    m_edges.resize(0);
-    m_nodes.resize(0);
-    m_nodesEdges.resize(0);
-    m_nodesNumEdges.resize(0);
-    m_edgesNumFaces.resize(0);
-    m_edgesFaces.resize(0);
-    m_facesNodes.resize(0);
-    m_facesEdges.resize(0);
-    m_facesCircumcenters.resize(0);
-    m_facesMassCenters.resize(0);
-    m_faceArea.resize(0);
-
-    m_isAdministrationDone = false;
-
-    return true;
-}
+//bool GridGeom::Mesh::DeleteMesh()
+//{
+//    //Used for internal state
+//    m_edges.resize(0);
+//    m_nodes.resize(0);
+//    m_nodesEdges.resize(0);
+//    m_nodesNumEdges.resize(0);
+//    m_nodeMask.resize(0);
+//    m_edgesNumFaces.resize(0);
+//    m_edgesFaces.resize(0);
+//    m_edgeLengths.resize(0);
+//    m_facesNodes.resize(0);
+//    m_facesEdges.resize(0);
+//    m_facesCircumcenters.resize(0);
+//    m_facesMassCenters.resize(0);
+//    m_faceArea.resize(0);
+//    m_nodesTypes.resize(0);
+//    m_polygonNodesCache.resize(0);
+//
+//    m_numFaces = 0;
+//    m_numNodes = 0;
+//    m_numEdges = 0;
+//
+//    m_rtree.Clear();
+//
+//    m_isAdministrationDone = false;
+//
+//    return true;
+//}
 
 bool GridGeom::Mesh::DeleteFlatCopies()
 {
@@ -979,7 +991,6 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     {
         m_edges[edgeIndex].first = -1;
         m_edges[edgeIndex].second = -1;
-        m_numEdges--;
     }
 
     // check if there is another edge starting at firstEdgeOtherNode and ending at secondNode
@@ -999,7 +1010,6 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
                 {
                     m_edges[secondEdgeIndex].first = -1;
                     m_edges[secondEdgeIndex].second = -1;
-                    m_numEdges--;
                 }
             }
         }
@@ -1042,11 +1052,11 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     m_nodesNumEdges[secondNodeIndex] = numSecondNodeEdges;
 
     // remove edges to first node
-    //m_nodesEdges[firstNodeIndex] = std::move(std::vector<int>(0));
-    //m_nodesNumEdges[firstNodeIndex] = 0;
-    //m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
-    //m_numNodes--;
-    DeleteNode(firstNodeIndex);
+    m_nodesEdges[firstNodeIndex] = std::move(std::vector<int>(0));
+    m_nodesNumEdges[firstNodeIndex] = 0;
+    m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
+
+    //DeleteNode(firstNodeIndex);
 
     m_isAdministrationDone = false;
 
