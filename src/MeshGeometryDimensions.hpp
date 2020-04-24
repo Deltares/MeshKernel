@@ -4,7 +4,7 @@ namespace GridGeomApi
 {
     struct MeshGeometryDimensions
     {
-        char* name = nullptr;
+        char name[255];
         int dim;
         int numnode;
         int numedge;

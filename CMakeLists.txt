@@ -6,8 +6,13 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 FIND_PACKAGE( Boost )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
  
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc") 
-
+if(WIN32)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc -std=c++11") 
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc -std=c++11 -g") 
+else()
+    set(CMAKE_CXX_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C++ compiler flags for a Release build")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11 -g") 
+endif()
 #-----------------------------------------------------------------------------------------------------------------#
 # Google tests 
 # https://crascit.com/2015/07/25/cmake-gtest/
@@ -50,8 +55,6 @@ source_group(source FILES ${all_cpp_srcs})
 # definitation for triangle
 add_library( gridgeomStateful_dll SHARED ${all_cpp_headers}  ${all_cpp_srcs})
 target_link_libraries(gridgeomStateful_dll LINK_PUBLIC ${Boost_LIBRARIES} triangle)
-
-set(CMAKE_CXX_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C++ compiler flags for a Release build")
 
 # Add tests
 FILE( GLOB all_test_srcs src/tests/*.cpp)
