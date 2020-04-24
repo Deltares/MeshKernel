@@ -67,11 +67,12 @@ bool GridGeom::Mesh::Administrate()
     // classify node types
     ClassifyNodes();
 
+    m_isAdministrationDone = true;
+
     // return value
     return true;
-
-
 }
+
 //gridtonet
 GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
 {
@@ -1013,9 +1014,9 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     return true;
 }
 
-bool GridGeom::Mesh::IsSet()  const
+bool GridGeom::Mesh::IsAdministrationDone()  const
 {
-    return GetNumFaces() > 0;
+    return m_isAdministrationDone;
 }
 
 bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
@@ -1054,6 +1055,7 @@ bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
     m_nodesNumEdges[endNode] = m_nodesNumEdges[endNode] + 1;
     m_nodesEdges[endNode].push_back(newEdgeIndex);
 
+    m_isAdministrationDone = false;
 
     return true;
 }
@@ -1072,7 +1074,8 @@ bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
     m_nodeMask[newNodeIndex] = newNodeIndex;
     m_nodesNumEdges[newNodeIndex] = 0;
 
-   
+    m_isAdministrationDone = false;
+
     return true;
 }
 
@@ -1088,6 +1091,8 @@ bool GridGeom::Mesh::DeleteNode(int nodeIndex)
     }
     m_nodesNumEdges[nodeIndex] = 0;
     m_nodes[nodeIndex] = { doubleMissingValue,doubleMissingValue };
+
+    m_isAdministrationDone = false;
 
     return true;
 }
@@ -1126,6 +1131,8 @@ bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
     {
         m_nodes[endNode] = { doubleMissingValue, doubleMissingValue };
     }
+
+    m_isAdministrationDone = false;
 
     return true;
 }
@@ -1316,6 +1323,51 @@ bool GridGeom::Mesh::OffsetSphericalCoordinates(double minx, double miny)
                 m_nodes[n].x += 360.0;
             }
         }
+    }
+
+    return true;
+}
+
+bool GridGeom::Mesh::BuildRTree()
+{
+    m_rtree.Clear();
+    m_rtree.BuildTree(m_nodes, m_projection);
+    return true;
+}
+
+bool GridGeom::Mesh::InsertMissingNodesInRTree()
+{
+
+    if (m_rtree.Size() < m_nodes.size())
+    {
+        //insert the missing nodes
+        for (int i = m_rtree.Size(); i < m_nodes.size(); ++i)
+        {
+            m_rtree.InsertNode(m_nodes[i]);
+        }
+    }
+    return true;
+}
+
+
+bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexIndex)
+{
+    if (GetNumNodes() == 0)
+    {
+        return true;
+    }
+
+    if (m_rtree.Empty())
+    {
+        BuildRTree();
+    }
+
+    InsertMissingNodesInRTree();
+
+    auto result = m_rtree.NearestNeighbours(point, searchRadius);
+    if (!result.empty())
+    {
+        vertexIndex = result[0];
     }
 
     return true;

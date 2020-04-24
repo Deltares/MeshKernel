@@ -262,6 +262,37 @@ TEST(Mesh, HangingEdge)
     ASSERT_EQ(1, mesh.GetNumFaces());
 }
 
+TEST(Mesh, InsertNodeRtree)
+{
+    //1 Setup
+    std::vector<GridGeom::Point> nodes;
+    nodes.push_back({ 0.0, 0.0 });
+    nodes.push_back({ 5.0, 0.0 });
+    nodes.push_back({ 3.0, 2.0 });
+    nodes.push_back({ 3.0, 4.0 });
+
+    std::vector<GridGeom::Edge> edges;
+    edges.push_back({ 0, 1 });
+    edges.push_back({ 1, 3 });
+    edges.push_back({ 3, 0 });
+    edges.push_back({ 2, 1 });
+
+
+    GridGeom::Mesh mesh;
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    mesh.BuildRTree();
+
+    GridGeom::Point newPoint{ 10.0,10.0 };
+    int newNodeIndex;
+    mesh.InsertNode(newPoint, newNodeIndex);
+
+    mesh.InsertMissingNodesInRTree();
+
+    int rtreeSize = mesh.GetRTreeSize();
+    ASSERT_EQ(5, rtreeSize);
+}
+
 TEST(Mesh, NodeMerging)
 {
     // 1. Setup

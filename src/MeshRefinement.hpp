@@ -85,7 +85,7 @@ namespace GridGeom
         std::vector<double> m_polygonEdgesLengthsCache;
         
 
-        GridGeom::SpatialTrees::RTree m_rtree;
+        SpatialTrees::RTree m_rtree;
 
         double m_minimumFaceSize = 5e4;
         bool m_directionalRefinement = false;
