@@ -37,7 +37,7 @@ namespace GridGeom
     }
 
     template<typename T>
-    bool AllocateVector(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
+    bool ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
     {
         const int currentSize = vectorToResize.size();
         if (newSize > currentSize )

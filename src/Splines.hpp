@@ -32,7 +32,7 @@ namespace GridGeom
         /// add a new spline, return the index
         bool AddSpline(const std::vector<Point>& splines, const int start, const int size)
         {
-            AllocateVector(m_numSplines + 1, m_splineCornerPoints, m_allocationSize, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }));
+            ResizeVectorIfNeededWithMinimumSize(m_numSplines + 1, m_splineCornerPoints, m_allocationSize, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }));
            
             m_numAllocatedSplines = m_splineCornerPoints.size();
             m_numAllocatedSplineNodes.resize(m_numAllocatedSplines, 10);
@@ -168,7 +168,7 @@ namespace GridGeom
             {
                 return false;
             }
-            AllocateVector(m_numSplineNodes[splineIndex] + 1, m_splineCornerPoints[splineIndex], m_allocationSize, { doubleMissingValue, doubleMissingValue });
+            ResizeVectorIfNeededWithMinimumSize(m_numSplineNodes[splineIndex] + 1, m_splineCornerPoints[splineIndex], m_allocationSize, { doubleMissingValue, doubleMissingValue });
             m_numAllocatedSplineNodes[splineIndex] = m_splineCornerPoints[splineIndex].size();
 
             m_splineCornerPoints[splineIndex][m_numSplineNodes[splineIndex]] = point;
