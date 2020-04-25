@@ -19,6 +19,7 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
     m_nodes = nodes;
     m_projection = projection;
 
+    m_isAdministrationDone = false;
     Administrate();
 
     return true;
@@ -26,9 +27,14 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
 
 bool GridGeom::Mesh::Administrate()
 {
+    if(m_isAdministrationDone)
+    {
+        return true;
+    }
+
     //Nodes, edges and faces indexses. Shift valid values up
     m_nodeMask.resize(m_nodes.size());
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), -1);
     int validIndex = 0;
     for (int n = 0; n < m_nodes.size(); ++n)
     {
@@ -42,21 +48,34 @@ bool GridGeom::Mesh::Administrate()
     auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) {return !n.IsValid(); });
     m_numNodes = endNodeVector - m_nodes.begin();
 
-    auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) {return e.first < 0 || e.second < 0; });
+    for (int e = 0; e < m_edges.size(); ++e)
+    {
+        if(m_edges[e].first<0 || m_edges[e].second < 0)
+        {
+            continue;
+        }
+        if(m_nodeMask[m_edges[e].first]>=0 && m_nodeMask[m_edges[e].second] >= 0 )
+        {
+            m_edges[e].first = m_nodeMask[m_edges[e].first];
+            m_edges[e].second = m_nodeMask[m_edges[e].second];
+        }
+        else
+        {
+            m_edges[e].first = -1;
+            m_edges[e].second = -1;
+        }
+
+    }
+    auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [&](const Edge& e) {return e.first < 0 || e.second < 0; });
     m_numEdges = endEdgeVector - m_edges.begin();
 
-    m_numFaces = 0;
-
+    // return if there are no nodes or no edges
     if (m_numNodes == 0 || m_numEdges == 0)
     {
         return true;
     }
 
-    for (int e = 0; e < m_numEdges; ++e)
-    {
-        m_edges[e].first = m_nodeMask[m_edges[e].first];
-        m_edges[e].second = m_nodeMask[m_edges[e].second];
-    }
+    m_numFaces = 0;
 
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 
@@ -71,6 +90,10 @@ bool GridGeom::Mesh::Administrate()
 
     ResizeVectorIfNeeded(m_edges.size(), m_edgesFaces);
     std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<int>(2, -1));
+
+    ResizeVectorIfNeeded(m_edges.size(), m_edgeMask);
+    std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
+    
 
     m_facesNodes.resize(0);
     m_facesEdges.resize(0);
@@ -154,7 +177,7 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections project
         }
     }
     m_edges.resize(ind);
-
+    m_isAdministrationDone = false;
     Administrate();
 }
 
@@ -288,6 +311,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
         validEdges++;
     }
 
+    m_isAdministrationDone = false;
     Administrate();
 
 }
@@ -320,8 +344,6 @@ bool GridGeom::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std:
 }
 
 
-
-
 bool GridGeom::Mesh::SetFlatCopies()
 {
     // Used for internal state
@@ -336,61 +358,49 @@ bool GridGeom::Mesh::SetFlatCopies()
             m_nodey[n] = m_nodes[n].y;
             m_nodez[n] = 0.0;
         }
+
+        int edgeIndex = 0;
         m_edgeNodes.resize(GetNumEdges() * 2);
-        int ei = 0;
         for (int e = 0; e < GetNumEdges(); e++)
         {
-            m_edgeNodes[ei] = m_edges[e].first;
-            ei++;
-            m_edgeNodes[ei] = m_edges[e].second;
-            ei++;
+            m_edgeNodes[edgeIndex] = m_edges[e].first;
+            edgeIndex++;
+            m_edgeNodes[edgeIndex] = m_edges[e].second;
+            edgeIndex++;
+        }
+
+        int faceIndex = 0;
+        m_faceNodes.resize(GetNumFaces() * maximumNumberOfNodesPerFace, -1);
+        m_facesCircumcentersx.resize(GetNumFaces());
+        m_facesCircumcentersy.resize(GetNumFaces());
+        m_facesCircumcentersz.resize(GetNumFaces());
+        for (int f = 0; f < GetNumFaces(); f++)
+        {
+            for (int n = 0; n < maximumNumberOfNodesPerFace; ++n)
+            {
+                if (n < m_facesNodes[f].size())
+                {
+                    m_faceNodes[faceIndex] = m_facesNodes[f][n];
+                }
+                faceIndex++;
+            }
+            m_facesCircumcentersx[f] = m_facesCircumcenters[f].x;
+            m_facesCircumcentersy[f] = m_facesCircumcenters[f].y;
+            m_facesCircumcentersz[f] = 0.0;
         }
     }
     else
     {
-        DeleteFlatCopies();
+        //set an array of size 1, for a valid location
+        m_nodex.resize(1);
+        m_nodey.resize(1);
+        m_nodez.resize(1);
+        m_edgeNodes.resize(1);
+        m_faceNodes.resize(1);
+        m_facesCircumcentersx.resize(1);
+        m_facesCircumcentersy.resize(1);
+        m_facesCircumcentersz.resize(1);
     }
-
-    return true;
-}
-
-//bool GridGeom::Mesh::DeleteMesh()
-//{
-//    //Used for internal state
-//    m_edges.resize(0);
-//    m_nodes.resize(0);
-//    m_nodesEdges.resize(0);
-//    m_nodesNumEdges.resize(0);
-//    m_nodeMask.resize(0);
-//    m_edgesNumFaces.resize(0);
-//    m_edgesFaces.resize(0);
-//    m_edgeLengths.resize(0);
-//    m_facesNodes.resize(0);
-//    m_facesEdges.resize(0);
-//    m_facesCircumcenters.resize(0);
-//    m_facesMassCenters.resize(0);
-//    m_faceArea.resize(0);
-//    m_nodesTypes.resize(0);
-//    m_polygonNodesCache.resize(0);
-//
-//    m_numFaces = 0;
-//    m_numNodes = 0;
-//    m_numEdges = 0;
-//
-//    m_rtree.Clear();
-//
-//    m_isAdministrationDone = false;
-//
-//    return true;
-//}
-
-bool GridGeom::Mesh::DeleteFlatCopies()
-{
-    //Used for internal state
-    m_nodex.resize(1);
-    m_nodey.resize(1);
-    m_nodez.resize(1);
-    m_edgeNodes.resize(1);
 
     return true;
 }
@@ -977,6 +987,7 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
         }
     }
 
+    m_isAdministrationDone = false;
     Administrate();
 
     return true;
@@ -1061,11 +1072,6 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     m_isAdministrationDone = false;
 
     return true;
-}
-
-bool GridGeom::Mesh::IsAdministrationDone()  const
-{
-    return m_isAdministrationDone;
 }
 
 bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
@@ -1449,3 +1455,85 @@ bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexI
 
     return true;
 }
+
+bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
+{
+    if (deletionOption == AllVerticesInside)
+    {
+        for (int n = 0; n < GetNumNodes(); ++n)
+        {
+            auto isInPolygon = IsPointInPolygon(m_nodes[n], polygons.m_nodes, polygons.m_numNodes - 1);
+            if (isInPolygon)
+            {
+                m_nodes[n] = { doubleMissingValue,doubleMissingValue };
+            }
+        }
+    }
+
+    if (deletionOption == FacesWithIncludedCircumcenters)
+    {
+
+        Administrate();
+        std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
+        for (int n = 0; n < GetNumNodes(); ++n)
+        {
+            auto isInPolygon = IsPointInPolygon(m_nodes[n], polygons.m_nodes, polygons.m_numNodes - 1);
+            if (isInPolygon)
+            {
+                m_nodeMask[n] = 1;
+            }
+        }
+        std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
+        for (int e = 0; e < GetNumEdges(); ++e)
+        {
+            auto firstNodeIndex = m_edges[e].first;
+            auto secondNodeIndex = m_edges[e].second;
+            if (firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 &&
+                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1)
+            {
+                m_edgeMask[e] = 1;
+            }
+        }
+
+        auto secondEdgeMask = m_edgeMask;
+        for (int f = 0; f < GetNumFaces(); ++f)
+        {
+            bool isOneEdgeNotIncluded = false;
+            for (int n = 0; n < GetNumFaceEdges(f); ++n)
+            {
+                auto edgeIndex = m_edgesFaces[f][n];
+                if (edgeIndex >= 0 && m_edgeMask[edgeIndex] == 0)
+                {
+                    isOneEdgeNotIncluded = true;
+                    break;
+                }
+            }
+
+            if (isOneEdgeNotIncluded)
+            {
+                for (int n = 0; n < GetNumFaceEdges(f); ++n)
+                {
+                    auto edgeIndex = m_edgesFaces[f][n];
+                    if (edgeIndex >= 0)
+                    {
+                        secondEdgeMask[edgeIndex] = 0;
+                    }
+                }
+            }
+        }
+
+        for (int e = 0; e < GetNumEdges(); ++e)
+        {
+            if (secondEdgeMask[e] == 1)
+            {
+                m_edges[e].first = -1;
+                m_edges[e].second = -1;
+            }
+        }
+    }
+    
+    m_isAdministrationDone = false;
+    Administrate();
+
+    return true;
+};
