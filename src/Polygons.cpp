@@ -11,7 +11,7 @@ namespace GridGeom
 {
     Polygons::Polygons() : m_numNodes(0), m_numAllocatedNodes(0)
     {
-        AllocateVector(m_numAllocatedNodes, m_nodes, m_allocationSize);
+        ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize);
         m_numAllocatedNodes = m_nodes.size();
     }
 
@@ -43,11 +43,10 @@ namespace GridGeom
     /// copynetboundstopol
     bool Polygons::MeshBoundaryToPolygon(const Mesh& mesh,
         int counterClockWise,
-        int setMeshState,
         std::vector<Point>& meshBoundaryPolygon,
         int& numNodesBoundaryPolygons)
     {
-        std::vector<bool> isVisited(mesh.GetNumEdges());
+        std::vector<bool> isVisited(mesh.GetNumEdges(), false);
         std::vector<int> boundaryPolygonStarts(mesh.GetNumEdges());
         int numBoundaryPolygons = 0;
         numNodesBoundaryPolygons = 0;
@@ -62,13 +61,13 @@ namespace GridGeom
                 continue;
             }
 
-            const int first = mesh.m_edges[e].first;
-            const int second = mesh.m_edges[e].second;
-            const auto firstPoint = mesh.m_nodes[first];
-            const auto secondPoint = mesh.m_nodes[second];
+            const auto firstNodeIndex = mesh.m_edges[e].first;
+            const auto secondNodeIndex = mesh.m_edges[e].second;
+            const auto firstPoint = mesh.m_nodes[firstNodeIndex];
+            const auto secondPoint = mesh.m_nodes[secondNodeIndex];
 
-            bool inHullFirst = IsPointInPolygon(mesh.m_nodes[first], m_nodes, GetNumNodes());
-            bool inHullSecond = IsPointInPolygon(mesh.m_nodes[second], m_nodes, GetNumNodes());
+            bool inHullFirst = IsPointInPolygon(mesh.m_nodes[firstNodeIndex], m_nodes, GetNumNodes());
+            bool inHullSecond = IsPointInPolygon(mesh.m_nodes[secondNodeIndex], m_nodes, GetNumNodes());
 
             if (!inHullFirst && !inHullSecond)
             {
@@ -87,7 +86,6 @@ namespace GridGeom
             numBoundaryPolygons++;
 
             const int startPolygonEdges = numNodesBoundaryPolygons;
-            const int nodeStart = first;
 
             meshBoundaryPolygon[numNodesBoundaryPolygons] = firstPoint;
             numNodesBoundaryPolygons++;
@@ -96,17 +94,17 @@ namespace GridGeom
             isVisited[e] = true;
 
             // walk the current mesh boundary
-            int currentNode = second;
-            WalkBoundary(mesh, isVisited, numNodesBoundaryPolygons, currentNode, meshBoundaryPolygonSize, meshBoundaryPolygon);
+            auto currentNode = secondNodeIndex;
+            WalkBoundaryFromNode(mesh, isVisited, numNodesBoundaryPolygons, currentNode, meshBoundaryPolygon);
 
-            const int numNodesFirstTail = numNodesBoundaryPolygons;
+            const auto numNodesFirstTail = numNodesBoundaryPolygons;
 
             // if the boundary polygon is not closed
-            if (currentNode != nodeStart)
+            if (currentNode != firstNodeIndex)
             {
                 //Now grow a polyline starting at the other side of the original link L, i.e., the second tail
-                currentNode = nodeStart;
-                WalkBoundary(mesh, isVisited, numNodesBoundaryPolygons, currentNode, meshBoundaryPolygonSize, meshBoundaryPolygon);
+                currentNode = firstNodeIndex;
+                WalkBoundaryFromNode(mesh, isVisited, numNodesBoundaryPolygons, currentNode, meshBoundaryPolygon);
             }
 
             // There is a nonempty second tail, so reverse the first tail, so that they connect.
@@ -117,7 +115,7 @@ namespace GridGeom
                 for (int n = start; n < numNodesFirstTail; n++)
                 {
                     backupPoint = meshBoundaryPolygon[n];
-                    const int replaceIndex = numNodesFirstTail - n + nodeStart;
+                    const int replaceIndex = numNodesFirstTail - n + firstNodeIndex;
                     meshBoundaryPolygon[n] = meshBoundaryPolygon[replaceIndex];
                     meshBoundaryPolygon[replaceIndex] = backupPoint;
                 }
@@ -130,47 +128,41 @@ namespace GridGeom
     }
 
 
-    bool Polygons::WalkBoundary(const Mesh& mesh,
+    bool Polygons::WalkBoundaryFromNode(const Mesh& mesh,
         std::vector<bool>& isVisited,
         int& nodeIndex,
         int& currentNode,
-        int meshBoundaryPolygonSize,
         std::vector<Point>& meshBoundaryPolygon)
     {
-        int ee = 0;
-        while (ee < mesh.m_nodesNumEdges[currentNode])
+        int e = 0;
+        bool currentNodeInPolygon = false;
+        while (e < mesh.m_nodesNumEdges[currentNode])
         {
-            bool inHull = IsPointInPolygon(mesh.m_nodes[currentNode], m_nodes, GetNumNodes());
+            if (!currentNodeInPolygon)
+            {
+                currentNodeInPolygon = IsPointInPolygon(mesh.m_nodes[currentNode], m_nodes, GetNumNodes());
+            }
 
-            if (!inHull)
+            if (!currentNodeInPolygon)
             {
                 break;
             }
 
-            const int currentEdge = mesh.m_nodesEdges[currentNode][ee];
-
-            if (isVisited[currentEdge] == 1 || mesh.m_edgesNumFaces[currentEdge] != 1)
+            const auto currentEdge = mesh.m_nodesEdges[currentNode][e];
+            if (isVisited[currentEdge] || mesh.m_edgesNumFaces[currentEdge] != 1)
             {
-                ee++;
+                e++;
                 continue;
             }
 
-            const int firstNode = mesh.m_edges[currentEdge].first;
-            const int secondNode = mesh.m_edges[currentEdge].second;
+            const auto firstNode = mesh.m_edges[currentEdge].first;
+            const auto secondNode = mesh.m_edges[currentEdge].second;
 
-            if (secondNode == currentNode)
-            {
-                currentNode = firstNode;
-                ee = 0;
-            }
-            else
-            {
-                currentNode = secondNode;
-                ee = 0;
-            }
+            currentNode = secondNode == currentNode ? firstNode : secondNode;
+            e = 0;
+            currentNodeInPolygon = false;
 
             nodeIndex++;
-
             ResizeVectorIfNeeded(nodeIndex + 1, meshBoundaryPolygon);
 
             meshBoundaryPolygon[nodeIndex] = mesh.m_nodes[currentNode];

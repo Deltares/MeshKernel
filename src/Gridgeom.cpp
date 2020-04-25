@@ -50,12 +50,12 @@ namespace GridGeomApi
     static bool ConvertPointVectorToGeometryListNative(std::vector<GridGeom::Point> pointVector, GeometryListNative& result)
     {
         // invalid memory allocation
-        if (pointVector.size()!= result.numberOfCoordinates)
+        if (pointVector.size() < result.numberOfCoordinates)
         {
             return -1;
         }
 
-        for (int i = 0; i < pointVector.size(); i++)
+        for (int i = 0; i < result.numberOfCoordinates; i++)
         {
             result.xCoordinates[i] = pointVector[i].x;
             result.yCoordinates[i] = pointVector[i].y;
@@ -406,6 +406,11 @@ namespace GridGeomApi
         CurvilinearParametersNative& curvilinearParameters, 
         SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
         // use the default constructor, no instance present
         GridGeom::Polygons polygon;
         GridGeom::Splines spline(meshInstances[gridStateId].m_projection, polygon);
@@ -422,6 +427,11 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_make_net(int& gridStateId, MakeGridParametersNative& makeGridParameters, GeometryListNative& disposableGeometryListIn)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
         GridGeom::Polygons polygon;
 
         std::vector<GridGeom::Point> result;
@@ -447,6 +457,11 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_mesh_from_polygon(int& gridStateId, GeometryListNative& disposableGeometryListIn)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
         GridGeom::Polygons polygon;
 
         std::vector<GridGeom::Point> result;
@@ -476,6 +491,11 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_mesh_from_samples(int& gridStateId, GeometryListNative& disposableGeometryListIn)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
         std::vector<GridGeom::Point> samplePoints;
         bool successful = ConvertGeometryListNativeToPointVector(disposableGeometryListIn, samplePoints);
         if (!successful)
@@ -490,25 +510,33 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon_count_edges(int& gridStateId, int& numberOfPolygonVertices)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
         GridGeom::Polygons polygon;
         std::vector<GridGeom::Point> meshBoundaryPolygon;
 
         int counterClockWise =0;
-        int setMeshState = 0;
-        polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, setMeshState, meshBoundaryPolygon, numberOfPolygonVertices);
+        polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, meshBoundaryPolygon, numberOfPolygonVertices);
 
         return 0;
     }
 
     GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon(int& gridStateId, GeometryListNative& disposableGeometryListInOut)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
         GridGeom::Polygons polygon;
         std::vector<GridGeom::Point> meshBoundaryPolygon;
 
         int counterClockWise = 0;
-        int setMeshState = 0;
         int numNodesBoundaryPolygons;
-        polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, setMeshState, meshBoundaryPolygon, numNodesBoundaryPolygons);
+        polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
         bool successful = ConvertPointVectorToGeometryListNative(meshBoundaryPolygon, disposableGeometryListInOut);
         if (!successful)
@@ -521,6 +549,11 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_refine_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
         std::vector<GridGeom::Point> polygonPoints;
         bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
         if (!successful)
@@ -545,6 +578,11 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_refine_polygon(int& gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
         std::vector<GridGeom::Point> polygonPoints;
         bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
         if (!successful)
