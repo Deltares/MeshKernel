@@ -27,16 +27,11 @@ namespace GridGeom
         // triangulatesamplestonetwork
         Mesh(std::vector<Point>& nodes, const Polygons& polygons, Projections projection);
 
-        
         bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
-
-        bool IsAdministrationDone() const;
         
         bool Administrate();
         
         bool SetFlatCopies();
-        
-        bool DeleteFlatCopies();
 
         void ComputeFaceCircumcentersMassCentersAreas();
 
@@ -67,6 +62,9 @@ namespace GridGeom
         ///makenet
         bool MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
 
+        // DELNET
+        bool DeleteMesh(const Polygons& polygons, int deletionOption);
+
         ///connectdbn
         bool ConnectNodes(int startNode, int endNode, int& newEdgeIndex);
 
@@ -81,9 +79,6 @@ namespace GridGeom
 
         ///Delete an edge based on the index
         bool DeleteEdge(int edgeIndex);
-
-        ///// Delete the mesh
-        //bool DeleteMesh();
 
         // find an edge
         bool FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
@@ -117,22 +112,27 @@ namespace GridGeom
         std::vector<int> m_edgesNumFaces;                           // LNN
         std::vector<std::vector<int>> m_edgesFaces;                 // LNE
         std::vector<double> m_edgeLengths;
+        std::vector<int> m_edgeMask;                                // LC
 
         // faces
-        std::vector<std::vector<int>> m_facesNodes;                 // netcell%Nod, the nodes composing the faces, in ccw order
-        std::vector<int>              m_numFacesNodes;              // netcell%N
-        std::vector<std::vector<int>> m_facesEdges;                 // netcell%lin
-        std::vector<Point>            m_facesCircumcenters;         // xz  the face circumcenter
-        std::vector<Point>            m_facesMassCenters;           // xzw the faces canters of mass
+        std::vector<std::vector<int>>   m_facesNodes;                 // netcell%Nod, the nodes composing the faces, in ccw order
+        std::vector<int>                m_numFacesNodes;              // netcell%N
+        std::vector<std::vector<int>>   m_facesEdges;                 // netcell%lin
+        std::vector<Point>              m_facesCircumcenters;         // xz  the face circumcenter
+        std::vector<Point>              m_facesMassCenters;           // xzw the faces canters of mass
 
         std::vector<double> m_faceArea;                             // Face area   
         std::vector<int> m_nodesTypes;                              // Node types,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
 
-        // Used for internal state
-        std::vector<double> m_nodex;
-        std::vector<double> m_nodey;
-        std::vector<double> m_nodez;
-        std::vector<int>    m_edgeNodes;
+        // Flat arrays for communication
+        std::vector<double>              m_nodex;
+        std::vector<double>              m_nodey;
+        std::vector<double>              m_nodez;
+        std::vector<int>                 m_edgeNodes;
+        std::vector<int>                 m_faceNodes;
+        std::vector<double>              m_facesCircumcentersx;
+        std::vector<double>              m_facesCircumcentersy;
+        std::vector<double>              m_facesCircumcentersz;
 
         std::vector<Point> m_polygonNodesCache;                     // polygon cache
 
@@ -179,6 +179,14 @@ namespace GridGeom
         int m_numFaces  =0;                                             // NUMP
         int m_numNodes = 0;                                             // Number of valid nodes in m_nodes
         int m_numEdges = 0;                                             // Number of valid edges in m_edges
+
+
+        enum DeleteMeshOptions
+        {
+            AllVerticesInside = 0,
+            FacesWithIncludedCircumcenters = 1,
+            FacesCompletelyIncluded = 2            
+        };
 
     };
 }
