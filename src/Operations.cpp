@@ -247,6 +247,37 @@ namespace GridGeom
     }
 
 
+    static bool IsOnLine(const Point& leftPoint, const Point& rightPoint, const Point& point)
+    {
+        const double tolerance = 1e-8;
+        const double crossProduct = (point.y - leftPoint.y) * (rightPoint.x - leftPoint.x) - (point.x - leftPoint.x) * (rightPoint.y - leftPoint.y);
+
+        // it is not aligned
+        if (crossProduct > tolerance)
+        {
+            return false;
+        }
+
+        const double dotProduct = (point.x - leftPoint.x) * (rightPoint.x - leftPoint.x) + (point.y - leftPoint.y) * (rightPoint.y - leftPoint.y);
+
+        // it is not between left and right
+        if (dotProduct < 0)
+        {
+            return false;
+        }
+
+        double const squaredDistance = (rightPoint.x - leftPoint.x) * (rightPoint.x - leftPoint.x) + (rightPoint.y - leftPoint.y) * (rightPoint.y - leftPoint.y);
+
+        if (dotProduct > squaredDistance)
+        {
+            return false;
+        }
+
+        return true;
+
+    }
+
+
     /// Check if a point is in polygon using the winding number method
     /// polygon: a closed polygon consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
     static bool IsPointInPolygon(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
@@ -269,23 +300,18 @@ namespace GridGeom
         {
             if (polygon[n].y <= point.y) // an upward crossing
             {
-                if (polygon[n + 1].y > point.y)
+                if (polygon[n + 1].y >= point.y && IsLeft(polygon[n], polygon[n + 1], point) >= 0.0)
                 {
-                    if (IsLeft(polygon[n], polygon[n + 1], point) > 0.0)
-                    {
-                        ++windingNumber; // have  a valid up intersect
-                    }
+                    ++windingNumber; // have  a valid up intersect
                 }
             }
             else
             {
-                if (polygon[n + 1].y <= point.y) // a downward crossing
+                if (polygon[n + 1].y <= point.y && IsLeft(polygon[n], polygon[n + 1], point) <= 0.0) // a downward crossing
                 {
-                    if (IsLeft(polygon[n], polygon[n + 1], point) < 0.0)
-                    {
-                        --windingNumber; // have  a valid down intersect
-                    }
+                    --windingNumber; // have  a valid down intersect
                 }
+
             }
         }
         return windingNumber == 0 ? false : true;
