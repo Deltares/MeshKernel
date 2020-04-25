@@ -47,8 +47,6 @@ namespace GridGeom
         int& numNodesBoundaryPolygons)
     {
         std::vector<bool> isVisited(mesh.GetNumEdges(), false);
-        std::vector<int> boundaryPolygonStarts(mesh.GetNumEdges());
-        int numBoundaryPolygons = 0;
         numNodesBoundaryPolygons = 0;
 
         meshBoundaryPolygon.resize(mesh.GetNumNodes() , { doubleMissingValue ,doubleMissingValue });
@@ -63,18 +61,18 @@ namespace GridGeom
 
             const auto firstNodeIndex = mesh.m_edges[e].first;
             const auto secondNodeIndex = mesh.m_edges[e].second;
-            const auto firstPoint = mesh.m_nodes[firstNodeIndex];
-            const auto secondPoint = mesh.m_nodes[secondNodeIndex];
+            const auto firstNode = mesh.m_nodes[firstNodeIndex];
+            const auto secondNode = mesh.m_nodes[secondNodeIndex];
 
-            bool inHullFirst = IsPointInPolygon(mesh.m_nodes[firstNodeIndex], m_nodes, GetNumNodes());
-            bool inHullSecond = IsPointInPolygon(mesh.m_nodes[secondNodeIndex], m_nodes, GetNumNodes());
+            bool firstNodeInPolygon = IsPointInPolygon(mesh.m_nodes[firstNodeIndex], m_nodes, GetNumNodes());
+            bool secondNodeInPolygon = IsPointInPolygon(mesh.m_nodes[secondNodeIndex], m_nodes, GetNumNodes());
 
-            if (!inHullFirst && !inHullSecond)
+            if (!firstNodeInPolygon && !secondNodeInPolygon)
             {
                 continue;
             }
 
-            ResizeVectorIfNeeded(numNodesBoundaryPolygons + 3, meshBoundaryPolygon);
+            ResizeVectorIfNeeded(numNodesBoundaryPolygons + 3, meshBoundaryPolygon,{doubleMissingValue, doubleMissingValue});
 
             //Start a new polyline
             if (numNodesBoundaryPolygons > 0)
@@ -82,14 +80,11 @@ namespace GridGeom
                 numNodesBoundaryPolygons++;
             }
 
-            boundaryPolygonStarts[numBoundaryPolygons] = numNodesBoundaryPolygons;
-            numBoundaryPolygons++;
-
             const int startPolygonEdges = numNodesBoundaryPolygons;
 
-            meshBoundaryPolygon[numNodesBoundaryPolygons] = firstPoint;
+            meshBoundaryPolygon[numNodesBoundaryPolygons] = firstNode;
             numNodesBoundaryPolygons++;
-            meshBoundaryPolygon[numNodesBoundaryPolygons] = secondPoint;
+            meshBoundaryPolygon[numNodesBoundaryPolygons] = secondNode;
 
             isVisited[e] = true;
 
@@ -120,9 +115,11 @@ namespace GridGeom
                     meshBoundaryPolygon[replaceIndex] = backupPoint;
                 }
             }
-        }
 
-        boundaryPolygonStarts[numBoundaryPolygons] = numNodesBoundaryPolygons + 1;
+            //Start a new polyline
+            numNodesBoundaryPolygons++;
+        }
+       
 
         return true;
     }
@@ -163,7 +160,7 @@ namespace GridGeom
             currentNodeInPolygon = false;
 
             nodeIndex++;
-            ResizeVectorIfNeeded(nodeIndex + 1, meshBoundaryPolygon);
+            ResizeVectorIfNeeded(nodeIndex + 1, meshBoundaryPolygon,{doubleMissingValue,doubleMissingValue});
 
             meshBoundaryPolygon[nodeIndex] = mesh.m_nodes[currentNode];
 
