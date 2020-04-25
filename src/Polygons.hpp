@@ -24,7 +24,6 @@ namespace GridGeom
         /// copynetboundstopol
         bool MeshBoundaryToPolygon(const Mesh& mesh,
             int counterClockWise,
-            int setMeshState,
             std::vector<Point>& meshBoundaryPolygon,
             int& numNodesBoundaryPolygons);
 
@@ -56,11 +55,10 @@ namespace GridGeom
         /// maximum edge length of a given polygon
         bool MaximumEdgeLength(const std::vector<Point>& localPolygon, int numPoints, double& maximumEdgeLength);
 
-        bool WalkBoundary(const Mesh& mesh,
+        bool WalkBoundaryFromNode(const Mesh& mesh,
             std::vector<bool>& isVisited,
             int& nodeIndex,
             int& currentNode,
-            int meshBoundaryPolygonSize,
             std::vector<Point>& meshBoundaryPolygon);
 
     };

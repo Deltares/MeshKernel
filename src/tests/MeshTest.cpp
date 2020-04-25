@@ -221,10 +221,9 @@ TEST(Mesh, MeshBoundaryToPolygon)
     GridGeom::Polygons polygons;
 
     int counterClockWise = 0;
-    int setMeshState = 0;
     std::vector<GridGeom::Point> meshBoundaryPolygon;
     int numNodesBoundaryPolygons = 0;
-    polygons.MeshBoundaryToPolygon(mesh, counterClockWise, setMeshState, meshBoundaryPolygon, numNodesBoundaryPolygons);
+    polygons.MeshBoundaryToPolygon(mesh, counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
     const double tolerance = 1e-5;
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);

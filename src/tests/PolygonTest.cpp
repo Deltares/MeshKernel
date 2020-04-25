@@ -1,7 +1,6 @@
 #include "../Mesh.hpp"
 #include "../Entities.hpp"
 #include "../Polygons.hpp"
-#include "../Orthogonalization.hpp"
 #include "../Splines.hpp"
 #include <gtest/gtest.h>
 
@@ -59,7 +58,7 @@ TEST(Polygons, MeshBoundaryToPolygon)
     std::vector<GridGeom::Point> meshBoundaryPolygon;
     int numNodesBoundaryPolygons;
     polygons.Set(polygon, GridGeom::Projections::cartesian);
-    polygons.MeshBoundaryToPolygon(mesh, 0, 1, meshBoundaryPolygon, numNodesBoundaryPolygons);
+    polygons.MeshBoundaryToPolygon(mesh, 0, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
 
     //constexpr double tolerance = 1e-2;

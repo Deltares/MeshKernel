@@ -14,7 +14,7 @@ namespace GridGeom
     LandBoundaries::LandBoundaries() :
         m_numAllocatedNodes(0)
     {
-        AllocateVector(m_numAllocatedNodes, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
+        ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
         m_numAllocatedNodes = m_nodes.size();
         m_numNode = 0;
         m_polygonNodesCache.resize(maximumNumberOfNodesPerFace);
@@ -24,7 +24,7 @@ namespace GridGeom
     bool LandBoundaries::Set(const std::vector<Point>& landBoundary)
     {
 
-        bool successful = AllocateVector(m_numNode + landBoundary.size(), m_nodes, m_allocationSize,{ doubleMissingValue,doubleMissingValue });
+        bool successful = ResizeVectorIfNeededWithMinimumSize(m_numNode + landBoundary.size(), m_nodes, m_allocationSize,{ doubleMissingValue,doubleMissingValue });
         m_numAllocatedNodes = m_nodes.size();
 
         for (int i = 0; i < landBoundary.size(); i++)
@@ -60,10 +60,9 @@ namespace GridGeom
 
         // network boundary to polygon
         int counterClockWise = 0;
-        int setMeshState = 0;
         std::vector<Point> meshBoundaryPolygon;
         int numNodesBoundaryPolygons;
-        const bool successful = polygons.MeshBoundaryToPolygon(mesh, counterClockWise, setMeshState, meshBoundaryPolygon, numNodesBoundaryPolygons);
+        const bool successful = polygons.MeshBoundaryToPolygon(mesh, counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
         if (!successful)
         {
             return false;
@@ -403,14 +402,14 @@ namespace GridGeom
 
         // Update  nodes
         int minSize = m_numNode + 3;
-        AllocateVector(minSize, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
+        ResizeVectorIfNeededWithMinimumSize(minSize, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
         m_numNode += 3;
         m_nodes[m_numNode - 2] = newNodeLeft;
         m_nodes[m_numNode - 1] = newNodeRight;
 
         // Update segment indexses
         minSize = m_numSegments + 1;
-        AllocateVector(minSize, m_segmentIndices, m_allocationSize, { -1, -1 });
+        ResizeVectorIfNeededWithMinimumSize(minSize, m_segmentIndices, m_allocationSize, { -1, -1 });
         m_segmentIndices[m_numSegments][0] = m_numNode - 2;
         m_segmentIndices[m_numSegments][1] = m_numNode - 1;
         m_numSegments++;
