@@ -288,7 +288,7 @@ TEST(Mesh, InsertNodeRtree)
 
     mesh.InsertMissingNodesInRTree();
 
-    int rtreeSize = mesh.GetRTreeSize();
+    int rtreeSize = mesh.m_rtree.Size();
     ASSERT_EQ(5, rtreeSize);
 }
 
