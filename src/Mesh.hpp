@@ -47,8 +47,6 @@ namespace GridGeom
 
         int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
-        int GetRTreeSize() const { return m_rtree.Size(); }
-
         bool GetBoundingBox(Point& lowerLeft, Point& upperRight) const;
 
         bool OffsetSphericalCoordinates(double minx, double miny);
@@ -62,7 +60,7 @@ namespace GridGeom
         ///makenet
         bool MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
 
-        // DELNET
+        /// DELNET
         bool DeleteMesh(const Polygons& polygons, int deletionOption);
 
         ///connectdbn
@@ -82,6 +80,8 @@ namespace GridGeom
 
         // find an edge
         bool FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
+
+        bool MoveNode(Point newPoint, int nodeindex);
 
         ///get_cellpolygon
         //need to account for spherical coordinates. Build a polygon around a face

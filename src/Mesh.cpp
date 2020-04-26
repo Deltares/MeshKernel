@@ -1493,6 +1493,55 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
 
     if (deletionOption == FacesWithIncludedCircumcenters)
     {
+        Administrate();
+
+        for (int e = 0; e < GetNumEdges(); ++e)
+        {
+            bool allFaceCircumcentersInPolygon = true;
+
+            for (int f = 0; f < GetNumEdgesFaces(e); ++f)
+            {
+                auto faceIndex = m_edgesFaces[e][f];
+                if(faceIndex<0)
+                {
+                    continue;
+                }
+
+                auto faceCircumcenter = m_facesCircumcenters[faceIndex];
+                auto isInPolygon = IsPointInPolygon(faceCircumcenter, polygons.m_nodes, polygons.m_numNodes - 1);
+                if (!isInPolygon)
+                {
+                    allFaceCircumcentersInPolygon = false;
+                    break;
+                }
+            }
+
+            // 2D edge without surrounding faces.
+            if(GetNumEdgesFaces(e)==0)
+            {
+                auto firstNodeIndex = m_edges[e].first;
+                auto secondNodeIndex = m_edges[e].second;
+
+                if(firstNodeIndex<0 || secondNodeIndex <0 )
+                {
+                    continue;
+                }
+
+                auto edgeCenter = (m_nodes[firstNodeIndex] + m_nodes[secondNodeIndex]) / 2.0;
+
+                allFaceCircumcentersInPolygon = IsPointInPolygon(edgeCenter, polygons.m_nodes, polygons.m_numNodes - 1);
+            }
+
+            if(allFaceCircumcentersInPolygon)
+            {
+                m_edges[e].first = -1;
+                m_edges[e].second = -1;
+            }
+        }
+    }
+
+    if (deletionOption == FacesCompletelyIncluded)
+    {
 
         Administrate();
         std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
@@ -1522,7 +1571,7 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
             bool isOneEdgeNotIncluded = false;
             for (int n = 0; n < GetNumFaceEdges(f); ++n)
             {
-                auto edgeIndex = m_edgesFaces[f][n];
+                auto edgeIndex = m_facesEdges[f][n];
                 if (edgeIndex >= 0 && m_edgeMask[edgeIndex] == 0)
                 {
                     isOneEdgeNotIncluded = true;
@@ -1534,7 +1583,7 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
             {
                 for (int n = 0; n < GetNumFaceEdges(f); ++n)
                 {
-                    auto edgeIndex = m_edgesFaces[f][n];
+                    auto edgeIndex = m_facesEdges[f][n];
                     if (edgeIndex >= 0)
                     {
                         secondEdgeMask[edgeIndex] = 0;
@@ -1558,3 +1607,16 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
 
     return true;
 };
+
+bool GridGeom::Mesh::MoveNode(Point newPoint, int nodeindex)
+{
+
+    Point nodeToMove = m_nodes[nodeindex];
+
+    auto dx = GetDx(newPoint, nodeToMove, m_projection);
+    auto dy = GetDy(newPoint, nodeToMove, m_projection);
+    
+
+
+    return true;
+}
