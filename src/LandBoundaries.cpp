@@ -23,6 +23,10 @@ namespace GridGeom
     /// admin_landboundary_segments
     bool LandBoundaries::Set(const std::vector<Point>& landBoundary)
     {
+        if(landBoundary.empty())
+        {
+            return true;
+        }
 
         bool successful = ResizeVectorIfNeededWithMinimumSize(m_numNode + landBoundary.size(), m_nodes, m_allocationSize,{ doubleMissingValue,doubleMissingValue });
         m_numAllocatedNodes = m_nodes.size();
@@ -41,6 +45,10 @@ namespace GridGeom
     /// TODO: ? Why splitting in two segments is required?
     bool LandBoundaries::Administrate(const Mesh& mesh, Polygons& polygons)
     {
+        if (m_numNode<=0)
+        {
+            return true;
+        }
 
         std::vector<int> landBoundaryMask(m_numNode - 1, 0);
         //mask the landboundary that is inside the selecting polygon
@@ -161,6 +169,11 @@ namespace GridGeom
     /// Find the mesh boundary line closest to the land boundary
     bool LandBoundaries::FindNearestMeshBoundary(const Mesh& mesh, const Polygons& polygon, int snapping)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
+
         bool successful = false;
         bool meshBoundOnly = false;
 
@@ -215,6 +228,11 @@ namespace GridGeom
     /// connect_boundary_paths, build an additional boundary for not assigned nodes  
     bool LandBoundaries::AssignSegmentsToAllMeshNodes(const Mesh& mesh, int edgeIndex, bool initialize, std::vector<int>& nodes, int numNodes)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
+
         bool successful = false;
         std::vector<int> nodesLoc;
         int numNodesLoc;
@@ -323,12 +341,6 @@ namespace GridGeom
                     if (landboundarySegmentIndex == -1)
                         return false;
 
-                    if (meshNode == 0) 
-                    {
-                        std::cout << "D";
-                    
-                    }
-
                     if ((nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][0] && edgeRatio < 0.0) ||
                         (nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][1] - 1 && edgeRatio > 1.0))
                     {
@@ -355,6 +367,11 @@ namespace GridGeom
     /// add_land, add new land boundary segment that connects two others
     bool LandBoundaries::AddLandBoundary(const Mesh& mesh, const std::vector<int>& nodesLoc, int numNodesLoc, int nodeIndex)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
+
         bool successful = false;
 
         int startSegmentIndex = m_meshNodesLandBoundarySegments[nodesLoc[0]];
@@ -426,6 +443,11 @@ namespace GridGeom
         int& numNodesInPath,
         int& numRejectedNodesInPath)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
+
         int startLandBoundaryIndex = m_segmentIndices[landBoundarySegment][0];
         int endLandBoundaryIndex = m_segmentIndices[landBoundarySegment][1];
 
@@ -617,6 +639,11 @@ namespace GridGeom
         int& startLandBoundaryIndex,
         int& endLandBoundaryIndex)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
+
         std::fill(m_nodeMask.begin(), m_nodeMask.end(), doubleMissingValue);
 
         // check if any of the land boundary node is inside a mesh face
@@ -737,6 +764,11 @@ namespace GridGeom
         double& leftEdgeRatio,
         double& rightEdgeRatio)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
+
         int numNextFaces = 0;
         std::vector<int> nextFaces(landBoundaryFaces.size(), intMissingValue);
         for (int f = 0; f < landBoundaryFaces.size(); f++)
@@ -891,6 +923,11 @@ namespace GridGeom
         double& rightEdgeRatio,
         int& landBoundaryNode)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
+
         bool isClose = false;
 
         const int startNode = std::max(std::min(landBoundaryNode, endNodeLandBoundaryIndex - 1), startNodeLandBoundaryIndex);
@@ -1014,6 +1051,11 @@ namespace GridGeom
         int& startMeshNode,
         int& endMeshNode)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
+
         // compute the start and end point of the land boundary respectively
         int nextLeftIndex = std::min(leftIndex + 1, endLandBoundaryIndex);
         Point startPoint =
@@ -1120,6 +1162,11 @@ namespace GridGeom
     bool LandBoundaries::ShortestPath(const Mesh& mesh, const Polygons& polygons, int landBoundarySegment,
         int startLandBoundaryIndex, int endLandBoundaryIndex, int startMeshNode, bool meshBoundOnly, std::vector<int>& connectedNodes)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
+
         connectedNodes.resize(mesh.GetNumNodes() , -1);
         // infinite distance for all nodes
         std::vector<double> nodeDistances(mesh.GetNumNodes() , std::numeric_limits<double>::max());
@@ -1261,6 +1308,10 @@ namespace GridGeom
         int& nearestLandBoundaryNodeIndex,
         double& edgeRatio)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
 
         minimumDistance = std::numeric_limits<double>::max();
         nearestLandBoundaryNodeIndex = -1;
@@ -1291,6 +1342,11 @@ namespace GridGeom
     /// TODO: it could be moved to generic operations
     bool LandBoundaries::IsFaceCrossedByLandBoundaries(const Mesh& mesh, int face, int startLandBoundaryIndex, int endLandBoundaryIndex)
     {
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
+
         bool isCrossed = false;
         bool areCrossing = false;
 
@@ -1326,6 +1382,11 @@ namespace GridGeom
     /// snap netnodes to land boundary segment
     bool LandBoundaries::SnapMeshToLandBoundaries(Mesh& mesh)
     {
+
+        if (m_numNode <= 0)
+        {
+            return true;
+        }
 
         for (int n = 0; n < mesh.GetNumNodes() ; n++)
         {
