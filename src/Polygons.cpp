@@ -19,11 +19,12 @@ namespace GridGeom
     {
         m_projection = projection;
         // resize if necessary
-        int startNewNodes = GetNumNodes();
-        if (startNewNodes != 0)
+        int numNodes = GetNumNodes();
+        int startNewNodes = numNodes;
+        if (numNodes != 0)
         {
-            ResizeVectorIfNeeded(GetNumNodes() + 1 + polygon.size(), m_nodes);
-            m_nodes[startNewNodes] = { doubleMissingValue,doubleMissingValue };
+            ResizeVectorIfNeeded(numNodes + 1 + polygon.size(), m_nodes);
+            m_nodes[numNodes] = { doubleMissingValue,doubleMissingValue };
             startNewNodes += 1;
         }
         else
@@ -33,7 +34,7 @@ namespace GridGeom
         m_numAllocatedNodes = m_nodes.size();
         m_numNodes = m_nodes.size();
 
-        for (int n = startNewNodes, nn = 0; nn < startNewNodes + polygon.size(); ++n, ++nn)
+        for (int n = startNewNodes, nn = 0; n < startNewNodes + polygon.size(); ++n, ++nn)
         {
             m_nodes[n] = polygon[nn];
         }
