@@ -94,6 +94,8 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_move_node(int& gridStateId, GeometryListNative& geometryListIn, int& nodeIndex);
 
+        GRIDGEOM_API int ggeo_delete_edge(int& gridStateId, GeometryListNative& geometryListIn, double searchRadius);
+
         GRIDGEOM_API int ggeo_offsetted_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, int& numberOfPolygonVertices);
 
         GRIDGEOM_API int ggeo_offsetted_polygon(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, GeometryListNative& geometryListOut);
