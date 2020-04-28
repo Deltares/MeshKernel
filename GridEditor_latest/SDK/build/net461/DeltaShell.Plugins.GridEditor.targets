@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="GridEditorPostBuild" AfterTargets="Build">
+    <ItemGroup>
+      <_FilesToCopy Include="$(MSBuildThisFileDirectory)..\..\contentDS\plugins\**\*"/>
+    </ItemGroup>
+
+    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\plugins\%(RecursiveDir)" SkipUnchangedFiles="true"/>
+  </Target>
+  
+  <Target Name="GridEditorClean" AfterTargets="Clean">
+    <ItemGroup>
+      <_OriginalFilesPlugins Include="$(MSBuildThisFileDirectory)..\..\contentDS\plugins\**\*"/>
+      <_FilesToCleanPlugins Include="$(SolutionDir)bin\$(Configuration)\plugins\%(_OriginalFilesPlugins.RecursiveDir)%(_OriginalFilesPlugins.FileName)%(_OriginalFilesPlugins.Extension)"/>
+    </ItemGroup>
+    
+    <Delete Files="@(_FilesToCleanPlugins)"/>
+  </Target>
+  
+</Project>

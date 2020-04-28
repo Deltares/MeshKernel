@@ -11,7 +11,7 @@
 
 static std::vector<GridGeom::Mesh> meshInstances;
 static std::map<int, GridGeom::Orthogonalization> orthogonalizationInstances;
-static std::map<int, GridGeom::Polygons> polygonInstances;
+static std::map<int, GridGeom::Splines> splineInstances;
 
 namespace GridGeomApi
 {
@@ -52,7 +52,7 @@ namespace GridGeomApi
         // invalid memory allocation
         if (pointVector.size() < result.numberOfCoordinates)
         {
-            return -1;
+            return false;
         }
 
         for (int i = 0; i < result.numberOfCoordinates; i++)
@@ -63,18 +63,18 @@ namespace GridGeomApi
         return true;
     }
 
-    static int SetSplines(GeometryListNative& geometryListIn, GridGeom::Splines& spline)
+    static bool SetSplines(GeometryListNative& geometryListIn, GridGeom::Splines& spline)
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
-            return -1;
+            return false;
         }
 
         std::vector<GridGeom::Point> splineCornerPoints;
         bool success = ConvertGeometryListNativeToPointVector(geometryListIn, splineCornerPoints);
         if (!success)
         {
-            return -1;
+            return false;
         }
 
         std::vector<std::vector<int>> indexes(splineCornerPoints.size(), std::vector<int>(2,0));
@@ -90,7 +90,7 @@ namespace GridGeomApi
             }
         }
 
-        return 0;
+        return true;
     }
 
     bool SetMeshGeometry(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
@@ -334,6 +334,11 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_orthogonalize_delete(int& gridStateId)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
         const int returnValue = orthogonalizationInstances.erase(gridStateId);
         return returnValue == 1 ? 0 : 1;
     }
@@ -400,30 +405,6 @@ namespace GridGeomApi
         geometry_list_out.numberOfCoordinates = index - 1;
         return 0;
     }
-
-    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho(int& gridStateId, 
-        GeometryListNative& geometryListIn, 
-        CurvilinearParametersNative& curvilinearParameters, 
-        SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
-    {
-        if (gridStateId >= meshInstances.size())
-        {
-            return -1;
-        }
-
-        // use the default constructor, no instance present
-        GridGeom::Polygons polygon;
-        GridGeom::Splines spline(meshInstances[gridStateId].m_projection, polygon);
-
-        int success = SetSplines(geometryListIn, spline);
-        spline.SetParameters(curvilinearParameters, splineToCurvilinearParameters);
-        GridGeom::CurvilinearGrid curvilinearGrid;
-        spline.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
-        meshInstances[gridStateId] = GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
-
-        return 0;
-    }
-
 
     GRIDGEOM_API int ggeo_make_net(int& gridStateId, MakeGridParametersNative& makeGridParameters, GeometryListNative& disposableGeometryListIn)
     {
@@ -762,6 +743,29 @@ namespace GridGeomApi
         return 0;
     }
 
+    GRIDGEOM_API int ggeo_move_node(int& gridStateId, GeometryListNative& geometryListIn, int& nodeIndex)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Point> newPoint;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, newPoint);
+        if (!successful || newPoint.size() != 1)
+        {
+            return -1;
+        }
+
+        successful = meshInstances[gridStateId].MoveNode(newPoint[0],nodeIndex);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        return 0;
+    }
+
     GRIDGEOM_API int ggeo_offsetted_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, int& numberOfPolygonVertices)
     {
         if (gridStateId >= meshInstances.size())
@@ -880,6 +884,102 @@ namespace GridGeomApi
         }
 
         return 0;
+    }
+
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho(int& gridStateId,
+        GeometryListNative& geometryListIn,
+        CurvilinearParametersNative& curvilinearParameters,
+        SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        // use the default constructor, no instance present
+        GridGeom::Polygons polygon;
+        GridGeom::Splines spline(meshInstances[gridStateId].m_projection, polygon);
+
+        bool successful = SetSplines(geometryListIn, spline);
+        if(!successful)
+        {
+            return false;
+        }
+
+        spline.SetParameters(curvilinearParameters, splineToCurvilinearParameters);
+        GridGeom::CurvilinearGrid curvilinearGrid;
+        spline.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
+        meshInstances[gridStateId] = GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_initialize(int& gridStateId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParametersNative, SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        GridGeom::Polygons polygon;
+        GridGeom::Splines spline(meshInstances[gridStateId].m_projection, polygon);
+
+        bool successful = SetSplines(geometryListNative, spline);
+        if (!successful)
+        {
+            return -1;
+        }
+        splineInstances[gridStateId] = spline;
+
+        successful = splineInstances[gridStateId].SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        successful = splineInstances[gridStateId].OrthogonalCurvilinearGridFromSplinesInitialize();
+        if (!successful)
+        {
+            return -1;
+        }
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_iteration(int& gridStateId, int& layer)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        const bool successful = splineInstances[gridStateId].OrthogonalCurvilinearGridFromSplinesIteration(layer);
+        return successful == true ? 0 : 1;
+    }
+
+
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_refresh_mesh(int& gridStateId)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        GridGeom::CurvilinearGrid curvilinearGrid;
+        const bool successful = splineInstances[gridStateId].OrthogonalCurvilinearGridFromSplinesRefreshMesh(curvilinearGrid);
+
+        meshInstances[gridStateId] = GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
+
+        return successful == true ? 0 : 1;
+    }
+
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_delete(int& gridStateId)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+        const int successful = splineInstances.erase(gridStateId);
+        return successful == 1 ? 0 : 1;
     }
 
 }

@@ -92,6 +92,8 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_delete_node(int& gridStateId, int& nodeIndex);
 
+        GRIDGEOM_API int ggeo_move_node(int& gridStateId, GeometryListNative& geometryListIn, int& nodeIndex);
+
         GRIDGEOM_API int ggeo_offsetted_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, int& numberOfPolygonVertices);
 
         GRIDGEOM_API int ggeo_offsetted_polygon(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, GeometryListNative& geometryListOut);
@@ -101,6 +103,15 @@ namespace GridGeomApi
         GRIDGEOM_API int ggeo_get_vertex_index(int& gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex);
 
         GRIDGEOM_API int ggeo_find_cells_stateful(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
+
+        GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_initialize(int& gridStateId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParametersNative, SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
+        
+        GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_iteration(int& gridStateId, int& layer);
+        
+        GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_refresh_mesh(int& gridStateId);
+        
+        GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_delete(int& gridStateId);
+
 
 #ifdef __cplusplus
     }

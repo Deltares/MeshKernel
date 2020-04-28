@@ -1615,8 +1615,20 @@ bool GridGeom::Mesh::MoveNode(Point newPoint, int nodeindex)
 
     auto dx = GetDx(newPoint, nodeToMove, m_projection);
     auto dy = GetDy(newPoint, nodeToMove, m_projection);
+
+    double distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
+
+    for (int n = 0; n < GetNumNodes(); ++n)
+    {
+        auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
+        auto nodeDy = GetDy(m_nodes[n], nodeToMove, m_projection);
+        double distanceCurrentNodeFromNewPoint = std::sqrt(nodeDx * nodeDx + nodeDy * nodeDy);
+
+        double factor = 0.5 * (1.0 + std::cos(std::min(distanceCurrentNodeFromNewPoint/distanceNodeToMoveFromNewPoint,1.0)* M_PI));
+
+        m_nodes[n].x += dx * factor;
+        m_nodes[n].y += dy * factor;
+    }
     
-
-
     return true;
 }
