@@ -54,6 +54,7 @@ bool GridGeom::Mesh::Administrate()
         {
             continue;
         }
+
         if(m_nodeMask[m_edges[e].first]>=0 && m_nodeMask[m_edges[e].second] >= 0 )
         {
             m_edges[e].first = m_nodeMask[m_edges[e].first];
@@ -64,10 +65,36 @@ bool GridGeom::Mesh::Administrate()
             m_edges[e].first = -1;
             m_edges[e].second = -1;
         }
-
     }
     auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [&](const Edge& e) {return e.first < 0 || e.second < 0; });
     m_numEdges = endEdgeVector - m_edges.begin();
+
+    //now remove isolated nodes with no edge connections
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), -1);
+    for (int e = 0; e < m_edges.size(); ++e)
+    {
+        int firstNode = m_edges[e].first;
+        int secondNode = m_edges[e].second;
+        if (m_nodeMask[firstNode] < 0)
+        {
+            m_nodeMask[firstNode] = firstNode;
+        }
+        if (m_nodeMask[secondNode] < 0)
+        {
+            m_nodeMask[secondNode] = secondNode;
+        }
+    }
+
+    for (int n = 0; n < m_nodes.size(); ++n)
+    {
+        if (m_nodeMask[n] < 0)
+        {
+            m_nodes[n] = {doubleMissingValue, doubleMissingValue };
+        }
+    }
+
+    endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) {return !n.IsValid(); });
+    m_numNodes = endNodeVector - m_nodes.begin();
 
     // return if there are no nodes or no edges
     if (m_numNodes == 0 || m_numEdges == 0)
@@ -347,6 +374,7 @@ bool GridGeom::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std:
 bool GridGeom::Mesh::SetFlatCopies()
 {
     // Used for internal state
+    Administrate();
 
     m_nodex.resize(GetNumNodes());
     m_nodey.resize(GetNumNodes());
@@ -1158,7 +1186,6 @@ bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
 
 bool GridGeom::Mesh::DeleteNode(int nodeIndex)
 {
-    //TODO
     for (int e = 0; e <  m_nodesNumEdges[nodeIndex]; e++)
     {
         auto edgeIndex = m_nodesEdges[nodeIndex][e];
@@ -1168,7 +1195,6 @@ bool GridGeom::Mesh::DeleteNode(int nodeIndex)
     }
     m_nodesNumEdges[nodeIndex] = 0;
     m_nodes[nodeIndex] = { doubleMissingValue,doubleMissingValue };
-    m_numNodes--;
 
     m_isAdministrationDone = false;
 
@@ -1183,39 +1209,46 @@ bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
         return true; 
     }
 
-    auto isNotValidIndex = [](const int& v) { return v < 0; };
+    int foundEdgeIndex = -1;
     for (int e = 0; e <  m_nodesNumEdges[startNode]; e++)
     {
         auto firstEdgeIndex = m_nodesEdges[startNode][e];
         for (int ee = 0; ee < m_nodesNumEdges[endNode]; ee++)
         {
             auto secondEdgeIndex = m_nodesEdges[endNode][ee];
-            if (firstEdgeIndex == secondEdgeIndex)
+            if (foundEdgeIndex!=-1 && firstEdgeIndex == secondEdgeIndex)
             {
                 m_nodesEdges[startNode][e] = -1;
                 m_nodesEdges[endNode][ee] = -1;
-
-                std::remove_if(m_nodesEdges[startNode].begin(), m_nodesEdges[startNode].end(), isNotValidIndex);
-                std::remove_if(m_nodesEdges[endNode].begin(), m_nodesEdges[endNode].end(), isNotValidIndex);
-                m_nodesNumEdges[startNode]--;
-                m_nodesNumEdges[endNode]--;
-                m_numEdges--;
+                m_edges[foundEdgeIndex].first = -1;
+                m_edges[foundEdgeIndex].second = -1;
+                foundEdgeIndex = firstEdgeIndex;
             }
         }
     }
+
+    if(foundEdgeIndex==-1)
+    {
+        return true;
+    }
+
+    auto isNotValidIndex = [](const int& v) { return v < 0; };
+    auto end = std::remove_if(m_nodesEdges[startNode].begin(), m_nodesEdges[startNode].end(), isNotValidIndex);
+    m_nodesNumEdges[startNode] = end - m_nodesEdges[startNode].begin();
+
+    end = std::remove_if(m_nodesEdges[endNode].begin(), m_nodesEdges[endNode].end(), isNotValidIndex);
+    m_nodesNumEdges[endNode] = end - m_nodesEdges[endNode].begin();
 
     // remove startNode
     if (m_nodesNumEdges[startNode] == 0)
     {
         m_nodes[startNode] = { doubleMissingValue, doubleMissingValue };
-        m_numNodes--;
     }
 
     // remove endNode
     if (m_nodesNumEdges[endNode] == 0)
     {
         m_nodes[endNode] = { doubleMissingValue, doubleMissingValue };
-        m_numNodes--;
     }
 
     m_isAdministrationDone = false;
@@ -1461,17 +1494,54 @@ bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexI
         return true;
     }
 
-    if (m_rtree.Empty())
+    for (int n = 0; n < GetNumNodes(); ++n)
     {
-        BuildRTree();
+        double absDx = std::abs(m_nodes[n].x - point.x);
+        double absDy = std::abs(m_nodes[n].y - point.y);
+        if (absDx < searchRadius && absDy < searchRadius)
+        {
+            vertexIndex = n;
+            break;
+        }
     }
 
-    InsertMissingNodesInRTree();
+    return true;
+}
 
-    auto result = m_rtree.NearestNeighbours(point, searchRadius);
-    if (!result.empty())
+bool GridGeom::Mesh::DeleteEdge(Point point, double searchRadius)
+{
+    int edgeIndex = -1;
+    for (int e = 0; e < GetNumEdges(); ++e)
     {
-        vertexIndex = result[0];
+        auto firstNode = m_edges[e].first;
+        auto secondNode = m_edges[e].second;
+
+        if( firstNode<0 || secondNode< 0)
+        {
+            continue;
+        }
+
+        Point edgeCenter = (m_nodes[firstNode] + m_nodes[secondNode]) / 2.0;
+        double absDx = std::abs(edgeCenter.x - point.x);
+        double absDy = std::abs(edgeCenter.y - point.y);
+
+        if (absDx < searchRadius && absDy < searchRadius)
+        {
+            edgeIndex = e;
+            break;
+        }
+    }
+
+    if(edgeIndex==-1)
+    {
+        return true;
+    }
+
+    bool successful = DeleteEdge(m_edges[edgeIndex].first, m_edges[edgeIndex].second);
+
+    if(!successful)
+    {
+        return false;
     }
 
     return true;
@@ -1610,11 +1680,10 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
 
 bool GridGeom::Mesh::MoveNode(Point newPoint, int nodeindex)
 {
-
     Point nodeToMove = m_nodes[nodeindex];
 
-    auto dx = GetDx(newPoint, nodeToMove, m_projection);
-    auto dy = GetDy(newPoint, nodeToMove, m_projection);
+    auto dx = GetDx(nodeToMove,newPoint, m_projection);
+    auto dy = GetDy(nodeToMove,newPoint, m_projection);
 
     double distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
 
