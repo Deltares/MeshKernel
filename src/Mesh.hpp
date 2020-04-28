@@ -30,6 +30,8 @@ namespace GridGeom
         bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
         
         bool Administrate();
+
+        bool RemoveInvalidNodesAndEdges();
         
         bool SetFlatCopies();
 
@@ -69,19 +71,21 @@ namespace GridGeom
         ///setnewpoint
         bool InsertNode(const Point& newPoint, int& newNodeIndex);
 
-        ///setnewpoint
+
+        ///based on node index
         bool DeleteNode(int nodeIndex);
-
-        ///DELELEM
-        bool DeleteEdge(int startNode, int endNode);
-
-        ///Delete an edge based on the index
-        bool DeleteEdge(int edgeIndex);
 
         // find an edge
         bool FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
 
         bool MoveNode(Point newPoint, int nodeindex);
+
+        bool GetNodeIndex(Point point, double searchRadius, int& vertexIndex);
+
+        ///Delete an edge based on the index
+        bool DeleteEdge(int edgeIndex);
+
+        bool DeleteEdgeClosetToAPoint(Point point, double searchRadius);
 
         ///get_cellpolygon
         //need to account for spherical coordinates. Build a polygon around a face
@@ -95,7 +99,6 @@ namespace GridGeom
 
         bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 
-        bool GetNodeIndex(Point point, double searchRadius, int& vertexIndex);
 
         bool BuildRTree();
 

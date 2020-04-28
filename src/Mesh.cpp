@@ -253,9 +253,9 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
             &numPointsIn,
             &faceNodesFlat[0],   // INDX
             &numtri,
-            &edgeNodesFlat[0], // EDGEINDX
+            &edgeNodesFlat[0],   // EDGEINDX
             &numedge,
-            &faceEdgesFlat[0], // TRIEDGE
+            &faceEdgesFlat[0],   // TRIEDGE
             &xNodesFlat[0],
             &yNodesFlat[0],
             &numPointsOut,
