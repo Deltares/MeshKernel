@@ -766,6 +766,30 @@ namespace GridGeomApi
         return 0;
     }
 
+    GRIDGEOM_API int ggeo_delete_edge(int& gridStateId, GeometryListNative& geometryListIn, double searchRadius)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Point> newPoint;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, newPoint);
+        if (!successful || newPoint.size() != 1)
+        {
+            return -1;
+        }
+
+        successful = meshInstances[gridStateId].DeleteEdge(newPoint[0], searchRadius);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        return 0;
+        
+    }
+
     GRIDGEOM_API int ggeo_offsetted_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, int& numberOfPolygonVertices)
     {
         if (gridStateId >= meshInstances.size())
