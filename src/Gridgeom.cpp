@@ -780,7 +780,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        successful = meshInstances[gridStateId].DeleteEdge(newPoint[0], searchRadius);
+        successful = meshInstances[gridStateId].DeleteEdgeClosetToAPoint(newPoint[0], searchRadius);
         if (!successful)
         {
             return -1;
