@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>DeltaShell.Plugins.GridEditor</id>
+    <title>Delta Shell Grid Editor</title>
+    <version>1.0.0</version>
+    <authors>Deltares</authors>
+    <copyright>Deltares 2019</copyright>    
+    <description>Grid editor plugin for Delta Shell framework </description>
+    <summary>Editor for editing grids in DeltaShell</summary>
+    <licenseUrl>http://www.gnu.org/licenses/lgpl.html</licenseUrl>
+    <iconUrl>http://bit.ly/192jI3c</iconUrl>
+    <dependencies>
+      <dependency id="DeltaShell.Framework" version="(1.5,)"/>
+    </dependencies>
+  </metadata>
+  
+  <files>
+    <file src="..\bin\$configuration$\plugins\DeltaShell.Plugins.GridEditor*\**\*" target="contentDS\plugins" exclude="**\*.pssym"/>
+    <file src="build\**\*" target="build"/>
+  </files>
+</package>

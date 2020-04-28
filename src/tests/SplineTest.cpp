@@ -563,3 +563,45 @@ TEST(Splines, OrthogonalCurvilinearMeshFourSplineCrossingFront)
     ASSERT_NEAR(603.508778997112, mesh.m_nodes[18].y, tolerance);
     ASSERT_NEAR(665.929912556253, mesh.m_nodes[19].y, tolerance);
 }
+
+TEST(Splines, OrthogonalCurvilinearGridFromSplinesShouldSucceed)
+{
+    std::vector<GridGeom::Point> firstSpline;
+    firstSpline.push_back({ -91.8222328478736,382.756497696669 });
+    firstSpline.push_back({ 636.059255717375,985.442370228695 });
+    firstSpline.push_back({ 2100.55681071066, 1646.35876184594 });
+
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
+    bool success = splines.AddSpline(firstSpline, 0, firstSpline.size());
+    ASSERT_TRUE(success);
+
+    std::vector<GridGeom::Point> secondSpline;
+    secondSpline.push_back(GridGeom::Point{ -199.54869315553, 1043.6728893139 });
+    secondSpline.push_back(GridGeom::Point{ 356.55276410832, 365.287341971103 });
+    success = splines.AddSpline(secondSpline, 0, secondSpline.size());
+
+    std::vector<GridGeom::Point> thirdSpline;
+    thirdSpline.push_back(GridGeom::Point{ 1800.66963742177, 1858.90015650699 });
+    thirdSpline.push_back(GridGeom::Point{ 2030.68018780839, 1273.68343970053 });
+    success = splines.AddSpline(thirdSpline, 0, thirdSpline.size());
+
+    
+    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
+    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+
+    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
+    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParametersNative.AverageWidth = 50.0;
+    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
+    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = false;
+    curvilinearParametersNative.MRefinement = 20;
+    curvilinearParametersNative.NRefinement = 40;
+    splines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    GridGeom::CurvilinearGrid curvilinearGrid;
+    success = splines.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
+    ASSERT_TRUE(success);
+
+}

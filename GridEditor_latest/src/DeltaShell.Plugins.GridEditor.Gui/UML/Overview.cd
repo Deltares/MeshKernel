@@ -1,0 +1,497 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.Controls.Ribbon.GridEditorRibbonViewModel" BaseTypeListCollapsed="true">
+    <Position X="8.25" Y="3.75" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Events" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>MmIhQQQV6TAQpMgwJC5AAACQwhEEYIQUQiHSIADQChg=</HashCode>
+      <FileName>Controls\Ribbon\GridEditorRibbonViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Controller" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.Controllers.GridEditorController" BaseTypeListCollapsed="true">
+    <Position X="13.5" Y="8.25" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="GridEditorState" Type="DeltaShell.Plugins.GridEditor.Data.GridEditorState" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="14.062" Y="14.487" />
+        <Point X="14.062" Y="23.067" />
+        <Point X="10.5" Y="23.067" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>lLJhABEK0QBAMMCIgiwOCEi0gQEEAIIUAmxAAFDWD5Q=</HashCode>
+      <FileName>Controllers\GridEditorController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="api" />
+      <Property Name="MapInteractor" />
+      <Property Name="GridEditorState" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.Controls.Ribbon.GridEditorRibbon" BaseTypeListCollapsed="true">
+    <Position X="4.75" Y="5.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AIoAAgAAEAAABAAAAAABAEAAAAAABAAAAAAAAAAAAQA=</HashCode>
+      <FileName>Controls\Ribbon\GridEditorRibbon.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.GridEditorGuiPlugin">
+    <Position X="0.5" Y="2.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>IIAAEAAAAAAgAAAAgCAIAAQAAAACAAAAAAAAiAAIAAA=</HashCode>
+      <FileName>GridEditorGuiPlugin.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="gridEditorRibbon" />
+      <Property Name="RibbonCommandHandler" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.GridGeomStateful.Api.CoordinateConverter" Collapsed="true">
+    <Position X="23.75" Y="14.75" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.GridGeomStateful.Api.GridgeomStatefulApi" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="14.75" Width="1.75" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.GridGeomStateful.Api.GridgeomStatefulApiRemote" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20.75" Y="14.75" Width="2.25" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.GridGeomStateful.Api.OrthogonalizationParameters">
+    <Position X="4" Y="29" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="SharpMap.Api.DisposableMeshGeometry" Collapsed="true">
+    <Position X="11.75" Y="26.5" Width="2" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Data.GridEditorState">
+    <Position X="8.25" Y="22.25" Width="2.25" />
+    <AssociationLine Name="SplinesToCurvilinearParameters" Type="DeltaShell.Plugins.GridEditor.GridGeomStateful.Api.SplinesToCurvilinearParameters" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="8.562" Y="22.25" />
+        <Point X="8.562" Y="20.124" />
+        <Point X="7.25" Y="20.124" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier />
+    <ShowAsAssociation>
+      <Property Name="MeshGeometry" />
+      <Property Name="OrthogonalizationParameters" />
+      <Property Name="MakeGridParameters" />
+      <Property Name="CurvilinearParameters" />
+      <Property Name="SamplesRefineParameters" />
+      <Property Name="SplinesToCurvilinearParameters" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="LandBoundaries" />
+      <Property Name="Splines" />
+      <Property Name="Polygons" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Data.Spline">
+    <Position X="11.75" Y="28.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.GridGeomStateful.Api.CurvilinearParameters">
+    <Position X="4" Y="22" Width="2" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.GridGeomStateful.Api.MakeGridParameters">
+    <Position X="4" Y="25" Width="2" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.ChangePolygonMapTool">
+    <Position X="22.75" Y="30.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>MapTools\ChangePolygonMapTool.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapLayers.Renderers.DisposableMeshGeometryRenderer">
+    <Position X="33" Y="27.75" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AQIABAQgQ4AAABCAAGABAAEgAAAIIAAEGQAAIAACgAY=</HashCode>
+      <FileName>MapLayers\Renderers\DisposableMeshGeometryRenderer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapLayers.Renderers.GridEditorPolygonRenderer">
+    <Position X="41" Y="27.25" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAECAAAAAAEgAAAAAAAAAEAAAQABAAAAAAAAA=</HashCode>
+      <FileName>MapLayers\Renderers\GridEditorPolygonRenderer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapLayers.Renderers.GridEditorStateGroupRenderer">
+    <Position X="37" Y="22.75" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="polygonsLayer" Type="SharpMap.Layers.VectorLayer">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.196" Y="0.633" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="landBoundaryLayer" Type="SharpMap.Layers.VectorLayer">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.451" Y="0.976" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAABAAQACBAgACAAAAQgAoAAAAAACAAAAAAQAAAAEA=</HashCode>
+      <FileName>MapLayers\Renderers\GridEditorStateGroupRenderer.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="disposableMeshGeometryRenderer" />
+      <Field Name="polygonsLayer" />
+      <Field Name="landBoundaryLayer" />
+      <Field Name="pointCloudLayer" />
+      <Property Name="MeshGeometryRenderer" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SharpMap.Layers.VectorLayer" Collapsed="true">
+    <Position X="38.25" Y="28.5" Width="2" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="SharpMap.Layers.PointCloudLayer" Collapsed="true">
+    <Position X="37.5" Y="30" Width="1.5" />
+    <InheritanceLine Type="SharpMap.Layers.VectorLayer" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="38.625" Y="29.191" />
+        <Point X="38.625" Y="30" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.Controllers.MapInteractor">
+    <Position X="17" Y="21.25" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAQgACIABMAIgAAQCAQggAAMAEAEAAASAAEDAICQ=</HashCode>
+      <FileName>Controllers\MapInteractor.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Renderer" />
+      <Property Name="PolygonMapTool" />
+      <Property Name="LandBoundariesMapTool" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="NetTopologySuite.Extensions.Coverages.PointCloud" Collapsed="true">
+    <Position X="11.75" Y="27.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.GridGeomStateful.Api.SplinesToCurvilinearParameters">
+    <Position X="4" Y="18" Width="3.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.GridGeomStateful.Api.SamplesRefineParameters">
+    <Position X="4" Y="31.75" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapLayers.FeatureEditors.SplineEditorFeatureInteractor">
+    <Position X="38.75" Y="32.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAgAARAAAIAQAABAAgAAAJARIAABACACAAA=</HashCode>
+      <FileName>MapLayers\FeatureEditors\SplineEditorFeatureInteractor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapLayers.FeatureEditors.PolygonEditorFeatureInteractor">
+    <Position X="41.75" Y="32.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAACgAAAwAABAAAAAAAAAAAgAEAAEQAAAAAAACAAA=</HashCode>
+      <FileName>MapLayers\FeatureEditors\PolygonEditorFeatureInteractor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SharpMap.Editors.Interactors.LinearRingInteractor" Collapsed="true">
+    <Position X="40.75" Y="30.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.Strategies.AddNewLineStringMapToolStrategy" Collapsed="true">
+    <Position X="6.25" Y="37.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>CAAggAAAABUAIACAAAAgAAAAAAACAACAAEAAQAAAAgA=</HashCode>
+      <FileName>MapTools\LineStringTool\Strategies\AddNewLineStringMapToolStrategy.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.Strategies.AddNewPolygonLineStringMapToolStrategy" Collapsed="true">
+    <Position X="6" Y="39" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MapTools\LineStringTool\Strategies\AddNewPolygonLineStringMapToolStrategy.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.Strategies.DraggingLineStringMapToolStrategy" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.5" Y="37.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>CAAAgAAAABUAAACAAAAAAAAAAAACAACAAEAAQAAAAgA=</HashCode>
+      <FileName>MapTools\LineStringTool\Strategies\DraggingLineStringMapToolStrategy.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.Strategies.EditingLineStringMapToolStrategy" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="12.5" Y="37.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAgAABABUAAACAAAAAIAAAAAACAAAAAEAAQAAAAgA=</HashCode>
+      <FileName>MapTools\LineStringTool\Strategies\EditingLineStringMapToolStrategy.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.Strategies.SelectLineStringMapToolStrategy" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.25" Y="37.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAgAAAABUAAACAAAAAAAAAAAACAAAAAEAAQAAAAgA=</HashCode>
+      <FileName>MapTools\LineStringTool\Strategies\SelectLineStringMapToolStrategy.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.Strategies.SelectToolSelectorFacade" BaseTypeListCollapsed="true">
+    <Position X="22.5" Y="36" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAQAAAgAAAAAAAAAAAAAAAAAAAAAQAAAAgA=</HashCode>
+      <FileName>MapTools\LineStringTool\Strategies\SelectToolFacade.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.LineStringMapTool" BaseTypeListCollapsed="true">
+    <Position X="17.5" Y="30.25" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AIBAAACAECCAAAGAAABBQAIAARAEAAABYAJAAAASQAA=</HashCode>
+      <FileName>MapTools\LineStringTool\LineStringMapTool.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="stateMachine" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="LineEditorStrategies" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.LineStringMapToolCoordinateSnappingExtensions">
+    <Position X="17.5" Y="35.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAARAAAAAAEAAAAAAAAAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>MapTools\LineStringTool\LineStringMapToolCoordinateSnappingExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.LineStringMapToolStateMachine">
+    <Position X="13.5" Y="31.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.LineStringMapToolStateMachine.StateTransition" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MapTools\LineStringTool\LineStringMapToolStateMachine.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAgAAAg=</HashCode>
+      <FileName>MapTools\LineStringTool\LineStringMapToolStateMachine.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="CurrentState" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.InsertEdgesMapTool" BaseTypeListCollapsed="true">
+    <Position X="20" Y="30.25" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AYCAAEAAwCAAIACAFAAgAAAAABMgAAAAIAAAAEAAACQ=</HashCode>
+      <FileName>MapTools\InsertEdgesMapTool.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.Controllers.Api.IGridEditorController">
+    <Position X="13.5" Y="0.75" Width="3" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>kKIhAAEIwQAAMIAAgigMAEiUgAAEAIAUAmhAAADED5A=</HashCode>
+      <FileName>Controllers\Api\IGridEditorController.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.Controls.Ribbon.Api.IGridRibbonState">
+    <Position X="8.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controls\Ribbon\Api\IGridRibbonState.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DelftTools.Shell.Gui.Forms.IRibbonCommandHandler">
+    <Position X="4.75" Y="0.5" Width="2" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.Controls.Ribbon.Api.IGridEditorRibbon">
+    <Position X="4.75" Y="3" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>Controls\Ribbon\Api\IGridEditorRibbon.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.GridGeomStateful.Api.IGridgeomStatefulApi">
+    <Position X="19.75" Y="7.5" Width="1.75" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.Api.IGridEditorMapTool">
+    <Position X="17.5" Y="28.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MapTools\Api\IGridEditorMapTool.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.Controllers.Api.IMapInteractor">
+    <Position X="17" Y="17.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAIAAMAIAAAQCAAggAAMAAAAAAACAAEBAAAQ=</HashCode>
+      <FileName>Controllers\Api\IMapInteractor.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="SelectedMapToolType" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.Api.IChangePolygonMapTool">
+    <Position X="22.75" Y="28.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MapTools\Api\IChangePolygonMapTool.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.MapLayers.Api.IGridEditorStateRenderer">
+    <Position X="37.25" Y="20.5" Width="2.25" />
+    <AssociationLine Name="MeshGeometryRenderer" Type="DeltaShell.Plugins.GridEditor.Gui.MapLayers.Api.IDisposableMeshGeometryRenderer" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="37.25" Y="21.812" />
+        <Point X="34.375" Y="21.812" />
+        <Point X="34.375" Y="24.5" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="PolygonRenderer" Type="DeltaShell.Plugins.GridEditor.Gui.MapLayers.Api.IGridEditorPolygonRenderer" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="39.5" Y="21.812" />
+        <Point X="42.125" Y="21.812" />
+        <Point X="42.125" Y="24.5" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAABAAACAAAAQAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>MapLayers\Api\IGridEditorStateRenderer.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="MeshGeometryRenderer" />
+      <Property Name="PolygonRenderer" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.MapLayers.Api.IDisposableMeshGeometryRenderer">
+    <Position X="33" Y="24.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAwAAAACAAGAAAAAAAAAIAAAAAQAAAAAAAAQ=</HashCode>
+      <FileName>MapLayers\Api\IDisposableMeshGeometryRenderer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.MapLayers.Api.IGridEditorPolygonRenderer">
+    <Position X="41" Y="24.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAA=</HashCode>
+      <FileName>MapLayers\Api\IGridEditorPolygonRenderer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="GeoAPI.Extensions.Feature.IFeature" Collapsed="true">
+    <Position X="11.75" Y="25.25" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.Strategies.ILineStringMapToolStrategy" Collapsed="true">
+    <Position X="10" Y="35.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>CAAAgAAAABUAAACAAAAAAAAAAAACAAAAAEAAQAAAAgA=</HashCode>
+      <FileName>MapTools\LineStringTool\Strategies\ILineStringMapToolStrategy.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="LineStringMapToolState" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.Strategies.ISelector">
+    <Position X="22.5" Y="33.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAgAAAAAAAAAAAAAAAAAAAAAQAAAAgA=</HashCode>
+      <FileName>MapTools\LineStringTool\Strategies\ISelector.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="DeltaShell.Plugins.GridEditor.Gui.Controllers.Api.MapToolType">
+    <Position X="20.75" Y="17.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAEAgAAAAEAAACAIAAAEAACA=</HashCode>
+      <FileName>Controllers\Api\MapToolType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DeltaShell.Plugins.GridEditor.Helpers.PolygonEditAction">
+    <Position X="30.25" Y="32" Width="2.75" />
+    <TypeIdentifier />
+  </Enum>
+  <Enum Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.LineStringMapToolState">
+    <Position X="14.5" Y="35" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIAAAACAAAAAAAAAAAAAAgACAAAAA=</HashCode>
+      <FileName>MapTools\LineStringTool\LineStringMapToolState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DeltaShell.Plugins.GridEditor.Gui.MapTools.LineStringTool.LineStringMapToolStateCommand">
+    <Position X="14.5" Y="38.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAgCEAAAAAAAAAAAAAAAABAAAAAAAQAAAAAkAAABA=</HashCode>
+      <FileName>MapTools\LineStringTool\LineStringMapToolStateCommand.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
