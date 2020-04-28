@@ -25,37 +25,55 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
     return true;
 };
 
-bool GridGeom::Mesh::Administrate()
+bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
 {
-    if(m_isAdministrationDone)
+    // Invalidate not connected nodes
+    std::vector<bool> connectedNodes(m_nodes.size(), false);
+    for (int e = 0; e < m_edges.size(); ++e)
     {
-        return true;
+        if (m_edges[e].first < 0 || m_edges[e].second < 0)
+        {
+            continue;
+        }
+        int firstNode = m_edges[e].first;
+        connectedNodes[firstNode] = true;
+        int secondNode = m_edges[e].second;
+        connectedNodes[secondNode] = true;
+    }
+    for (int n = 0; n < m_nodes.size(); ++n)
+    {
+        if (!connectedNodes[n])
+        {
+            m_nodes[n] = { doubleMissingValue,doubleMissingValue };
+        }
     }
 
-    //Nodes, edges and faces indexses. Shift valid values up
+    // Flag invalid nodes
     m_nodeMask.resize(m_nodes.size());
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), -1);
     int validIndex = 0;
     for (int n = 0; n < m_nodes.size(); ++n)
     {
-        if(m_nodes[n].IsValid())
+        if (m_nodes[n].IsValid())
         {
             m_nodeMask[n] = validIndex;
             validIndex++;
         }
     }
 
+    // Remove invalid nodes
     auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) {return !n.IsValid(); });
     m_numNodes = endNodeVector - m_nodes.begin();
 
+    // Flag invalid edges
     for (int e = 0; e < m_edges.size(); ++e)
     {
-        if(m_edges[e].first<0 || m_edges[e].second < 0)
+        if (m_edges[e].first < 0 || m_edges[e].second < 0)
         {
             continue;
         }
 
-        if(m_nodeMask[m_edges[e].first]>=0 && m_nodeMask[m_edges[e].second] >= 0 )
+        if (m_nodeMask[m_edges[e].first] >= 0 && m_nodeMask[m_edges[e].second] >= 0)
         {
             m_edges[e].first = m_nodeMask[m_edges[e].first];
             m_edges[e].second = m_nodeMask[m_edges[e].second];
@@ -66,36 +84,25 @@ bool GridGeom::Mesh::Administrate()
             m_edges[e].second = -1;
         }
     }
+
+    // Remove invalid edges
     auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [&](const Edge& e) {return e.first < 0 || e.second < 0; });
     m_numEdges = endEdgeVector - m_edges.begin();
 
-    //now remove isolated nodes with no edge connections
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), -1);
-    for (int e = 0; e < m_edges.size(); ++e)
+    m_isAdministrationDone = false;
+
+    return true;
+}
+
+bool GridGeom::Mesh::Administrate()
+{
+    if(m_isAdministrationDone)
     {
-        int firstNode = m_edges[e].first;
-        int secondNode = m_edges[e].second;
-        if (m_nodeMask[firstNode] < 0)
-        {
-            m_nodeMask[firstNode] = firstNode;
-        }
-        if (m_nodeMask[secondNode] < 0)
-        {
-            m_nodeMask[secondNode] = secondNode;
-        }
+        return true;
     }
 
-    for (int n = 0; n < m_nodes.size(); ++n)
-    {
-        if (m_nodeMask[n] < 0)
-        {
-            m_nodes[n] = {doubleMissingValue, doubleMissingValue };
-        }
-    }
-
-    endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) {return !n.IsValid(); });
-    m_numNodes = endNodeVector - m_nodes.begin();
-
+    RemoveInvalidNodesAndEdges();
+    
     // return if there are no nodes or no edges
     if (m_numNodes == 0 || m_numEdges == 0)
     {
@@ -1189,73 +1196,14 @@ bool GridGeom::Mesh::DeleteNode(int nodeIndex)
     for (int e = 0; e <  m_nodesNumEdges[nodeIndex]; e++)
     {
         auto edgeIndex = m_nodesEdges[nodeIndex][e];
-        auto startNode = m_edges[edgeIndex].first;
-        auto endNode = m_edges[edgeIndex].second;
-        DeleteEdge(startNode, endNode);
+        DeleteEdge(edgeIndex);
     }
-    m_nodesNumEdges[nodeIndex] = 0;
     m_nodes[nodeIndex] = { doubleMissingValue,doubleMissingValue };
 
     m_isAdministrationDone = false;
 
     return true;
 }
-
-//to do: check if accessing after remove if works
-bool GridGeom::Mesh::DeleteEdge(int startNode, int endNode)
-{
-    if (startNode < 0 || endNode < 0)
-    {
-        return true; 
-    }
-
-    int foundEdgeIndex = -1;
-    for (int e = 0; e <  m_nodesNumEdges[startNode]; e++)
-    {
-        auto firstEdgeIndex = m_nodesEdges[startNode][e];
-        for (int ee = 0; ee < m_nodesNumEdges[endNode]; ee++)
-        {
-            auto secondEdgeIndex = m_nodesEdges[endNode][ee];
-            if (foundEdgeIndex!=-1 && firstEdgeIndex == secondEdgeIndex)
-            {
-                m_nodesEdges[startNode][e] = -1;
-                m_nodesEdges[endNode][ee] = -1;
-                m_edges[foundEdgeIndex].first = -1;
-                m_edges[foundEdgeIndex].second = -1;
-                foundEdgeIndex = firstEdgeIndex;
-            }
-        }
-    }
-
-    if(foundEdgeIndex==-1)
-    {
-        return true;
-    }
-
-    auto isNotValidIndex = [](const int& v) { return v < 0; };
-    auto end = std::remove_if(m_nodesEdges[startNode].begin(), m_nodesEdges[startNode].end(), isNotValidIndex);
-    m_nodesNumEdges[startNode] = end - m_nodesEdges[startNode].begin();
-
-    end = std::remove_if(m_nodesEdges[endNode].begin(), m_nodesEdges[endNode].end(), isNotValidIndex);
-    m_nodesNumEdges[endNode] = end - m_nodesEdges[endNode].begin();
-
-    // remove startNode
-    if (m_nodesNumEdges[startNode] == 0)
-    {
-        m_nodes[startNode] = { doubleMissingValue, doubleMissingValue };
-    }
-
-    // remove endNode
-    if (m_nodesNumEdges[endNode] == 0)
-    {
-        m_nodes[endNode] = { doubleMissingValue, doubleMissingValue };
-    }
-
-    m_isAdministrationDone = false;
-
-    return true;
-}
-
 
 bool GridGeom::Mesh::DeleteEdge(int edgeIndex)
 {
@@ -1266,12 +1214,10 @@ bool GridGeom::Mesh::DeleteEdge(int edgeIndex)
 
     m_edges[edgeIndex].first = intMissingValue;
     m_edges[edgeIndex].second = intMissingValue;
-    m_edgesNumFaces[edgeIndex] = 0;
-    m_numEdges--;
-
+ 
     m_isAdministrationDone = false;
 
-    return false;
+    return true;
 }
 
 
@@ -1508,7 +1454,7 @@ bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexI
     return true;
 }
 
-bool GridGeom::Mesh::DeleteEdge(Point point, double searchRadius)
+bool GridGeom::Mesh::DeleteEdgeClosetToAPoint(Point point, double searchRadius)
 {
     int edgeIndex = -1;
     for (int e = 0; e < GetNumEdges(); ++e)
@@ -1537,7 +1483,7 @@ bool GridGeom::Mesh::DeleteEdge(Point point, double searchRadius)
         return true;
     }
 
-    bool successful = DeleteEdge(m_edges[edgeIndex].first, m_edges[edgeIndex].second);
+    bool successful = DeleteEdge(edgeIndex);
 
     if(!successful)
     {
