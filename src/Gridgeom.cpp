@@ -887,6 +887,16 @@ namespace GridGeomApi
         return 0;
     }
 
+    GRIDGEOM_API int ggeo_refine_mesh_based_on_polygon(int& gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative)
+    {
+        
+
+
+
+
+        return 0;
+    }
+
     GRIDGEOM_API int ggeo_get_vertex_index(int& gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex)
     {
         if (gridStateId >= meshInstances.size())

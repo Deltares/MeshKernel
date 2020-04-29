@@ -102,6 +102,8 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int& gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative);
 
+        GRIDGEOM_API int ggeo_refine_mesh_based_on_polygon(int& gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative);
+
         GRIDGEOM_API int ggeo_get_vertex_index(int& gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex);
 
         GRIDGEOM_API int ggeo_find_cells_stateful(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);

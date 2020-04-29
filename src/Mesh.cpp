@@ -1150,22 +1150,6 @@ bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
     m_edges[newEdgeIndex].second = endNode;
     m_numEdges++;
 
-    // add the new edge to the nodes
-    if (m_nodesNumEdges[startNode] + 1 > maximumNumberOfEdgesPerNode)
-    {
-        return false;
-    }
-    m_nodesNumEdges[startNode] = m_nodesNumEdges[startNode] + 1;
-    m_nodesEdges[startNode].push_back(newEdgeIndex);
-
-
-    if (m_nodesNumEdges[endNode] + 1 > maximumNumberOfEdgesPerNode)
-    {
-        return false;
-    }
-    m_nodesNumEdges[endNode] = m_nodesNumEdges[endNode] + 1;
-    m_nodesEdges[endNode].push_back(newEdgeIndex);
-
     m_isAdministrationDone = false;
 
     return true;

@@ -25,8 +25,8 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
     m_deltaTimeMaxCourant = sampleRefineParametersNative.MaximumTimeStepInCourantGrid;
     m_refineOutsideFace = bool(sampleRefineParametersNative.AccountForSamplesOutside);
     m_minimumFaceSize = sampleRefineParametersNative.MinimumCellSize;
-    m_maxNumberOfRefinementIterations = 1; //sampleRefineParametersNative.MaxNumberOfRefinementIterations;
     m_connectHangingNodes = sampleRefineParametersNative.ConnectHangingNodes;
+    m_maxNumberOfRefinementIterations = interpolationParametersNative.MaxNumberOfRefinementIterations;
 
     // find faces
     m_mesh.FindFaces();
@@ -181,9 +181,6 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
 
     }
 
-    //connect hanging nodes
-    m_mesh.Administrate();
-
     bool successful = FindBrotherEdges();
     if (!successful)
     {
@@ -206,6 +203,8 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
             return false;
         }
     }
+
+    m_mesh.Administrate();
 
     return true;
 }
@@ -389,9 +388,10 @@ bool GridGeom::MeshRefinement::ConnectHangingNodes()
                     {
                         continue;
                     }
+
                     auto e = NextCircularBackwardIndex(n, numNonHangingNodes);
                     auto ee = NextCircularForwardIndex(n, numNonHangingNodes);
-                    auto eee = NextCircularBackwardIndex(n + 2, numNonHangingNodes);
+                    auto eee = NextCircularForwardIndex(n + 1, numNonHangingNodes);
                     if (hangingNodeCache[e] >= 0) // left neighbor
                     {
                         int newEdgeIndex;
@@ -801,6 +801,12 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
 
     for (int f = 0; f < m_mesh.GetNumFaces(); f++)
     {
+
+        if(f==8)
+        {
+            std::cout << "debug";
+        }
+
         m_mesh.FacePolygon(f, m_polygonNodesCache, m_localNodeIndexsesCache, m_edgeIndexsesCache);
 
         int numHangingEdges;
@@ -1268,7 +1274,7 @@ bool  GridGeom::MeshRefinement::SplitFaces()
                 for (int n = 0; n < numFaceNodes; n++)
                 {
                     int edgeIndex = m_mesh.m_facesEdges[f][n];
-                    if (!m_isHangingEdgeCache[edgeIndex] && m_edgeMask[edgeIndex] == 0)
+                    if (!m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] == 0)
                     {
                         m_edgeMask[edgeIndex] = 1;
                         num++;
