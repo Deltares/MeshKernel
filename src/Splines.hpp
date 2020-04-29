@@ -48,10 +48,8 @@ namespace GridGeom
                 index++;
             }
             
-
             m_splinesLength.resize(m_numAllocatedSplines);
             m_type.resize(m_numAllocatedSplines);
-            m_centralSplineIndexses.resize(m_numAllocatedSplines);
 
             // compute basic properties
             SecondOrderDerivative(m_splineCornerPoints[m_numSplines], m_numSplineNodes[m_numSplines], m_splineDerivatives[m_numSplines]);
@@ -100,10 +98,9 @@ namespace GridGeom
         bool AllocateSplinesProperties()
         {
             m_type.resize(m_numSplines);
-            std::fill(m_type.begin(), m_type.end(), intMissingValue);
 
-            m_centralSplineIndexses.resize(m_numSplines);
-            std::fill(m_centralSplineIndexses.begin(), m_centralSplineIndexses.end(), intMissingValue);
+            m_centralSplineIndex.resize(m_numSplines);
+            std::fill(m_centralSplineIndex.begin(), m_centralSplineIndex.end(), intMissingValue);
 
             m_numCrossingSplines.resize(m_numSplines, 0);
             std::fill(m_numCrossingSplines.begin(), m_numCrossingSplines.end(), 0);
@@ -254,7 +251,7 @@ namespace GridGeom
             for (int s = 0; s < m_numOriginalSplines; ++s)
             {
                 // mirrow only center splines
-                if (m_type[s] != 0.0)
+                if (m_type[s] !=SplineTypes::central)
                 {
                     continue;
                 }
@@ -285,7 +282,7 @@ namespace GridGeom
                     newCrossSpline[1] = { xs2, ys2 };
                     AddSpline(newCrossSpline, 0, newCrossSpline.size());
                     // flag the cross spline as artificially added
-                    m_type[m_numSplines - 1] = 3;
+                    m_type[m_numSplines - 1] = SplineTypes::arficial;
                 }
             }
 
@@ -294,14 +291,14 @@ namespace GridGeom
             m_rightGridLineIndexOriginal.resize(m_numOriginalSplines);
             m_mfacOriginal.resize(m_numOriginalSplines);
             m_maximumGridHeightsOriginal.resize(m_numOriginalSplines);
-            m_numLayersOriginal.resize(m_numOriginalSplines);
+            m_originalTypes.resize(m_numOriginalSplines);
             for (int s = 0; s < m_numOriginalSplines; ++s)
             {
                 m_leftGridLineIndexOriginal[s] = m_leftGridLineIndex[s];
                 m_rightGridLineIndexOriginal[s] = m_rightGridLineIndex[s];
                 m_mfacOriginal[s] = m_numMSpline[s];
                 m_maximumGridHeightsOriginal[s] = m_maximumGridHeights[s];
-                m_numLayersOriginal[s] = m_type[s];
+                m_originalTypes[s] = m_type[s];
             }
 
             // compute spline properties with artificial splines added
@@ -312,7 +309,7 @@ namespace GridGeom
             for (int s = 0; s < m_numOriginalSplines; ++s)
             {
                 // Remove the last part of the sub-intervals
-                if (m_type[s] != 0)
+                if (m_type[s] != SplineTypes::central)
                 {
                     continue;
                 }
@@ -321,7 +318,7 @@ namespace GridGeom
                 for (int i = 0; i < m_numCrossingSplines[s]; ++i)
                 {
                     int crossingSplineIndex = m_crossingSplinesIndexses[s][i];
-                    if (m_type[crossingSplineIndex] == 3)
+                    if (m_type[crossingSplineIndex] == SplineTypes::arficial)
                     {
                         m_numCrossSplineLeftHeights[s][i] = m_numCrossSplineLeftHeights[s][i] - 1;
                         m_numCrossSplineRightHeights[s][i] = m_numCrossSplineRightHeights[s][i] - 1;
@@ -1207,7 +1204,7 @@ namespace GridGeom
                 int numTrueCrossings = 0;
                 for (int i = 0; i < m_numCrossingSplines[s]; ++i)
                 {
-                    if (m_type[m_crossingSplinesIndexses[s][i]] != 1)
+                    if (m_type[m_crossingSplinesIndexses[s][i]] != SplineTypes::crossing)
                     {
                         // true crossing splines only
                         continue;
@@ -1471,7 +1468,7 @@ namespace GridGeom
 
             for (int s = 0; s < m_numSplines; s++)
             {
-                if (m_type[s] != 0)
+                if (m_type[s] != SplineTypes::central)
                 {
                     continue;
                 }
@@ -1906,7 +1903,7 @@ namespace GridGeom
             for (int s = 0; s < m_numSplines; ++s)
             {
                 //center splines only
-                if (m_type[s] != 0)
+                if (m_type[s] != SplineTypes::central)
                 {
                     continue;
                 }
@@ -1923,7 +1920,7 @@ namespace GridGeom
             for (int s = 0; s < m_numSplines; ++s)
             {
                 //center splines only
-                if (m_type[s] != 0)
+                if (m_type[s] != SplineTypes::central)
                 {
                     continue;
                 }
@@ -2078,11 +2075,11 @@ namespace GridGeom
             // select all non-cross splines only
             for (int s = 0; s < m_numSplines; ++s)
             {
-                m_type[s] = 1;
+                m_type[s] = SplineTypes::crossing;
                 // select all non-cross splines for growing the grid
                 if (m_numSplineNodes[s] > 2)
                 {
-                    m_type[s] = 0;
+                    m_type[s] = SplineTypes::central;
                 }
             }
             // check the cross splines. The center spline is the middle spline that crosses the cross spline
@@ -2098,27 +2095,27 @@ namespace GridGeom
                 int crossingSplineIndex = m_crossingSplinesIndexses[s][middleCrossingSpline];
 
                 // if m_numIntersectingSplines[s] is even, check if the middle spline has already been assigned as a bounding spline
-                if (m_type[crossingSplineIndex] != 0 && 2 * crossingSplineIndex == m_numCrossingSplines[s])
+                if (m_type[crossingSplineIndex] != SplineTypes::central && 2 * crossingSplineIndex == m_numCrossingSplines[s])
                 {
                     middleCrossingSpline = std::min(middleCrossingSpline + 1, m_numCrossingSplines[s] - 1);
                     crossingSplineIndex = m_crossingSplinesIndexses[s][middleCrossingSpline];
                 }
                 
-                if (m_type[crossingSplineIndex] == 0)
+                if (m_type[crossingSplineIndex] == SplineTypes::central)
                 {
                     // associate bounding splines with the middle spline
                     for (int i = 0; i < middleCrossingSpline; ++i)
                     {
                         int index = m_crossingSplinesIndexses[s][i];
-                        m_type[index] = 4; // lateral spline
-                        m_centralSplineIndexses[index] = -crossingSplineIndex;
+                        m_type[index] = SplineTypes::lateral; // lateral spline
+                        m_centralSplineIndex[index] = -crossingSplineIndex;
 
                     }
                     for (int i = middleCrossingSpline + 1; i < m_numCrossingSplines[s]; ++i)
                     {
                         int index = m_crossingSplinesIndexses[s][i];
-                        m_type[index] = 4; // lateral spline
-                        m_centralSplineIndexses[index] = -crossingSplineIndex;
+                        m_type[index] = SplineTypes::lateral; // lateral spline
+                        m_centralSplineIndex[index] = -crossingSplineIndex;
                     }
                 }
             }
@@ -2132,13 +2129,13 @@ namespace GridGeom
                     m_rightGridLineIndex[s] = m_rightGridLineIndexOriginal[s];
                     m_numMSpline[s] = m_mfacOriginal[s];
                     m_maximumGridHeights[s] = m_maximumGridHeightsOriginal[s];
-                    m_type[s] = m_numLayersOriginal[s];
+                    m_type[s] = m_originalTypes[s];
                 }
 
                 //mark new splines as artificial cross splines
                 for (int s = m_numOriginalSplines; s < m_numSplines; ++s)
                 {
-                    m_type[s] = 3;
+                    m_type[s] = SplineTypes::arficial;
                 }
             }
 
@@ -2224,7 +2221,7 @@ namespace GridGeom
                 {
                     break;
                 }
-                if (m_centralSplineIndexses[m_crossingSplinesIndexses[crossingSplineIndex][s + 1]] != -centerSplineIndex)
+                if (m_centralSplineIndex[m_crossingSplinesIndexses[crossingSplineIndex][s + 1]] != -centerSplineIndex)
                 {
                     continue;
                 }
@@ -2252,7 +2249,7 @@ namespace GridGeom
                 {
                     break;
                 }
-                if (m_centralSplineIndexses[m_crossingSplinesIndexses[crossingSplineIndex][s - 1]] != -centerSplineIndex)
+                if (m_centralSplineIndex[m_crossingSplinesIndexses[crossingSplineIndex][s - 1]] != -centerSplineIndex)
                 {
                     continue;
                 }
@@ -2492,10 +2489,18 @@ namespace GridGeom
         bool m_checkFrontCollisions = false;                                            // check front collisions
         bool m_isSpacingCurvatureAdapted = true;                                        // is curvature adapted
 
+        // spline types
+        enum class SplineTypes
+        {
+            central,
+            crossing,
+            arficial,
+            lateral
+        };
 
-        // Spline properties (first index is the spline number)                 
-        std::vector<int> m_type;                                                   // id number of layers ( >0 only for center spline)
-        std::vector<int> m_centralSplineIndexses;                                       // for each spline the index to its central
+        // Spline properties (first index is the spline number) 
+        std::vector<SplineTypes> m_type;
+        std::vector<int> m_centralSplineIndex;                                          // for each spline the index to its central
         std::vector<int> m_numCrossingSplines;                                          // ncs num of cross splines
         std::vector<std::vector<int>> m_crossingSplinesIndexses;                        // ics for each cross spline, the indexses of the center splines
         std::vector<double> m_splinesLength;                                            // splinesLength spline path length
@@ -2525,7 +2530,7 @@ namespace GridGeom
         std::vector<int> m_rightGridLineIndexOriginal;
         std::vector<int> m_mfacOriginal;
         std::vector<double> m_maximumGridHeightsOriginal;
-        std::vector<int> m_numLayersOriginal;
+        std::vector<SplineTypes> m_originalTypes;
 
 
         //cache variables during iterations

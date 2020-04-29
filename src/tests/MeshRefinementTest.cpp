@@ -63,10 +63,10 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
     sampleRefineParametersNative.MinimumCellSize = 1.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.MaxNumberOfRefinementIterations = 1;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     
     meshRefinement.RefineMeshBasedOnSamples(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
        
@@ -188,10 +188,10 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 15.97;
     sampleRefineParametersNative.MinimumCellSize = 50.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.MaxNumberOfRefinementIterations = 1;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
 
     meshRefinement.RefineMeshBasedOnSamples(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
@@ -212,5 +212,133 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     // total number of edges
     ASSERT_EQ(35, mesh.GetNumEdges());
 
+}
+
+TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
+{
+    // Prepare
+    //1 Setup
+    const int n = 4; // x
+    const int m = 4; // y
+    double delta = 10.0;
+
+    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
+    std::vector<GridGeom::Point> nodes(n * m);
+    std::size_t nodeIndex = 0;
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < m; ++j)
+        {
+            indexesValues[i][j] = i * m + j;
+            nodes[nodeIndex] = { i * delta, j * delta };
+            nodeIndex++;
+        }
+    }
+
+    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::size_t edgeIndex = 0;
+
+    for (int i = 0; i < n - 1; ++i)
+    {
+        for (int j = 0; j < m; ++j)
+        {
+            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
+            edgeIndex++;
+        }
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < m - 1; ++j)
+        {
+            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
+            edgeIndex++;
+        }
+    }
+
+    GridGeom::Mesh mesh;
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    //sample points
+    std::vector<GridGeom::Sample> samples;
+
+    samples.push_back({ 2.7091951,       5.4000854,       0.0000000 });
+    samples.push_back({ 6.4910383,       2.4182367,       0.0000000 });
+    samples.push_back({ 8.0910482,      6.7091894,       0.0000000 });
+    samples.push_back({ 13.2910795,       5.2182646,       0.0000000 });
+    samples.push_back({ 16.1274605,      2.0909605,       0.0000000 });
+    samples.push_back({ 18.7820244,       7.5091972,       0.0000000 });
+    samples.push_back({ 23.5456886,       8.1637497,       0.0000000 });
+    samples.push_back({ 24.6366081,       1.5818644,       0.0000000 });
+    samples.push_back({ 27.8729897,       6.5273695,       0.0000000 });
+    samples.push_back({ 28.0184441,      14.7092705,       0.0000000 });
+    samples.push_back({ 23.8366013,      12.4910660,       0.0000000 });
+    samples.push_back({ 22.6002312,      17.2183857,       0.0000000 });
+    samples.push_back({ 24.0184212,      23.7639065,       0.0000000 });
+    samples.push_back({ 27.9457169,      25.9093838,       0.0000000 });
+    samples.push_back({ 24.6366081,      27.3275795,       0.0000000 });
+    samples.push_back({ 17.4365616,      27.5821285,       0.0000000 });
+    samples.push_back({ 16.6001930,      22.8184433,       0.0000000 });
+    samples.push_back({ 12.7092581,      27.2548523,       0.0000000 });
+    samples.push_back({ 4.7455721,      27.6912193,       0.0000000 });
+    samples.push_back({ 2.6728315,      24.7457352,       0.0000000 });
+    samples.push_back({ 7.5819540,      22.9638996,       0.0000000 });
+    samples.push_back({ 3.5455656,      15.1820030,       0.0000000 });
+    samples.push_back({ 4.8546629,      11.8365135,       0.0000000 });
+    samples.push_back({ 8.7455969,      17.2183857,       0.0000000 });
+    samples.push_back({ 11.8404741,      17.6817989,       3.0000000 });
+    samples.push_back({ 13.5837603,     12.1783361,       3.0000000 });
+    samples.push_back({ 17.2156067,      16.9106121,       3.0000000 });
+
+    GridGeom::MeshRefinement  meshRefinement(mesh);
+    GridGeom::Polygons polygon;
+    GridGeomApi::SampleRefineParametersNative sampleRefineParametersNative;
+    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
+    sampleRefineParametersNative.MinimumCellSize = 3.0;
+    sampleRefineParametersNative.AccountForSamplesOutside = false;
+    sampleRefineParametersNative.ConnectHangingNodes = 1;
+
+    GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
+
+    meshRefinement.RefineMeshBasedOnSamples(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+
+    // total number of edges
+    ASSERT_EQ(150, mesh.GetNumNodes());
+    ASSERT_EQ(293, mesh.GetNumEdges());
+
+    // assert on newly generated edges
+    ASSERT_EQ(109, mesh.m_edges[282].first);
+    ASSERT_EQ(44, mesh.m_edges[282].second);
+
+    ASSERT_EQ(44, mesh.m_edges[283].first);
+    ASSERT_EQ(67, mesh.m_edges[283].second);
+
+    ASSERT_EQ(92, mesh.m_edges[284].first);
+    ASSERT_EQ(91, mesh.m_edges[284].second);
+
+    ASSERT_EQ(91, mesh.m_edges[285].first);
+    ASSERT_EQ(12, mesh.m_edges[285].second);
+
+    ASSERT_EQ(12, mesh.m_edges[286].first);
+    ASSERT_EQ(92, mesh.m_edges[286].second);
+
+    ASSERT_EQ(100, mesh.m_edges[287].first);
+    ASSERT_EQ(99, mesh.m_edges[287].second);
+
+    ASSERT_EQ(99, mesh.m_edges[288].first);
+    ASSERT_EQ(14, mesh.m_edges[288].second);
+
+    ASSERT_EQ(14, mesh.m_edges[289].first);
+    ASSERT_EQ(100, mesh.m_edges[289].second);
+
+    ASSERT_EQ(97, mesh.m_edges[290].first);
+    ASSERT_EQ(96, mesh.m_edges[290].second);
+
+    ASSERT_EQ(96, mesh.m_edges[291].first);
+    ASSERT_EQ(14, mesh.m_edges[291].second);
+
+    ASSERT_EQ(14, mesh.m_edges[292].first);
+    ASSERT_EQ(97, mesh.m_edges[292].second);
 
 }

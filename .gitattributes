@@ -686,12 +686,12 @@ src/tests/PolygonTest.cpp -text
 src/tests/SpatialTreesTest.cpp -text
 src/tests/SplineTest.cpp -text
 tests/FindFaces.pol -text
-tests/FourSplinesBox.spl -text
 tests/MakeNetPolygon.pol -text
 tests/OffsetAPolygonTest.pli -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
 tests/SamplesForRefinementFourByFourMesh.xyz -text
 tests/SamplesToTriangulate.xyz -text
+tests/SevenSplines.spl -text
 tests/SmallTriangularGrid_net.nc -text
 tests/SmallTriangularGrid_oneCrossingLandBoundaries.ldb -text
 tests/SmallTriangularGrid_twoCrossingLandBoundaries.ldb -text
