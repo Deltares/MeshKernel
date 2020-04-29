@@ -686,6 +686,7 @@ src/tests/PolygonTest.cpp -text
 src/tests/SpatialTreesTest.cpp -text
 src/tests/SplineTest.cpp -text
 tests/FindFaces.pol -text
+tests/FourSplinesspl -text
 tests/MakeNetPolygon.pol -text
 tests/OffsetAPolygonTest.pli -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
@@ -700,6 +701,7 @@ tests/TestOrthogonalizationLargeTriangularGrid_net.nc -text
 tests/TestOrthogonalizationMediumTriangularGrid_net.nc -text
 tests/TestOrthogonalizationSmallTriangularGrid_landBoundary.ldb -text
 tests/ThreeNodesSpline.spl -text
+tests/WindowedSamplesForMeshRefinement.xyz -text
 tests/refinePolygonTest.pol -text
 thirdParty/CMakeLists.txt -text
 thirdParty/eigen/.hg_archival.txt -text
