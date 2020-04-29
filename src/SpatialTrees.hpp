@@ -1,5 +1,6 @@
 #pragma once
 #include "Entities.hpp"
+#include "Constants.cpp"
 
 // include boost
 #include <boost/geometry.hpp>
@@ -9,6 +10,7 @@
 
 #include <vector>
 #include <memory>
+#include <utility>
 
 // kd-tree
 // https://gist.github.com/alexcpn/1f187f2114976e748f4d3ad38dea17e8
@@ -48,40 +50,48 @@ namespace GridGeom
                     m_points[n] = std::make_pair(Point2D{ nodes[n].x, nodes[n].y }, n);
                 }
                 m_rtree2D = RTree2D(m_points.begin(), m_points.end());
+                
+                m_queryCache.reserve(queryCapacity);
+                m_queryIndexses.reserve(queryCapacity);
+
                 return true;
             }
 
-            std::vector<int> NearestNeighbours(Point node, const double searchRadius) const
+            bool NearestNeighbours(Point node, const double searchRadius)
             {
-                  
-                std::vector<value2D> queryResult;
+                m_queryCache.resize(0);
+                
                 Box2D box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
                 Point2D nodeSought = Point2D(node.x, node.y);
+
                 m_rtree2D.query(
                     bgi::within(box) &&
                     bgi::satisfies([&](value2D const& v) {return bg::distance(v.first, nodeSought) < searchRadius; }),
-                    std::back_inserter(queryResult));
+                    std::back_inserter(m_queryCache));
 
-                std::vector<int> result(queryResult.size());
-                for (size_t i = 0; i < queryResult.size(); i++)
+                m_queryIndexses.resize(m_queryCache.size());
+                for (size_t i = 0; i < m_queryCache.size(); i++)
                 {
-                    result[i] = queryResult[i].second;
+                    m_queryIndexses[i] = m_queryCache[i].second;
                 }
-                return std::move(result);
+
+                return true;
             }
 
-            int NearestNeighbour(Point node) const
+            bool NearestNeighbour(Point node)
             {
-                int result = -1;
-                std::vector<value2D> queryResult;
+                m_queryCache.resize(0);
+
                 Point2D nodeSought = Point2D(node.x, node.y);
-                m_rtree2D.query(bgi::nearest(nodeSought,1),std::back_inserter(queryResult));
-                
-                if(!queryResult.empty())
+                m_rtree2D.query(bgi::nearest(nodeSought,1),std::back_inserter(m_queryCache));
+
+                if(!m_queryCache.empty())
                 {
-                    result = queryResult[0].second;
+                    m_queryIndexses.resize(1);
+                    m_queryIndexses[0] = m_queryCache[0].second;
                 }
-                return result;
+
+                return true;
             }
 
             bool RemoveNode(int position) 
@@ -120,13 +130,27 @@ namespace GridGeom
                 return true;
             }
 
+            int GetQueryResultSize() const
+            {
+                return m_queryCache.size();
+            }
+
+            int GetQuerySampleIndex(int index) const
+            {
+                return m_queryIndexses[index];
+            }
 
         private:
 
             Projections m_projection;
             RTree2D m_rtree2D;
             std::vector<std::pair<Point2D, int>> m_points;
+            std::vector<value2D> m_queryCache;
+            std::vector<int> m_queryIndexses;
+            int m_querySize = 0;
 
+            // Rtree maximum number of results in a query 
+            int queryCapacity = 100;
         };   
 
         class KDTree
