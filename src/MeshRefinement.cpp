@@ -181,12 +181,6 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
 
     }
 
-    bool successful = FindBrotherEdges();
-    if (!successful)
-    {
-        return false;
-    }
-
     //remove isolated hanging nodes and update netcell administration (no need for setnodadm)
     if(m_connectHangingNodes)
     {
@@ -1189,7 +1183,7 @@ bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask()
         return false;
     }
 
-    //only keep jalink=1, set other values to 0
+    //only keep m_edgeMask = 1, set other values to 0
     for (int i = 0; i < m_edgeMask.size(); i++)
     {
         if (m_edgeMask[i] != 1)

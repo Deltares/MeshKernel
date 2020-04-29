@@ -4,6 +4,8 @@
 #include "../SampleRefineParametersNative.hpp"
 #include "../InterpolationParametersNative.hpp"
 #include <gtest/gtest.h>
+#include <iostream>
+#include <fstream>
 
 TEST(MeshRefinement, FourByFourWithFourSamples) 
 {
@@ -341,4 +343,120 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     ASSERT_EQ(14, mesh.m_edges[292].first);
     ASSERT_EQ(97, mesh.m_edges[292].second);
 
+}
+
+TEST(MeshRefinement, WindowOfRefinementFile)
+{
+    // Prepare
+    //1 Setup
+    const int n = 4; // x
+    const int m = 4; // y
+    double delta = 40.0;
+    double originX = 197253;
+    double originY = 442281;
+
+    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
+    std::vector<GridGeom::Point> nodes(n * m);
+    std::size_t nodeIndex = 0;
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < m; ++j)
+        {
+            indexesValues[i][j] = i * m + j;
+            nodes[nodeIndex] = { originX + i * delta, originY + j * delta };
+            nodeIndex++;
+        }
+    }
+
+    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::size_t edgeIndex = 0;
+
+    for (int i = 0; i < n - 1; ++i)
+    {
+        for (int j = 0; j < m; ++j)
+        {
+            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
+            edgeIndex++;
+        }
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < m - 1; ++j)
+        {
+            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
+            edgeIndex++;
+        }
+    }
+
+    GridGeom::Mesh mesh;
+    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+
+    //sample points
+    std::vector<GridGeom::Sample> samples;
+
+    // read sample file
+    std::string line;
+    std::ifstream infile("..\\..\\tests\\WindowedSamplesForMeshRefinement.xyz");
+    while (std::getline(infile, line))  
+    {
+        std::istringstream iss(line);
+        double sampleX;
+        double sampleY;
+        double sampleValue;
+
+        iss >> sampleX;
+        iss >> sampleY;
+        iss >> sampleValue;
+
+        samples.push_back({ sampleX , sampleY , sampleValue });
+    }
+
+
+    GridGeom::MeshRefinement  meshRefinement(mesh);
+    GridGeom::Polygons polygon;
+    GridGeomApi::SampleRefineParametersNative sampleRefineParametersNative;
+    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
+    sampleRefineParametersNative.MinimumCellSize = 3.0;
+    sampleRefineParametersNative.AccountForSamplesOutside = false;
+    sampleRefineParametersNative.ConnectHangingNodes = 1;
+
+    GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
+
+    meshRefinement.RefineMeshBasedOnSamples(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+
+    // total number of edges
+    ASSERT_EQ(1614, mesh.GetNumNodes());
+    ASSERT_EQ(3216, mesh.GetNumEdges());
+
+    ASSERT_EQ(170, mesh.m_edges[3113].first);
+    ASSERT_EQ(804, mesh.m_edges[3113].second);
+
+    ASSERT_EQ(1, mesh.m_edges[3114].first);
+    ASSERT_EQ(804, mesh.m_edges[3114].second);
+
+    ASSERT_EQ(462, mesh.m_edges[3115].first);
+    ASSERT_EQ(856, mesh.m_edges[3115].second);
+
+    ASSERT_EQ(9, mesh.m_edges[3116].first);
+    ASSERT_EQ(856, mesh.m_edges[3116].second);
+
+    ASSERT_EQ(211, mesh.m_edges[3117].first);
+    ASSERT_EQ(1256, mesh.m_edges[3117].second);
+
+    ASSERT_EQ(538, mesh.m_edges[3118].first);
+    ASSERT_EQ(1256, mesh.m_edges[3118].second);
+
+    ASSERT_EQ(77, mesh.m_edges[3119].first);
+    ASSERT_EQ(1052, mesh.m_edges[3119].second);
+
+    ASSERT_EQ(258, mesh.m_edges[3120].first);
+    ASSERT_EQ(1052, mesh.m_edges[3120].second);
+
+    ASSERT_EQ(290, mesh.m_edges[3121].first);
+    ASSERT_EQ(769, mesh.m_edges[3121].second);
+
+    ASSERT_EQ(593, mesh.m_edges[3122].first);
+    ASSERT_EQ(769, mesh.m_edges[3122].second);
 }
