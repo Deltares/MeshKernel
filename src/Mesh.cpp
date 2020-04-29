@@ -11,6 +11,7 @@
 #include "CurvilinearGrid.hpp"
 #include "Entities.hpp"
 #include "MakeGridParametersNative.hpp"
+#include <iostream>
 
 bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
 {
@@ -1008,39 +1009,42 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
 bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 {
     // first filter the nodes in polygon
-    std::vector<Point> filteredPoints(GetNumNodes());
+    std::vector<Point> filteredNodes(GetNumNodes());
     int index = 0;
     for (int i = 0; i < GetNumNodes(); i++)
     {
         bool inPolygon = IsPointInPolygon(m_nodes[i], polygon.m_nodes, polygon.m_numNodes - 1);
         if (inPolygon)
         {
-            filteredPoints[index] = m_nodes[i];
+            filteredNodes[index] = m_nodes[i];
             index++;
         }
     }
-    filteredPoints.resize(index);
+    filteredNodes.resize(index);
 
     // build the R-Tree
-    GridGeom::SpatialTrees::RTree rtree;
-    rtree.BuildTree(filteredPoints, m_projection);
+    SpatialTrees::RTree rtree;
+    rtree.BuildTree(filteredNodes, m_projection);
 
     // merge the closest nodes
-    for (int i = 0; i < filteredPoints.size(); i++)
+    for (int i = 0; i < filteredNodes.size(); i++)
     {
-        auto result = rtree.NearestNeighbours(filteredPoints[i], mergingDistance);
+        rtree.NearestNeighbours(filteredNodes[i], mergingDistance);
 
-        if (result.size() > 1)
+        int resultSize = rtree.GetQueryResultSize();
+        if (resultSize > 1)
         {
-            for (int j = 0; j < result.size(); j++)
+            for (int j = 0; j < rtree.GetQueryResultSize(); j++)
             {
-                if (result[j] != i)
+                auto nodeIndex = rtree.GetQuerySampleIndex(j);
+                if (nodeIndex != i)
                 {
-                    rtree.RemoveNode(result[j]);
-                    MergeTwoNodes(i, result[j]);
+                    rtree.RemoveNode(nodeIndex);
+                    MergeTwoNodes(i, nodeIndex);
                 }
             }
         }
+
     }
 
     m_isAdministrationDone = false;

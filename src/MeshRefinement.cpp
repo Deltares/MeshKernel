@@ -23,9 +23,9 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
     GridGeomApi::InterpolationParametersNative& interpolationParametersNative)
 {
     m_deltaTimeMaxCourant = sampleRefineParametersNative.MaximumTimeStepInCourantGrid;
-    m_refineOutsideFace = bool(sampleRefineParametersNative.AccountForSamplesOutside);
+    m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
     m_minimumFaceSize = sampleRefineParametersNative.MinimumCellSize;
-    m_connectHangingNodes = sampleRefineParametersNative.ConnectHangingNodes;
+    m_connectHangingNodes = sampleRefineParametersNative.ConnectHangingNodes == 1 ? true : false;
     m_maxNumberOfRefinementIterations = interpolationParametersNative.MaxNumberOfRefinementIterations;
 
     // find faces
@@ -963,10 +963,14 @@ bool GridGeom::MeshRefinement::ComputeLocalEdgeRefinementFromSamples(int faceind
         if (refinementValue == doubleMissingValue && m_refineOutsideFace)
         {
             // find nearest face
-            auto sampleIndex = m_rtree.NearestNeighbour(centerOfMass);
-            if (sampleIndex >= 0)
+            m_rtree.NearestNeighbour(centerOfMass);
+            if (m_rtree.GetQueryResultSize() > 0)
             {
-                refinementValue = samples[sampleIndex].value;
+                auto sampleIndex = m_rtree.GetQuerySampleIndex(0);
+                if(sampleIndex>=0)
+                {
+                    refinementValue = samples[sampleIndex].value;  
+                }
             }
         }
     }

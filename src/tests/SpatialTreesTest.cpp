@@ -24,11 +24,11 @@ TEST(SpatialTrees, RTreeOnePoint)
     GridGeom::SpatialTrees::RTree rtree;
     rtree.BuildTree(nodes, GridGeom::Projections::cartesian);
     std::vector<GridGeom::Point> pointToSearch(1, { (n-1.0)/2.0, (n-1.0)/2.0 });
-    auto result = rtree.NearestNeighbours(pointToSearch[0], 0.708);
-    ASSERT_EQ(result.size(),4);
-    result = rtree.NearestNeighbours(pointToSearch[0], 0.700);
-    ASSERT_EQ(result.size(), 0);
-
+    auto successful = rtree.NearestNeighbours(pointToSearch[0], 0.708);
+    ASSERT_EQ(true, successful);
+    ASSERT_EQ(rtree.GetQueryResultSize(),4);
+    successful  = rtree.NearestNeighbours(pointToSearch[0], 0.700);
+    ASSERT_EQ(rtree.GetQueryResultSize(), 0);
 }
 
 TEST(SpatialTrees, RTreeRemovePoint)
@@ -94,8 +94,9 @@ TEST(SpatialTrees, RTreeManyPoints)
     start = std::chrono::steady_clock::now();
     for (int i = 0; i < nodes.size(); ++i)
     {
-        auto result = rtree.NearestNeighbours(nodes[i], 1e-4);
-        ASSERT_EQ(result.size(), 1);
+        auto successful = rtree.NearestNeighbours(nodes[i], 1e-4);
+        ASSERT_EQ(successful, true);
+        ASSERT_EQ(rtree.GetQueryResultSize(), 1);
     }
     end = std::chrono::steady_clock::now();
     elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();

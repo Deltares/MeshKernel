@@ -1232,7 +1232,7 @@ namespace GridGeom
         const std::vector<Point>& polygon,
         const Point centerOfMass,
         const Projections& projection,
-        const SpatialTrees::RTree& rtree,
+        SpatialTrees::RTree& rtree,
         int averagingMethod,
         double& result)
     {
@@ -1277,8 +1277,8 @@ namespace GridGeom
             searchRadius = std::max(searchRadius, distance);
         }
 
-        auto sampleIndexses = rtree.NearestNeighbours(centerOfMass, searchRadius);
-        if (sampleIndexses.empty())
+        auto successful = rtree.NearestNeighbours(centerOfMass, searchRadius);
+        if (rtree.GetQueryResultSize() == 0)
         {
             return true;
         }
@@ -1288,10 +1288,10 @@ namespace GridGeom
         auto minSampleValue = std::min_element(samples.begin(), samples.end(), [](auto const& s1, auto const& s2) { return s1.value < s2.value; })->value;
         result = doubleMissingValue;
         bool firstValidSampleFound = false;
-        for (int i = 0; i < sampleIndexses.size(); i++)
+        for (int i = 0; i < rtree.GetQueryResultSize(); i++)
         {
             //do stuff based on the averaging method
-            auto sampleIndex = sampleIndexses[i];
+            auto sampleIndex = rtree.GetQuerySampleIndex(i);
             if (samples[sampleIndex].value == doubleMissingValue) 
             {
                 continue;
