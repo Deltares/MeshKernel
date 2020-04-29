@@ -1278,7 +1278,6 @@ namespace GridGeom
         }
 
         auto sampleIndexses = rtree.NearestNeighbours(centerOfMass, searchRadius);
-        result = doubleMissingValue;
         if (sampleIndexses.empty())
         {
             return true;
@@ -1288,6 +1287,7 @@ namespace GridGeom
         double wall = 0;
         auto minSampleValue = std::min_element(samples.begin(), samples.end(), [](auto const& s1, auto const& s2) { return s1.value < s2.value; })->value;
         result = doubleMissingValue;
+        bool firstValidSampleFound = false;
         for (int i = 0; i < sampleIndexses.size(); i++)
         {
             //do stuff based on the averaging method
@@ -1308,10 +1308,10 @@ namespace GridGeom
                 }
                 if (averagingMethod == KdTree) 
                 {
-                    if(result== doubleMissingValue)
+                    if(!firstValidSampleFound)
                     {
-                        result = std::min(minSampleValue, std::abs(samples[sampleIndex].value));
-                        
+                        firstValidSampleFound = true;
+                        result = samples[sampleIndex].value;
                     }
                     result = std::min(std::abs(result), std::abs(samples[sampleIndex].value));
                 }
