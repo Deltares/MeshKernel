@@ -690,6 +690,7 @@ tests/FourSplines.spl -text
 tests/MakeNetPolygon.pol -text
 tests/OffsetAPolygonTest.pli -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
+tests/SamplesForMeshRefinement.xyz -text
 tests/SamplesForRefinementFourByFourMesh.xyz -text
 tests/SamplesToTriangulate.xyz -text
 tests/SevenSplines.spl -text
