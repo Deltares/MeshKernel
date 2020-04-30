@@ -241,7 +241,7 @@ namespace GridGeomApi
     {
         if(gridStateId>= meshInstances.size())
         {
-            return false;
+            return -1;
         }
 
         meshInstances[gridStateId].SetFlatCopies();
@@ -601,7 +601,7 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_merge_nodes(int& gridStateId, GeometryListNative& geometryListIn) 
     {
 
-        if (gridStateId>=meshInstances.size()) 
+        if (gridStateId >= meshInstances.size()) 
         {
             return 0;
         }
@@ -621,6 +621,22 @@ namespace GridGeomApi
         {
             return -1;
         }
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_merge_two_nodes(int& gridStateId, int& firstNodeIndex, int& endNode)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        bool successful = meshInstances[gridStateId].MergeTwoNodes(firstNodeIndex, endNode);
+        if (!successful)
+        {
+            return -1;
+        }
+
         return 0;
     }
 
@@ -787,7 +803,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        successful = meshInstances[gridStateId].DeleteEdgeClosetToAPoint(newPoint[0], searchRadius);
+        successful = meshInstances[gridStateId].DeleteEdgeCloseToAPoint(newPoint[0], searchRadius);
         if (!successful)
         {
             return -1;
@@ -944,7 +960,7 @@ namespace GridGeomApi
         bool successful = SetSplines(geometryListIn, spline);
         if(!successful)
         {
-            return false;
+            return -1;
         }
 
         spline.SetParameters(curvilinearParameters, splineToCurvilinearParameters);
@@ -1022,5 +1038,7 @@ namespace GridGeomApi
         const int successful = splineInstances.erase(gridStateId);
         return successful == 1 ? 0 : 1;
     }
+
+
 
 }

@@ -1399,22 +1399,22 @@ bool GridGeom::Mesh::OffsetSphericalCoordinates(double minx, double miny)
     return true;
 }
 
-bool GridGeom::Mesh::BuildRTree()
+bool GridGeom::Mesh::BuildNodesRTree()
 {
-    m_rtree.Clear();
-    m_rtree.BuildTree(m_nodes, m_projection);
+    m_nodesRtree.Clear();
+    m_nodesRtree.BuildTree(m_nodes, m_projection);
     return true;
 }
 
 bool GridGeom::Mesh::InsertMissingNodesInRTree()
 {
 
-    if (m_rtree.Size() < m_nodes.size())
+    if (m_nodesRtree.Size() < m_nodes.size())
     {
         //insert the missing nodes
-        for (int i = m_rtree.Size(); i < m_nodes.size(); ++i)
+        for (int i = m_nodesRtree.Size(); i < m_nodes.size(); ++i)
         {
-            m_rtree.InsertNode(m_nodes[i]);
+            m_nodesRtree.InsertNode(m_nodes[i]);
         }
     }
     return true;
@@ -1442,7 +1442,7 @@ bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexI
     return true;
 }
 
-bool GridGeom::Mesh::DeleteEdgeClosetToAPoint(Point point, double searchRadius)
+bool GridGeom::Mesh::DeleteEdgeCloseToAPoint(Point point, double searchRadius)
 {
     int edgeIndex = -1;
     for (int e = 0; e < GetNumEdges(); ++e)
