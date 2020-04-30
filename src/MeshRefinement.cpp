@@ -181,7 +181,7 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
 
     }
 
-    //remove isolated hanging nodes and update netcell administration (no need for setnodadm)
+    //remove isolated hanging nodes and cannect if needed
     if(m_connectHangingNodes)
     {
         int numRemovedIsolatedHangingNodes = 0;
@@ -196,10 +196,11 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
         {
             return false;
         }
+
+        m_mesh.Administrate();
     }
 
-    m_mesh.Administrate();
-
+  
     return true;
 }
 
@@ -795,12 +796,6 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
 
     for (int f = 0; f < m_mesh.GetNumFaces(); f++)
     {
-
-        if(f==8)
-        {
-            std::cout << "debug";
-        }
-
         m_mesh.FacePolygon(f, m_polygonNodesCache, m_localNodeIndexsesCache, m_edgeIndexsesCache);
 
         int numHangingEdges;
