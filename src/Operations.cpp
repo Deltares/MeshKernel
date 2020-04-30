@@ -1277,7 +1277,7 @@ namespace GridGeom
             searchRadius = std::max(searchRadius, distance);
         }
 
-        auto successful = rtree.NearestNeighbours(centerOfMass, searchRadius);
+        rtree.NearestNeighbours(centerOfMass, searchRadius);
         if (rtree.GetQueryResultSize() == 0)
         {
             return true;

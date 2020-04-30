@@ -93,7 +93,7 @@ namespace GridGeomApi
         return true;
     }
 
-    bool SetMeshGeometry(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    bool SetMeshGeometry(int& gridStateId, bool addFaceInformation, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -104,24 +104,31 @@ namespace GridGeomApi
         meshGeometry.nodey = &meshInstances[gridStateId].m_nodey[0];
         meshGeometry.nodez = &meshInstances[gridStateId].m_nodez[0];
         meshGeometry.edge_nodes = &meshInstances[gridStateId].m_edgeNodes[0];
-        meshGeometry.face_nodes = &meshInstances[gridStateId].m_faceNodes[0];
-        meshGeometry.facex = &meshInstances[gridStateId].m_facesCircumcentersx[0];
-        meshGeometry.facey = &meshInstances[gridStateId].m_facesCircumcentersy[0];
-        meshGeometry.facez = &meshInstances[gridStateId].m_facesCircumcentersz[0];
 
+        if(addFaceInformation)
+        {
+            meshGeometry.face_nodes = &meshInstances[gridStateId].m_faceNodes[0];
+            meshGeometry.facex = &meshInstances[gridStateId].m_facesCircumcentersx[0];
+            meshGeometry.facey = &meshInstances[gridStateId].m_facesCircumcentersy[0];
+            meshGeometry.facez = &meshInstances[gridStateId].m_facesCircumcentersz[0];
+        }
+
+
+        meshGeometryDimensions.numface = 0;
+        meshGeometryDimensions.maxnumfacenodes = GridGeom::maximumNumberOfNodesPerFace;
         if (meshInstances[gridStateId].GetNumNodes() == 1)
         {
             meshGeometryDimensions.numnode = 0;
             meshGeometryDimensions.numedge = 0;
-            meshGeometryDimensions.numface = 0;
-            meshGeometryDimensions.maxnumfacenodes = GridGeom::maximumNumberOfNodesPerFace;
         }
         else
         {
             meshGeometryDimensions.numnode = meshInstances[gridStateId].GetNumNodes();
             meshGeometryDimensions.numedge = meshInstances[gridStateId].GetNumEdges();
-            meshGeometryDimensions.numface = meshInstances[gridStateId].GetNumFaces();
-            meshGeometryDimensions.maxnumfacenodes = GridGeom::maximumNumberOfNodesPerFace;
+            if (addFaceInformation)
+            {
+                meshGeometryDimensions.numface = meshInstances[gridStateId].GetNumFaces();
+            }
         }
 
         return true;
@@ -157,7 +164,7 @@ namespace GridGeomApi
 
         meshInstances[gridStateId].SetFlatCopies();
 
-        bool successful = SetMeshGeometry(gridStateId, meshGeometryDimensions, meshGeometry);
+        bool successful = SetMeshGeometry(gridStateId, true,meshGeometryDimensions, meshGeometry);
         if(!successful)
         {
             return -1;
@@ -239,7 +246,7 @@ namespace GridGeomApi
 
         meshInstances[gridStateId].SetFlatCopies();
 
-        bool successful = SetMeshGeometry(gridStateId, meshGeometryDimensions, meshGeometry);
+        bool successful = SetMeshGeometry(gridStateId, false,meshGeometryDimensions, meshGeometry);
         if (!successful)
         {
             return -1;
