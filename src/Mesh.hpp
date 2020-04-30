@@ -57,7 +57,7 @@ namespace GridGeom
         bool MergeNodesInPolygon(const Polygons& polygons);
 
         ///mergenodes
-        inline bool MergeTwoNodes(int startNode, int endNode);
+        bool MergeTwoNodes(int startNode, int endNode);
 
         ///makenet
         bool MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
@@ -85,7 +85,7 @@ namespace GridGeom
         ///Delete an edge based on the index
         bool DeleteEdge(int edgeIndex);
 
-        bool DeleteEdgeClosetToAPoint(Point point, double searchRadius);
+        bool DeleteEdgeCloseToAPoint(Point point, double searchRadius);
 
         ///get_cellpolygon
         //need to account for spherical coordinates. Build a polygon around a face
@@ -99,8 +99,7 @@ namespace GridGeom
 
         bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 
-
-        bool BuildRTree();
+        bool BuildNodesRTree();
 
         bool InsertMissingNodesInRTree();
 
@@ -118,11 +117,11 @@ namespace GridGeom
         std::vector<int> m_edgeMask;                                // LC
 
         // faces
-        std::vector<std::vector<int>>   m_facesNodes;                 // netcell%Nod, the nodes composing the faces, in ccw order
-        std::vector<int>                m_numFacesNodes;              // netcell%N
-        std::vector<std::vector<int>>   m_facesEdges;                 // netcell%lin
-        std::vector<Point>              m_facesCircumcenters;         // xz  the face circumcenter
-        std::vector<Point>              m_facesMassCenters;           // xzw the faces canters of mass
+        std::vector<std::vector<int>>   m_facesNodes;               // netcell%Nod, the nodes composing the faces, in ccw order
+        std::vector<int>                m_numFacesNodes;            // netcell%N
+        std::vector<std::vector<int>>   m_facesEdges;               // netcell%lin
+        std::vector<Point>              m_facesCircumcenters;       // xz  the face circumcenter
+        std::vector<Point>              m_facesMassCenters;         // xzw the faces canters of mass
 
         std::vector<double> m_faceArea;                             // Face area   
         std::vector<int> m_nodesTypes;                              // Node types,  1=internal, 2=on ring, 3=corner point, 0/-1=other (e.g. 1d)
@@ -144,7 +143,7 @@ namespace GridGeom
         double m_triangleMaximumAngle = 150.0;                      // maximum angle of created triangles
 
         // spatial tree to inquire node vertices
-        SpatialTrees::RTree m_rtree;
+        SpatialTrees::RTree m_nodesRtree;
 
         bool m_isAdministrationDone = false;
 
