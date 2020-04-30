@@ -1236,6 +1236,7 @@ namespace GridGeom
         int averagingMethod,
         double& result)
     {
+        result = doubleMissingValue;
         std::vector<Point> searchPolygon(numNodes);
 
         // averaging settings
@@ -1286,7 +1287,6 @@ namespace GridGeom
         int numValidSamplesInPolygon = 0;
         double wall = 0;
         auto minSampleValue = std::min_element(samples.begin(), samples.end(), [](auto const& s1, auto const& s2) { return s1.value < s2.value; })->value;
-        result = doubleMissingValue;
         bool firstValidSampleFound = false;
         for (int i = 0; i < rtree.GetQueryResultSize(); i++)
         {
