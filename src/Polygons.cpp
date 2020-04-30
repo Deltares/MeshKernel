@@ -187,6 +187,7 @@ namespace GridGeom
         std::vector<double> xPoint;
         std::vector<double> yPoint;
         const int safetySize = 11;
+        bool isOnePolygonClosed = false;
         for (int i = 0; i < indexes.size(); ++i)
         {
             int numLocalPoints = 0;
@@ -204,6 +205,7 @@ namespace GridGeom
                 continue;
             }
 
+            isOnePolygonClosed = true;
             double localPolygonArea = 0.0;
             Point centerOfMass;
             bool success = FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
@@ -279,7 +281,7 @@ namespace GridGeom
             //TODO: CHECK POINTS ARE INSIDE THE POLYGON?
          }
 
-        return true;
+        return isOnePolygonClosed ? true : false;
     }
 
     bool Polygons::RefinePart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon)
