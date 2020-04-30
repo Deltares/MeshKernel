@@ -4,7 +4,6 @@
 #include "../SampleRefineParametersNative.hpp"
 #include "../InterpolationParametersNative.hpp"
 #include <gtest/gtest.h>
-#include <iostream>
 #include <fstream>
 
 TEST(MeshRefinement, FourByFourWithFourSamples) 

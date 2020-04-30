@@ -280,7 +280,7 @@ TEST(Mesh, InsertNodeRtree)
     GridGeom::Mesh mesh;
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
-    mesh.BuildRTree();
+    mesh.BuildNodesRTree();
 
     GridGeom::Point newPoint{ 10.0,10.0 };
     int newNodeIndex;
@@ -288,7 +288,7 @@ TEST(Mesh, InsertNodeRtree)
 
     mesh.InsertMissingNodesInRTree();
 
-    int rtreeSize = mesh.m_rtree.Size();
+    int rtreeSize = mesh.m_nodesRtree.Size();
     ASSERT_EQ(5, rtreeSize);
 }
 
