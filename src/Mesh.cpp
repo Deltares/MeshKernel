@@ -1005,6 +1005,7 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 {
     // first filter the nodes in polygon
     std::vector<Point> filteredNodes(GetNumNodes());
+    std::vector<int> originalNodeIndexses(GetNumNodes(), - 1);
     int index = 0;
     for (int i = 0; i < GetNumNodes(); i++)
     {
@@ -1012,13 +1013,15 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
         if (inPolygon)
         {
             filteredNodes[index] = m_nodes[i];
+            originalNodeIndexses[index] = i;
             index++;
         }
     }
     filteredNodes.resize(index);
 
     // Update the R-Tree of the mesh nodes
-    RefreshRTreeIfNeeded();
+    m_nodesRTree.Clear();
+    m_nodesRTree.BuildTree(filteredNodes, m_projection);
     
     // merge the closest nodes
     for (int i = 0; i < filteredNodes.size(); i++)
@@ -1030,10 +1033,10 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
         {
             for (int j = 0; j < m_nodesRTree.GetQueryResultSize(); j++)
             {
-                auto nodeIndex = m_nodesRTree.GetQuerySampleIndex(j);
-                if (nodeIndex != i)
+                auto nodeIndexInFilteredNodes = m_nodesRTree.GetQuerySampleIndex(j);
+                if (nodeIndexInFilteredNodes != i)
                 {
-                    MergeTwoNodes(i, nodeIndex);
+                    MergeTwoNodes(originalNodeIndexses[i], originalNodeIndexses[nodeIndexInFilteredNodes]);
                     m_nodesRTree.RemoveNode(i);
                 }
             }
@@ -1049,6 +1052,11 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 ///mergenodes
 bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
 {
+    if(firstNodeIndex>=GetNumNodes() || secondNodeIndex >= GetNumNodes())
+    {
+        return true;
+    }
+    
     int edgeIndex;
     FindEdge(firstNodeIndex, secondNodeIndex, edgeIndex);
     if (edgeIndex >= 0)
@@ -1069,8 +1077,8 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
             {
                 auto secondEdgeIndex = m_nodesEdges[firstEdgeOtherNode][nn];
                 auto secondEdge = m_edges[secondEdgeIndex];
-                auto secondEdgeOtherNode = secondEdge.first + secondEdge.second - firstEdgeOtherNode;
-                if (secondEdgeOtherNode == secondNodeIndex)
+                auto secondNodeSecondEdge = secondEdge.first + secondEdge.second - firstEdgeOtherNode;
+                if (secondNodeSecondEdge == secondNodeIndex)
                 {
                     m_edges[secondEdgeIndex].first = -1;
                     m_edges[secondEdgeIndex].second = -1;
@@ -1080,7 +1088,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     }
 
     // add all valid edges starting at secondNode
-    std::vector<int> secondNodeEdges(maximumNumberOfEdgesPerNode);
+    std::vector<int> secondNodeEdges(maximumNumberOfEdgesPerNode,-1);
     int numSecondNodeEdges = 0;
     for (auto n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
@@ -1092,7 +1100,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
         }
     }
 
-    // add all valid edges starting at firstNode
+    // add all valid edges starting at firstNode are assigned to the second node
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
@@ -1119,7 +1127,6 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     m_nodesEdges[firstNodeIndex] = std::move(std::vector<int>(0));
     m_nodesNumEdges[firstNodeIndex] = 0;
     m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
-    m_numNodes--;
 
     return true;
 }
@@ -1627,7 +1634,6 @@ bool GridGeom::Mesh::MoveNode(Point newPoint, int nodeindex)
     auto dy = GetDy(nodeToMove,newPoint, m_projection);
 
     double distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
-
     for (int n = 0; n < GetNumNodes(); ++n)
     {
         auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
