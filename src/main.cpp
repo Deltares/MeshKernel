@@ -442,7 +442,7 @@ int main()
 //
 //    GridGeom::Polygons polygon;
 //
-//    bool successful = meshRefinement.RefineMeshBasedOnSamples(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+//    bool successful = meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 //
 //
 //    return 0;
