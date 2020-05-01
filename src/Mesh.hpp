@@ -107,7 +107,7 @@ namespace GridGeom
 
         bool IsFullFaceNotInPolygon(int faceIndex) const;
 
-        bool SelectNodesInPolygon(const Polygons& polygons, int inside);
+        bool SelectNodesInPolygon(const Polygons& polygons, bool inside);
 
         bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 

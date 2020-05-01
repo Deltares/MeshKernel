@@ -1285,17 +1285,16 @@ bool GridGeom::Mesh::FacePolygon(int faceIndex, std::vector<Point>& polygonNodes
 }
 
 
-bool GridGeom::Mesh::SelectNodesInPolygon(const Polygons& polygon, int inside)
+bool GridGeom::Mesh::SelectNodesInPolygon(const Polygons& polygon, bool inside)
 {
-
-    int numberOfMeshVertices = 0;
     for (int i = 0; i < GetNumNodes(); ++i)
     {
         bool isInPolygon = IsPointInPolygon(m_nodes[i], polygon.m_nodes, polygon.m_numNodes - 1);
-        if (inside == false)
+        if (!inside)
         {
             isInPolygon = !isInPolygon;
         }
+        m_nodeMask[i] = 0;
         if (isInPolygon)
         {
             m_nodeMask[i] = 1;

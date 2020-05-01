@@ -11,24 +11,38 @@
 GridGeom::MeshRefinement::MeshRefinement(Mesh& mesh) :
     m_mesh(mesh)
 {
+    m_mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
     // all gets refined
     m_faceMask.resize(m_mesh.GetNumFaces(), 1);
     m_edgeMask.resize(m_mesh.GetNumEdges(), -1);
 };
 
-bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sample,
+bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
     const Polygons& polygon,
     GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
     GridGeomApi::InterpolationParametersNative& interpolationParametersNative)
 {
-    m_deltaTimeMaxCourant = sampleRefineParametersNative.MaximumTimeStepInCourantGrid;
-    m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
-    m_minimumFaceSize = sampleRefineParametersNative.MinimumCellSize;
-    m_connectHangingNodes = sampleRefineParametersNative.ConnectHangingNodes == 1 ? true : false;
-    m_maxNumberOfRefinementIterations = interpolationParametersNative.MaxNumberOfRefinementIterations;
 
-    // find faces
-    m_mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    bool isRefinementBasedOnSamples = false;
+    if (!sample.empty())
+    {
+        isRefinementBasedOnSamples = true;
+        // build the R-Tree
+        std::vector<Point> points(sample.size());
+        for (int i = 0; i < sample.size(); i++)
+        {
+            points[i] = { sample[i].x, sample[i].y };
+        }
+        m_rtree.BuildTree(points, m_mesh.m_projection);
+
+        m_deltaTimeMaxCourant = sampleRefineParametersNative.MaximumTimeStepInCourantGrid;
+        m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
+        m_minimumFaceSize = sampleRefineParametersNative.MinimumCellSize;
+        m_connectHangingNodes = sampleRefineParametersNative.ConnectHangingNodes == 1 ? true : false;
+    }
+
+    m_maxNumberOfRefinementIterations = interpolationParametersNative.MaxNumberOfRefinementIterations;
 
     // get bounding box
     Point lowerLeft{ doubleMissingValue,doubleMissingValue };
@@ -42,17 +56,8 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
         }
     }
 
-
-    // select nodes inside polygon
+    // select nodes inside polygon, set m_mesh.m_nodeMask
     m_mesh.SelectNodesInPolygon(polygon, true);
-
-    // build the R-Tree
-    std::vector<Point> points(sample.size());
-    for (int i = 0; i < sample.size(); i++)
-    {
-        points[i] = { sample[i].x, sample[i].y };
-    }
-    m_rtree.BuildTree(points, m_mesh.m_projection);
 
     //find_link_broders
     FindBrotherEdges();
@@ -79,27 +84,50 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
         const auto numEdgesBeforeRefinement = m_mesh.GetNumEdges();
 
         // computes the edge and face refinement mask from samples
-        bool successful = ComputeEdgeAndFaceRefinementMaskFromSamples(sample);
-        if (!successful)
+        if(isRefinementBasedOnSamples)
         {
-            return false;
+            bool successful = ComputeEdgeAndFaceRefinementMaskFromSamples(sample);
+            if (!successful)
+            {
+                return false;
+            }
+            
+            for (int i = 0; i < m_edgeMask.size(); i++)
+            {
+                m_edgeMask[i] = -m_edgeMask[i];
+            }
+
+            successful = SmoothEdgeRefinementMask();
+            if (!successful)
+            {
+                return false;
+            }
         }
 
-        for (int i = 0; i < m_edgeMask.size(); i++)
+        if (level == 0)
         {
-            m_edgeMask[i] = -m_edgeMask[i];
+            //if one face node is in polygon enable face refinement
+            for (int f = 0; f < m_mesh.GetNumFaces(); f++)
+            {
+                bool activeNodeFound = false;
+                for (int n = 0; n < m_mesh.GetNumEdgesFaces(f); n++)
+                {
+                    const auto nodeIndex = m_mesh.m_facesNodes[f][n];
+                    if (m_mesh.m_nodeMask[nodeIndex] != 0 && m_mesh.m_nodeMask[nodeIndex] != -2)
+                    {
+                        activeNodeFound = true;
+                        break;
+                    }
+                }
+                if (!activeNodeFound)
+                {
+                    m_faceMask[f] = 0;
+                }
+            }
         }
-
-        successful = SmoothEdgeRefinementMask();
-        if (!successful)
-        {
-            return false;
-        }
-
-        //disable direct refinement of cells with one or more inactive nodes
         if (level > 0)
         {
-            //first level: disable cells with all nodes inactive only
+            //if one face node is not in polygon disable refinement
             for (int f = 0; f < m_mesh.GetNumFaces(); f++)
             {
                 for (int n = 0; n < m_mesh.GetNumFaceEdges(f); n++)
@@ -110,27 +138,6 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
                         m_faceMask[f] = 0;
                         break;
                     }
-                }
-            }
-        }
-        if (level == 0)
-        {
-            for (int f = 0; f < m_mesh.GetNumFaces(); f++)
-            {
-                bool activeNodeFound = false;
-                for (int n = 0; n < m_mesh.GetNumEdgesFaces(f); n++)
-                {
-                    const auto nodeIndex = m_mesh.m_facesNodes[f][n];
-                    if (m_mesh.m_nodeMask[nodeIndex] != 0 && m_mesh.m_nodeMask[nodeIndex] != -2)
-                    {
-                        //active node found : discard this cell and continue with next
-                        activeNodeFound = true;
-                        break;
-                    }
-                }
-                if (!activeNodeFound)
-                {
-                    m_faceMask[f] = 0;
                 }
             }
         }
@@ -184,7 +191,7 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
 
     }
 
-    //remove isolated hanging nodes and cannect if needed
+    //remove isolated hanging nodes and connect if needed
     if(m_connectHangingNodes)
     {
         auto numRemovedIsolatedHangingNodes = 0;
@@ -745,28 +752,19 @@ bool GridGeom::MeshRefinement::ComputeInitialRefinementMask()
     while (repeat)
     {
         repeat = false;
-        bool hanging = false;
-        bool crossing = false;
+
         for (int f = 0; f < m_mesh.GetNumFaces(); f++)
         {
+            bool crossing = false;
             auto numnodes = m_mesh.GetNumFaceEdges(f);
             for (int n = 0; n < numnodes; n++)
             {
                 int nodeIndex = m_mesh.m_facesNodes[f][n];
-                auto nn = NextCircularForwardIndex(n, numnodes);
-
-
-                int firstEdgeIndex = m_mesh.m_facesEdges[f][n];
-                int secondEdgeIndex = m_mesh.m_facesEdges[f][nn];
-
-                if (m_brotherEdges[firstEdgeIndex] == secondEdgeIndex || m_brotherEdges[secondEdgeIndex] == firstEdgeIndex)
-                {
-                    hanging = true;
-                }
 
                 if (m_mesh.m_nodeMask[nodeIndex] == 0)
                 {
                     crossing = true;
+                    break;
                 }
             }
 
@@ -779,7 +777,7 @@ bool GridGeom::MeshRefinement::ComputeInitialRefinementMask()
                     if (m_mesh.m_nodeMask[nodeIndex] == 1)
                     {
                         m_mesh.m_nodeMask[nodeIndex] = -2;
-                        repeat = true;;
+                        repeat = true;
                     }
 
                 }

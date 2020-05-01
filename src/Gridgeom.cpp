@@ -651,7 +651,8 @@ namespace GridGeomApi
         GridGeom::Polygons polygon;
         polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
 
-        successful = meshInstances[gridStateId].SelectNodesInPolygon(polygon, inside);
+        bool selectInside = inside == 1 ? true : false; 
+        successful = meshInstances[gridStateId].SelectNodesInPolygon(polygon, selectInside);
         if (!successful)
         {
             return -1;
@@ -687,7 +688,8 @@ namespace GridGeomApi
         GridGeom::Polygons polygon;
         polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
 
-        successful = meshInstances[gridStateId].SelectNodesInPolygon(polygon,inside);
+        bool selectInside = inside == 1 ? true : false;
+        successful = meshInstances[gridStateId].SelectNodesInPolygon(polygon, selectInside);
         if (!successful)
         {
             return -1;
@@ -894,7 +896,7 @@ namespace GridGeomApi
         // polygon could be passed as api parameter
         GridGeom::Polygons polygon;
 
-        successful = meshRefinement.RefineMeshBasedOnSamples(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+        successful = meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
         if (!successful)
         {
             return -1;
@@ -906,6 +908,42 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_refine_mesh_based_on_polygon(int& gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative)
     {
         
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Point> points;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListNative, points);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        if (points.empty())
+        {
+            return 0;
+        }
+
+
+        GridGeom::Polygons polygon;
+        successful = polygon.Set(points, meshInstances[gridStateId].m_projection);
+        if (!successful)
+        {
+            return -1;
+        }
+
+
+        GridGeom::MeshRefinement meshRefinement(meshInstances[gridStateId]);
+
+        // polygon could be passed as api parameter
+        std::vector<GridGeom::Sample> samples; 
+        SampleRefineParametersNative sampleRefineParametersNative;
+        successful = meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+        if (!successful)
+        {
+            return -1;
+        }
 
 
 
