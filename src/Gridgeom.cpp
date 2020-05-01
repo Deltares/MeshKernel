@@ -93,7 +93,7 @@ namespace GridGeomApi
         return true;
     }
 
-    bool SetMeshGeometry(int& gridStateId, bool addFaceInformation, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    bool SetMeshGeometry(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -105,7 +105,9 @@ namespace GridGeomApi
         meshGeometry.nodez = &meshInstances[gridStateId].m_nodez[0];
         meshGeometry.edge_nodes = &meshInstances[gridStateId].m_edgeNodes[0];
 
-        if(addFaceInformation)
+        meshGeometryDimensions.maxnumfacenodes = GridGeom::maximumNumberOfNodesPerFace;
+        meshGeometryDimensions.numface = meshInstances[gridStateId].GetNumFaces();
+        if(meshGeometryDimensions.numface > 0)
         {
             meshGeometry.face_nodes = &meshInstances[gridStateId].m_faceNodes[0];
             meshGeometry.facex = &meshInstances[gridStateId].m_facesCircumcentersx[0];
@@ -113,9 +115,6 @@ namespace GridGeomApi
             meshGeometry.facez = &meshInstances[gridStateId].m_facesCircumcentersz[0];
         }
 
-
-        meshGeometryDimensions.numface = 0;
-        meshGeometryDimensions.maxnumfacenodes = GridGeom::maximumNumberOfNodesPerFace;
         if (meshInstances[gridStateId].GetNumNodes() == 1)
         {
             meshGeometryDimensions.numnode = 0;
@@ -124,11 +123,7 @@ namespace GridGeomApi
         else
         {
             meshGeometryDimensions.numnode = meshInstances[gridStateId].GetNumNodes();
-            meshGeometryDimensions.numedge = meshInstances[gridStateId].GetNumEdges();
-            if (addFaceInformation)
-            {
-                meshGeometryDimensions.numface = meshInstances[gridStateId].GetNumFaces();
-            }
+            meshGeometryDimensions.numedge = meshInstances[gridStateId].GetNumEdges(); 
         }
 
         return true;
@@ -160,12 +155,28 @@ namespace GridGeomApi
             return -1;
         }
 
-        meshInstances[gridStateId].Administrate();
+        meshInstances[gridStateId].SetFlatCopies(GridGeom::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
-        meshInstances[gridStateId].SetFlatCopies();
-
-        bool successful = SetMeshGeometry(gridStateId, true,meshGeometryDimensions, meshGeometry);
+        bool successful = SetMeshGeometry(gridStateId,meshGeometryDimensions, meshGeometry);
         if(!successful)
+        {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_get_mesh(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        meshInstances[gridStateId].SetFlatCopies(GridGeom::Mesh::AdministrationOptions::AdministrateMeshEdges);
+
+        bool successful = SetMeshGeometry(gridStateId, meshGeometryDimensions, meshGeometry);
+        if (!successful)
         {
             return -1;
         }
@@ -233,24 +244,6 @@ namespace GridGeomApi
         //    auto instance = std::make_unique<GridGeom::Mesh<GridGeom::OperationTypes::sphericalOperations>>();
         //    instance->Set(edges, nodes);
         //}
-
-        return 0;
-    }
-
-    GRIDGEOM_API int ggeo_get_mesh(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
-    {
-        if(gridStateId>= meshInstances.size())
-        {
-            return -1;
-        }
-
-        meshInstances[gridStateId].SetFlatCopies();
-
-        bool successful = SetMeshGeometry(gridStateId, false,meshGeometryDimensions, meshGeometry);
-        if (!successful)
-        {
-            return -1;
-        }
 
         return 0;
     }

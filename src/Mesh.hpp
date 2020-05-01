@@ -19,6 +19,19 @@ namespace GridGeom
 
     public:
 
+        enum DeleteMeshOptions
+        {
+            AllVerticesInside = 0,
+            FacesWithIncludedCircumcenters = 1,
+            FacesCompletelyIncluded = 2
+        };
+
+        enum class AdministrationOptions
+        {
+            AdministrateMeshEdges,
+            AdministrateMeshEdgesAndFaces
+        };
+
         Mesh(){}
 
         //gridtonet
@@ -29,11 +42,11 @@ namespace GridGeom
 
         bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
         
-        bool Administrate();
+        bool Administrate(AdministrationOptions administrationOption);
 
         bool RemoveInvalidNodesAndEdges();
         
-        bool SetFlatCopies();
+        bool SetFlatCopies(AdministrationOptions administrationOption);
 
         void ComputeFaceCircumcentersMassCentersAreas();
 
@@ -69,11 +82,10 @@ namespace GridGeom
         bool ConnectNodes(int startNode, int endNode, int& newEdgeIndex);
 
         ///setnewpoint
-        bool InsertNode(const Point& newPoint, int& newNodeIndex);
-
+        bool InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree = false);
 
         ///based on node index
-        bool DeleteNode(int nodeIndex);
+        bool DeleteNode(int nodeIndex, bool updateRTree = false);
 
         // find an edge
         bool FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
@@ -99,9 +111,7 @@ namespace GridGeom
 
         bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 
-        bool BuildNodesRTree();
-
-        bool InsertMissingNodesInRTree();
+        bool RefreshRTreeIfNeeded();
 
 
         std::vector<Edge>  m_edges;                                 // KN
@@ -143,10 +153,7 @@ namespace GridGeom
         double m_triangleMaximumAngle = 150.0;                      // maximum angle of created triangles
 
         // spatial tree to inquire node vertices
-        SpatialTrees::RTree m_nodesRtree;
-
-        bool m_isAdministrationDone = false;
-
+        SpatialTrees::RTree m_nodesRTree;
 
         Projections m_projection;
 
@@ -178,17 +185,9 @@ namespace GridGeom
 
         double m_dcenterinside = 1.0;
 
-        int m_numFaces  =0;                                             // NUMP
+        int m_numFaces = 0;                                             // NUMP
         int m_numNodes = 0;                                             // Number of valid nodes in m_nodes
         int m_numEdges = 0;                                             // Number of valid edges in m_edges
-
-
-        enum DeleteMeshOptions
-        {
-            AllVerticesInside = 0,
-            FacesWithIncludedCircumcenters = 1,
-            FacesCompletelyIncluded = 2            
-        };
 
     };
 }
