@@ -28,7 +28,7 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
     m_maxNumberOfRefinementIterations = interpolationParametersNative.MaxNumberOfRefinementIterations;
 
     // find faces
-    m_mesh.FindFaces();
+    m_mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     // get bounding box
     Point lowerLeft{ doubleMissingValue,doubleMissingValue };
@@ -174,7 +174,7 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
             return false;
         }
 
-        m_mesh.Administrate();
+        m_mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         m_faceMask.resize(m_mesh.GetNumFaces());
         std::fill(m_faceMask.begin(), m_faceMask.end(), 1);
@@ -200,7 +200,7 @@ bool GridGeom::MeshRefinement::RefineMeshBasedOnSamples(std::vector<Sample>& sam
             return false;
         }
 
-        m_mesh.Administrate();
+        m_mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 
   

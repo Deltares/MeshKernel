@@ -103,7 +103,8 @@ TEST(Mesh, MakeMeshInPolygon)
 
     // 2 Execution
     mesh.MakeMesh(makeGridParametersNative, polygons);
-    ASSERT_EQ(17, mesh.GetNumFaces());
+    ASSERT_EQ(43, mesh.GetNumEdges());
+    ASSERT_EQ(27, mesh.GetNumNodes());
 }
 
 TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
@@ -280,15 +281,11 @@ TEST(Mesh, InsertNodeRtree)
     GridGeom::Mesh mesh;
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
-    mesh.BuildNodesRTree();
-
     GridGeom::Point newPoint{ 10.0,10.0 };
     int newNodeIndex;
-    mesh.InsertNode(newPoint, newNodeIndex);
+    mesh.InsertNode(newPoint, newNodeIndex,true);
 
-    mesh.InsertMissingNodesInRTree();
-
-    int rtreeSize = mesh.m_nodesRtree.Size();
+    int rtreeSize = mesh.m_nodesRTree.Size();
     ASSERT_EQ(5, rtreeSize);
 }
 
@@ -380,7 +377,8 @@ TEST(Mesh, NodeMerging)
     //std::cout << "Elapsed time NodeMerging " << elapsedTime << " s " << std::endl;
 
     // 3. Assert
-    ASSERT_EQ(mesh.GetNumFaces(), (n-1)*(m-1));
+    ASSERT_EQ(mesh.GetNumNodes(), n*m);
+    ASSERT_EQ(mesh.GetNumEdges(), (n -1) * m + (m - 1) * n);
 }
 
 TEST(Mesh, MillionQuads)

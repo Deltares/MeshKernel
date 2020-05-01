@@ -11,7 +11,6 @@
 #include "CurvilinearGrid.hpp"
 #include "Entities.hpp"
 #include "MakeGridParametersNative.hpp"
-#include <iostream>
 
 bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
 {
@@ -20,14 +19,16 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
     m_nodes = nodes;
     m_projection = projection;
 
-    m_isAdministrationDone = false;
-    Administrate();
+    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     return true;
 };
 
 bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
 {
+    m_numNodes = 0;
+    m_numEdges = 0;
+
     // Invalidate not connected nodes
     std::vector<bool> connectedNodes(m_nodes.size(), false);
     for (int e = 0; e < m_edges.size(); ++e)
@@ -90,17 +91,11 @@ bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
     auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [&](const Edge& e) {return e.first < 0 || e.second < 0; });
     m_numEdges = endEdgeVector - m_edges.begin();
 
-    m_isAdministrationDone = false;
-
     return true;
 }
 
-bool GridGeom::Mesh::Administrate()
+bool GridGeom::Mesh::Administrate(AdministrationOptions administrationOption)
 {
-    if(m_isAdministrationDone)
-    {
-        return true;
-    }
 
     RemoveInvalidNodesAndEdges();
     
@@ -110,8 +105,6 @@ bool GridGeom::Mesh::Administrate()
         return true;
     }
 
-    m_numFaces = 0;
-
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 
     ResizeVectorIfNeeded(m_nodes.size(), m_nodesEdges);
@@ -119,7 +112,16 @@ bool GridGeom::Mesh::Administrate()
 
     ResizeVectorIfNeeded(m_nodes.size(), m_nodesNumEdges);
     std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(), 0);
+       
+    NodeAdministration();
 
+    if (administrationOption == AdministrationOptions::AdministrateMeshEdges)
+    {
+        return true;
+    }
+
+    // face administration
+    m_numFaces = 0;
     ResizeVectorIfNeeded(m_edges.size(), m_edgesNumFaces);
     std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
 
@@ -128,16 +130,12 @@ bool GridGeom::Mesh::Administrate()
 
     ResizeVectorIfNeeded(m_edges.size(), m_edgeMask);
     std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
-    
 
     m_facesNodes.resize(0);
     m_facesEdges.resize(0);
     m_facesCircumcenters.resize(0);
     m_facesMassCenters.resize(0);
     m_faceArea.resize(0);
-
-    // run administration and find the faces    
-    NodeAdministration();
 
     SortEdgesInCounterClockWiseOrder();
 
@@ -150,9 +148,6 @@ bool GridGeom::Mesh::Administrate()
     // classify node types
     ClassifyNodes();
 
-    m_isAdministrationDone = true;
-
-    // return value
     return true;
 }
 
@@ -212,8 +207,8 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections project
         }
     }
     m_edges.resize(ind);
-    m_isAdministrationDone = false;
-    Administrate();
+
+    Administrate(AdministrationOptions::AdministrateMeshEdges);
 }
 
 GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& polygons, Projections projection)
@@ -239,7 +234,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
     std::vector<int> faceEdgesFlat;
     std::vector<double> xNodesFlat;
     std::vector<double> yNodesFlat;
-    // if the number of estimated triangles is not sufficent, tricall must be repeated
+    // if the number of estimated triangles is not sufficient, triangulation must be repeated
     while (numtri < 0)
     {
         numtri = numberOfTriangles;
@@ -346,8 +341,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
         validEdges++;
     }
 
-    m_isAdministrationDone = false;
-    Administrate();
+    Administrate(AdministrationOptions::AdministrateMeshEdges);
 
 }
 
@@ -379,10 +373,9 @@ bool GridGeom::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std:
 }
 
 
-bool GridGeom::Mesh::SetFlatCopies()
+bool GridGeom::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
 {
-    // Used for internal state
-    Administrate();
+    Administrate(administrationOption);
 
     m_nodex.resize(GetNumNodes());
     m_nodey.resize(GetNumNodes());
@@ -1002,6 +995,8 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
     // Assign mesh
     *this = Mesh(CurvilinearGrid, m_projection);
 
+    Administrate(AdministrationOptions::AdministrateMeshEdges);
+
     return true;
 }
 
@@ -1022,33 +1017,31 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     }
     filteredNodes.resize(index);
 
-    // build the R-Tree
-    SpatialTrees::RTree rtree;
-    rtree.BuildTree(filteredNodes, m_projection);
-
+    // Update the R-Tree of the mesh nodes
+    RefreshRTreeIfNeeded();
+    
     // merge the closest nodes
     for (int i = 0; i < filteredNodes.size(); i++)
     {
-        rtree.NearestNeighbours(filteredNodes[i], mergingDistance);
+        m_nodesRTree.NearestNeighbours(filteredNodes[i], mergingDistance);
 
-        int resultSize = rtree.GetQueryResultSize();
+        int resultSize = m_nodesRTree.GetQueryResultSize();
         if (resultSize > 1)
         {
-            for (int j = 0; j < rtree.GetQueryResultSize(); j++)
+            for (int j = 0; j < m_nodesRTree.GetQueryResultSize(); j++)
             {
-                auto nodeIndex = rtree.GetQuerySampleIndex(j);
+                auto nodeIndex = m_nodesRTree.GetQuerySampleIndex(j);
                 if (nodeIndex != i)
                 {
-                    rtree.RemoveNode(nodeIndex);
                     MergeTwoNodes(i, nodeIndex);
+                    m_nodesRTree.RemoveNode(i);
                 }
             }
         }
 
     }
 
-    m_isAdministrationDone = false;
-    Administrate();
+    Administrate(AdministrationOptions::AdministrateMeshEdges);
 
     return true;
 }
@@ -1126,10 +1119,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     m_nodesEdges[firstNodeIndex] = std::move(std::vector<int>(0));
     m_nodesNumEdges[firstNodeIndex] = 0;
     m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
-
-    //DeleteNode(firstNodeIndex);
-
-    m_isAdministrationDone = false;
+    m_numNodes--;
 
     return true;
 }
@@ -1154,12 +1144,10 @@ bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
     m_edges[newEdgeIndex].second = endNode;
     m_numEdges++;
 
-    m_isAdministrationDone = false;
-
     return true;
 }
 
-bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
+bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree)
 {
     int newSize = GetNumNodes() + 1;
     newNodeIndex = GetNumNodes();
@@ -1174,22 +1162,53 @@ bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
     m_nodeMask[newNodeIndex] = newNodeIndex;
     m_nodesNumEdges[newNodeIndex] = 0;
 
-    m_isAdministrationDone = false;
+    if(updateRTree)
+    {
+        RefreshRTreeIfNeeded();
+    }
 
     return true;
 }
 
-bool GridGeom::Mesh::DeleteNode(int nodeIndex)
+bool GridGeom::Mesh::DeleteNode(int nodeIndex, bool updateRTree)
 {
+    if(nodeIndex>=GetNumNodes())
+    {
+        return true;
+    }
+
     for (int e = 0; e <  m_nodesNumEdges[nodeIndex]; e++)
     {
         auto edgeIndex = m_nodesEdges[nodeIndex][e];
         DeleteEdge(edgeIndex);
     }
     m_nodes[nodeIndex] = { doubleMissingValue,doubleMissingValue };
+    m_numNodes--;
 
-    m_isAdministrationDone = false;
+    if (updateRTree)
+    {
+        RefreshRTreeIfNeeded();
+        m_nodesRTree.RemoveNode(nodeIndex);
+    }
 
+    return true;
+}
+
+bool GridGeom::Mesh::RefreshRTreeIfNeeded()
+{
+    if (m_nodesRTree.Empty())
+    {
+        m_nodesRTree.BuildTree(m_nodes, m_projection);
+    }
+
+    //insert the missing nodes
+    if (m_nodesRTree.Size() < GetNumNodes())
+    {
+        for (int i = m_nodesRTree.Size(); i < GetNumNodes(); ++i)
+        {
+            m_nodesRTree.InsertNode(m_nodes[i]);
+        }
+    }
     return true;
 }
 
@@ -1202,8 +1221,6 @@ bool GridGeom::Mesh::DeleteEdge(int edgeIndex)
 
     m_edges[edgeIndex].first = intMissingValue;
     m_edges[edgeIndex].second = intMissingValue;
- 
-    m_isAdministrationDone = false;
 
     return true;
 }
@@ -1399,27 +1416,6 @@ bool GridGeom::Mesh::OffsetSphericalCoordinates(double minx, double miny)
     return true;
 }
 
-bool GridGeom::Mesh::BuildNodesRTree()
-{
-    m_nodesRtree.Clear();
-    m_nodesRtree.BuildTree(m_nodes, m_projection);
-    return true;
-}
-
-bool GridGeom::Mesh::InsertMissingNodesInRTree()
-{
-
-    if (m_nodesRtree.Size() < m_nodes.size())
-    {
-        //insert the missing nodes
-        for (int i = m_nodesRtree.Size(); i < m_nodes.size(); ++i)
-        {
-            m_nodesRtree.InsertNode(m_nodes[i]);
-        }
-    }
-    return true;
-}
-
 
 bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexIndex)
 {
@@ -1428,14 +1424,19 @@ bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexI
         return true;
     }
 
+    double closestDistance = std::numeric_limits<double>::max();
     for (int n = 0; n < GetNumNodes(); ++n)
     {
-        double absDx = std::abs(m_nodes[n].x - point.x);
-        double absDy = std::abs(m_nodes[n].y - point.y);
+        const auto absDx = std::abs(GetDx(m_nodes[n], point, m_projection));
+        const auto absDy = std::abs(GetDy(m_nodes[n], point, m_projection));
         if (absDx < searchRadius && absDy < searchRadius)
         {
-            vertexIndex = n;
-            break;
+            const double distance = Distance(m_nodes[n], point, m_projection);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                vertexIndex = n;
+            }
         }
     }
 
@@ -1444,25 +1445,31 @@ bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexI
 
 bool GridGeom::Mesh::DeleteEdgeCloseToAPoint(Point point, double searchRadius)
 {
+    // linear search of the closest edge. The alternative is to mantain an rtree also for edge centers
     int edgeIndex = -1;
+    double closestDistance = std::numeric_limits<double>::max();
     for (int e = 0; e < GetNumEdges(); ++e)
     {
-        auto firstNode = m_edges[e].first;
-        auto secondNode = m_edges[e].second;
+        const auto firstNode = m_edges[e].first;
+        const auto secondNode = m_edges[e].second;
 
-        if( firstNode<0 || secondNode< 0)
+        if (firstNode < 0 || secondNode < 0)
         {
             continue;
         }
 
-        Point edgeCenter = (m_nodes[firstNode] + m_nodes[secondNode]) / 2.0;
-        double absDx = std::abs(edgeCenter.x - point.x);
-        double absDy = std::abs(edgeCenter.y - point.y);
+        auto edgeCenter = (m_nodes[firstNode] + m_nodes[secondNode]) / 2.0;
+        const auto absDx = std::abs(GetDx(point, edgeCenter, m_projection));
+        const auto absDy = std::abs(GetDy(point, edgeCenter, m_projection));
 
         if (absDx < searchRadius && absDy < searchRadius)
         {
-            edgeIndex = e;
-            break;
+            const double distance = Distance(point, edgeCenter, m_projection);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                edgeIndex = e;
+            }
         }
     }
 
@@ -1497,7 +1504,7 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
 
     if (deletionOption == FacesWithIncludedCircumcenters)
     {
-        Administrate();
+        Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         for (int e = 0; e < GetNumEdges(); ++e)
         {
@@ -1547,7 +1554,8 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
     if (deletionOption == FacesCompletelyIncluded)
     {
 
-        Administrate();
+        Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
         std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
         for (int n = 0; n < GetNumNodes(); ++n)
         {
@@ -1606,8 +1614,7 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
         }
     }
     
-    m_isAdministrationDone = false;
-    Administrate();
+    Administrate(AdministrationOptions::AdministrateMeshEdges);
 
     return true;
 };
