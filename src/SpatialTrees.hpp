@@ -57,7 +57,7 @@ namespace GridGeom
                 return true;
             }
 
-            bool NearestNeighbours(Point node, const double searchRadius)
+            bool NearestNeighbours(Point node, double searchRadius)
             {
                 m_queryCache.resize(0);
                 
@@ -101,6 +101,7 @@ namespace GridGeom
                 {
                     return false;
                 }
+                m_points[position] = std::make_pair(Point2D{ doubleMissingValue,doubleMissingValue }, -1);
                 return true;
             }
 
