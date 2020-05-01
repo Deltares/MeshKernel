@@ -50,6 +50,7 @@ FILE( GLOB all_cpp_headers src/*.hpp )
 source_group(include FILES ${all_cpp_headers})
 
 FILE( GLOB all_cpp_srcs src/*.cpp)
+list(REMOVE_ITEM all_cpp_srcs "src/main.cpp")
 source_group(source FILES ${all_cpp_srcs})
 
 # definition for triangle
@@ -71,9 +72,9 @@ endif()
 
 if(WIN32)
    # Add main executable
-   #add_executable( GridGeomMainTest src/main.cpp )
-   #target_link_libraries(GridGeomMainTest LINK_PUBLIC gridgeomStateful_dll ${Boost_LIBRARIES})
-   #if(OpenMP_CXX_FOUND)
-   #   target_link_libraries(GridGeomMainTest PUBLIC OpenMP::OpenMP_CXX)
-   #endif()
+   add_executable( GridGeomMainTest src/main.cpp )
+   target_link_libraries(GridGeomMainTest LINK_PUBLIC gridgeomStateful_dll ${Boost_LIBRARIES})
+   if(OpenMP_CXX_FOUND)
+      target_link_libraries(GridGeomMainTest PUBLIC OpenMP::OpenMP_CXX)
+   endif()
 endif()
