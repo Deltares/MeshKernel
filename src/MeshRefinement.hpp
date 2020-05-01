@@ -20,7 +20,7 @@ namespace GridGeom
         MeshRefinement(Mesh& mesh);
 
         ///refinecellsandfaces2
-        bool RefineMeshBasedOnSamples(std::vector<Sample>& sample,
+        bool Refine(std::vector<Sample>& sample,
             const Polygons& polygon,
             GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
             GridGeomApi::InterpolationParametersNative& interpolationParametersNative);
@@ -70,8 +70,11 @@ namespace GridGeom
 
         bool RefineFaces(int numEdgesBeforeRefinemet);
 
+        // mesh R-Tree
         Mesh& m_mesh;
-        double m_deltaTimeMaxCourant;
+
+        // samples R-Tree
+        SpatialTrees::RTree m_rtree;
 
         std::vector<int> m_faceMask; //refine cell without hanging nodes (1), refine cell with hanging nodes (2), do not refine cell at all (0) or refine cell outside polygon (-2)
         std::vector<int> m_edgeMask;
@@ -83,10 +86,8 @@ namespace GridGeom
         std::vector<int> m_localNodeIndexsesCache;
         std::vector<int> m_edgeIndexsesCache;
         std::vector<double> m_polygonEdgesLengthsCache;
-        
-
-        SpatialTrees::RTree m_rtree;
-
+       
+        double m_deltaTimeMaxCourant = 0.0;
         double m_minimumFaceSize = 5e4;
         bool m_directionalRefinement = false;
         bool m_refineOutsideFace = false;
