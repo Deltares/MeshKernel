@@ -63,7 +63,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
     FindBrotherEdges();
 
     //set_initial_mask
-    bool successful = ComputeInitialRefinementMask();
+    bool successful = ComputeNodeMask();
     if (!successful)
     {
         return false;
@@ -577,8 +577,8 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
 
         const bool isFullFaceNotInPolygon = m_mesh.IsFullFaceNotInPolygon(f);
 
-
-        bool successful = m_mesh.FacePolygon(f, m_polygonNodesCache, m_localNodeIndexsesCache, m_edgeIndexsesCache);
+        int numClosedPolygonNodes = 0;
+        bool successful = m_mesh.FaceClosedPolygon(f, m_polygonNodesCache, m_localNodeIndexsesCache, m_edgeIndexsesCache, numClosedPolygonNodes);
         if (!successful)
         {
             return false;
@@ -745,7 +745,7 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeInitialRefinementMask()
+bool GridGeom::MeshRefinement::ComputeNodeMask()
 {
     bool repeat = true;
 
@@ -799,7 +799,8 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
 
     for (int f = 0; f < m_mesh.GetNumFaces(); f++)
     {
-        m_mesh.FacePolygon(f, m_polygonNodesCache, m_localNodeIndexsesCache, m_edgeIndexsesCache);
+        int numClosedPolygonNodes = 0;
+        m_mesh.FaceClosedPolygon(f, m_polygonNodesCache, m_localNodeIndexsesCache, m_edgeIndexsesCache, numClosedPolygonNodes);
 
         int numHangingEdges;
         int numHangingNodes;
@@ -810,9 +811,9 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
             return false;
         }
 
-        auto numPolygonNodes = m_mesh.GetNumFaceEdges(f);
+
         int numEdgesToBeRefined = 0;
-        successful = ComputeLocalEdgeRefinementFromSamples(f, numPolygonNodes, samples, WaveCourant, numEdgesToBeRefined);
+        successful = ComputeLocalEdgeRefinementFromSamples(f, m_mesh.GetNumFaceEdges(f), samples, WaveCourant, numEdgesToBeRefined);
         if (!successful)
         {
             return false;
@@ -823,7 +824,7 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
         {
             m_faceMask[f] = 1;
 
-            for (int n = 0; n < numPolygonNodes; n++)
+            for (int n = 0; n < m_mesh.GetNumFaceEdges(f); n++)
             {
                 if (m_refineEdgeCache[n] == 1)
                 {

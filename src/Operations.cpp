@@ -277,37 +277,37 @@ namespace GridGeom
 
     }
 
-
-    /// Check if a point is in polygon using the winding number method
-    /// polygon: a closed polygon consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
-    static bool IsPointInPolygon(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
+    /// Check if a point is in polygonNodes using the winding number method
+    /// polygonNodes: a closed polygonNodes consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
+    static bool IsPointInPolygonNodes(const Point& point, const std::vector<Point>& polygonNodes, int startNode, int endNode)
     {
-        if (numberOfPolygonPoints <= 0)
+        if (endNode <= startNode)
         {
             return true;
         }
-        if (polygon.size() < numberOfPolygonPoints + 1)
+        const int currentPolygonSize = endNode - startNode + 1;
+        if (polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }
-        if (polygon[numberOfPolygonPoints] != polygon[0])
+        if (polygonNodes[startNode] != polygonNodes[endNode])
         {
             return false;
         }
 
         int windingNumber = 0;
-        for (int n = 0; n < numberOfPolygonPoints; n++)
+        for (int n = startNode; n < endNode; n++)
         {
-            if (polygon[n].y <= point.y) // an upward crossing
+            if (polygonNodes[n].y <= point.y) // an upward crossing
             {
-                if (polygon[n + 1].y >= point.y && IsLeft(polygon[n], polygon[n + 1], point) >= 0.0)
+                if (polygonNodes[n + 1].y >= point.y && IsLeft(polygonNodes[n], polygonNodes[n + 1], point) >= 0.0)
                 {
                     ++windingNumber; // have  a valid up intersect
                 }
             }
             else
             {
-                if (polygon[n + 1].y <= point.y && IsLeft(polygon[n], polygon[n + 1], point) <= 0.0) // a downward crossing
+                if (polygonNodes[n + 1].y <= point.y && IsLeft(polygonNodes[n], polygonNodes[n + 1], point) <= 0.0) // a downward crossing
                 {
                     --windingNumber; // have  a valid down intersect
                 }
@@ -315,55 +315,6 @@ namespace GridGeom
             }
         }
         return windingNumber == 0 ? false : true;
-    }
-
-    // dbpinpol_optinside_perpol
-    static bool IsPointInPolygons(const Point& point, const std::vector<Point>& polygon, const int numberOfPolygonPoints)
-    {
-        if (numberOfPolygonPoints <= 0)
-        {
-            return true;
-        }
-
-        // Split input polygons in parts 
-        std::vector<std::vector<int>> indexes(numberOfPolygonPoints, std::vector<int>(2));
-        std::vector<Point> subpolygon(numberOfPolygonPoints);
-        int numPolygons = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue, indexes);
-
-        bool inPolygon = false;
-        auto compareX = [](const auto&p1, const auto&p2) { return p1->x > p2->x; };
-        auto compareY = [](const auto&p1, const auto&p2) { return p1->y > p2->y; };
-        for (int p = 0; p <= numPolygons; p++) 
-        {
-            // Calculate the bounding box
-            auto startPolygon = polygon.begin() + indexes[p][0];
-            auto endPolygon = polygon.begin() + indexes[p][1];
-            const int numberOfSubPolygonPoints = indexes[p][1] - indexes[p][0] + 2;
-            
-            for (int pp = 0; pp < numberOfSubPolygonPoints; pp++) 
-            {
-                subpolygon[pp] = polygon[indexes[p][0] + pp];
-            }
-            subpolygon[numberOfSubPolygonPoints] = polygon[indexes[p][0]];
-            
-            // create bounding box before actual checking
-            double XMin = std::min(startPolygon, endPolygon, compareX)->x;
-            double XMax = std::max(startPolygon, endPolygon, compareX)->x;
-            double YMin = std::min(startPolygon, endPolygon, compareY)->y;
-            double YMax = std::max(startPolygon, endPolygon, compareY)->y;
-
-            if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax)) 
-            {
-                 inPolygon = IsPointInPolygon(point, subpolygon, numberOfSubPolygonPoints);
-            }
-
-            if (inPolygon) 
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     static double GetDx(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
@@ -1111,7 +1062,7 @@ namespace GridGeom
 
         Point centerOfMass;
         double area;
-        bool successful = FaceAreaAndCenterOfMass(polygon, numNodes, projection, area, centerOfMass);
+        FaceAreaAndCenterOfMass(polygon, numNodes, projection, area, centerOfMass);
 
         double xCenter = 0;
         double yCenter = 0;
@@ -1196,7 +1147,7 @@ namespace GridGeom
             }
             polygon[numNodes] = polygon[0];
 
-            bool isCircumcenterInside = IsPointInPolygon(result, polygon, numNodes);
+            bool isCircumcenterInside = IsPointInPolygonNodes(result, polygon,0, numNodes-1);
 
             if (!isCircumcenterInside)
             {
@@ -1228,7 +1179,7 @@ namespace GridGeom
     }
 
     static bool Averaging(const std::vector<Sample>& samples,
-        int numNodes,
+        int numPolygonNodes,
         const std::vector<Point>& polygon,
         const Point centerOfMass,
         const Projections& projection,
@@ -1237,7 +1188,7 @@ namespace GridGeom
         double& result)
     {
         result = doubleMissingValue;
-        std::vector<Point> searchPolygon(numNodes);
+        std::vector<Point> searchPolygon(numPolygonNodes);
 
         // averaging settings
         const double relativeFaceSearchSize = 1.01;
@@ -1245,7 +1196,7 @@ namespace GridGeom
         double maxx = std::numeric_limits<double>::min();
         double miny = std::numeric_limits<double>::max();
         double maxy = std::numeric_limits<double>::min();
-        for (int i = 0; i < numNodes; i++)
+        for (int i = 0; i < numPolygonNodes; i++)
         {
             searchPolygon[i] = polygon[i] * relativeFaceSearchSize + centerOfMass * (1 - relativeFaceSearchSize);
             minx = std::min(minx, searchPolygon[i].x);
@@ -1260,7 +1211,7 @@ namespace GridGeom
             double xmean = 0.5 *(maxx + minx);
             minx = std::numeric_limits<double>::max();
             maxx = std::numeric_limits<double>::min();
-            for (int i = 0; i < numNodes; i++)
+            for (int i = 0; i < numPolygonNodes; i++)
             {
                 if (searchPolygon[i].x < xmean)
                 {
@@ -1272,7 +1223,7 @@ namespace GridGeom
         }
 
         double searchRadius = std::numeric_limits<double>::min();
-        for (int i = 0; i < numNodes; i++)
+        for (int i = 0; i < numPolygonNodes; i++)
         {
             double distance = Distance(centerOfMass, searchPolygon[i], projection);
             searchRadius = std::max(searchRadius, distance);
@@ -1297,7 +1248,8 @@ namespace GridGeom
             }
 
             Point samplePoint{ samples[sampleIndex].x, samples[sampleIndex].y };
-            bool isInPolygon = IsPointInPolygon(samplePoint, polygon, numNodes);
+            // assume here polygon has a size equal to numPolygonNodes + 1
+            bool isInPolygon = IsPointInPolygonNodes(samplePoint, polygon, 0, numPolygonNodes);
             if (isInPolygon) 
             {
                 if (averagingMethod == SimpleAveraging)

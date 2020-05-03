@@ -1,8 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 #include "Entities.hpp"
+#include "Operations.cpp"
 
 extern "C"
 {
@@ -22,7 +24,7 @@ namespace GridGeom
         bool Set(const std::vector<Point>& polygon, Projections projection);
 
         /// copynetboundstopol
-        bool MeshBoundaryToPolygon(const Mesh& mesh,
+        bool MeshBoundaryToPolygon(Mesh& mesh,
             int counterClockWise,
             std::vector<Point>& meshBoundaryPolygon,
             int& numNodesBoundaryPolygons);
@@ -30,9 +32,10 @@ namespace GridGeom
         /// create a set of points in a polygon 
         bool CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints);
 
-        std::vector<Point> m_nodes;             // Polygon nodes
-        int m_numNodes;                         // NPL
-        int m_numAllocatedNodes;                // MAXPOL
+        std::vector<Point> m_nodes;                // Polygon nodes
+        int m_numNodes;                            // NPL
+        int m_numAllocatedNodes;                   // MAXPOL
+        std::vector<std::vector<int>> m_indexses;  // start-end of polygon nodes in m_nodes
         int m_allocationSize = 100;
         Projections m_projection;
 
@@ -49,6 +52,11 @@ namespace GridGeom
         bool OffsetCopy(int nodeIndex, double distance, bool Inner, Polygons& newPolygon);
 
         int GetNumNodes() const { return m_numNodes; }
+
+        bool IsPointInPolygon(const Point& point, int polygonIndex) const;
+
+        // dbpinpol_optinside_perpol
+        bool IsPointInPolygons(const Point& point) const;
 
     private:
 
