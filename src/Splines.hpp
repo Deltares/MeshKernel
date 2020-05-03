@@ -221,7 +221,7 @@ namespace GridGeom
             {
                 for (int n = 0; n < m_numSplineNodes[s]; n++)
                 {
-                    bool isInPolygons = IsPointInPolygons(m_splineCornerPoints[s][n], m_polygon.m_nodes, m_polygon.m_numNodes);
+                    bool isInPolygons = m_polygon.IsPointInPolygons(m_splineCornerPoints[s][n]);
                     if (!isInPolygons)
                     {
                         DeleteSpline(s);

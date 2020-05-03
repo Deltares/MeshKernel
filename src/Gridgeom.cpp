@@ -868,6 +868,12 @@ namespace GridGeomApi
         {
             return -1;
         }
+
+        successful = ConvertPointVectorToGeometryListNative(newPolygon.m_nodes, geometryListOut);
+        if (!successful)
+        {
+            return -1;
+        }
     
         return 0;
     }

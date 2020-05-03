@@ -8,7 +8,7 @@
 #include "Entities.hpp"
 #include "Mesh.hpp"
 
-bool GridGeom::Orthogonalization::Set(const Mesh& mesh,
+bool GridGeom::Orthogonalization::Set(Mesh& mesh,
     int& isTriangulationRequired,
     int& isAccountingForLandBoundariesRequired,
     int& projectToLandBoundaryOption,

@@ -21,7 +21,7 @@ namespace GridGeom
         /// admin_landboundary_segments
         /// The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary
         /// TODO: ? Why splitting in two segments is required?
-        bool Administrate(const Mesh& mesh, Polygons& polygons);
+        bool Administrate(Mesh& mesh, Polygons& polygons);
 
         /// find_nearest_meshline
         /// Find the mesh boundary line closest to the land boundary

@@ -43,7 +43,7 @@ namespace GridGeom
     /// admin_landboundary_segments
     /// The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary
     /// TODO: ? Why splitting in two segments is required?
-    bool LandBoundaries::Administrate(const Mesh& mesh, Polygons& polygons)
+    bool LandBoundaries::Administrate(Mesh& mesh, Polygons& polygons)
     {
         if (m_numNode<=0)
         {
@@ -56,8 +56,8 @@ namespace GridGeom
         {
             if (m_nodes[n].x != doubleMissingValue && m_nodes[n + 1].x != doubleMissingValue)
             {
-                bool firstPointInPolygon = IsPointInPolygon(m_nodes[n], polygons.m_nodes, polygons.m_numNodes);
-                bool secondPointInPolygon = IsPointInPolygon(m_nodes[n + 1], polygons.m_nodes, polygons.m_numNodes);
+                bool firstPointInPolygon = polygons.IsPointInPolygon(m_nodes[n],0);
+                bool secondPointInPolygon = polygons.IsPointInPolygon(m_nodes[n + 1],0);
 
                 if (firstPointInPolygon || secondPointInPolygon)
                 {
@@ -658,10 +658,10 @@ namespace GridGeom
                 if (numFaceNodes == 0)
                     continue;
 
-                int numPolygonPoints;
-                mesh.FacePolygon(f, m_polygonNodesCache, numPolygonPoints);
+                int numClosedPolygonPoints;
+                mesh.FaceClosedPolygon(f, m_polygonNodesCache, numClosedPolygonPoints);
 
-                nodeInFace = IsPointInPolygon(m_nodes[i], m_polygonNodesCache, numFaceNodes);
+                nodeInFace = IsPointInPolygonNodes(m_nodes[i], m_polygonNodesCache, 0, numClosedPolygonPoints -1);
                 if (nodeInFace)
                 {
                     crossedFaceIndex = f;
@@ -741,7 +741,7 @@ namespace GridGeom
         {
             if (m_nodeMask[n] > 0)
             {
-                bool inPolygon = IsPointInPolygon(mesh.m_nodes[n], polygon.m_nodes, polygon.m_numNodes);
+                bool inPolygon = polygon.IsPointInPolygon(mesh.m_nodes[n],0);
                 if (!inPolygon)
                 {
                     m_nodeMask[n] = 0;
@@ -1071,8 +1071,8 @@ namespace GridGeom
             m_nodes[rightIndex].y + rightEdgeRatio * (m_nodes[nextRightIndex].y - m_nodes[rightIndex].y)
         };
 
-        bool isStartPointInsideAPolygon = IsPointInPolygons(startPoint, polygons.m_nodes, polygons.m_numNodes);
-        bool isEndPointInsideAPolygon = IsPointInPolygons(endPoint, polygons.m_nodes, polygons.m_numNodes);
+        bool isStartPointInsideAPolygon = polygons.IsPointInPolygon(startPoint,0);
+        bool isEndPointInsideAPolygon = polygons.IsPointInPolygon(endPoint,0);
 
         if (!isStartPointInsideAPolygon)
         {
