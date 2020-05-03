@@ -15,7 +15,7 @@ namespace GridGeom
     {
     public:
         
-        bool Set(const Mesh& mesh,
+        bool Set(Mesh& mesh,
             int& isTriangulationRequired,
             int& isAccountingForLandBoundariesRequired,
             int& projectToLandBoundaryOption,

@@ -306,7 +306,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
         }
         Point approximateCenter = (inputNodes[faceNodes[i][0]] + inputNodes[faceNodes[i][1]] + inputNodes[faceNodes[i][2]]) * oneThird;
 
-        bool isTriangleInPolygon = IsPointInPolygon(approximateCenter, polygons.m_nodes, polygons.m_numNodes - 1);
+        bool isTriangleInPolygon = polygons.IsPointInPolygon(approximateCenter,0);
         if (!isTriangleInPolygon)
         {
             continue;
@@ -467,6 +467,11 @@ void GridGeom::Mesh::NodeAdministration()
         if (firstNode < 0 || secondNode < 0)
         {
             continue;
+        }
+
+        if(m_nodesNumEdges[firstNode]>= maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= maximumNumberOfEdgesPerNode)
+        {
+            continue; 
         }
 
         // Search for previously connected edges
@@ -743,7 +748,7 @@ void GridGeom::Mesh::ComputeFaceCircumcentersMassCentersAreas()
     {
         //need to account for spherical coordinates. Build a polygon around a face
         int numPolygonPoints;
-        bool successful = FacePolygon(f, m_polygonNodesCache, numPolygonPoints);
+        bool successful = FaceClosedPolygon(f, m_polygonNodesCache, numPolygonPoints);
         if (!successful)
         {
             return;
@@ -942,7 +947,7 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
             {
                 for (int m = 0; m < numM; ++m)
                 {
-                    bool isInPolygon = IsPointInPolygon(CurvilinearGrid.m_grid[n][m], polygons.m_nodes, polygons.m_numNodes - 1);
+                    bool isInPolygon = polygons.IsPointInPolygon(CurvilinearGrid.m_grid[n][m],0);
                     if (isInPolygon)
                     {
                         nodeBasedMask[n][m] = true;
@@ -1009,7 +1014,7 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     int index = 0;
     for (int i = 0; i < GetNumNodes(); i++)
     {
-        bool inPolygon = IsPointInPolygon(m_nodes[i], polygon.m_nodes, polygon.m_numNodes - 1);
+        bool inPolygon = polygon.IsPointInPolygon(m_nodes[i],0);
         if (inPolygon)
         {
             filteredNodes[index] = m_nodes[i];
@@ -1233,7 +1238,7 @@ bool GridGeom::Mesh::DeleteEdge(int edgeIndex)
 }
 
 
-bool GridGeom::Mesh::FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numPolygonPoints) const
+bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numClosedPolygonNodes) const
 {
     auto numFaceNodes = GetNumFaceEdges(faceIndex);
     if (polygonNodesCache.size() < numFaceNodes + 1)
@@ -1247,13 +1252,16 @@ bool GridGeom::Mesh::FacePolygon(int faceIndex, std::vector<Point>& polygonNodes
     }
     polygonNodesCache[numFaceNodes] = polygonNodesCache[0];
 
-    numPolygonPoints = numFaceNodes + 1;
+    numClosedPolygonNodes = numFaceNodes + 1;
 
     return true;
 }
 
 
-bool GridGeom::Mesh::FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache, std::vector<int>& localNodeIndexsesCache, std::vector<int>& edgeIndexsesCache) const
+bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, 
+    std::vector<int>& localNodeIndexsesCache, 
+    std::vector<int>& edgeIndexsesCache,
+    int& numClosedPolygonNodes) const
 {
     auto numFaceNodes = GetNumFaceEdges(faceIndex);
     if (polygonNodesCache.size() < numFaceNodes + 1)
@@ -1280,6 +1288,7 @@ bool GridGeom::Mesh::FacePolygon(int faceIndex, std::vector<Point>& polygonNodes
     polygonNodesCache[numFaceNodes] = polygonNodesCache[0];
     localNodeIndexsesCache[numFaceNodes] = 0;
     edgeIndexsesCache[numFaceNodes] = m_facesEdges[faceIndex][0];
+    numClosedPolygonNodes = numFaceNodes + 1;
 
     return true;
 }
@@ -1289,7 +1298,7 @@ bool GridGeom::Mesh::SelectNodesInPolygon(const Polygons& polygon, bool inside)
 {
     for (int i = 0; i < GetNumNodes(); ++i)
     {
-        bool isInPolygon = IsPointInPolygon(m_nodes[i], polygon.m_nodes, polygon.m_numNodes - 1);
+        bool isInPolygon = polygon.IsPointInPolygon(m_nodes[i],0);
         if (!inside)
         {
             isInPolygon = !isInPolygon;
@@ -1500,7 +1509,7 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
     {
         for (int n = 0; n < GetNumNodes(); ++n)
         {
-            auto isInPolygon = IsPointInPolygon(m_nodes[n], polygons.m_nodes, polygons.m_numNodes - 1);
+            auto isInPolygon = polygons.IsPointInPolygon(m_nodes[n],0);
             if (isInPolygon)
             {
                 m_nodes[n] = { doubleMissingValue,doubleMissingValue };
@@ -1525,7 +1534,7 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
                 }
 
                 auto faceCircumcenter = m_facesCircumcenters[faceIndex];
-                auto isInPolygon = IsPointInPolygon(faceCircumcenter, polygons.m_nodes, polygons.m_numNodes - 1);
+                auto isInPolygon = polygons.IsPointInPolygon(faceCircumcenter,0);
                 if (!isInPolygon)
                 {
                     allFaceCircumcentersInPolygon = false;
@@ -1546,7 +1555,7 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
 
                 auto edgeCenter = (m_nodes[firstNodeIndex] + m_nodes[secondNodeIndex]) / 2.0;
 
-                allFaceCircumcentersInPolygon = IsPointInPolygon(edgeCenter, polygons.m_nodes, polygons.m_numNodes - 1);
+                allFaceCircumcentersInPolygon = polygons.IsPointInPolygon(edgeCenter,0);
             }
 
             if(allFaceCircumcentersInPolygon)
@@ -1565,7 +1574,7 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
         std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
         for (int n = 0; n < GetNumNodes(); ++n)
         {
-            auto isInPolygon = IsPointInPolygon(m_nodes[n], polygons.m_nodes, polygons.m_numNodes - 1);
+            auto isInPolygon = polygons.IsPointInPolygon(m_nodes[n],0);
             if (isInPolygon)
             {
                 m_nodeMask[n] = 1;

@@ -101,9 +101,10 @@ namespace GridGeom
 
         ///get_cellpolygon
         //need to account for spherical coordinates. Build a polygon around a face
-        bool FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache, std::vector<int>& localNodeIndexsesCache, std::vector<int>& nodeIndexsesCache) const;
+        bool FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, 
+            std::vector<int>& localNodeIndexsesCache, std::vector<int>& nodeIndexsesCache, int& numClosedPolygonNodes) const;
 
-        bool FacePolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numPolygonPoints) const;
+        bool FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numClosedPolygonNodes) const;
 
         bool IsFullFaceNotInPolygon(int faceIndex) const;
 

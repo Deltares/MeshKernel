@@ -14,6 +14,12 @@ namespace GridGeom
 
     class MeshRefinement
     {
+        enum RefinementType
+        {
+            RidgeRefinement = 1,
+            WaveCourant = 2,
+            MeshWidth = 3
+        };
 
     public:
 
@@ -31,11 +37,8 @@ namespace GridGeom
         bool FindBrotherEdges();
 
         ///set_initial_mask
-        // do not refine, based on the criterion :
-        //    cells with hanging nodes
-        //    cells that are crossed by the selecting polygon
-        //    ensure that no crossed cells have hanging nodes
-        bool ComputeInitialRefinementMask();
+        // do not refine faces crossed by the selecting polygon
+        bool ComputeNodeMask();
 
         ///compute_jarefine_poly
         bool ComputeEdgeAndFaceRefinementMaskFromSamples(std::vector<Sample>& polygon);
@@ -93,14 +96,6 @@ namespace GridGeom
         bool m_refineOutsideFace = false;
         bool m_connectHangingNodes = true;
         int m_maxNumberOfRefinementIterations = 10;
-
-        enum RefinementType 
-        {
-            RidgeRefinement = 1,
-            WaveCourant = 2,
-            MeshWidth = 3
-        };
-
 
     };
 }

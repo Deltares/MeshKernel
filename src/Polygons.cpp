@@ -20,6 +20,8 @@ namespace GridGeom
         m_projection = projection;
         // resize if necessary
         int numNodes = GetNumNodes();
+        int nextPolygonIndex = m_indexses.size();
+        ResizeVectorIfNeeded(m_indexses.size() + 1, m_indexses,std::vector<int>(2,0));
         int startNewNodes = numNodes;
         if (numNodes != 0)
         {
@@ -34,7 +36,10 @@ namespace GridGeom
         m_numAllocatedNodes = m_nodes.size();
         m_numNodes = m_nodes.size();
 
-        for (int n = startNewNodes, nn = 0; n < startNewNodes + polygon.size(); ++n, ++nn)
+        m_indexses[nextPolygonIndex][0] = startNewNodes;
+        m_indexses[nextPolygonIndex][1] = startNewNodes + polygon.size() - 1;
+
+        for (int n = m_indexses[nextPolygonIndex][0], nn = 0; n < m_indexses[nextPolygonIndex][1] + 1; ++n, ++nn)
         {
             m_nodes[n] = polygon[nn];
         }
@@ -42,11 +47,14 @@ namespace GridGeom
     }
 
     /// copynetboundstopol
-    bool Polygons::MeshBoundaryToPolygon(const Mesh& mesh,
+    bool Polygons::MeshBoundaryToPolygon(Mesh& mesh,
         int counterClockWise,
         std::vector<Point>& meshBoundaryPolygon,
         int& numNodesBoundaryPolygons)
     {
+        // Find faces
+        mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
         std::vector<bool> isVisited(mesh.GetNumEdges(), false);
         numNodesBoundaryPolygons = 0;
 
@@ -65,8 +73,8 @@ namespace GridGeom
             const auto firstNode = mesh.m_nodes[firstNodeIndex];
             const auto secondNode = mesh.m_nodes[secondNodeIndex];
 
-            bool firstNodeInPolygon = IsPointInPolygon(mesh.m_nodes[firstNodeIndex], m_nodes, GetNumNodes());
-            bool secondNodeInPolygon = IsPointInPolygon(mesh.m_nodes[secondNodeIndex], m_nodes, GetNumNodes());
+            bool firstNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[firstNodeIndex], m_nodes, 0,GetNumNodes()-1);
+            bool secondNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[secondNodeIndex], m_nodes, 0, GetNumNodes()-1);
 
             if (!firstNodeInPolygon && !secondNodeInPolygon)
             {
@@ -138,7 +146,7 @@ namespace GridGeom
         {
             if (!currentNodeInPolygon)
             {
-                currentNodeInPolygon = IsPointInPolygon(mesh.m_nodes[currentNode], m_nodes, GetNumNodes());
+                currentNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[currentNode], m_nodes, 0, GetNumNodes()-1);
             }
 
             if (!currentNodeInPolygon)
@@ -171,13 +179,9 @@ namespace GridGeom
     }
 
     /// triangulate..
-    bool Polygons::CreatePointsInPolygons(std::vector<std::vector<GridGeom::Point>>& generatedPoints)
+    bool Polygons::CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints)
     {        
-        std::vector<std::vector<int>> indexes(GetNumNodes(), std::vector<int>(2));
-        int pos = FindIndexes(m_nodes, 0, GetNumNodes(), doubleMissingValue, indexes);
-        indexes.resize(pos);
-
-        generatedPoints.resize(pos);
+        generatedPoints.resize(m_indexses.size());
         std::vector<Point> localPolygon(GetNumNodes());
         std::vector<double> xLocalPolygon(GetNumNodes());
         std::vector<double> yLocalPolygon(GetNumNodes());
@@ -188,10 +192,10 @@ namespace GridGeom
         std::vector<double> yPoint;
         const int safetySize = 11;
         bool isOnePolygonClosed = false;
-        for (int i = 0; i < indexes.size(); ++i)
+        for (int i = 0; i < m_indexses.size(); ++i)
         {
             int numLocalPoints = 0;
-            for (int j = indexes[i][0]; j <= indexes[i][1]; ++j)
+            for (int j = m_indexses[i][0]; j <= m_indexses[i][1]; ++j)
             {
                 localPolygon[numLocalPoints] = m_nodes[j];
                 xLocalPolygon[numLocalPoints] = m_nodes[j].x;
@@ -286,15 +290,17 @@ namespace GridGeom
 
     bool Polygons::RefinePart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon)
     {
-        std::vector<std::vector<int>> indexes(GetNumNodes(), std::vector<int>(2));
-        int pos = FindIndexes(m_nodes, 0, GetNumNodes(), doubleMissingValue, indexes);
-        indexes.resize(pos);
-
+        if(m_indexses.empty())
+        {
+            return false;
+        }
+        
         if(startIndex==0 && endIndex==0)
         {
-            startIndex = indexes[0][0];
-            endIndex = indexes[0][1];
+            startIndex = m_indexses[0][0];
+            endIndex = m_indexses[0][1];
         }
+
 
         if (endIndex <= startIndex)
         {
@@ -303,9 +309,9 @@ namespace GridGeom
 
         bool polygonFound = false;
         int polygonIndex;
-        for (int i = 0; i < indexes.size(); ++i)
+        for (int i = 0; i < m_indexses.size(); ++i)
         {
-            if (startIndex >= indexes[i][0] && endIndex <= indexes[i][1])
+            if (startIndex >= m_indexses[i][0] && endIndex <= m_indexses[i][1])
             {
                 polygonFound = true;
                 polygonIndex = i;
@@ -328,13 +334,13 @@ namespace GridGeom
         }
 
         int numNodesRefinedPart = std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex);
-        int numNodesNotRefinedPart = startIndex - indexes[polygonIndex][0] + indexes[polygonIndex][1] - endIndex;
+        int numNodesNotRefinedPart = startIndex - m_indexses[polygonIndex][0] + m_indexses[polygonIndex][1] - endIndex;
         int totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
         refinedPolygon.resize(totalNumNodes);
 
         // before refinement
         int refinedNodeIndex = 0;
-        for (int i = indexes[polygonIndex][0]; i <= startIndex; ++i)
+        for (int i = m_indexses[polygonIndex][0]; i <= startIndex; ++i)
         {
             refinedPolygon[refinedNodeIndex] = m_nodes[i];
             refinedNodeIndex++;
@@ -377,7 +383,7 @@ namespace GridGeom
         }
 
         // after refinement
-        for (int i = endIndex + 1; i <= indexes[polygonIndex][1]; ++i)
+        for (int i = endIndex + 1; i <= m_indexses[polygonIndex][1]; ++i)
         {
             refinedPolygon[refinedNodeIndex] = m_nodes[i];
             refinedNodeIndex++;
@@ -440,12 +446,7 @@ namespace GridGeom
 
     //copypol: look how the layer thickness is determined when the input distance is not given, but th coordinate of another point
     bool Polygons::OffsetCopy(int nodeIndex, double distance, bool innerAndOuter, Polygons& newPolygon)
-    {
-        std::vector<std::vector<int>> indexes(GetNumNodes(), std::vector<int>(2));
-        int pos = FindIndexes(m_nodes, 0, GetNumNodes(), doubleMissingValue, indexes);
-        indexes.resize(pos);
-
-        
+    {        
         int sizenewPolygon = GetNumNodes();
         if (innerAndOuter) 
         {
@@ -453,13 +454,8 @@ namespace GridGeom
         }
         
         std::vector<Point> normalVectors(sizenewPolygon);
-        double dxNormalPreviusEdge;
-        double dyNormalPreviusEdge;
-        double dxNormalNodeIndex;
-        double dyNormalNodeIndex;
-        double dxNormalPreviusEdgeNodeIndex;
-        double dyNormalPreviusEdgeNodeIndex;
-        Point normalVectorNodeIndex;
+        double dxNormalPreviousEdge;
+        double dyNormalPreviuosEdge;
         for (int n = 0; n < GetNumNodes(); n++)
         {
             double dxNormal;
@@ -474,31 +470,22 @@ namespace GridGeom
             }
             else
             {
-                dxNormal = dxNormalPreviusEdge;
-                dyNormal = dyNormalPreviusEdge;
+                dxNormal = dxNormalPreviousEdge;
+                dyNormal = dyNormalPreviuosEdge;
             }
 
             if (n == 0)
             {
-                dxNormalPreviusEdge = dxNormal;
-                dyNormalPreviusEdge = dyNormal;
+                dxNormalPreviousEdge = dxNormal;
+                dyNormalPreviuosEdge = dyNormal;
             }
 
-            double factor = 1.0 / (1.0 + dxNormalPreviusEdge*dxNormal + dyNormalPreviusEdge*dyNormal);
-            normalVectors[n].x = factor *(dxNormalPreviusEdge + dxNormal);
-            normalVectors[n].y = factor *(dyNormalPreviusEdge + dyNormal);
+            double factor = 1.0 / (1.0 + dxNormalPreviousEdge*dxNormal + dyNormalPreviuosEdge*dyNormal);
+            normalVectors[n].x = factor *(dxNormalPreviousEdge + dxNormal);
+            normalVectors[n].y = factor *(dyNormalPreviuosEdge + dyNormal);
 
-            if (n == nodeIndex) 
-            {
-                dxNormalNodeIndex = dxNormal;
-                dyNormalNodeIndex = dyNormal;
-                dxNormalPreviusEdgeNodeIndex = dxNormalPreviusEdge;
-                dyNormalPreviusEdgeNodeIndex = dyNormalPreviusEdge;
-                normalVectorNodeIndex = normalVectors[n];
-            }
-
-            dxNormalPreviusEdge = dxNormal;
-            dyNormalPreviusEdge = dyNormal;
+            dxNormalPreviousEdge = dxNormal;
+            dyNormalPreviuosEdge = dyNormal;
         }
 
         // negative sign introduced because normal vector pointing inward
@@ -532,6 +519,56 @@ namespace GridGeom
 
         return true;
     }
+
+    bool Polygons::IsPointInPolygon(const Point& point, int polygonIndex) const
+    {
+        if (polygonIndex >= m_indexses.size())
+        {
+            return true;
+        }
+
+        bool inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indexses[polygonIndex][0], m_indexses[polygonIndex][1]);
+
+        return inPolygon;
+    }
+
+    bool Polygons::IsPointInPolygons(const Point& point) const
+    {
+        if (m_indexses.empty())
+        {
+            return true;
+        }
+
+        bool inPolygon = false;
+        for (int p = 0; p <= m_indexses.size(); p++)
+        {
+            // Calculate the bounding box
+            double XMin = std::numeric_limits<double>::max();
+            double XMax = std::numeric_limits<double>::min();
+            double YMin = std::numeric_limits<double>::max();
+            double YMax = std::numeric_limits<double>::min();
+
+            for (int n = m_indexses[p][0]; n <= m_indexses[p][1]; n++)
+            {
+                XMin = std::min(XMin, m_nodes[n].x);
+                XMax = std::max(XMax, m_nodes[n].x);
+                YMin = std::min(YMin, m_nodes[n].y);
+                YMax = std::max(YMax, m_nodes[n].y);
+            }
+
+            if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
+            {
+                inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indexses[p][0], m_indexses[p][1]);
+            }
+
+            if (inPolygon)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
 
