@@ -379,7 +379,7 @@ namespace GridGeomApi
         {            
             std::vector<GridGeom::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + indexes[s][1] + 1);
             int numNodes = indexes[s][1] - indexes[s][0] + 1;
-            GridGeom::Splines::SecondOrderDerivative(coordinates, numNodes, coordinatesDerivatives);
+            SecondOrderDerivative(coordinates, numNodes, coordinatesDerivatives);
 
             for (int n = 0; n < numNodes - 1; n++)
             {
@@ -388,7 +388,7 @@ namespace GridGeomApi
 
                     double pointAdimensionalCoordinate = n + double(p)/ double(number_of_points_between_vertices);
                     GridGeom::Point pointCoordinate;
-                    GridGeom::Splines::Interpolate(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+                    Interpolate(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
                     geometry_list_out.xCoordinates[index] = pointCoordinate.x;
                     geometry_list_out.yCoordinates[index] = pointCoordinate.y;
                     geometry_list_out.zCoordinates[index] = GridGeom::doubleMissingValue;

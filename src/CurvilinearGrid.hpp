@@ -16,7 +16,6 @@ namespace GridGeom
 
             int mMax = m + 1;
             int nMax = n + 1;
-            int mnMax = std::max(m, n);
 
             m_grid.resize(mMax);
             for (int i = 0; i < m_grid.size(); ++i)
