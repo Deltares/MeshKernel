@@ -40,6 +40,9 @@ namespace GridGeom
         // triangulatesamplestonetwork
         Mesh(std::vector<Point>& nodes, const Polygons& polygons, Projections projection);
 
+        // to build the mesh 
+        Mesh& operator+=(Mesh const& rhs);
+
         bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
         
         bool Administrate(AdministrationOptions administrationOption);
