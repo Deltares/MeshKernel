@@ -2,7 +2,8 @@
 #include "../Entities.hpp"
 #include "../Polygons.hpp"
 #include "../Constants.cpp"
-#include "../Splines.hpp"
+#include "../CurvilinearGrid.hpp"
+#include "../Splines.cpp"
 #include <gtest/gtest.h>
 
 TEST(Splines, SetSpline)
@@ -36,7 +37,7 @@ TEST(Splines, CubicSplineInterpolation)
 
     int pointsBetweenVertices = 20;
     std::vector<GridGeom::Point> coordinatesDerivatives(splineNodes.size());
-    GridGeom::Splines::SecondOrderDerivative(splineNodes, splineNodes.size(), coordinatesDerivatives);
+    SecondOrderDerivative(splineNodes, splineNodes.size(), coordinatesDerivatives);
     std::vector<GridGeom::Point> splineCoordinates;
 
     for (int n = 0; n < splineNodes.size() - 1; n++)
@@ -45,7 +46,7 @@ TEST(Splines, CubicSplineInterpolation)
         {
             const double pointAdimensionalCoordinate = n + double(p) / double(pointsBetweenVertices);
             GridGeom::Point pointCoordinate;
-            GridGeom::Splines::Interpolate(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+            Interpolate(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
             splineCoordinates.push_back({ pointCoordinate.x, pointCoordinate.y });
         }
     }
