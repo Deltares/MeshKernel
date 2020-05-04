@@ -37,7 +37,7 @@ TEST(Splines, CubicSplineInterpolation)
 
     int pointsBetweenVertices = 20;
     std::vector<GridGeom::Point> coordinatesDerivatives(splineNodes.size());
-    SecondOrderDerivative(splineNodes, splineNodes.size(), coordinatesDerivatives);
+    GridGeom::Splines::SecondOrderDerivative(splineNodes, splineNodes.size(), coordinatesDerivatives);
     std::vector<GridGeom::Point> splineCoordinates;
 
     for (int n = 0; n < splineNodes.size() - 1; n++)
@@ -46,7 +46,7 @@ TEST(Splines, CubicSplineInterpolation)
         {
             const double pointAdimensionalCoordinate = n + double(p) / double(pointsBetweenVertices);
             GridGeom::Point pointCoordinate;
-            Interpolate(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+            GridGeom::Splines::Interpolate(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
             splineCoordinates.push_back({ pointCoordinate.x, pointCoordinate.y });
         }
     }
