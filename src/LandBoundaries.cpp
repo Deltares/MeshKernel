@@ -84,7 +84,6 @@ namespace GridGeom
 
                 Point firstPoint = m_nodes[n];
                 Point secondPoint = m_nodes[n + 1];
-                const double landBoundaryLength = Distance(firstPoint, secondPoint, mesh.m_projection);
 
                 bool landBoundaryIsClose = false;
                 for (int nn = 0; nn < numNodesBoundaryPolygons - 1; nn++)

@@ -804,6 +804,7 @@ void GridGeom::Mesh::ComputeFaceCircumcentersMassCentersAreas()
 bool GridGeom::Mesh::ClassifyNodes()
 {
     m_nodesTypes.resize(GetNumNodes(), 0);
+    std::fill(m_nodesTypes.begin(), m_nodesTypes.end(), 0);
 
     for (int e = 0; e < GetNumEdges(); e++)
     {
@@ -1655,4 +1656,49 @@ bool GridGeom::Mesh::MoveNode(Point newPoint, int nodeindex)
     }
     
     return true;
+}
+
+GridGeom::Mesh& GridGeom::Mesh::operator+=(Mesh const& rhs)
+{
+    if (m_projection != rhs.m_projection || rhs.GetNumNodes() == 0 || rhs.GetNumEdges() == 0)
+    {
+        return *this;
+    }
+
+    if (m_projection != rhs.m_projection)
+    {
+        return *this;
+    }
+
+    std::vector<Point> nodes(GetNumNodes() + rhs.GetNumNodes());
+    std::vector<Edge> edges(GetNumEdges() + rhs.GetNumEdges());
+
+    //copy mesh nodes
+    for (int n = 0; n < GetNumNodes(); ++n)
+    {
+        nodes[n] = m_nodes[n];
+    }
+
+    for (int n = GetNumNodes(); n < nodes.size(); ++n)
+    {
+        const int index = n - GetNumNodes();
+        nodes[n] = rhs.m_nodes[index];
+    }
+
+    //copy mesh edges
+    for (int e = 0; e < GetNumEdges(); ++e)
+    {
+        edges[e] = m_edges[e];
+    }
+
+    for (int e = GetNumEdges(); e < edges.size(); ++e)
+    {
+        const int index = e - GetNumEdges();
+        edges[e].first = rhs.m_edges[index].first + GetNumNodes();
+        edges[e].second = rhs.m_edges[index].second + GetNumNodes();
+    }
+
+    Set(edges, nodes, m_projection);
+
+    return *this;
 }

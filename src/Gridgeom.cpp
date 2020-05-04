@@ -428,11 +428,15 @@ namespace GridGeomApi
             return -1;
         }
 
-        successful = meshInstances[gridStateId].MakeMesh(makeGridParameters, polygon);
+        GridGeom::Mesh mesh;
+        successful = mesh.MakeMesh(makeGridParameters, polygon);
         if (!successful)
         {
             return -1;
         }
+
+        meshInstances[gridStateId] += mesh;
+
         return 0;
     }
 
@@ -466,7 +470,7 @@ namespace GridGeomApi
         }
 
         GridGeom::Mesh mesh(generatedPoints[0], polygon, meshInstances[gridStateId].m_projection);
-        meshInstances[gridStateId] = mesh;
+        meshInstances[gridStateId] += mesh;
         return 0;
     }
 
@@ -485,7 +489,7 @@ namespace GridGeomApi
         }
         GridGeom::Polygons polygon;
         GridGeom::Mesh mesh(samplePoints, polygon, meshInstances[gridStateId].m_projection);
-        meshInstances[gridStateId] = mesh;
+        meshInstances[gridStateId] += mesh;
         return 0;
     }
 
@@ -1003,7 +1007,7 @@ namespace GridGeomApi
         spline.SetParameters(curvilinearParameters, splineToCurvilinearParameters);
         GridGeom::CurvilinearGrid curvilinearGrid;
         spline.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
-        meshInstances[gridStateId] = GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
+        meshInstances[gridStateId] += GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
 
         return 0;
     }
@@ -1061,7 +1065,7 @@ namespace GridGeomApi
         GridGeom::CurvilinearGrid curvilinearGrid;
         const bool successful = splineInstances[gridStateId].OrthogonalCurvilinearGridFromSplinesRefreshMesh(curvilinearGrid);
 
-        meshInstances[gridStateId] = GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
+        meshInstances[gridStateId] += GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
 
         return successful == true ? 0 : 1;
     }
