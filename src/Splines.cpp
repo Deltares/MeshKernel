@@ -1,5 +1,3 @@
-#pragma once
-
 /// TODO: CHECK FOR FRONT COLLISION
 
 #include <vector>
@@ -2328,6 +2326,88 @@ bool GridGeom::Splines::ComputeCurvatureOnSplinePoint(
 
     tangentialVector.x = dx / distance;
     tangentialVector.y = dy / distance;
+
+    return true;
+}
+
+
+/// second order derivative of spline coordinates
+bool GridGeom::Splines::SecondOrderDerivative(const std::vector<Point>& coordinates, int numNodes, std::vector<Point>& coordinatesDerivatives)
+{
+    std::vector<Point> u(numNodes);
+    u[0] = { 0.0, 0.0 };
+    coordinatesDerivatives.resize(coordinates.size(), { 0.0, 0.0 });
+    coordinatesDerivatives[0] = { 0.0, 0.0 };
+
+    for (int i = 1; i < numNodes - 1; i++)
+    {
+        const Point p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
+        coordinatesDerivatives[i].x = -0.5 / p.x;
+        coordinatesDerivatives[i].y = -0.5 / p.y;
+
+        const Point delta = coordinates[i + 1] - coordinates[i] - (coordinates[i] - coordinates[i - 1]);
+        u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
+    }
+
+    coordinatesDerivatives[numNodes - 1] = { 0.0, 0.0 };
+    for (int i = numNodes - 2; i >= 0; i--)
+    {
+        coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
+    }
+
+    return true;
+}
+
+bool GridGeom::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, int numNodes, std::vector<double>& coordinatesDerivatives)
+{
+    std::vector<double> u(numNodes);
+    u[0] = 0.0;
+    //coordinatesDerivatives.resize(coordinates.size());
+    coordinatesDerivatives[0] = 0.0;
+
+    for (int i = 1; i < numNodes - 1; i++)
+    {
+        const double p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
+        coordinatesDerivatives[i] = -0.5 / p;
+
+        const double delta = coordinates[i + 1] - coordinates[i] - (coordinates[i] - coordinates[i - 1]);
+        u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
+    }
+
+    coordinatesDerivatives[numNodes - 1] = 0.0;
+    for (int i = numNodes - 2; i >= 0; i--)
+    {
+        coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
+    }
+
+    return true;
+}
+
+/// splint
+template<typename T>
+bool GridGeom::Splines::Interpolate(const std::vector<T>& coordinates, const std::vector<T>& coordinatesDerivatives, double pointAdimensionalCoordinate, T& pointCoordinate)
+{
+    if (pointAdimensionalCoordinate < 0)
+    {
+        return false;
+    }
+
+    const double eps = 1e-5;
+    const double splFac = 1.0;
+    int intCoordinate = std::floor(pointAdimensionalCoordinate);
+    if (pointAdimensionalCoordinate - intCoordinate < eps)
+    {
+        pointCoordinate = coordinates[intCoordinate];
+        return true;
+    }
+
+    int low = intCoordinate;
+    int high = low + 1;
+    double a = high - pointAdimensionalCoordinate;
+    double b = pointAdimensionalCoordinate - low;
+
+    pointCoordinate = coordinates[low] * a + coordinates[high] * b +
+        (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;
 
     return true;
 }

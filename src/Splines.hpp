@@ -133,7 +133,6 @@ namespace GridGeom
         ///comp_gridheights
         bool ComputeGridHeights();
 
-
         bool FindNearestCrossSplines(int s,
             int j,
             const std::vector<int>& numHeightsLeft,
@@ -146,7 +145,6 @@ namespace GridGeom
 
         // GetValidSplineIndexses
         bool GetValidSplineIndexses(int s, int numValues, const std::vector<int>& v, std::vector<int>& validIndexses, int& numValid);
-
 
         /// SECT3R
         /// compute the intersection of two splines
@@ -161,7 +159,6 @@ namespace GridGeom
         /// compute the intersection of two splines, one must have only two nodes
         bool GetSplineIntersections(int index);
 
-
         bool MakeAllGridLines(bool isSpacingCurvatureAdapeted);
 
         /// make_gridline, generate a gridline on a spline with a prescribed maximum mesh width
@@ -175,15 +172,12 @@ namespace GridGeom
         ///get_splineprops
         bool ComputeSplineProperties(bool restoreOriginalProperties);
 
-
         /// get the grid heights from the cross spline information
         /// get_heights
         bool ComputeHeights();
 
-
         ///comp_subheights, compute the height of the subintervals of grid layers on a cross spline, w.r.t. a center spline
         bool ComputeSubHeights(int centerSplineIndex, int crossingSplineLocalIndex);
-
 
         ///splinelength
         /// TODO: remove special treatment assign delta and calculate number of points 
@@ -194,7 +188,6 @@ namespace GridGeom
             bool accountForCurvature = false,
             double height = 1.0,
             double assignedDelta = -1);
-
 
         /// comp_curv
         /// compute curvature in a point on a spline
@@ -264,7 +257,6 @@ namespace GridGeom
         std::vector<double> m_gridLineDimensionalCoordinates;                           // sg1 center spline coordinates of the first gridline
         std::vector<std::vector<double>> m_gridHeights;                                 // heights of all grid elements        
 
-
         //original spline chaches
         int m_numOriginalSplines = 0;
         int m_allocationSize = 5;                                                       // allocation cache size
@@ -274,7 +266,6 @@ namespace GridGeom
         std::vector<int> m_mfacOriginal;
         std::vector<double> m_maximumGridHeightsOriginal;
         std::vector<SplineTypes> m_originalTypes;
-
 
         //cache variables during iterations
         std::vector<double> m_edgeVelocities;
@@ -295,13 +286,13 @@ namespace GridGeom
             {
             };
 
-            void SetDimensionalDistance(const double distance)
+            void SetDimensionalDistance(double distance)
             {
                 m_DimensionalDistance = distance;
             }
 
             // this is the function we want to find the root
-            double operator()(double const& adimensionalDistancereferencePoint)
+            double operator()(double adimensionalDistancereferencePoint)
             {
                 double distanceFromReferencePoint = m_spline.GetSplineLength(m_splineIndex, 0, adimensionalDistancereferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
                 distanceFromReferencePoint = std::abs(distanceFromReferencePoint - m_DimensionalDistance);
@@ -316,6 +307,16 @@ namespace GridGeom
             double m_DimensionalDistance;
         };
 
+
+        /// second order derivative of spline coordinates
+        static bool SecondOrderDerivative(const std::vector<Point>& coordinates, int numNodes, std::vector<Point>& coordinatesDerivatives);
+        
+        static bool SecondOrderDerivative(const std::vector<double>& coordinates, int numNodes, std::vector<double>& coordinatesDerivatives);
+
+        /// splint
+        template<typename T>
+        static bool Interpolate(const std::vector<T>& coordinates, const std::vector<T>& coordinatesDerivatives, double pointAdimensionalCoordinate, T& pointCoordinate);
+        
     };
 
 }
