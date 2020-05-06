@@ -680,6 +680,7 @@ src/SplinesToCurvilinearParametersNative.hpp -text
 src/main.cpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/LandBoundaryTest.cpp -text
+src/tests/MakeMeshes.cpp -text
 src/tests/MeshRefinementTest.cpp -text
 src/tests/MeshTest.cpp -text
 src/tests/OrthogonalizationTest.cpp -text
@@ -704,7 +705,8 @@ tests/TestOrthogonalizationMediumTriangularGrid_net.nc -text
 tests/TestOrthogonalizationSmallTriangularGrid_landBoundary.ldb -text
 tests/ThreeNodesSpline.spl -text
 tests/WindowedSamplesForMeshRefinement.xyz -text
-tests/refinePolygonTest.pol -text
+tests/refineRectangularMeshPolygonTest.pol -text
+tests/refineSmallTriangularMeshPolygonTest.pol -text
 thirdParty/CMakeLists.txt -text
 thirdParty/eigen/.hg_archival.txt -text
 thirdParty/eigen/.hgeol -text

@@ -154,40 +154,6 @@ namespace GridGeom
             int queryCapacity = 100;
         };   
 
-        class KDTree
-        {
-
-            class Node
-            {
-               public:
-                   using NodePtr = std::shared_ptr< Node >;
-                   size_t index;
-                   std::vector< double > x;
-                   NodePtr left;
-                   NodePtr right;
-            };
-
-
-
-        public:
-            bool BuildTree(std::vector<Point>& nodes, const Projections projection)
-            {
-                CreateKDTree(nodes);
-                return true;
-            }
-
-            bool CreateKDTree(std::vector<Point>& nodes)
-            {
-                return true;
-            }
-
-            std::vector<int> NearestNeighbours(Point node, const double searchRadius)
-            {
-                return  std::move(std::vector<int>(0));
-            } 
-        
-        };
-
     }
 }
 

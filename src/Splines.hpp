@@ -22,11 +22,9 @@ namespace GridGeom
         /// add a new spline, return the index
         bool AddSpline(const std::vector<Point>& splines, int start, int size);
 
-
         //Run-time settings
         bool SetParameters(const GridGeomApi::CurvilinearParametersNative& curvilinearParametersNative,
             const GridGeomApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
-
 
         // set the reference to polygon
         bool SetPolygon(const Polygons& polygon);
@@ -188,7 +186,7 @@ namespace GridGeom
             bool accountForCurvature = false,
             double height = 1.0,
             double assignedDelta = -1);
-
+        
         /// comp_curv
         /// compute curvature in a point on a spline
         bool ComputeCurvatureOnSplinePoint(

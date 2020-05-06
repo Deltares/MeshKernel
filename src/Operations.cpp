@@ -40,7 +40,7 @@ namespace GridGeom
     bool ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
     {
         const int currentSize = vectorToResize.size();
-        if (newSize > currentSize )
+        if (newSize > currentSize)
         {
             newSize = std::max(minSize, int(5 * newSize));
             vectorToResize.resize(newSize, fillValue);
@@ -75,11 +75,11 @@ namespace GridGeom
         if (start > vec.size() || end > vec.size() || indexes.size() == 0)
         {
             return -1;
-        
+
         }
 
         int pos = 0;
-        for (int n = start; n <end; n++)
+        for (int n = start; n < end; n++)
         {
 
             if (vec[n].x != separator && indexes[pos][0] == -1)
@@ -97,7 +97,7 @@ namespace GridGeom
             }
         }
 
-        if(pos< indexes.size() && indexes[pos][1] == -1)
+        if (pos < indexes.size() && indexes[pos][1] == -1)
         {
             indexes[pos][1] = int(vec.size()) - 1;
             pos++;
@@ -107,7 +107,7 @@ namespace GridGeom
     }
 
     template <typename T>
-    inline std::vector<int> SortedIndexes(const std::vector<T> &v) 
+    inline std::vector<int> SortedIndexes(const std::vector<T>& v)
     {
         std::vector<int> idx(v.size());
         iota(idx.begin(), idx.end(), 0);
@@ -117,10 +117,10 @@ namespace GridGeom
 
     //chmike's algorithm
     template< class T >
-    void ReorderVector(std::vector<T> &v, std::vector<int> const &order) 
+    void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
     {
         std::vector<T> ordered(v.size());
-        for (int i=0; i < order.size();++i)
+        for (int i = 0; i < order.size(); ++i)
         {
             ordered[i] = v[order[i]];
         }
@@ -138,19 +138,19 @@ namespace GridGeom
         {
             isMonotonic = true;
             maxIter++;
-                for (int n = 0; n < v.size(); ++n)
+            for (int n = 0; n < v.size(); ++n)
+            {
+                if (v[n + 1] - v[n] < 0.0)
                 {
-                    if (v[n + 1] - v[n] < 0.0)
-                    {
-                        isMonotonic = false;
-                        break;
-                    }
+                    isMonotonic = false;
+                    break;
                 }
+            }
             if (!isMonotonic)
             {
                 for (int n = 1; n < v.size() - 1; ++n)
                 {
-                    v[n] = 0.5 *(v[n - 1] + v[n + 1]);
+                    v[n] = 0.5 * (v[n - 1] + v[n + 1]);
                 }
             }
         }
@@ -158,9 +158,9 @@ namespace GridGeom
     }
 
     template <typename T>
-    void AddValueToVector(std::vector<T>& vec, const T value) 
+    void AddValueToVector(std::vector<T>& vec, const T value)
     {
-        for (auto& val : vec) 
+        for (auto& val : vec)
         {
             val += value;
         }
@@ -177,14 +177,14 @@ namespace GridGeom
         const double tolerance = 0.00001;
 
         double left = min;
-        double middle = (min + max)*0.5;
+        double middle = (min + max) * 0.5;
         double right = max;
 
         double x0 = left;
         double x1 = middle - c * (middle - left);
         double x2 = middle;
         double x3 = right;
-        if (std::abs(right - middle)>std::abs(middle - left))
+        if (std::abs(right - middle) > std::abs(middle - left))
         {
             x1 = middle;
             x2 = middle + c * (middle - left);
@@ -193,13 +193,13 @@ namespace GridGeom
         double f1 = func(x1);
         double f2 = func(x2);
 
-        while (std::abs(x3 - x0)>tolerance*std::max(std::abs(x1) + std::abs(x2), 1e-8))
+        while (std::abs(x3 - x0) > tolerance* std::max(std::abs(x1) + std::abs(x2), 1e-8))
         {
-            if (f2<f1)
+            if (f2 < f1)
             {
                 x0 = x1;
                 x1 = x2;
-                x2 = r*x1 + c*x3;
+                x2 = r * x1 + c * x3;
 
                 f1 = f2;
                 f2 = func(x2);
@@ -208,14 +208,19 @@ namespace GridGeom
             {
                 x3 = x2;
                 x2 = x1;
-                x1 = r*x2 + c*x0;
+                x1 = r * x2 + c * x0;
 
                 f2 = f1;
                 f1 = func(x1);
             }
         }
-           
-        return f1<f2? x1: x2;
+
+        return f1 < f2 ? x1 : x2;
+    }
+
+    static bool IsPointOnPole(const Point& point)
+    {
+        return std::abs(point.y) - 90.0 < absLatitudeAtPoles;
     }
 
     ///sphertocart3D transform 2d spherical to 3d cartesian
@@ -228,7 +233,7 @@ namespace GridGeom
     }
 
     ///Cart3Dtospher Transform 3d cartesian coordinates to 2d spherical
-    static void CartesianToSpherical(const cartesian3DPoint& cartesianPoint, const double referenceLongitude, Point& sphericalPoint)
+    static void CartesianToSpherical(const cartesian3DPoint& cartesianPoint, double referenceLongitude, Point& sphericalPoint)
     {
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
         sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * raddeg_hp;
@@ -325,9 +330,9 @@ namespace GridGeom
         }
         if (projection == Projections::spherical)
         {
-            double  firstPointYDiff = abs(abs(firstPoint.y) - 90.0);
-            double  secondPointYDiff = abs(abs(secondPoint.y) - 90.0);
-            if (firstPointYDiff <= absLatitudeAtPoles && secondPointYDiff > absLatitudeAtPoles || firstPointYDiff > absLatitudeAtPoles && secondPointYDiff <= absLatitudeAtPoles)
+            bool  isFirstPointOnPole = IsPointOnPole(firstPoint);
+            bool  isSecondPointOnPole = IsPointOnPole(secondPoint);
+            if (isFirstPointOnPole && !isSecondPointOnPole || !isFirstPointOnPole && isSecondPointOnPole)
             {
                 return 0.0;
             }
@@ -369,8 +374,9 @@ namespace GridGeom
         return doubleMissingValue;
     }
 
-    //out product of two segments
-    static double OuterProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
+    ///dprodout: out product of two segments
+    static double OuterProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment,
+        const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -384,7 +390,43 @@ namespace GridGeom
         }
         if (projection == Projections::spherical)
         {
-            //TODO: IMPLEMENTATION IS MISSING
+            cartesian3DPoint firstPointFirstSegmentCartesian;
+            SphericalToCartesian(firstPointFirstSegment, firstPointFirstSegmentCartesian);
+            auto xx1 = firstPointFirstSegmentCartesian.x;
+            auto yy1 = firstPointFirstSegmentCartesian.y;
+            auto zz1 = firstPointFirstSegmentCartesian.z;
+
+            cartesian3DPoint secondPointFirstSegmentCartesian;
+            SphericalToCartesian(secondPointFirstSegment, secondPointFirstSegmentCartesian);
+            auto xx2 = secondPointFirstSegmentCartesian.x;
+            auto yy2 = secondPointFirstSegmentCartesian.y;
+            auto zz2 = secondPointFirstSegmentCartesian.z;
+
+            cartesian3DPoint firstPointSecondSegmentCartesian;
+            SphericalToCartesian(firstPointSecondSegment, firstPointSecondSegmentCartesian);
+            auto xx3 = firstPointSecondSegmentCartesian.x;
+            auto yy3 = firstPointSecondSegmentCartesian.y;
+            auto zz3 = firstPointSecondSegmentCartesian.z;
+
+
+            cartesian3DPoint secondPointSecondSegmentCartesian;
+            SphericalToCartesian(secondPointSecondSegment, secondPointSecondSegmentCartesian);
+            auto xx4 = secondPointSecondSegmentCartesian.x;
+            auto yy4 = secondPointSecondSegmentCartesian.y;
+            auto zz4 = secondPointSecondSegmentCartesian.z;
+
+            double vxx = (yy2 - yy1) * (zz4 - zz3) - (zz2 - zz1) * (yy4 - yy3);
+            double vyy = (zz2 - zz1) * (xx4 - xx3) - (xx2 - xx1) * (zz4 - zz3);
+            double vzz = (xx2 - xx1) * (yy4 - yy3) - (yy2 - yy1) * (xx4 - xx3);
+
+            double result = std::sqrt(vxx * vxx + vyy * vyy + vzz * vzz);
+
+            //check if vector is pointing outwards of earth
+            if (vxx * xx1 + vyy * yy1 + vzz * zz1 < 0.0)
+            {
+                result = -result;
+            }
+            return result;
         }
         return doubleMissingValue;
     }
@@ -399,8 +441,8 @@ namespace GridGeom
             SphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
 
             cartesian3DPoint middleCartesianPointCoordinate;
-            middleCartesianPointCoordinate.x = 0.5*(firstPointCartesianCoordinates.x + secondPointCartesianCoordinates.x);
-            middleCartesianPointCoordinate.y = 0.5*(firstPointCartesianCoordinates.y + secondPointCartesianCoordinates.y);
+            middleCartesianPointCoordinate.x = 0.5 * (firstPointCartesianCoordinates.x + secondPointCartesianCoordinates.x);
+            middleCartesianPointCoordinate.y = 0.5 * (firstPointCartesianCoordinates.y + secondPointCartesianCoordinates.y);
             double referenceLongitude = std::max(firstPoint.x, secondPoint.x);
 
             CartesianToSpherical(middleCartesianPointCoordinate, referenceLongitude, result);
@@ -486,16 +528,24 @@ namespace GridGeom
     ///normalout
     static void NormalVectorOutside(const Point& firstPoint, const Point& secondPoint, Point& result, const Projections& projection)
     {
+        double dx = 0.0;
+        double dy = 0.0;
         if (projection == Projections::cartesian)
         {
-            double dx = GetDx(firstPoint, secondPoint, projection);
-            double dy = GetDy(firstPoint, secondPoint, projection);
+            dx = GetDx(firstPoint, secondPoint, projection);
+            dy = GetDy(firstPoint, secondPoint, projection);
+
             const double squaredDistance = dx * dx + dy * dy;
-            if (squaredDistance != 0.0)
+            if (squaredDistance > 0.0)
             {
                 const double distance = sqrt(squaredDistance);
                 result.x = dy / distance;
                 result.y = -dx / distance;
+            }
+            else
+            {
+                result.x = doubleMissingValue;
+                result.y = doubleMissingValue;
             }
         }
         if (projection == Projections::spherical)
@@ -512,18 +562,31 @@ namespace GridGeom
             double lambda = middlePoint.x * degrad_hp;
             double phi = middlePoint.y * degrad_hp;
             double elambda[3] = { -sin(lambda), cos(lambda), 0.0 };
-            double ephi[3] = { -sin(phi)*cos(lambda), -sin(phi)*sin(lambda), cos(phi) };
+            double ephi[3] = { -sin(phi) * cos(lambda), -sin(phi) * sin(lambda), cos(phi) };
 
             // project vector in local base
-            double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
+            dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
                 (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
                 (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
 
-            double dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
+            dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
                 (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
                 (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
 
-            result.x = result.x / cos(degrad_hp*0.5*(firstPoint.y + secondPoint.y));
+            const double squaredDistance = dx * dx + dy * dy;
+            if (squaredDistance > 0.0)
+            {
+                const double distance = sqrt(squaredDistance);
+                result.x = dy / distance;
+                result.y = -dx / distance;
+            }
+            else
+            {
+                result.x = doubleMissingValue;
+                result.y = doubleMissingValue;
+            }
+
+            result.x = result.x / cos(degrad_hp * 0.5 * (firstPoint.y + secondPoint.y));
             result.y = middlePoint.y;
         }
 
@@ -596,13 +659,11 @@ namespace GridGeom
                 }
                 minX = minX + 360.0;
             }
-            //TODO: check result
             minX = std::min_element(polygon.begin(), polygon.end(), [](const Point& p1, const Point& p2) { return p1.x < p2.x; })->x;
         }
     }
 
-    //dbdistance
-    static double Distance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    static double SquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
 
         if (firstPoint.x == doubleMissingValue || firstPoint.y == doubleMissingValue ||
@@ -613,18 +674,37 @@ namespace GridGeom
         {
             double dx = GetDx(firstPoint, secondPoint, projection);
             double dy = GetDy(firstPoint, secondPoint, projection);
-            const double squaredDistance = dx * dx + dy * dy;
-            double distance = 0.0;
-            if (squaredDistance != 0.0)
-            {
-                distance = sqrt(squaredDistance);
-            }
-            return distance;
+            return dx * dx + dy * dy;
         }
         if (projection == Projections::spherical)
         {
+            cartesian3DPoint firstPointCartesian;
+            SphericalToCartesian(firstPoint, firstPointCartesian);
+            auto xx1 = firstPointCartesian.x;
+            auto yy1 = firstPointCartesian.y;
+            auto zz1 = firstPointCartesian.z;
+
+            cartesian3DPoint secondPointCartesian;
+            SphericalToCartesian(secondPoint, secondPointCartesian);
+            auto xx2 = secondPointCartesian.x;
+            auto yy2 = secondPointCartesian.y;
+            auto zz2 = secondPointCartesian.z;
+
+            return (xx2 - xx1) * (xx2 - xx1) + (yy2 - yy1) * (yy2 - yy1) + (zz2 - zz1) * (zz2 - zz1);
         }
+
         return doubleMissingValue;
+    }
+
+    //dbdistance
+    static double Distance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    {
+        double distance = SquaredDistance(firstPoint, secondPoint, projection);
+        if (distance >= 0.0)
+        {
+            distance = sqrt(distance);
+        }
+        return distance;
     }
 
     // dLINEDIS3
@@ -635,10 +715,11 @@ namespace GridGeom
         if (projection == Projections::cartesian)
         {
             double dis = 0.0;
-            double r2 = Distance(secondNode, firstNode, projection);
-            if (r2 != 0.0)
+            double squaredDistance = SquaredDistance(secondNode, firstNode, projection);
+            if (squaredDistance != 0.0)
             {
-                ratio = (GetDx(firstNode, point, projection) * GetDx(firstNode, secondNode, projection) + GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) / (r2 * r2);
+                ratio = (GetDx(firstNode, point, projection) * GetDx(firstNode, secondNode, projection) +
+                    GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) / squaredDistance;
                 double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
                 normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
                 normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
@@ -648,7 +729,58 @@ namespace GridGeom
         }
         if (projection == Projections::spherical)
         {
-            //TODO: implement me
+            cartesian3DPoint firstNodeCartesian;
+            SphericalToCartesian(firstNode, firstNodeCartesian);
+            auto xx1 = firstNodeCartesian.x;
+            auto yy1 = firstNodeCartesian.y;
+            auto zz1 = firstNodeCartesian.z;
+
+            cartesian3DPoint secondNodeCartesian;
+            SphericalToCartesian(secondNode, secondNodeCartesian);
+            auto xx2 = secondNodeCartesian.x;
+            auto yy2 = secondNodeCartesian.y;
+            auto zz2 = secondNodeCartesian.z;
+
+            cartesian3DPoint pointCartesian;
+            SphericalToCartesian(point, pointCartesian);
+            auto xx3 = pointCartesian.x;
+            auto yy3 = pointCartesian.y;
+            auto zz3 = pointCartesian.z;
+
+            double x21 = xx2 - xx1;
+            double y21 = yy2 - yy1;
+            double z21 = zz2 - zz1;
+            double x31 = xx3 - xx1;
+            double y31 = yy3 - yy1;
+            double z31 = zz3 - zz1;
+
+            double r2 = x21 * x21 + y21 * y21 + z21 * z21;
+
+            ratio = 0.0;
+            if (r2 >= 0.0)
+            {
+
+                ratio = (x31 * x21 + y31 * y21 + z31 * z21) / r2;
+                double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
+
+                cartesian3DPoint cartesianNormal3DPoint;
+                cartesianNormal3DPoint.x = firstNodeCartesian.x + correctedRatio * x21;
+                cartesianNormal3DPoint.y = firstNodeCartesian.y + correctedRatio * y21;
+                cartesianNormal3DPoint.z = firstNodeCartesian.z + correctedRatio * z21;
+
+                cartesianNormal3DPoint.x = cartesianNormal3DPoint.x - xx3;
+                cartesianNormal3DPoint.y = cartesianNormal3DPoint.y - yy3;
+                cartesianNormal3DPoint.z = cartesianNormal3DPoint.z - zz3;
+
+                double dis = std::sqrt(cartesianNormal3DPoint.x * cartesianNormal3DPoint.x +
+                    cartesianNormal3DPoint.y * cartesianNormal3DPoint.y +
+                    cartesianNormal3DPoint.z * cartesianNormal3DPoint.z);
+
+                double referenceLongitude = std::max({ firstNode.x, secondNode.x,point.x });
+                CartesianToSpherical(cartesianNormal3DPoint, referenceLongitude, normalPoint);
+
+                return dis;
+            }
         }
         return -1.0;
     }
@@ -697,17 +829,17 @@ namespace GridGeom
     {
         if (projection == Projections::cartesian)
         {
-            double dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
+            const auto dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
+            const auto dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
 
-            double dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
+            const auto dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
+            const auto dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
 
-            double r1 = dx1 * dx1 + dy1 * dy1;
-            double r2 = dx2 * dx2 + dy2 * dy2;
+            const auto r1 = dx1 * dx1 + dy1 * dy1;
+            const auto r2 = dx2 * dx2 + dy2 * dy2;
 
             double cosphi;
-            if (r1 == 0.0 || r2 == 0.0)
+            if (r1 <= 0.0 || r2 <= 0.0)
             {
                 cosphi = doubleMissingValue;
             }
@@ -718,7 +850,50 @@ namespace GridGeom
         }
         if (projection == Projections::spherical)
         {
-            //TODO: IMPLEMENTATION IS MISSING
+            cartesian3DPoint firstPointFirstSegmentCartesian;
+            SphericalToCartesian(firstPointFirstSegment, firstPointFirstSegmentCartesian);
+            auto xx1 = firstPointFirstSegmentCartesian.x;
+            auto yy1 = firstPointFirstSegmentCartesian.y;
+            auto zz1 = firstPointFirstSegmentCartesian.z;
+
+            cartesian3DPoint secondPointFirstSegmentCartesian;
+            SphericalToCartesian(secondPointFirstSegment, secondPointFirstSegmentCartesian);
+            auto xx2 = secondPointFirstSegmentCartesian.x;
+            auto yy2 = secondPointFirstSegmentCartesian.y;
+            auto zz2 = secondPointFirstSegmentCartesian.z;
+
+            cartesian3DPoint firstPointSecondSegmentCartesian;
+            SphericalToCartesian(firstPointSecondSegment, firstPointSecondSegmentCartesian);
+            auto xx3 = firstPointSecondSegmentCartesian.x;
+            auto yy3 = firstPointSecondSegmentCartesian.y;
+            auto zz3 = firstPointSecondSegmentCartesian.z;
+
+            cartesian3DPoint secondPointSecondSegmentCartesian;
+            SphericalToCartesian(secondPointSecondSegment, secondPointSecondSegmentCartesian);
+            auto xx4 = secondPointSecondSegmentCartesian.x;
+            auto yy4 = secondPointSecondSegmentCartesian.y;
+            auto zz4 = secondPointSecondSegmentCartesian.z;
+
+            auto dx1 = xx2 - xx1;
+            auto dy1 = yy2 - yy1;
+            auto dz1 = zz2 - zz1;
+            auto firstSegmentDistance = dx1 * dx1 + dy1 * dy1 + dz1 * dz1;
+
+            auto dx2 = xx4 - xx3;
+            auto dy2 = yy4 - yy3;
+            auto dz2 = zz4 - zz3;
+            auto secondSegmentDistance = dx2 * dx2 + dy2 * dy2 + dz2 * dz2;
+
+            double cosphi;
+            if (firstSegmentDistance <= 0.0 || secondSegmentDistance <= 0.0)
+            {
+                cosphi = doubleMissingValue;
+            }
+            else
+            {
+                cosphi = (dx1 * dx2 + dy1 * dy2 + dz1 * dz2) / sqrt(firstSegmentDistance * secondSegmentDistance);
+            }
+            return cosphi;
         }
         return doubleMissingValue;
     }
@@ -904,12 +1079,12 @@ namespace GridGeom
     }
 
     //CROSS
-    static bool AreLinesCrossing(const Point& firstSegmentFistPoint, 
-        const Point& firstSegmentSecondPoint, 
-        const Point& secondSegmentFistPoint, 
-        const Point& secondSegmentSecondPoint, 
-        bool adimensional, 
-        Point& intersection, 
+    static bool AreLinesCrossing(const Point& firstSegmentFistPoint,
+        const Point& firstSegmentSecondPoint,
+        const Point& secondSegmentFistPoint,
+        const Point& secondSegmentSecondPoint,
+        bool adimensional,
+        Point& intersection,
         double& crossProduct,
         double& firstRatio,
         double& secondRatio,
@@ -1049,12 +1224,12 @@ namespace GridGeom
         return true;
     }
 
-    static bool ComputePolygonCircumenter(std::vector<Point>& polygon, 
-        std::vector<Point>& middlePoints, 
-        std::vector<Point>& normals, 
-        int numNodes, 
-        const std::vector<int>& edgesNumFaces, 
-        Projections projection, 
+    static bool ComputePolygonCircumenter(std::vector<Point>& polygon,
+        std::vector<Point>& middlePoints,
+        std::vector<Point>& normals,
+        int numNodes,
+        const std::vector<int>& edgesNumFaces,
+        Projections projection,
         const double weightCircumCenter,
         Point& result)
     {
@@ -1080,7 +1255,7 @@ namespace GridGeom
         {
             CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], projection, result);
         }
-        else if(!edgesNumFaces.empty())
+        else if (!edgesNumFaces.empty())
         {
             Point estimatedCircumCenter = centerOfMass;
 
@@ -1093,7 +1268,7 @@ namespace GridGeom
                 }
             }
 
-            if(numValidEdges>0)
+            if (numValidEdges > 0)
             {
                 const double eps = 1e-3;
                 for (int n = 0; n < numNodes; n++)
@@ -1147,7 +1322,7 @@ namespace GridGeom
             }
             polygon[numNodes] = polygon[0];
 
-            bool isCircumcenterInside = IsPointInPolygonNodes(result, polygon,0, numNodes-1);
+            const auto isCircumcenterInside = IsPointInPolygonNodes(result, polygon, 0, numNodes - 1);
 
             if (!isCircumcenterInside)
             {
@@ -1170,12 +1345,6 @@ namespace GridGeom
         }
 
         return true;
-    }
-
-    // todo: implement comp_middle_latitude
-    static bool ComputeMiddleLatitude(double firstLatitude, double secondLatitude, double& middlelatitude)
-    {
-        return false;    
     }
 
     static bool Averaging(const std::vector<Sample>& samples,
@@ -1208,7 +1377,7 @@ namespace GridGeom
         if (projection == Projections::spherical && maxx - minx > 180.0)
         {
 
-            double xmean = 0.5 *(maxx + minx);
+            double xmean = 0.5 * (maxx + minx);
             minx = std::numeric_limits<double>::max();
             maxx = std::numeric_limits<double>::min();
             for (int i = 0; i < numPolygonNodes; i++)
@@ -1225,9 +1394,14 @@ namespace GridGeom
         double searchRadius = std::numeric_limits<double>::min();
         for (int i = 0; i < numPolygonNodes; i++)
         {
-            double distance = Distance(centerOfMass, searchPolygon[i], projection);
+            double distance = SquaredDistance(centerOfMass, searchPolygon[i], projection);
             searchRadius = std::max(searchRadius, distance);
         }
+        if (searchRadius <= 0.0)
+        {
+            return true;
+        }
+        searchRadius = std::sqrt(searchRadius);
 
         rtree.NearestNeighbours(centerOfMass, searchRadius);
         if (rtree.GetQueryResultSize() == 0)
@@ -1242,7 +1416,7 @@ namespace GridGeom
         {
             //do stuff based on the averaging method
             auto sampleIndex = rtree.GetQuerySampleIndex(i);
-            if (samples[sampleIndex].value == doubleMissingValue) 
+            if (samples[sampleIndex].value == doubleMissingValue)
             {
                 continue;
             }
@@ -1250,16 +1424,16 @@ namespace GridGeom
             Point samplePoint{ samples[sampleIndex].x, samples[sampleIndex].y };
             // assume here polygon has a size equal to numPolygonNodes + 1
             bool isInPolygon = IsPointInPolygonNodes(samplePoint, polygon, 0, numPolygonNodes);
-            if (isInPolygon) 
+            if (isInPolygon)
             {
                 if (averagingMethod == SimpleAveraging)
                 {
                     result += samples[sampleIndex].value;
                     numValidSamplesInPolygon++;
                 }
-                if (averagingMethod == KdTree) 
+                if (averagingMethod == KdTree)
                 {
-                    if(!firstValidSampleFound)
+                    if (!firstValidSampleFound)
                     {
                         firstValidSampleFound = true;
                         result = samples[sampleIndex].value;
@@ -1268,7 +1442,7 @@ namespace GridGeom
                 }
                 if (averagingMethod == InverseWeightDistance)
                 {
-                    double distance = std::max(0.01,Distance(centerOfMass, samplePoint, projection));
+                    double distance = std::max(0.01, Distance(centerOfMass, samplePoint, projection));
                     double weight = 1.0 / distance;
                     wall += weight;
                     numValidSamplesInPolygon++;
@@ -1293,7 +1467,7 @@ namespace GridGeom
         return true;
     }
 
-    static int NextCircularForwardIndex(int currentIndex, int size) 
+    static int NextCircularForwardIndex(int currentIndex, int size)
     {
         int index = currentIndex + 1;
         if (index >= size)
@@ -1311,6 +1485,39 @@ namespace GridGeom
             index = index + size;
         }
         return index;
+    }
+
+    static bool ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projections& projection, Point& centre)
+    {
+
+        centre = (firstPoint + secondPoint) * 0.5;
+        if (projection == Projections::spherical)
+        {
+            centre.y = (firstPoint.y + secondPoint.y) / 2.0;
+            const auto isFirstNodeOnPole = IsPointOnPole(firstPoint);
+            const auto isSecondNodeOnPole = IsPointOnPole(secondPoint);
+
+            if (isFirstNodeOnPole && !isSecondNodeOnPole)
+            {
+                centre.x = secondPoint.x;
+            }
+            else if (!isFirstNodeOnPole && isSecondNodeOnPole)
+            {
+                centre.x = firstPoint.x;
+            }
+            else
+            {
+                const auto maxx = std::max(firstPoint.x, secondPoint.x);
+                const auto minx = std::min(firstPoint.x, secondPoint.x);
+
+                if (maxx - minx)
+                {
+                    centre.x = centre.x + 180.0;
+                }
+            }
+        }
+
+        return true;
     }
 
 }
