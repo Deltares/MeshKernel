@@ -527,20 +527,15 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
         if (m_mesh.m_projection == Projections::spherical)
         {
 
-            bool successful = ComputeMiddleLatitude(firstNode.y, secondNode.y, middle.y);
-            if (!successful)
-            {
-                return false;
-            }
-
+            middle.y = (firstNode.y + secondNode.y)/2.0;
             if (std::abs(firstNode.x - secondNode.x) > 180.0)
             {
                 middle.x += 180.0;
             }
 
             // fix at poles
-            const bool firstNodeAtPole = std::abs(std::abs(firstNode.y) - 90.0) < absLatitudeAtPoles;
-            const bool secondNodeAtPole = std::abs(std::abs(secondNode.y) - 90.0) < absLatitudeAtPoles;
+            const auto firstNodeAtPole = IsPointOnPole(firstNode);
+            const auto secondNodeAtPole = IsPointOnPole(secondNode);
             if (firstNodeAtPole && !secondNodeAtPole)
             {
                 middle.x = secondNode.x;
@@ -683,7 +678,7 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
             if (m_mesh.m_projection == Projections::spherical)
             {
                 double middlelatitude;
-                bool successful = ComputeMiddleLatitude(miny, maxy, middlelatitude);
+                middlelatitude = (miny + maxy) / 2.0;
                 double ydiff = maxy - miny;
                 if (successful && ydiff > 1e-8)
                 {
@@ -1273,7 +1268,7 @@ bool  GridGeom::MeshRefinement::SplitFaces()
                     }
                     if (iter == maxiter)
                     {
-                        //TODO: ADD DOT
+                        //TODO: ADD DOT/MESSAGES
                     }
                 }
 
@@ -1324,20 +1319,10 @@ bool GridGeom::MeshRefinement::FindBrotherEdges()
             }
 
             //check if node k is in the middle
-            auto firstEdgeOtherNode = m_mesh.m_edges[firstEdgeIndex].first + m_mesh.m_edges[firstEdgeIndex].second - n;
-            auto secondEdgeOtherNode = m_mesh.m_edges[secondEdgeIndex].first + m_mesh.m_edges[secondEdgeIndex].second - n;
-            auto centre = (m_mesh.m_nodes[firstEdgeOtherNode] + m_mesh.m_nodes[secondEdgeOtherNode])*0.5;
-
-            if (m_mesh.m_projection == Projections::spherical)
-            {
-                double middleLatitude;
-                bool successful = ComputeMiddleLatitude(m_mesh.m_nodes[firstEdgeOtherNode].y, m_mesh.m_nodes[secondEdgeOtherNode].y, middleLatitude);
-                if (!successful)
-                {
-                    return false;
-                }
-                //TODO: FINISH FOR SPHERICAL
-            }
+            const auto firstEdgeOtherNode = m_mesh.m_edges[firstEdgeIndex].first + m_mesh.m_edges[firstEdgeIndex].second - n;
+            const auto secondEdgeOtherNode = m_mesh.m_edges[secondEdgeIndex].first + m_mesh.m_edges[secondEdgeIndex].second - n;
+            Point centre;
+            ComputeMiddlePoint(m_mesh.m_nodes[firstEdgeOtherNode], m_mesh.m_nodes[secondEdgeOtherNode], m_mesh.m_projection, centre);
 
             //compute tolerance
             auto firstEdgeLength = Distance(m_mesh.m_nodes[firstEdgeOtherNode], m_mesh.m_nodes[n], m_mesh.m_projection);

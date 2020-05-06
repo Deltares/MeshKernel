@@ -3,6 +3,7 @@
 #include "../Polygons.hpp"
 #include "../SampleRefineParametersNative.hpp"
 #include "../InterpolationParametersNative.hpp"
+#include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 #include <fstream>
 
@@ -133,49 +134,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 {
     // Prepare
-    std::vector<GridGeom::Point> nodes;
-
-    nodes.push_back({ 322.252624511719,454.880187988281 });
-    nodes.push_back({ 227.002044677734,360.379241943359 });
-    nodes.push_back({ 259.252227783203,241.878051757813 });
-    nodes.push_back({ 428.003295898438,210.377746582031 });
-    nodes.push_back({ 536.003967285156,310.878753662109 });
-    nodes.push_back({ 503.753784179688,432.379974365234 });
-    nodes.push_back({ 350.752807617188,458.630249023438 });
-    nodes.push_back({ 343.15053976393,406.232256102912 });
-    nodes.push_back({ 310.300984548069,319.41005739802 });
-    nodes.push_back({ 423.569603308318,326.17986967523 });
-
-    std::vector<GridGeom::Edge> edges;
-    edges.push_back({ 3, 9 });
-    edges.push_back({ 9, 2 });
-    edges.push_back({ 2, 3 });
-    edges.push_back({ 3, 4 });
-    edges.push_back({ 4, 9 });
-    edges.push_back({ 2, 8 });
-    edges.push_back({ 8, 1 });
-    edges.push_back({ 1, 2 });
-    edges.push_back({ 9, 8 });
-    edges.push_back({ 8, 7 });
-    edges.push_back({ 7, 1 });
-    edges.push_back({ 9, 10 });
-    edges.push_back({ 10, 8 });
-    edges.push_back({ 4, 5 });
-    edges.push_back({ 5, 10 });
-    edges.push_back({ 10, 4 });
-    edges.push_back({ 8, 6 });
-    edges.push_back({ 6, 7 });
-    edges.push_back({ 10, 6 });
-    edges.push_back({ 5, 6 });
-
-    for (int i = 0; i < edges.size(); i++)
-    {
-        edges[i].first -= 1;
-        edges[i].second -= 1;
-    }
-
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    auto mesh = MakeSmallSizeTriangularMesh();
 
     //sample points
     std::vector<GridGeom::Sample> samples;
@@ -212,8 +171,61 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 
     // total number of edges
     ASSERT_EQ(35, mesh.GetNumEdges());
-
 }
+
+TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
+{
+    // Prepare
+    auto mesh = MakeSmallSizeTriangularMesh();
+
+    // Polygon sample
+    std::vector<GridGeom::Point> point;
+    point.push_back({ 399.638169557229, 504.294564030922 });
+    point.push_back({ 361.827403800769, 129.967983041964 });
+    point.push_back({ 651.709941266965, 113.583317880831 });
+    point.push_back({ 666.834247569549, 411.028008498319 });
+    point.push_back({ 410.981399284167, 505.55492288947 });
+    point.push_back({ 399.638169557229, 504.294564030922 });
+
+    GridGeom::Polygons polygon;
+    polygon.Set(point, mesh.m_projection);
+
+    GridGeom::MeshRefinement  meshRefinement(mesh);
+    GridGeomApi::SampleRefineParametersNative sampleRefineParametersNative;
+
+    GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
+
+    std::vector<GridGeom::Sample> samples;
+    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+
+    // total number of edges
+    ASSERT_EQ(15, mesh.GetNumNodes());
+    ASSERT_EQ(33, mesh.GetNumEdges());
+
+    // assert on newly generated edges
+    ASSERT_EQ(10, mesh.m_edges[20].first);
+    ASSERT_EQ(11, mesh.m_edges[20].second);
+
+    ASSERT_EQ(11, mesh.m_edges[21].first);
+    ASSERT_EQ(12, mesh.m_edges[21].second);
+
+    ASSERT_EQ(12, mesh.m_edges[22].first);
+    ASSERT_EQ(10, mesh.m_edges[22].second);
+
+    ASSERT_EQ(14, mesh.m_edges[23].first);
+    ASSERT_EQ(13, mesh.m_edges[23].second);
+
+    ASSERT_EQ(13, mesh.m_edges[24].first);
+    ASSERT_EQ(11, mesh.m_edges[24].second);
+
+    ASSERT_EQ(11, mesh.m_edges[25].first);
+    ASSERT_EQ(14, mesh.m_edges[25].second);
+
+    ASSERT_EQ(10, mesh.m_edges[26].first);
+    ASSERT_EQ(4, mesh.m_edges[26].second);
+}
+
 
 TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 {
@@ -563,5 +575,4 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     ASSERT_EQ(10, mesh.m_edges[48].first);
     ASSERT_EQ(27, mesh.m_edges[48].second);
-
 }
