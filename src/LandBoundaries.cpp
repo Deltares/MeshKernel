@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <iostream>
 #include "Mesh.hpp"
 #include "Entities.hpp"
 #include "Constants.cpp"
@@ -336,7 +335,7 @@ namespace GridGeom
                         }
                     }
 
-                    //TODO: maybe this is not completly correct
+                    //TODO: CHECK
                     if (landboundarySegmentIndex == -1)
                         return false;
 
@@ -387,7 +386,7 @@ namespace GridGeom
         int endNode = m_segmentIndices[startSegmentIndex][1];
 
         Point newNodeLeft;
-        if (Distance(mesh.m_nodes[nodeIndex], m_nodes[startNode], mesh.m_projection) <= Distance(mesh.m_nodes[nodeIndex], m_nodes[endNode], mesh.m_projection))
+        if (SquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[startNode], mesh.m_projection) <= SquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[endNode], mesh.m_projection))
         {
             newNodeLeft = m_nodes[startNode];
         }
@@ -406,7 +405,7 @@ namespace GridGeom
             // find start/end
             startNode = m_segmentIndices[endSegmentIndex][0];
             endNode = m_segmentIndices[endSegmentIndex][1];
-            if (Distance(mesh.m_nodes[nodeIndex], m_nodes[startNode], mesh.m_projection) <= Distance(mesh.m_nodes[nodeIndex], m_nodes[endNode], mesh.m_projection))
+            if (SquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[startNode], mesh.m_projection) <= SquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[endNode], mesh.m_projection))
             {
                 newNodeRight = m_nodes[startNode];
             }
@@ -951,7 +950,7 @@ namespace GridGeom
         int stepNode = 0;
         while (searchIter < 3)
         {
-            const double landBoundaryLength = Distance(m_nodes[currentNode], m_nodes[currentNode + 1], mesh.m_projection);
+            const double landBoundaryLength = SquaredDistance(m_nodes[currentNode], m_nodes[currentNode + 1], mesh.m_projection);
 
             if (landBoundaryLength > 0)
             {
@@ -1124,8 +1123,8 @@ namespace GridGeom
         // Find start and end node on the found edges
         int firstMeshNodeIndex = mesh.m_edges[startEdge].first;
         int secondMeshNodeIndex = mesh.m_edges[startEdge].second;
-        double firstDinstance = Distance(mesh.m_nodes[firstMeshNodeIndex], startPoint, mesh.m_projection);
-        double secondDinstance = Distance(mesh.m_nodes[secondMeshNodeIndex], startPoint, mesh.m_projection);
+        double firstDinstance = SquaredDistance(mesh.m_nodes[firstMeshNodeIndex], startPoint, mesh.m_projection);
+        double secondDinstance = SquaredDistance(mesh.m_nodes[secondMeshNodeIndex], startPoint, mesh.m_projection);
 
         if (firstDinstance <= secondDinstance)
         {
@@ -1138,8 +1137,8 @@ namespace GridGeom
 
         firstMeshNodeIndex = mesh.m_edges[endEdge].first;
         secondMeshNodeIndex = mesh.m_edges[endEdge].second;
-        firstDinstance = Distance(mesh.m_nodes[firstMeshNodeIndex], endPoint, mesh.m_projection);
-        secondDinstance = Distance(mesh.m_nodes[secondMeshNodeIndex], endPoint, mesh.m_projection);
+        firstDinstance = SquaredDistance(mesh.m_nodes[firstMeshNodeIndex], endPoint, mesh.m_projection);
+        secondDinstance = SquaredDistance(mesh.m_nodes[secondMeshNodeIndex], endPoint, mesh.m_projection);
 
         if (firstDinstance <= secondDinstance)
         {
@@ -1229,9 +1228,6 @@ namespace GridGeom
                 if (!successful)
                     return false;
 
-
-                double firstNodeDistance = Distance(currentNodeOnLandBoundary, middlePointOnLandBoundary, mesh.m_projection);
-                double secondNodeDistance = Distance(neighbouringNodeOnLandBoundary, middlePointOnLandBoundary, mesh.m_projection);
                 double maximumDistance = std::max(currentNodeDistance, neighbouringNodeDistance);
 
                 if (currentNodeLandBoundaryNodeIndex < neighbouringNodeLandBoundaryNodeIndex)
@@ -1345,9 +1341,6 @@ namespace GridGeom
         {
             return true;
         }
-
-        bool isCrossed = false;
-        bool areCrossing = false;
 
         for (int e = 0; e < mesh.m_facesEdges[face].size(); e++)
         {

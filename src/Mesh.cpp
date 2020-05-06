@@ -1447,10 +1447,10 @@ bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexI
         const auto absDy = std::abs(GetDy(m_nodes[n], point, m_projection));
         if (absDx < searchRadius && absDy < searchRadius)
         {
-            const double distance = Distance(m_nodes[n], point, m_projection);
-            if (distance < closestDistance)
+            const double squaredDistance = SquaredDistance(m_nodes[n], point, m_projection);
+            if (squaredDistance < closestDistance)
             {
-                closestDistance = distance;
+                closestDistance = squaredDistance;
                 vertexIndex = n;
             }
         }
@@ -1480,10 +1480,10 @@ bool GridGeom::Mesh::DeleteEdgeCloseToAPoint(Point point, double searchRadius)
 
         if (absDx < searchRadius && absDy < searchRadius)
         {
-            const double distance = Distance(point, edgeCenter, m_projection);
-            if (distance < closestDistance)
+            const double squaredDistance = SquaredDistance(point, edgeCenter, m_projection);
+            if (squaredDistance < closestDistance)
             {
-                closestDistance = distance;
+                closestDistance = squaredDistance;
                 edgeIndex = e;
             }
         }
@@ -1670,35 +1670,27 @@ GridGeom::Mesh& GridGeom::Mesh::operator+=(Mesh const& rhs)
         return *this;
     }
 
-    std::vector<Point> nodes(GetNumNodes() + rhs.GetNumNodes());
-    std::vector<Edge> edges(GetNumEdges() + rhs.GetNumEdges());
+    int rhsNumNodes = rhs.GetNumNodes();
+    int rhsNumEdges = rhs.GetNumEdges();
+    ResizeVectorIfNeeded(GetNumEdges() + rhsNumEdges, m_edges,{ doubleMissingValue, doubleMissingValue });
+    ResizeVectorIfNeeded(GetNumNodes() + rhsNumNodes, m_nodes, { doubleMissingValue, doubleMissingValue });
 
     //copy mesh nodes
-    for (int n = 0; n < GetNumNodes(); ++n)
-    {
-        nodes[n] = m_nodes[n];
-    }
-
-    for (int n = GetNumNodes(); n < nodes.size(); ++n)
+    for (int n = GetNumNodes(); n < GetNumNodes() + rhsNumNodes; ++n)
     {
         const int index = n - GetNumNodes();
-        nodes[n] = rhs.m_nodes[index];
+        m_nodes[n] = rhs.m_nodes[index];
     }
 
     //copy mesh edges
-    for (int e = 0; e < GetNumEdges(); ++e)
-    {
-        edges[e] = m_edges[e];
-    }
-
-    for (int e = GetNumEdges(); e < edges.size(); ++e)
+    for (int e = GetNumEdges(); e < GetNumEdges() + rhsNumEdges; ++e)
     {
         const int index = e - GetNumEdges();
-        edges[e].first = rhs.m_edges[index].first + GetNumNodes();
-        edges[e].second = rhs.m_edges[index].second + GetNumNodes();
+        m_edges[e].first = rhs.m_edges[index].first + GetNumNodes();
+        m_edges[e].second = rhs.m_edges[index].second + GetNumNodes();
     }
 
-    Set(edges, nodes, m_projection);
+    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     return *this;
 }

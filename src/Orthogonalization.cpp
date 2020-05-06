@@ -1128,7 +1128,7 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
         int numFaceNodes = mesh.GetNumFaceEdges(sharedFaces[f]);
         if (numFaceNodes > maximumNumberOfEdgesPerNode)
         {
-            //TODO: error
+            //TODO: add logger
             return false;
         }
 

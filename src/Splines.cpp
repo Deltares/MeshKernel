@@ -687,8 +687,6 @@ bool GridGeom::Splines::GrowLayer(int layerIndex)
         // update the time step
         totalTimeStep += localTimeStep;
 
-        //TODO: here split and convert to grid if needed
-
         if (totalTimeStep < m_timeStep)
         {
             success = ComputeVelocitiesAtGridPoints(layerIndex, velocityVectorAtGridPoints);
