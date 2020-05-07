@@ -386,7 +386,7 @@ namespace GridGeom
         int endNode = m_segmentIndices[startSegmentIndex][1];
 
         Point newNodeLeft;
-        if (SquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[startNode], mesh.m_projection) <= SquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[endNode], mesh.m_projection))
+        if (ComputeSquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[startNode], mesh.m_projection) <= ComputeSquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[endNode], mesh.m_projection))
         {
             newNodeLeft = m_nodes[startNode];
         }
@@ -405,7 +405,7 @@ namespace GridGeom
             // find start/end
             startNode = m_segmentIndices[endSegmentIndex][0];
             endNode = m_segmentIndices[endSegmentIndex][1];
-            if (SquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[startNode], mesh.m_projection) <= SquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[endNode], mesh.m_projection))
+            if (ComputeSquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[startNode], mesh.m_projection) <= ComputeSquaredDistance(mesh.m_nodes[nodeIndex], m_nodes[endNode], mesh.m_projection))
             {
                 newNodeRight = m_nodes[startNode];
             }
@@ -950,7 +950,7 @@ namespace GridGeom
         int stepNode = 0;
         while (searchIter < 3)
         {
-            const double landBoundaryLength = SquaredDistance(m_nodes[currentNode], m_nodes[currentNode + 1], mesh.m_projection);
+            const double landBoundaryLength = ComputeSquaredDistance(m_nodes[currentNode], m_nodes[currentNode + 1], mesh.m_projection);
 
             if (landBoundaryLength > 0)
             {
@@ -1123,8 +1123,8 @@ namespace GridGeom
         // Find start and end node on the found edges
         int firstMeshNodeIndex = mesh.m_edges[startEdge].first;
         int secondMeshNodeIndex = mesh.m_edges[startEdge].second;
-        double firstDinstance = SquaredDistance(mesh.m_nodes[firstMeshNodeIndex], startPoint, mesh.m_projection);
-        double secondDinstance = SquaredDistance(mesh.m_nodes[secondMeshNodeIndex], startPoint, mesh.m_projection);
+        double firstDinstance = ComputeSquaredDistance(mesh.m_nodes[firstMeshNodeIndex], startPoint, mesh.m_projection);
+        double secondDinstance = ComputeSquaredDistance(mesh.m_nodes[secondMeshNodeIndex], startPoint, mesh.m_projection);
 
         if (firstDinstance <= secondDinstance)
         {
@@ -1137,8 +1137,8 @@ namespace GridGeom
 
         firstMeshNodeIndex = mesh.m_edges[endEdge].first;
         secondMeshNodeIndex = mesh.m_edges[endEdge].second;
-        firstDinstance = SquaredDistance(mesh.m_nodes[firstMeshNodeIndex], endPoint, mesh.m_projection);
-        secondDinstance = SquaredDistance(mesh.m_nodes[secondMeshNodeIndex], endPoint, mesh.m_projection);
+        firstDinstance = ComputeSquaredDistance(mesh.m_nodes[firstMeshNodeIndex], endPoint, mesh.m_projection);
+        secondDinstance = ComputeSquaredDistance(mesh.m_nodes[secondMeshNodeIndex], endPoint, mesh.m_projection);
 
         if (firstDinstance <= secondDinstance)
         {
