@@ -306,9 +306,8 @@ bool GridGeom::Orthogonalization::InnerIteration(Mesh& mesh)
         {
             dx0 = (dx0 + m_rightHandSideCache[firstCacheIndex]) / m_increments[firstCacheIndex];
             dy0 = (dy0 + m_rightHandSideCache[firstCacheIndex +1]) / m_increments[firstCacheIndex +1];
+            orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], m_orthogonalCoordinates[n], mesh.m_projection);
         }
-
-        orthogonalizationComputeCoordinates(dx0, dy0, mesh.m_nodes[n], m_orthogonalCoordinates[n], mesh.m_projection);
     }
 	
     // update mesh node coordinates
