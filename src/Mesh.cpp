@@ -398,7 +398,7 @@ bool GridGeom::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
     }
 
     int faceIndex = 0;
-    m_faceNodes.resize(GetNumFaces() * maximumNumberOfNodesPerFace, -1);
+    m_faceNodes.resize(GetNumFaces() * maximumNumberOfNodesPerFace, intMissingValue);
     m_facesCircumcentersx.resize(GetNumFaces());
     m_facesCircumcentersy.resize(GetNumFaces());
     m_facesCircumcentersz.resize(GetNumFaces());
@@ -436,7 +436,7 @@ bool GridGeom::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
     }
     if (m_faceNodes.empty())
     {
-        m_faceNodes.resize(1);
+        m_faceNodes.resize(1, intMissingValue);
     }
     if (m_facesCircumcentersx.empty())
     {

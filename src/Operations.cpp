@@ -521,6 +521,7 @@ namespace GridGeom
         }
         if (projection == Projections::spherical)
         {
+            //TODO
             //if (JSFERIC.eq.1 . and .jasfer3D.eq.0) xn = xn * cos(dg2rd * 0.5d0 * (y0 + y1)) !normal vector needs to be in Cartesian coordinates
         }
     }
@@ -1024,12 +1025,27 @@ namespace GridGeom
         }
         if (projection == Projections::spherical)
         {
-            //TODO: implement
-            //if (jsferic.eq.1 . and .jasfer3D.eq.1) then
-            //    dumx(1) = relaxin * Dx0
-            //    dumy(1) = relaxin * Dy0
-            //    call loc2spher(xk(k), yk(k), 1, dumx, dumy, xk1(k), yk1(k))
-            //else
+            Point localPoint{ relaxationFactorOrthogonalizationUpdate * dx0, relaxationFactorOrthogonalizationUpdate * dy0 };
+
+            double phi0 = point.y * degrad_hp;
+            double lambda0 = point.x * degrad_hp;
+
+            //compute base vectors
+            double exxp[3] = { std::cos(phi0) * std::cos(lambda0), std::cos(phi0) * std::sin(lambda0), std::sin(phi0) };
+            double eyyp[3] = { -std::sin(lambda0), std::cos(lambda0), 0.0 };
+            double ezzp[3] = { -std::sin(phi0) * std::cos(lambda0), -std::sin(phi0) * std::sin(lambda0), std::cos(phi0) };
+
+            //get 3D-coordinates in rotated frame
+            cartesian3DPoint cartesianLocalPoint;
+            SphericalToCartesian(localPoint, cartesianLocalPoint);
+
+            cartesian3DPoint transformedCartesianLocalPoint;
+            transformedCartesianLocalPoint.x = exxp[0] * cartesianLocalPoint.x + eyyp[0] * cartesianLocalPoint.y + ezzp[0] * cartesianLocalPoint.z;
+            transformedCartesianLocalPoint.y = exxp[1] * cartesianLocalPoint.x + eyyp[1] * cartesianLocalPoint.y + ezzp[1] * cartesianLocalPoint.z;
+            transformedCartesianLocalPoint.z = exxp[2] * cartesianLocalPoint.x + eyyp[2] * cartesianLocalPoint.y + ezzp[2] * cartesianLocalPoint.z;
+
+            //tranform to spherical coordinates
+            CartesianToSpherical(transformedCartesianLocalPoint, point.x, updatedPoint);
         }
         return true;
     }
