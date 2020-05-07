@@ -1447,7 +1447,7 @@ bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexI
         const auto absDy = std::abs(GetDy(m_nodes[n], point, m_projection));
         if (absDx < searchRadius && absDy < searchRadius)
         {
-            const double squaredDistance = SquaredDistance(m_nodes[n], point, m_projection);
+            const double squaredDistance = ComputeSquaredDistance(m_nodes[n], point, m_projection);
             if (squaredDistance < closestDistance)
             {
                 closestDistance = squaredDistance;
@@ -1480,7 +1480,7 @@ bool GridGeom::Mesh::DeleteEdgeCloseToAPoint(Point point, double searchRadius)
 
         if (absDx < searchRadius && absDy < searchRadius)
         {
-            const double squaredDistance = SquaredDistance(point, edgeCenter, m_projection);
+            const double squaredDistance = ComputeSquaredDistance(point, edgeCenter, m_projection);
             if (squaredDistance < closestDistance)
             {
                 closestDistance = squaredDistance;

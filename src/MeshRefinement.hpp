@@ -71,6 +71,7 @@ namespace GridGeom
         ///split_cells
         bool SplitFaces();
 
+        ///refine_cells
         bool RefineFaces(int numEdgesBeforeRefinemet);
 
         // mesh R-Tree
