@@ -1080,11 +1080,8 @@ bool GridGeom::Splines::ComputeVelocitiesAtGridPoints
 
         if (m_projection == Projections::spherical)
         {
-            // use to spherical?
-            velocityVector[m].TransformToSpherical();
-            //TODO: check the results
-            //vel(1, i) = vel(1, i) * Rai*rd2dg / cos(dg2rd*yc(i));
-            //vel(2, i) = vel(2, i) * Rai*rd2dg; 
+            velocityVector[m].x = velocityVector[m].x * earth_radius * raddeg_hp / std::cos(degrad_hp * m_gridPoints[layerIndex][m].y);
+            velocityVector[m].y = velocityVector[m].y * earth_radius * raddeg_hp;
         }
     }
     return true;

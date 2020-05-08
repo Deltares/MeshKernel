@@ -678,6 +678,7 @@ src/Splines.cpp -text
 src/Splines.hpp -text
 src/SplinesToCurvilinearParametersNative.hpp -text
 src/main.cpp -text
+src/tests/FunctionsTest.cpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/LandBoundaryTest.cpp -text
 src/tests/MakeMeshes.cpp -text

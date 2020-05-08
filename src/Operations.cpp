@@ -610,37 +610,52 @@ namespace GridGeom
     ///Computes the normal vector to a line 1-2, which is *outward* w.r.t.
     ///an 'inside' point 3. Similar to normalout, except that the normal
     ///vector may be flipped based on the 'inside' point.
-    static void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, bool& flippedNormal, Projections projection)
+    ///TODO:test me
+    static void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, Projections projection)
     {
-        NormalVector(firstPoint, secondPoint, insidePoint, result, projection);
+        NormalVector(firstPoint, secondPoint, insidePoint, normal, projection);
+        Point thirdPoint;
         if (projection == Projections::cartesian)
         {
             flippedNormal = false;
-            Point thirdPoint{ firstPoint.x + result.x, firstPoint.y + result.y };
-
-            if (OuterProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint, projection) * OuterProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint, projection) > 0.0)
-            {
-                result.x = -result.x;
-                result.y = -result.y;
-                flippedNormal = true;
-            }
-            else
-            {
-                flippedNormal = false;
-            }
+            thirdPoint.x = firstPoint.x + normal.x;
+            thirdPoint.y = firstPoint.y + normal.y;
         }
         if (projection == Projections::spherical)
         {
             Point middle;
             MiddlePoint(firstPoint, secondPoint, middle, projection);
             Point localComponents;
-            TransformGlobalVectorToLocal(firstPoint, middle, result, projection,localComponents);
+            TransformGlobalVectorToLocal(firstPoint, middle, normal, projection,localComponents);
             double elambda[3];
             double ephi[3];
-            ComputeTwoBaseComponents(localComponents, elambda, ephi);
+            ComputeTwoBaseComponents(firstPoint, elambda, ephi);
 
-            //..//
+            double vxx = localComponents.x * elambda[0] + localComponents.y * ephi[0];
+            double vyy = localComponents.x * elambda[1] + localComponents.y * ephi[1];
+            double vzz = localComponents.x * elambda[2] + localComponents.y * ephi[2];
 
+            Cartesian3DPoint firstPointCartesian;
+            SphericalToCartesian(firstPoint, firstPointCartesian);
+            
+            Cartesian3DPoint rotatedPoint;
+            double alpha = 0.0;
+            rotatedPoint.x = firstPointCartesian.x + alpha * vxx;
+            rotatedPoint.y = firstPointCartesian.y + alpha * vyy;
+            rotatedPoint.z = firstPointCartesian.z + alpha * vzz;
+
+            CartesianToSpherical(rotatedPoint, firstPoint.x, thirdPoint);
+        }
+
+        if (OuterProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint, projection) * OuterProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint, projection) > 0.0)
+        {
+            normal.x = -normal.x;
+            normal.y = -normal.y;
+            flippedNormal = true;
+        }
+        else
+        {
+            flippedNormal = false;
         }
     }
 
@@ -1167,44 +1182,31 @@ namespace GridGeom
 
     static bool CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, const Projections projection, Point& circumcenter)
     {
+
+        double dx2 = GetDx(p1, p2, projection);
+        double dy2 = GetDy(p1, p2, projection);
+
+        double dx3 = GetDx(p1, p3, projection);
+        double dy3 = GetDy(p1, p3, projection);
+
+        double den = dy2 * dx3 - dy3 * dx2;
+        double z = 0.0;
+        if (std::abs(den) > 0.0)
+        {
+            z = (dx2 * (dx2 - dx3) + dy2 * (dy2 - dy3)) / den;
+        }
+
         if (projection == Projections::cartesian)
         {
-            double dx2 = GetDx(p1, p2, projection);
-            double dy2 = GetDy(p1, p2, projection);
-
-            double dx3 = GetDx(p1, p3, projection);
-            double dy3 = GetDy(p1, p3, projection);
-
-            double den = dy2 * dx3 - dy3 * dx2;
-            double z = 0.0;
-            if (den != 0.0)
-            {
-                z = (dx2 * (dx2 - dx3) + dy2 * (dy2 - dy3)) / den;
-            }
-
             circumcenter.x = p1.x + 0.5 * (dx3 - z * dy3);
             circumcenter.y = p1.y + 0.5 * (dy3 + z * dx3);
         }
         if (projection == Projections::spherical)
         {
-            double dx2 = GetDx(p1, p2, projection);
-            double dy2 = GetDy(p1, p2, projection);
-
-            double dx3 = GetDx(p1, p3, projection);
-            double dy3 = GetDy(p1, p3, projection);
-
-            double den = dy2 * dx3 - dy3 * dx2;
-            double z = 0.0;
-            if (den > 1e-16)
-            {
-                z = (dx2 * (dx2 - dx3) + dy2 * (dy2 - dy3)) / den;
-            }
-
-            //TODO circumcenter3 FINISH
-            //phi = (y(1) + y(2) + y(3)) / 3d0
-            //    xf = 1d0 / dcos(degrad_hp * phi)
-            //    xz = x(1) + xf * 0.5d0 * (dx3 - z * dy3) * raddeg_hp / earth_radius
-            //    yz = y(1) + 0.5d0 * (dy3 + z * dx3) * raddeg_hp / earth_radius
+            double phi = (p1.y + p2.y + p3.y) / 3.0;
+            double xf = 1.0 / cos(degrad_hp * phi);
+            circumcenter.x = p1.x + xf * 0.5 * (dx3 - z * dy3) * raddeg_hp / earth_radius;
+            circumcenter.y = p1.y + 0.5 * (dy3 + z * dx3) * raddeg_hp / earth_radius;
         }
         return true;
     }
