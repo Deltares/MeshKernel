@@ -13,6 +13,12 @@ namespace GridGeom
         sphericalOperations
     };
 
+    enum class Projections
+    {
+        cartesian,
+        spherical
+    };
+
     struct Point
     {
         double x;
@@ -144,12 +150,6 @@ namespace GridGeom
     {
         std::vector<double> x;
         std::vector<double> y;
-    };
-
-    enum class Projections
-    {
-        cartesian,
-        spherical
     };
 
     typedef std::pair<int, int> Edge;

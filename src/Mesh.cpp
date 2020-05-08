@@ -1411,9 +1411,9 @@ bool GridGeom::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
     return true;
 }
 
-bool GridGeom::Mesh::OffsetSphericalCoordinates(double minx, double miny)
+bool GridGeom::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
 {
-    if(m_projection==Projections::spherical)
+    if(m_projection==Projections::spherical && maxx - minx > 180.0)
     {
         for (int n = 0; n < GetNumNodes(); ++n)
         {
