@@ -690,7 +690,7 @@ src/tests/SpatialTreesTest.cpp -text
 src/tests/SplineTest.cpp -text
 tests/FindFaces.pol -text
 tests/FourSplines.spl -text
-tests/MakeNetPolygon.pol -text
+tests/MakeMeshInPolygon.pol -text
 tests/OffsetAPolygonTest.pli -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
 tests/SamplesForMeshRefinement.xyz -text

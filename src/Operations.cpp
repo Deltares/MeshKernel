@@ -291,58 +291,6 @@ namespace GridGeom
         return windingNumber == 0 ? false : true;
     }
 
-    static double GetDx(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
-    {
-        if (projection == Projections::cartesian)
-        {
-            return secondPoint.x - firstPoint.x;
-        }
-        if (projection == Projections::spherical)
-        {
-            bool  isFirstPointOnPole = IsPointOnPole(firstPoint);
-            bool  isSecondPointOnPole = IsPointOnPole(secondPoint);
-            if (isFirstPointOnPole && !isSecondPointOnPole || !isFirstPointOnPole && isSecondPointOnPole)
-            {
-                return 0.0;
-            }
-            double firstPointX = firstPoint.x;
-            double secondPointX = secondPoint.x;
-            if (firstPointX - secondPointX > 180.0)
-            {
-                firstPointX -= 360.0;
-            }
-            else if (firstPointX - secondPointX < -180.0)
-            {
-                firstPointX += 360.0;
-            }
-
-            firstPointX = firstPointX * degrad_hp;
-            secondPointX = secondPointX * degrad_hp;
-            double firstPointY = firstPoint.y * degrad_hp;
-            double secondPointY = secondPoint.y * degrad_hp;
-            double cosPhi = cos(0.5 * (firstPointY + secondPointY));
-            double dx = earth_radius * cosPhi * (secondPointX - firstPointX);
-            return dx;
-        }
-        return doubleMissingValue;
-    }
-
-    static double GetDy(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
-    {
-        if (projection == Projections::cartesian)
-        {
-            return secondPoint.y - firstPoint.y;
-        }
-        if (projection == Projections::spherical)
-        {
-            double firstPointY = firstPoint.y * degrad_hp;
-            double secondPointY = secondPoint.y * degrad_hp;
-            double dy = earth_radius * (secondPointY - firstPointY);
-            return dy;
-        }
-        return doubleMissingValue;
-    }
-
 
     static bool ComputeThreeBaseComponents(const Point& point, double(&exxp)[3], double(&eyyp)[3], double(&ezzp)[3])
     {
@@ -381,21 +329,75 @@ namespace GridGeom
         return true;
     };
 
+    static double GetDx(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    {
+        double delta = secondPoint.x - firstPoint.x;
+        if (std::abs(delta) <= nearlyZero)
+        {
+            return 0.0;
+        }
+
+        if (projection == Projections::cartesian)
+        {
+            return delta;
+        }
+        if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
+        {
+            bool  isFirstPointOnPole = IsPointOnPole(firstPoint);
+            bool  isSecondPointOnPole = IsPointOnPole(secondPoint);
+            if (isFirstPointOnPole && !isSecondPointOnPole || !isFirstPointOnPole && isSecondPointOnPole)
+            {
+                return 0.0;
+            }
+            double firstPointX = firstPoint.x;
+            double secondPointX = secondPoint.x;
+            if (firstPointX - secondPointX > 180.0)
+            {
+                firstPointX -= 360.0;
+            }
+            else if (firstPointX - secondPointX < -180.0)
+            {
+                firstPointX += 360.0;
+            }
+
+            firstPointX = firstPointX * degrad_hp;
+            secondPointX = secondPointX * degrad_hp;
+            double firstPointY = firstPoint.y * degrad_hp;
+            double secondPointY = secondPoint.y * degrad_hp;
+            double cosPhi = cos(0.5 * (firstPointY + secondPointY));
+            double dx = earth_radius * cosPhi * (secondPointX - firstPointX);
+            return dx;
+        }
+        return doubleMissingValue;
+    }
+
+    static double GetDy(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    {
+        double delta = secondPoint.y - firstPoint.y;
+        if (std::abs(delta)<= nearlyZero)
+        {
+            return 0.0;
+        }
+
+        if (projection == Projections::cartesian)
+        {
+            return delta;
+        }
+        if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
+        {
+            double firstPointY = firstPoint.y * degrad_hp;
+            double secondPointY = secondPoint.y * degrad_hp;
+            double dy = earth_radius * (secondPointY - firstPointY);
+            return dy;
+        }
+        return doubleMissingValue;
+    }
+
     ///dprodout: out product of two segments
     static double OuterProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment,
         const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
-        if (projection == Projections::cartesian)
-        {
-            double dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
-
-            double dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
-
-            return dx1 * dy2 - dy1 * dx2;
-        }
-        if (projection == Projections::spherical)
+        if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointFirstSegmentCartesian;
             SphericalToCartesian(firstPointFirstSegment, firstPointFirstSegmentCartesian);
@@ -435,13 +437,26 @@ namespace GridGeom
             }
             return result;
         }
+
+        // cartesian and spherical
+        if (projection == Projections::cartesian || projection == Projections::spherical)
+        {
+            double dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
+
+            double dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
+
+            return dx1 * dy2 - dy1 * dx2;
+        }
+
         return doubleMissingValue;
     }
 
     /// half
     static void MiddlePoint(const Point& firstPoint, const Point& secondPoint, Point& result, const Projections& projection)
     {
-        if (projection == Projections::spherical)
+        if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointCartesianCoordinates;
             SphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
@@ -455,18 +470,18 @@ namespace GridGeom
 
             CartesianToSpherical(middleCartesianPointCoordinate, referenceLongitude, result);
         }
-        if (projection == Projections::cartesian)
+
+        // cartesian and spherical
+        if (projection == Projections::cartesian || projection == Projections::spherical)
         {
-            result = (firstPoint + secondPoint) * 0.5 ;
-        }
+            result = (firstPoint + secondPoint) * 0.5;
+        }  
     }
 
 
     static bool ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projections& projection, Point& centre)
     {
-
-        centre = (firstPoint + secondPoint) * 0.5;
-        if (projection == Projections::spherical)
+        if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
         {
             centre.y = (firstPoint.y + secondPoint.y) / 2.0;
             const auto isFirstNodeOnPole = IsPointOnPole(firstPoint);
@@ -492,26 +507,19 @@ namespace GridGeom
             }
         }
 
+        // cartesian
+        if (projection == Projections::cartesian)
+        {
+            centre = (firstPoint + secondPoint) * 0.5;
+        }
+
         return true;
     }
 
     ///normalin, Normalized vector in direction 1 -> 2, in the orientation of (xu,yu)
     static void NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, const Projections& projection)
-    {
-
-        if (projection == Projections::cartesian)
-        {
-            double dx = GetDx(firstPoint, secondPoint, projection);
-            double dy = GetDy(firstPoint, secondPoint, projection);
-            const double squaredDistance = dx * dx + dy * dy;
-            if (squaredDistance > 0.0)
-            {
-                const double distance = sqrt(squaredDistance);
-                result.x = dy / distance;
-                result.y = -dx / distance;
-            }
-        }
-        if (projection == Projections::spherical)
+    {  
+        if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointCartesianCoordinates;
             Cartesian3DPoint secondPointCartesianCoordinates;
@@ -538,19 +546,27 @@ namespace GridGeom
                 result.y = dy / distance;
             }
         }
+
+        // cartesian and spherical
+        if (projection == Projections::cartesian || projection == Projections::spherical)
+        {
+            double dx = GetDx(firstPoint, secondPoint, projection);
+            double dy = GetDy(firstPoint, secondPoint, projection);
+            const double squaredDistance = dx * dx + dy * dy;
+            if (squaredDistance > 0.0)
+            {
+                const double distance = sqrt(squaredDistance);
+                result.x = dy / distance;
+                result.y = -dx / distance;
+            }
+        }
     }
 
     //spher2locvec, transforms vector with componentis in global spherical coordinate directions(xglob, yglob) 
     ///to local coordinate directions(xloc, yloc) around reference point(xref, yref)
     static bool TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, Projections projection, Point& localComponents)
     {
-        if (projection == Projections::cartesian)
-        {
-            localComponents = globalComponents;
-            return true;
-        }
-
-        if (projection == Projections::spherical)
+        if (projection == Projections::sphericalAccurate)
         {
             double exxp[3];
             double eyyp[3];
@@ -602,6 +618,13 @@ namespace GridGeom
 
             return true;
         }
+
+        // cartesian and spherical
+        if (projection == Projections::cartesian || projection == Projections::spherical)
+        {
+            localComponents = globalComponents;
+        }
+        
         return true;
     }
 
@@ -615,13 +638,13 @@ namespace GridGeom
     {
         NormalVector(firstPoint, secondPoint, insidePoint, normal, projection);
         Point thirdPoint;
-        if (projection == Projections::cartesian)
+        if (projection == Projections::cartesian || projection == Projections::spherical)
         {
             flippedNormal = false;
             thirdPoint.x = firstPoint.x + normal.x;
             thirdPoint.y = firstPoint.y + normal.y;
         }
-        if (projection == Projections::spherical)
+        if (projection == Projections::sphericalAccurate)
         {
             Point middle;
             MiddlePoint(firstPoint, secondPoint, middle, projection);
@@ -662,27 +685,7 @@ namespace GridGeom
     ///normalout
     static void NormalVectorOutside(const Point& firstPoint, const Point& secondPoint, Point& result, const Projections& projection)
     {
-        double dx = 0.0;
-        double dy = 0.0;
-        if (projection == Projections::cartesian)
-        {
-            dx = GetDx(firstPoint, secondPoint, projection);
-            dy = GetDy(firstPoint, secondPoint, projection);
-
-            const double squaredDistance = dx * dx + dy * dy;
-            if (squaredDistance > 0.0)
-            {
-                const double distance = sqrt(squaredDistance);
-                result.x = dy / distance;
-                result.y = -dx / distance;
-            }
-            else
-            {
-                result.x = doubleMissingValue;
-                result.y = doubleMissingValue;
-            }
-        }
-        if (projection == Projections::spherical)
+        if (projection == Projections::sphericalAccurate)
         {
             Point middlePoint;
             MiddlePoint(firstPoint, secondPoint, middlePoint, projection);
@@ -698,11 +701,11 @@ namespace GridGeom
             ComputeTwoBaseComponents(middlePoint, elambda, ephi);
 
             // project vector in local base
-            dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
+            double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
                 (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
                 (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
 
-            dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
+            double dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
                 (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
                 (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
 
@@ -723,6 +726,25 @@ namespace GridGeom
             result.y = middlePoint.y;
         }
 
+        // cartesian and spherical
+        if (projection == Projections::cartesian || projection == Projections::spherical)
+        {
+            double dx = GetDx(firstPoint, secondPoint, projection);
+            double dy = GetDy(firstPoint, secondPoint, projection);
+
+            const double squaredDistance = dx * dx + dy * dy;
+            if (squaredDistance > 0.0)
+            {
+                const double distance = sqrt(squaredDistance);
+                result.x = dy / distance;
+                result.y = -dx / distance;
+            }
+            else
+            {
+                result.x = doubleMissingValue;
+                result.y = doubleMissingValue;
+            }
+        }
     }
 
     static void Add(Point& point, const Point& normal, const double increment, const Projections& projection)
@@ -732,7 +754,7 @@ namespace GridGeom
             point.x = point.x + normal.x * increment;
             point.y = point.y + normal.y * increment;
         }
-        if (projection == Projections::spherical)
+        if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
         {
             double convertedIncrement = raddeg_hp * increment / earth_radius;
             double xf = 1.0 / cos(degrad_hp * point.y);
@@ -759,7 +781,7 @@ namespace GridGeom
                 }
             }
         }
-        if (projection == Projections::spherical)
+        if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
         {
             minX = std::numeric_limits<double>::max();
             minY = std::numeric_limits<double>::max();
@@ -803,13 +825,7 @@ namespace GridGeom
             secondPoint.x == doubleMissingValue || secondPoint.y == doubleMissingValue)
             return 0.0;
 
-        if (projection == Projections::cartesian)
-        {
-            double dx = GetDx(firstPoint, secondPoint, projection);
-            double dy = GetDy(firstPoint, secondPoint, projection);
-            return dx * dx + dy * dy;
-        }
-        if (projection == Projections::spherical)
+        if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointCartesian;
             SphericalToCartesian(firstPoint, firstPointCartesian);
@@ -824,6 +840,14 @@ namespace GridGeom
             auto zz2 = secondPointCartesian.z;
 
             return (xx2 - xx1) * (xx2 - xx1) + (yy2 - yy1) * (yy2 - yy1) + (zz2 - zz1) * (zz2 - zz1);
+        }
+
+        //cartesian and spherical
+        if (projection == Projections::cartesian || projection == Projections::spherical)
+        {
+            double dx = GetDx(firstPoint, secondPoint, projection);
+            double dy = GetDy(firstPoint, secondPoint, projection);
+            return dx * dx + dy * dy;
         }
 
         return doubleMissingValue;
@@ -860,7 +884,7 @@ namespace GridGeom
             }
             return dis;
         }
-        if (projection == Projections::spherical)
+        if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstNodeCartesian;
             SphericalToCartesian(firstNode, firstNodeCartesian);
@@ -921,17 +945,7 @@ namespace GridGeom
     /// dprodin inner product of two segments
     static double InnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
-        if (projection == Projections::cartesian)
-        {
-            double dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
-
-            double dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
-
-            return dx1 * dx2 + dy1 * dy2;
-        }
-        if (projection == Projections::spherical)
+        if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointFirstSegment3D;
             Cartesian3DPoint secondPointFirstSegment3D;
@@ -954,53 +968,44 @@ namespace GridGeom
             return DotProduct(dx1, dx2, dy1, dy2, dz1, dz2);
         }
 
+        // cartesian and spherical
+        if (projection == Projections::cartesian || projection == Projections::spherical)
+        {
+            double dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
+
+            double dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
+            double dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
+
+            return dx1 * dx2 + dy1 * dy2;
+        }
+
         return doubleMissingValue;
     }
 
     // dcosphi
     static double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
-        if (projection == Projections::cartesian)
-        {
-            const auto dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
-            const auto dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
-
-            const auto dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
-            const auto dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
-
-            const auto r1 = dx1 * dx1 + dy1 * dy1;
-            const auto r2 = dx2 * dx2 + dy2 * dy2;
-
-            double cosphi;
-            if (r1 <= 0.0 || r2 <= 0.0)
-            {
-                cosphi = doubleMissingValue;
-            }
-
-            cosphi = (dx1 * dx2 + dy1 * dy2) / std::sqrt(r1 * r2);
-            cosphi = std::max(std::min(cosphi, 1.0), -1.0);
-            return cosphi;
-        }
-        if (projection == Projections::spherical)
+        if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointFirstSegmentCartesian;
             SphericalToCartesian(firstPointFirstSegment, firstPointFirstSegmentCartesian);
             auto xx1 = firstPointFirstSegmentCartesian.x;
             auto yy1 = firstPointFirstSegmentCartesian.y;
             auto zz1 = firstPointFirstSegmentCartesian.z;
-
+            
             Cartesian3DPoint secondPointFirstSegmentCartesian;
             SphericalToCartesian(secondPointFirstSegment, secondPointFirstSegmentCartesian);
             auto xx2 = secondPointFirstSegmentCartesian.x;
             auto yy2 = secondPointFirstSegmentCartesian.y;
             auto zz2 = secondPointFirstSegmentCartesian.z;
-
+            
             Cartesian3DPoint firstPointSecondSegmentCartesian;
             SphericalToCartesian(firstPointSecondSegment, firstPointSecondSegmentCartesian);
             auto xx3 = firstPointSecondSegmentCartesian.x;
             auto yy3 = firstPointSecondSegmentCartesian.y;
             auto zz3 = firstPointSecondSegmentCartesian.z;
-
+            
             Cartesian3DPoint secondPointSecondSegmentCartesian;
             SphericalToCartesian(secondPointSecondSegment, secondPointSecondSegmentCartesian);
             auto xx4 = secondPointSecondSegmentCartesian.x;
@@ -1028,156 +1033,31 @@ namespace GridGeom
             }
             return cosphi;
         }
-        return doubleMissingValue;
-    }
-
-    static bool OrthogonalizationComputeLocalCoordinates(const std::vector<int>& m_nodesNumEdges, const std::vector<int>& numConnectedNodes, std::vector<int>& localCoordinates, const Projections& projection)
-    {
-        if (projection == Projections::cartesian)
-        {
-            //do nothing
-        }
-        if (projection == Projections::spherical)
-        {
-            localCoordinates.resize(m_nodesNumEdges.size(), 0);
-            localCoordinates[0] = 1;
-            for (int i = 0; i < m_nodesNumEdges.size(); i++)
-            {
-                localCoordinates[i + 1] = localCoordinates[i] + std::max(m_nodesNumEdges[i] + 1, numConnectedNodes[i]);
-            }
-        }
-        return true;
-    }
-
-    static bool orthogonalizationComputeJacobian(const int currentNode, const std::vector<double>& Jxi, const std::vector<double>& Jeta, const std::vector<std::size_t>& connectedNodes, const int numNodes, const std::vector<Point>& nodes, std::vector<double>& J, const Projections& projection)
-    {
-        if (projection == Projections::cartesian)
-        {
-            J[0] = 0.0;
-            J[1] = 0.0;
-            J[2] = 0.0;
-            J[3] = 0.0;
-            for (int i = 0; i < numNodes; i++)
-            {
-                J[0] += Jxi[i] * nodes[connectedNodes[i]].x;
-                J[1] += Jxi[i] * nodes[connectedNodes[i]].y;
-                J[2] += Jeta[i] * nodes[connectedNodes[i]].x;
-                J[3] += Jeta[i] * nodes[connectedNodes[i]].y;
-            }
-        }
-        if (projection == Projections::spherical)
-        {
-            double factor = std::cos(nodes[currentNode].y) * degrad_hp;
-            J[0] = 0.0;
-            J[1] = 0.0;
-            J[2] = 0.0;
-            J[3] = 0.0;
-            for (int i = 0; i < numNodes; i++)
-            {
-                J[0] += Jxi[i] * nodes[connectedNodes[i]].x;
-                J[1] += Jxi[i] * nodes[connectedNodes[i]].y;
-                J[2] += Jeta[i] * nodes[connectedNodes[i]].x;
-                J[3] += Jeta[i] * nodes[connectedNodes[i]].y;
-            }
-        }
-        return true;
-    }
-
-    static bool orthogonalizationComputeDeltasDxDy(int firstNode, int secondNode, double wwx, double wwy, const std::vector<Point>& nodes, double& dx0, double& dy0, const Projections& projection)
-    {
-        if (projection == Projections::cartesian)
-        {
-            dx0 += wwx * (nodes[firstNode].x - nodes[secondNode].x);
-            dy0 += wwy * (nodes[firstNode].y - nodes[secondNode].y);
-        }
-        if (projection == Projections::spherical)
-        {
-            double wwxTransformed = wwx * earth_radius * degrad_hp;
-            double wwyTransformed = wwy * earth_radius * degrad_hp;
-
-            dx0 += dx0 + wwxTransformed * (nodes[firstNode].x - nodes[secondNode].x);
-            dy0 += dy0 + wwyTransformed * (nodes[firstNode].y - nodes[secondNode].y);
-        }
-        return true;
-    }
-
-    static bool orthogonalizationComputeIncrements(double wwx, double wwy, double* increments, const Projections& projection)
-    {
-        if (projection == Projections::cartesian)
-        {
-            increments[0] += wwx;
-            increments[1] += wwy;
-
-        }
-        if (projection == Projections::spherical)
-        {
-            double wwxTransformed = wwx * earth_radius * degrad_hp;
-            double wwyTransformed = wwy * earth_radius * degrad_hp;
-
-            increments[0] += wwxTransformed;
-            increments[1] += wwyTransformed;
-        }
-        return true;
-    }
-
-    static bool orthogonalizationComputeDeltas(int firstNode, int secondNode, double wwx, double wwy, const std::vector<Point>& nodes, double& dx0, double& dy0, double* increments, const Projections& projection)
-    {
-        if (projection == Projections::cartesian)
-        {
-            increments[0] += wwx;
-            increments[1] += wwy;
-
-            dx0 = dx0 + wwx * (nodes[firstNode].x - nodes[secondNode].x);
-            dy0 = dy0 + wwy * (nodes[firstNode].y - nodes[secondNode].y);
-        }
-        if (projection == Projections::spherical)
-        {
-            double wwxTransformed = wwx * earth_radius * degrad_hp;
-            double wwyTransformed = wwy * earth_radius * degrad_hp;
-
-            increments[0] += wwxTransformed;
-            increments[1] += wwyTransformed;
-
-            dx0 = dx0 + wwxTransformed * (nodes[firstNode].x - nodes[secondNode].x);
-            dy0 = dy0 + wwxTransformed * (nodes[firstNode].y - nodes[secondNode].y);
-        }
-        return true;
-    }
         
-    static bool orthogonalizationComputeCoordinates(double dx0, double dy0, const Point& point, Point& updatedPoint, const Projections& projection)
-    {
-        if (projection == Projections::cartesian)
+        // cartesian and spherical
+        if (projection == Projections::cartesian || projection == Projections::spherical)
         {
-            double x0 = point.x + dx0;
-            double y0 = point.y + dy0;
-            static constexpr double relaxationFactorCoordinates = 1.0 - relaxationFactorOrthogonalizationUpdate;
+            const auto dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
+            const auto dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
 
-            updatedPoint.x = relaxationFactorOrthogonalizationUpdate * x0 + relaxationFactorCoordinates * point.x;
-            updatedPoint.y = relaxationFactorOrthogonalizationUpdate * y0 + relaxationFactorCoordinates * point.y;
+            const auto dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
+            const auto dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
+
+            const auto r1 = dx1 * dx1 + dy1 * dy1;
+            const auto r2 = dx2 * dx2 + dy2 * dy2;
+
+            double cosphi;
+            if (r1 <= 0.0 || r2 <= 0.0)
+            {
+                 return doubleMissingValue;
+            }
+
+            cosphi = (dx1 * dx2 + dy1 * dy2) / std::sqrt(r1 * r2);
+            cosphi = std::max(std::min(cosphi, 1.0), -1.0);
+            return cosphi;
         }
-        if (projection == Projections::spherical)
-        {
-            Point localPoint{ relaxationFactorOrthogonalizationUpdate * dx0, relaxationFactorOrthogonalizationUpdate * dy0 };
 
-            double exxp[3];
-            double eyyp[3];
-            double ezzp[3];
-            ComputeThreeBaseComponents(point, exxp, eyyp, ezzp);
-
-            //get 3D-coordinates in rotated frame
-            Cartesian3DPoint cartesianLocalPoint;
-            SphericalToCartesian(localPoint, cartesianLocalPoint);
-
-            //project to fixed frame
-            Cartesian3DPoint transformedCartesianLocalPoint;
-            transformedCartesianLocalPoint.x = exxp[0] * cartesianLocalPoint.x + eyyp[0] * cartesianLocalPoint.y + ezzp[0] * cartesianLocalPoint.z;
-            transformedCartesianLocalPoint.y = exxp[1] * cartesianLocalPoint.x + eyyp[1] * cartesianLocalPoint.y + ezzp[1] * cartesianLocalPoint.z;
-            transformedCartesianLocalPoint.z = exxp[2] * cartesianLocalPoint.x + eyyp[2] * cartesianLocalPoint.y + ezzp[2] * cartesianLocalPoint.z;
-
-            //tranform to spherical coordinates
-            CartesianToSpherical(transformedCartesianLocalPoint, point.x, updatedPoint);
-        }
-        return true;
+        return doubleMissingValue;
     }
 
     static bool CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, const Projections projection, Point& circumcenter)

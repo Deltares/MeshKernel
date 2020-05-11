@@ -13,6 +13,7 @@ namespace GridGeom
 
     class Orthogonalization
     {
+
     public:
         
         bool Set(Mesh& mesh,
@@ -48,6 +49,9 @@ namespace GridGeom
 
         bool ComputeSmootherOperators(const Mesh& mesh);
 
+        /// comp_local_coords
+        bool ComputeLocalCoordinates(const Mesh& mesh);
+
         /// orthonet_comp_operators, compute coefficient matrix G of gradient at link, compute coefficientmatrix Div of gradient in node, compute coefficientmatrix Az of cell - center in cell
         bool ComputeOperatorsNode(const Mesh& mesh, const int currentNode, const std::size_t& numConnectedNodes, const std::vector<std::size_t>& connectedNodes, const std::size_t& numSharedFaces, const std::vector<int>& sharedFaces,
             const std::vector<double>& xi, const std::vector<double>& eta, const std::vector<std::vector<std::size_t>>& faceNodeMapping);
@@ -61,7 +65,7 @@ namespace GridGeom
 
         double OptimalEdgeAngle(int numFaceNodes, double theta1 = -1.0, double theta2 = -1.0, bool isBoundaryEdge = false);
 
-        ///  orthonet_compute_aspect: compute link - based aspect ratios
+        ///  orthonet_compute_aspect: compute edge - based aspect ratios
         bool AspectRatio(const Mesh& mesh);
 
         /// orthonet_compweights: compute weights wwand right - hand side rhs in orthogonalizer
@@ -79,18 +83,15 @@ namespace GridGeom
 
         bool ComputeIncrements(const Mesh& mesh);
 
+        bool ComputeJacobian(int currentNode, const Mesh& mesh, std::vector<double>& J) const;
+
+        bool ComputeLocalIncrements(double wwx, double wwy, int startingNode, int currentNode, const Mesh& mesh, double* increments) const;
+
+        bool ComputeOrthogonalCoordinates(int nodeIndex, const Mesh& mesh);
+
         bool AllocateCaches(const Mesh& mesh);
 
         bool DeallocateCaches();
-
-        enum class NodeTypes
-        {
-            internalNode,
-            onRing,
-            cornerNode,
-            hangingNode,
-            other
-        };
 
         std::vector<std::vector<std::vector<double>>> m_Az;
         std::vector<std::vector<std::vector<double>>> m_Gxi;
@@ -113,9 +114,10 @@ namespace GridGeom
 
         std::vector<double> m_aspectRatios;
         std::vector<std::vector<double>> m_ww2Global;
-        std::vector<int> m_numConnectedNodes;                            // nmk2, determined from local node administration
+        std::vector<int> m_numConnectedNodes;                                    // nmk2, determined from local node administration
         std::vector<std::vector<std::size_t>> m_connectedNodes;                  // kk2, determined from local node administration
-        std::vector<int> m_localCoordinates;                                     // iloc
+        std::vector<int> m_localCoordinatesIndexes;                              // iloc
+        std::vector<Point> m_localCoordinates;                                   // xloc,yloc 
                                                                                  
         // run-time options                                                      
         bool m_keepCircumcentersAndMassCenters = false;                          
@@ -170,7 +172,7 @@ namespace GridGeom
         std::vector<double> m_nodeYErrors;
         std::vector<int>    m_nodeErrorCode;
 
-        // the land boundary
+        // the land boundaries
         LandBoundaries m_landBoundaries;
 
         // the polygons
