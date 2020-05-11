@@ -32,6 +32,15 @@ namespace GridGeom
             AdministrateMeshEdgesAndFaces
         };
 
+        enum class NodeTypes
+        {
+            internalNode,
+            onRing,
+            cornerNode,
+            hangingNode,
+            other
+        };
+
         Mesh(){}
 
         //gridtonet

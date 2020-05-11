@@ -738,8 +738,7 @@ void GridGeom::Mesh::ComputeFaceCircumcentersMassCentersAreas()
     m_facesCircumcenters.resize(GetNumFaces());
     m_faceArea.resize(GetNumFaces());
     m_facesMassCenters.resize(GetNumFaces());
-    Point centerOfMass;
-    const int maximumNumberCircumcenterIterations = 100;
+
     std::vector<Point> middlePointsCache(maximumNumberOfNodesPerFace);
     std::vector<Point> normalsCache(maximumNumberOfNodesPerFace);
     std::vector<int> numEdgeFacesCache(maximumNumberOfEdgesPerFace);
@@ -930,11 +929,13 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
         {
             for (int m = 0; m < numM; ++m)
             {
-                CurvilinearGrid.m_grid[n][m] = Point
+                double newPointXCoordinate = OriginXCoordinate + m * XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle;
+                double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
+                if(m_projection==Projections::spherical && n > 0)
                 {
-                    OriginXCoordinate + m*XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle,
-                    OriginYCoordinate + m*XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle
-                };
+                    newPointYCoordinate = XGridBlockSize * cos(degrad_hp * CurvilinearGrid.m_grid[n - 1][m].y);
+                }
+                CurvilinearGrid.m_grid[n][m] = { newPointXCoordinate , newPointYCoordinate };
             }
         }
 

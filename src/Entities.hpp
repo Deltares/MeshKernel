@@ -15,8 +15,9 @@ namespace GridGeom
 
     enum class Projections
     {
-        cartesian,
-        spherical
+        cartesian,         // jsferic  = 0
+        spherical,         // jsferic  = 1  
+        sphericalAccurate  // jasfer3D = 1
     };
 
     struct Point
