@@ -76,7 +76,7 @@ TEST(Orthogonalization, TestOrthogonalizationSmallTriangularGrid)
 {
    
     // now build node-edge mapping
-    auto mesh = MakeSmallSizeTriangularMesh();
+    auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 0;
@@ -131,7 +131,7 @@ TEST(Orthogonalization, TestOrthogonalizationSmallTriangularGrid)
 TEST(Orthogonalization, TestOrthogonalizationMediumTriangularGrid)
 {
     // now build node-edge mapping
-    auto mesh = MakeMediumSizeTriangularMesh();
+    auto mesh = MakeMediumSizeTriangularMeshForTesting();
 
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 0;
@@ -253,7 +253,7 @@ TEST(Orthogonalization, TestOrthogonalizationFourQuads)
 TEST(Orthogonalization, OrthogonalizeAndSnapToLandBoundaries)
 {
     // Prepare
-    auto mesh = MakeSmallSizeTriangularMesh();
+    auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     // the land boundary to use
     std::vector<GridGeom::Point> landBoundary

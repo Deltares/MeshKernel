@@ -9,7 +9,7 @@
 TEST(LandBoundaries, OneLandBoundary)
 {
     // Prepare
-    auto mesh = MakeSmallSizeTriangularMesh();
+    auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     GridGeom::LandBoundaries landboundaries;
     std::vector<GridGeom::Point> landBoundaryPolygon
@@ -43,7 +43,7 @@ TEST(LandBoundaries, OneLandBoundary)
 TEST(LandBoundaries, TwoLandBoundaries)
 {
     // Prepare
-    auto mesh = MakeSmallSizeTriangularMesh();
+    auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     GridGeom::LandBoundaries landboundaries;
     std::vector<GridGeom::Point> landBoundaryPolygon
@@ -83,7 +83,7 @@ TEST(LandBoundaries, TwoLandBoundaries)
 TEST(LandBoundaries, OneCrossingLandBoundary)
 {
     // Prepare
-    auto mesh = MakeSmallSizeTriangularMesh();
+    auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
 
     GridGeom::LandBoundaries landboundaries;
@@ -119,7 +119,7 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
 TEST(LandBoundaries, TwoCrossingLandBoundary)
 {
     // Prepare
-    auto mesh = MakeSmallSizeTriangularMesh();
+    auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     GridGeom::LandBoundaries landboundaries;
     std::vector<GridGeom::Point> landBoundaryPolygon

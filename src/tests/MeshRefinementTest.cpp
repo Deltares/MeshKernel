@@ -9,47 +9,7 @@
 
 TEST(MeshRefinement, FourByFourWithFourSamples) 
 {
-    //1 Setup
-    const int n = 5; // x
-    const int m = 5; // y
-    double delta = 10.0;
-
-    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<GridGeom::Point> nodes(n * m);
-    std::size_t nodeIndex = 0;
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = 0; j < m; ++j)
-        {
-            indexesValues[i][j] = i * m + j;
-            nodes[nodeIndex] = { i *delta, j*delta };
-            nodeIndex++;
-        }
-    }
-
-    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
-    std::size_t edgeIndex = 0;
-
-    for (int i = 0; i < n - 1; ++i)
-    {
-        for (int j = 0; j < m; ++j)
-        {
-            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
-            edgeIndex++;
-        }
-    }
-
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = 0; j < m - 1; ++j)
-        {
-            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
-            edgeIndex++;
-        }
-    }
-
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, GridGeom::Projections::cartesian);
 
     //sample points
     std::vector<GridGeom::Sample> samples;
@@ -57,7 +17,6 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     samples.push_back({ 24.7033062, 14.4729137, 1.0 });
     samples.push_back({ 15.5396099, 24.2669525, 1.0 });
     samples.push_back({ 23.8305721, 23.9275551, 1.0 });
-
 
     GridGeom::MeshRefinement  meshRefinement(mesh);
     GridGeom::Polygons polygon;
@@ -134,12 +93,12 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 {
     // Prepare
-    auto mesh = MakeSmallSizeTriangularMesh();
+    auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     //sample points
     std::vector<GridGeom::Sample> samples;
-    samples.push_back({ 359.8657532,350.3144836, 1.0000000 });
-    samples.push_back({ 387.5152588 ,299.2614746, 1.0000000 });
+    samples.push_back({ 359.8657532,350.3144836, 1.0 });
+    samples.push_back({ 387.5152588 ,299.2614746, 1.0 });
 
 
     GridGeom::MeshRefinement  meshRefinement(mesh);
@@ -176,7 +135,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 {
     // Prepare
-    auto mesh = MakeSmallSizeTriangularMesh();
+    auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     // Polygon sample
     std::vector<GridGeom::Point> point;
@@ -230,47 +189,8 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 {
     // Prepare
-    //1 Setup
-    const int n = 4; // x
-    const int m = 4; // y
-    double delta = 10.0;
 
-    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<GridGeom::Point> nodes(n * m);
-    std::size_t nodeIndex = 0;
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = 0; j < m; ++j)
-        {
-            indexesValues[i][j] = i * m + j;
-            nodes[nodeIndex] = { i * delta, j * delta };
-            nodeIndex++;
-        }
-    }
-
-    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
-    std::size_t edgeIndex = 0;
-
-    for (int i = 0; i < n - 1; ++i)
-    {
-        for (int j = 0; j < m; ++j)
-        {
-            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
-            edgeIndex++;
-        }
-    }
-
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = 0; j < m - 1; ++j)
-        {
-            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
-            edgeIndex++;
-        }
-    }
-
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, GridGeom::Projections::cartesian);
 
     //sample points
     std::vector<GridGeom::Sample> samples;
@@ -359,49 +279,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 TEST(MeshRefinement, WindowOfRefinementFile)
 {
     // Prepare
-    //1 Setup
-    const int n = 4; // x
-    const int m = 4; // y
-    double delta = 40.0;
-    double originX = 197253;
-    double originY = 442281;
-
-    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<GridGeom::Point> nodes(n * m);
-    std::size_t nodeIndex = 0;
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = 0; j < m; ++j)
-        {
-            indexesValues[i][j] = i * m + j;
-            nodes[nodeIndex] = { originX + i * delta, originY + j * delta };
-            nodeIndex++;
-        }
-    }
-
-    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
-    std::size_t edgeIndex = 0;
-
-    for (int i = 0; i < n - 1; ++i)
-    {
-        for (int j = 0; j < m; ++j)
-        {
-            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
-            edgeIndex++;
-        }
-    }
-
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = 0; j < m - 1; ++j)
-        {
-            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
-            edgeIndex++;
-        }
-    }
-
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, GridGeom::Projections::cartesian, { 197253.0,442281.0 });
 
     //sample points
     std::vector<GridGeom::Sample> samples;
@@ -475,49 +353,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 TEST(MeshRefinement, RefineBasedOnPolygon)
 {
     // Prepare
-    //1 Setup
-    const int n = 5; 
-    const int m = 5; 
-    double delta = 10.0;
-    double originX = 0.0;
-    double originY = 0.0;
-
-    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<GridGeom::Point> nodes(n * m);
-    std::size_t nodeIndex = 0;
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = 0; j < m; ++j)
-        {
-            indexesValues[i][j] = i * m + j;
-            nodes[nodeIndex] = { originX + i * delta, originY + j * delta };
-            nodeIndex++;
-        }
-    }
-
-    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
-    std::size_t edgeIndex = 0;
-
-    for (int i = 0; i < n - 1; ++i)
-    {
-        for (int j = 0; j < m; ++j)
-        {
-            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
-            edgeIndex++;
-        }
-    }
-
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = 0; j < m - 1; ++j)
-        {
-            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
-            edgeIndex++;
-        }
-    }
-
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, GridGeom::Projections::cartesian);
 
     //sample points
     std::vector<GridGeom::Sample> samples;
@@ -575,4 +411,60 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     ASSERT_EQ(10, mesh.m_edges[48].first);
     ASSERT_EQ(27, mesh.m_edges[48].second);
+}
+
+
+TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
+{
+
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, GridGeom::Projections::spherical,{41.1,41.1});
+
+    //sample points
+    std::vector<GridGeom::Sample> samples;
+    samples.push_back({ 41.1050110, 41.1049728, 1.0 });
+    samples.push_back({ 41.1084785, 41.1048775, 1.0 });
+    samples.push_back({ 41.1085625, 41.1083946, 1.0 });
+    samples.push_back({ 41.1052971, 41.1083336, 1.0 });
+
+    GridGeom::MeshRefinement  meshRefinement(mesh);
+    GridGeom::Polygons polygon;
+    GridGeomApi::SampleRefineParametersNative sampleRefineParametersNative;
+    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.000527;
+    sampleRefineParametersNative.MinimumCellSize = 0.00165;
+    sampleRefineParametersNative.AccountForSamplesOutside = false;
+    sampleRefineParametersNative.ConnectHangingNodes = 1;
+
+    GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
+
+    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+
+    ASSERT_EQ(60, mesh.GetNumEdges());
+    ASSERT_EQ(32, mesh.GetNumNodes());
+
+    //sides of the refined part
+    ASSERT_EQ(5, mesh.m_edges[5].first);
+    ASSERT_EQ(16, mesh.m_edges[5].second);
+
+    ASSERT_EQ(16, mesh.m_edges[40].first);
+    ASSERT_EQ(9, mesh.m_edges[40].second);
+
+    ASSERT_EQ(9, mesh.m_edges[9].first);
+    ASSERT_EQ(19, mesh.m_edges[9].second);
+
+    ASSERT_EQ(19, mesh.m_edges[43].first);
+    ASSERT_EQ(13, mesh.m_edges[43].second);
+
+    ASSERT_EQ(6, mesh.m_edges[16].first);
+    ASSERT_EQ(22, mesh.m_edges[16].second);
+
+    ASSERT_EQ(22, mesh.m_edges[46].first);
+    ASSERT_EQ(5, mesh.m_edges[46].second);
+
+    ASSERT_EQ(7, mesh.m_edges[17].first);
+    ASSERT_EQ(23, mesh.m_edges[17].second);
+
+    ASSERT_EQ(23, mesh.m_edges[47].first);
+    ASSERT_EQ(6, mesh.m_edges[47].second);
+
 }
