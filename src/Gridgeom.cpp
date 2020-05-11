@@ -10,6 +10,7 @@
 #include "Constants.cpp"
 
 static std::vector<GridGeom::Mesh> meshInstances;
+// for supporting interactivity we need to save some instances
 static std::map<int, GridGeom::Orthogonalization> orthogonalizationInstances;
 static std::map<int, GridGeom::Splines> splineInstances;
 
@@ -234,16 +235,14 @@ namespace GridGeomApi
             nodes[n].y = meshGeometry.nodey[n];
         }
 
-        // TODO: re-enable switch
-        //if (IsGeographic)
-        //{
-        meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::cartesian);
-        //}
-        //else
-        //{
-        //    auto instance = std::make_unique<GridGeom::Mesh<GridGeom::OperationTypes::sphericalOperations>>();
-        //    instance->Set(edges, nodes);
-        //}
+        if (IsGeographic)
+        {
+            meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::cartesian);
+        }
+        else
+        {
+            meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::spherical);
+        }
 
         return 0;
     }

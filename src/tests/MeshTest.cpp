@@ -2,6 +2,7 @@
 #include "../Entities.hpp"
 #include "../Polygons.cpp"
 #include "../Constants.cpp"
+#include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 #include <chrono>
 #include <random>
@@ -430,8 +431,8 @@ TEST(Mesh, NodeMerging)
     std::random_device                      rand_dev;
     std::mt19937                            generator(rand_dev());
     
-    nodes.resize(nodes.size()*2);
-    edges.resize(edges.size()+ nodes.size() * 2);
+    nodes.resize(mesh.GetNumNodes() *2);
+    edges.resize(mesh.GetNumEdges() + mesh.GetNumNodes() * 2);
     int originalNodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {

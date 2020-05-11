@@ -1088,6 +1088,11 @@ namespace GridGeom
             circumcenter.x = p1.x + xf * 0.5 * (dx3 - z * dy3) * raddeg_hp / earth_radius;
             circumcenter.y = p1.y + 0.5 * (dy3 + z * dx3) * raddeg_hp / earth_radius;
         }
+        if (projection == Projections::sphericalAccurate)
+        {
+            //TODO: compute in case of spherical accurate
+            return true;
+        }
         return true;
     }
 
@@ -1219,7 +1224,7 @@ namespace GridGeom
         }
         area = std::abs(area) < minArea ? minArea : area;
 
-        double fac = 1.0 / (3.0 * area);
+        const double fac = 1.0 / (3.0 * area);
         xCenterOfMass = fac * xCenterOfMass;
         yCenterOfMass = fac * yCenterOfMass;
 
@@ -1237,6 +1242,7 @@ namespace GridGeom
         return true;
     }
 
+    ///GETCIRCUMCENTER
     static bool ComputePolygonCircumenter(std::vector<Point>& polygon,
         std::vector<Point>& middlePoints,
         std::vector<Point>& normals,

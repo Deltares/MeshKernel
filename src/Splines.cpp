@@ -2306,8 +2306,8 @@ bool GridGeom::Splines::ComputeCurvatureOnSplinePoint(
 
     if (m_projection == Projections::spherical)
     {
-        p.TransformToSpherical();
-        pp.TransformToSpherical();
+        p.TransformSphericalToCartesian();
+        pp.TransformSphericalToCartesian();
     }
 
     curvatureFactor = std::abs(pp.x * p.y - pp.y * p.x) / std::pow((p.x * p.x + p.y * p.y + 1e-8), 1.5);
