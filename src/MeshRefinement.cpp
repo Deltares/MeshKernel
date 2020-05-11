@@ -656,15 +656,6 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
         Point splittingNode(m_mesh.m_facesMassCenters[f]);
         if (numNonHangingEdges == numNodesQuads)
         {
-            double miny;
-            double maxy;
-            if (m_mesh.m_projection == Projections::spherical)
-            {
-                auto select = [&](const auto& p1, const auto& p2) { return p1->y < p2->y; };
-                auto minmax = std::minmax(facePolygonWithoutHangingNodes.begin(), facePolygonWithoutHangingNodes.begin() + numNonHangingEdges, select);
-                miny = minmax.first->x;
-                maxy = minmax.second->y;
-            }
 
             ComputePolygonCircumenter(facePolygonWithoutHangingNodes,
                 middlePointsCache,
@@ -676,7 +667,15 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
                 splittingNode);
 
             if (m_mesh.m_projection == Projections::spherical)
-            {
+            {                
+                double miny = std::numeric_limits<double>::max();
+                double maxy = std::numeric_limits<double>::min();
+                for (int i = 0; i < numNonHangingEdges; ++i)
+                {
+                    miny = std::min(facePolygonWithoutHangingNodes[i].y, miny);
+                    maxy = std::max(facePolygonWithoutHangingNodes[i].y, maxy);
+                }
+
                 double middlelatitude;
                 middlelatitude = (miny + maxy) / 2.0;
                 double ydiff = maxy - miny;
