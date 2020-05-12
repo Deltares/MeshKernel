@@ -695,6 +695,7 @@ tests/OffsetAPolygonTest.pli -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
 tests/SamplesForMeshRefinement.xyz -text
 tests/SamplesForRefinementFourByFourMesh.xyz -text
+tests/SamplesForRefinementFourByFourMeshSpherical.xyz -text
 tests/SamplesToTriangulate.xyz -text
 tests/SevenSplines.spl -text
 tests/SmallTriangularGrid_net.nc -text
