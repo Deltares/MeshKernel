@@ -866,8 +866,8 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
     if (makeGridParametersNative.GridType == 0)
     {
         // regular grid
-        int numM = makeGridParametersNative.NumberOfRows + 1;
-        int numN = makeGridParametersNative.NumberOfColumns + 1;
+        int numM = makeGridParametersNative.NumberOfColumns + 1;
+        int numN = makeGridParametersNative.NumberOfRows + 1;
         double XGridBlockSize = makeGridParametersNative.XGridBlockSize;
         double YGridBlockSize = makeGridParametersNative.YGridBlockSize;
         double cosineAngle = std::cos(makeGridParametersNative.GridAngle*degrad_hp);

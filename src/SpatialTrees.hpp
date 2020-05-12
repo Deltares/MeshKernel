@@ -7,13 +7,9 @@
 #include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/index/rtree.hpp>
 
-
 #include <vector>
 #include <memory>
 #include <utility>
-
-// kd-tree
-// https://gist.github.com/alexcpn/1f187f2114976e748f4d3ad38dea17e8
 
 // r-tree
 // https://gist.github.com/logc/10272165

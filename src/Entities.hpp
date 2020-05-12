@@ -115,7 +115,7 @@ namespace GridGeom
             return x != rhs.x || y != rhs.y;
         }
 
-        void TransformToSpherical() 
+        void TransformSphericalToCartesian() 
         {
             x = x * degrad_hp *earth_radius * std::cos(degrad_hp*y);
             y = y * degrad_hp *earth_radius;
