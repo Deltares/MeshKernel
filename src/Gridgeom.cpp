@@ -211,7 +211,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_set_state(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool IsGeographic)
+    GRIDGEOM_API int ggeo_set_state(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool& isSpherical)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -235,13 +235,14 @@ namespace GridGeomApi
             nodes[n].y = meshGeometry.nodey[n];
         }
 
-        if (IsGeographic)
+        // spherical or cartesian
+        if (isSpherical)
         {
-            meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::cartesian);
+            meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::spherical);
         }
         else
         {
-            meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::spherical);
+            meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::cartesian);
         }
 
         return 0;
