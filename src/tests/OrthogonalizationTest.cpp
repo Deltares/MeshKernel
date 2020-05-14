@@ -11,7 +11,7 @@
 #include <Windows.h>
 #endif
 
-TEST(Orthogonalization, TestOrthogonalizationOneQuadOneTriangle)
+TEST(Orthogonalization, OrthogonalizationOneQuadOneTriangle)
 {
     // Preparation
     std::vector<GridGeom::Point> nodes;
@@ -72,7 +72,7 @@ TEST(Orthogonalization, TestOrthogonalizationOneQuadOneTriangle)
     ASSERT_NEAR(0.0, mesh.m_nodes[4].y, tolerance);
 }
 
-TEST(Orthogonalization, TestOrthogonalizationSmallTriangularGrid)
+TEST(Orthogonalization, OrthogonalizationSmallTriangularGrid)
 {
    
     // now build node-edge mapping
@@ -128,7 +128,7 @@ TEST(Orthogonalization, TestOrthogonalizationSmallTriangularGrid)
     ASSERT_NEAR(327.102805172725, mesh.m_nodes[9].y, tolerance);
 }
 
-TEST(Orthogonalization, TestOrthogonalizationMediumTriangularGrid)
+TEST(Orthogonalization, OrthogonalizationMediumTriangularGrid)
 {
     // now build node-edge mapping
     auto mesh = MakeMediumSizeTriangularMeshForTesting();
@@ -184,7 +184,7 @@ TEST(Orthogonalization, TestOrthogonalizationMediumTriangularGrid)
 
 }
 
-TEST(Orthogonalization, TestOrthogonalizationFourQuads)
+TEST(Orthogonalization, OrthogonalizationFourQuads)
 {
 
     const int n = 3; //x
@@ -319,3 +319,41 @@ TEST(Orthogonalization, OrthogonalizeAndSnapToLandBoundaries)
     ASSERT_NEAR(336.831643075189, mesh.m_nodes[8].y, tolerance);
     ASSERT_NEAR(340.875100904741, mesh.m_nodes[9].y, tolerance);
 }
+
+//TEST(Orthogonalization, OrthogonalizationSphericalRectangular)
+//{
+//    //1 Setup
+//    GridGeom::Polygons polygons;
+//    std::vector<GridGeom::Point> nodes;
+//
+//    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, GridGeom::Projections::spherical, { 41.1,41.1 });
+//
+//    int isTriangulationRequired = 0;
+//    int isAccountingForLandBoundariesRequired = 0;
+//    int projectToLandBoundaryOption = 0;
+//    GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
+//    orthogonalizationParametersNative.InnerIterations = 2;
+//    orthogonalizationParametersNative.BoundaryIterations = 25;
+//    orthogonalizationParametersNative.OuterIterations = 25;
+//    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
+//    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
+//
+//    GridGeom::Orthogonalization orthogonalization;
+//    std::vector<GridGeom::Point> polygon;
+//    std::vector<GridGeom::Point> landBoundary;
+//
+//    orthogonalization.Set(mesh,
+//        isTriangulationRequired,
+//        isAccountingForLandBoundariesRequired,
+//        projectToLandBoundaryOption,
+//        orthogonalizationParametersNative,
+//        polygon,
+//        landBoundary);
+//
+//    orthogonalization.Iterate(mesh);
+//
+//    // check the values
+//    constexpr double tolerance = 0.15;
+//    //ASSERT_NEAR(313.081472564480, mesh.m_nodes[0].x, tolerance);
+//    
+//}
