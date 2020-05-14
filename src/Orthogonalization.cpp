@@ -192,10 +192,14 @@ bool GridGeom::Orthogonalization::AllocateCaches(const Mesh& mesh)
     // reallocate caches
     if (successful && m_cacheSize == 0)
     {
-        m_increments.resize(mesh.GetNumNodes()  * 2);
         m_rightHandSideCache.resize(mesh.GetNumNodes()  * 2);
+        std::fill(m_rightHandSideCache.begin(), m_rightHandSideCache.end(), 0.0);
+
         m_startCacheIndex.resize(mesh.GetNumNodes() );
+        std::fill(m_startCacheIndex.begin(), m_startCacheIndex.end(), 0.0);
+
         m_endCacheIndex.resize(mesh.GetNumNodes() );
+        std::fill(m_endCacheIndex.begin(), m_endCacheIndex.end(), 0.0);
 
         for (int n = 0; n < mesh.GetNumNodes() ; n++)
         {
@@ -213,7 +217,6 @@ bool GridGeom::Orthogonalization::AllocateCaches(const Mesh& mesh)
 
 bool GridGeom::Orthogonalization::DeallocateCaches() 
 {
-    m_increments.resize(0);
     m_rightHandSideCache.resize(0);
     m_startCacheIndex.resize(0);
     m_endCacheIndex.resize(0);
@@ -299,19 +302,15 @@ bool GridGeom::Orthogonalization::ComputeIncrements(const Mesh& mesh)
             {
                 m_k1[cacheIndex] = m_connectedNodes[n][nn];
             }
+
             m_wwx[cacheIndex] = wwx;
             m_wwy[cacheIndex] = wwy;
-            
-            ComputeLocalIncrements(wwx, wwy, n, m_k1[cacheIndex], mesh, increments);
         }
-
-        m_increments[firstCacheIndex] = increments[0];
-        m_increments[firstCacheIndex + 1] = increments[1];
 
         m_rightHandSideCache[firstCacheIndex] = atpfLoc * m_rightHandSide[n][0];
         m_rightHandSideCache[firstCacheIndex + 1] = atpfLoc * m_rightHandSide[n][1];
 	}
-	
+
 	return true;
 }
 
@@ -1523,7 +1522,7 @@ bool GridGeom::Orthogonalization::ComputeWeightsOrthogonalizer(const Mesh& mesh)
                     bool flippedNormal;
                     NormalVectorInside(mesh.m_nodes[n], neighbouringNode, mesh.m_facesMassCenters[leftFace], normal, flippedNormal, mesh.m_projection);
                     
-                    if(mesh.m_projection==Projections::spherical)
+                    if(mesh.m_projection==Projections::spherical && mesh.m_projection != Projections::sphericalAccurate)
                     {
                         normal.x = normal.x * std::cos(degrad_hp * 0.5 * (mesh.m_nodes[n].y + neighbouringNode.y));
                     }
@@ -1761,63 +1760,71 @@ bool GridGeom::Orthogonalization::ComputeJacobian(int currentNode, const Mesh& m
     return true;
 }
 
-
-bool GridGeom::Orthogonalization::ComputeLocalIncrements(double wwx, double wwy, int startingNode, int currentNode, const Mesh& mesh, double* increments) const
+bool GridGeom::Orthogonalization::ComputeLocalIncrements(double wwx, double wwy, int currentNode, int n, const Mesh& mesh, double& dx0, double& dy0, double* increments)
 {
+
+    double wwxTransformed;
+    double wwyTransformed;
     if (mesh.m_projection == Projections::cartesian)
     {
-        increments[0] += wwx;
-        increments[1] += wwy;
-
+        wwxTransformed = wwx;
+        wwyTransformed = wwy;
+        dx0 = dx0 + wwxTransformed * (mesh.m_nodes[currentNode].x - mesh.m_nodes[n].x);
+        dy0 = dy0 + wwyTransformed * (mesh.m_nodes[currentNode].y - mesh.m_nodes[n].y);
     }
+        
     if (mesh.m_projection == Projections::spherical)
     {
-        double wwxTransformed = wwx * earth_radius * degrad_hp *
-            std::cos(0.5 * (mesh.m_nodes[startingNode].y + mesh.m_nodes[currentNode].y) * degrad_hp);
-        double wwyTransformed = wwy * earth_radius * degrad_hp;
+        wwxTransformed = wwx * earth_radius * degrad_hp *
+            std::cos(0.5 * (mesh.m_nodes[n].y + mesh.m_nodes[currentNode].y) * degrad_hp);
+        wwyTransformed = wwy * earth_radius * degrad_hp;
 
-        increments[0] += wwxTransformed;
-        increments[1] += wwyTransformed;
+        dx0 = dx0 + wwxTransformed * (mesh.m_nodes[currentNode].x - mesh.m_nodes[n].x);
+        dy0 = dy0 + wwyTransformed * (mesh.m_nodes[currentNode].y - mesh.m_nodes[n].y);
 
     }
     if (mesh.m_projection == Projections::sphericalAccurate)
     {
-        double wwxTransformed = wwx * earth_radius * degrad_hp;
-        double wwyTransformed = wwy * earth_radius * degrad_hp;
+        wwxTransformed = wwx * earth_radius * degrad_hp;
+        wwyTransformed = wwy * earth_radius * degrad_hp;
 
-        increments[0] += wwxTransformed;
-        increments[1] += wwyTransformed;
+        dx0 = dx0 + wwxTransformed * m_localCoordinates[m_localCoordinatesIndexes[n] + currentNode - 1].x;
+        dy0 = dy0 + wwyTransformed * m_localCoordinates[m_localCoordinatesIndexes[n] + currentNode - 1].y;
     }
+
+    increments[0] += wwxTransformed;
+    increments[1] += wwyTransformed;
+
     return true;
 }
 
 bool GridGeom::Orthogonalization::ComputeOrthogonalCoordinates(int nodeIndex, const Mesh& mesh)
 {
+    int maxnn = m_endCacheIndex[nodeIndex] - m_startCacheIndex[nodeIndex];    
+ 
+    double dx0 = 0.0;
+    double dy0 = 0.0;
+    double increments[2]{ 0.0, 0.0 };
+    for (int nn = 1, cacheIndex = m_startCacheIndex[nodeIndex]; nn < maxnn; nn++, cacheIndex++)
+    {
+        auto wwx = m_wwx[cacheIndex];
+        auto wwy = m_wwy[cacheIndex];
+        auto k1 = m_k1[cacheIndex];
 
-    int firstCacheIndex = nodeIndex * 2;
-    if (std::abs(m_increments[firstCacheIndex]) <= 1e-8 || std::abs(m_increments[firstCacheIndex + 1]) <= 1e-8)
+        ComputeLocalIncrements(wwx, wwy, m_k1[cacheIndex], nodeIndex, mesh, dx0, dy0, increments);
+    }
+
+    if (increments[0] <= 1e-8 || increments[1] <= 1e-8)
     {
         return true;
     }
 
-    int maxnn = m_endCacheIndex[nodeIndex] - m_startCacheIndex[nodeIndex];
-    double dx0 = 0.0;
-    double dy0 = 0.0;
+    int firstCacheIndex = nodeIndex * 2;
+    dx0 = (dx0 + m_rightHandSideCache[firstCacheIndex]) / increments[0];
+    dy0 = (dy0 + m_rightHandSideCache[firstCacheIndex + 1]) / increments[1];
 
-    if (mesh.m_projection == Projections::cartesian)
+    if (mesh.m_projection == Projections::cartesian || mesh.m_projection == Projections::spherical)
     {
-        for (int nn = 1, cacheIndex = m_startCacheIndex[nodeIndex]; nn < maxnn; nn++, cacheIndex++)
-        {
-            const auto firstNode = m_k1[cacheIndex];
-            const auto wwx = m_wwx[cacheIndex];
-            const auto wwy = m_wwx[cacheIndex];
-            dx0 += wwx * (mesh.m_nodes[firstNode].x - mesh.m_nodes[nodeIndex].x);
-            dy0 += wwy * (mesh.m_nodes[firstNode].y - mesh.m_nodes[nodeIndex].y);
-        }
-
-        dx0 = (dx0 + m_rightHandSideCache[firstCacheIndex]) / m_increments[firstCacheIndex];
-        dy0 = (dy0 + m_rightHandSideCache[firstCacheIndex + 1]) / m_increments[firstCacheIndex + 1];
-
         double x0 = mesh.m_nodes[nodeIndex].x + dx0;
         double y0 = mesh.m_nodes[nodeIndex].y + dy0;
         static constexpr double relaxationFactorCoordinates = 1.0 - relaxationFactorOrthogonalizationUpdate;
@@ -1827,18 +1834,6 @@ bool GridGeom::Orthogonalization::ComputeOrthogonalCoordinates(int nodeIndex, co
     }
     if (mesh.m_projection == Projections::sphericalAccurate)
     {
-        for (int nn = 1, cacheIndex = m_startCacheIndex[nodeIndex]; nn < maxnn; nn++, cacheIndex++)
-        {
-            double wwxTransformed = m_wwx[cacheIndex] * earth_radius * degrad_hp;
-            double wwyTransformed = m_wwx[cacheIndex] * earth_radius * degrad_hp;
-
-            dx0 += dx0 + wwxTransformed * m_localCoordinates[m_localCoordinatesIndexes[nodeIndex] + nn - 1].x;
-            dy0 += dy0 + wwyTransformed * m_localCoordinates[m_localCoordinatesIndexes[nodeIndex] + nn - 1].y;
-        }
-
-        dx0 = (dx0 + m_rightHandSideCache[firstCacheIndex]) / m_increments[firstCacheIndex];
-        dy0 = (dy0 + m_rightHandSideCache[firstCacheIndex + 1]) / m_increments[firstCacheIndex + 1];
-
         Point localPoint{ relaxationFactorOrthogonalizationUpdate * dx0, relaxationFactorOrthogonalizationUpdate * dy0 };
 
         double exxp[3];
