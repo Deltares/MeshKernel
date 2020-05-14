@@ -559,6 +559,11 @@ namespace GridGeom
                 result.x = dy / distance;
                 result.y = -dx / distance;
             }
+
+            if (projection == Projections::spherical) 
+            {
+                result.x = result.x / std::cos(degrad_hp * 0.5 *(firstPoint.y + secondPoint.y));
+            }
         }
     }
 
@@ -765,46 +770,28 @@ namespace GridGeom
 
     static void ReferencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projections& projection)
     {
-        if (projection == Projections::cartesian)
+        minX = std::numeric_limits<double>::max();
+        minY = std::numeric_limits<double>::max();
+        for (int i = 0; i < numPoints; i++)
         {
-            minX = std::numeric_limits<double>::max();
-            minY = std::numeric_limits<double>::max();
-            for (int i = 0; i < numPoints; i++)
+            minX = std::min(polygon[i].x, minX);
+            if (abs(polygon[i].y) < abs(minY))
             {
-                if (polygon[i].x < minX)
-                {
-                    minX = polygon[i].x;
-                }
-                if (abs(polygon[i].y) < abs(minY))
-                {
-                    minY = polygon[i].y;
-                }
+                minY = polygon[i].y;
             }
         }
-        if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
+
+        if (projection == Projections::spherical)
         {
-            minX = std::numeric_limits<double>::max();
-            minY = std::numeric_limits<double>::max();
-            double xmax = std::numeric_limits<double>::min();
+            double maxX = std::numeric_limits<double>::min();
             for (int i = 0; i < numPoints; i++)
             {
-                if (polygon[i].x < minX)
-                {
-                    minX = polygon[i].x;
-                }
-                if (abs(polygon[i].y) < abs(minY))
-                {
-                    minY = polygon[i].y;
-                }
-                if (polygon[i].x > xmax)
-                {
-                    xmax = polygon[i].x;
-                }
+                maxX = std::max(polygon[i].x, maxX);
             }
 
-            if (xmax - minX > 180.0)
+            if (maxX - minX > 180.0)
             {
-                double deltaX = xmax - 180.0;
+                double deltaX = maxX - 180.0;
                 for (int i = 0; i < numPoints; i++)
                 {
                     if (polygon[i].x < deltaX)
@@ -814,7 +801,6 @@ namespace GridGeom
                 }
                 minX = minX + 360.0;
             }
-            minX = std::min_element(polygon.begin(), polygon.end(), [](const Point& p1, const Point& p2) { return p1.x < p2.x; })->x;
         }
     }
 
@@ -869,7 +855,7 @@ namespace GridGeom
     // normalPoint: coordinates of the projected point from point onto the line
     static double DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, Point& normalPoint, double& ratio, const Projections& projection)
     {
-        if (projection == Projections::cartesian)
+        if (projection == Projections::cartesian || projection == Projections::spherical)
         {
             double dis = 0.0;
             double squaredDistance = ComputeSquaredDistance(secondNode, firstNode, projection);
@@ -884,7 +870,7 @@ namespace GridGeom
             }
             return dis;
         }
-        if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
+        if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstNodeCartesian;
             SphericalToCartesian(firstNode, firstNodeCartesian);
@@ -1193,8 +1179,8 @@ namespace GridGeom
             return false;
         }
 
-        double minX = std::numeric_limits<double>::max();
-        double minY = std::numeric_limits<double>::max();
+        double minX;
+        double minY;
         ReferencePoint(polygon, numberOfPolygonPoints, minX, minY, projection);
 
         Point reference{ minX, minY };
@@ -1253,6 +1239,7 @@ namespace GridGeom
         Point& result)
     {
         const int maximumNumberCircumcenterIterations = 100;
+        const double eps = projection == Projections::cartesian ? 1e-3: 9e-10; //111km = 0-e digit.
 
         Point centerOfMass;
         double area;
@@ -1289,7 +1276,7 @@ namespace GridGeom
 
             if (numValidEdges > 0)
             {
-                const double eps = 1e-3;
+                
                 for (int n = 0; n < numNodes; n++)
                 {
                     int nextNode = n + 1;

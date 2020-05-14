@@ -85,7 +85,7 @@ namespace GridGeom
 
         bool ComputeJacobian(int currentNode, const Mesh& mesh, std::vector<double>& J) const;
 
-        bool ComputeLocalIncrements(double wwx, double wwy, int startingNode, int currentNode, const Mesh& mesh, double* increments) const;
+        bool ComputeLocalIncrements(double wwx, double wwy, int currentNode, int n, const Mesh& mesh, double& dx0, double& dy0, double* increments);
 
         bool ComputeOrthogonalCoordinates(int nodeIndex, const Mesh& mesh);
 
@@ -158,7 +158,6 @@ namespace GridGeom
         std::vector<int> m_k1;
         std::vector<double> m_wwx;
         std::vector<double> m_wwy;
-        std::vector<double> m_increments;
         std::vector<double> m_rightHandSideCache;
         std::vector<int> m_startCacheIndex;
         std::vector<int> m_endCacheIndex;
