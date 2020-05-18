@@ -220,7 +220,7 @@ namespace GridGeom
 
     static bool IsPointOnPole(const Point& point)
     {
-        return std::abs(point.y) - 90.0 < absLatitudeAtPoles;
+        return std::abs(std::abs(point.y) - 90.0) < absLatitudeAtPoles;
     }
 
     ///sphertocart3D transform 2d spherical to 3d cartesian
@@ -556,13 +556,8 @@ namespace GridGeom
             if (squaredDistance > 0.0)
             {
                 const double distance = sqrt(squaredDistance);
-                result.x = dy / distance;
-                result.y = -dx / distance;
-            }
-
-            if (projection == Projections::spherical) 
-            {
-                result.x = result.x / std::cos(degrad_hp * 0.5 *(firstPoint.y + secondPoint.y));
+                result.x = dx / distance;
+                result.y = dy / distance;
             }
         }
     }
@@ -634,59 +629,6 @@ namespace GridGeom
     }
 
 
-    ///normaloutchk
-    ///Computes the normal vector to a line 1-2, which is *outward* w.r.t.
-    ///an 'inside' point 3. Similar to normalout, except that the normal
-    ///vector may be flipped based on the 'inside' point.
-    ///TODO:test me
-    static void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, Projections projection)
-    {
-        NormalVector(firstPoint, secondPoint, insidePoint, normal, projection);
-        Point thirdPoint;
-        if (projection == Projections::cartesian || projection == Projections::spherical)
-        {
-            flippedNormal = false;
-            thirdPoint.x = firstPoint.x + normal.x;
-            thirdPoint.y = firstPoint.y + normal.y;
-        }
-        if (projection == Projections::sphericalAccurate)
-        {
-            Point middle;
-            MiddlePoint(firstPoint, secondPoint, middle, projection);
-            Point localComponents;
-            TransformGlobalVectorToLocal(firstPoint, middle, normal, projection,localComponents);
-            double elambda[3];
-            double ephi[3];
-            ComputeTwoBaseComponents(firstPoint, elambda, ephi);
-
-            double vxx = localComponents.x * elambda[0] + localComponents.y * ephi[0];
-            double vyy = localComponents.x * elambda[1] + localComponents.y * ephi[1];
-            double vzz = localComponents.x * elambda[2] + localComponents.y * ephi[2];
-
-            Cartesian3DPoint firstPointCartesian;
-            SphericalToCartesian(firstPoint, firstPointCartesian);
-            
-            Cartesian3DPoint rotatedPoint;
-            double alpha = 0.0;
-            rotatedPoint.x = firstPointCartesian.x + alpha * vxx;
-            rotatedPoint.y = firstPointCartesian.y + alpha * vyy;
-            rotatedPoint.z = firstPointCartesian.z + alpha * vzz;
-
-            CartesianToSpherical(rotatedPoint, firstPoint.x, thirdPoint);
-        }
-
-        if (OuterProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint, projection) * OuterProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint, projection) > 0.0)
-        {
-            normal.x = -normal.x;
-            normal.y = -normal.y;
-            flippedNormal = true;
-        }
-        else
-        {
-            flippedNormal = false;
-        }
-    }
-
     ///normalout
     static void NormalVectorOutside(const Point& firstPoint, const Point& secondPoint, Point& result, const Projections& projection)
     {
@@ -752,7 +694,60 @@ namespace GridGeom
         }
     }
 
-    static void Add(Point& point, const Point& normal, const double increment, const Projections& projection)
+    ///normaloutchk
+    ///Computes the normal vector to a line 1-2, which is *outward* w.r.t.
+    ///an 'inside' point 3. Similar to normalout, except that the normal
+    ///vector may be flipped based on the 'inside' point.
+    ///TODO:test me
+    static void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, Projections projection)
+    {
+        NormalVectorOutside(firstPoint, secondPoint, normal, projection);
+        Point thirdPoint;
+        if (projection == Projections::cartesian || projection == Projections::spherical)
+        {
+            flippedNormal = false;
+            thirdPoint.x = firstPoint.x + normal.x;
+            thirdPoint.y = firstPoint.y + normal.y;
+        }
+        if (projection == Projections::sphericalAccurate)
+        {
+            Point middle;
+            MiddlePoint(firstPoint, secondPoint, middle, projection);
+            Point localComponents;
+            TransformGlobalVectorToLocal(firstPoint, middle, normal, projection,localComponents);
+            double elambda[3];
+            double ephi[3];
+            ComputeTwoBaseComponents(firstPoint, elambda, ephi);
+
+            double vxx = localComponents.x * elambda[0] + localComponents.y * ephi[0];
+            double vyy = localComponents.x * elambda[1] + localComponents.y * ephi[1];
+            double vzz = localComponents.x * elambda[2] + localComponents.y * ephi[2];
+
+            Cartesian3DPoint firstPointCartesian;
+            SphericalToCartesian(firstPoint, firstPointCartesian);
+            
+            Cartesian3DPoint rotatedPoint;
+            double alpha = 0.0;
+            rotatedPoint.x = firstPointCartesian.x + alpha * vxx;
+            rotatedPoint.y = firstPointCartesian.y + alpha * vyy;
+            rotatedPoint.z = firstPointCartesian.z + alpha * vzz;
+
+            CartesianToSpherical(rotatedPoint, firstPoint.x, thirdPoint);
+        }
+
+        if (OuterProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint, projection) * OuterProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint, projection) > 0.0)
+        {
+            normal.x = -normal.x;
+            normal.y = -normal.y;
+            flippedNormal = true;
+        }
+        else
+        {
+            flippedNormal = false;
+        }
+    }
+
+    static void Add(Point& point, const Point& normal, double increment, double xf, const Projections& projection)
     {
         if (projection == Projections::cartesian)
         {
@@ -762,7 +757,6 @@ namespace GridGeom
         if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
         {
             double convertedIncrement = raddeg_hp * increment / earth_radius;
-            double xf = 1.0 / cos(degrad_hp * point.y);
             point.x = point.x + normal.x * convertedIncrement * xf;
             point.y = point.y + normal.y * convertedIncrement;
         }
@@ -1279,14 +1273,18 @@ namespace GridGeom
                 
                 for (int n = 0; n < numNodes; n++)
                 {
-                    int nextNode = n + 1;
-                    if (nextNode == numNodes) nextNode = 0;
-                    middlePoints[n].x = 0.5 * (polygon[n].x + polygon[nextNode].x);
-                    middlePoints[n].y = 0.5 * (polygon[n].y + polygon[nextNode].y);
-                    NormalVector(polygon[n], polygon[nextNode], middlePoints[n], normals[n], projection);
+                    if (edgesNumFaces[n] == 2)
+                    {
+                        int nextNode = n + 1;
+                        if (nextNode == numNodes) nextNode = 0;
+                        middlePoints[n].x = 0.5 * (polygon[n].x + polygon[nextNode].x);
+                        middlePoints[n].y = 0.5 * (polygon[n].y + polygon[nextNode].y);
+                        NormalVector(polygon[n], polygon[nextNode], middlePoints[n], normals[n], projection);
+                    }
                 }
 
                 Point previousCircumCenter = estimatedCircumCenter;
+                double xf = 1.0 / std::cos(degrad_hp * centerOfMass.y);
 
                 for (int iter = 0; iter < maximumNumberCircumcenterIterations; iter++)
                 {
@@ -1298,7 +1296,7 @@ namespace GridGeom
                             double dx = GetDx(middlePoints[n], estimatedCircumCenter, projection);
                             double dy = GetDy(middlePoints[n], estimatedCircumCenter, projection);
                             double increment = -0.1 * DotProduct(dx, dy, normals[n].x, normals[n].y);
-                            Add(estimatedCircumCenter, normals[n], increment, projection);
+                            Add(estimatedCircumCenter, normals[n], increment, xf, projection);
                         }
                     }
                     if (iter > 0 &&

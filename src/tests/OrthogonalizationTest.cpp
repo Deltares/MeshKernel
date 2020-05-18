@@ -86,7 +86,7 @@ TEST(Orthogonalization, OrthogonalizationSmallTriangularGrid)
     orthogonalizationParametersNative.BoundaryIterations = 25;
     orthogonalizationParametersNative.OuterIterations = 25;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
-    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.975;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
 
 
     GridGeom::Orthogonalization orthogonalization;
@@ -320,40 +320,78 @@ TEST(Orthogonalization, OrthogonalizeAndSnapToLandBoundaries)
     ASSERT_NEAR(340.875100904741, mesh.m_nodes[9].y, tolerance);
 }
 
-//TEST(Orthogonalization, OrthogonalizationSphericalRectangular)
-//{
-//    //1 Setup
-//    GridGeom::Polygons polygons;
-//    std::vector<GridGeom::Point> nodes;
-//
-//    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, GridGeom::Projections::spherical, { 41.1,41.1 });
-//
-//    int isTriangulationRequired = 0;
-//    int isAccountingForLandBoundariesRequired = 0;
-//    int projectToLandBoundaryOption = 0;
-//    GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
-//    orthogonalizationParametersNative.InnerIterations = 2;
-//    orthogonalizationParametersNative.BoundaryIterations = 25;
-//    orthogonalizationParametersNative.OuterIterations = 25;
-//    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
-//    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
-//
-//    GridGeom::Orthogonalization orthogonalization;
-//    std::vector<GridGeom::Point> polygon;
-//    std::vector<GridGeom::Point> landBoundary;
-//
-//    orthogonalization.Set(mesh,
-//        isTriangulationRequired,
-//        isAccountingForLandBoundariesRequired,
-//        projectToLandBoundaryOption,
-//        orthogonalizationParametersNative,
-//        polygon,
-//        landBoundary);
-//
-//    orthogonalization.Iterate(mesh);
-//
-//    // check the values
-//    constexpr double tolerance = 0.15;
-//    //ASSERT_NEAR(313.081472564480, mesh.m_nodes[0].x, tolerance);
-//    
-//}
+TEST(Orthogonalization, OrthogonalizationSphericalRectangular)
+{
+    //1 Setup
+    GridGeom::Polygons polygons;
+    std::vector<GridGeom::Point> nodes;
+
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, GridGeom::Projections::spherical, { 41.1,41.1 });
+
+    int isTriangulationRequired = 0;
+    int isAccountingForLandBoundariesRequired = 0;
+    int projectToLandBoundaryOption = 0;
+    GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
+    orthogonalizationParametersNative.InnerIterations = 2;
+    orthogonalizationParametersNative.BoundaryIterations = 25;
+    orthogonalizationParametersNative.OuterIterations = 25;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
+
+    GridGeom::Orthogonalization orthogonalization;
+    std::vector<GridGeom::Point> polygon;
+    std::vector<GridGeom::Point> landBoundary;
+
+    orthogonalization.Set(mesh,
+        isTriangulationRequired,
+        isAccountingForLandBoundariesRequired,
+        projectToLandBoundaryOption,
+        orthogonalizationParametersNative,
+        polygon,
+        landBoundary);
+
+    orthogonalization.Iterate(mesh);
+
+    // check the values
+    constexpr double tolerance = 1e-6;
+    ASSERT_NEAR(41.1, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(41.1, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(41.1, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(41.1, mesh.m_nodes[3].x, tolerance);
+
+    ASSERT_NEAR(41.103, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(41.103, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(41.103, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(41.103, mesh.m_nodes[7].x, tolerance);
+
+    ASSERT_NEAR(41.106, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(41.106, mesh.m_nodes[9].x, tolerance);
+    ASSERT_NEAR(41.106, mesh.m_nodes[10].x, tolerance);
+    ASSERT_NEAR(41.106, mesh.m_nodes[11].x, tolerance);
+
+    ASSERT_NEAR(41.109, mesh.m_nodes[12].x, tolerance);
+    ASSERT_NEAR(41.109, mesh.m_nodes[13].x, tolerance);
+    ASSERT_NEAR(41.109, mesh.m_nodes[14].x, tolerance);
+    ASSERT_NEAR(41.109, mesh.m_nodes[15].x, tolerance);
+
+    ASSERT_NEAR(41.1, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(41.103, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(41.106, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(41.109, mesh.m_nodes[3].y, tolerance);
+
+    ASSERT_NEAR(41.1, mesh.m_nodes[4].y, tolerance);
+    ASSERT_NEAR(41.103, mesh.m_nodes[5].y, tolerance);
+    ASSERT_NEAR(41.106, mesh.m_nodes[6].y, tolerance);
+    ASSERT_NEAR(41.109, mesh.m_nodes[7].y, tolerance);
+
+    ASSERT_NEAR(41.1, mesh.m_nodes[8].y, tolerance);
+    ASSERT_NEAR(41.103, mesh.m_nodes[9].y, tolerance);
+    ASSERT_NEAR(41.106, mesh.m_nodes[10].y, tolerance);
+    ASSERT_NEAR(41.109, mesh.m_nodes[11].y, tolerance);
+
+    ASSERT_NEAR(41.1, mesh.m_nodes[12].y, tolerance);
+    ASSERT_NEAR(41.103, mesh.m_nodes[13].y, tolerance);
+    ASSERT_NEAR(41.106, mesh.m_nodes[14].y, tolerance);
+    ASSERT_NEAR(41.109, mesh.m_nodes[15].y, tolerance);
+
+}
