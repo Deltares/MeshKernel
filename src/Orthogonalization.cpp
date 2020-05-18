@@ -233,7 +233,7 @@ bool GridGeom::Orthogonalization::FinalizeOuterIteration(Mesh& mesh)
     m_mu = std::min(2.0 * m_mu, m_mumax);
 
     //compute new faces circumcenters
-    if (m_keepCircumcentersAndMassCenters != true)
+    if (!m_keepCircumcentersAndMassCenters)
     {
         mesh.ComputeFaceCircumcentersMassCentersAreas();
     }
