@@ -680,6 +680,7 @@ src/SplinesToCurvilinearParametersNative.hpp -text
 src/gridgeomStateful_dll_version.h.svn -text
 src/gridgeomStateful_dll_version.rc.svn -text
 src/main.cpp -text
+src/resource.h -text
 src/tests/FunctionsTest.cpp -text
 src/tests/GridGeomTest.hpp -text
 src/tests/LandBoundaryTest.cpp -text
