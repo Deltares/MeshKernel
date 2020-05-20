@@ -82,9 +82,9 @@ TEST(Orthogonalization, OrthogonalizationSmallTriangularGrid)
     int isAccountingForLandBoundariesRequired = 0;
     int projectToLandBoundaryOption = 0;
     GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
-    orthogonalizationParametersNative.InnerIterations = 2;
+    orthogonalizationParametersNative.OuterIterations = 2;
     orthogonalizationParametersNative.BoundaryIterations = 25;
-    orthogonalizationParametersNative.OuterIterations = 25;
+    orthogonalizationParametersNative.InnerIterations = 25;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
 
@@ -137,9 +137,9 @@ TEST(Orthogonalization, OrthogonalizationMediumTriangularGrid)
     int isAccountingForLandBoundariesRequired = 0;
     int projectToLandBoundaryOption = 0;
     GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
-    orthogonalizationParametersNative.InnerIterations = 2;
+    orthogonalizationParametersNative.OuterIterations = 2;
     orthogonalizationParametersNative.BoundaryIterations = 25;
-    orthogonalizationParametersNative.OuterIterations = 25;
+    orthogonalizationParametersNative.InnerIterations = 25;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.5;
 
@@ -239,9 +239,9 @@ TEST(Orthogonalization, OrthogonalizeAndSnapToLandBoundaries)
     // snap to land boundaries
     int projectToLandBoundaryOption = 2;
     GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
-    orthogonalizationParametersNative.InnerIterations = 2;
+    orthogonalizationParametersNative.OuterIterations = 2;
     orthogonalizationParametersNative.BoundaryIterations = 25;
-    orthogonalizationParametersNative.OuterIterations = 25;
+    orthogonalizationParametersNative.InnerIterations = 25;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.975;
 
@@ -293,9 +293,9 @@ TEST(Orthogonalization, OrthogonalizationSphericalRectangular)
     int isAccountingForLandBoundariesRequired = 0;
     int projectToLandBoundaryOption = 0;
     GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
-    orthogonalizationParametersNative.InnerIterations = 2;
+    orthogonalizationParametersNative.OuterIterations = 2;
     orthogonalizationParametersNative.BoundaryIterations = 25;
-    orthogonalizationParametersNative.OuterIterations = 25;
+    orthogonalizationParametersNative.InnerIterations = 25;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
 
