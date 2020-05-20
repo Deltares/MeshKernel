@@ -186,42 +186,7 @@ TEST(Orthogonalization, OrthogonalizationMediumTriangularGrid)
 
 TEST(Orthogonalization, OrthogonalizationFourQuads)
 {
-
-    const int n = 3; //x
-    const int m = 3; //y
-
-    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<GridGeom::Point> nodes(n * m);
-    std::size_t nodeIndex = 0;
-    for (int j = 0; j < m; ++j)
-    {
-        for (int i = 0; i < n; ++i)
-        {
-            indexesValues[i][j] = i + j * n;
-            nodes[nodeIndex] = { (double)i, (double)j };
-            nodeIndex++;
-        }
-    }
-
-    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
-    std::size_t edgeIndex = 0;
-    for (int j = 0; j < m; ++j)
-    {
-        for (int i = 0; i < n - 1; ++i)
-        {
-            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
-            edgeIndex++;
-        }
-    }
-
-    for (int j = 0; j < m - 1; ++j)
-    {
-        for (int i = 0; i < n; ++i)
-        {
-            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
-            edgeIndex++;
-        }
-    }
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, GridGeom::Projections::cartesian);
 
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 0;
@@ -232,10 +197,6 @@ TEST(Orthogonalization, OrthogonalizationFourQuads)
     orthogonalizationParametersNative.OuterIterations = 25;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.975;
-
-    // now build node-edge mapping
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
     std::vector<GridGeom::Point> polygon;
     std::vector<GridGeom::Point> landBoundary;

@@ -52,9 +52,11 @@ source_group(include FILES ${all_cpp_headers})
 FILE( GLOB all_cpp_srcs src/*.cpp)
 list(REMOVE_ITEM all_cpp_srcs "src/main.cpp")
 source_group(source FILES ${all_cpp_srcs})
+set(header_version_file src/gridgeomStateful_dll_version.h)
+set(rc_version_file src/gridgeomStateful_dll_version.rc)
 
 # definition for triangle
-add_library( gridgeomStateful_dll SHARED ${all_cpp_headers}  ${all_cpp_srcs})
+add_library( gridgeomStateful_dll SHARED ${all_cpp_headers}  ${all_cpp_srcs} ${header_version_file} ${rc_version_file})
 target_link_libraries(gridgeomStateful_dll LINK_PUBLIC ${Boost_LIBRARIES} triangle)
 
 # Add tests
@@ -77,4 +79,25 @@ if(WIN32)
    #if(OpenMP_CXX_FOUND)
    #   target_link_libraries(GridGeomMainTest PUBLIC OpenMP::OpenMP_CXX)
    #endif()
-endif()
+endif(WIN32)
+
+# Add dll version number
+if(WIN32)
+	set(update_version_script "${CMAKE_CURRENT_SOURCE_DIR}/thirdParty/scripts_lgpl/win32/update_version.cmd")
+endif(WIN32)
+
+set(ini_version_file "${CMAKE_CURRENT_SOURCE_DIR}/src/version_number.ini")
+set(dll_version_header "${CMAKE_CURRENT_SOURCE_DIR}/src/gridgeomStateful_dll_version.h")
+set(dll_version_rc "${CMAKE_CURRENT_SOURCE_DIR}/src/gridgeomStateful_dll_version.rc")
+set(version_directory "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+#execute_process(COMMAND call ${update_version_script} ${dll_version_header} ${version_directory} ${ini_version_file})
+#execute_process(COMMAND call ${update_version_script} ${dll_version_rc} ${version_directory} ${ini_version_file})
+
+add_custom_command( TARGET gridgeomStateful_dll
+                    PRE_BUILD
+                    COMMAND  call ${update_version_script} ${dll_version_header} ${version_directory} ${ini_version_file})
+
+add_custom_command( TARGET gridgeomStateful_dll
+				    PRE_BUILD
+                    COMMAND  call ${update_version_script} ${dll_version_rc} ${version_directory} ${ini_version_file})

@@ -1,4 +1,4 @@
-set libVersion=Debug
+set libVersion=Release
 rem set guiVersion=Release
 set guiVersion=%libVersion%
 copy /y ".\%libVersion%\gridgeomStateful_dll.dll" "..\GridEditor_latest\src\DeltaShell.Plugins.GridEditor\Lib\gridgeomStateful_dll.dll"
