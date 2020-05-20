@@ -57,6 +57,10 @@ bool GridGeom::Orthogonalization::Set(Mesh& mesh,
     m_orthogonalizationToSmoothingFactor = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor;
     m_orthogonalizationToSmoothingFactorBoundary = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary;
     m_smoothorarea = orthogonalizationParametersNative.Smoothorarea;
+    m_orthogonalizationOuterIterations = orthogonalizationParametersNative.OuterIterations;
+    m_orthogonalizationBoundaryIterations = orthogonalizationParametersNative.BoundaryIterations;
+    m_orthogonalizationInnerIterations = orthogonalizationParametersNative.InnerIterations;
+
 
     m_polygons.Set(polygon, mesh.m_projection);
 
