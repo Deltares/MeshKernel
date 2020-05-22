@@ -2,8 +2,8 @@
 
 #include <vector>
 #include "LandBoundaries.hpp"
-#include "OrthogonalizationParametersNative.hpp"
 #include "Polygons.hpp"
+#include "OrthogonalizationParametersNative.hpp"
 
 namespace GridGeom
 {
@@ -21,7 +21,7 @@ namespace GridGeom
             int& isAccountingForLandBoundariesRequired,
             int& projectToLandBoundaryOption,
             GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
-            std::vector<Point>& polygon,
+            const Polygons& polygon,
             std::vector<Point>& landBoundaries);
 
         bool Iterate(Mesh& mesh);
@@ -122,7 +122,7 @@ namespace GridGeom
         // run-time options                                                      
         bool m_keepCircumcentersAndMassCenters = false;                          
         double m_orthogonalizationToSmoothingFactor = 0.975;                     // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
-        double m_orthogonalizationToSmoothingFactorBoundary = 1.0;               // minimum ATPF on the boundary
+        double m_orthogonalizationToSmoothingFactorBoundary = 1.0;               // ATPF_B minimum ATPF on the boundary
         double m_smoothorarea = 1.0;                                             // Factor between smoother(1.0) and area - homogenizer(0.0)
         int m_orthogonalizationOuterIterations = 2;
         int m_orthogonalizationBoundaryIterations = 25;
