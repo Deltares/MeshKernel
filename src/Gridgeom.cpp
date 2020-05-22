@@ -1085,6 +1085,34 @@ namespace GridGeomApi
         return successful == 1 ? 0 : 1;
     }
 
+    GRIDGEOM_API int ggeo_points_in_polygon(int& ggid, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative) 
+    {
+    
+        std::vector<GridGeom::Point> polygonNodes;
+        bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonNodes);
+        if (!successful || polygonNodes.empty())
+        {
+            return -1;
+        }
 
+
+        std::vector<GridGeom::Point> points;
+        successful = ConvertGeometryListNativeToPointVector(pointsNative, points);
+        if (!successful || points.empty() || points.size()!= selectedPointsNative.numberOfCoordinates)
+        {
+            return -1;
+        }
+
+        
+        GridGeom::Polygons polygon;
+        polygon.Set(polygonNodes, meshInstances[ggid].m_projection);
+
+        for (int i = 0; i < points.size(); i++)
+        {
+            selectedPointsNative.zCoordinates[i]= polygon.IsPointInPolygons(points[i]);
+        }
+        
+        return successful == 1 ? 0 : 1;
+    }
 
 }

@@ -540,7 +540,7 @@ namespace GridGeom
         }
 
         bool inPolygon = false;
-        for (int p = 0; p <= m_indexses.size(); p++)
+        for (int p = 0; p < m_indexses.size(); p++)
         {
             // Calculate the bounding box
             double XMin = std::numeric_limits<double>::max();
