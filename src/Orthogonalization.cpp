@@ -13,7 +13,7 @@ bool GridGeom::Orthogonalization::Set(Mesh& mesh,
     int& isAccountingForLandBoundariesRequired,
     int& projectToLandBoundaryOption,
     GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
-    std::vector<Point>& polygon,
+    const Polygons& polygon,
     std::vector<Point>& landBoundaries)
 {
     m_maxNumNeighbours = *(std::max_element(mesh.m_nodesNumEdges.begin(), mesh.m_nodesNumEdges.end()));
@@ -22,6 +22,18 @@ bool GridGeom::Orthogonalization::Set(Mesh& mesh,
     m_weights.resize(mesh.GetNumNodes() , std::vector<double>(m_maxNumNeighbours, 0.0));
     m_rightHandSide.resize(mesh.GetNumNodes() , std::vector<double>(2, 0.0));
     m_aspectRatios.resize(mesh.GetNumEdges(), 0.0);
+    m_polygons = polygon;
+
+    // Sets the node mask
+    mesh.SelectNodesInPolygon(m_polygons, true);
+    // Flag nodes outside the polygon as corner points
+    for (auto n = 0; n < mesh.GetNumNodes(); n++)
+    {
+        if (mesh.m_nodeMask[n] == 0) 
+        {
+            mesh.m_nodesTypes[n] = 3;
+        }
+    }
 
     //for each node, determine the neighbouring nodes
     for (auto n = 0; n < mesh.GetNumNodes() ; n++)
@@ -60,9 +72,6 @@ bool GridGeom::Orthogonalization::Set(Mesh& mesh,
     m_orthogonalizationOuterIterations = orthogonalizationParametersNative.OuterIterations;
     m_orthogonalizationBoundaryIterations = orthogonalizationParametersNative.BoundaryIterations;
     m_orthogonalizationInnerIterations = orthogonalizationParametersNative.InnerIterations;
-
-
-    m_polygons.Set(polygon, mesh.m_projection);
 
     m_landBoundaries.Set(landBoundaries);
 

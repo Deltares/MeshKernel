@@ -254,12 +254,15 @@ namespace GridGeomApi
         GridGeom::Orthogonalization ortogonalization;
 
         // build enclosing polygon
-        std::vector<GridGeom::Point> polygon(geometryListNativePolygon.numberOfCoordinates);
+        std::vector<GridGeom::Point> nodes(geometryListNativePolygon.numberOfCoordinates);
         for (int i = 0; i < geometryListNativePolygon.numberOfCoordinates; i++)
         {
-            polygon[i].x = geometryListNativePolygon.xCoordinates[i];
-            polygon[i].y = geometryListNativePolygon.yCoordinates[i];
+            nodes[i].x = geometryListNativePolygon.xCoordinates[i];
+            nodes[i].y = geometryListNativePolygon.yCoordinates[i];
         }
+
+        GridGeom::Polygons polygon;
+        polygon.Set(nodes, meshInstances[gridStateId].m_projection);
 
         // build land boundary
         std::vector<GridGeom::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
@@ -289,12 +292,14 @@ namespace GridGeomApi
         GeometryListNative& geometryListNativeLandBoundaries)
     {
         // build enclosing polygon
-        std::vector<GridGeom::Point> polygon(geometryListNativePolygon.numberOfCoordinates);
+        std::vector<GridGeom::Point> nodes(geometryListNativePolygon.numberOfCoordinates);
         for (int i = 0; i < geometryListNativePolygon.numberOfCoordinates; i++)
         {
-            polygon[i].x = geometryListNativePolygon.xCoordinates[i];
-            polygon[i].y = geometryListNativePolygon.yCoordinates[i];
+            nodes[i].x = geometryListNativePolygon.xCoordinates[i];
+            nodes[i].y = geometryListNativePolygon.yCoordinates[i];
         }
+        GridGeom::Polygons polygon;
+        polygon.Set(nodes, meshInstances[gridStateId].m_projection);
 
         // build land boundary
         std::vector<GridGeom::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
