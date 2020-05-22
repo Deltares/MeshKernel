@@ -115,6 +115,8 @@ bool GridGeom::Mesh::Administrate(AdministrationOptions administrationOption)
        
     NodeAdministration();
 
+    SortEdgesInCounterClockWiseOrder();
+
     if (administrationOption == AdministrationOptions::AdministrateMeshEdges)
     {
         return true;
@@ -136,8 +138,6 @@ bool GridGeom::Mesh::Administrate(AdministrationOptions administrationOption)
     m_facesCircumcenters.resize(0);
     m_facesMassCenters.resize(0);
     m_faceArea.resize(0);
-
-    SortEdgesInCounterClockWiseOrder();
 
     // find faces
     FindFaces();

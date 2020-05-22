@@ -128,6 +128,65 @@ TEST(Orthogonalization, OrthogonalizationSmallTriangularGrid)
     ASSERT_NEAR(327.102805172725, mesh.m_nodes[9].y, tolerance);
 }
 
+TEST(Orthogonalization, OrthogonalizationSmallTriangularGridAsNcFile)
+{
+
+    // now build node-edge mapping
+    auto mesh = MakeSmallSizeTriangularMeshForTestingAsNcFile();
+
+    int isTriangulationRequired = 0;
+    int isAccountingForLandBoundariesRequired = 0;
+    int projectToLandBoundaryOption = 0;
+    GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
+    orthogonalizationParametersNative.OuterIterations = 2;
+    orthogonalizationParametersNative.BoundaryIterations = 25;
+    orthogonalizationParametersNative.InnerIterations = 25;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
+
+
+    GridGeom::Orthogonalization orthogonalization;
+    std::vector<GridGeom::Point> polygon;
+    std::vector<GridGeom::Point> landBoundary;
+
+    orthogonalization.Set(mesh,
+        isTriangulationRequired,
+        isAccountingForLandBoundariesRequired,
+        projectToLandBoundaryOption,
+        orthogonalizationParametersNative,
+        polygon,
+        landBoundary);
+
+    orthogonalization.Iterate(mesh);
+
+    constexpr double tolerance = 1e-2;
+
+    ASSERT_NEAR(325.590101919525, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(229.213730481198, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(263.439319753147, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(429.191105834504, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(535.865215426468, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(503.753784179688, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(354.048340705929, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(346.790050854504, mesh.m_nodes[7].x, tolerance);
+    ASSERT_NEAR(315.030130405285, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(424.314957449766, mesh.m_nodes[9].x, tolerance);
+
+    ASSERT_NEAR(455.319334078551, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(362.573521507281, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(241.096458631763, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(211.483073921775, mesh.m_nodes[3].y, tolerance);
+    ASSERT_NEAR(311.401495506714, mesh.m_nodes[4].y, tolerance);
+    ASSERT_NEAR(432.379974365234, mesh.m_nodes[5].y, tolerance);
+    ASSERT_NEAR(458.064836627594, mesh.m_nodes[6].y, tolerance);
+    ASSERT_NEAR(405.311585650679, mesh.m_nodes[7].y, tolerance);
+    ASSERT_NEAR(319.612138503550, mesh.m_nodes[8].y, tolerance);
+    ASSERT_NEAR(327.102805172725, mesh.m_nodes[9].y, tolerance);
+}
+
+
+
+
 TEST(Orthogonalization, OrthogonalizationMediumTriangularGrid)
 {
     // now build node-edge mapping
