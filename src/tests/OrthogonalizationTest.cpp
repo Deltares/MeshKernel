@@ -479,5 +479,64 @@ TEST(Orthogonalization, OrthogonalizationSphericalRectangular)
     ASSERT_NEAR(41.103, mesh.m_nodes[13].y, tolerance);
     ASSERT_NEAR(41.106, mesh.m_nodes[14].y, tolerance);
     ASSERT_NEAR(41.109, mesh.m_nodes[15].y, tolerance);
+}
 
+TEST(MeshRefinement, SmallTriangulargridSpherical)
+{
+    std::vector<GridGeom::Point> nodes;
+    nodes.push_back({ 41.1019592, 41.1072273 });
+    nodes.push_back({ 41.1044655, 41.1043587 });
+    nodes.push_back({ 41.1051979, 41.1073151 });
+    nodes.push_back({ 41.1080132,41.1046638 });
+    nodes.push_back({ 41.1014137, 41.1039963 });
+
+    std::vector<GridGeom::Edge> edges;
+    edges.push_back({ 4, 0 });
+    edges.push_back({ 4, 1 });
+    edges.push_back({ 1, 0 });
+    edges.push_back({ 1, 3 });
+    edges.push_back({ 3, 2 });
+    edges.push_back({ 2, 1 });
+    edges.push_back({ 0, 2 });
+
+    GridGeom::Mesh mesh;
+    mesh.Set(edges, nodes, GridGeom::Projections::spherical);
+
+    int isTriangulationRequired = 0;
+    int isAccountingForLandBoundariesRequired = 0;
+    int projectToLandBoundaryOption = 0;
+    GridGeomApi::OrthogonalizationParametersNative orthogonalizationParametersNative;
+    orthogonalizationParametersNative.OuterIterations = 2;
+    orthogonalizationParametersNative.BoundaryIterations = 25;
+    orthogonalizationParametersNative.InnerIterations = 25;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
+
+    GridGeom::Orthogonalization orthogonalization;
+    GridGeom::Polygons polygon;
+    std::vector<GridGeom::Point> landBoundary;
+
+    orthogonalization.Set(mesh,
+        isTriangulationRequired,
+        isAccountingForLandBoundariesRequired,
+        projectToLandBoundaryOption,
+        orthogonalizationParametersNative,
+        polygon,
+        landBoundary);
+
+    orthogonalization.Iterate(mesh);
+
+    constexpr double tolerance = 1e-3;
+
+    ASSERT_NEAR(41.1019592285156, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(41.1044654597059, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(41.1051978230878, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(41.1080131530762, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(41.1014137268066, mesh.m_nodes[4].x, tolerance);
+
+    ASSERT_NEAR(41.1072273254395, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(41.1043586701373, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(41.1073150612170, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(41.1046638488770, mesh.m_nodes[3].y, tolerance);
+    ASSERT_NEAR(41.1039962768555, mesh.m_nodes[4].y, tolerance);
 }
