@@ -1080,8 +1080,8 @@ bool GridGeom::Splines::ComputeVelocitiesAtGridPoints
 
         if (m_projection == Projections::spherical)
         {
-            velocityVector[m].x = velocityVector[m].x * earth_radius * raddeg_hp / std::cos(degrad_hp * m_gridPoints[layerIndex][m].y);
-            velocityVector[m].y = velocityVector[m].y * earth_radius * raddeg_hp;
+            velocityVector[m].x = velocityVector[m].x * one_over_earth_radius * raddeg_hp / std::cos(degrad_hp * m_gridPoints[layerIndex][m].y);
+            velocityVector[m].y = velocityVector[m].y * one_over_earth_radius * raddeg_hp;
         }
     }
     return true;
@@ -1671,7 +1671,7 @@ bool GridGeom::Splines::GetSplinesIntersection(const int first, const int second
             double crossProduct;
             double firstRatio;
             double secondRatio;
-            bool areCrossing = GridGeom::AreLinesCrossing(m_splineCornerPoints[first][n],
+            bool areCrossing = AreLinesCrossing(m_splineCornerPoints[first][n],
                 m_splineCornerPoints[first][n + 1],
                 m_splineCornerPoints[second][nn],
                 m_splineCornerPoints[second][nn + 1],
