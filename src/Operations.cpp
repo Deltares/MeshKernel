@@ -1089,79 +1089,42 @@ namespace GridGeom
         const Projections& projection)
     {
         bool isCrossing = false;
-        if (projection == Projections::cartesian)
+
+        firstRatio = doubleMissingValue;
+        secondRatio = doubleMissingValue;
+        double x21 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+        double y21 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+
+        double x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+        double y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+
+        double x31 = GetDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+        double y31 = GetDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+
+        double det = x43 * y21 - y43 * x21;
+
+        std::vector<double> values{ x21, y21, x43, y43 };
+        double eps = std::max(0.00001 * (*std::max_element(values.begin(), values.end())), std::numeric_limits<double>::denorm_min());
+
+        if (std::abs(det) < eps)
         {
-            firstRatio = doubleMissingValue;
-            secondRatio = doubleMissingValue;
-            double x21 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-            double y21 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-
-            double x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-            double y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-
-            double x31 = GetDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
-            double y31 = GetDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
-
-            double det = x43 * y21 - y43 * x21;
-
-            std::vector<double> values{ x21, y21, x43, y43 };
-            double eps = std::max(0.00001 * (*std::max_element(values.begin(), values.end())), std::numeric_limits<double>::denorm_min());
-
-            if (std::abs(det) < eps)
-            {
-                return isCrossing;
-            }
-
-            secondRatio = (y31 * x21 - x31 * y21) / det;
-            firstRatio = (y31 * x43 - x31 * y43) / det;
-            if (firstRatio >= 0.0 && firstRatio <= 1.0 && secondRatio >= 0.0 && secondRatio <= 1.0)
-            {
-                isCrossing = true;
-            }
-            intersection.x = firstSegmentFistPoint.x + firstRatio * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
-            intersection.y = firstSegmentFistPoint.y + firstRatio * (firstSegmentSecondPoint.y - firstSegmentFistPoint.y);
-            crossProduct = -det;
-            if (adimensional)
-            {
-                crossProduct = -det / (std::sqrt(x21 * x21 + y21 * y21) * std::sqrt(x43 * x43 + y43 * y43) + 1e-8);
-            }
+            return isCrossing;
         }
 
-        if (projection == Projections::spherical)
+        secondRatio = (y31 * x21 - x31 * y21) / det;
+        firstRatio = (y31 * x43 - x31 * y43) / det;
+        if (firstRatio >= 0.0 && firstRatio <= 1.0 && secondRatio >= 0.0 && secondRatio <= 1.0)
         {
-            double x21 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-            double y21 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-
-            double x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-            double y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-
-            double x31 = GetDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
-            double y31 = GetDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
-
-            double det = x43 * y21 - y43 * x21;
-
-            std::vector<double> values{ x21, y21, x43, y43 };
-            double eps = std::max(0.00001 * (*std::max_element(values.begin(), values.end())), std::numeric_limits<double>::denorm_min());
-
-            if (det < eps)
-            {
-                return isCrossing;
-            }
-
-            double sm = (y31 * y21 - x31 * y21) / det;
-            double sl = (y31 * x43 - x31 * y43) / det;
-            if (sm >= 0.0 && sm <= 1.0 && sl >= 0.0 && sl <= 1.0)
-            {
-                isCrossing = true;
-            }
-            intersection.x = firstSegmentFistPoint.x + sl * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
-            intersection.y = firstSegmentFistPoint.y + sl * (firstSegmentSecondPoint.x - firstSegmentFistPoint.y);
-            crossProduct = -det;
-            if (adimensional)
-            {
-                crossProduct = -det / (std::sqrt(x21 * x21 + y21 * y21) * std::sqrt(x43 * x43 + y43 * y43) + 1e-8);
-            }
+            isCrossing = true;
         }
+        intersection.x = firstSegmentFistPoint.x + firstRatio * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
+        intersection.y = firstSegmentFistPoint.y + firstRatio * (firstSegmentSecondPoint.y - firstSegmentFistPoint.y);
+        crossProduct = -det;
+        if (adimensional)
+        {
+            crossProduct = -det / (std::sqrt(x21 * x21 + y21 * y21) * std::sqrt(x43 * x43 + y43 * y43) + 1e-8);
+        }
+
         return isCrossing;
     }
 

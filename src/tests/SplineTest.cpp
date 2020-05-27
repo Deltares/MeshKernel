@@ -109,13 +109,13 @@ TEST(Splines, ComputeSplinesProperties)
 
     GridGeom::Polygons polygon;
     GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
-    bool success = splines.AddSpline(firstSpline,0, firstSpline.size());
+    bool success = splines.AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
     std::vector<GridGeom::Point> secondSpline;
     secondSpline.push_back(GridGeom::Point{ 72.5010681152344,391.129577636719 });
     secondSpline.push_back(GridGeom::Point{ 462.503479003906, 90.3765411376953 });
-    success = splines.AddSpline(secondSpline,0, secondSpline.size());
+    success = splines.AddSpline(secondSpline, 0, secondSpline.size());
 
     success = splines.ComputeSplineProperties(false);
     ASSERT_TRUE(success);
@@ -161,14 +161,14 @@ TEST(Splines, ComputeBoundingBox)
 
     GridGeom::Polygons polygon;
     GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
-    bool success = splines.AddSpline(firstSpline,0, firstSpline.size());
+    bool success = splines.AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
     std::vector<GridGeom::Point> secondSpline;
     secondSpline.push_back(GridGeom::Point{ 273.502319335938, 86.6264953613281 });
     secondSpline.push_back(GridGeom::Point{ 557.004089355469, 316.128814697266 });
     secondSpline.push_back(GridGeom::Point{ 847.255920410156, 409.129730224609 });
-    success = splines.AddSpline(secondSpline,0, secondSpline.size());
+    success = splines.AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(success);
 
     std::vector<GridGeom::Point> thirdSpline;
@@ -180,7 +180,7 @@ TEST(Splines, ComputeBoundingBox)
     std::vector<GridGeom::Point> fourthSpline;
     fourthSpline.push_back(GridGeom::Point{ 704.755004882812, 636.382019042969 });
     fourthSpline.push_back(GridGeom::Point{ 845.005859375000, 285.378509521484 });
-    success = splines.AddSpline(fourthSpline,0, fourthSpline.size());
+    success = splines.AddSpline(fourthSpline, 0, fourthSpline.size());
     ASSERT_TRUE(success);
 
     success = splines.ComputeSplineProperties(false);
@@ -388,45 +388,45 @@ TEST(Splines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedLargeMRefineme
     const double tolerance = 1e-5;
 
     ASSERT_NEAR(588.142743143705, mesh.m_nodes[0].x, tolerance);
-    ASSERT_NEAR(469.414124846559,mesh.m_nodes[1].x, tolerance);
-    ASSERT_NEAR(366.687368582373,mesh.m_nodes[2].x, tolerance);
-    ASSERT_NEAR(277.805794755322,mesh.m_nodes[3].x, tolerance);
-    ASSERT_NEAR(200.903394122161,mesh.m_nodes[4].x, tolerance);
-    ASSERT_NEAR(134.365652175209,mesh.m_nodes[5].x, tolerance);
-    ASSERT_NEAR(76.7956534892387,mesh.m_nodes[6].x, tolerance);
-    ASSERT_NEAR(26.9847544156713,mesh.m_nodes[7].x, tolerance);
-    ASSERT_NEAR(-22.8261446578961,mesh.m_nodes[8].x, tolerance);
-    ASSERT_NEAR(-78.9948453544669,mesh.m_nodes[9].x, tolerance);
-    ASSERT_NEAR(-142.332849618982,mesh.m_nodes[10].x, tolerance);
-    ASSERT_NEAR(-213.755238502133,mesh.m_nodes[11].x, tolerance);
-    ASSERT_NEAR(-294.293892869459,mesh.m_nodes[12].x, tolerance);
-    ASSERT_NEAR(-385.112401585425,mesh.m_nodes[13].x, tolerance);
-    ASSERT_NEAR(-487.522872559699,mesh.m_nodes[14].x, tolerance);
-    ASSERT_NEAR(589.751674409702,mesh.m_nodes[15].x, tolerance);
-    ASSERT_NEAR(475.485400123041,mesh.m_nodes[16].x, tolerance);
-    ASSERT_NEAR(375.293682537274,mesh.m_nodes[17].x, tolerance);
-    ASSERT_NEAR(288.605483013514,mesh.m_nodes[18].x, tolerance);
-    ASSERT_NEAR(213.600840736189,mesh.m_nodes[19].x, tolerance);
-    ASSERT_NEAR(148.705083366035,mesh.m_nodes[20].x, tolerance);
-    ASSERT_NEAR(92.5557678466786,mesh.m_nodes[21].x, tolerance);
-    ASSERT_NEAR(43.9740768231890,mesh.m_nodes[22].x, tolerance);
-    ASSERT_NEAR(-4.60761420030062,mesh.m_nodes[23].x, tolerance);
-    ASSERT_NEAR(-59.3902122498050,mesh.m_nodes[24].x, tolerance);
-    ASSERT_NEAR(-121.165193437728,mesh.m_nodes[25].x, tolerance);
-    ASSERT_NEAR(-190.825056909698,mesh.m_nodes[26].x, tolerance);
-    ASSERT_NEAR(-269.376219299725,mesh.m_nodes[27].x, tolerance);
-    ASSERT_NEAR(-357.953555017692,mesh.m_nodes[28].x, tolerance);
-    ASSERT_NEAR(-457.836792441174,mesh.m_nodes[29].x, tolerance);
-    ASSERT_NEAR(589.751674409702,mesh.m_nodes[30].x, tolerance);
-    ASSERT_NEAR(481.252352883142,mesh.m_nodes[31].x, tolerance);
-    ASSERT_NEAR(408.289995573200,mesh.m_nodes[32].x, tolerance);
-    ASSERT_NEAR(345.161270558643,mesh.m_nodes[33].x, tolerance);
-    ASSERT_NEAR(290.540832446502,mesh.m_nodes[34].x, tolerance);
-    ASSERT_NEAR(243.281961641267,mesh.m_nodes[35].x, tolerance);
-    ASSERT_NEAR(202.392489733323,mesh.m_nodes[36].x, tolerance);
-    ASSERT_NEAR(167.013969586259,mesh.m_nodes[37].x, tolerance);
-    ASSERT_NEAR(131.635449439195,mesh.m_nodes[38].x, tolerance);
-    ASSERT_NEAR(91.7412586860200,mesh.m_nodes[39].x, tolerance);
+    ASSERT_NEAR(469.414124846559, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(366.687368582373, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(277.805794755322, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(200.903394122161, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(134.365652175209, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(76.7956534892387, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(26.9847544156713, mesh.m_nodes[7].x, tolerance);
+    ASSERT_NEAR(-22.8261446578961, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(-78.9948453544669, mesh.m_nodes[9].x, tolerance);
+    ASSERT_NEAR(-142.332849618982, mesh.m_nodes[10].x, tolerance);
+    ASSERT_NEAR(-213.755238502133, mesh.m_nodes[11].x, tolerance);
+    ASSERT_NEAR(-294.293892869459, mesh.m_nodes[12].x, tolerance);
+    ASSERT_NEAR(-385.112401585425, mesh.m_nodes[13].x, tolerance);
+    ASSERT_NEAR(-487.522872559699, mesh.m_nodes[14].x, tolerance);
+    ASSERT_NEAR(589.751674409702, mesh.m_nodes[15].x, tolerance);
+    ASSERT_NEAR(475.485400123041, mesh.m_nodes[16].x, tolerance);
+    ASSERT_NEAR(375.293682537274, mesh.m_nodes[17].x, tolerance);
+    ASSERT_NEAR(288.605483013514, mesh.m_nodes[18].x, tolerance);
+    ASSERT_NEAR(213.600840736189, mesh.m_nodes[19].x, tolerance);
+    ASSERT_NEAR(148.705083366035, mesh.m_nodes[20].x, tolerance);
+    ASSERT_NEAR(92.5557678466786, mesh.m_nodes[21].x, tolerance);
+    ASSERT_NEAR(43.9740768231890, mesh.m_nodes[22].x, tolerance);
+    ASSERT_NEAR(-4.60761420030062, mesh.m_nodes[23].x, tolerance);
+    ASSERT_NEAR(-59.3902122498050, mesh.m_nodes[24].x, tolerance);
+    ASSERT_NEAR(-121.165193437728, mesh.m_nodes[25].x, tolerance);
+    ASSERT_NEAR(-190.825056909698, mesh.m_nodes[26].x, tolerance);
+    ASSERT_NEAR(-269.376219299725, mesh.m_nodes[27].x, tolerance);
+    ASSERT_NEAR(-357.953555017692, mesh.m_nodes[28].x, tolerance);
+    ASSERT_NEAR(-457.836792441174, mesh.m_nodes[29].x, tolerance);
+    ASSERT_NEAR(589.751674409702, mesh.m_nodes[30].x, tolerance);
+    ASSERT_NEAR(481.252352883142, mesh.m_nodes[31].x, tolerance);
+    ASSERT_NEAR(408.289995573200, mesh.m_nodes[32].x, tolerance);
+    ASSERT_NEAR(345.161270558643, mesh.m_nodes[33].x, tolerance);
+    ASSERT_NEAR(290.540832446502, mesh.m_nodes[34].x, tolerance);
+    ASSERT_NEAR(243.281961641267, mesh.m_nodes[35].x, tolerance);
+    ASSERT_NEAR(202.392489733323, mesh.m_nodes[36].x, tolerance);
+    ASSERT_NEAR(167.013969586259, mesh.m_nodes[37].x, tolerance);
+    ASSERT_NEAR(131.635449439195, mesh.m_nodes[38].x, tolerance);
+    ASSERT_NEAR(91.7412586860200, mesh.m_nodes[39].x, tolerance);
 
     ASSERT_NEAR(278.613317010633, mesh.m_nodes[0].y, tolerance);
     ASSERT_NEAR(288.968716199430, mesh.m_nodes[1].y, tolerance);
@@ -564,7 +564,6 @@ TEST(Splines, OrthogonalCurvilinearMeshFourSplineCrossingFront)
     ASSERT_NEAR(603.508778997112, mesh.m_nodes[18].y, tolerance);
     ASSERT_NEAR(665.929912556253, mesh.m_nodes[19].y, tolerance);
 }
-
 TEST(Splines, OrthogonalCurvilinearGridFromSplineWithSevenSplies)
 {
     GridGeom::Polygons polygon;
@@ -657,7 +656,7 @@ TEST(Splines, OrthogonalCurvilinearGridFromSplineWithSevenSplies)
     ASSERT_NEAR(159.316512108475, mesh.m_nodes[17].x, tolerance);
     ASSERT_NEAR(154.251600000000, mesh.m_nodes[18].x, tolerance);
     ASSERT_NEAR(149.317118005829, mesh.m_nodes[19].x, tolerance);
-    
+
     ASSERT_NEAR(-32.9072706211971, mesh.m_nodes[0].y, tolerance);
     ASSERT_NEAR(-20.6818375059078, mesh.m_nodes[1].y, tolerance);
     ASSERT_NEAR(-9.63982764890134, mesh.m_nodes[2].y, tolerance);
@@ -678,5 +677,90 @@ TEST(Splines, OrthogonalCurvilinearGridFromSplineWithSevenSplies)
     ASSERT_NEAR(73.3233799367651, mesh.m_nodes[17].y, tolerance);
     ASSERT_NEAR(76.8764000000000, mesh.m_nodes[18].y, tolerance);
     ASSERT_NEAR(80.3379237444341, mesh.m_nodes[19].y, tolerance);
+}
+
+TEST(Splines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedSpherical)
+{
+    std::vector<GridGeom::Point> firstSpline;
+    firstSpline.push_back(GridGeom::Point{ 4.109727E+01, 4.110174E+01 });
+    firstSpline.push_back(GridGeom::Point{ 4.109865E+01, 4.110418E+01 });
+    firstSpline.push_back(GridGeom::Point{ 4.110644E+01, 4.110904E+01 });
+
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::spherical, polygon);
+    bool success = splines.AddSpline(firstSpline, 0, firstSpline.size());
+    ASSERT_TRUE(success);
+
+    std::vector<GridGeom::Point> secondSpline;
+    secondSpline.push_back(GridGeom::Point{ 4.109612E+01, 4.110473E+01 });
+    secondSpline.push_back(GridGeom::Point{ 4.109923E+01, 4.110212E+01 });
+    success = splines.AddSpline(secondSpline, 0, secondSpline.size());
+    ASSERT_TRUE(success);
+
+    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
+    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+
+    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
+    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParametersNative.AverageWidth = 100.0;
+    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
+    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    curvilinearParametersNative.MRefinement = 10;
+    curvilinearParametersNative.NRefinement = 20;
+    splines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    GridGeom::CurvilinearGrid curvilinearGrid;
+
+    success = splines.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
+    ASSERT_TRUE(success);
+
+    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::spherical);
+
+    const double tolerance = 5e-4;
+
+    ASSERT_NEAR(41.0994668963040, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(41.0991084975934, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(41.0987913585479, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(41.0985107292634, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(41.0982624066548, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(41.0980426715056, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(41.0978482327633, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(41.0976761782490, mesh.m_nodes[7].x, tolerance);
+    ASSERT_NEAR(41.0975239310399, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(41.0973892108745, mesh.m_nodes[9].x, tolerance);
+    ASSERT_NEAR(41.0972700000000, mesh.m_nodes[10].x, tolerance);
+    ASSERT_NEAR(41.0971507891255, mesh.m_nodes[11].x, tolerance);
+    ASSERT_NEAR(41.0970173108791, mesh.m_nodes[12].x, tolerance);
+    ASSERT_NEAR(41.0968678577157, mesh.m_nodes[13].x, tolerance);
+    ASSERT_NEAR(41.0967005177284, mesh.m_nodes[14].x, tolerance);
+    ASSERT_NEAR(41.0965131501894, mesh.m_nodes[15].x, tolerance);
+    ASSERT_NEAR(41.0963033581646, mesh.m_nodes[16].x, tolerance);
+    ASSERT_NEAR(41.0960684578508, mesh.m_nodes[17].x, tolerance);
+    ASSERT_NEAR(41.0958054442416, mesh.m_nodes[18].x, tolerance);
+    ASSERT_NEAR(41.0955109526861, mesh.m_nodes[19].x, tolerance);
+
+    ASSERT_NEAR(41.1017323378167, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(41.1017335906480, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(41.1017346983120, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(41.1017356777341, mesh.m_nodes[3].y, tolerance);
+    ASSERT_NEAR(41.1017365438410, mesh.m_nodes[4].y, tolerance);
+    ASSERT_NEAR(41.1017373098033, mesh.m_nodes[5].y, tolerance);
+    ASSERT_NEAR(41.1017379872469, mesh.m_nodes[6].y, tolerance);
+    ASSERT_NEAR(41.1017385864373, mesh.m_nodes[7].y, tolerance);
+    ASSERT_NEAR(41.1017391164415, mesh.m_nodes[8].y, tolerance);
+    ASSERT_NEAR(41.1017395852698, mesh.m_nodes[9].y, tolerance);
+    ASSERT_NEAR(41.1017400000000, mesh.m_nodes[10].y, tolerance);
+    ASSERT_NEAR(41.1017404147302, mesh.m_nodes[11].y, tolerance);
+    ASSERT_NEAR(41.1017408789613, mesh.m_nodes[12].y, tolerance);
+    ASSERT_NEAR(41.1017413985836, mesh.m_nodes[13].y, tolerance);
+    ASSERT_NEAR(41.1017419801843, mesh.m_nodes[14].y, tolerance);
+    ASSERT_NEAR(41.1017426311279, mesh.m_nodes[15].y, tolerance);
+    ASSERT_NEAR(41.1017433596473, mesh.m_nodes[16].y, tolerance);
+    ASSERT_NEAR(41.1017441749444, mesh.m_nodes[17].y, tolerance);
+    ASSERT_NEAR(41.1017450873013, mesh.m_nodes[18].y, tolerance);
+    ASSERT_NEAR(41.1017461082051, mesh.m_nodes[19].y, tolerance);
+
 
 }
+
