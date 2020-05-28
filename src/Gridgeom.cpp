@@ -1109,7 +1109,7 @@ namespace GridGeomApi
 
         for (int i = 0; i < points.size(); i++)
         {
-            selectedPointsNative.zCoordinates[i]= polygon.IsPointInPolygons(points[i]);
+            selectedPointsNative.zCoordinates[i]= polygon.IsPointInPolygons(points[i])? 1.0 : 0.0;
         }
         
         return successful == 1 ? 0 : 1;
