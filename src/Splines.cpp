@@ -253,18 +253,26 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
 
             double xMiddle = (m_gridLine[i].x + m_gridLine[i + 1].x) * 0.5;
             double yMiddle = (m_gridLine[i].y + m_gridLine[i + 1].y) * 0.5;
-            double xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x;
-            double xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x;
-            double ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y;
-            double ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y;
+            
+            double xs1;
+            double xs2;
+            double ys1;
+            double ys2;
 
+            if (m_projection == Projections::cartesian)
+            {
+                xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x;
+                xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x;
+                ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y;
+                ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y;
+            }
             if (m_projection == Projections::spherical)
             {
                 const double factor = 1.0 / (earth_radius * degrad_hp);
-                xs1 = xs1 * factor;
-                ys1 = ys1 * factor;
-                xs2 = xs2 * factor;
-                ys2 = ys2 * factor;
+                xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x * factor;
+                xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x * factor;
+                ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y * factor;
+                ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y * factor;
             }
 
             newCrossSpline[0] = { xs1, ys1 };
@@ -2289,8 +2297,8 @@ bool GridGeom::Splines::ComputeCurvatureOnSplinePoint(
     Point& normalVector,
     Point& tangentialVector)
 {
-    double leftCornerPoint = std::max(std::min(double(std::floor(adimensionalPointCoordinate)), double(m_numSplineNodes[splineIndex] - 1)), 0.0);
-    double rightCornerPoint = std::max(double(leftCornerPoint + 1.0), 0.0);
+    auto const leftCornerPoint = int(std::max(std::min(double(std::floor(adimensionalPointCoordinate)), double(m_numSplineNodes[splineIndex] - 1)), 0.0));
+    auto const rightCornerPoint = int(std::max(double(leftCornerPoint + 1.0), 0.0));
 
     double leftSegment = rightCornerPoint - adimensionalPointCoordinate;
     double rightSegment = adimensionalPointCoordinate - leftCornerPoint;
@@ -2306,8 +2314,8 @@ bool GridGeom::Splines::ComputeCurvatureOnSplinePoint(
 
     if (m_projection == Projections::spherical)
     {
-        p.TransformSphericalToCartesian();
-        pp.TransformSphericalToCartesian();
+        p.TransformSphericalToCartesian(pointCoordinate.y);
+        pp.TransformSphericalToCartesian(pointCoordinate.y);
     }
 
     curvatureFactor = std::abs(pp.x * p.y - pp.y * p.x) / std::pow((p.x * p.x + p.y * p.y + 1e-8), 1.5);
