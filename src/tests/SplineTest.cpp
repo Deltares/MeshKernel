@@ -51,7 +51,7 @@ TEST(Splines, CubicSplineInterpolation)
         }
     }
 
-    const double tolerance = 1e-5;
+    const double tolerance = 1e-6;
     ASSERT_NEAR(226.817168170929, splineCoordinates[1].x, tolerance);
     ASSERT_NEAR(241.648133331299, splineCoordinates[2].x, tolerance);
     ASSERT_NEAR(256.510598720551, splineCoordinates[3].x, tolerance);
@@ -92,7 +92,7 @@ TEST(Splines, SplineIntersection)
     splines.GetSplinesIntersection(0, 1, GridGeom::Projections::cartesian,
         crossProductIntersection, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
 
-    const double tolerance = 1e-5;
+    const double tolerance = 1e-6;
     ASSERT_NEAR(261.736770097059, dimensionalIntersection.x, tolerance);
     ASSERT_NEAR(245.199166962145, dimensionalIntersection.y, tolerance);
     ASSERT_NEAR(0.601498208554790, firstSplineRatio, tolerance);
@@ -123,7 +123,7 @@ TEST(Splines, ComputeSplinesProperties)
     ASSERT_TRUE(success);
     ASSERT_EQ(7, splines.m_numM);
 
-    const double tolerance = 1e-5;
+    const double tolerance = 1e-6;
     ASSERT_NEAR(253.52971595547601, splines.m_maximumGridHeights[0], tolerance);
     ASSERT_NEAR(0.0, splines.m_maximumGridHeights[1], tolerance);
 
@@ -186,7 +186,7 @@ TEST(Splines, ComputeBoundingBox)
     success = splines.ComputeSplineProperties(false);
     ASSERT_TRUE(success);
 
-    const double tolerance = 1e-5;
+    const double tolerance = 1e-6;
     ASSERT_NEAR(345.967070088532, splines.m_maximumGridHeights[0], tolerance);
     ASSERT_NEAR(370.339417298715, splines.m_maximumGridHeights[1], tolerance);
     ASSERT_NEAR(0.0, splines.m_maximumGridHeights[2], tolerance);
@@ -217,7 +217,7 @@ TEST(Splines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdapted)
 
     GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
 
-    const double tolerance = 1e-5;
+    const double tolerance = 1e-6;
     ASSERT_NEAR(588.142743143705, mesh.m_nodes[0].x, tolerance);
     ASSERT_NEAR(469.414124846559, mesh.m_nodes[1].x, tolerance);
     ASSERT_NEAR(366.687368582373, mesh.m_nodes[2].x, tolerance);
@@ -301,7 +301,7 @@ TEST(Splines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNotAdapted)
 
     GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
 
-    const double tolerance = 1e-5;
+    const double tolerance = 1e-6;
     ASSERT_NEAR(548.641052099198, mesh.m_nodes[0].x, tolerance);
     ASSERT_NEAR(438.270117898728, mesh.m_nodes[1].x, tolerance);
     ASSERT_NEAR(342.774623898401, mesh.m_nodes[2].x, tolerance);
@@ -385,7 +385,7 @@ TEST(Splines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedLargeMRefineme
 
     GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
 
-    const double tolerance = 1e-5;
+    const double tolerance = 1e-6;
 
     ASSERT_NEAR(588.142743143705, mesh.m_nodes[0].x, tolerance);
     ASSERT_NEAR(469.414124846559, mesh.m_nodes[1].x, tolerance);
@@ -521,7 +521,7 @@ TEST(Splines, OrthogonalCurvilinearMeshFourSplineCrossingFront)
 
     GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
 
-    const double tolerance = 1e-5;
+    const double tolerance = 1e-6;
     ASSERT_NEAR(100.529546838174, mesh.m_nodes[0].x, tolerance);
     ASSERT_NEAR(53.2575912534712, mesh.m_nodes[1].x, tolerance);
     ASSERT_NEAR(5.19099854865588, mesh.m_nodes[2].x, tolerance);
@@ -634,7 +634,7 @@ TEST(Splines, OrthogonalCurvilinearGridFromSplineWithSevenSplies)
     ASSERT_TRUE(success);
 
     GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
-    const double tolerance = 1e-5;
+    const double tolerance = 1e-6;
 
     ASSERT_NEAR(318.512311735701, mesh.m_nodes[0].x, tolerance);
     ASSERT_NEAR(299.483532213548, mesh.m_nodes[1].x, tolerance);
@@ -717,7 +717,7 @@ TEST(Splines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedSpherical)
 
     GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::spherical);
 
-    const double tolerance = 5e-4;
+    const double tolerance = 1e-6;
 
     ASSERT_NEAR(41.0994668963040, mesh.m_nodes[0].x, tolerance);
     ASSERT_NEAR(41.0991084975934, mesh.m_nodes[1].x, tolerance);
@@ -760,7 +760,5 @@ TEST(Splines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedSpherical)
     ASSERT_NEAR(41.1017441749444, mesh.m_nodes[17].y, tolerance);
     ASSERT_NEAR(41.1017450873013, mesh.m_nodes[18].y, tolerance);
     ASSERT_NEAR(41.1017461082051, mesh.m_nodes[19].y, tolerance);
-
-
 }
 

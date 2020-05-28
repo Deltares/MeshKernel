@@ -668,9 +668,6 @@ namespace GridGeom
                 result.x = doubleMissingValue;
                 result.y = doubleMissingValue;
             }
-
-            result.x = result.x / cos(degrad_hp * 0.5 * (firstPoint.y + secondPoint.y));
-            result.y = middlePoint.y;
         }
 
         // cartesian and spherical
@@ -680,16 +677,21 @@ namespace GridGeom
             double dy = GetDy(firstPoint, secondPoint, projection);
 
             const double squaredDistance = dx * dx + dy * dy;
+            result.x = doubleMissingValue;
+            result.y = doubleMissingValue;
             if (squaredDistance > 0.0)
             {
                 const double distance = sqrt(squaredDistance);
                 result.x = dy / distance;
                 result.y = -dx / distance;
             }
-            else
+
+            if (projection == Projections::spherical)
             {
-                result.x = doubleMissingValue;
-                result.y = doubleMissingValue;
+                Point middlePoint;
+                MiddlePoint(firstPoint, secondPoint, middlePoint, projection);
+                result.x = result.x / cos(degrad_hp * 0.5 * (firstPoint.y + secondPoint.y));
+                result.y = result.y;
             }
         }
     }
