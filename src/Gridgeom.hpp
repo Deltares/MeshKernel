@@ -118,7 +118,7 @@ namespace GridGeomApi
         
         GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_delete(int& gridStateId);
 
-        GRIDGEOM_API int  ggeo_points_in_polygon(int& ggid, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative);
+        GRIDGEOM_API int ggeo_points_in_polygon(int& ggid, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative);
 
 
 #ifdef __cplusplus
