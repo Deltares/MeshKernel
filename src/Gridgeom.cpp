@@ -948,7 +948,6 @@ namespace GridGeomApi
             return -1;
         }
 
-
         GridGeom::MeshRefinement meshRefinement(meshInstances[gridStateId]);
 
         // polygon could be passed as api parameter
@@ -959,9 +958,6 @@ namespace GridGeomApi
         {
             return -1;
         }
-
-
-
 
         return 0;
     }
@@ -1056,7 +1052,7 @@ namespace GridGeomApi
         }
 
         const bool successful = splineInstances[gridStateId].OrthogonalCurvilinearGridFromSplinesIteration(layer);
-        return successful == true ? 0 : 1;
+        return successful ? 0 : 1;
     }
 
 
@@ -1072,7 +1068,7 @@ namespace GridGeomApi
 
         meshInstances[gridStateId] += GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
 
-        return successful == true ? 0 : 1;
+        return successful ? 0 : 1;
     }
 
     GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_delete(int& gridStateId)
@@ -1082,7 +1078,7 @@ namespace GridGeomApi
             return 0;
         }
         const int successful = splineInstances.erase(gridStateId);
-        return successful == 1 ? 0 : 1;
+        return successful;
     }
 
     GRIDGEOM_API int ggeo_points_in_polygon(int& ggid, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative) 
@@ -1094,7 +1090,6 @@ namespace GridGeomApi
         {
             return -1;
         }
-
 
         std::vector<GridGeom::Point> points;
         successful = ConvertGeometryListNativeToPointVector(pointsNative, points);
@@ -1112,7 +1107,7 @@ namespace GridGeomApi
             selectedPointsNative.zCoordinates[i]= polygon.IsPointInPolygons(points[i])? 1.0 : 0.0;
         }
         
-        return successful == 1 ? 0 : 1;
+        return successful ? 0 : 1;
     }
 
 }

@@ -89,6 +89,36 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     ASSERT_EQ(84, mesh.GetNumEdges()); 
 }
 
+TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
+{
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, GridGeom::Projections::cartesian);
+
+    //sample points
+    std::vector<GridGeom::Sample> samples;
+    samples.push_back({ 14.7153645, 14.5698833, 1.0 });
+    samples.push_back({ 24.7033062, 14.4729137, 1.0 });
+    samples.push_back({ 15.5396099, 24.2669525, 1.0 });
+    samples.push_back({ 23.8305721, 23.9275551, 1.0 });
+
+    GridGeom::MeshRefinement  meshRefinement(mesh);
+    GridGeom::Polygons polygon;
+    GridGeomApi::SampleRefineParametersNative sampleRefineParametersNative;
+    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.64;
+    sampleRefineParametersNative.MinimumCellSize = 2.0;
+    sampleRefineParametersNative.AccountForSamplesOutside = false;
+    sampleRefineParametersNative.ConnectHangingNodes = 1;
+
+    GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
+
+    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+
+    // 3 Validation edges connecting hanging nodes
+
+    //bottom side
+    ASSERT_EQ(0.0, 0.0);
+}
+
 
 TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 {

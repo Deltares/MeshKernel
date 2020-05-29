@@ -7,6 +7,7 @@
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
 #include "Operations.cpp"
+#include <iostream>
 
 GridGeom::MeshRefinement::MeshRefinement(Mesh& mesh) :
     m_mesh(mesh)
@@ -561,6 +562,10 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
         {
             m_mesh.m_nodeMask[newNodeIndex] = -1;
         }
+        else
+        {
+            m_mesh.m_nodeMask[newNodeIndex] = 1;
+        }
     }
 
     for (auto f = 0; f < m_mesh.GetNumFaces(); f++)
@@ -570,7 +575,18 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
             continue;
         }
 
-        const bool isFullFaceNotInPolygon = m_mesh.IsFullFaceNotInPolygon(f);
+        const auto numEdges = m_mesh.GetNumFaceEdges(f);
+        // check if the parent face is crossed by the enclosing polygon
+        bool isParentCrossed = false;
+        for (int e = 0; e < numEdges; ++e)
+        {
+            const auto n = m_mesh.m_facesNodes[f][e];
+            if(m_mesh.m_nodeMask[n]!=1)
+            {
+                isParentCrossed = true;
+                break;
+            }
+        }
 
         int numClosedPolygonNodes = 0;
         bool successful = m_mesh.FaceClosedPolygon(f, m_polygonNodesCache, m_localNodeIndexsesCache, m_edgeIndexsesCache, numClosedPolygonNodes);
@@ -579,7 +595,7 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
             return false;
         }
 
-        const auto numEdges = m_mesh.GetNumFaceEdges(f);
+        
         int numBrotherEdges = 0;
         int numNonHangingNodes = 0;
         std::fill(nonHangingFaceNodes.begin(), nonHangingFaceNodes.end(), intMissingValue);
@@ -699,7 +715,7 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
                 }
 
                 m_mesh.m_nodeMask[newNodeIndex] = 1;
-                if (isFullFaceNotInPolygon)
+                if (isParentCrossed)
                 {
                     //deactive nodes in cells crossed by polygon
                     m_mesh.m_nodeMask[newNodeIndex] = -1;
@@ -860,7 +876,7 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
     std::fill(m_isHangingNodeCache.begin(), m_isHangingNodeCache.end(), false);
     std::fill(m_isHangingEdgeCache.begin(), m_isHangingEdgeCache.end(), false);
 
-    int kknod = 0;
+    int kknod = -1;
 
     for (int n = 0; n < numFaceNodes; n++)
     {
@@ -873,17 +889,19 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
         // check if the brother link is in the cell
         if (m_brotherEdges[edgeIndex] != intMissingValue)
         {
-            auto e = NextCircularBackwardIndex(n, numFaceNodes);
-            auto ee = NextCircularForwardIndex(n, numFaceNodes);
+            const auto e = NextCircularBackwardIndex(n, numFaceNodes);
+            const auto ee = NextCircularForwardIndex(n, numFaceNodes);
+            const auto firstEdgeIndex = m_mesh.m_facesEdges[faceIndex][e];
+            const auto secondEdgeIndex = m_mesh.m_facesEdges[faceIndex][ee];
 
             int commonNode = intMissingValue;
-            if (m_brotherEdges[edgeIndex] == m_mesh.m_facesEdges[faceIndex][e])
+            if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
             {
-
+                m_mesh.FindCommonNode(edgeIndex, firstEdgeIndex, commonNode);
             }
-            else if (m_brotherEdges[edgeIndex] == m_mesh.m_facesEdges[faceIndex][ee])
+            else if (m_brotherEdges[edgeIndex] == secondEdgeIndex)
             {
-
+                m_mesh.FindCommonNode(edgeIndex, secondEdgeIndex, commonNode);
             }
 
             if (commonNode != intMissingValue)
@@ -892,16 +910,13 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
                 numHangingEdges++;
                 for (int nn = 0; nn < numFaceNodes; nn++)
                 {
-                    kknod = kknod + 1;
-                    if (kknod >= numFaceNodes)
-                    {
-                        kknod = kknod - numFaceNodes;
-                    }
+                    kknod = NextCircularForwardIndex(kknod, numFaceNodes);
 
-                    if (m_mesh.m_facesNodes[faceIndex][n] == commonNode && m_isHangingNodeCache[kknod] == 0)
+                    if (m_mesh.m_facesNodes[faceIndex][kknod] == commonNode && !m_isHangingNodeCache[kknod])
                     {
                         numHangingNodes++;
                         m_isHangingNodeCache[kknod] = true;
+                        break;
                     }
                 }
             }
@@ -1206,6 +1221,10 @@ bool  GridGeom::MeshRefinement::SplitFaces()
             int numHangingEdges;
             int numHangingNodes;
             int numEdgesToRefine;
+            if(f==17)
+            {
+                std::cout << "debug" << std::endl;
+            }
             bool successful = FindHangingNodes(f, numHangingEdges, numHangingNodes, numEdgesToRefine);
             if(!successful)
             {
@@ -1240,7 +1259,7 @@ bool  GridGeom::MeshRefinement::SplitFaces()
             }
 
             if (numFaceNodes + numEdgesToRefine > maximumNumberOfEdgesPerFace ||          // would result in unsupported cells after refinement
-                numFaceNodes - numHangingNodes - numEdgesToRefine < 1 ||  // cells with only one unrefined edge
+                numFaceNodes - numHangingNodes - numEdgesToRefine <= 1 ||  // cells with only one unrefined edge
                 numNodesEffective == numEdgesToRefine)                    // refine all edges
             {
                 isSplittingRequired = true;
