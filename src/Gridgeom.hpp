@@ -13,12 +13,9 @@
 #if !defined(GRIDGEOM_API)
 #define GRIDGEOM_API __declspec(dllexport)
 #endif
-#if !defined(GRIDGEOM_CONVENTION)
-#define GRIDGEOM_CONVENTION __cdecl
-#endif
 #else  
 #define GRIDGEOM_API __attribute__((visibility("default")))
-#endif 
+#endif
 
 // contains all mesh instances
 namespace GridGeomApi
@@ -118,6 +115,9 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_points_in_polygon(int gridStateId, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative);
 
+        GRIDGEOM_API int ggeo_flip_links(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption);
+
+        GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines(int gridStateId, GeometryListNative& geometryListNativeIn, CurvilinearParametersNative& curvilinearParametersNative);
 
 #ifdef __cplusplus
     }
