@@ -113,10 +113,73 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
-    // 3 Validation edges connecting hanging nodes
+    //Assert number of edges and nodes
+    ASSERT_EQ(131, mesh.GetNumEdges());
+    ASSERT_EQ(62, mesh.GetNumNodes());
 
-    //bottom side
-    ASSERT_EQ(0.0, 0.0);
+    //Assert edges
+    ASSERT_EQ(0, mesh.m_edges[0].first);
+    ASSERT_EQ(4, mesh.m_edges[0].second);
+
+    ASSERT_EQ(1, mesh.m_edges[1].first);
+    ASSERT_EQ(32, mesh.m_edges[1].second);
+
+    ASSERT_EQ(2, mesh.m_edges[2].first);
+    ASSERT_EQ(33, mesh.m_edges[2].second);
+
+    ASSERT_EQ(3, mesh.m_edges[3].first);
+    ASSERT_EQ(7, mesh.m_edges[3].second);
+
+    ASSERT_EQ(4, mesh.m_edges[4].first);
+    ASSERT_EQ(34, mesh.m_edges[4].second);
+
+    ASSERT_EQ(5, mesh.m_edges[5].first);
+    ASSERT_EQ(35, mesh.m_edges[5].second);
+
+    ASSERT_EQ(6, mesh.m_edges[6].first);
+    ASSERT_EQ(17, mesh.m_edges[6].second);
+
+    ASSERT_EQ(7, mesh.m_edges[7].first);
+    ASSERT_EQ(18, mesh.m_edges[7].second);
+
+    ASSERT_EQ(8, mesh.m_edges[8].first);
+    ASSERT_EQ(36, mesh.m_edges[8].second);
+
+    ASSERT_EQ(9, mesh.m_edges[9].first);
+    ASSERT_EQ(37, mesh.m_edges[9].second);
+
+    ASSERT_EQ(10, mesh.m_edges[10].first);
+    ASSERT_EQ(38, mesh.m_edges[10].second);
+
+    ASSERT_EQ(11, mesh.m_edges[11].first);
+    ASSERT_EQ(21, mesh.m_edges[11].second);
+
+    ASSERT_EQ(1, mesh.m_edges[12].first);
+    ASSERT_EQ(0, mesh.m_edges[12].second);
+
+    ASSERT_EQ(2, mesh.m_edges[13].first);
+    ASSERT_EQ(39, mesh.m_edges[13].second);
+
+    ASSERT_EQ(3, mesh.m_edges[14].first);
+    ASSERT_EQ(2, mesh.m_edges[14].second);
+
+    ASSERT_EQ(5, mesh.m_edges[15].first);
+    ASSERT_EQ(40, mesh.m_edges[15].second);
+
+    ASSERT_EQ(6, mesh.m_edges[16].first);
+    ASSERT_EQ(22, mesh.m_edges[16].second);
+
+    ASSERT_EQ(7, mesh.m_edges[17].first);
+    ASSERT_EQ(23, mesh.m_edges[17].second);
+
+    ASSERT_EQ(9, mesh.m_edges[18].first);
+    ASSERT_EQ(41, mesh.m_edges[18].second);
+
+    ASSERT_EQ(10, mesh.m_edges[19].first);
+    ASSERT_EQ(24, mesh.m_edges[19].second);
+
+    ASSERT_EQ(11, mesh.m_edges[20].first);
+    ASSERT_EQ(25, mesh.m_edges[20].second);
 }
 
 
@@ -266,7 +329,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
-    // total number of edges
+    // assert on number of nodes and edges
     ASSERT_EQ(150, mesh.GetNumNodes());
     ASSERT_EQ(293, mesh.GetNumEdges());
 
@@ -477,8 +540,9 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
-    // total number of edges
-    ASSERT_EQ(0, 0.0);
+    // assert on number of nodes and edges
+    ASSERT_EQ(32, mesh.GetNumNodes());
+    ASSERT_EQ(60, mesh.GetNumEdges());
 }
 
 
