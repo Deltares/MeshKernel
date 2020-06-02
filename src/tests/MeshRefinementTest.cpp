@@ -443,6 +443,44 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
     ASSERT_EQ(27, mesh.m_edges[48].second);
 }
 
+TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
+{
+    // Prepare
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, GridGeom::Projections::cartesian);
+
+    //sample points
+    std::vector<GridGeom::Sample> samples;
+
+    GridGeom::MeshRefinement  meshRefinement(mesh);
+
+    std::vector<GridGeom::Point> point;
+    point.push_back({ 9.09836065573771, 34.016393442623 });
+    point.push_back({ 7.18032786885247, 7.75409836065574 });
+    point.push_back({ 34.6229508196721, 6.5 });
+    point.push_back({ 34.4194409808304, 26.6983515050386 });
+    point.push_back({ 34.327868852459, 35.7868852459016 });
+    point.push_back({ 29.0521194370216, 35.4840476661635 });
+    point.push_back({ 9.90983606557378, 34.3852459016394 });
+    point.push_back({ 9.09836065573771, 34.016393442623 });
+
+    GridGeom::Polygons polygon;
+    polygon.Set(point, mesh.m_projection);
+
+    GridGeomApi::SampleRefineParametersNative sampleRefineParametersNative;
+    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
+    sampleRefineParametersNative.MinimumCellSize = 1.0;
+    sampleRefineParametersNative.AccountForSamplesOutside = false;
+    sampleRefineParametersNative.ConnectHangingNodes = 1;
+
+    GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
+
+    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+
+    // total number of edges
+    ASSERT_EQ(0, 0.0);
+}
+
 
 TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 {
