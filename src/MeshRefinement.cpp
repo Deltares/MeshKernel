@@ -164,13 +164,12 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
         }
         if (numFacesToRefine == 0)
         {
-            return true;
+            break;
         }
         numFacesAfterRefinement = numFacesAfterRefinement * 4;
 
-        // do refinement
-
-        successful = RefineFaces(numEdgesBeforeRefinement);
+        // spit the edges
+        successful = RefineFacesBySplittingEdges(numEdgesBeforeRefinement);
         if (!successful)
         {
             return false;
@@ -499,11 +498,11 @@ bool GridGeom::MeshRefinement::ConnectHangingNodes()
     return successful;
 }
 
-bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
+bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRefinemet)
 {
 
     //Add new nodes where required
-    std::vector<int> nonHangingFaceNodes(maximumNumberOfNodesPerFace, intMissingValue);
+    std::vector<int> notHangingFaceNodes(maximumNumberOfNodesPerFace, intMissingValue);
     std::vector<bool> ishanging(maximumNumberOfNodesPerFace, false);
     std::vector<Point> facePolygonWithoutHangingNodes(maximumNumberOfNodesPerFace);
     std::vector<Point> middlePointsCache(maximumNumberOfNodesPerFace);
@@ -598,7 +597,8 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
         
         int numBrotherEdges = 0;
         int numNonHangingNodes = 0;
-        std::fill(nonHangingFaceNodes.begin(), nonHangingFaceNodes.end(), intMissingValue);
+        std::fill(notHangingFaceNodes.begin(), notHangingFaceNodes.end(), intMissingValue);
+        std::fill(ishanging.begin(), ishanging.end(), false);
         for (int e = 0; e < numEdges; e++)
         {
             const auto firstEdge = NextCircularBackwardIndex(e, numEdges);
@@ -623,14 +623,14 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
                 numBrotherEdges++;
                 int newNode;
                 m_mesh.FindCommonNode(edgeIndex, m_brotherEdges[edgeIndex], newNode);
+                notHangingFaceNodes[numNonHangingNodes] = newNode;
                 numNonHangingNodes++;
-                nonHangingFaceNodes[numNonHangingNodes] = newNode;
             }
             else if (m_brotherEdges[edgeIndex] != firstEdgeIndex || m_brotherEdges[edgeIndex] < 0)
             {
                 if (m_edgeMask[edgeIndex] != 0)
                 {
-                    nonHangingFaceNodes[numNonHangingNodes] = m_edgeMask[edgeIndex];
+                    notHangingFaceNodes[numNonHangingNodes] = m_edgeMask[edgeIndex];
                     numNonHangingNodes++;
                 }
             }
@@ -711,7 +711,7 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
                 for (int n = 0; n < numNonHangingNodes; ++n)
                 {
                     int newEdgeIndex;
-                    m_mesh.ConnectNodes(nonHangingFaceNodes[n], newNodeIndex, newEdgeIndex);
+                    m_mesh.ConnectNodes(notHangingFaceNodes[n], newNodeIndex, newEdgeIndex);
                 }
 
                 m_mesh.m_nodeMask[newNodeIndex] = 1;
@@ -724,7 +724,7 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
             else if (numNonHangingNodes == 2)
             {
                 int newEdgeIndex;
-                m_mesh.ConnectNodes(nonHangingFaceNodes[0], nonHangingFaceNodes[1], newEdgeIndex);
+                m_mesh.ConnectNodes(notHangingFaceNodes[0], notHangingFaceNodes[1], newEdgeIndex);
             }
         }
         else
@@ -733,7 +733,7 @@ bool GridGeom::MeshRefinement::RefineFaces(int numEdgesBeforeRefinemet)
             {
                 auto nn = NextCircularForwardIndex(n, numNonHangingNodes);
                 int newEdgeIndex;
-                m_mesh.ConnectNodes(nonHangingFaceNodes[n], nonHangingFaceNodes[nn], newEdgeIndex);
+                m_mesh.ConnectNodes(notHangingFaceNodes[n], notHangingFaceNodes[nn], newEdgeIndex);
             }
         }
     }
@@ -1221,10 +1221,7 @@ bool  GridGeom::MeshRefinement::SplitFaces()
             int numHangingEdges;
             int numHangingNodes;
             int numEdgesToRefine;
-            if(f==17)
-            {
-                std::cout << "debug" << std::endl;
-            }
+
             bool successful = FindHangingNodes(f, numHangingEdges, numHangingNodes, numEdgesToRefine);
             if(!successful)
             {
