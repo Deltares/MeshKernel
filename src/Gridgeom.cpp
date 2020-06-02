@@ -94,7 +94,7 @@ namespace GridGeomApi
         return true;
     }
 
-    bool SetMeshGeometry(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    bool SetMeshGeometry(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -1108,6 +1108,18 @@ namespace GridGeomApi
         }
         
         return successful ? 0 : 1;
+    }
+
+    GRIDGEOM_API int ggeo_flip_links(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption)
+    {
+        // not implemented
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines(int gridStateId, GeometryListNative& geometryListNativeIn, CurvilinearParametersNative& curvilinearParametersNative)
+    {
+        // not implemented
+        return 0;
     }
 
 }

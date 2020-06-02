@@ -543,6 +543,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     // assert on number of nodes and edges
     ASSERT_EQ(32, mesh.GetNumNodes());
     ASSERT_EQ(60, mesh.GetNumEdges());
+    ASSERT_EQ(29, mesh.GetNumFaces());
 }
 
 
