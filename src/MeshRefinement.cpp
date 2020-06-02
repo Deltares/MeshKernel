@@ -104,6 +104,11 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
                 return false;
             }
         }
+        else
+        {
+            std::fill(m_faceMask.begin(), m_faceMask.end(), 1);
+            std::fill(m_edgeMask.begin(), m_edgeMask.end(), -1);
+        }
 
         if (level == 0)
         {
@@ -111,7 +116,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
             for (int f = 0; f < m_mesh.GetNumFaces(); f++)
             {
                 bool activeNodeFound = false;
-                for (int n = 0; n < m_mesh.GetNumEdgesFaces(f); n++)
+                for (int n = 0; n < m_mesh.GetNumFaceEdges(f); n++)
                 {
                     const auto nodeIndex = m_mesh.m_facesNodes[f][n];
                     if (m_mesh.m_nodeMask[nodeIndex] != 0 && m_mesh.m_nodeMask[nodeIndex] != -2)
@@ -184,11 +189,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
         m_mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         m_faceMask.resize(m_mesh.GetNumFaces());
-        std::fill(m_faceMask.begin(), m_faceMask.end(), 1);
-
         m_edgeMask.resize(m_mesh.GetNumEdges());
-        std::fill(m_edgeMask.begin(), m_edgeMask.end(), -1);
-
     }
 
     //remove isolated hanging nodes and connect if needed
