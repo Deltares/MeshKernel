@@ -138,7 +138,7 @@ namespace GridGeomApi
         return 0;
     };
 
-    GRIDGEOM_API int ggeo_deallocate_state(int& gridStateId)
+    GRIDGEOM_API int ggeo_deallocate_state(int gridStateId)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -149,7 +149,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_find_cells_stateful(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    GRIDGEOM_API int ggeo_find_cells_stateful(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -167,7 +167,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_get_mesh(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    GRIDGEOM_API int ggeo_get_mesh(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -185,7 +185,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_delete_mesh(int& gridStateId, GeometryListNative& geometryListIn, int& deletionOption)
+    GRIDGEOM_API int ggeo_delete_mesh(int gridStateId, GeometryListNative& geometryListIn, int deletionOption)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -211,7 +211,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_set_state(int& gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool& isSpherical)
+    GRIDGEOM_API int ggeo_set_state(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool isSpherical)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -248,7 +248,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_orthogonalize(int& gridStateId, int& isTriangulationRequired, int& isAccountingForLandBoundariesRequired, int& projectToLandBoundaryOption,
+    GRIDGEOM_API int ggeo_orthogonalize(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
         OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
     {
         GridGeom::Orthogonalization ortogonalization;
@@ -283,10 +283,10 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_orthogonalize_initialize(int& gridStateId,
-        int& isTriangulationRequired,
-        int& isAccountingForLandBoundariesRequired,
-        int& projectToLandBoundaryOption,
+    GRIDGEOM_API int ggeo_orthogonalize_initialize(int gridStateId,
+        int isTriangulationRequired,
+        int isAccountingForLandBoundariesRequired,
+        int projectToLandBoundaryOption,
         OrthogonalizationParametersNative& orthogonalizationParametersNative,
         GeometryListNative& geometryListNativePolygon,
         GeometryListNative& geometryListNativeLandBoundaries)
@@ -319,25 +319,25 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_orthogonalize_prepare_outer_iteration(int& gridStateId)
+    GRIDGEOM_API int ggeo_orthogonalize_prepare_outer_iteration(int gridStateId)
     {
         bool status = orthogonalizationInstances[gridStateId].PrapareOuterIteration(meshInstances[gridStateId]);
         return status == true ? 0 : 1;
     }
 
-    GRIDGEOM_API int ggeo_orthogonalize_inner_iteration(int& gridStateId)
+    GRIDGEOM_API int ggeo_orthogonalize_inner_iteration(int gridStateId)
     {
         const bool status = orthogonalizationInstances[gridStateId].InnerIteration(meshInstances[gridStateId]);
         return status == true ? 0 : 1;
     }
 
-    GRIDGEOM_API int ggeo_orthogonalize_finalize_outer_iteration(int& gridStateId)
+    GRIDGEOM_API int ggeo_orthogonalize_finalize_outer_iteration(int gridStateId)
     {
         const bool status = orthogonalizationInstances[gridStateId].FinalizeOuterIteration(meshInstances[gridStateId]);
         return status == true ? 0 : 1;
     }
 
-    GRIDGEOM_API int ggeo_orthogonalize_delete(int& gridStateId)
+    GRIDGEOM_API int ggeo_orthogonalize_delete(int gridStateId)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -348,19 +348,19 @@ namespace GridGeomApi
         return returnValue == 1 ? 0 : 1;
     }
 
-    GRIDGEOM_API int ggeo_get_orthogonality(int& gridStateId, GeometryListNative& geometryList)
+    GRIDGEOM_API int ggeo_get_orthogonality(int gridStateId, GeometryListNative& geometryList)
     {
         const bool status = orthogonalizationInstances[gridStateId].GetOrthogonality(meshInstances[gridStateId], geometryList.zCoordinates);
         return status == true ? 0 : 1;
     }
 
-    GRIDGEOM_API int ggeo_get_smoothness(int& gridStateId, GeometryListNative& geometryList)
+    GRIDGEOM_API int ggeo_get_smoothness(int gridStateId, GeometryListNative& geometryList)
     {
         const bool status = orthogonalizationInstances[gridStateId].GetSmoothness(meshInstances[gridStateId], geometryList.zCoordinates);
         return status == true ? 0 : 1;
     }
 
-    GRIDGEOM_API int ggeo_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int& number_of_points_between_vertices)
+    GRIDGEOM_API int ggeo_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int number_of_points_between_vertices)
     {
 
         if (geometryListIn.numberOfCoordinates == 0)
@@ -411,7 +411,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_make_net(int& gridStateId, MakeGridParametersNative& makeGridParameters, GeometryListNative& disposableGeometryListIn)
+    GRIDGEOM_API int ggeo_make_net(int gridStateId, MakeGridParametersNative& makeGridParameters, GeometryListNative& disposableGeometryListIn)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -445,7 +445,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_mesh_from_polygon(int& gridStateId, GeometryListNative& disposableGeometryListIn)
+    GRIDGEOM_API int ggeo_mesh_from_polygon(int gridStateId, GeometryListNative& disposableGeometryListIn)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -479,7 +479,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_mesh_from_samples(int& gridStateId, GeometryListNative& disposableGeometryListIn)
+    GRIDGEOM_API int ggeo_mesh_from_samples(int gridStateId, GeometryListNative& disposableGeometryListIn)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -498,7 +498,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon_count_edges(int& gridStateId, int& numberOfPolygonVertices)
+    GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon_count_edges(int gridStateId, int& numberOfPolygonVertices)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -514,7 +514,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon(int& gridStateId, GeometryListNative& disposableGeometryListInOut)
+    GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon(int gridStateId, GeometryListNative& disposableGeometryListInOut)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -537,7 +537,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_refine_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices)
+    GRIDGEOM_API int ggeo_refine_polygon_count(int gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -566,7 +566,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_refine_polygon(int& gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut)
+    GRIDGEOM_API int ggeo_refine_polygon(int gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -600,7 +600,7 @@ namespace GridGeomApi
     }
 
 
-    GRIDGEOM_API int ggeo_merge_nodes(int& gridStateId, GeometryListNative& geometryListIn) 
+    GRIDGEOM_API int ggeo_merge_nodes(int gridStateId, GeometryListNative& geometryListIn) 
     {
 
         if (gridStateId >= meshInstances.size()) 
@@ -626,7 +626,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_merge_two_nodes(int& gridStateId, int& firstNodeIndex, int& endNode)
+    GRIDGEOM_API int ggeo_merge_two_nodes(int gridStateId, int firstNodeIndex, int endNode)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -643,7 +643,7 @@ namespace GridGeomApi
     }
 
 
-    GRIDGEOM_API int ggeo_count_vertices_in_polygons(int& gridStateId, GeometryListNative& geometryListIn, const int& inside, int& numberOfMeshVertices) 
+    GRIDGEOM_API int ggeo_count_vertices_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices) 
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -717,7 +717,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_insert_edge(int& gridStateId, int& start_node, int& end_node, int& new_edge_index)
+    GRIDGEOM_API int ggeo_insert_edge(int gridStateId, int start_node, int end_node, int& new_edge_index)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -734,7 +734,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_insert_node(int& gridStateId, double& xCoordinate, double& yCoordinate, double& zCoordinate, int& vertexIndex)
+    GRIDGEOM_API int ggeo_insert_node(int gridStateId, double xCoordinate, double yCoordinate, double zCoordinate, int& vertexIndex)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -754,7 +754,7 @@ namespace GridGeomApi
     }
 
 
-    GRIDGEOM_API int ggeo_delete_node(int& gridStateId, int& nodeIndex)
+    GRIDGEOM_API int ggeo_delete_node(int gridStateId, int nodeIndex)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -770,7 +770,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_move_node(int& gridStateId, GeometryListNative& geometryListIn, int& nodeIndex)
+    GRIDGEOM_API int ggeo_move_node(int gridStateId, GeometryListNative& geometryListIn, int nodeIndex)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -793,7 +793,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_delete_edge(int& gridStateId, GeometryListNative& geometryListIn, double searchRadius)
+    GRIDGEOM_API int ggeo_delete_edge(int gridStateId, GeometryListNative& geometryListIn, double searchRadius)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -817,7 +817,7 @@ namespace GridGeomApi
         
     }
 
-    GRIDGEOM_API int ggeo_offsetted_polygon_count(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, int& numberOfPolygonVertices)
+    GRIDGEOM_API int ggeo_offsetted_polygon_count(int gridStateId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonVertices)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -850,7 +850,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_offsetted_polygon(int& gridStateId, GeometryListNative& geometryListIn, bool& innerAndOuter, double& distance, GeometryListNative& geometryListOut)
+    GRIDGEOM_API int ggeo_offsetted_polygon(int gridStateId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, GeometryListNative& geometryListOut)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -887,7 +887,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int& gridStateId, GeometryListNative& geometryListIn, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative)
+    GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int gridStateId, GeometryListNative& geometryListIn, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -920,7 +920,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_refine_mesh_based_on_polygon(int& gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative)
+    GRIDGEOM_API int ggeo_refine_mesh_based_on_polygon(int gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative)
     {
         
         if (gridStateId >= meshInstances.size())
@@ -962,7 +962,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_get_vertex_index(int& gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex)
+    GRIDGEOM_API int ggeo_get_vertex_index(int gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -985,7 +985,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho(int& gridStateId,
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho(int gridStateId,
         GeometryListNative& geometryListIn,
         CurvilinearParametersNative& curvilinearParameters,
         SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
@@ -1013,7 +1013,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_initialize(int& gridStateId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParametersNative, SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_initialize(int gridStateId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParametersNative, SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -1044,7 +1044,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_iteration(int& gridStateId, int& layer)
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_iteration(int gridStateId, int layer)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -1056,7 +1056,7 @@ namespace GridGeomApi
     }
 
 
-    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_refresh_mesh(int& gridStateId)
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_refresh_mesh(int gridStateId)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -1071,7 +1071,7 @@ namespace GridGeomApi
         return successful ? 0 : 1;
     }
 
-    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_delete(int& gridStateId)
+    GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_delete(int gridStateId)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -1081,7 +1081,7 @@ namespace GridGeomApi
         return successful;
     }
 
-    GRIDGEOM_API int ggeo_points_in_polygon(int& ggid, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative) 
+    GRIDGEOM_API int ggeo_points_in_polygon(int gridStateId, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative)
     {
     
         std::vector<GridGeom::Point> polygonNodes;
@@ -1100,7 +1100,7 @@ namespace GridGeomApi
 
         
         GridGeom::Polygons polygon;
-        polygon.Set(polygonNodes, meshInstances[ggid].m_projection);
+        polygon.Set(polygonNodes, meshInstances[gridStateId].m_projection);
 
         for (int i = 0; i < points.size(); i++)
         {
