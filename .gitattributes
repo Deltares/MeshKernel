@@ -693,10 +693,14 @@ src/tests/SpatialTreesTest.cpp -text
 src/tests/SplineTest.cpp -text
 src/version_number.ini -text
 tests/FindFaces.pol -text
+tests/FourByFourMesh_net.nc -text
 tests/FourSplines.spl -text
 tests/MakeMeshInPolygon.pol -text
 tests/OffsetAPolygonTest.pli -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
+tests/OrthogonalizationSmallTriangularGridWithPolygon.pol -text
+tests/RefineBasedOnPolygonThreeByThree.pol -text
+tests/RefineBasedOnPolygonTriangularMesh.pol -text
 tests/SamplesForMeshRefinement.xyz -text
 tests/SamplesForRefinementFourByFourMesh.xyz -text
 tests/SamplesForRefinementFourByFourMeshSpherical.xyz -text
@@ -711,8 +715,6 @@ tests/TestOrthogonalizationMediumTriangularGrid_net.nc -text
 tests/TestOrthogonalizationSmallTriangularGrid_landBoundary.ldb -text
 tests/ThreeNodesSpline.spl -text
 tests/WindowedSamplesForMeshRefinement.xyz -text
-tests/refineRectangularMeshPolygonTest.pol -text
-tests/refineSmallTriangularMeshPolygonTest.pol -text
 thirdParty/CMakeLists.txt -text
 thirdParty/eigen/.hg_archival.txt -text
 thirdParty/eigen/.hgeol -text
