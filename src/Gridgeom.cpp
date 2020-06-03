@@ -1086,7 +1086,7 @@ namespace GridGeomApi
     
         std::vector<GridGeom::Point> polygonNodes;
         bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonNodes);
-        if (!successful || polygonNodes.empty())
+        if (!successful)
         {
             return -1;
         }
@@ -1104,7 +1104,7 @@ namespace GridGeomApi
 
         for (int i = 0; i < points.size(); i++)
         {
-            selectedPointsNative.zCoordinates[i]= polygon.IsPointInPolygons(points[i])? 1.0 : 0.0;
+            selectedPointsNative.zCoordinates[i]= polygon.IsPointInPolygon(points[i], 0)? 1.0 : 0.0;
         }
         
         return successful ? 0 : 1;
