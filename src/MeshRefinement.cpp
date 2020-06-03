@@ -823,7 +823,7 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
 
 
         int numEdgesToBeRefined = 0;
-        successful = ComputeLocalEdgeRefinementFromSamples(f, m_mesh.GetNumFaceEdges(f), samples, WaveCourant, numEdgesToBeRefined);
+        successful = ComputeLocalEdgeRefinementFromSamples( m_mesh.GetNumFaceEdges(f), samples, WaveCourant, numEdgesToBeRefined);
         if (!successful)
         {
             return false;
@@ -926,7 +926,7 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeLocalEdgeRefinementFromSamples(int faceindex,
+bool GridGeom::MeshRefinement::ComputeLocalEdgeRefinementFromSamples(
     int numPolygonNodes,
     const std::vector<Sample>& samples,
     int refineType,
@@ -991,7 +991,9 @@ bool GridGeom::MeshRefinement::ComputeLocalEdgeRefinementFromSamples(int faceind
             continue;
         }
 
-        double c = std::sqrt(gravity*std::abs(refinementValue));
+        //refinementValue = std::pow(2.0, 2 * refinementValue);
+        double c = std::sqrt(gravity * std::abs(refinementValue));
+
         double waveCourant = c * m_deltaTimeMaxCourant / m_polygonEdgesLengthsCache[i];
         double newEdgeLength = 0.5 * m_polygonEdgesLengthsCache[i];
 
