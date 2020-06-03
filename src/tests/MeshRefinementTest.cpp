@@ -536,14 +536,14 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     sampleRefineParametersNative.ConnectHangingNodes = 1;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     // assert on number of nodes and edges
-    ASSERT_EQ(32, mesh.GetNumNodes());
-    ASSERT_EQ(60, mesh.GetNumEdges());
-    ASSERT_EQ(29, mesh.GetNumFaces());
+    ASSERT_EQ(48, mesh.GetNumNodes());
+    ASSERT_EQ(96, mesh.GetNumEdges());
+    ASSERT_EQ(49, mesh.GetNumFaces());
 }
 
 

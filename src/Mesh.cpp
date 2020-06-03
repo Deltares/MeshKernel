@@ -21,6 +21,10 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point
 
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
+    //no polygon involved, so node mask is 1 everywhere 
+    m_nodeMask.resize(m_nodes.size());
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
+
     return true;
 };
 
@@ -51,14 +55,14 @@ bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
     }
 
     // Flag invalid nodes
-    m_nodeMask.resize(m_nodes.size());
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), -1);
+    std::vector<int> validNodesIndexses(m_nodes.size());
+    std::fill(validNodesIndexses.begin(), validNodesIndexses.end(), -1);
     int validIndex = 0;
     for (int n = 0; n < m_nodes.size(); ++n)
     {
         if (m_nodes[n].IsValid())
         {
-            m_nodeMask[n] = validIndex;
+            validNodesIndexses[n] = validIndex;
             validIndex++;
         }
     }
@@ -75,10 +79,10 @@ bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
             continue;
         }
 
-        if (m_nodeMask[m_edges[e].first] >= 0 && m_nodeMask[m_edges[e].second] >= 0)
+        if (validNodesIndexses[m_edges[e].first] >= 0 && validNodesIndexses[m_edges[e].second] >= 0)
         {
-            m_edges[e].first = m_nodeMask[m_edges[e].first];
-            m_edges[e].second = m_nodeMask[m_edges[e].second];
+            m_edges[e].first = validNodesIndexses[m_edges[e].first];
+            m_edges[e].second = validNodesIndexses[m_edges[e].second];
         }
         else
         {
@@ -105,7 +109,6 @@ bool GridGeom::Mesh::Administrate(AdministrationOptions administrationOption)
         return true;
     }
 
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 
     ResizeVectorIfNeeded(m_nodes.size(), m_nodesEdges);
     std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<int>(maximumNumberOfEdgesPerNode, 0));

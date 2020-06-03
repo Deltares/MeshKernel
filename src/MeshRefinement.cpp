@@ -957,7 +957,7 @@ bool GridGeom::MeshRefinement::ComputeLocalEdgeRefinementFromSamples(int faceind
     if (m_deltaTimeMaxCourant > 0.0 || refineType == WaveCourant)
     {
 
-        bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh.m_projection, m_rtree, AveragingMethod::KdTree, refinementValue);
+        bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh.m_projection, m_rtree, KdTree, refinementValue);
         if (!success)
         {
             return true;
