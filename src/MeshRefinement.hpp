@@ -44,8 +44,7 @@ namespace GridGeom
         bool ComputeEdgeAndFaceRefinementMaskFromSamples(std::vector<Sample>& polygon);
 
         ///compute_jarefine_poly
-        bool ComputeLocalEdgeRefinementFromSamples(int faceindex, 
-            int numPolygonNodes,
+        bool ComputeLocalEdgeRefinementFromSamples(int numPolygonNodes,
             const std::vector<Sample>& samples,
             int refineType,
             int& numEdgesToBeRefined);

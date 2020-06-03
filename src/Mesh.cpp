@@ -212,6 +212,10 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections project
     m_edges.resize(ind);
 
     Administrate(AdministrationOptions::AdministrateMeshEdges);
+
+    //no polygon involved, so node mask is 1 everywhere 
+    m_nodeMask.resize(m_nodes.size());
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 }
 
 GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& polygons, Projections projection)
@@ -345,6 +349,10 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
     }
 
     Administrate(AdministrationOptions::AdministrateMeshEdges);
+
+    //no polygon involved, so node mask is 1 everywhere 
+    m_nodeMask.resize(m_nodes.size());
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 
 }
 
@@ -1695,6 +1703,10 @@ GridGeom::Mesh& GridGeom::Mesh::operator+=(Mesh const& rhs)
     }
 
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+    //no polygon involved, so node mask is 1 everywhere 
+    m_nodeMask.resize(m_nodes.size());
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 
     return *this;
 }
