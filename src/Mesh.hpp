@@ -52,7 +52,7 @@ namespace GridGeom
         // to build the mesh 
         Mesh& operator+=(Mesh const& rhs);
 
-        bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection);
+        bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
         
         bool Administrate(AdministrationOptions administrationOption);
 

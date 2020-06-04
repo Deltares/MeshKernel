@@ -12,14 +12,17 @@
 #include "Entities.hpp"
 #include "MakeGridParametersNative.hpp"
 
-bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection)
+bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, 
+    const std::vector<Point>& nodes, 
+    Projections projection,
+    AdministrationOptions administration)
 {
     // copy edges and nodes
     m_edges = edges;
     m_nodes = nodes;
     m_projection = projection;
 
-    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    Administrate(administration);
 
     //no polygon involved, so node mask is 1 everywhere 
     m_nodeMask.resize(m_nodes.size());
@@ -157,15 +160,14 @@ bool GridGeom::Mesh::Administrate(AdministrationOptions administrationOption)
 //gridtonet
 GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
 {
-    m_projection = projection;
 
     if (curvilinearGrid.m_grid.size() == 0)
     {
         return;
     }
 
-    m_nodes.resize(curvilinearGrid.m_grid.size()*curvilinearGrid.m_grid[0].size());
-    m_edges.resize(curvilinearGrid.m_grid.size() * (curvilinearGrid.m_grid[0].size() - 1) + (curvilinearGrid.m_grid.size() - 1) * curvilinearGrid.m_grid[0].size());
+    std::vector<Point> nodes(curvilinearGrid.m_grid.size()*curvilinearGrid.m_grid[0].size());
+    std::vector<Edge>  edges(curvilinearGrid.m_grid.size() * (curvilinearGrid.m_grid[0].size() - 1) + (curvilinearGrid.m_grid.size() - 1) * curvilinearGrid.m_grid[0].size());
     std::vector<std::vector<int>> indexses(curvilinearGrid.m_grid.size(), std::vector<int>(curvilinearGrid.m_grid[0].size(), intMissingValue));
 
     int ind = 0;
@@ -175,13 +177,13 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections project
         {
             if (curvilinearGrid.m_grid[m][n].IsValid())
             {
-                m_nodes[ind] = curvilinearGrid.m_grid[m][n];
+                nodes[ind] = curvilinearGrid.m_grid[m][n];
                 indexses[m][n] = ind;
                 ind++;
             }
         }
     }
-    m_nodes.resize(ind);
+    nodes.resize(ind);
 
     ind = 0;
     for (int m = 0; m < curvilinearGrid.m_grid.size() - 1; m++)
@@ -190,8 +192,8 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections project
         {
             if (indexses[m][n] != intMissingValue && indexses[m + 1][n] != intMissingValue)
             {
-                m_edges[ind].first = indexses[m][n];
-                m_edges[ind].second = indexses[m + 1][n];
+                edges[ind].first = indexses[m][n];
+                edges[ind].second = indexses[m + 1][n];
                 ind++;
             }
         }
@@ -203,19 +205,16 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections project
         {
             if (indexses[m][n] != intMissingValue && indexses[m][n + 1] != intMissingValue)
             {
-                m_edges[ind].first = indexses[m][n];
-                m_edges[ind].second = indexses[m][n + 1];
+                edges[ind].first = indexses[m][n];
+                edges[ind].second = indexses[m][n + 1];
                 ind++;
             }
         }
     }
-    m_edges.resize(ind);
+    edges.resize(ind);
 
-    Administrate(AdministrationOptions::AdministrateMeshEdges);
+    Set(edges, nodes, projection, AdministrationOptions::AdministrateMeshEdges);
 
-    //no polygon involved, so node mask is 1 everywhere 
-    m_nodeMask.resize(m_nodes.size());
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 }
 
 GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& polygons, Projections projection)
@@ -328,31 +327,27 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
 
     // now add all points and all valid edges
     m_nodes = inputNodes;
-    int validEdges = 0;
+    int validEdgesCount = 0;
     for (int i = 0; i < numedge; ++i)
     {
         if (!edgeNodesFlag[i])
             continue;
-        validEdges++;
+        validEdgesCount++;
     }
 
-    m_edges.resize(validEdges);
-    validEdges = 0;
+    std::vector<Edge> edges(validEdgesCount);
+    validEdgesCount = 0;
     for (int i = 0; i < numedge; ++i)
     {
         if (!edgeNodesFlag[i])
             continue;
 
-        m_edges[validEdges].first = std::abs(edgeNodes[i][0]);
-        m_edges[validEdges].second = edgeNodes[i][1];
-        validEdges++;
+        edges[validEdgesCount].first = std::abs(edgeNodes[i][0]);
+        edges[validEdgesCount].second = edgeNodes[i][1];
+        validEdgesCount++;
     }
 
-    Administrate(AdministrationOptions::AdministrateMeshEdges);
-
-    //no polygon involved, so node mask is 1 everywhere 
-    m_nodeMask.resize(m_nodes.size());
-    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
+    Set(edges, inputNodes, projection, AdministrationOptions::AdministrateMeshEdges);
 
 }
 
