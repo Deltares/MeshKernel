@@ -762,3 +762,73 @@ TEST(Splines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedSpherical)
     ASSERT_NEAR(41.1017461082051, mesh.m_nodes[19].y, tolerance);
 }
 
+
+TEST(Splines, OrthogonalCurvilinearMeshTwoCrossingHighCurvature)
+{
+    std::vector<GridGeom::Point> firstSpline;
+    firstSpline.push_back(GridGeom::Point{ -103.468336664918, 420.606335102062 });
+    firstSpline.push_back(GridGeom::Point{ 111.984583950396, 845.689124424167 });
+    firstSpline.push_back(GridGeom::Point{ 1465.84415268176, 1608.50892444055 });
+
+
+    GridGeom::Polygons polygon;
+    GridGeom::Splines splines(GridGeom::Projections::cartesian, polygon);
+    bool success = splines.AddSpline(firstSpline, 0, firstSpline.size());
+    ASSERT_TRUE(success);
+
+    std::vector<GridGeom::Point> secondSpline;
+    secondSpline.push_back(GridGeom::Point{ -333.478887051536, 921.388799234953 });
+    secondSpline.push_back(GridGeom::Point{ 167.303577081355, 490.482958004326 });
+    success = splines.AddSpline(secondSpline, 0, secondSpline.size());
+    ASSERT_TRUE(success);
+
+    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
+    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+
+    splinesToCurvilinearParametersNative.AspectRatio = 0.5;
+    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParametersNative.AverageWidth = 120.0;
+    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
+    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    curvilinearParametersNative.MRefinement = 20;
+    curvilinearParametersNative.NRefinement = 3;
+    splines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    GridGeom::CurvilinearGrid curvilinearGrid;
+
+    success = splines.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
+    ASSERT_TRUE(success);
+
+    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
+
+    const double tolerance = 1e-6;
+
+    ASSERT_NEAR(189.317899173845, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(47.4845436454654, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(-44.2005274315104, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(-103.468336664918, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(-162.736145898326, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(-269.814914053481, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(-463.273432900883, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(182.838365135208, mesh.m_nodes[7].x, tolerance);
+    ASSERT_NEAR(37.2764147141659, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(-55.7300943458967, mesh.m_nodes[9].x, tolerance);
+    ASSERT_NEAR(-115.852118266335, mesh.m_nodes[10].x, tolerance);
+    ASSERT_NEAR(-175.974142186772, mesh.m_nodes[11].x, tolerance);
+    ASSERT_NEAR(-284.596214499957, mesh.m_nodes[12].x, tolerance);
+    ASSERT_NEAR(-480.843011002095, mesh.m_nodes[13].x, tolerance);
+    ASSERT_NEAR(182.838365135208, mesh.m_nodes[14].x, tolerance);
+    ASSERT_NEAR(37.8679827389320, mesh.m_nodes[15].x, tolerance);
+    ASSERT_NEAR(-54.6628549419648, mesh.m_nodes[16].x, tolerance);
+    ASSERT_NEAR(-114.477391501297, mesh.m_nodes[17].x, tolerance);
+    ASSERT_NEAR(-174.291928060630, mesh.m_nodes[18].x, tolerance);
+    ASSERT_NEAR(-282.358464944443, mesh.m_nodes[19].x, tolerance);
+    ASSERT_NEAR(-477.601579174313, mesh.m_nodes[20].x, tolerance);
+    ASSERT_NEAR(182.838365135208, mesh.m_nodes[21].x, tolerance);
+    ASSERT_NEAR(42.1724119247128, mesh.m_nodes[22].x, tolerance);
+    ASSERT_NEAR(-45.7933216922166, mesh.m_nodes[23].x, tolerance);
+    ASSERT_NEAR(-102.656846558853, mesh.m_nodes[24].x, tolerance);
+
+}
+
