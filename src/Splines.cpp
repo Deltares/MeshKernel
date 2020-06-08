@@ -184,7 +184,7 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplines(CurvilinearGrid& cu
     }
 
     // Grow grid, from the second layer
-    for (int layer = 1; layer < m_maxNumN + 1; ++layer)
+    for (int layer = 1; layer <= m_maxNumN; ++layer)
     {
         successful = OrthogonalCurvilinearGridFromSplinesIteration(layer);
         if (!successful)
@@ -334,9 +334,9 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
     }
 
     // Increase curvilinear grid
-    int maxNumPoints = std::max(m_numM + 1, m_maxNumN + 1);
+    const int numGridLayers = m_maxNumN + 1;
     // The layer by coordinate to grow
-    m_gridPoints.resize(m_maxNumN + 1, std::vector<Point>(m_numM + 1, { doubleMissingValue, doubleMissingValue }));
+    m_gridPoints.resize(numGridLayers + 1, std::vector<Point>(m_numM + 1, { doubleMissingValue, doubleMissingValue }));
     m_validFrontNodes.resize(m_numM, 1);
 
     // Copy the first n in m_gridPoints
@@ -625,7 +625,6 @@ bool GridGeom::Splines::GrowLayer(int layerIndex)
         return false;
     }
 
-    // TODO: remove while loop
     double totalTimeStep = 0.0;
     std::vector<Point> gridLine(m_gridPoints[layerIndex - 1]);
     double localTimeStep = 0.0;
@@ -636,27 +635,17 @@ bool GridGeom::Splines::GrowLayer(int layerIndex)
     {
         // Copy old front velocities
         newValidFrontNodes = m_validFrontNodes;
-        // remove isolated points at the start end end of the masl
-        if (newValidFrontNodes[0] == 1 && newValidFrontNodes[1] == 0)
-        {
-            newValidFrontNodes[0] = 0;
-        }
 
-        if (newValidFrontNodes.back() == 1 && *(newValidFrontNodes.end() - 1) == 0)
+        for (int i = 0; i < m_validFrontNodes.size(); ++i)
         {
-            newValidFrontNodes.back() = 0;
-        }
-
-        for (int i = 0; i < newValidFrontNodes.size() - 2; ++i)
-        {
-            if (newValidFrontNodes[i + 1] == 1 && newValidFrontNodes[i] == 0 && newValidFrontNodes[i + 2] == 0)
+            if(m_validFrontNodes[i]<=0)
             {
-                newValidFrontNodes[i + 1] = 0;
+                activeLayerPoints[i] = { doubleMissingValue, doubleMissingValue };
             }
         }
 
         std::vector<double> maximumGridLayerGrowTime(newValidFrontNodes.size(), std::numeric_limits<double>::max());
-        success = ComputeMaximumGridLayerGrowTime(gridLine, velocityVectorAtGridPoints, maximumGridLayerGrowTime);
+        success = ComputeMaximumGridLayerGrowTime(activeLayerPoints, velocityVectorAtGridPoints, maximumGridLayerGrowTime);
         if (!success)
         {
             return false;
@@ -669,6 +658,26 @@ bool GridGeom::Splines::GrowLayer(int layerIndex)
             otherTimeStep = 0;
         }
         localTimeStep = std::min(localTimeStep, otherTimeStep);
+
+        // remove isolated points at the start end end of the masl
+        if (newValidFrontNodes[0] == 1 && newValidFrontNodes[1] == 0)
+        {
+            newValidFrontNodes[0] = 0;
+        }
+
+        if (newValidFrontNodes[m_numM - 1] == 1 && newValidFrontNodes[m_numM - 2] == 0)
+        {
+            newValidFrontNodes[m_numM - 1] = 0;
+        }
+
+        for (int i = 0; i < newValidFrontNodes.size() - 2; ++i)
+        {
+            if (newValidFrontNodes[i + 1] == 1 && newValidFrontNodes[i] == 0 && newValidFrontNodes[i + 2] == 0)
+            {
+                newValidFrontNodes[i + 1] = 0;
+            }
+        }
+
         m_validFrontNodes = newValidFrontNodes;
 
         for (int i = 0; i < velocityVectorAtGridPoints.size(); ++i)
@@ -787,7 +796,7 @@ bool GridGeom::Splines::ComputeMaximumGridLayerGrowTime
             continue;
         }
 
-        edgeWidth[i] = Distance(coordinates[i], coordinates[i + 1], Projections::cartesian);
+        edgeWidth[i] = Distance(coordinates[i], coordinates[i + 1], m_projection);
 
         if (edgeWidth[i] < minEdgeWidth)
         {
@@ -801,7 +810,7 @@ bool GridGeom::Splines::ComputeMaximumGridLayerGrowTime
             coordinates[i],
             coordinates[i + 1],
             firstPointIncremented,
-            secondPointIncremented, Projections::cartesian) / edgeWidth[i] - edgeWidth[i];
+            secondPointIncremented, m_projection) / edgeWidth[i] - edgeWidth[i];
 
         edgeIncrement[i] = edgeIncrement[i] / dt;
     }
@@ -1306,7 +1315,7 @@ bool GridGeom::Splines::ComputeGrowFactor(
     const int numIterations = 1000;
     const double relaxationFactor = 0.5;
     double oldAspectRatio;
-    double oldHeightDifference;
+    double oldHeightDifference = heightDifference;
 
     if (std::abs(heightDifferenceIncremented) > tolerance&& std::abs(heightDifferenceIncremented - heightDifference) > tolerance)
     {

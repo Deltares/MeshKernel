@@ -669,7 +669,7 @@ bool GridGeom::Orthogonalization::ComputeLocalCoordinates(const Mesh& mesh)
     return true;
 }
 
-bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, const int currentNode,
+bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int currentNode,
     const std::size_t& numConnectedNodes, const std::vector<std::size_t>& connectedNodes,
     const std::size_t& numSharedFaces, const std::vector<int>& sharedFaces,
     const std::vector<double>& xi, const std::vector<double>& eta,
@@ -1596,7 +1596,7 @@ bool GridGeom::Orthogonalization::InitializeTopologies(const Mesh& mesh)
 }
 
 
-bool GridGeom::Orthogonalization::AllocateNodeOperators(const int topologyIndex)
+bool GridGeom::Orthogonalization::AllocateNodeOperators(int topologyIndex)
 {
     int numSharedFaces = m_numTopologyFaces[topologyIndex];
     int numConnectedNodes = m_numTopologyNodes[topologyIndex];
