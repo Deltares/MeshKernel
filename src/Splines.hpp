@@ -60,8 +60,6 @@ namespace GridGeom
         bool GetSubIntervalAndGridLayer(int layer, int& gridLayer, int& subLayerIndex);
 
         /// growlayer
-        /// m_edgeVelocities, m_validFrontNodes, m_gridPoints, m_timeStep
-
         bool GrowLayer(int layerIndex);
 
         bool ComputeMaximumGridLayerGrowTimeOtherFront();
@@ -92,7 +90,7 @@ namespace GridGeom
         bool ComputeVelocitiesAtGridPoints(int layerIndex, std::vector<Point>& velocityVector);
 
         /// get_LR
-        bool GetNeighbours(const std::vector<Point>& gridPoints, const int index, int& currentLeftIndex, int& currentRightIndex);
+        bool GetNeighbours(const std::vector<Point>& gridPoints, int index, int& currentLeftIndex, int& currentRightIndex);
 
         ///comp_edgevel: TODO: can this be splitted in compute heights and computeGrowFactors
         bool ComputeEdgeVelocities(
@@ -196,6 +194,8 @@ namespace GridGeom
             Point& normalVector,
             Point& tangentialVector);
 
+        bool RemoveSkinnyTriangles();
+
         int m_numSplines = 0;
         int m_numAllocatedSplines = 0;
         std::vector<int> m_numSplineNodes;
@@ -222,6 +222,7 @@ namespace GridGeom
         double m_onTopOfEachOtherTolerance = 1e-4;                                      // On - top - of - each - other tolerance *IMPORTANT*
         bool m_checkFrontCollisions = false;                                            // check front collisions
         bool m_isSpacingCurvatureAdapted = true;                                        // is curvature adapted
+        bool m_removeSkinnyTriangles = false;
 
         // spline types
         enum class SplineTypes
