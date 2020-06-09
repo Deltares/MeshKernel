@@ -899,5 +899,58 @@ TEST(Splines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatureRemoveSkinnyTrian
 
     const double tolerance = 1e-6;
 
+    ASSERT_NEAR(189.317899173845, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(47.4845436454654, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(-44.2005274315104, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(-103.468336664918, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(-162.736145898326, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(-269.814914053481, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(-463.273432900883, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(182.838365135208, mesh.m_nodes[7].x, tolerance);
+    ASSERT_NEAR(42.7645089001448, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(-55.7300943458967, mesh.m_nodes[9].x, tolerance);
+    ASSERT_NEAR(-115.852118266335, mesh.m_nodes[10].x, tolerance);
+    ASSERT_NEAR(-175.974142186772, mesh.m_nodes[11].x, tolerance);
+    ASSERT_NEAR(-284.596214499957, mesh.m_nodes[12].x, tolerance);
+    ASSERT_NEAR(-480.843011002095, mesh.m_nodes[13].x, tolerance);
+    ASSERT_NEAR(182.838365135208, mesh.m_nodes[14].x, tolerance);
+    ASSERT_NEAR(42.7645089001448, mesh.m_nodes[15].x, tolerance);
+    ASSERT_NEAR(-54.6628549419648, mesh.m_nodes[16].x, tolerance);
+    ASSERT_NEAR(-114.477391501297, mesh.m_nodes[17].x, tolerance);
+    ASSERT_NEAR(-174.291928060630, mesh.m_nodes[18].x, tolerance);
+    ASSERT_NEAR(-282.358464944443, mesh.m_nodes[19].x, tolerance);
+    ASSERT_NEAR(-477.601579174313, mesh.m_nodes[20].x, tolerance);
+    ASSERT_NEAR(182.838365135208, mesh.m_nodes[21].x, tolerance);
+    ASSERT_NEAR(42.7645089001448, mesh.m_nodes[22].x, tolerance);
+    ASSERT_NEAR(-45.7933216922166, mesh.m_nodes[23].x, tolerance);
+    ASSERT_NEAR(-102.656846558853, mesh.m_nodes[24].x, tolerance);
+
+
+    ASSERT_NEAR(466.770557740332, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(444.407393763762, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(429.951215447599, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(420.606335102062, mesh.m_nodes[3].y, tolerance);
+    ASSERT_NEAR(411.261454756525, mesh.m_nodes[4].y, tolerance);
+    ASSERT_NEAR(394.378119791050, mesh.m_nodes[5].y, tolerance);
+    ASSERT_NEAR(363.875107551570, mesh.m_nodes[6].y, tolerance);
+    ASSERT_NEAR(507.865550198607, mesh.m_nodes[7].y, tolerance);
+    ASSERT_NEAR(541.250471813772, mesh.m_nodes[8].y, tolerance);
+    ASSERT_NEAR(503.074909615816, mesh.m_nodes[9].y, tolerance);
+    ASSERT_NEAR(499.147694477674, mesh.m_nodes[10].y, tolerance);
+    ASSERT_NEAR(495.220479339532, mesh.m_nodes[11].y, tolerance);
+    ASSERT_NEAR(488.125205113747, mesh.m_nodes[12].y, tolerance);
+    ASSERT_NEAR(475.306218995532, mesh.m_nodes[13].y, tolerance);
+    ASSERT_NEAR(507.865550198607, mesh.m_nodes[14].y, tolerance);
+    ASSERT_NEAR(541.250471813772, mesh.m_nodes[15].y, tolerance);
+    ASSERT_NEAR(544.226537400807, mesh.m_nodes[16].y, tolerance);
+    ASSERT_NEAR(552.155711172380, mesh.m_nodes[17].y, tolerance);
+    ASSERT_NEAR(560.084884943953, mesh.m_nodes[18].y, tolerance);
+    ASSERT_NEAR(574.410471985723, mesh.m_nodes[19].y, tolerance);
+    ASSERT_NEAR(600.292417570909, mesh.m_nodes[20].y, tolerance);
+    ASSERT_NEAR(507.865550198607, mesh.m_nodes[21].y, tolerance);
+    ASSERT_NEAR(541.250471813772, mesh.m_nodes[22].y, tolerance);
+    ASSERT_NEAR(580.841498361190, mesh.m_nodes[23].y, tolerance);
+    ASSERT_NEAR(600.952956688129, mesh.m_nodes[24].y, tolerance);
+
 }
 
