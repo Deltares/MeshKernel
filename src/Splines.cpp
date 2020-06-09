@@ -59,7 +59,8 @@ bool GridGeom::Splines::SetParameters(const GridGeomApi::CurvilinearParametersNa
     m_dtolcos = splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles;
     m_checkFrontCollisions = splinesToCurvilinearParametersNative.CheckFrontCollisions;
     m_isSpacingCurvatureAdapted = splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing;
-
+    m_removeSkinnyTriangles = splinesToCurvilinearParametersNative.RemoveSkinnyTriangles == 1? true: false;
+    
     // curvature adapted grid spacing? to add
     m_maxNumM = curvilinearParametersNative.MRefinement;
     m_maxNumN = curvilinearParametersNative.NRefinement;
@@ -174,6 +175,7 @@ bool GridGeom::Splines::AddPointInExistingSpline(int splineIndex, const Point& p
 /// 5. Compute properties with artificial spline added
 /// 6. Compute edge velocities
 /// 7. Grow layers
+/// 8. Remove skinny triangles
 bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplines(CurvilinearGrid& curvilinearGrid)
 {
 
@@ -193,8 +195,152 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplines(CurvilinearGrid& cu
         }
     }
 
+    if (m_removeSkinnyTriangles)
+    {
+        RemoveSkinnyTriangles();
+    }
+
     successful = OrthogonalCurvilinearGridFromSplinesRefreshMesh(curvilinearGrid);
     return successful;
+}
+
+
+bool GridGeom::Splines::RemoveSkinnyTriangles()
+{
+    int numMaxIterations = 10;
+    int numN = m_gridPoints.size() - 2;
+    const double distanceTolerance = 1e-2;
+    const double cosineTolerance = 1e-2;
+    const double maxCosine = 0.93969;
+    for (int j = numN - 1; j >= 1; --j)
+    {
+        for (int iter = 0; iter < numMaxIterations; ++iter)
+        {
+            int numChanged = 0;
+            
+            int firstLeftIndex;
+            int firstRightIndex = 0;
+            int i = 0;
+
+            while (firstRightIndex != m_numM - 1 || i != m_numM - 1)
+            {
+                if (firstRightIndex > i)
+                {
+                    i = firstRightIndex;
+                }
+                else
+                {
+                    i++;
+                    if (i >= m_numM - 1)
+                    {
+                        break;
+                    }
+                }
+
+                if (!m_gridPoints[j][i].IsValid())
+                {
+                    continue;
+                }
+
+                GetNeighbours(m_gridPoints[j], i, firstLeftIndex, firstRightIndex);
+
+                double rightDistance = Distance(m_gridPoints[j][i], m_gridPoints[j][firstRightIndex], m_projection);
+
+                if (rightDistance < distanceTolerance)
+                {
+                    continue;
+                }
+
+                // Detect triangular cell
+                if (!m_gridPoints[j + 1][i].IsValid())
+                {
+                    continue;
+                }
+
+                //GetNeighbours(m_gridPoints[j+1], i, secondLeftIndex, secondRightIndex);
+                double leftDistance = Distance(m_gridPoints[j][firstLeftIndex], m_gridPoints[j][i], m_projection);
+                if (leftDistance < distanceTolerance)
+                {
+                    firstLeftIndex = i;
+                }
+
+                if (m_gridPoints[j + 1][firstRightIndex].IsValid())
+                {
+                    double currentDistance = Distance(m_gridPoints[j + 1][i], m_gridPoints[j + 1][firstRightIndex], m_projection);
+                    double currentCosPhi = NormalizedInnerProductTwoSegments(
+                        m_gridPoints[j + 1][i],
+                        m_gridPoints[j][i],
+                        m_gridPoints[j + 1][i],
+                        m_gridPoints[j][firstRightIndex],
+                        m_projection);
+                    if (currentDistance < distanceTolerance && currentCosPhi > maxCosine)
+                    {
+
+                        //determine persistent node
+                        double leftCosPhi = NormalizedInnerProductTwoSegments(
+                            m_gridPoints[j - 1][i],
+                            m_gridPoints[j][i],
+                            m_gridPoints[j][i],
+                            m_gridPoints[j + 1][i],
+                            m_projection);
+
+                        double rightCosPhi = NormalizedInnerProductTwoSegments(
+                            m_gridPoints[j - 1][firstRightIndex],
+                            m_gridPoints[j][firstRightIndex],
+                            m_gridPoints[j][firstRightIndex],
+                            m_gridPoints[j + 1][firstRightIndex],
+                            m_projection);
+
+
+                        int secondLeftIndex;
+                        int secondRightIndex;
+                        GetNeighbours(m_gridPoints[j], firstRightIndex, secondLeftIndex, secondRightIndex);
+
+
+                        if ((secondRightIndex == firstRightIndex || leftCosPhi - rightCosPhi < -cosineTolerance) && firstLeftIndex != i)
+                        {
+                            //move left node
+                            for (int k = i; k <= firstRightIndex - 1; ++k)
+                            {
+                                m_gridPoints[j][k] = m_gridPoints[j][firstRightIndex];
+                            }
+                            numChanged++;
+                        }
+                        else if ((firstLeftIndex == i || rightCosPhi - leftCosPhi < -cosineTolerance) && secondRightIndex != firstRightIndex)
+                        {
+                            //move right node
+                            for (int k = firstRightIndex; k <= secondRightIndex - 1; ++k)
+                            {
+                                m_gridPoints[j][k] = m_gridPoints[j][i];
+                            }
+                            numChanged++;
+                        }
+                        else
+                        {
+                            //move both nodes
+                            Point middle = (m_gridPoints[j][i] + m_gridPoints[j][firstRightIndex]) * 0.5;
+                            for (int k = i; k <= firstRightIndex - 1; ++k)
+                            {
+                                m_gridPoints[j][k] = middle;
+                            }
+                            for (int k = firstRightIndex; k <= secondRightIndex - 1; ++k)
+                            {
+                                m_gridPoints[j][k] = middle;
+                            }
+                            numChanged++;
+                        }
+                    }
+                }
+            }
+
+            if (numChanged == 0)
+            {
+                break;
+            }
+        }
+    }
+
+    return true;
 }
 
 bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
@@ -583,11 +729,8 @@ bool GridGeom::Splines::GetSubIntervalAndGridLayer(int layer, int& gridLayer, in
 }
 
 /// growlayer
-/// m_edgeVelocities, m_validFrontNodes, m_gridPoints, m_timeStep
 bool GridGeom::Splines::GrowLayer(int layerIndex)
 {
-    //std::vector<int> currentValidFrontNodes(m_validFrontNodes);
-
     assert(layerIndex - 1 >= 0);
     std::vector<Point> velocityVectorAtGridPoints(m_numM);
     bool success = ComputeVelocitiesAtGridPoints(layerIndex - 1, velocityVectorAtGridPoints);
@@ -1107,7 +1250,7 @@ bool GridGeom::Splines::ComputeVelocitiesAtGridPoints
 /// get_LR
 bool GridGeom::Splines::GetNeighbours(
     const std::vector<Point>& gridPoints,
-    const int index,
+    int index,
     int& currentLeftIndex,
     int& currentRightIndex)
 {

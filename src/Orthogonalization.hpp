@@ -53,7 +53,7 @@ namespace GridGeom
         bool ComputeLocalCoordinates(const Mesh& mesh);
 
         /// orthonet_comp_operators, compute coefficient matrix G of gradient at link, compute coefficientmatrix Div of gradient in node, compute coefficientmatrix Az of cell - center in cell
-        bool ComputeOperatorsNode(const Mesh& mesh, const int currentNode, const std::size_t& numConnectedNodes, const std::vector<std::size_t>& connectedNodes, const std::size_t& numSharedFaces, const std::vector<int>& sharedFaces,
+        bool ComputeOperatorsNode(const Mesh& mesh, int currentNode, const std::size_t& numConnectedNodes, const std::vector<std::size_t>& connectedNodes, const std::size_t& numSharedFaces, const std::vector<int>& sharedFaces,
             const std::vector<double>& xi, const std::vector<double>& eta, const std::vector<std::vector<std::size_t>>& faceNodeMapping);
 
         /// orthonet_assign_xieta: assign xiand eta to all nodes in the stencil
@@ -75,7 +75,7 @@ namespace GridGeom
 
         bool InitializeTopologies(const Mesh& mesh);
 
-        bool AllocateNodeOperators(const int topologyIndex);
+        bool AllocateNodeOperators(int topologyIndex);
 
         /// save only the unique topologies
         bool SaveTopology(int currentNode, const std::vector<int>& sharedFaces, int numSharedFaces, const std::vector<std::size_t>& connectedNodes, int numConnectedNodes,

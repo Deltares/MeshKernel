@@ -8,7 +8,6 @@
 #include <boost/geometry/index/rtree.hpp>
 
 #include <vector>
-#include <memory>
 #include <utility>
 
 // r-tree
@@ -103,7 +102,7 @@ namespace GridGeom
 
             bool InsertNode(const Point& node)
             {
-                auto pointToInsert = std::make_pair(Point2D{ node.x, node.y }, m_points.size());
+                const auto pointToInsert = std::make_pair(Point2D{ node.x, node.y }, m_points.size());
                 m_points.push_back(pointToInsert);
                 m_rtree2D.insert(m_points.end()-1, m_points.end());
                 return true;
@@ -146,7 +145,7 @@ namespace GridGeom
             std::vector<int> m_queryIndexses;
             int m_querySize = 0;
 
-            // Rtree maximum number of results in a query 
+            // Rtree preallocated capacity of the query array 
             int queryCapacity = 100;
         };   
 
