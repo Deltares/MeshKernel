@@ -111,6 +111,12 @@ namespace GridGeom
 
         bool DeleteEdgeCloseToAPoint(Point point, double searchRadius);
 
+        // compute a selection mask for the edges
+        bool MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertMasking, bool includeIntersected);
+
+        // compute the masked nodes from the edges
+        bool ComputeNodeMaskFromEdgeMask();
+
         ///get_cellpolygon
         //need to account for spherical coordinates. Build a polygon around a face
         bool FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, 
@@ -120,7 +126,7 @@ namespace GridGeom
 
         bool IsFullFaceNotInPolygon(int faceIndex) const;
 
-        bool SelectNodesInPolygon(const Polygons& polygons, bool inside);
+        bool MaskNodesInPolygon(const Polygons& polygons, bool inside);
 
         bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 

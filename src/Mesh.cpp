@@ -1507,7 +1507,7 @@ bool GridGeom::Mesh::DeleteEdgeCloseToAPoint(Point point, double searchRadius)
     return true;
 }
 
-bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertDeletion)
+bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertMasking, bool includeIntersected)
 {
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
@@ -1515,7 +1515,7 @@ bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inver
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
     for (int n = 0; n < GetNumNodes(); ++n)
     {
-        auto isInPolygon = polygons.IsPointInPolygon(m_nodes[n],0);
+        auto isInPolygon = polygons.IsPointInPolygon(m_nodes[n], 0);
         if (isInPolygon)
         {
             m_nodeMask[n] = 1;
@@ -1528,47 +1528,65 @@ bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inver
     {
         auto firstNodeIndex = m_edges[e].first;
         auto secondNodeIndex = m_edges[e].second;
-        if (firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 &&
-            secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1)
+
+        int isEdgeIncluded;
+        if (includeIntersected)
         {
-            edgeMask[e] = 1;
+            isEdgeIncluded = firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 ||
+                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1;
         }
+        else
+        {
+            isEdgeIncluded = firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 &&
+                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1;
+
+        }
+
+        edgeMask[e] = isEdgeIncluded;
     }
 
     // if one edge of the face is not included do not include all the edges of that face 
     auto secondEdgeMask = edgeMask;
-    for (int f = 0; f < GetNumFaces(); ++f)
+    if (!includeIntersected)
     {
-        bool isOneEdgeNotIncluded = false;
-        for (int n = 0; n < GetNumFaceEdges(f); ++n)
+        for (int f = 0; f < GetNumFaces(); ++f)
         {
-            auto edgeIndex = m_facesEdges[f][n];
-            if (edgeIndex >= 0 && edgeMask[edgeIndex] == 0)
-            {
-                isOneEdgeNotIncluded = true;
-                break;
-            }
-        }
-
-        if (isOneEdgeNotIncluded)
-        {
+            bool isOneEdgeNotIncluded = false;
             for (int n = 0; n < GetNumFaceEdges(f); ++n)
             {
                 auto edgeIndex = m_facesEdges[f][n];
-                if (edgeIndex >= 0)
+                if (edgeIndex >= 0 && edgeMask[edgeIndex] == 0)
                 {
-                    secondEdgeMask[edgeIndex] = invertDeletion ? 1: 0;
+                    isOneEdgeNotIncluded = true;
+                    break;
+                }
+            }
+
+            if (isOneEdgeNotIncluded)
+            {
+                for (int n = 0; n < GetNumFaceEdges(f); ++n)
+                {
+                    auto edgeIndex = m_facesEdges[f][n];
+                    if (edgeIndex >= 0)
+                    {
+                        secondEdgeMask[edgeIndex] = 0;
+                    }
                 }
             }
         }
     }
 
     // if the selection is inverted, we do not want to delete the edges fully inside the polygon
-    if(invertDeletion)
+    if (invertMasking)
     {
         for (int e = 0; e < GetNumEdges(); ++e)
         {
-            if(edgeMask[e] == 1)
+            if (secondEdgeMask[e] == 0)
+            {
+                secondEdgeMask[e] = 1;
+            }
+
+            if (edgeMask[e] == 1)
             {
                 secondEdgeMask[e] = 0;
             }
@@ -1657,7 +1675,7 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, bo
 
     if (deletionOption == FacesCompletelyIncluded)
     {
-        MaskFaceEdgesInPolygon(polygons, invertDeletion);
+        MaskFaceEdgesInPolygon(polygons, invertDeletion, false);
 
         // mark the edges for deletion
         for (int e = 0; e < GetNumEdges(); ++e)

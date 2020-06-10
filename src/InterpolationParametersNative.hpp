@@ -24,6 +24,9 @@ namespace GridGeomApi
 
         /// *Interpolation settings, 1=bathy, 2=zk, 3=s1, 4=Zc (2)
         int InterpolateTo;
+
+        /// *Refine faces intersected by polygon
+        bool RefineIntersected;
     };
 }
 
