@@ -57,7 +57,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
     }
 
     // select the nodes to refine
-    if (!isRefinementBasedOnSamples && interpolationParametersNative.RefineOnlyFacesInsidePolygon)
+    if (!isRefinementBasedOnSamples && interpolationParametersNative.RefineIntersected)
     {
         m_refineIntersectedFaces = true;
         m_mesh.MaskFaceEdgesInPolygon(polygon, false, true);
