@@ -1532,13 +1532,13 @@ bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inver
         int isEdgeIncluded;
         if (includeIntersected)
         {
-            isEdgeIncluded = firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 ||
-                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1;
+            isEdgeIncluded = (firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 ||
+                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1) == true ? 1 : 0;
         }
         else
         {
-            isEdgeIncluded = firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 &&
-                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1;
+            isEdgeIncluded = (firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 &&
+                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1)==true? 1: 0;
 
         }
 
