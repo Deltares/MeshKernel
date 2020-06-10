@@ -29,7 +29,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
-    interpolationParametersNative.RefineOnlyFacesInsidePolygon = false;
+    interpolationParametersNative.RefineIntersected = false;
     
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
        
@@ -112,7 +112,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
-    interpolationParametersNative.RefineOnlyFacesInsidePolygon = false;
+    interpolationParametersNative.RefineIntersected = false;
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
@@ -207,7 +207,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
-    interpolationParametersNative.RefineOnlyFacesInsidePolygon = false;
+    interpolationParametersNative.RefineIntersected = false;
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
@@ -330,7 +330,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
-    interpolationParametersNative.RefineOnlyFacesInsidePolygon = false;
+    interpolationParametersNative.RefineIntersected = false;
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
@@ -410,7 +410,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
-    interpolationParametersNative.RefineOnlyFacesInsidePolygon = false;
+    interpolationParametersNative.RefineIntersected = false;
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
@@ -477,7 +477,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
-    interpolationParametersNative.RefineOnlyFacesInsidePolygon = false;
+    interpolationParametersNative.RefineIntersected = false;
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
@@ -544,7 +544,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
-    interpolationParametersNative.RefineOnlyFacesInsidePolygon = false;
+    interpolationParametersNative.RefineIntersected = false;
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
@@ -577,7 +577,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
-    interpolationParametersNative.RefineOnlyFacesInsidePolygon = false;
+    interpolationParametersNative.RefineIntersected = false;
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
