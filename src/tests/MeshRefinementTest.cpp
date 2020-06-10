@@ -25,6 +25,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     sampleRefineParametersNative.MinimumCellSize = 1.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefineOnlyFacesInsidePolygon = false;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
@@ -107,6 +108,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     sampleRefineParametersNative.MinimumCellSize = 2.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefineOnlyFacesInsidePolygon = false;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
@@ -201,6 +203,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     sampleRefineParametersNative.MinimumCellSize = 50.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefineOnlyFacesInsidePolygon = false;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
@@ -323,6 +326,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     sampleRefineParametersNative.MinimumCellSize = 3.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefineOnlyFacesInsidePolygon = false;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
@@ -402,6 +406,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     sampleRefineParametersNative.MinimumCellSize = 3.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefineOnlyFacesInsidePolygon = false;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
@@ -468,6 +473,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
     sampleRefineParametersNative.MinimumCellSize = 3.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefineOnlyFacesInsidePolygon = false;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
@@ -534,6 +540,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     sampleRefineParametersNative.MinimumCellSize = 1.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefineOnlyFacesInsidePolygon = false;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
@@ -566,6 +573,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     sampleRefineParametersNative.MinimumCellSize = 0.00165;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefineOnlyFacesInsidePolygon = false;
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
