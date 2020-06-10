@@ -185,7 +185,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_delete_mesh(int gridStateId, GeometryListNative& geometryListIn, int deletionOption)
+    GRIDGEOM_API int ggeo_delete_mesh(int gridStateId, GeometryListNative& geometryListIn, int deletionOption, bool invertDeletion)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -206,7 +206,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        meshInstances[gridStateId].DeleteMesh(polygon, deletionOption);
+        meshInstances[gridStateId].DeleteMesh(polygon, deletionOption, invertDeletion);
 
         return 0;
     }
