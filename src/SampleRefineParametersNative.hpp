@@ -25,8 +25,9 @@ namespace GridGeomApi
         /// *Maximum time-step in courant grid (0.0)
         double MaximumTimeStepInCourantGrid;
 
-        /// *Take samples outside cell into account , 1 yes 0 no (1)
+        /// *Take samples outside face into account , 1 yes 0 no (1)
         int AccountForSamplesOutside;
+
     };
 }
 
