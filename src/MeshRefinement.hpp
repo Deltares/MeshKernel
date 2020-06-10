@@ -95,6 +95,7 @@ namespace GridGeom
         bool m_directionalRefinement = false;
         bool m_refineOutsideFace = false;
         bool m_connectHangingNodes = true;
+        bool m_refineIntersectedFaces = false;
         int m_maxNumberOfRefinementIterations = 10;
 
     };

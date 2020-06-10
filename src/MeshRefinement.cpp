@@ -40,7 +40,6 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
         m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
         m_minimumFaceSize = sampleRefineParametersNative.MinimumCellSize;
         m_connectHangingNodes = sampleRefineParametersNative.ConnectHangingNodes == 1 ? true : false;
-        m_refineOnlyFacesInsidePolygon = sampleRefineParametersNative.RefineOnlyFacesInsidePolygon;
     }
 
     m_maxNumberOfRefinementIterations = interpolationParametersNative.MaxNumberOfRefinementIterations;
@@ -58,9 +57,10 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
     }
 
     // select the nodes to refine
-    if (!isRefinementBasedOnSamples && m_refineOnlyFacesInsidePolygon)
+    if (!isRefinementBasedOnSamples && interpolationParametersNative.RefineOnlyFacesInsidePolygon)
     {
-        m_mesh.MaskFaceEdgesInPolygon(polygon, false);
+        m_refineIntersectedFaces = true;
+        m_mesh.MaskFaceEdgesInPolygon(polygon, false, true);
         m_mesh.ComputeNodeMaskFromEdgeMask();
     }
     else
