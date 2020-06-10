@@ -88,7 +88,7 @@ namespace GridGeom
         bool MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
 
         /// DELNET
-        bool DeleteMesh(const Polygons& polygons, int deletionOption);
+        bool DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion);
 
         ///connectdbn
         bool ConnectNodes(int startNode, int endNode, int& newEdgeIndex);

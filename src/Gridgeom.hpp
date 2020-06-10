@@ -28,7 +28,7 @@ namespace GridGeomApi
 
         GRIDGEOM_API int ggeo_deallocate_state(int gridStateId);
 
-        GRIDGEOM_API int ggeo_delete_mesh(int gridStateId, GeometryListNative& geometryListNativePolygon, int deletionOption);
+        GRIDGEOM_API int ggeo_delete_mesh(int gridStateId, GeometryListNative& geometryListNativePolygon, int deletionOption, bool invertDeletion);
 
         GRIDGEOM_API int ggeo_set_state(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool isCartesian);
 

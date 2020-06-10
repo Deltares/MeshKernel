@@ -1511,13 +1511,17 @@ bool GridGeom::Mesh::DeleteEdgeCloseToAPoint(Point point, double searchRadius)
     return true;
 }
 
-bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
+bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion)
 {
     if (deletionOption == AllVerticesInside)
     {
         for (int n = 0; n < GetNumNodes(); ++n)
         {
             auto isInPolygon = polygons.IsPointInPolygon(m_nodes[n],0);
+            if(invertDeletion)
+            {
+                isInPolygon = !isInPolygon;
+            }
             if (isInPolygon)
             {
                 m_nodes[n] = { doubleMissingValue,doubleMissingValue };
@@ -1543,6 +1547,10 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
 
                 auto faceCircumcenter = m_facesCircumcenters[faceIndex];
                 auto isInPolygon = polygons.IsPointInPolygon(faceCircumcenter,0);
+                if (invertDeletion)
+                {
+                    isInPolygon = !isInPolygon;
+                }
                 if (!isInPolygon)
                 {
                     allFaceCircumcentersInPolygon = false;
@@ -1564,6 +1572,10 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
                 auto edgeCenter = (m_nodes[firstNodeIndex] + m_nodes[secondNodeIndex]) / 2.0;
 
                 allFaceCircumcentersInPolygon = polygons.IsPointInPolygon(edgeCenter,0);
+                if (invertDeletion)
+                {
+                    allFaceCircumcentersInPolygon = !allFaceCircumcentersInPolygon;
+                }
             }
 
             if(allFaceCircumcentersInPolygon)
@@ -1583,6 +1595,10 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption)
         for (int n = 0; n < GetNumNodes(); ++n)
         {
             auto isInPolygon = polygons.IsPointInPolygon(m_nodes[n],0);
+            if (invertDeletion)
+            {
+                isInPolygon = !isInPolygon;
+            }
             if (isInPolygon)
             {
                 m_nodeMask[n] = 1;
