@@ -17,17 +17,29 @@ namespace GridGeom
 
     bool Polygons::Set(const std::vector<Point>& polygon, Projections projection)
     {
+        // always set the projection first
         m_projection = projection;
+        
+        // in no points to add, return
+        if (polygon.empty())
+        {
+            return true;
+        }
+
+        // find the polygons in the current list of points 
+        std::vector<std::vector<int>> indexes(polygon.size(), std::vector<int>(2,0));
+        int pos = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue, indexes);
+        indexes.resize(pos);
+
         // resize if necessary
         int numNodes = GetNumNodes();
-        int nextPolygonIndex = m_indexses.size();
-        ResizeVectorIfNeeded(m_indexses.size() + 1, m_indexses,std::vector<int>(2,0));
-        int startNewNodes = numNodes;
-        if (numNodes != 0)
+        int currentNodePosition = numNodes;
+        if (currentNodePosition != 0)
         {
+            // add separator
             ResizeVectorIfNeeded(numNodes + 1 + polygon.size(), m_nodes);
-            m_nodes[numNodes] = { doubleMissingValue,doubleMissingValue };
-            startNewNodes += 1;
+            m_nodes[currentNodePosition] = { doubleMissingValue,doubleMissingValue };
+            currentNodePosition += 1;
         }
         else
         {
@@ -36,13 +48,22 @@ namespace GridGeom
         m_numAllocatedNodes = m_nodes.size();
         m_numNodes = m_nodes.size();
 
-        m_indexses[nextPolygonIndex][0] = startNewNodes;
-        m_indexses[nextPolygonIndex][1] = startNewNodes + polygon.size() - 1;
+        int numPolygons = m_indexses.size();
+        ResizeVectorIfNeeded(numPolygons + indexes.size(), m_indexses, std::vector<int>(2, 0));
 
-        for (int n = m_indexses[nextPolygonIndex][0], nn = 0; n < m_indexses[nextPolygonIndex][1] + 1; ++n, ++nn)
+        for (int p = 0; p < indexes.size(); p++)
         {
-            m_nodes[n] = polygon[nn];
+            int indexInIndexes = 0;
+            for (int n = indexes[p][0]; n <= indexes[p][1]; n++)
+            {
+                m_nodes[currentNodePosition] = polygon[indexes[p][0] + indexInIndexes];
+                indexInIndexes++;
+                currentNodePosition++;
+            }
+            m_indexses[numPolygons + p][0] = indexes[p][0] + numNodes;
+            m_indexses[numPolygons + p][1] = indexes[p][1] + numNodes;
         }
+
         return true;
     }
 
@@ -534,12 +555,6 @@ namespace GridGeom
 
     bool Polygons::IsPointInPolygons(const Point& point) const
     {
-        if (m_indexses.empty())
-        {
-            return true;
-        }
-
-        bool inPolygon = false;
         for (int p = 0; p < m_indexses.size(); p++)
         {
             // Calculate the bounding box
@@ -556,17 +571,18 @@ namespace GridGeom
                 YMax = std::max(YMax, m_nodes[n].y);
             }
 
+            bool inPolygon = false;
             if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
             {
                 inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indexses[p][0], m_indexses[p][1]);
             }
-
-            if (inPolygon)
-            {
-                return true;
-            }
+            
+            return inPolygon;
+  
         }
-        return false;
+
+        // empty polygons, always true
+        return true;
     }
 
 

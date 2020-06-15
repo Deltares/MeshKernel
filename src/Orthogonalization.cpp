@@ -25,7 +25,7 @@ bool GridGeom::Orthogonalization::Set(Mesh& mesh,
     m_polygons = polygon;
 
     // Sets the node mask
-    mesh.MaskNodesInPolygon(m_polygons, true);
+    mesh.MaskNodesInPolygons(m_polygons, true);
     // Flag nodes outside the polygon as corner points
     for (auto n = 0; n < mesh.GetNumNodes(); n++)
     {

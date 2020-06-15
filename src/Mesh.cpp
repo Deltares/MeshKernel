@@ -1298,11 +1298,11 @@ bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygo
 }
 
 
-bool GridGeom::Mesh::MaskNodesInPolygon(const Polygons& polygon, bool inside)
+bool GridGeom::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
 {
     for (int i = 0; i < GetNumNodes(); ++i)
     {
-        bool isInPolygon = polygon.IsPointInPolygon(m_nodes[i],0);
+        bool isInPolygon = polygon.IsPointInPolygons(m_nodes[i]);
         if (!inside)
         {
             isInPolygon = !isInPolygon;
