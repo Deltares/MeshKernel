@@ -1533,12 +1533,12 @@ bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inver
         if (includeIntersected)
         {
             isEdgeIncluded = (firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 ||
-                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1) == true ? 1 : 0;
+                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1) ? 1 : 0;
         }
         else
         {
             isEdgeIncluded = (firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 &&
-                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1)==true? 1: 0;
+                secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1) ? 1: 0;
 
         }
 
@@ -1576,7 +1576,7 @@ bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inver
         }
     }
 
-    // if the selection is inverted, we do not want to delete the edges fully inside the polygon
+    // if the selection is inverted, do not delete the edges of included faces
     if (invertMasking)
     {
         for (int e = 0; e < GetNumEdges(); ++e)
