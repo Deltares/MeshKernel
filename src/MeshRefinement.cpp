@@ -65,7 +65,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
     }
     else
     {
-        m_mesh.MaskNodesInPolygon(polygon, true);
+        m_mesh.MaskNodesInPolygons(polygon, true);
     }
 
 

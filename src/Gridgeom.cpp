@@ -661,7 +661,7 @@ namespace GridGeomApi
         polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
 
         bool selectInside = inside == 1 ? true : false; 
-        successful = meshInstances[gridStateId].MaskNodesInPolygon(polygon, selectInside);
+        successful = meshInstances[gridStateId].MaskNodesInPolygons(polygon, selectInside);
         if (!successful)
         {
             return -1;
@@ -698,7 +698,7 @@ namespace GridGeomApi
         polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
 
         bool selectInside = inside == 1 ? true : false;
-        successful = meshInstances[gridStateId].MaskNodesInPolygon(polygon, selectInside);
+        successful = meshInstances[gridStateId].MaskNodesInPolygons(polygon, selectInside);
         if (!successful)
         {
             return -1;
