@@ -1300,6 +1300,7 @@ bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygo
 
 bool GridGeom::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
 {
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
     for (int i = 0; i < GetNumNodes(); ++i)
     {
         bool isInPolygon = polygon.IsPointInPolygons(m_nodes[i]);
@@ -1763,6 +1764,9 @@ bool GridGeom::Mesh::ComputeNodeMaskFromEdgeMask()
     {
         return true;
     }
+
+    // fill node mask to 0
+    std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
 
     // compute node mask from edge mask
     for (int e = 0; e < GetNumEdges(); ++e)
