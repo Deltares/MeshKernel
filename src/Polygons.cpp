@@ -36,7 +36,6 @@ namespace GridGeom
         int currentNodePosition = numNodes;
         if (currentNodePosition != 0)
         {
-            // add separator
             ResizeVectorIfNeeded(numNodes + 1 + polygon.size(), m_nodes);
             m_nodes[currentNodePosition] = { doubleMissingValue,doubleMissingValue };
         }
@@ -44,12 +43,12 @@ namespace GridGeom
         {
             ResizeVectorIfNeeded(polygon.size(), m_nodes);
         }
+
         m_numAllocatedNodes = m_nodes.size();
         m_numNodes = m_nodes.size();
 
         int numPolygons = m_indexses.size();
         ResizeVectorIfNeeded(numPolygons + indexes.size(), m_indexses, std::vector<int>(2, 0));
-
         for (int p = 0; p < indexes.size(); p++)
         {
             int indexInIndexes = 0;
