@@ -251,6 +251,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 
     GridGeomApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
+    interpolationParametersNative.RefineIntersected = false;
 
     std::vector<GridGeom::Sample> samples;
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
