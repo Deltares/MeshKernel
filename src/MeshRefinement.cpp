@@ -8,6 +8,8 @@
 #include "SpatialTrees.hpp"
 #include "Operations.cpp"
 
+#include <iostream>
+
 GridGeom::MeshRefinement::MeshRefinement(Mesh& mesh) :
     m_mesh(mesh)
 {
@@ -16,6 +18,9 @@ GridGeom::MeshRefinement::MeshRefinement(Mesh& mesh) :
     // all gets refined
     m_faceMask.resize(m_mesh.GetNumFaces(), 1);
     m_edgeMask.resize(m_mesh.GetNumEdges(), -1);
+
+    // default refinement value
+    m_refinementType = RefinementType::WaveCourant;
 };
 
 bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
@@ -40,6 +45,21 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
         m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
         m_minimumFaceSize = sampleRefineParametersNative.MinimumCellSize;
         m_connectHangingNodes = sampleRefineParametersNative.ConnectHangingNodes == 1 ? true : false;
+
+        if (sampleRefineParametersNative.RefinementType == 1)
+        {
+            m_refinementType = RefinementType::RidgeRefinement;
+
+        }
+        if (sampleRefineParametersNative.RefinementType == 2)
+        {
+            m_refinementType = RefinementType::WaveCourant;
+
+        }
+        if (sampleRefineParametersNative.RefinementType == 3)
+        {
+            m_refinementType = RefinementType::RefinementLevels;
+        }
     }
 
     m_maxNumberOfRefinementIterations = interpolationParametersNative.MaxNumberOfRefinementIterations;
@@ -82,6 +102,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
     auto numFacesAfterRefinement = m_mesh.GetNumFaces();
     for (int level = 0; level < m_maxNumberOfRefinementIterations; level++)
     {
+
         if (level > 0) 
         {
             bool successful = FindBrotherEdges();
@@ -90,6 +111,9 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
                 return false;
             }
         }
+
+        // Compute all lengths at once
+        m_mesh.ComputeEdgeLengths();
 
         const auto numEdgesBeforeRefinement = m_mesh.GetNumEdges();
 
@@ -514,6 +538,7 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
     //Add new nodes where required
     std::vector<int> notHangingFaceNodes(maximumNumberOfNodesPerFace, intMissingValue);
     std::vector<bool> ishanging(maximumNumberOfNodesPerFace, false);
+    std::vector<int> parentEdge(maximumNumberOfNodesPerFace, -1);
     std::vector<Point> facePolygonWithoutHangingNodes(maximumNumberOfNodesPerFace);
     std::vector<Point> middlePointsCache(maximumNumberOfNodesPerFace);
     std::vector<Point> normalsCache(maximumNumberOfNodesPerFace);
@@ -560,6 +585,7 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
         int newNodeIndex;
         m_mesh.InsertNode(middle, newNodeIndex);
         m_edgeMask[e] = newNodeIndex;
+        m_parentEdgeStartingLength[e] -= 1.0;
 
         // set mask on the new node
         m_mesh.m_nodeMask[newNodeIndex] = 1;
@@ -609,6 +635,7 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
         int numNonHangingNodes = 0;
         std::fill(notHangingFaceNodes.begin(), notHangingFaceNodes.end(), intMissingValue);
         std::fill(ishanging.begin(), ishanging.end(), false);
+        std::fill(parentEdge.begin(), parentEdge.end(), -1);
         for (int e = 0; e < numEdges; e++)
         {
             const auto firstEdge = NextCircularBackwardIndex(e, numEdges);
@@ -634,6 +661,7 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
                 int newNode;
                 m_mesh.FindCommonNode(edgeIndex, m_brotherEdges[edgeIndex], newNode);
                 notHangingFaceNodes[numNonHangingNodes] = newNode;
+                parentEdge[numNonHangingNodes] = edgeIndex;
                 numNonHangingNodes++;
             }
             else if (m_brotherEdges[edgeIndex] != firstEdgeIndex || m_brotherEdges[edgeIndex] < 0)
@@ -641,6 +669,7 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
                 if (m_edgeMask[edgeIndex] != 0)
                 {
                     notHangingFaceNodes[numNonHangingNodes] = m_edgeMask[edgeIndex];
+                    parentEdge[numNonHangingNodes] = edgeIndex;
                     numNonHangingNodes++;
                 }
             }
@@ -722,6 +751,8 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
                 {
                     int newEdgeIndex;
                     m_mesh.ConnectNodes(notHangingFaceNodes[n], newNodeIndex, newEdgeIndex);
+                    ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_parentEdgeStartingLength);
+                    m_parentEdgeStartingLength[newEdgeIndex] = m_parentEdgeStartingLength[parentEdge[n]];
                 }
 
                 m_mesh.m_nodeMask[newNodeIndex] = 1;
@@ -735,6 +766,8 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
             {
                 int newEdgeIndex;
                 m_mesh.ConnectNodes(notHangingFaceNodes[0], notHangingFaceNodes[1], newEdgeIndex);
+                ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_parentEdgeStartingLength);
+                m_parentEdgeStartingLength[newEdgeIndex] = std::max(m_parentEdgeStartingLength[parentEdge[0]], m_parentEdgeStartingLength[parentEdge[1]]);
             }
         }
         else
@@ -744,6 +777,9 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
                 auto nn = NextCircularForwardIndex(n, numNonHangingNodes);
                 int newEdgeIndex;
                 m_mesh.ConnectNodes(notHangingFaceNodes[n], notHangingFaceNodes[nn], newEdgeIndex);
+                // save the parent edge length
+                ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_parentEdgeStartingLength);
+                m_parentEdgeStartingLength[newEdgeIndex] = m_parentEdgeStartingLength[parentEdge[n]];
             }
         }
     }
@@ -759,6 +795,10 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
             ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_brotherEdges);
             m_brotherEdges[newEdgeIndex] = e;
             m_brotherEdges[e] = newEdgeIndex;
+
+            // save the parent edge length
+            ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_parentEdgeStartingLength, 0.0);
+            m_parentEdgeStartingLength[newEdgeIndex] = m_parentEdgeStartingLength[e];
         }
     }
 
@@ -817,6 +857,12 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
     m_localNodeIndexsesCache.resize(maximumNumberOfNodesPerFace + 1, intMissingValue);
     m_edgeIndexsesCache.resize(maximumNumberOfEdgesPerFace + 1, intMissingValue);
 
+    // save the parent edge length
+    if (m_firstIteration && m_parentEdgeStartingLength.empty())
+    {
+        ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_parentEdgeStartingLength, 0.0);
+    }
+
     for (int f = 0; f < m_mesh.GetNumFaces(); f++)
     {
         int numClosedPolygonNodes = 0;
@@ -831,9 +877,8 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
             return false;
         }
 
-
         int numEdgesToBeRefined = 0;
-        successful = ComputeLocalEdgeRefinementFromSamples( m_mesh.GetNumFaceEdges(f), samples, WaveCourant, numEdgesToBeRefined);
+        successful = ComputeEdgesFaceRefinementFromSamples( m_mesh.GetNumFaceEdges(f), samples, numEdgesToBeRefined);
         if (!successful)
         {
             return false;
@@ -862,6 +907,7 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
             }
         }
     }
+    m_firstIteration = false;
     return true;
 };
 
@@ -936,15 +982,18 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeLocalEdgeRefinementFromSamples(
+bool GridGeom::MeshRefinement::ComputeEdgesFaceRefinementFromSamples(
     int numPolygonNodes,
     const std::vector<Sample>& samples,
-    int refineType,
     int& numEdgesToBeRefined)
 {
     numEdgesToBeRefined = 0;
-    m_refineEdgeCache.resize(maximumNumberOfEdgesPerFace);
-    std::fill(m_refineEdgeCache.begin(), m_refineEdgeCache.end(), 0);
+
+    // Not implemented yet
+    if (m_refinementType == RidgeRefinement) 
+    {
+        return true;
+    }
 
     //find center of mass
     Point centerOfMass;
@@ -958,13 +1007,14 @@ bool GridGeom::MeshRefinement::ComputeLocalEdgeRefinementFromSamples(
     m_polygonEdgesLengthsCache.resize(numPolygonNodes);
     for (int i = 0; i < numPolygonNodes; i++)
     {
-        auto nextNode = NextCircularForwardIndex(i, numPolygonNodes);
-        auto distance = Distance(m_polygonNodesCache[i], m_polygonNodesCache[nextNode], m_mesh.m_projection);
-        m_polygonEdgesLengthsCache[i] = distance;
+        int edgeIndex = m_edgeIndexsesCache[i];
+        m_polygonEdgesLengthsCache[i] = m_mesh.m_edgeLengths[edgeIndex];
     }
 
     double refinementValue = 0.0;
-    if (m_deltaTimeMaxCourant > 0.0 || refineType == WaveCourant)
+
+
+    if ((m_deltaTimeMaxCourant > 0.0 || m_refinementType == WaveCourant) || m_refinementType == RefinementLevels )
     {
 
         bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh.m_projection, m_rtree, KdTree, refinementValue);
@@ -987,12 +1037,24 @@ bool GridGeom::MeshRefinement::ComputeLocalEdgeRefinementFromSamples(
         }
     }
 
+
+    if (refinementValue > 1.0) 
+    {
+        std::cout << "Debug" << std::endl;
+    }
+
+    if (m_firstIteration == false)
+    {
+        refinementValue = 0.0;
+    }
+
     if (refinementValue == doubleMissingValue)
     {
         return true;
     }
-
-    // always wave courant
+    m_refineEdgeCache.resize(maximumNumberOfEdgesPerFace);
+    std::fill(m_refineEdgeCache.begin(), m_refineEdgeCache.end(), 0);
+    // wave courant, levels refinementValue = std::pow(2.0, 2 * refinementValue);
     for (int i = 0; i < numPolygonNodes; i++)
     {
         if (m_polygonEdgesLengthsCache[i] < mergingDistance)
@@ -1001,22 +1063,41 @@ bool GridGeom::MeshRefinement::ComputeLocalEdgeRefinementFromSamples(
             continue;
         }
 
-        //refinementValue = std::pow(2.0, 2 * refinementValue);
-        double c = std::sqrt(gravity * std::abs(refinementValue));
-
-        double waveCourant = c * m_deltaTimeMaxCourant / m_polygonEdgesLengthsCache[i];
+        double waveCourant = 0.0;
         double newEdgeLength = 0.5 * m_polygonEdgesLengthsCache[i];
+        bool doRefinement = false;
 
-        if (waveCourant < 1 && std::abs(newEdgeLength - m_minimumFaceSize) < std::abs(m_polygonEdgesLengthsCache[i] - m_minimumFaceSize))
+        // based on wave courant
+        if (m_refinementType == WaveCourant) 
+        {
+            double c = std::sqrt(gravity * std::abs(refinementValue));
+            waveCourant = c * m_deltaTimeMaxCourant / m_polygonEdgesLengthsCache[i];    
+            doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_minimumFaceSize) < std::abs(m_polygonEdgesLengthsCache[i] - m_minimumFaceSize);
+        }
+
+        // based on refinement levels
+        if (m_refinementType == RefinementLevels)
+        {
+            int edgeIndex = m_edgeIndexsesCache[i];
+
+            if (m_firstIteration) 
+            {
+                m_parentEdgeStartingLength[edgeIndex] = std::abs(refinementValue);
+            }
+
+            if (m_parentEdgeStartingLength[edgeIndex] > 0.0)
+            {
+                doRefinement = true;
+            }
+        }
+
+        if (doRefinement)
         {
             numEdgesToBeRefined++;
             m_refineEdgeCache[i] = 1;
         }
-        else
-        {
-            m_refineEdgeCache[i] = 0;
-        }
     }
+
 
     if (numEdgesToBeRefined > 0)
     {
@@ -1045,7 +1126,6 @@ bool GridGeom::MeshRefinement::ComputeLocalEdgeRefinementFromSamples(
         else
         {
             numEdgesToBeRefined = 0;
-            std::fill(m_refineEdgeCache.begin(), m_refineEdgeCache.end(), 0);
         }
     }
 
