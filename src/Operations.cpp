@@ -1399,8 +1399,9 @@ namespace GridGeom
             {
                 if (averagingMethod == SimpleAveraging)
                 {
-                    if (numValidSamplesInPolygon == 0) 
+                    if (!firstValidSampleFound)
                     {
+                        firstValidSampleFound = true;
                         result = 0.0;
                     }
                     result += sampleValue;
@@ -1414,6 +1415,15 @@ namespace GridGeom
                         result = sampleValue;
                     }
                     result = std::min(std::abs(result), std::abs(sampleValue));
+                }
+                if (averagingMethod == Max)
+                {
+                    if (!firstValidSampleFound)
+                    {
+                        firstValidSampleFound = true;
+                        result = doubleMissingValue;
+                    }
+                    result = std::max(result, sampleValue);
                 }
                 if (averagingMethod == InverseWeightDistance)
                 {
