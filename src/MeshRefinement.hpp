@@ -72,6 +72,9 @@ namespace GridGeom
         ///refine_cells
         bool RefineFacesBySplittingEdges(int numEdgesBeforeRefinemet);
 
+        // compute the refinament value at the center of mass
+        double ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples);
+
         // mesh R-Tree
         Mesh& m_mesh;
 
@@ -81,7 +84,7 @@ namespace GridGeom
         std::vector<int> m_faceMask; //refine cell without hanging nodes (1), refine cell with hanging nodes (2), do not refine cell at all (0) or refine cell outside polygon (-2)
         std::vector<int> m_edgeMask;
         std::vector<int> m_brotherEdges;
-        std::vector<double> m_parentEdgeStartingLength;
+        std::vector<double> m_edgeRefinementLevel;
         std::vector<int> m_refineEdgeCache;
         std::vector<bool> m_isHangingNodeCache;
         std::vector<bool> m_isHangingEdgeCache;
