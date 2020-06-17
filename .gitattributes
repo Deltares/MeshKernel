@@ -692,8 +692,10 @@ src/tests/PolygonTest.cpp -text
 src/tests/SpatialTreesTest.cpp -text
 src/tests/SplineTest.cpp -text
 src/version_number.ini -text
+tests/2SplinesCurved.spl -text
 tests/FindFaces.pol -text
-tests/FourByFourMesh_net.nc -text
+tests/FourByFourWithFourSamples.nc -text
+tests/FourByFourWithFourSamples.xyz -text
 tests/FourSplines.spl -text
 tests/MakeMeshInPolygon.pol -text
 tests/OffsetAPolygonTest.pli -text
@@ -702,7 +704,6 @@ tests/OrthogonalizationSmallTriangularGridWithPolygon.pol -text
 tests/RefineBasedOnPolygonThreeByThree.pol -text
 tests/RefineBasedOnPolygonTriangularMesh.pol -text
 tests/SamplesForMeshRefinement.xyz -text
-tests/SamplesForRefinementFourByFourMesh.xyz -text
 tests/SamplesForRefinementFourByFourMeshSpherical.xyz -text
 tests/SamplesToTriangulate.xyz -text
 tests/SevenSplines.spl -text
