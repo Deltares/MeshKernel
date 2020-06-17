@@ -8,8 +8,6 @@
 #include "SpatialTrees.hpp"
 #include "Operations.cpp"
 
-#include <iostream>
-
 GridGeom::MeshRefinement::MeshRefinement(Mesh& mesh) :
     m_mesh(mesh)
 {
