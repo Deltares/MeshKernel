@@ -1325,7 +1325,6 @@ namespace GridGeom
         int averagingMethod,
         double& result)
     {
-        result = doubleMissingValue;
         std::vector<Point> searchPolygon(numPolygonNodes);
 
         // averaging settings
@@ -1360,6 +1359,7 @@ namespace GridGeom
             }
         }
 
+        result = doubleMissingValue;
         double searchRadius = std::numeric_limits<double>::min();
         for (int i = 0; i < numPolygonNodes; i++)
         {
@@ -1381,11 +1381,13 @@ namespace GridGeom
         int numValidSamplesInPolygon = 0;
         double wall = 0;
         bool firstValidSampleFound = false;
+        
         for (int i = 0; i < rtree.GetQueryResultSize(); i++)
         {
             //do stuff based on the averaging method
             auto sampleIndex = rtree.GetQuerySampleIndex(i);
-            if (samples[sampleIndex].value == doubleMissingValue)
+            auto sampleValue = samples[sampleIndex].value;
+            if (sampleValue <= doubleMissingValue)
             {
                 continue;
             }
@@ -1397,7 +1399,11 @@ namespace GridGeom
             {
                 if (averagingMethod == SimpleAveraging)
                 {
-                    result += samples[sampleIndex].value;
+                    if (numValidSamplesInPolygon == 0) 
+                    {
+                        result = 0.0;
+                    }
+                    result += sampleValue;
                     numValidSamplesInPolygon++;
                 }
                 if (averagingMethod == KdTree)
@@ -1405,9 +1411,9 @@ namespace GridGeom
                     if (!firstValidSampleFound)
                     {
                         firstValidSampleFound = true;
-                        result = samples[sampleIndex].value;
+                        result = sampleValue;
                     }
-                    result = std::min(std::abs(result), std::abs(samples[sampleIndex].value));
+                    result = std::min(std::abs(result), std::abs(sampleValue));
                 }
                 if (averagingMethod == InverseWeightDistance)
                 {
@@ -1415,14 +1421,17 @@ namespace GridGeom
                     double weight = 1.0 / distance;
                     wall += weight;
                     numValidSamplesInPolygon++;
-                    result += weight * samples[sampleIndex].value;
+                    result += weight * sampleValue;
                 }
             }
         }
 
         if (averagingMethod == SimpleAveraging && numValidSamplesInPolygon > 0)
         {
-            result /= numValidSamplesInPolygon;
+            if (result > doubleMissingValue) 
+            {
+                result /= numValidSamplesInPolygon;
+            }
             return true;
         }
 

@@ -1012,11 +1012,11 @@ bool GridGeom::MeshRefinement::ComputeEdgesFaceRefinementFromSamples(
     // for refinement based on levels  we calculate the refinement value only once
     if (m_refinementType == RefinementLevels && m_firstIteration)
     {
-        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples);
+        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, KdTree);
     }
     if (m_refinementType == WaveCourant)
     {
-        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples);
+        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, KdTree);
     }
 
     if (refinementValue == doubleMissingValue)
@@ -1104,7 +1104,7 @@ bool GridGeom::MeshRefinement::ComputeEdgesFaceRefinementFromSamples(
     return true;
 }
 
-double GridGeom::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples)
+double GridGeom::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod)
 {
     //find center of mass
     Point centerOfMass;
@@ -1116,7 +1116,7 @@ double GridGeom::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygon
     }
 
     double refinementValue = 0.0;
-    bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh.m_projection, m_rtree, KdTree, refinementValue);
+    bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh.m_projection, m_rtree, averagingMethod, refinementValue);
     if (!success)
     {
         return doubleMissingValue;
