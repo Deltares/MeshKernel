@@ -97,19 +97,12 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
         return false;
     }
 
-    //set initial refinement levels for all edges
-    if (m_firstIteration && m_edgeRefinementLevel.empty())
-    {
-        m_edgeRefinementLevel.resize(m_mesh.GetNumEdges(), 0.0);
-    }
-
     auto numFacesAfterRefinement = m_mesh.GetNumFaces();
     for (int level = 0; level < m_maxNumberOfRefinementIterations; level++)
     {
 
         if (level > 0) 
         {
-            m_firstIteration = false;
             bool successful = FindBrotherEdges();
             if (!successful)
             {
@@ -591,9 +584,6 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
         m_mesh.InsertNode(middle, newNodeIndex);
         m_edgeMask[e] = newNodeIndex;
 
-        // for refinement based on levels  decrease the level
-        m_edgeRefinementLevel[e] -= 1.0;
-
         // set mask on the new node
         m_mesh.m_nodeMask[newNodeIndex] = 1;
         if (m_mesh.m_nodeMask[firstNodeIndex] == 0 && m_mesh.m_nodeMask[secondNodeIndex] == 0)
@@ -758,10 +748,6 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
                 {
                     int newEdgeIndex;
                     m_mesh.ConnectNodes(notHangingFaceNodes[n], newNodeIndex, newEdgeIndex);
-
-                    // new edge gets the parent level
-                    ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_edgeRefinementLevel);
-                    m_edgeRefinementLevel[newEdgeIndex] = m_edgeRefinementLevel[parentEdge[n]];
                 }
 
                 m_mesh.m_nodeMask[newNodeIndex] = 1;
@@ -775,8 +761,6 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
             {
                 int newEdgeIndex;
                 m_mesh.ConnectNodes(notHangingFaceNodes[0], notHangingFaceNodes[1], newEdgeIndex);
-                ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_edgeRefinementLevel);
-                m_edgeRefinementLevel[newEdgeIndex] = std::max(m_edgeRefinementLevel[parentEdge[0]], m_edgeRefinementLevel[parentEdge[1]]);
             }
         }
         else
@@ -786,10 +770,6 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
                 auto nn = NextCircularForwardIndex(n, numNonHangingNodes);
                 int newEdgeIndex;
                 m_mesh.ConnectNodes(notHangingFaceNodes[n], notHangingFaceNodes[nn], newEdgeIndex);
-
-                // new edge gets the parent level
-                ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_edgeRefinementLevel);
-                m_edgeRefinementLevel[newEdgeIndex] = m_edgeRefinementLevel[parentEdge[n]];
             }
         }
     }
@@ -805,10 +785,6 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
             ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_brotherEdges);
             m_brotherEdges[newEdgeIndex] = e;
             m_brotherEdges[e] = newEdgeIndex;
-
-            // new edge gets the parent level
-            ResizeVectorIfNeeded(m_mesh.GetNumEdges(), m_edgeRefinementLevel, 0.0);
-            m_edgeRefinementLevel[newEdgeIndex] = m_edgeRefinementLevel[e];
         }
     }
 
@@ -988,7 +964,7 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
 
 bool GridGeom::MeshRefinement::ComputeEdgesFaceRefinementFromSamples(
     int numPolygonNodes,
-    const std::vector<Sample>& samples,
+    std::vector<Sample>& samples,
     int& numEdgesToBeRefined)
 {
     numEdgesToBeRefined = 0;
@@ -1010,10 +986,17 @@ bool GridGeom::MeshRefinement::ComputeEdgesFaceRefinementFromSamples(
     // a default value
     double refinementValue = 0.0;
     // for refinement based on levels  we calculate the refinement value only once
-    if (m_refinementType == RefinementLevels && m_firstIteration)
+    if (m_refinementType == RefinementLevels)
     {
-        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, KdTree);
+        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, Max);
+        for (int i = 0; i < m_rtree.GetQueryResultSize(); i++)
+        {
+            // decrease the sample values in the current cells by one
+            auto sampleIndex = m_rtree.GetQuerySampleIndex(i);
+            samples[sampleIndex].value -= 1.0;
+        }
     }
+
     if (m_refinementType == WaveCourant)
     {
         refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, KdTree);
@@ -1052,12 +1035,7 @@ bool GridGeom::MeshRefinement::ComputeEdgesFaceRefinementFromSamples(
         {
             int edgeIndex = m_edgeIndexsesCache[i];
 
-            if (m_firstIteration) 
-            {
-                m_edgeRefinementLevel[edgeIndex] = std::abs(refinementValue);
-            }
-
-            if (m_edgeRefinementLevel[edgeIndex] > 0.0)
+            if (refinementValue > 0.0)
             {
                 doRefinement = true;
             }

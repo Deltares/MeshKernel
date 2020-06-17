@@ -45,7 +45,7 @@ namespace GridGeom
 
         ///compute_jarefine_poly
         bool ComputeEdgesFaceRefinementFromSamples(int numPolygonNodes,
-            const std::vector<Sample>& samples,
+            std::vector<Sample>& samples,
             int& numEdgesToBeRefined);
 
         ///comp_jalink
@@ -84,7 +84,6 @@ namespace GridGeom
         std::vector<int> m_faceMask; //refine cell without hanging nodes (1), refine cell with hanging nodes (2), do not refine cell at all (0) or refine cell outside polygon (-2)
         std::vector<int> m_edgeMask;
         std::vector<int> m_brotherEdges;
-        std::vector<double> m_edgeRefinementLevel;
         std::vector<int> m_refineEdgeCache;
         std::vector<bool> m_isHangingNodeCache;
         std::vector<bool> m_isHangingEdgeCache;
@@ -99,7 +98,6 @@ namespace GridGeom
         bool m_refineOutsideFace = false;
         bool m_connectHangingNodes = true;
         bool m_refineIntersectedFaces = false;
-        bool m_firstIteration = true;
         int m_maxNumberOfRefinementIterations = 10;
         RefinementType m_refinementType;
 
