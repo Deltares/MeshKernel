@@ -702,7 +702,11 @@ tests/MeshRefinementTests/RefineBasedOnPolygonThreeByThree.pol -text
 tests/MeshRefinementTests/RefineBasedOnPolygonTriangularMesh.pol -text
 tests/MeshRefinementTests/SamplesForMeshRefinement.xyz -text
 tests/MeshRefinementTests/SamplesForRefinementFourByFourMeshSpherical.xyz -text
+tests/MeshRefinementTests/SevenBySevenBasedOnLevels.nc -text
+tests/MeshRefinementTests/SevenBySevenBasedOnLevels.xyz -text
 tests/MeshRefinementTests/SmallTriangularMeshSamplesForRefinement.xyz -text
+tests/MeshRefinementTests/ThreeByThreeOnLevels.nc -text
+tests/MeshRefinementTests/ThreeByThreeOnLevels.xyz -text
 tests/MeshRefinementTests/WindowOfRefinementFile.xyz -text
 tests/OffsetAPolygonTest.pli -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
