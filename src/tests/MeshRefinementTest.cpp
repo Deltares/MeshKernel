@@ -91,6 +91,182 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     ASSERT_EQ(84, mesh.GetNumEdges()); 
 }
 
+TEST(MeshRefinement, SevenBySevenBasedOnLevels)
+{
+    auto mesh = MakeRectangularMeshForTesting(7, 7, 10.0, GridGeom::Projections::cartesian);
+
+    //sample points
+    std::vector<GridGeom::Sample> samples;
+    samples.push_back({ 34.8731232, 54.8006172, 1.0000000 });
+    samples.push_back({34.9458466, 44.1823273, 1.0000000});
+    samples.push_back({34.9458466, 33.8549500, 1.0000000});
+    samples.push_back({34.5822067, 24.6912193, 1.0000000});
+    samples.push_back({46.0731964, 23.8184834, 1.0000000});
+    samples.push_back({57.0550766, 23.5275726, 1.0000000});
+
+    samples.push_back({45.2004623, 54.7278862, 2.0000000});
+    samples.push_back({45.3459167, 46.1459808, 2.0000000});
+    samples.push_back({44.8368225, 36.1095161, 2.0000000});
+    samples.push_back({54.7277908, 35.5276947, 2.0000000});
+
+    samples.push_back({54.5823364, 54.4369774, 3.0000000});
+    samples.push_back({54.1459732, 44.4732399, 3.0000000});
+
+    GridGeom::MeshRefinement  meshRefinement(mesh);
+    GridGeom::Polygons polygon;
+    GridGeomApi::SampleRefineParametersNative sampleRefineParametersNative;
+    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
+    sampleRefineParametersNative.MinimumCellSize = 1.0;
+    sampleRefineParametersNative.AccountForSamplesOutside = false;
+    sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefinementType = 3;
+
+    GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 10;
+    interpolationParametersNative.RefineIntersected = false;
+
+    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+
+    // 3 Validation edges connecting hanging nodes
+
+    ////bottom side
+    //ASSERT_EQ(5, mesh.m_edges[73].first);
+    //ASSERT_EQ(25, mesh.m_edges[73].second);
+
+    //ASSERT_EQ(10, mesh.m_edges[72].first);
+    //ASSERT_EQ(25, mesh.m_edges[72].second);
+
+    //ASSERT_EQ(10, mesh.m_edges[77].first);
+    //ASSERT_EQ(28, mesh.m_edges[77].second);
+
+    //ASSERT_EQ(15, mesh.m_edges[76].first);
+    //ASSERT_EQ(28, mesh.m_edges[76].second);
+
+    ////right side
+    //ASSERT_EQ(21, mesh.m_edges[81].first);
+    //ASSERT_EQ(35, mesh.m_edges[81].second);
+
+    //ASSERT_EQ(22, mesh.m_edges[80].first);
+    //ASSERT_EQ(35, mesh.m_edges[80].second);
+
+    //ASSERT_EQ(22, mesh.m_edges[83].first);
+    //ASSERT_EQ(36, mesh.m_edges[83].second);
+
+    //ASSERT_EQ(23, mesh.m_edges[82].first);
+    //ASSERT_EQ(36, mesh.m_edges[82].second);
+
+    ////upper side
+    //ASSERT_EQ(19, mesh.m_edges[79].first);
+    //ASSERT_EQ(30, mesh.m_edges[79].second);
+
+    //ASSERT_EQ(14, mesh.m_edges[78].first);
+    //ASSERT_EQ(30, mesh.m_edges[78].second);
+
+    //ASSERT_EQ(14, mesh.m_edges[75].first);
+    //ASSERT_EQ(27, mesh.m_edges[75].second);
+
+    //ASSERT_EQ(9, mesh.m_edges[74].first);
+    //ASSERT_EQ(27, mesh.m_edges[74].second);
+
+    ////left side
+    //ASSERT_EQ(3, mesh.m_edges[71].first);
+    //ASSERT_EQ(32, mesh.m_edges[71].second);
+
+    //ASSERT_EQ(2, mesh.m_edges[70].first);
+    //ASSERT_EQ(32, mesh.m_edges[70].second);
+
+    //ASSERT_EQ(2, mesh.m_edges[69].first);
+    //ASSERT_EQ(31, mesh.m_edges[69].second);
+
+    //ASSERT_EQ(1, mesh.m_edges[68].first);
+    //ASSERT_EQ(31, mesh.m_edges[68].second);
+
+    //// total number of edges
+    //ASSERT_EQ(84, mesh.GetNumEdges());
+}
+
+TEST(MeshRefinement, TwoByTwoBasedOnLevels)
+{
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 10.0, GridGeom::Projections::cartesian);
+
+    //sample points
+    std::vector<GridGeom::Sample> samples;
+    samples.push_back({ 15.0, 15.0, 2.0000000 });
+
+    GridGeom::MeshRefinement  meshRefinement(mesh);
+    GridGeom::Polygons polygon;
+    GridGeomApi::SampleRefineParametersNative sampleRefineParametersNative;
+    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
+    sampleRefineParametersNative.MinimumCellSize = 1.0;
+    sampleRefineParametersNative.AccountForSamplesOutside = false;
+    sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefinementType = 3;
+
+    GridGeomApi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 10;
+    interpolationParametersNative.RefineIntersected = false;
+
+    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+
+    // 3 Validation edges connecting hanging nodes
+
+    ////bottom side
+    //ASSERT_EQ(5, mesh.m_edges[73].first);
+    //ASSERT_EQ(25, mesh.m_edges[73].second);
+
+    //ASSERT_EQ(10, mesh.m_edges[72].first);
+    //ASSERT_EQ(25, mesh.m_edges[72].second);
+
+    //ASSERT_EQ(10, mesh.m_edges[77].first);
+    //ASSERT_EQ(28, mesh.m_edges[77].second);
+
+    //ASSERT_EQ(15, mesh.m_edges[76].first);
+    //ASSERT_EQ(28, mesh.m_edges[76].second);
+
+    ////right side
+    //ASSERT_EQ(21, mesh.m_edges[81].first);
+    //ASSERT_EQ(35, mesh.m_edges[81].second);
+
+    //ASSERT_EQ(22, mesh.m_edges[80].first);
+    //ASSERT_EQ(35, mesh.m_edges[80].second);
+
+    //ASSERT_EQ(22, mesh.m_edges[83].first);
+    //ASSERT_EQ(36, mesh.m_edges[83].second);
+
+    //ASSERT_EQ(23, mesh.m_edges[82].first);
+    //ASSERT_EQ(36, mesh.m_edges[82].second);
+
+    ////upper side
+    //ASSERT_EQ(19, mesh.m_edges[79].first);
+    //ASSERT_EQ(30, mesh.m_edges[79].second);
+
+    //ASSERT_EQ(14, mesh.m_edges[78].first);
+    //ASSERT_EQ(30, mesh.m_edges[78].second);
+
+    //ASSERT_EQ(14, mesh.m_edges[75].first);
+    //ASSERT_EQ(27, mesh.m_edges[75].second);
+
+    //ASSERT_EQ(9, mesh.m_edges[74].first);
+    //ASSERT_EQ(27, mesh.m_edges[74].second);
+
+    ////left side
+    //ASSERT_EQ(3, mesh.m_edges[71].first);
+    //ASSERT_EQ(32, mesh.m_edges[71].second);
+
+    //ASSERT_EQ(2, mesh.m_edges[70].first);
+    //ASSERT_EQ(32, mesh.m_edges[70].second);
+
+    //ASSERT_EQ(2, mesh.m_edges[69].first);
+    //ASSERT_EQ(31, mesh.m_edges[69].second);
+
+    //ASSERT_EQ(1, mesh.m_edges[68].first);
+    //ASSERT_EQ(31, mesh.m_edges[68].second);
+
+    //// total number of edges
+    //ASSERT_EQ(84, mesh.GetNumEdges());
+}
+
+
 TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 {
     auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, GridGeom::Projections::cartesian);
@@ -385,7 +561,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 
     // read sample file
     std::string line;
-    std::ifstream infile("..\\..\\tests\\WindowedSamplesForMeshRefinement.xyz");
+    std::ifstream infile("..\\..\\tests\\MeshRefinementTests\\WindowOfRefinementFile.xyz");
     while (std::getline(infile, line))  
     {
         std::istringstream iss(line);

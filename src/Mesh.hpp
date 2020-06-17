@@ -132,6 +132,8 @@ namespace GridGeom
 
         bool RefreshRTreeIfNeeded();
 
+        bool ComputeEdgeLengths();
+
 
         std::vector<Edge>  m_edges;                                 // KN
         std::vector<Point> m_nodes;                                 // KN
@@ -199,8 +201,6 @@ namespace GridGeom
 
         /// CHECKTRIANGLE
         bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes);
-
-        bool ComputeEdgeLengths();
 
         double m_dcenterinside = 1.0;
 
