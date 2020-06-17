@@ -73,7 +73,7 @@ namespace GridGeom
         bool RefineFacesBySplittingEdges(int numEdgesBeforeRefinemet);
 
         // compute the refinament value at the center of mass
-        double ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples);
+        double ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod);
 
         // mesh R-Tree
         Mesh& m_mesh;
