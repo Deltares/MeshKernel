@@ -703,7 +703,7 @@ tests/MeshRefinementTests/RefineBasedOnPolygonTriangularMesh.pol -text
 tests/MeshRefinementTests/SamplesForMeshRefinement.xyz -text
 tests/MeshRefinementTests/SamplesForRefinementFourByFourMeshSpherical.xyz -text
 tests/MeshRefinementTests/SmallTriangularMeshSamplesForRefinement.xyz -text
-tests/MeshRefinementTests/WindowedSamplesForMeshRefinement.xyz -text
+tests/MeshRefinementTests/WindowOfRefinementFile.xyz -text
 tests/OffsetAPolygonTest.pli -text
 tests/OrthogonalCurvilinearMeshTwoCrossings.spl -text
 tests/OrthogonalizationSmallTriangularGridWithPolygon.pol -text
