@@ -127,62 +127,10 @@ TEST(MeshRefinement, SevenBySevenBasedOnLevels)
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
-    // 3 Validation edges connecting hanging nodes
-
-    ////bottom side
-    //ASSERT_EQ(5, mesh.m_edges[73].first);
-    //ASSERT_EQ(25, mesh.m_edges[73].second);
-
-    //ASSERT_EQ(10, mesh.m_edges[72].first);
-    //ASSERT_EQ(25, mesh.m_edges[72].second);
-
-    //ASSERT_EQ(10, mesh.m_edges[77].first);
-    //ASSERT_EQ(28, mesh.m_edges[77].second);
-
-    //ASSERT_EQ(15, mesh.m_edges[76].first);
-    //ASSERT_EQ(28, mesh.m_edges[76].second);
-
-    ////right side
-    //ASSERT_EQ(21, mesh.m_edges[81].first);
-    //ASSERT_EQ(35, mesh.m_edges[81].second);
-
-    //ASSERT_EQ(22, mesh.m_edges[80].first);
-    //ASSERT_EQ(35, mesh.m_edges[80].second);
-
-    //ASSERT_EQ(22, mesh.m_edges[83].first);
-    //ASSERT_EQ(36, mesh.m_edges[83].second);
-
-    //ASSERT_EQ(23, mesh.m_edges[82].first);
-    //ASSERT_EQ(36, mesh.m_edges[82].second);
-
-    ////upper side
-    //ASSERT_EQ(19, mesh.m_edges[79].first);
-    //ASSERT_EQ(30, mesh.m_edges[79].second);
-
-    //ASSERT_EQ(14, mesh.m_edges[78].first);
-    //ASSERT_EQ(30, mesh.m_edges[78].second);
-
-    //ASSERT_EQ(14, mesh.m_edges[75].first);
-    //ASSERT_EQ(27, mesh.m_edges[75].second);
-
-    //ASSERT_EQ(9, mesh.m_edges[74].first);
-    //ASSERT_EQ(27, mesh.m_edges[74].second);
-
-    ////left side
-    //ASSERT_EQ(3, mesh.m_edges[71].first);
-    //ASSERT_EQ(32, mesh.m_edges[71].second);
-
-    //ASSERT_EQ(2, mesh.m_edges[70].first);
-    //ASSERT_EQ(32, mesh.m_edges[70].second);
-
-    //ASSERT_EQ(2, mesh.m_edges[69].first);
-    //ASSERT_EQ(31, mesh.m_edges[69].second);
-
-    //ASSERT_EQ(1, mesh.m_edges[68].first);
-    //ASSERT_EQ(31, mesh.m_edges[68].second);
-
-    //// total number of edges
-    //ASSERT_EQ(84, mesh.GetNumEdges());
+    // Assert number of edges
+    ASSERT_EQ(624, mesh.GetNumEdges());
+    // Assert number of faces
+    ASSERT_EQ(322, mesh.GetNumFaces());
 }
 
 TEST(MeshRefinement, TwoByTwoBasedOnLevels)
@@ -197,7 +145,7 @@ TEST(MeshRefinement, TwoByTwoBasedOnLevels)
     GridGeom::Polygons polygon;
     GridGeomApi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
-    sampleRefineParametersNative.MinimumCellSize = 1.0;
+    sampleRefineParametersNative.MinimumCellSize = 0.5;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
     sampleRefineParametersNative.RefinementType = 3;
@@ -208,62 +156,58 @@ TEST(MeshRefinement, TwoByTwoBasedOnLevels)
 
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
-    // 3 Validation edges connecting hanging nodes
+    // Assert number of edges
+    ASSERT_EQ(73, mesh.GetNumEdges());
 
-    ////bottom side
-    //ASSERT_EQ(5, mesh.m_edges[73].first);
-    //ASSERT_EQ(25, mesh.m_edges[73].second);
+    // Assert edge values
+    ASSERT_EQ(0, mesh.m_edges[0].first);
+    ASSERT_EQ(3, mesh.m_edges[0].second);
 
-    //ASSERT_EQ(10, mesh.m_edges[72].first);
-    //ASSERT_EQ(25, mesh.m_edges[72].second);
+    ASSERT_EQ(1, mesh.m_edges[1].first);
+    ASSERT_EQ(14, mesh.m_edges[1].second);
 
-    //ASSERT_EQ(10, mesh.m_edges[77].first);
-    //ASSERT_EQ(28, mesh.m_edges[77].second);
+    ASSERT_EQ(2, mesh.m_edges[2].first);
+    ASSERT_EQ(15, mesh.m_edges[2].second);
 
-    //ASSERT_EQ(15, mesh.m_edges[76].first);
-    //ASSERT_EQ(28, mesh.m_edges[76].second);
+    ASSERT_EQ(3, mesh.m_edges[3].first);
+    ASSERT_EQ(16, mesh.m_edges[3].second);
 
-    ////right side
-    //ASSERT_EQ(21, mesh.m_edges[81].first);
-    //ASSERT_EQ(35, mesh.m_edges[81].second);
+    ASSERT_EQ(4, mesh.m_edges[4].first);
+    ASSERT_EQ(17, mesh.m_edges[4].second);
 
-    //ASSERT_EQ(22, mesh.m_edges[80].first);
-    //ASSERT_EQ(35, mesh.m_edges[80].second);
+    ASSERT_EQ(5, mesh.m_edges[5].first);
+    ASSERT_EQ(18, mesh.m_edges[5].second);
 
-    //ASSERT_EQ(22, mesh.m_edges[83].first);
-    //ASSERT_EQ(36, mesh.m_edges[83].second);
+    ASSERT_EQ(1, mesh.m_edges[6].first);
+    ASSERT_EQ(0, mesh.m_edges[6].second);
 
-    //ASSERT_EQ(23, mesh.m_edges[82].first);
-    //ASSERT_EQ(36, mesh.m_edges[82].second);
+    ASSERT_EQ(2, mesh.m_edges[7].first);
+    ASSERT_EQ(19, mesh.m_edges[7].second);
 
-    ////upper side
-    //ASSERT_EQ(19, mesh.m_edges[79].first);
-    //ASSERT_EQ(30, mesh.m_edges[79].second);
+    ASSERT_EQ(4, mesh.m_edges[8].first);
+    ASSERT_EQ(20, mesh.m_edges[8].second);
 
-    //ASSERT_EQ(14, mesh.m_edges[78].first);
-    //ASSERT_EQ(30, mesh.m_edges[78].second);
+    ASSERT_EQ(5, mesh.m_edges[9].first);
+    ASSERT_EQ(21, mesh.m_edges[9].second);
 
-    //ASSERT_EQ(14, mesh.m_edges[75].first);
-    //ASSERT_EQ(27, mesh.m_edges[75].second);
+    ASSERT_EQ(7, mesh.m_edges[10].first);
+    ASSERT_EQ(22, mesh.m_edges[10].second);
 
-    //ASSERT_EQ(9, mesh.m_edges[74].first);
-    //ASSERT_EQ(27, mesh.m_edges[74].second);
+    ASSERT_EQ(8, mesh.m_edges[11].first);
+    ASSERT_EQ(23, mesh.m_edges[11].second);
 
-    ////left side
-    //ASSERT_EQ(3, mesh.m_edges[71].first);
-    //ASSERT_EQ(32, mesh.m_edges[71].second);
+    ASSERT_EQ(9, mesh.m_edges[12].first);
+    ASSERT_EQ(24, mesh.m_edges[12].second);
 
-    //ASSERT_EQ(2, mesh.m_edges[70].first);
-    //ASSERT_EQ(32, mesh.m_edges[70].second);
+    ASSERT_EQ(12, mesh.m_edges[13].first);
+    ASSERT_EQ(25, mesh.m_edges[13].second);
 
-    //ASSERT_EQ(2, mesh.m_edges[69].first);
-    //ASSERT_EQ(31, mesh.m_edges[69].second);
+    ASSERT_EQ(10, mesh.m_edges[14].first);
+    ASSERT_EQ(26, mesh.m_edges[14].second);
 
-    //ASSERT_EQ(1, mesh.m_edges[68].first);
-    //ASSERT_EQ(31, mesh.m_edges[68].second);
+    ASSERT_EQ(11, mesh.m_edges[15].first);
+    ASSERT_EQ(27, mesh.m_edges[15].second);
 
-    //// total number of edges
-    //ASSERT_EQ(84, mesh.GetNumEdges());
 }
 
 
