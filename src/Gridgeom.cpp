@@ -889,7 +889,7 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int gridStateId, GeometryListNative& geometryListIn, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative)
     {
-        if (gridStateId >= meshInstances.size())
+        if (gridStateId >= meshInstances.size() || meshInstances[gridStateId].GetNumNodes() <= 0)
         {
             return 0;
         }
@@ -923,10 +923,11 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_refine_mesh_based_on_polygon(int gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative)
     {
         
-        if (gridStateId >= meshInstances.size())
+        if (gridStateId >= meshInstances.size() || meshInstances[gridStateId].GetNumNodes()<=0)
         {
             return 0;
         }
+
 
         std::vector<GridGeom::Point> points;
         bool successful = ConvertGeometryListNativeToPointVector(geometryListNative, points);

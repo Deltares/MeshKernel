@@ -14,11 +14,11 @@ namespace GridGeom
 
     class MeshRefinement
     {
-        enum RefinementType
+        enum class RefinementType
         {
-            RidgeRefinement = 1,
-            WaveCourant = 2,
-            RefinementLevels = 3
+            RidgeRefinement,
+            WaveCourant,
+            RefinementLevels
         };
 
     public:
@@ -73,7 +73,7 @@ namespace GridGeom
         bool RefineFacesBySplittingEdges(int numEdgesBeforeRefinemet);
 
         // compute the refinament value at the center of mass
-        double ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod);
+        double ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod, Point centerOfMass);
 
         // mesh R-Tree
         Mesh& m_mesh;
@@ -91,6 +91,7 @@ namespace GridGeom
         std::vector<int> m_localNodeIndexsesCache;
         std::vector<int> m_edgeIndexsesCache;
         std::vector<double> m_polygonEdgesLengthsCache;
+        std::vector<bool> m_subtractedSample;
        
         double m_deltaTimeMaxCourant = 0.0;
         double m_minimumFaceSize = 5e4;
