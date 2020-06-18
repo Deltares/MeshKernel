@@ -52,16 +52,17 @@ namespace GridGeom
                 return true;
             }
 
-            bool NearestNeighbours(Point node, double searchRadius)
+            bool NearestNeighboursOnSquaredDistance(Point node, double searchRadiusSquared)
             {
                 m_queryCache.resize(0);
+                double searchRadius = std::sqrt(searchRadiusSquared);
                 
                 Box2D box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
                 Point2D nodeSought = Point2D(node.x, node.y);
 
                 m_rtree2D.query(
                     bgi::within(box) &&
-                    bgi::satisfies([&](value2D const& v) {return bg::distance(v.first, nodeSought) < searchRadius; }),
+                    bgi::satisfies([&](value2D const& v) {return bg::comparable_distance(v.first, nodeSought) < searchRadiusSquared; }),
                     std::back_inserter(m_queryCache));
 
                 m_queryIndexses.resize(m_queryCache.size());

@@ -1360,19 +1360,18 @@ namespace GridGeom
         }
 
         result = doubleMissingValue;
-        double searchRadius = std::numeric_limits<double>::min();
+        double searchRadiusSquared = std::numeric_limits<double>::min();
         for (int i = 0; i < numPolygonNodes; i++)
         {
-            double distance = ComputeSquaredDistance(centerOfMass, searchPolygon[i], projection);
-            searchRadius = std::max(searchRadius, distance);
+            double squaredDistance = ComputeSquaredDistance(centerOfMass, searchPolygon[i], projection);
+            searchRadiusSquared = std::max(searchRadiusSquared, squaredDistance);
         }
-        if (searchRadius <= 0.0)
+        if (searchRadiusSquared <= 0.0)
         {
             return true;
         }
-        searchRadius = std::sqrt(searchRadius);
-
-        rtree.NearestNeighbours(centerOfMass, searchRadius);
+ 
+        rtree.NearestNeighboursOnSquaredDistance(centerOfMass, searchRadiusSquared);
         if (rtree.GetQueryResultSize() == 0)
         {
             return true;
@@ -1421,7 +1420,7 @@ namespace GridGeom
                     if (!firstValidSampleFound)
                     {
                         firstValidSampleFound = true;
-                        result = doubleMissingValue;
+                        result = -std::numeric_limits<double>::max();
                     }
                     result = std::max(result, sampleValue);
                 }

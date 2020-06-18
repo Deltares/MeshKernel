@@ -1035,7 +1035,7 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     // merge the closest nodes
     for (int i = 0; i < filteredNodes.size(); i++)
     {
-        m_nodesRTree.NearestNeighbours(filteredNodes[i], mergingDistance);
+        m_nodesRTree.NearestNeighboursOnSquaredDistance(filteredNodes[i], mergingDistanceSquared);
 
         int resultSize = m_nodesRTree.GetQueryResultSize();
         if (resultSize > 1)
