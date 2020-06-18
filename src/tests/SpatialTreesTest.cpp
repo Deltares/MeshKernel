@@ -24,10 +24,12 @@ TEST(SpatialTrees, RTreeOnePoint)
     GridGeom::SpatialTrees::RTree rtree;
     rtree.BuildTree(nodes, GridGeom::Projections::cartesian);
     std::vector<GridGeom::Point> pointToSearch(1, { (n-1.0)/2.0, (n-1.0)/2.0 });
-    auto successful = rtree.NearestNeighbours(pointToSearch[0], 0.708);
+    double squaredDistance = 0.708 * 0.708;
+    auto successful = rtree.NearestNeighboursOnSquaredDistance(pointToSearch[0], squaredDistance);
     ASSERT_EQ(true, successful);
     ASSERT_EQ(rtree.GetQueryResultSize(),4);
-    successful  = rtree.NearestNeighbours(pointToSearch[0], 0.700);
+    squaredDistance = 0.700 * 0.700;
+    successful  = rtree.NearestNeighboursOnSquaredDistance(pointToSearch[0], squaredDistance);
     ASSERT_EQ(rtree.GetQueryResultSize(), 0);
 }
 
@@ -94,7 +96,7 @@ TEST(SpatialTrees, RTreeManyPoints)
     start = std::chrono::steady_clock::now();
     for (int i = 0; i < nodes.size(); ++i)
     {
-        auto successful = rtree.NearestNeighbours(nodes[i], 1e-4);
+        auto successful = rtree.NearestNeighboursOnSquaredDistance(nodes[i], 1e-8);
         ASSERT_EQ(successful, true);
         ASSERT_EQ(rtree.GetQueryResultSize(), 1);
     }

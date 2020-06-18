@@ -39,6 +39,7 @@ namespace GridGeom
 
     // merging distance
     static constexpr double mergingDistance = 0.001;
+    static constexpr double mergingDistanceSquared = mergingDistance * mergingDistance;
 
     // physical constants
     static constexpr double gravity = 9.81;

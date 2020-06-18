@@ -31,6 +31,8 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
     if (!sample.empty())
     {
         isRefinementBasedOnSamples = true;
+
+        m_subtractedSample.resize(sample.size(), false);
         // build the R-Tree
         std::vector<Point> points(sample.size());
         for (int i = 0; i < sample.size(); i++)
@@ -39,7 +41,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
         }
         m_rtree.BuildTree(points, m_mesh.m_projection);
 
-        m_deltaTimeMaxCourant = sampleRefineParametersNative.MaximumTimeStepInCourantGrid;
+        m_deltaTimeMaxCourant = sampleRefineParametersNative.MinimumCellSize / std::sqrt(gravity);
         m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
         m_minimumFaceSize = sampleRefineParametersNative.MinimumCellSize;
         m_connectHangingNodes = sampleRefineParametersNative.ConnectHangingNodes == 1 ? true : false;
@@ -842,6 +844,8 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
     m_polygonNodesCache.resize(maximumNumberOfNodesPerFace + 1);
     m_localNodeIndexsesCache.resize(maximumNumberOfNodesPerFace + 1, intMissingValue);
     m_edgeIndexsesCache.resize(maximumNumberOfEdgesPerFace + 1, intMissingValue);
+    m_refineEdgeCache.resize(maximumNumberOfEdgesPerFace);
+    std::fill(m_subtractedSample.begin(), m_subtractedSample.end(), false);
 
     for (int f = 0; f < m_mesh.GetNumFaces(); f++)
     {
@@ -857,6 +861,7 @@ bool GridGeom::MeshRefinement::ComputeEdgeAndFaceRefinementMaskFromSamples(std::
             return false;
         }
 
+        std::fill(m_refineEdgeCache.begin(), m_refineEdgeCache.end(), 0);
         int numEdgesToBeRefined = 0;
         successful = ComputeEdgesFaceRefinementFromSamples( m_mesh.GetNumFaceEdges(f), samples, numEdgesToBeRefined);
         if (!successful)
@@ -970,7 +975,7 @@ bool GridGeom::MeshRefinement::ComputeEdgesFaceRefinementFromSamples(
     numEdgesToBeRefined = 0;
 
     // Not implemented yet
-    if (m_refinementType == RidgeRefinement) 
+    if (m_refinementType == RefinementType::RidgeRefinement)
     {
         return true;
     }
@@ -982,33 +987,61 @@ bool GridGeom::MeshRefinement::ComputeEdgesFaceRefinementFromSamples(
         int edgeIndex = m_edgeIndexsesCache[i];
         m_polygonEdgesLengthsCache[i] = m_mesh.m_edgeLengths[edgeIndex];
     }
+    
+    //find center of mass
+    Point centerOfMass;
+    double area;
+    bool successful = FaceAreaAndCenterOfMass(m_polygonNodesCache, numPolygonNodes, m_mesh.m_projection, area, centerOfMass);
+    if (!successful)
+    {
+        return false;
+    }
 
     // a default value
     double refinementValue = 0.0;
-    // for refinement based on levels  we calculate the refinement value only once
-    if (m_refinementType == RefinementLevels)
+    if (m_refinementType == RefinementType::RefinementLevels)
     {
-        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, Max);
+        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, Max, centerOfMass);
+        // nothing to do 
+        if (refinementValue <= 0) 
+        {
+            return true;
+        }
         for (int i = 0; i < m_rtree.GetQueryResultSize(); i++)
         {
             // decrease the sample values in the current cells by one
-            auto sampleIndex = m_rtree.GetQuerySampleIndex(i);
-            samples[sampleIndex].value -= 1.0;
+            const auto sampleIndex = m_rtree.GetQuerySampleIndex(i);
+            if (!m_subtractedSample[sampleIndex])
+            {
+                samples[sampleIndex].value -= 1.0;
+                m_subtractedSample[sampleIndex] = true;
+            }
         }
     }
 
-    if (m_refinementType == WaveCourant)
+    if (m_refinementType == RefinementType::WaveCourant)
     {
-        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, KdTree);
+        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, KdTree, centerOfMass);
+    }
+
+    if (refinementValue == doubleMissingValue && m_refineOutsideFace)
+    {
+        // find nearest face
+        m_rtree.NearestNeighbour(centerOfMass);
+        if (m_rtree.GetQueryResultSize() > 0)
+        {
+            auto sampleIndex = m_rtree.GetQuerySampleIndex(0);
+            if (sampleIndex >= 0)
+            {
+                refinementValue = samples[sampleIndex].value;
+            }
+        }
     }
 
     if (refinementValue == doubleMissingValue)
     {
         return true;
     }
-
-    m_refineEdgeCache.resize(maximumNumberOfEdgesPerFace);
-    std::fill(m_refineEdgeCache.begin(), m_refineEdgeCache.end(), 0);
 
     for (int i = 0; i < numPolygonNodes; i++)
     {
@@ -1017,28 +1050,22 @@ bool GridGeom::MeshRefinement::ComputeEdgesFaceRefinementFromSamples(
             numEdgesToBeRefined++;
             continue;
         }
-
-        double waveCourant = 0.0;
-        double newEdgeLength = 0.5 * m_polygonEdgesLengthsCache[i];
+        
         bool doRefinement = false;
 
         // based on wave courant
-        if (m_refinementType == WaveCourant) 
+        if (m_refinementType == RefinementType::WaveCourant)
         {
+            double newEdgeLength = 0.5 * m_polygonEdgesLengthsCache[i];
             double c = std::sqrt(gravity * std::abs(refinementValue));
-            waveCourant = c * m_deltaTimeMaxCourant / m_polygonEdgesLengthsCache[i];    
+            double waveCourant = c * m_deltaTimeMaxCourant / m_polygonEdgesLengthsCache[i];    
             doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_minimumFaceSize) < std::abs(m_polygonEdgesLengthsCache[i] - m_minimumFaceSize);
         }
 
         // based on refinement levels
-        if (m_refinementType == RefinementLevels)
+        if (m_refinementType == RefinementType::RefinementLevels && refinementValue > 0.0)
         {
-            int edgeIndex = m_edgeIndexsesCache[i];
-
-            if (refinementValue > 0.0)
-            {
-                doRefinement = true;
-            }
+            doRefinement = true;
         }
 
         if (doRefinement)
@@ -1082,35 +1109,15 @@ bool GridGeom::MeshRefinement::ComputeEdgesFaceRefinementFromSamples(
     return true;
 }
 
-double GridGeom::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod)
+double GridGeom::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod, Point centerOfMass)
 {
-    //find center of mass
-    Point centerOfMass;
-    double area;
-    bool successful = FaceAreaAndCenterOfMass(m_polygonNodesCache, numPolygonNodes, m_mesh.m_projection, area, centerOfMass);
-    if (!successful)
-    {
-        return false;
-    }
+
 
     double refinementValue = 0.0;
     bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh.m_projection, m_rtree, averagingMethod, refinementValue);
     if (!success)
     {
         return doubleMissingValue;
-    }
-    if (refinementValue == doubleMissingValue && m_refineOutsideFace)
-    {
-        // find nearest face
-        m_rtree.NearestNeighbour(centerOfMass);
-        if (m_rtree.GetQueryResultSize() > 0)
-        {
-            auto sampleIndex = m_rtree.GetQuerySampleIndex(0);
-            if (sampleIndex >= 0)
-            {
-                refinementValue = samples[sampleIndex].value;
-            }
-        }
     }
 
     return refinementValue;
