@@ -50,18 +50,24 @@ bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
         connectedNodes[secondNode] = true;
     }
 
+    int numNodesNotConnected = 0;
     int numInvalidNodes = 0;
     for (int n = 0; n < m_nodes.size(); ++n)
     {
         if (!connectedNodes[n])
         {
-            numInvalidNodes++;
+            
             m_nodes[n] = { doubleMissingValue,doubleMissingValue };
+            numNodesNotConnected++;
+        }
+        if (!m_nodes[n].IsValid()) 
+        {
+            numInvalidNodes++;
         }
     }
 
     // nothing to do, return
-    if (numInvalidEdges == 0 && numInvalidNodes == 0) 
+    if (numInvalidEdges == 0 && numInvalidNodes == 0 && numInvalidNodes==0)
     {
         m_numNodes = m_nodes.size();
         m_numEdges = m_edges.size();
