@@ -55,7 +55,8 @@ bool GridGeom::Splines::SetParameters(const GridGeomApi::CurvilinearParametersNa
     m_aspectRatio = splinesToCurvilinearParametersNative.AspectRatio;
     m_aspectRatioGrowFactor = splinesToCurvilinearParametersNative.AspectRatioGrowFactor;
     m_averageMeshWidth = splinesToCurvilinearParametersNative.AverageWidth;
-    m_onTopOfEachOtherTolerance = splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance;
+    m_onTopOfEachOtherSquaredTolerance = splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance * 
+                                         splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance;
     m_dtolcos = splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles;
     m_checkFrontCollisions = splinesToCurvilinearParametersNative.CheckFrontCollisions;
     m_isSpacingCurvatureAdapted = splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing;
@@ -209,7 +210,7 @@ bool GridGeom::Splines::RemoveSkinnyTriangles()
 {
     int numMaxIterations = 10;
     int numN = m_gridPoints.size() - 2;
-    const double distanceTolerance = 1e-2;
+    const double squaredDistanceTolerance = 1e-4;
     const double cosineTolerance = 1e-2;
     const double maxCosine = 0.93969;
     for (int j = numN - 1; j >= 1; --j)
@@ -244,9 +245,9 @@ bool GridGeom::Splines::RemoveSkinnyTriangles()
 
                 GetNeighbours(m_gridPoints[j], i, firstLeftIndex, firstRightIndex);
 
-                double rightDistance = Distance(m_gridPoints[j][i], m_gridPoints[j][firstRightIndex], m_projection);
+                double squaredRightDistance = ComputeSquaredDistance(m_gridPoints[j][i], m_gridPoints[j][firstRightIndex], m_projection);
 
-                if (rightDistance < distanceTolerance)
+                if (squaredRightDistance < squaredDistanceTolerance)
                 {
                     continue;
                 }
@@ -258,22 +259,22 @@ bool GridGeom::Splines::RemoveSkinnyTriangles()
                 }
 
                 //GetNeighbours(m_gridPoints[j+1], i, secondLeftIndex, secondRightIndex);
-                double leftDistance = Distance(m_gridPoints[j][firstLeftIndex], m_gridPoints[j][i], m_projection);
-                if (leftDistance < distanceTolerance)
+                double squaredLeftDistance = ComputeSquaredDistance(m_gridPoints[j][firstLeftIndex], m_gridPoints[j][i], m_projection);
+                if (squaredLeftDistance < squaredDistanceTolerance)
                 {
                     firstLeftIndex = i;
                 }
 
                 if (m_gridPoints[j + 1][firstRightIndex].IsValid())
                 {
-                    double currentDistance = Distance(m_gridPoints[j + 1][i], m_gridPoints[j + 1][firstRightIndex], m_projection);
+                    double squaredCurrentDistance = ComputeSquaredDistance(m_gridPoints[j + 1][i], m_gridPoints[j + 1][firstRightIndex], m_projection);
                     double currentCosPhi = NormalizedInnerProductTwoSegments(
                         m_gridPoints[j + 1][i],
                         m_gridPoints[j][i],
                         m_gridPoints[j + 1][i],
                         m_gridPoints[j][firstRightIndex],
                         m_projection);
-                    if (currentDistance < distanceTolerance && currentCosPhi > maxCosine)
+                    if (squaredCurrentDistance < squaredDistanceTolerance && currentCosPhi > maxCosine)
                     {
 
                         //determine persistent node
@@ -509,16 +510,16 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
     }
 
     //compute maximum mesh width and get dtolLR in the proper dimension
-    double maximumGridWidth = 0.0;
+    double squaredMaximumGridWidth = 0.0;
     for (int i = 0; i < m_gridPoints[0].size() - 1; i++)
     {
         if (!m_gridPoints[0][i].IsValid() || !m_gridPoints[0][i + 1].IsValid())
         {
             continue;
         }
-        maximumGridWidth = std::max(maximumGridWidth, Distance(m_gridPoints[0][i], m_gridPoints[0][i + 1], m_projection));
+        squaredMaximumGridWidth = std::max(squaredMaximumGridWidth, ComputeSquaredDistance(m_gridPoints[0][i], m_gridPoints[0][i + 1], m_projection));
     }
-    m_onTopOfEachOtherTolerance = m_onTopOfEachOtherTolerance * maximumGridWidth;
+    m_onTopOfEachOtherSquaredTolerance = m_onTopOfEachOtherSquaredTolerance * squaredMaximumGridWidth;
 
 
     m_subLayerGridPoints.resize(m_numPerpendicularFacesOnSubintervalAndEdge.size());
@@ -597,7 +598,7 @@ bool GridGeom::Splines::ConvertSplineMeshToCurvilinearMesh(const std::vector<std
     std::vector<std::vector<int>> nIndexsesOtherSide(1, std::vector<int>(2));
     std::vector<std::vector<Point>> gridPointsNDirection(gridPoints[0].size(), std::vector<Point>(gridPoints.size()));
     std::vector<std::vector<Point>> curvilinearMeshPoints;
-    double distanceTolerance = 1e-6;
+    double squaredDistanceTolerance = 1e-12;
 
     // get the grid sizes in j-direction
     for (int i = 0; i < gridPoints[0].size(); i++)
@@ -639,8 +640,8 @@ bool GridGeom::Splines::ConvertSplineMeshToCurvilinearMesh(const std::vector<std
             }
             else
             {
-                double distance = Distance(gridPoints[0][i], gridPoints[0][mOther], m_projection);
-                if (distance > distanceTolerance)
+                double squaredDistance = ComputeSquaredDistance(gridPoints[0][i], gridPoints[0][mOther], m_projection);
+                if (squaredDistance > squaredDistanceTolerance)
                 {
                     isConnected = false;
                 }
@@ -1179,16 +1180,16 @@ bool GridGeom::Splines::ComputeVelocitiesAtGridPoints
         int currentRightIndex;
         GetNeighbours(m_gridPoints[layerIndex], m, currentLeftIndex, currentRightIndex);
 
-        double leftRightDistance = Distance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][currentRightIndex], m_projection);
-        double leftDistance = Distance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][m], m_projection);
-        double rightDistance = Distance(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], m_projection);
+        double squaredLeftRightDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][currentRightIndex], m_projection);
+        double squaredLeftDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][m], m_projection);
+        double squaredRightDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], m_projection);
 
-        if (leftRightDistance <= m_onTopOfEachOtherTolerance)
+        if (squaredLeftRightDistance <= m_onTopOfEachOtherSquaredTolerance)
         {
             continue;
         }
 
-        if (leftDistance <= m_onTopOfEachOtherTolerance || rightDistance <= m_onTopOfEachOtherTolerance)
+        if (squaredLeftDistance <= m_onTopOfEachOtherSquaredTolerance || squaredRightDistance <= m_onTopOfEachOtherSquaredTolerance)
         {
             NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][currentLeftIndex], normalVectorLeft, m_projection);
             if (m_projection == Projections::spherical)
@@ -1261,7 +1262,7 @@ bool GridGeom::Splines::GetNeighbours(
     int end = gridPoints.size() - 1;
 
     // left
-    while (Distance(gridPoints[currentLeftIndex], gridPoints[index], m_projection) < m_onTopOfEachOtherTolerance)
+    while (ComputeSquaredDistance(gridPoints[currentLeftIndex], gridPoints[index], m_projection) < m_onTopOfEachOtherSquaredTolerance)
     {
         if (!circularConnection)
         {
@@ -1283,7 +1284,7 @@ bool GridGeom::Splines::GetNeighbours(
     }
 
     // right
-    while (Distance(gridPoints[currentRightIndex], gridPoints[index], m_projection) < m_onTopOfEachOtherTolerance)
+    while (ComputeSquaredDistance(gridPoints[currentRightIndex], gridPoints[index], m_projection) < m_onTopOfEachOtherSquaredTolerance)
     {
         if (!circularConnection)
         {
@@ -1882,15 +1883,15 @@ bool GridGeom::Splines::GetSplinesIntersection(const int first, const int second
     double secondCrossing = secondCrossingRatio == -1 ? 0 : secondCrossingIndex + secondCrossingRatio;
 
     // use bisection to find the intersection 
-    double distanceBetweenCrossings = std::numeric_limits<double>::max();
-    double maxDistanceBetweenCrossings = 0.000001;
+    double squaredDistanceBetweenCrossings = std::numeric_limits<double>::max();
+    double maxSquaredDistanceBetweenCrossings = 1e-12;
     double maxDistanceBetweenVertices = 0.0001;
     double firstRatioIterations = 1.0;
     double secondRatioIterations = 1.0;
     double previousFirstCrossing;
     double previousSecondCrossing;
     int numIterations = 0;
-    while (distanceBetweenCrossings > maxDistanceBetweenCrossings&& numIterations < 20)
+    while (squaredDistanceBetweenCrossings > maxSquaredDistanceBetweenCrossings&& numIterations < 20)
     {
         // increment counter
         numIterations++;
@@ -1961,7 +1962,7 @@ bool GridGeom::Splines::GetSplinesIntersection(const int first, const int second
             if (std::abs(firstCrossing - previousFirstCrossing) > maxDistanceBetweenVertices ||
                 std::abs(secondCrossing - previousSecondCrossing) > maxDistanceBetweenVertices)
             {
-                distanceBetweenCrossings = Distance(oldIntersection, closestIntersection, projection);
+                squaredDistanceBetweenCrossings = ComputeSquaredDistance(oldIntersection, closestIntersection, projection);
             }
             else
             {
