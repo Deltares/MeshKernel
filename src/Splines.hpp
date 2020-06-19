@@ -219,7 +219,7 @@ namespace GridGeom
         double m_maxaspect = 1.0;                                                       // maxaspect maximum cell aspect ratio *inoperative*
         int m_maxNUniformPart = 5;                                                      // maximum number of layers in the uniform part
         bool m_growGridOutside = true;                                                  // grow the grid outside the prescribed grid height
-        double m_onTopOfEachOtherTolerance = 1e-4;                                      // On - top - of - each - other tolerance *IMPORTANT*
+        double m_onTopOfEachOtherSquaredTolerance = 1e-8;                                      // On - top - of - each - other tolerance *IMPORTANT*
         bool m_checkFrontCollisions = false;                                            // check front collisions
         bool m_isSpacingCurvatureAdapted = true;                                        // is curvature adapted
         bool m_removeSkinnyTriangles = false;
