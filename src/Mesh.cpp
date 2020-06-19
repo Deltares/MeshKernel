@@ -33,15 +33,15 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges,
 
 bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
 {
-    m_numNodes = 0;
-    m_numEdges = 0;
 
     // Invalidate not connected nodes
+    int numInvalidEdges = 0;
     std::vector<bool> connectedNodes(m_nodes.size(), false);
     for (int e = 0; e < m_edges.size(); ++e)
     {
         if (m_edges[e].first < 0 || m_edges[e].second < 0)
         {
+            numInvalidEdges++;
             continue;
         }
         int firstNode = m_edges[e].first;
@@ -49,12 +49,23 @@ bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
         int secondNode = m_edges[e].second;
         connectedNodes[secondNode] = true;
     }
+
+    int numInvalidNodes = 0;
     for (int n = 0; n < m_nodes.size(); ++n)
     {
         if (!connectedNodes[n])
         {
+            numInvalidNodes++;
             m_nodes[n] = { doubleMissingValue,doubleMissingValue };
         }
+    }
+
+    // nothing to do, return
+    if (numInvalidEdges == 0 && numInvalidNodes == 0) 
+    {
+        m_numNodes = m_nodes.size();
+        m_numEdges = m_edges.size();
+        return true;
     }
 
     // Flag invalid nodes
@@ -91,12 +102,12 @@ bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
     }
 
     // Remove invalid nodes
-    auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) {return !n.IsValid(); });
-    m_numNodes = endNodeVector - m_nodes.begin();
+    auto endNodeVector = m_nodes.erase(std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) {return !n.IsValid(); }), m_nodes.end());
+    m_numNodes = m_nodes.size();
 
     // Remove invalid edges
-    auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [&](const Edge& e) {return e.first < 0 || e.second < 0; });
-    m_numEdges = endEdgeVector - m_edges.begin();
+    auto endEdgeVector = m_edges.erase(std::remove_if(m_edges.begin(), m_edges.end(), [&](const Edge& e) {return e.first < 0 || e.second < 0; }), m_edges.end());
+    m_numEdges = m_edges.size();
 
     return true;
 }
@@ -1467,7 +1478,8 @@ bool GridGeom::Mesh::DeleteEdgeCloseToAPoint(Point point, double searchRadius)
 {
     // linear search of the closest edge. The alternative is to mantain an rtree also for edge centers
     int edgeIndex = -1;
-    double closestDistance = std::numeric_limits<double>::max();
+    double closestSquaredDistance = std::numeric_limits<double>::max();
+    double searchRadiusSquared = searchRadius * searchRadius;
     for (int e = 0; e < GetNumEdges(); ++e)
     {
         const auto firstNode = m_edges[e].first;
@@ -1478,18 +1490,13 @@ bool GridGeom::Mesh::DeleteEdgeCloseToAPoint(Point point, double searchRadius)
             continue;
         }
 
-        auto edgeCenter = (m_nodes[firstNode] + m_nodes[secondNode]) / 2.0;
-        const auto absDx = std::abs(GetDx(point, edgeCenter, m_projection));
-        const auto absDy = std::abs(GetDy(point, edgeCenter, m_projection));
+        const auto edgeCenter = (m_nodes[firstNode] + m_nodes[secondNode]) * 0.5;
+        const double squaredDistance = ComputeSquaredDistance(point, edgeCenter, m_projection);
 
-        if (absDx < searchRadius && absDy < searchRadius)
+        if (squaredDistance < searchRadiusSquared && squaredDistance < closestSquaredDistance)
         {
-            const double squaredDistance = ComputeSquaredDistance(point, edgeCenter, m_projection);
-            if (squaredDistance < closestDistance)
-            {
-                closestDistance = squaredDistance;
-                edgeIndex = e;
-            }
+            closestSquaredDistance = squaredDistance;
+            edgeIndex = e;
         }
     }
 
