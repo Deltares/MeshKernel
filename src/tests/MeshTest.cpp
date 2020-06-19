@@ -474,6 +474,15 @@ TEST(Mesh, NodeMerging)
     ASSERT_EQ(mesh.GetNumEdges(), (n -1) * m + (m - 1) * n);
 }
 
+//TEST(Mesh, DeleteEdge)
+//{
+//    // 1. Setup
+//    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, GridGeom::Projections::cartesian);
+//
+//    // start deleting nodes
+//
+//}
+
 TEST(Mesh, MillionQuads)
 {
     const int n = 11; // x
