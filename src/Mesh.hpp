@@ -60,7 +60,7 @@ namespace GridGeom
         
         bool SetFlatCopies(AdministrationOptions administrationOption);
 
-        void ComputeFaceCircumcentersMassCentersAreas();
+        void ComputeFaceCircumcentersMassCentersAndAreas();
 
         void FindFaces();
 
@@ -109,7 +109,7 @@ namespace GridGeom
         ///Delete an edge based on the index
         bool DeleteEdge(int edgeIndex);
 
-        bool DeleteEdgeCloseToAPoint(Point point, double searchRadius);
+        int FindEdgeCloseToAPoint(Point point, double searchRadius);
 
         // compute a selection mask for the edges
         bool MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertMasking, bool includeIntersected);
