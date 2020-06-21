@@ -109,12 +109,14 @@ bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
     }
 
     // Remove invalid nodes
-    auto endNodeVector = m_nodes.erase(std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) {return !n.IsValid(); }), m_nodes.end());
-    m_numNodes = m_nodes.size();
+    auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) {return !n.IsValid(); });
+    m_numNodes = endNodeVector-  m_nodes.begin();
+    std::fill(endNodeVector, m_nodes.end(), Point{doubleMissingValue, doubleMissingValue});
 
     // Remove invalid edges
-    auto endEdgeVector = m_edges.erase(std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) {return e.first < 0 || e.second < 0; }), m_edges.end());
-    m_numEdges = m_edges.size();
+    auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) {return e.first < 0 || e.second < 0; });
+    m_numEdges = endEdgeVector - m_edges.begin();
+    std::fill(endEdgeVector, m_edges.end(), std::make_pair<int, int>(-1, -1));
 
     return true;
 }
