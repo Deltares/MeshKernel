@@ -1,4 +1,5 @@
 #include <vector>
+#include <array>
 #include <cmath>
 #include <numeric>
 #include <algorithm>
@@ -112,7 +113,7 @@ bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
     m_numNodes = m_nodes.size();
 
     // Remove invalid edges
-    auto endEdgeVector = m_edges.erase(std::remove_if(m_edges.begin(), m_edges.end(), [&](const Edge& e) {return e.first < 0 || e.second < 0; }), m_edges.end());
+    auto endEdgeVector = m_edges.erase(std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) {return e.first < 0 || e.second < 0; }), m_edges.end());
     m_numEdges = m_edges.size();
 
     return true;
@@ -163,7 +164,7 @@ bool GridGeom::Mesh::Administrate(AdministrationOptions administrationOption)
     FindFaces();
 
     // find mesh circumcenters
-    ComputeFaceCircumcentersMassCentersAreas();
+    ComputeFaceCircumcentersMassCentersAndAreas();
 
     // classify node types
     ClassifyNodes();
@@ -369,10 +370,10 @@ bool GridGeom::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std:
 {
     double phiMin = 1e3;
     double phiMax = 0.0;
-    static std::vector<std::vector<int>> nodePermutations
-    {
+    static std::array<std::array<int,3>, 3> nodePermutations
+    { {
         {2,0,1}, {0,1,2}, {1,2,0}
-    };
+    } };
 
     for (int i = 0; i < faceNodes.size(); ++i)
     {
@@ -752,7 +753,7 @@ void GridGeom::Mesh::FindFaces()
     }
 }
 
-void GridGeom::Mesh::ComputeFaceCircumcentersMassCentersAreas()
+void GridGeom::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
 {
     m_facesCircumcenters.resize(GetNumFaces());
     m_faceArea.resize(GetNumFaces());
@@ -1480,7 +1481,7 @@ bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexI
     return true;
 }
 
-bool GridGeom::Mesh::DeleteEdgeCloseToAPoint(Point point, double searchRadius)
+int GridGeom::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius)
 {
     // linear search of the closest edge. The alternative is to mantain an rtree also for edge centers
     int edgeIndex = -1;
@@ -1506,19 +1507,7 @@ bool GridGeom::Mesh::DeleteEdgeCloseToAPoint(Point point, double searchRadius)
         }
     }
 
-    if(edgeIndex==-1)
-    {
-        return true;
-    }
-
-    bool successful = DeleteEdge(edgeIndex);
-
-    if(!successful)
-    {
-        return false;
-    }
-
-    return true;
+    return edgeIndex;
 }
 
 bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertMasking, bool includeIntersected)

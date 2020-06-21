@@ -192,6 +192,11 @@ namespace GridGeomApi
             return -1;
         }
 
+        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        {
+            return 0;
+        }
+
         std::vector<GridGeom::Point> polygonPoints;
         bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
         if (!successful)
@@ -251,6 +256,17 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_orthogonalize(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
         OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
     {
+
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        {
+            return 0;
+        }
+        
         GridGeom::Orthogonalization ortogonalization;
 
         // build enclosing polygon
@@ -291,6 +307,16 @@ namespace GridGeomApi
         GeometryListNative& geometryListNativePolygon,
         GeometryListNative& geometryListNativeLandBoundaries)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        {
+            return 0;
+        }
+
         // build enclosing polygon
         std::vector<GridGeom::Point> nodes(geometryListNativePolygon.numberOfCoordinates);
         for (int i = 0; i < geometryListNativePolygon.numberOfCoordinates; i++)
@@ -807,15 +833,35 @@ namespace GridGeomApi
             return -1;
         }
 
-        successful = meshInstances[gridStateId].DeleteEdgeCloseToAPoint(newPoint[0], searchRadius);
+        auto edgeIndex = meshInstances[gridStateId].FindEdgeCloseToAPoint(newPoint[0], searchRadius);
+        successful = meshInstances[gridStateId].DeleteEdge(edgeIndex);
         if (!successful)
         {
             return -1;
         }
 
         return 0;
-        
     }
+
+    GRIDGEOM_API int ggeo_find_edge(int gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& edgeIndex)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Point> newPoint;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, newPoint);
+        if (!successful || newPoint.size() != 1)
+        {
+            return -1;
+        }
+
+        edgeIndex = meshInstances[gridStateId].FindEdgeCloseToAPoint(newPoint[0], searchRadius);
+
+        return 0;
+    }
+
 
     GRIDGEOM_API int ggeo_offsetted_polygon_count(int gridStateId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonVertices)
     {
