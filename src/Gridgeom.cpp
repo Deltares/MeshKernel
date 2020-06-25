@@ -238,7 +238,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_find_cells_stateful(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    GRIDGEOM_API int ggeo_find_faces(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -508,7 +508,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_mesh_from_samples(int gridStateId, GeometryListNative& geometryListNative)
+    GRIDGEOM_API int ggeo_make_mesh_from_samples(int gridStateId, GeometryListNative& geometryListNative)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -708,7 +708,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_count_vertices_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices)
+    GRIDGEOM_API int ggeo_count_nodes_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -1158,7 +1158,7 @@ namespace GridGeomApi
         return successful ? 0 : 1;
     }
 
-    GRIDGEOM_API int ggeo_flip_links(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption)
+    GRIDGEOM_API int ggeo_flip_edges(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption)
     {
         // not implemented
         return 0;
