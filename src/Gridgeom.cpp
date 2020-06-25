@@ -9,8 +9,10 @@
 #include "MeshRefinement.hpp"
 #include "Constants.cpp"
 
+// The vector containing the mesh instances 
 static std::vector<GridGeom::Mesh> meshInstances;
-// for supporting interactivity we need to save some instances
+
+// For supporting interactivity for orthogonalization and orthogonal curvilinear grid from splines, we need to save some instances
 static std::map<int, GridGeom::Orthogonalization> orthogonalizationInstances;
 static std::map<int, GridGeom::Splines> splineInstances;
 
@@ -94,7 +96,7 @@ namespace GridGeomApi
         return true;
     }
 
-    bool SetMeshGeometry(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    static bool SetMeshGeometry(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -130,7 +132,7 @@ namespace GridGeomApi
         return true;
     }
 
-    GRIDGEOM_API int ggeo_new_grid(int& gridStateId)
+    GRIDGEOM_API int ggeo_new_mesh(int& gridStateId)
     {
         int instanceSize = meshInstances.size();
         meshInstances.resize(instanceSize + 1);
@@ -146,42 +148,6 @@ namespace GridGeomApi
         }
 
         meshInstances.pop_back();
-        return 0;
-    }
-
-    GRIDGEOM_API int ggeo_find_cells_stateful(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
-    {
-        if (gridStateId >= meshInstances.size())
-        {
-            return -1;
-        }
-
-        meshInstances[gridStateId].SetFlatCopies(GridGeom::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-
-        bool successful = SetMeshGeometry(gridStateId,meshGeometryDimensions, meshGeometry);
-        if(!successful)
-        {
-            return -1;
-        }
-
-        return 0;
-    }
-
-    GRIDGEOM_API int ggeo_get_mesh(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
-    {
-        if (gridStateId >= meshInstances.size())
-        {
-            return -1;
-        }
-
-        meshInstances[gridStateId].SetFlatCopies(GridGeom::Mesh::AdministrationOptions::AdministrateMeshEdges);
-
-        bool successful = SetMeshGeometry(gridStateId, meshGeometryDimensions, meshGeometry);
-        if (!successful)
-        {
-            return -1;
-        }
-
         return 0;
     }
 
@@ -216,7 +182,8 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_set_state(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool isSpherical)
+
+    GRIDGEOM_API int ggeo_set_state(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool isGeographic)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -241,13 +208,49 @@ namespace GridGeomApi
         }
 
         // spherical or cartesian
-        if (isSpherical)
+        if (isGeographic)
         {
             meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::spherical);
         }
         else
         {
             meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::cartesian);
+        }
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_get_mesh(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        meshInstances[gridStateId].SetFlatCopies(GridGeom::Mesh::AdministrationOptions::AdministrateMeshEdges);
+
+        bool successful = SetMeshGeometry(gridStateId, meshGeometryDimensions, meshGeometry);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_find_cells_stateful(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        meshInstances[gridStateId].SetFlatCopies(GridGeom::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+        bool successful = SetMeshGeometry(gridStateId,meshGeometryDimensions, meshGeometry);
+        if(!successful)
+        {
+            return -1;
         }
 
         return 0;
@@ -437,7 +440,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_make_net(int gridStateId, MakeGridParametersNative& makeGridParameters, GeometryListNative& disposableGeometryListIn)
+    GRIDGEOM_API int ggeo_make_mesh(int gridStateId, MakeGridParametersNative& makeGridParameters, GeometryListNative& geometryListNative)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -447,7 +450,7 @@ namespace GridGeomApi
         GridGeom::Polygons polygon;
 
         std::vector<GridGeom::Point> result;
-        bool successful = ConvertGeometryListNativeToPointVector(disposableGeometryListIn, result);
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListNative, result);
         if (!successful)
         {
             return -1;
@@ -471,7 +474,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_mesh_from_polygon(int gridStateId, GeometryListNative& disposableGeometryListIn)
+    GRIDGEOM_API int ggeo_make_mesh_from_polygon(int gridStateId, GeometryListNative& disposableGeometryListIn)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -505,7 +508,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_mesh_from_samples(int gridStateId, GeometryListNative& disposableGeometryListIn)
+    GRIDGEOM_API int ggeo_mesh_from_samples(int gridStateId, GeometryListNative& geometryListNative)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -513,7 +516,7 @@ namespace GridGeomApi
         }
 
         std::vector<GridGeom::Point> samplePoints;
-        bool successful = ConvertGeometryListNativeToPointVector(disposableGeometryListIn, samplePoints);
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListNative, samplePoints);
         if (!successful)
         {
             return -1;
@@ -524,23 +527,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon_count_edges(int gridStateId, int& numberOfPolygonVertices)
-    {
-        if (gridStateId >= meshInstances.size())
-        {
-            return -1;
-        }
-
-        GridGeom::Polygons polygon;
-        std::vector<GridGeom::Point> meshBoundaryPolygon;
-
-        int counterClockWise =0;
-        polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, meshBoundaryPolygon, numberOfPolygonVertices);
-
-        return 0;
-    }
-
-    GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon(int gridStateId, GeometryListNative& disposableGeometryListInOut)
+    GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon(int gridStateId, GeometryListNative& geometryListNative)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -554,7 +541,7 @@ namespace GridGeomApi
         int numNodesBoundaryPolygons;
         polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
-        bool successful = ConvertPointVectorToGeometryListNative(meshBoundaryPolygon, disposableGeometryListInOut);
+        bool successful = ConvertPointVectorToGeometryListNative(meshBoundaryPolygon, geometryListNative);
         if (!successful)
         {
             return -1;
@@ -563,31 +550,18 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_refine_polygon_count(int gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices)
+    GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon_count_vertices(int gridStateId, int& numberOfPolygonVertices)
     {
         if (gridStateId >= meshInstances.size())
         {
             return -1;
         }
 
-        std::vector<GridGeom::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
-        {
-            return -1;
-        }
-
         GridGeom::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        std::vector<GridGeom::Point> meshBoundaryPolygon;
 
-        std::vector<GridGeom::Point> refinedPolygon;
-        successful = polygon.RefinePart(firstIndex, secondIndex, distance, refinedPolygon);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        numberOfPolygonVertices = refinedPolygon.size();
+        int counterClockWise =0;
+        polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, meshBoundaryPolygon, numberOfPolygonVertices);
 
         return 0;
     }
@@ -625,6 +599,35 @@ namespace GridGeomApi
         return 0;
     }
 
+    GRIDGEOM_API int ggeo_refine_polygon_count(int gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons polygon;
+        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+
+        std::vector<GridGeom::Point> refinedPolygon;
+        successful = polygon.RefinePart(firstIndex, secondIndex, distance, refinedPolygon);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        numberOfPolygonVertices = refinedPolygon.size();
+
+        return 0;
+    }
+
 
     GRIDGEOM_API int ggeo_merge_nodes(int gridStateId, GeometryListNative& geometryListIn) 
     {
@@ -652,14 +655,14 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_merge_two_nodes(int gridStateId, int firstNodeIndex, int endNode)
+    GRIDGEOM_API int ggeo_merge_two_nodes(int gridStateId, int startNode, int endNode)
     {
         if (gridStateId >= meshInstances.size())
         {
             return 0;
         }
 
-        bool successful = meshInstances[gridStateId].MergeTwoNodes(firstNodeIndex, endNode);
+        bool successful = meshInstances[gridStateId].MergeTwoNodes(startNode, endNode);
         if (!successful)
         {
             return -1;
@@ -668,45 +671,7 @@ namespace GridGeomApi
         return 0;
     }
 
-
-    GRIDGEOM_API int ggeo_count_vertices_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices) 
-    {
-        if (gridStateId >= meshInstances.size())
-        {
-            return 0;
-        }
-
-        std::vector<GridGeom::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        GridGeom::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
-
-        bool selectInside = inside == 1 ? true : false; 
-        successful = meshInstances[gridStateId].MaskNodesInPolygons(polygon, selectInside);
-        if (!successful)
-        {
-            return -1;
-        }
-        
-        numberOfMeshVertices = 0;
-        for (auto i = 0; i < meshInstances[gridStateId].GetNumNodes() ; ++i) 
-        {
-            if (meshInstances[gridStateId].m_nodeMask[i]>0)
-            {
-                numberOfMeshVertices++;
-            }
-        }
-
-        return 0;
-    }
-
-    //https://www.mono-project.com/docs/advanced/pinvoke/#memory-management
-    GRIDGEOM_API int ggeo_vertices_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices)
+    GRIDGEOM_API int ggeo_nodes_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -743,14 +708,50 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_insert_edge(int gridStateId, int start_node, int end_node, int& new_edge_index)
+    GRIDGEOM_API int ggeo_count_vertices_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices)
     {
         if (gridStateId >= meshInstances.size())
         {
             return 0;
         }
 
-        bool successful = meshInstances[gridStateId].ConnectNodes(start_node, end_node, new_edge_index);
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons polygon;
+        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+
+        bool selectInside = inside == 1 ? true : false;
+        successful = meshInstances[gridStateId].MaskNodesInPolygons(polygon, selectInside);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        numberOfMeshVertices = 0;
+        for (auto i = 0; i < meshInstances[gridStateId].GetNumNodes(); ++i)
+        {
+            if (meshInstances[gridStateId].m_nodeMask[i] > 0)
+            {
+                numberOfMeshVertices++;
+            }
+        }
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_insert_edge(int gridStateId, int startNode, int endNode, int& new_edge_index)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        bool successful = meshInstances[gridStateId].ConnectNodes(startNode, endNode, new_edge_index);
         if (!successful)
         {
             return -1;
@@ -862,40 +863,6 @@ namespace GridGeomApi
         return 0;
     }
 
-
-    GRIDGEOM_API int ggeo_offsetted_polygon_count(int gridStateId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonVertices)
-    {
-        if (gridStateId >= meshInstances.size())
-        {
-            return 0;
-        }
-
-        std::vector<GridGeom::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        GridGeom::Polygons polygon;
-        successful = polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        GridGeom::Polygons newPolygon;
-        successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        numberOfPolygonVertices = newPolygon.GetNumNodes();
-    
-        return 0;
-    }
-
     GRIDGEOM_API int ggeo_offsetted_polygon(int gridStateId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, GeometryListNative& geometryListOut)
     {
         if (gridStateId >= meshInstances.size())
@@ -929,6 +896,39 @@ namespace GridGeomApi
         {
             return -1;
         }
+
+        return 0;
+    }
+
+    GRIDGEOM_API int ggeo_offsetted_polygon_count(int gridStateId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonVertices)
+    {
+        if (gridStateId >= meshInstances.size())
+        {
+            return 0;
+        }
+
+        std::vector<GridGeom::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons polygon;
+        successful = polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        GridGeom::Polygons newPolygon;
+        successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        numberOfPolygonVertices = newPolygon.GetNumNodes();
     
         return 0;
     }
@@ -1009,7 +1009,7 @@ namespace GridGeomApi
         return 0;
     }
 
-    GRIDGEOM_API int ggeo_get_vertex_index(int gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex)
+    GRIDGEOM_API int ggeo_get_node_index(int gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex)
     {
         if (gridStateId >= meshInstances.size())
         {
@@ -1059,6 +1059,7 @@ namespace GridGeomApi
 
         return 0;
     }
+
 
     GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_initialize(int gridStateId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParametersNative, SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
     {
