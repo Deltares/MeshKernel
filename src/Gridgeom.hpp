@@ -74,7 +74,7 @@ namespace GridGeomApi
         /// <param name="meshGeometryDimensions">Grid dimensions</param>
         /// <param name="meshGeometry">Mesh data</param>
         /// <returns>Error code</returns>
-        GRIDGEOM_API int ggeo_find_faces_stateful(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
+        GRIDGEOM_API int ggeo_find_faces(int gridStateId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
 
         /// <summary>
         /// Orthogonalization
