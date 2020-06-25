@@ -711,12 +711,11 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
         if (numNonHangingEdges == numNodesQuads)
         {
 
-            ComputePolygonCircumenter(facePolygonWithoutHangingNodes,
+            m_mesh.ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
                 middlePointsCache,
                 normalsCache,
                 numNonHangingEdges,
                 localEdgesNumFaces,
-                m_mesh.m_projection,
                 weightCircumCenter,
                 splittingNode);
 
