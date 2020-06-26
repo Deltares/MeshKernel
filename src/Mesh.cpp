@@ -262,7 +262,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
     std::vector<int> faceEdgesFlat;
     std::vector<double> xNodesFlat;
     std::vector<double> yNodesFlat;
-    // if the number of estimated triangles is not sufficient, triangulation must be repeated
+    // If the number of estimated triangles is not sufficient, triangulation must be repeated
     while (numtri < 0)
     {
         numtri = numberOfTriangles;
@@ -290,7 +290,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
         }
     }
 
-    // create face nodes
+    // Create face nodes
     std::vector<std::vector<int>> faceNodes(numtri, std::vector<int>(3, -1));
     std::vector<std::vector<int>> faceEdges(numtri, std::vector<int>(3, -1));
     int index = 0;
@@ -307,7 +307,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
         index++;
     }
 
-    // create edges
+    // Create the edges
     std::vector<std::vector<int>> edgeNodes(numedge, std::vector<int>(2, 0));
     index = 0;
     for (int i = 0; i < numedge; ++i)
@@ -319,10 +319,10 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
     }
 
 
-    // for each triangle we have to check
-    // 1. validity of its internal angles
-    // 2. is inside the polygon
-    // if so we mark the edges and we add them to kn table
+    // For each triangle check
+    // 1. Validity of its internal angles
+    // 2. Is inside the polygon
+    // If so we mark the edges and we add them m_edges
     std::vector<bool> edgeNodesFlag(numedge, false);
     for (int i = 0; i < numtri; ++i)
     {
@@ -1291,7 +1291,8 @@ bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygo
 }
 
 
-bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, 
+bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex, 
+    std::vector<Point>& polygonNodesCache, 
     std::vector<int>& localNodeIndexsesCache, 
     std::vector<int>& edgeIndexsesCache,
     int& numClosedPolygonNodes) const
@@ -1521,7 +1522,7 @@ int GridGeom::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius)
     return edgeIndex;
 }
 
-bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertMasking, bool includeIntersected)
+bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)
 {
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
@@ -1591,7 +1592,7 @@ bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inver
     }
 
     // if the selection is inverted, do not delete the edges of included faces
-    if (invertMasking)
+    if (invertSelection)
     {
         for (int e = 0; e < GetNumEdges(); ++e)
         {
