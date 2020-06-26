@@ -23,35 +23,73 @@ namespace GridGeom
 
     public:
 
+        /// <summary>
+        /// Constructor, store a reference of mesh
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
         MeshRefinement(Mesh& mesh);
 
-        ///refinecellsandfaces2
+        /// <summary>
+        /// Refine a mesh (refinecellsandfaces2)
+        /// </summary>
+        /// <param name="sample">The samples with values used for refinement (option 1, refine based on sample)</param>
+        /// <param name="polygon">The samples with values used for refinement (option 2, refine in polygon)</param>
+        /// <param name="sampleRefineParametersNative">Sample's related parameters</param>
+        /// <param name="interpolationParametersNative">Interpolation parameters</param>
+        /// <returns></returns>
         bool Refine(std::vector<Sample>& sample,
-            const Polygons& polygon,
-            GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
-            GridGeomApi::InterpolationParametersNative& interpolationParametersNative);
+                    const Polygons& polygon,
+                    GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
+                    GridGeomApi::InterpolationParametersNative& interpolationParametersNative);
 
     private:
 
-        ///find_linkbrothers
-        bool FindBrotherEdges();
+        /// <summary>
+        /// Finds where the current edges originates from (find_linkbrothers)
+        /// </summary>
+        /// <returns></returns>
+        bool FindParentEdges();
 
-        ///set_initial_mask
-        // do not refine faces crossed by the selecting polygon
+        /// <summary>
+        /// Modifies the m_mesh.m_nodeMask, the mask where to perform the refinement (set_initial_mask)
+        /// </summary>
+        /// <returns></returns>
         bool ComputeNodeMask();
 
-        ///compute_jarefine_poly
-        bool ComputeEdgeAndFaceRefinementMaskFromSamples(std::vector<Sample>& polygon);
+        /// <summary>
+        /// Computes the edge and face refinement mask from samples (compute_jarefine_poly)
+        /// </summary>
+        /// <param name="samples"> the sample to use for computing masking</param>
+        /// <returns></returns>
+        bool ComputeMaskFromSamples(std::vector<Sample>& samples);
 
-        ///compute_jarefine_poly
-        bool ComputeEdgesFaceRefinementFromSamples(int numPolygonNodes,
+        /// <summary>
+        /// Computes the edge and face refinement mask from samples for a single face (compute_jarefine_poly)
+        /// Face nodes, edge and edge lenghts are stored in local caches. See Mesh.FaceClosedPolygon function
+        /// </summary>
+        /// <param name="numPolygonNodes"></param>
+        /// <param name="samples"></param>
+        /// <param name="numEdgesToBeRefined"></param>
+        /// <returns></returns>
+        bool ComputeEdgesRefinementFromSamplesSingleFace(int numPolygonNodes,
             std::vector<Sample>& samples,
             int& numEdgesToBeRefined);
 
-        ///comp_jalink
+        /// <summary>
+        /// Computes the edge refinement mask (comp_jalink)
+        /// </summary>
+        /// <returns></returns>
         bool ComputeEdgesRefinementMask();
 
-        ///find_hangingnodes
+        /// <summary>
+        /// Finds the hanging nodes in a face. Should this be a mesh class responsability? (find_hangingnodes) 
+        /// </summary>
+        /// <param name="faceIndex"></param>
+        /// <param name="numHangingEdges"></param>
+        /// <param name="numHangingNodes"></param>
+        /// <param name="numEdgesToRefine"></param>
+        /// <returns></returns>
         bool FindHangingNodes(int faceIndex,
             int& numHangingEdges,
             int& numHangingNodes,
