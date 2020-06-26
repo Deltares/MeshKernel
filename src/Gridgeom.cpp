@@ -350,18 +350,46 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_orthogonalize_prepare_outer_iteration(int gridStateId)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        {
+            return 0;
+        }
+
         bool status = orthogonalizationInstances[gridStateId].PrapareOuterIteration(meshInstances[gridStateId]);
         return status == true ? 0 : 1;
     }
 
     GRIDGEOM_API int ggeo_orthogonalize_inner_iteration(int gridStateId)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        {
+            return 0;
+        }
         const bool status = orthogonalizationInstances[gridStateId].InnerIteration(meshInstances[gridStateId]);
         return status == true ? 0 : 1;
     }
 
     GRIDGEOM_API int ggeo_orthogonalize_finalize_outer_iteration(int gridStateId)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        {
+            return 0;
+        }
         const bool status = orthogonalizationInstances[gridStateId].FinalizeOuterIteration(meshInstances[gridStateId]);
         return status == true ? 0 : 1;
     }
@@ -369,6 +397,11 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_orthogonalize_delete(int gridStateId)
     {
         if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[gridStateId].GetNumNodes() <= 0)
         {
             return 0;
         }
@@ -379,12 +412,31 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_get_orthogonality(int gridStateId, GeometryListNative& geometryList)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        {
+            return 0;
+        }
         const bool status = orthogonalizationInstances[gridStateId].GetOrthogonality(meshInstances[gridStateId], geometryList.zCoordinates);
         return status == true ? 0 : 1;
     }
 
     GRIDGEOM_API int ggeo_get_smoothness(int gridStateId, GeometryListNative& geometryList)
     {
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        {
+            return 0;
+        }
+
         const bool status = orthogonalizationInstances[gridStateId].GetSmoothness(meshInstances[gridStateId], geometryList.zCoordinates);
         return status == true ? 0 : 1;
     }
