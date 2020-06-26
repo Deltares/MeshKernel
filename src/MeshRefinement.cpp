@@ -924,7 +924,7 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
             numEdgesToRefine += 1;
         }
 
-        // check if the brother link is in the cell
+        // check if the parent edge is in the cell
         if (m_brotherEdges[edgeIndex] != intMissingValue)
         {
             const auto e = NextCircularBackwardIndex(n, numFaceNodes);
