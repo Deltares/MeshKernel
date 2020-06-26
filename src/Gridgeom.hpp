@@ -100,7 +100,7 @@ namespace GridGeomApi
         /// <param name="orthogonalizationParameters">The structure containing the user defined orthogonalization parameters</param>
         /// <param name="geometryListNativePolygon">The polygon where to perform the orthogonalization</param>
         /// <param name="geometryListNativeLandBoundaries">The land boundaries to account for in the orthogonalization process</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_orthogonalize_initialize(int gridStateId,
             int isTriangulationRequired, 
             int isAccountingForLandBoundariesRequired, 
@@ -113,28 +113,28 @@ namespace GridGeomApi
         /// Prepare outer orthogonalization iteration (interactive mode)
         /// </summary>
         /// <param name="gridGeomId">Id of the mesh state</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_orthogonalize_prepare_outer_iteration(int gridStateId);
 
         /// <summary>
         /// Perform inner orthogonalization iteration (interactive mode)
         /// </summary>
         /// <param name="gridGeomId">Id of the mesh state</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_orthogonalize_inner_iteration(int gridStateId);
 
         /// <summary>
         /// Finalize orthogonalization outer iteration (interactive mode)
         /// </summary>
         /// <param name="gridStateId"></param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_orthogonalize_finalize_outer_iteration(int gridStateId);
          
         /// <summary>
         /// Clean up back-end orthogonalization algorithm (interactive mode)
         /// </summary>
         /// <param name="gridGeomId">Id of the mesh state</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_orthogonalize_delete(int gridStateId);
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace GridGeomApi
         /// </summary>
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="geometryListIn">The orthogonality values of each edge</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_get_orthogonality(int gridStateId, GeometryListNative& geometryList);
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace GridGeomApi
         /// </summary>
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="geometryListIn">The smoothness values of each edge</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_get_smoothness(int gridStateId, GeometryListNative& geometryList);
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace GridGeomApi
         /// <param name="geometryListNative">The input splines corners</param>
         /// <param name="curvilinearParametersNative">The input parameters to generate the curvilinear grid</param>
         /// <param name="splinesToCurvilinearParametersNative">The parameters of the advancing front algorithm</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_initialize(int gridStateId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParametersNative, SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
 
         /// <summary>
@@ -187,21 +187,21 @@ namespace GridGeomApi
         /// </summary>
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="layer">The layer index</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_iteration(int gridStateId, int layer);
 
         /// <summary>
         /// Converts curvilinear grid to mesh and refreshes the state (interactive)
         /// </summary>
         /// <param name="gridStateId"></param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_refresh_mesh(int gridStateId);
 
         /// <summary>
         /// Finalize curvilinear grid from splines algorithm
         /// </summary>
         /// <param name="gridStateId"></param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines_ortho_delete(int gridStateId);
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace GridGeomApi
         /// </summary>
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="geometryListNative">The polygon where to triangulate</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_make_mesh_from_polygon(int gridStateId, GeometryListNative& geometryListNative);
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace GridGeomApi
         /// </summary>
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="geometryListNative">The samples where to triangulate</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_make_mesh_from_samples(int gridStateId, GeometryListNative& geometryListNative);
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace GridGeomApi
         /// </summary>
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="geometryListNative">The output network boundary polygon</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon(int gridStateId, GeometryListNative& geometryListNative);
 
         /// <summary>
@@ -242,7 +242,7 @@ namespace GridGeomApi
         /// </summary>
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="numberOfPolygonVertices">The number of polygon points</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_copy_mesh_boundaries_to_polygon_count_vertices(int gridStateId, int& numberOfPolygonVertices);
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace GridGeomApi
         /// <param name="secondIndex">The index of the second vertex</param>
         /// <param name="distance">The refinement distance</param>
         /// <param name="geometryListOut"></param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_refine_polygon(int gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut);
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace GridGeomApi
         /// <param name="secondIndex">The index of the second vertex</param>
         /// <param name="distance">The refinement distance</param>
         /// <param name="numberOfPolygonVertices">The number of vertices after refinement </param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_refine_polygon_count(int gridStateId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices);
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace GridGeomApi
         /// </summary>
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="geometryListIn">The polygon where to perform the operation</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_merge_nodes(int gridStateId, GeometryListNative& geometryListIn);
 
         /// <summary>
@@ -293,7 +293,7 @@ namespace GridGeomApi
         /// <param name="geometryListIn">The input polygons</param>
         /// <param name="numberOfMeshVertices">The number of selected nodes</param>
         /// <param name="selectedVerticesPtr">The selected vertices indexes</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_nodes_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices);
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace GridGeomApi
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="geometryListIn">The input polygons</param>
         /// <param name="numberOfMeshVertices">The number of selected nodes</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_count_nodes_in_polygons(int gridStateId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices);
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace GridGeomApi
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="disposableGeometryList">The polygon where to perform the operation</param>
         /// <param name="vertexIndex">The index of the new mesh node</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_insert_node(int gridStateId, double xCoordinate, double yCoordinate, double zCoordinate, int& vertexIndex);
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace GridGeomApi
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="geometryListIn">The new coordinate</param>
         /// <param name="nodeIndex">The node index (to be detailed)</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_move_node(int gridStateId, GeometryListNative& geometryListIn, int nodeIndex);
 
         /// <summary>
@@ -347,7 +347,7 @@ namespace GridGeomApi
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="geometryListIn">The input point coordinates</param>
         /// <param name="searchRadius">The search radius</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_delete_edge(int gridStateId, GeometryListNative& geometryListIn, double searchRadius);
 
         /// <summary>
@@ -357,7 +357,7 @@ namespace GridGeomApi
         /// <param name="geometryListIn">The input point coordinates</param>
         /// <param name="searchRadius">The search radius</param>
         /// <param name="edgeIndex">The edge index</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_find_edge(int gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& edgeIndex);
 
         /// <summary>
@@ -368,7 +368,7 @@ namespace GridGeomApi
         /// <param name="innerPolygon">Compute inner/outer polygon</param>
         /// <param name="distance">The offset distance</param>
         /// <param name="geometryListOut">The offsetted polygon</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_offsetted_polygon(int gridStateId, GeometryListNative& geometryListIn, bool innerPolygon, double distance, GeometryListNative& geometryListOut);
 
         /// <summary>
@@ -379,7 +379,7 @@ namespace GridGeomApi
         /// <param name="innerPolygon">Compute inner/outer polygon</param>
         /// <param name="distance">The offset distance</param>
         /// <param name="numberOfPolygonVertices">The number of vertices of the generated polygon</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_offsetted_polygon_count(int gridStateId, GeometryListNative& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonVertices);
 
         /// <summary>
@@ -389,7 +389,7 @@ namespace GridGeomApi
         /// <param name="geometryListNative">The sample set</param>
         /// <param name="interpolationParametersNative">The interpolation parameters</param>
         /// <param name="sampleRefineParametersNative">The interpolation settings related to the samples</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative);
 
         /// <summary>
@@ -398,7 +398,7 @@ namespace GridGeomApi
         /// <param name="gridStateId">Id of the mesh state</param>
         /// <param name="geometryListNative">The closed polygon where to perform the refinement</param>
         /// <param name="interpolationParametersNative">The interpolation parameters</param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_refine_mesh_based_on_polygon(int gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative);
 
         /// <summary>
@@ -408,7 +408,7 @@ namespace GridGeomApi
         /// <param name="geometryListIn"></param>
         /// <param name="searchRadius"></param>
         /// <param name="vertexIndex"></param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_get_node_index(int gridStateId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex);
 
         /// <summary>
@@ -418,7 +418,7 @@ namespace GridGeomApi
         /// <param name="inputPolygon">The polygon(s) used for selection</param>
         /// <param name="inputPoints">The points to select</param>
         /// <param name="selectedPoints">The selected points in the zCoordinates field (0.0 not selected, 1.0 selected)</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_points_in_polygon(int gridGeomId, GeometryListNative& inputPolygon, GeometryListNative& inputPoints, GeometryListNative& selectedPoints);
 
         /// <summary>
@@ -437,7 +437,7 @@ namespace GridGeomApi
         /// <param name="gridStateId"></param>
         /// <param name="geometryListNativeIn"></param>
         /// <param name="curvilinearParametersNative"></param>
-        /// <returns></returns>
+        /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines(int gridStateId, GeometryListNative& geometryListNativeIn, CurvilinearParametersNative& curvilinearParametersNative);
 
 #ifdef __cplusplus
