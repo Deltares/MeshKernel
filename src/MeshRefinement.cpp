@@ -39,7 +39,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
         {
             points[i] = { sample[i].x, sample[i].y };
         }
-        m_rtree.BuildTree(points, m_mesh.m_projection);
+        m_samplesRTree.BuildTree(points, m_mesh.m_projection);
 
         m_deltaTimeMaxCourant = sampleRefineParametersNative.MinimumCellSize / std::sqrt(gravity);
         m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
@@ -860,7 +860,7 @@ bool GridGeom::MeshRefinement::ComputeMaskFromSamples(std::vector<Sample>& sampl
 
         std::fill(m_refineEdgeCache.begin(), m_refineEdgeCache.end(), 0);
         int numEdgesToBeRefined = 0;
-        successful = ComputeEdgesRefinementFromSamplesSingleFace( m_mesh.GetNumFaceEdges(f), samples, numEdgesToBeRefined);
+        successful = ComputeFaceMaskFromSamples( m_mesh.GetNumFaceEdges(f), samples, numEdgesToBeRefined);
         if (!successful)
         {
             return false;
@@ -964,7 +964,7 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeEdgesRefinementFromSamplesSingleFace(
+bool GridGeom::MeshRefinement::ComputeFaceMaskFromSamples(
     int numPolygonNodes,
     std::vector<Sample>& samples,
     int& numEdgesToBeRefined)
@@ -1004,10 +1004,10 @@ bool GridGeom::MeshRefinement::ComputeEdgesRefinementFromSamplesSingleFace(
         {
             return true;
         }
-        for (int i = 0; i < m_rtree.GetQueryResultSize(); i++)
+        for (int i = 0; i < m_samplesRTree.GetQueryResultSize(); i++)
         {
             // decrease the sample values in the current cells by one
-            const auto sampleIndex = m_rtree.GetQuerySampleIndex(i);
+            const auto sampleIndex = m_samplesRTree.GetQuerySampleIndex(i);
             if (!m_subtractedSample[sampleIndex])
             {
                 samples[sampleIndex].value -= 1.0;
@@ -1024,10 +1024,10 @@ bool GridGeom::MeshRefinement::ComputeEdgesRefinementFromSamplesSingleFace(
     if (refinementValue == doubleMissingValue && m_refineOutsideFace)
     {
         // find nearest face
-        m_rtree.NearestNeighbour(centerOfMass);
-        if (m_rtree.GetQueryResultSize() > 0)
+        m_samplesRTree.NearestNeighbour(centerOfMass);
+        if (m_samplesRTree.GetQueryResultSize() > 0)
         {
-            auto sampleIndex = m_rtree.GetQuerySampleIndex(0);
+            auto sampleIndex = m_samplesRTree.GetQuerySampleIndex(0);
             if (sampleIndex >= 0)
             {
                 refinementValue = samples[sampleIndex].value;
@@ -1111,7 +1111,7 @@ double GridGeom::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygon
 
 
     double refinementValue = 0.0;
-    bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh.m_projection, m_rtree, averagingMethod, refinementValue);
+    bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh.m_projection, m_samplesRTree, averagingMethod, refinementValue);
     if (!success)
     {
         return doubleMissingValue;
@@ -1185,9 +1185,9 @@ bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask()
                         isQuadEdge[num] = m_edgeMask[edgeIndex];
                     }
 
-                    auto ee = NextCircularForwardIndex(n, numFaceNodes);
+                    const auto ee = NextCircularForwardIndex(n, numFaceNodes);
 
-                    auto secondEdgeIndex = m_mesh.m_facesEdges[f][ee];
+                    const auto secondEdgeIndex = m_mesh.m_facesEdges[f][ee];
 
                     if (n != numFaceNodes - 1 && m_brotherEdges[edgeIndex] != secondEdgeIndex)
                     {
@@ -1336,8 +1336,8 @@ bool  GridGeom::MeshRefinement::SplitFaces()
             }
 
             if (numFaceNodes + numEdgesToRefine > maximumNumberOfEdgesPerFace ||          // would result in unsupported cells after refinement
-                numFaceNodes - numHangingNodes - numEdgesToRefine <= 1 ||  // cells with only one unrefined edge
-                numNodesEffective == numEdgesToRefine)                    // refine all edges
+                numFaceNodes - numHangingNodes - numEdgesToRefine <= 1 ||                 // faces with only one unrefined edge
+                numNodesEffective == numEdgesToRefine)                                    // refine all edges
             {
                 isSplittingRequired = true;
             }
