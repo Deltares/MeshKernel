@@ -4,28 +4,28 @@ namespace GridGeomApi
 {
     struct SampleRefineParametersNative
     {
-        /// Sample vector dimension (1) 
+        /// Sample vector dimension
         int SampleVectorDimension;
 
-        /// *Maximum number of refinement iterations, set to 1 if only one refinement is wanted (10) 
+        /// Maximum number of refinement iterations, set to 1 if only one refinement is wanted
         int MaxNumberOfRefinementIterations;
 
-        /// *Minimum cell size (50000.0)
+        /// Minimum cell size
         double MinimumCellSize;
 
-        /// *Directional refinement, 1 yes 0 no (0)
+        /// Directional refinement, 1 yes 0 no
         int DirectionalRefinement;
 
-        /// *Refinement criterion type (2)
+        /// Refinement criterion type
         int RefinementType;
 
-        /// *Connect hanging nodes at the end of the iteration, 1 yes 0 no (1) 
+        /// Connect hanging nodes at the end of the iteration, 1 yes 0 no
         int ConnectHangingNodes;
 
-        /// *Maximum time-step in courant grid (0.0)
+        /// Maximum time-step in courant grid
         double MaximumTimeStepInCourantGrid;
 
-        /// *Take samples outside face into account , 1 yes 0 no (1)
+        /// Take samples outside face into account , 1 yes 0 no
         int AccountForSamplesOutside;
 
     };
