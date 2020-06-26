@@ -26,7 +26,7 @@ namespace GridGeom
         /// <summary>
         /// Constructor, store a reference of mesh
         /// </summary>
-        /// <param name="mesh"></param>
+        /// <param name="mesh">Mesh to be refined</param>
         /// <returns></returns>
         MeshRefinement(Mesh& mesh);
 
@@ -46,7 +46,7 @@ namespace GridGeom
     private:
 
         /// <summary>
-        /// Finds where the current edges originates from (find_linkbrothers)
+        /// Finds where the current edges originates from. For example the original edge index after the splitting (find_linkbrothers)
         /// </summary>
         /// <returns></returns>
         bool FindParentEdges();
@@ -58,7 +58,7 @@ namespace GridGeom
         bool ComputeNodeMask();
 
         /// <summary>
-        /// Computes the edge and face refinement mask from samples (compute_jarefine_poly)
+        /// Computes the edge and face refinement mask from sample values (compute_jarefine_poly)
         /// </summary>
         /// <param name="samples"> the sample to use for computing masking</param>
         /// <returns></returns>
@@ -66,15 +66,15 @@ namespace GridGeom
 
         /// <summary>
         /// Computes the edge and face refinement mask from samples for a single face (compute_jarefine_poly)
-        /// Face nodes, edge and edge lenghts are stored in local caches. See Mesh.FaceClosedPolygon function
+        /// Face nodes, edge and edge lenghts are stored in local caches. See Mesh.FaceClosedPolygon method
         /// </summary>
-        /// <param name="numPolygonNodes"></param>
-        /// <param name="samples"></param>
-        /// <param name="numEdgesToBeRefined"></param>
+        /// <param name="numPolygonNodes">The number of face nodes</param>
+        /// <param name="samples"> The samples to use for refinement</param>
+        /// <param name="numEdgesToBeRefined"> The computed numebr of edges to be refined</param>
         /// <returns></returns>
-        bool ComputeEdgesRefinementFromSamplesSingleFace(int numPolygonNodes,
-            std::vector<Sample>& samples,
-            int& numEdgesToBeRefined);
+        bool ComputeFaceMaskFromSamples(int numPolygonNodes,
+                                        std::vector<Sample>& samples,
+                                        int& numEdgesToBeRefined);
 
         /// <summary>
         /// Computes the edge refinement mask (comp_jalink)
@@ -91,54 +91,78 @@ namespace GridGeom
         /// <param name="numEdgesToRefine"></param>
         /// <returns></returns>
         bool FindHangingNodes(int faceIndex,
-            int& numHangingEdges,
-            int& numHangingNodes,
-            int& numEdgesToRefine);
+                              int& numHangingEdges,
+                              int& numHangingNodes,
+                              int& numEdgesToRefine);
 
-        ///remove_isolated_hanging_nodes
+        /// <summary>
+        /// Remove isolated hanging nodes(remove_isolated_hanging_nodes)
+        /// </summary>
+        /// <param name="numRemovedIsolatedHangingNodes"></param>
+        /// <returns></returns>
         bool RemoveIsolatedHangingnodes(int& numRemovedIsolatedHangingNodes);
 
-        ///connect_hanging_nodes
+        /// <summary>
+        /// Connect the hanging nodes with triangles (connect_hanging_nodes)
+        /// </summary>
+        /// <returns></returns>
         bool ConnectHangingNodes();
 
-        ///TODO: smooth_jarefine
+        /// <summary>
+        /// Smooth the face refinement mask (smooth_jarefine)
+        /// </summary>
+        /// <returns></returns>
         bool SmoothEdgeRefinementMask();
 
-        ///split_cells
+        /// <summary>
+        /// Computes m_faceMask, if a face must be splitted later on (split_cells)
+        /// </summary>
+        /// <returns></returns>
         bool SplitFaces();
 
-        ///refine_cells
+        /// <summary>
+        /// Actual refinement operation by splitting the face (refine_cells)
+        /// </summary>
+        /// <param name="numEdgesBeforeRefinemet">Numer of edges before the refinement</param>
+        /// <returns></returns>
         bool RefineFacesBySplittingEdges(int numEdgesBeforeRefinemet);
 
-        // compute the refinament value at the center of mass
-        double ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod, Point centerOfMass);
-
-        // mesh R-Tree
+        /// <summary>
+        /// Compute the refinement value at the face center of mass
+        /// </summary>
+        /// <param name="numPolygonNodes">The number of polygon nodes</param>
+        /// <param name="samples">The number of samples</param>
+        /// <param name="averagingMethod">the averaging method to be used</param>
+        /// <param name="centerOfMass">Tha face center of mass</param>
+        /// <returns>The refinement value at the face center of mass</returns>
+        double ComputeFaceRefinementFromSamples(int numPolygonNodes, 
+                                                const std::vector<Sample>& samples, 
+                                                AveragingMethod averagingMethod, 
+                                                Point centerOfMass);
         Mesh& m_mesh;
 
-        // samples R-Tree
-        SpatialTrees::RTree m_rtree;
+        SpatialTrees::RTree m_samplesRTree;              // samples RTree
 
-        std::vector<int> m_faceMask; //refine cell without hanging nodes (1), refine cell with hanging nodes (2), do not refine cell at all (0) or refine cell outside polygon (-2)
-        std::vector<int> m_edgeMask;
-        std::vector<int> m_brotherEdges;
-        std::vector<int> m_refineEdgeCache;
-        std::vector<bool> m_isHangingNodeCache;
-        std::vector<bool> m_isHangingEdgeCache;
-        std::vector<Point> m_polygonNodesCache;
-        std::vector<int> m_localNodeIndexsesCache;
-        std::vector<int> m_edgeIndexsesCache;
+        std::vector<int>    m_faceMask;                  // refine cell without hanging nodes (1), refine cell with hanging nodes (2), do not refine cell at all (0) or refine cell outside polygon (-2)
+        std::vector<int>    m_edgeMask;
+        std::vector<int>    m_brotherEdges;
+        std::vector<int>    m_refineEdgeCache;
+        std::vector<bool>   m_isHangingNodeCache;
+        std::vector<bool>   m_isHangingEdgeCache;
+        std::vector<Point>  m_polygonNodesCache;
+        std::vector<int>    m_localNodeIndexsesCache;
+        std::vector<int>    m_edgeIndexsesCache;
         std::vector<double> m_polygonEdgesLengthsCache;
-        std::vector<bool> m_subtractedSample;
+        std::vector<bool>   m_subtractedSample;
        
-        double m_deltaTimeMaxCourant = 0.0;
-        double m_minimumFaceSize = 5e4;
-        bool m_directionalRefinement = false;
-        bool m_refineOutsideFace = false;
-        bool m_connectHangingNodes = true;
-        bool m_refineIntersectedFaces = false;
-        int m_maxNumberOfRefinementIterations = 10;
-        RefinementType m_refinementType;
+        double              m_deltaTimeMaxCourant = 0.0;
+        double              m_minimumFaceSize = 5e4;
+        bool                m_directionalRefinement = false;
+        bool                m_refineOutsideFace = false;
+        bool                m_connectHangingNodes = true;
+        bool                m_refineIntersectedFaces = false;
+        int                 m_maxNumberOfRefinementIterations = 10;
+        RefinementType      m_refinementType;
 
     };
 }
