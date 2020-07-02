@@ -88,11 +88,10 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
         m_mesh.MaskNodesInPolygons(polygon, true);
     }
 
-    //find_link_broders
-    FindParentEdges();
+    FindBrotherEdges();
 
     //set_initial_mask
-    bool successful = ComputeNodeMask();
+    bool successful = ComputeNodeMaskOfFacesAtPolygonPerimeter();
     if (!successful)
     {
         return false;
@@ -104,14 +103,14 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
 
         if (level > 0) 
         {
-            bool successful = FindParentEdges();
+            bool successful = FindBrotherEdges();
             if (!successful)
             {
                 return false;
             }
         }
 
-        // Compute all lengths at once
+        // Compute all edge lengths at once
         m_mesh.ComputeEdgeLengths();
 
         const auto numEdgesBeforeRefinement = m_mesh.GetNumEdges();
@@ -119,7 +118,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
         // computes the edge and face refinement mask from samples
         if(isRefinementBasedOnSamples)
         {
-            bool successful = ComputeMaskFromSamples(sample);
+            bool successful = ComputeRefinementMasksFromSamples(sample);
             if (!successful)
             {
                 return false;
@@ -791,50 +790,40 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeNodeMask()
+bool GridGeom::MeshRefinement::ComputeNodeMaskOfFacesAtPolygonPerimeter()
 {
-    bool repeat = true;
-
-    while (repeat)
+    for (int f = 0; f < m_mesh.GetNumFaces(); f++)
     {
-        repeat = false;
-
-        for (int f = 0; f < m_mesh.GetNumFaces(); f++)
+        bool crossing = false;
+        const auto numnodes = m_mesh.GetNumFaceEdges(f);
+        for (int n = 0; n < numnodes; n++)
         {
-            bool crossing = false;
-            auto numnodes = m_mesh.GetNumFaceEdges(f);
+            int nodeIndex = m_mesh.m_facesNodes[f][n];
+
+            if (m_mesh.m_nodeMask[nodeIndex] == 0)
+            {
+                crossing = true;
+                break;
+            }
+        }
+
+        if (crossing)
+        {
+            m_faceMask[f] = 0;
             for (int n = 0; n < numnodes; n++)
             {
                 int nodeIndex = m_mesh.m_facesNodes[f][n];
-
-                if (m_mesh.m_nodeMask[nodeIndex] == 0)
+                if (m_mesh.m_nodeMask[nodeIndex] == 1)
                 {
-                    crossing = true;
-                    break;
-                }
-            }
-
-            if (crossing)
-            {
-                m_faceMask[f] = 0;
-                for (int n = 0; n < numnodes; n++)
-                {
-                    int nodeIndex = m_mesh.m_facesNodes[f][n];
-                    if (m_mesh.m_nodeMask[nodeIndex] == 1)
-                    {
-                        m_mesh.m_nodeMask[nodeIndex] = -2;
-                        repeat = true;
-                    }
-
+                    m_mesh.m_nodeMask[nodeIndex] = -2;
                 }
             }
         }
     }
-
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeMaskFromSamples(std::vector<Sample>& samples)
+bool GridGeom::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<Sample>& samples)
 {
     std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
     std::fill(m_faceMask.begin(), m_faceMask.end(), 0);
@@ -860,7 +849,7 @@ bool GridGeom::MeshRefinement::ComputeMaskFromSamples(std::vector<Sample>& sampl
 
         std::fill(m_refineEdgeCache.begin(), m_refineEdgeCache.end(), 0);
         int numEdgesToBeRefined = 0;
-        successful = ComputeFaceMaskFromSamples( m_mesh.GetNumFaceEdges(f), samples, numEdgesToBeRefined);
+        successful = ComputeFaceRefinementMaskFromSamples( m_mesh.GetNumFaceEdges(f), samples, numEdgesToBeRefined);
         if (!successful)
         {
             return false;
@@ -964,7 +953,7 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeFaceMaskFromSamples(
+bool GridGeom::MeshRefinement::ComputeFaceRefinementMaskFromSamples(
     int numPolygonNodes,
     std::vector<Sample>& samples,
     int& numEdgesToBeRefined)
@@ -1108,8 +1097,6 @@ bool GridGeom::MeshRefinement::ComputeFaceMaskFromSamples(
 
 double GridGeom::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod, Point centerOfMass)
 {
-
-
     double refinementValue = 0.0;
     bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh.m_projection, m_samplesRTree, averagingMethod, refinementValue);
     if (!success)
@@ -1375,7 +1362,7 @@ bool  GridGeom::MeshRefinement::SplitFaces()
 }
 
 
-bool GridGeom::MeshRefinement::FindParentEdges()
+bool GridGeom::MeshRefinement::FindBrotherEdges()
 {
     m_brotherEdges.resize(m_mesh.GetNumEdges());
     std::fill(m_brotherEdges.begin(), m_brotherEdges.end(), intMissingValue);
