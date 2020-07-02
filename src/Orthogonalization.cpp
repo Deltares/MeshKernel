@@ -262,7 +262,6 @@ bool GridGeom::Orthogonalization::ComputeIncrements(const Mesh& mesh)
 	for (int n = 0; n < mesh.GetNumNodes() ; n++)
     {
         int firstCacheIndex = n * 2;
-        double increments[2]{ 0.0, 0.0 };
         if ((mesh.m_nodesTypes[n] != 1 && mesh.m_nodesTypes[n] != 2) || mesh.m_nodesNumEdges[n] < 2)
         {
             continue;
@@ -280,9 +279,6 @@ bool GridGeom::Orthogonalization::ComputeIncrements(const Mesh& mesh)
         {
             mumat = m_mu * m_ww2Global[n][0] / std::max(m_ww2x[n][0], m_ww2y[n][0]);
         }
-
-        increments[0] = 0.0;
-        increments[1] = 0.0;
 
         int maxnn = m_endCacheIndex[n] - m_startCacheIndex[n];
         for (int nn = 1, cacheIndex = m_startCacheIndex[n]; nn < maxnn; nn++, cacheIndex++)
@@ -492,9 +488,6 @@ bool GridGeom::Orthogonalization::ComputeWeightsSmoother(const Mesh& mesh)
             a2[0] = -J[n][1] / determinant;
             a2[1] = J[n][0] / determinant;
 
-            //m << J[n][0], J[n][3], J[n][2], J[n][4];
-            //Eigen::JacobiSVD<Eigen::MatrixXf> svd(m, Eigen::ComputeThinU | Eigen::ComputeThinV);
-
             std::fill(DGinvDxi.begin(), DGinvDxi.end(), 0.0);
             std::fill(DGinvDeta.begin(), DGinvDeta.end(), 0.0);
             for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
@@ -515,7 +508,6 @@ bool GridGeom::Orthogonalization::ComputeWeightsSmoother(const Mesh& mesh)
             currentGinv[1] = Ginv[n][1];
             currentGinv[2] = Ginv[n][2];
             currentGinv[3] = Ginv[n][3];
-            double currentGinvFactor = MatrixNorm(a1, a2, currentGinv);
 
             // compute small matrix operations
             std::fill(GxiByDivxi.begin(), GxiByDivxi.end(), 0.0);
@@ -811,9 +803,6 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
             {
                 return false;
             }
-
-            auto numNodesLeftFace = mesh.GetNumFaceEdges(faceLeft);
-            auto numNodesRightFace = mesh.GetNumFaceEdges(faceRight);
 
             for (int i = 0; i < numConnectedNodes; i++)
             {
