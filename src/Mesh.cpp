@@ -622,7 +622,6 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
     }
 }
 
-// look at sub_findelemcontours in IrregularGridClass.f90 for a similar implementation
 bool GridGeom::Mesh::FindFacesRecursive(
     int startingNode,
     int node,
@@ -730,7 +729,6 @@ bool GridGeom::Mesh::FindFacesRecursive(
 
     const int edge = m_nodesEdges[otherNode][edgeIndexOtherNode];
     FindFacesRecursive(startingNode, otherNode, index + 1, edge, edges, nodes, sortedEdgesFaces, sortedNodes);
-
 
     return true;
 
