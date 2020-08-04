@@ -13,11 +13,11 @@ GridGeom::MeshRefinement::MeshRefinement(Mesh& mesh) :
 {
     m_mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
-    // all gets refined
+    // all faces and edges refined
     m_faceMask.resize(m_mesh.GetNumFaces(), 1);
     m_edgeMask.resize(m_mesh.GetNumEdges(), -1);
 
-    // default refinement value
+    // default refinement 
     m_refinementType = RefinementType::WaveCourant;
 };
 
@@ -65,8 +65,8 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
     m_maxNumberOfRefinementIterations = interpolationParametersNative.MaxNumberOfRefinementIterations;
 
     // get bounding box
-    Point lowerLeft{ doubleMissingValue,doubleMissingValue };
-    Point upperRight{ doubleMissingValue,doubleMissingValue };
+    Point lowerLeft{ doubleMissingValue, doubleMissingValue };
+    Point upperRight{ doubleMissingValue, doubleMissingValue };
     if (m_mesh.m_projection == Projections::spherical)
     {
         bool successful = m_mesh.GetBoundingBox(lowerLeft, upperRight);
@@ -88,10 +88,14 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
         m_mesh.MaskNodesInPolygons(polygon, true);
     }
 
-    FindBrotherEdges();
+    bool successful = FindBrotherEdges();
+    if (!successful)
+    {
+        return false;
+    }
 
     //set_initial_mask
-    bool successful = ComputeNodeMaskOfFacesAtPolygonPerimeter();
+    successful = ComputeNodeMaskAtPolygonPerimeter();
     if (!successful)
     {
         return false;
@@ -185,7 +189,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
             return false;
         }
 
-        successful = SplitFaces();
+        successful = ComputeIfFaceShouldBeSplitted();
         if (!successful)
         {
             return false;
@@ -790,7 +794,7 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeNodeMaskOfFacesAtPolygonPerimeter()
+bool GridGeom::MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
 {
     for (int f = 0; f < m_mesh.GetNumFaces(); f++)
     {
@@ -849,7 +853,7 @@ bool GridGeom::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<Sam
 
         std::fill(m_refineEdgeCache.begin(), m_refineEdgeCache.end(), 0);
         int numEdgesToBeRefined = 0;
-        successful = ComputeFaceRefinementMaskFromSamples( m_mesh.GetNumFaceEdges(f), samples, numEdgesToBeRefined);
+        successful = ComputeEdgesRefinementMaskFromSamples(m_mesh.GetNumFaceEdges(f), samples, numEdgesToBeRefined);
         if (!successful)
         {
             return false;
@@ -953,7 +957,7 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeFaceRefinementMaskFromSamples(
+bool GridGeom::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(
     int numPolygonNodes,
     std::vector<Sample>& samples,
     int& numEdgesToBeRefined)
@@ -1144,8 +1148,8 @@ bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask()
             {
                 for (int n = 0; n < numFaceNodes; n++)
                 {
-                    auto e = NextCircularBackwardIndex(n, numFaceNodes);
-                    auto ee = NextCircularForwardIndex(n, numFaceNodes);
+                    const auto e = NextCircularBackwardIndex(n, numFaceNodes);
+                    const auto ee = NextCircularForwardIndex(n, numFaceNodes);
 
                     auto edgeIndex = m_mesh.m_facesEdges[f][n];
 
@@ -1210,7 +1214,7 @@ bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask()
                     }
                 }
 
-                auto edgeIndexDifference = secondEdgeIndex - firstEdgeIndex;
+                const auto edgeIndexDifference = secondEdgeIndex - firstEdgeIndex;
                 bool refineAllEdges = false;
                 if (numEdgesToRefine == 2 && (edgeIndexDifference == 1 || edgeIndexDifference == 3))
                 {
@@ -1232,8 +1236,8 @@ bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask()
                         continue;
                     }
 
-                    auto e = NextCircularBackwardIndex(n, numFaceNodes);
-                    auto ee = NextCircularForwardIndex(n, numFaceNodes);
+                    const auto e = NextCircularBackwardIndex(n, numFaceNodes);
+                    const auto ee = NextCircularForwardIndex(n, numFaceNodes);
 
                     auto secondEdgeIndex = m_mesh.m_facesEdges[f][ee];
 
@@ -1253,7 +1257,7 @@ bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask()
         return false;
     }
 
-    //only keep m_edgeMask = 1, set other values to 0
+    // only keep m_edgeMask = 1, set other values to 0
     for (int i = 0; i < m_edgeMask.size(); i++)
     {
         if (m_edgeMask[i] != 1)
@@ -1265,7 +1269,7 @@ bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask()
     return true;
 }
 
-bool  GridGeom::MeshRefinement::SplitFaces()
+bool  GridGeom::MeshRefinement::ComputeIfFaceShouldBeSplitted()
 {
     const int maxiter = 1000;
     int num = 1;
@@ -1372,23 +1376,23 @@ bool GridGeom::MeshRefinement::FindBrotherEdges()
         const auto numEdgesNodes = m_mesh.m_nodesNumEdges[n];
         for (int e = 0; e < numEdgesNodes; e++)
         {
-            const auto ee = NextCircularForwardIndex(e, numEdgesNodes);
-            const auto firstEdgeIndex = m_mesh.m_nodesEdges[n][e];
 
+            const auto firstEdgeIndex = m_mesh.m_nodesEdges[n][e];
             if (m_mesh.GetNumEdgesFaces(firstEdgeIndex) < 1)
             {
                 continue;
             }
 
+            const auto ee = NextCircularForwardIndex(e, numEdgesNodes);
             const auto secondEdgeIndex = m_mesh.m_nodesEdges[n][ee];
             if (m_mesh.GetNumEdgesFaces(secondEdgeIndex) < 1)
             {
                 continue;
             }
 
+            // both edges should share the same face
             const auto firstEdgeLeftFace = m_mesh.m_edgesFaces[firstEdgeIndex][0];
             const auto firstEdgeRighFace = m_mesh.GetNumEdgesFaces(firstEdgeIndex) == 1 ? firstEdgeLeftFace : m_mesh.m_edgesFaces[firstEdgeIndex][1];
-
             const auto secondEdgeLeftFace = m_mesh.m_edgesFaces[secondEdgeIndex][0];
             const auto secondEdgeRighFace = m_mesh.GetNumEdgesFaces(secondEdgeIndex) == 1 ? secondEdgeLeftFace : m_mesh.m_edgesFaces[secondEdgeIndex][1];
 
@@ -1403,16 +1407,17 @@ bool GridGeom::MeshRefinement::FindBrotherEdges()
             //check if node k is in the middle
             const auto firstEdgeOtherNode = m_mesh.m_edges[firstEdgeIndex].first + m_mesh.m_edges[firstEdgeIndex].second - n;
             const auto secondEdgeOtherNode = m_mesh.m_edges[secondEdgeIndex].first + m_mesh.m_edges[secondEdgeIndex].second - n;
+            
+            //compute tolerance
+            const auto firstEdgeSquaredLength = ComputeSquaredDistance(m_mesh.m_nodes[firstEdgeOtherNode], m_mesh.m_nodes[n], m_mesh.m_projection);
+            const auto secondEdgeSquaredLength = ComputeSquaredDistance(m_mesh.m_nodes[secondEdgeOtherNode], m_mesh.m_nodes[n], m_mesh.m_projection);
+            const auto squaredTolerance = 0.0000001 * std::max(firstEdgeSquaredLength, secondEdgeSquaredLength);
+
+            //The center of the two edges coincides with the shared node
             Point centre;
             ComputeMiddlePoint(m_mesh.m_nodes[firstEdgeOtherNode], m_mesh.m_nodes[secondEdgeOtherNode], m_mesh.m_projection, centre);
-
-            //compute tolerance
-            const auto firstEdgeLength = Distance(m_mesh.m_nodes[firstEdgeOtherNode], m_mesh.m_nodes[n], m_mesh.m_projection);
-            const auto secondEdgeLength = Distance(m_mesh.m_nodes[secondEdgeOtherNode], m_mesh.m_nodes[n], m_mesh.m_projection);
-            const auto tolerance = 0.0001 * std::max(firstEdgeLength, secondEdgeLength);
-
-            const auto distanceFromCentre = Distance(centre, m_mesh.m_nodes[n], m_mesh.m_projection);
-            if (distanceFromCentre < tolerance)
+            const auto squaredDistanceFromCentre = ComputeSquaredDistance(centre, m_mesh.m_nodes[n], m_mesh.m_projection);
+            if (squaredDistanceFromCentre < squaredTolerance)
             {
                 m_brotherEdges[firstEdgeIndex] = secondEdgeIndex;
                 m_brotherEdges[secondEdgeIndex] = firstEdgeIndex;

@@ -336,7 +336,7 @@ bool GridGeom::Orthogonalization::InnerIteration(Mesh& mesh)
     mesh.m_nodes = m_orthogonalCoordinates;
 
     // project on the original net boundary
-    ProjectOnBoundary(mesh);
+    ProjectOnOriginalMeshBoundary(mesh);
 
     // compute local coordinates
     ComputeLocalCoordinates(mesh);
@@ -350,7 +350,7 @@ bool GridGeom::Orthogonalization::InnerIteration(Mesh& mesh)
     return true;
 }
 
-bool GridGeom::Orthogonalization::SnapToLandBoundary(Mesh& mesh, const LandBoundaries& landBoundaries)
+bool GridGeom::Orthogonalization::ProjectOnLandBoundary(Mesh& mesh, const LandBoundaries& landBoundaries)
 {
     bool successful = false;
 
@@ -358,15 +358,13 @@ bool GridGeom::Orthogonalization::SnapToLandBoundary(Mesh& mesh, const LandBound
 }
 
 
-bool GridGeom::Orthogonalization::ProjectOnBoundary(Mesh& mesh)
+bool GridGeom::Orthogonalization::ProjectOnOriginalMeshBoundary(Mesh& mesh)
 {
     Point firstPoint;
     Point secondPoint;
     Point thirdPoint;
     Point normalSecondPoint;
     Point normalThirdPoint;
-    int leftNode;
-    int rightNode;
 
     for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
@@ -376,6 +374,8 @@ bool GridGeom::Orthogonalization::ProjectOnBoundary(Mesh& mesh)
             firstPoint = mesh.m_nodes[n];
             int numEdges = mesh.m_nodesNumEdges[nearestPointIndex];
             int numNodes = 0;
+            int leftNode;
+            int rightNode;
             for (auto nn = 0; nn < numEdges; nn++)
             {
                 auto edgeIndex = mesh.m_nodesEdges[nearestPointIndex][nn];
@@ -403,7 +403,7 @@ bool GridGeom::Orthogonalization::ProjectOnBoundary(Mesh& mesh)
                 }
             }
 
-            //Project the moved boundary point back onto the closest ORIGINAL edge(netlink) (either between 0 and 2 or 0 and 3)
+            //Project the moved boundary point back onto the closest original edge (either between 0 and 2 or 0 and 3)
             double rl2;
             double dis2 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2, mesh.m_projection);
 
@@ -676,7 +676,7 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
         if (sharedFaces[f] < 0 || mesh.m_nodesTypes[currentNode] == 3) continue;
 
         int edgeLeft = f + 1;
-        int edgeRight = edgeLeft + 1;
+        int edgeRight = edgeLeft + 1; 
         if (edgeRight > numSharedFaces)
         {
             edgeRight -= numSharedFaces;
@@ -791,7 +791,8 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
         else
         {
             faceLeftIndex = f;
-            faceRightIndex = faceLeftIndex - 1; if (faceRightIndex < 0)faceRightIndex += numSharedFaces;
+            faceRightIndex = NextCircularBackwardIndex(faceLeftIndex, numSharedFaces);
+
 
             if (faceRightIndex < 0) continue;
 
@@ -1178,8 +1179,9 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
         dTheta = 2.0 * M_PI / double(numFaceNodes);
 
         // orientation of the face (necessary for folded cells)
-        int previousNode = nodeIndex + 1; if (previousNode >= numFaceNodes) previousNode -= numFaceNodes;
-        int nextNode = nodeIndex - 1; if (nextNode < 0) nextNode += numFaceNodes;
+        int previousNode = NextCircularForwardIndex(nodeIndex, numFaceNodes);
+        int nextNode = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
+
         if ((faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode]) == -1 ||
             (faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode]) == mesh.m_nodesNumEdges[currentNode])
         {
