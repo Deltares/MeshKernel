@@ -24,14 +24,24 @@ namespace GridGeom
     public:
 
         /// <summary>
-        /// Constructor, store a reference of mesh
+        /// Constructor, store a mesh reference
         /// </summary>
         /// <param name="mesh">Mesh to be refined</param>
         /// <returns></returns>
         MeshRefinement(Mesh& mesh);
 
         /// <summary>
-        /// Refine a mesh (refinecellsandfaces2)
+        /// Refine a mesh (refinecellsandfaces2). Steps:
+        /// 1. Masks the node to be refined (those inside a polygon)
+        /// 2. Find the brother edges (FindBrotherEdges)
+        /// 3. Mask nodes at the polygon perimeter (ComputeNodeMaskAtPolygonPerimeter)
+        /// 4. Do mesh refinement iterations
+        ///    4.1 Find the brother edges (FindBrotherEdges)
+        ///    4.2 Compute edge refinement mask based on samples (ComputeRefinementMasksFromSamples)
+        ///    4.3 Compute edge refinement mask based on polygon (ComputeEdgesRefinementMask)
+        ///    4.3 Compute if a face should be splitted (ComputeIfFaceShouldBeSplitted)
+        ///    4.4 Refine face by splitting edges (RefineFacesBySplittingEdges)
+        /// 5. Connect hanging nodes if requested (RemoveIsolatedHangingnodes, ConnectHangingNodes)
         /// </summary>
         /// <param name="sample">The samples with values used for refinement (option 1, refine based on sample)</param>
         /// <param name="polygon">The samples with values used for refinement (option 2, refine in polygon)</param>
@@ -46,36 +56,36 @@ namespace GridGeom
     private:
 
         /// <summary>
-        /// Finds if two edges are brothers, for example both generated from splitting an edge in equal parts, the shere a common node (find_linkbrothers)
+        /// Finds if two edges are brothers, for example sharing an hanging node.
         /// </summary>
         /// <returns>If the operation succeeded</returns>
         bool FindBrotherEdges();
 
         /// <summary>
         /// Modifies the initial m_mesh.m_nodeMask, all mesh nodes of faces at the polygon perimeter included in the polygon will get a node mask value of -2 (set_initial_mask)
-        /// The mask value of the other nodes does not get modified.
+        /// The mask value of the other nodes will not be modified.
         /// </summary>
         /// <returns>If the operation succeeded</returns>
-        bool ComputeNodeMaskOfFacesAtPolygonPerimeter();
+        bool ComputeNodeMaskAtPolygonPerimeter();
 
         /// <summary>
-        /// Computes the edge and face refinement mask from the sample values (compute_jarefine_poly)
+        /// Computes the edge and face refinement mask from sample values (compute_jarefine_poly)
         /// </summary>
         /// <param name="samples"> the sample to use for computing masking</param>
         /// <returns>If the operation succeeded</returns>
         bool ComputeRefinementMasksFromSamples(std::vector<Sample>& samples);
 
         /// <summary>
-        /// Computes the edge and face refinement mask from samples for a single face (compute_jarefine_poly)
+        /// Computes the number of edges that should be refined in a face (compute_jarefine_poly)
         /// Face nodes, edge and edge lenghts are stored in local caches. See Mesh.FaceClosedPolygon method
         /// </summary>
         /// <param name="numPolygonNodes">The number of face nodes</param>
         /// <param name="samples"> The samples to use for refinement</param>
         /// <param name="numEdgesToBeRefined"> The computed numebr of edges to be refined</param>
         /// <returns>If the operation succeeded</returns>
-        bool ComputeFaceRefinementMaskFromSamples(int numPolygonNodes,
-                                        std::vector<Sample>& samples,
-                                        int& numEdgesToBeRefined);
+        bool ComputeEdgesRefinementMaskFromSamples(int numPolygonNodes,
+                                                   std::vector<Sample>& samples,
+                                                   int& numEdgesToBeRefined);
 
         /// <summary>
         /// Computes the edge refinement mask (comp_jalink)
@@ -119,7 +129,7 @@ namespace GridGeom
         /// Computes m_faceMask, if a face must be splitted later on (split_cells)
         /// </summary>
         /// <returns>If the operation succeeded</returns>
-        bool SplitFaces();
+        bool ComputeIfFaceShouldBeSplitted();
 
         /// <summary>
         /// Actual refinement operation by splitting the face (refine_cells)
@@ -140,11 +150,12 @@ namespace GridGeom
                                                 const std::vector<Sample>& samples, 
                                                 AveragingMethod averagingMethod, 
                                                 Point centerOfMass);
-        Mesh& m_mesh;
+        // samples RTree
+        SpatialTrees::RTree m_samplesRTree;              
 
-        SpatialTrees::RTree m_samplesRTree;              // samples RTree
+        // refine cell without hanging nodes (1), refine cell with hanging nodes (2), do not refine cell at all (0) or refine cell outside polygon (-2)
+        std::vector<int>    m_faceMask;  
 
-        std::vector<int>    m_faceMask;                  // refine cell without hanging nodes (1), refine cell with hanging nodes (2), do not refine cell at all (0) or refine cell outside polygon (-2)
         std::vector<int>    m_edgeMask;
         std::vector<int>    m_brotherEdges;
         std::vector<int>    m_refineEdgeCache;
@@ -165,5 +176,6 @@ namespace GridGeom
         int                 m_maxNumberOfRefinementIterations = 10;
         RefinementType      m_refinementType;
 
+        Mesh& m_mesh;
     };
 }
