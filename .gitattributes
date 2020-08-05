@@ -639,6 +639,7 @@ buildGCC/bootstrap.sh -text
 doc/BudgetEstimateGridGeomInC++.xlsx -text
 doc/BudgetEstimateGridGeomInC++_phase2.xlsx -text
 doc/BudgetEstimateGridGeomInC++_phase3.xlsx -text
+doc/BudgetEstimateGridGeomInC++_phase4.xlsx -text
 doc/ProjectplanGridGeomInC++Phase3_V00.docx -text
 doc/ProjectplanGridGeomInC++_v00.docx -text
 doc/cf-arrays.jpeg -text
