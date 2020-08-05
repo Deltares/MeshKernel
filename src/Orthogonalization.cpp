@@ -161,10 +161,10 @@ bool GridGeom::Orthogonalization::PrapareOuterIteration(const Mesh& mesh)
         successful = AspectRatio(mesh);
     }
 
-    //compute weights orthogonalizer
+    //compute weights and rhs of orthogonalizer
     if (successful)
     {
-        successful = ComputeWeightsOrthogonalizer(mesh);
+        successful = ComputeWeightsAndRhsOrthogonalizer(mesh);
     }
 
     // compute local coordinates
@@ -562,33 +562,30 @@ bool GridGeom::Orthogonalization::ComputeWeightsSmoother(const Mesh& mesh)
 
 bool GridGeom::Orthogonalization::ComputeSmootherOperators(const Mesh& mesh)
 {
-    //allocate small administration arrays only once
-    std::vector<int> sharedFaces(maximumNumberOfEdgesPerNode, -1); //icell
-    std::vector<std::size_t> connectedNodes(maximumNumberOfConnectedNodes, 0); //adm%kk2
-    std::vector<std::vector<std::size_t>> faceNodeMapping(maximumNumberOfConnectedNodes, std::vector<std::size_t>(maximumNumberOfNodesPerFace, 0));//kkc
-    std::vector<double> xi(maximumNumberOfConnectedNodes, 0.0);
-    std::vector<double> eta(maximumNumberOfConnectedNodes, 0.0);
+    bool successful = InitializeSmoother(mesh);
 
-    m_numConnectedNodes.resize(mesh.GetNumNodes() , 0.0);
-    m_connectedNodes.resize(mesh.GetNumNodes() , std::vector<std::size_t>(maximumNumberOfConnectedNodes));
-    bool successful = InitializeTopologies(mesh);
+    if (!successful)
+    {
+        return false;
+    }
+
     for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
         int numSharedFaces = 0;
         int numConnectedNodes = 0;
         if (successful)
         {
-            successful = OrthogonalizationAdministration(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping);
+            successful = OrthogonalizationAdministration(mesh, n, numSharedFaces, numConnectedNodes);
         }
 
         if (successful)
         {
-            successful = ComputeXiEta(mesh, n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
+            successful = ComputeXiEta(mesh, n, numSharedFaces, numConnectedNodes);
         }
             
         if (successful)
         {
-            successful = SaveTopology(n, sharedFaces, numSharedFaces, connectedNodes, numConnectedNodes, faceNodeMapping, xi, eta);
+            successful = SaveTopology(n, numSharedFaces, numConnectedNodes);
         }
         
         if (successful)
@@ -638,11 +635,7 @@ bool GridGeom::Orthogonalization::ComputeSmootherOperators(const Mesh& mesh)
             }
             if (successful)
             {
-                successful = ComputeOperatorsNode(mesh, n,
-                    m_numTopologyNodes[currentTopology], m_topologyConnectedNodes[currentTopology],
-                    m_numTopologyFaces[currentTopology], m_topologySharedFaces[currentTopology],
-                    m_topologyXi[currentTopology], m_topologyEta[currentTopology],
-                    m_topologyFaceNodeMapping[currentTopology]);
+                successful = ComputeOperatorsNode(mesh, n, currentTopology);
             } 
         }
     }
@@ -654,44 +647,41 @@ bool GridGeom::Orthogonalization::ComputeLocalCoordinates(const Mesh& mesh)
 {
     if(mesh.m_projection == Projections::sphericalAccurate)
     {
-        //TODO : comp_local_coords
+        //TODO : missing implementation
         return true;
     }
 
     return true;
 }
 
-bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int currentNode,
-    const std::size_t& numConnectedNodes, const std::vector<std::size_t>& connectedNodes,
-    const std::size_t& numSharedFaces, const std::vector<int>& sharedFaces,
-    const std::vector<double>& xi, const std::vector<double>& eta,
-    const std::vector<std::vector<std::size_t>>& faceNodeMapping
-)
+bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, 
+                                                       int currentNode,
+                                                       int currentTopology)
 {
     // the current topology index
     int topologyIndex = m_nodeTopologyMapping[currentNode];
 
-    for (int f = 0; f < numSharedFaces; f++)
+    for (int f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
-        if (sharedFaces[f] < 0 || mesh.m_nodesTypes[currentNode] == 3) continue;
+        if (m_topologySharedFaces[currentTopology][f] < 0 || mesh.m_nodesTypes[currentNode] == 3) continue;
 
         int edgeLeft = f + 1;
         int edgeRight = edgeLeft + 1; 
-        if (edgeRight > numSharedFaces)
+        if (edgeRight > m_numTopologyFaces[currentTopology])
         {
-            edgeRight -= numSharedFaces;
+            edgeRight -= m_numTopologyFaces[currentTopology];
         }
 
-        double edgeLeftSquaredDistance = std::sqrt(xi[edgeLeft] * xi[edgeLeft] + eta[edgeLeft] * eta[edgeLeft] + 1e-16);
-        double edgeRightSquaredDistance = std::sqrt(xi[edgeRight] * xi[edgeRight] + eta[edgeRight] * eta[edgeRight] + 1e-16);
-        double cDPhi = (xi[edgeLeft] * xi[edgeRight] + eta[edgeLeft] * eta[edgeRight]) / (edgeLeftSquaredDistance * edgeRightSquaredDistance);
+        double edgeLeftSquaredDistance = std::sqrt(m_topologyXi[currentTopology][edgeLeft] * m_topologyXi[currentTopology][edgeLeft] + m_topologyEta[currentTopology][edgeLeft] * m_topologyEta[currentTopology][edgeLeft] + 1e-16);
+        double edgeRightSquaredDistance = std::sqrt(m_topologyXi[currentTopology][edgeRight] * m_topologyXi[currentTopology][edgeRight] + m_topologyEta[currentTopology][edgeRight] * m_topologyEta[currentTopology][edgeRight] + 1e-16);
+        double cDPhi = (m_topologyXi[currentTopology][edgeLeft] * m_topologyXi[currentTopology][edgeRight] + m_topologyEta[currentTopology][edgeLeft] * m_topologyEta[currentTopology][edgeRight]) / (edgeLeftSquaredDistance * edgeRightSquaredDistance);
 
-        auto numFaceNodes = mesh.GetNumFaceEdges(sharedFaces[f]);
+        auto numFaceNodes = mesh.GetNumFaceEdges(m_topologySharedFaces[currentTopology][f]);
 
         if (numFaceNodes == 3)
         {
             // determine the index of the current stencil node
-            int nodeIndex = FindIndex(mesh.m_facesNodes[sharedFaces[f]], currentNode);
+            int nodeIndex = FindIndex(mesh.m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
 
             int nodeLeft = nodeIndex - 1; if (nodeLeft < 0)nodeLeft += numFaceNodes;
             int nodeRight = nodeIndex + 1; if (nodeRight >= numFaceNodes) nodeRight -= numFaceNodes;
@@ -699,15 +689,15 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
             double alphaLeft = 0.5 * (1.0 - edgeLeftSquaredDistance / edgeRightSquaredDistance * cDPhi) * alpha;
             double alphaRight = 0.5 * (1.0 - edgeRightSquaredDistance / edgeLeftSquaredDistance * cDPhi) * alpha;
 
-            m_Az[topologyIndex][f][faceNodeMapping[f][nodeIndex]] = 1.0 - (alphaLeft + alphaRight);
-            m_Az[topologyIndex][f][faceNodeMapping[f][nodeLeft]] = alphaLeft;
-            m_Az[topologyIndex][f][faceNodeMapping[f][nodeRight]] = alphaRight;
+            m_Az[topologyIndex][f][m_topologyFaceNodeMapping[currentTopology][f][nodeIndex]] = 1.0 - (alphaLeft + alphaRight);
+            m_Az[topologyIndex][f][m_topologyFaceNodeMapping[currentTopology][f][nodeLeft]] = alphaLeft;
+            m_Az[topologyIndex][f][m_topologyFaceNodeMapping[currentTopology][f][nodeRight]] = alphaRight;
         }
         else
         {
-            for (int i = 0; i < faceNodeMapping[f].size(); i++)
+            for (int i = 0; i < m_topologyFaceNodeMapping[currentTopology][f].size(); i++)
             {
-                m_Az[topologyIndex][f][faceNodeMapping[f][i]] = 1.0 / double(numFaceNodes);
+                m_Az[topologyIndex][f][m_topologyFaceNodeMapping[currentTopology][f][i]] = 1.0 / double(numFaceNodes);
             }
         }
     }
@@ -726,22 +716,22 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
     double xiBoundary = 0.0;
     double etaBoundary = 0.0;
 
-    for (int f = 0; f < numSharedFaces; f++)
+    for (int f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
         auto edgeIndex = mesh.m_nodesEdges[currentNode][f];
         int otherNode = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
         int leftFace = mesh.m_edgesFaces[edgeIndex][0];
-        faceLeftIndex = FindIndex(sharedFaces, leftFace);
+        faceLeftIndex = FindIndex(m_topologySharedFaces[currentTopology], leftFace);
 
         // face not found, this happens when the cell is outside of the polygon
-        if (sharedFaces[faceLeftIndex] != leftFace)
+        if (m_topologySharedFaces[currentTopology][faceLeftIndex] != leftFace)
         {
             return false;
         }
 
         //by construction
-        double xiOne = xi[f + 1];
-        double etaOne = eta[f + 1];
+        double xiOne = m_topologyXi[currentTopology][f + 1];
+        double etaOne = m_topologyEta[currentTopology][f + 1];
 
         double leftRightSwap = 1.0;
         double leftXi = 0.0;
@@ -764,12 +754,12 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
             // swap Left and Right if the boundary is at the left with I_SWAP_LR
             if (f != faceLeftIndex) leftRightSwap = -1.0;
 
-            for (int i = 0; i < numConnectedNodes; i++)
+            for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
             {
-                leftXi += xi[i] * m_Az[topologyIndex][faceLeftIndex][i];
-                leftEta += eta[i] * m_Az[topologyIndex][faceLeftIndex][i];
-                m_leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[topologyIndex][faceLeftIndex][i];
-                m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[topologyIndex][faceLeftIndex][i];
+                leftXi += m_topologyXi[currentTopology][i] * m_Az[topologyIndex][faceLeftIndex][i];
+                leftEta += m_topologyEta[currentTopology][i] * m_Az[topologyIndex][faceLeftIndex][i];
+                m_leftXFaceCenter[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[topologyIndex][faceLeftIndex][i];
+                m_leftYFaceCenter[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[topologyIndex][faceLeftIndex][i];
             }
 
 
@@ -791,13 +781,13 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
         else
         {
             faceLeftIndex = f;
-            faceRightIndex = NextCircularBackwardIndex(faceLeftIndex, numSharedFaces);
+            faceRightIndex = NextCircularBackwardIndex(faceLeftIndex, m_numTopologyFaces[currentTopology]);
 
 
             if (faceRightIndex < 0) continue;
 
-            auto faceLeft = sharedFaces[faceLeftIndex];
-            auto faceRight = sharedFaces[faceRightIndex];
+            auto faceLeft = m_topologySharedFaces[currentTopology][faceLeftIndex];
+            auto faceRight = m_topologySharedFaces[currentTopology][faceRightIndex];
 
             if ((faceLeft != mesh.m_edgesFaces[edgeIndex][0] && faceLeft != mesh.m_edgesFaces[edgeIndex][1]) ||
                 (faceRight != mesh.m_edgesFaces[edgeIndex][0] && faceRight != mesh.m_edgesFaces[edgeIndex][1]))
@@ -805,17 +795,17 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
                 return false;
             }
 
-            for (int i = 0; i < numConnectedNodes; i++)
+            for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
             {
-                leftXi += xi[i] * m_Az[topologyIndex][faceLeftIndex][i];
-                leftEta += eta[i] * m_Az[topologyIndex][faceLeftIndex][i];
-                rightXi += xi[i] * m_Az[topologyIndex][faceRightIndex][i];
-                rightEta += eta[i] * m_Az[topologyIndex][faceRightIndex][i];
+                leftXi += m_topologyXi[currentTopology][i] * m_Az[topologyIndex][faceLeftIndex][i];
+                leftEta += m_topologyEta[currentTopology][i] * m_Az[topologyIndex][faceLeftIndex][i];
+                rightXi += m_topologyXi[currentTopology][i] * m_Az[topologyIndex][faceRightIndex][i];
+                rightEta += m_topologyEta[currentTopology][i] * m_Az[topologyIndex][faceRightIndex][i];
 
-                m_leftXFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[topologyIndex][faceLeftIndex][i];
-                m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[topologyIndex][faceLeftIndex][i];
-                m_leftYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].x * m_Az[topologyIndex][faceRightIndex][i];
-                m_rightYFaceCenter[f] += mesh.m_nodes[connectedNodes[i]].y * m_Az[topologyIndex][faceRightIndex][i];
+                m_leftXFaceCenter[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[topologyIndex][faceLeftIndex][i];
+                m_leftYFaceCenter[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[topologyIndex][faceLeftIndex][i];
+                m_leftYFaceCenter[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[topologyIndex][faceRightIndex][i];
+                m_rightYFaceCenter[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[topologyIndex][faceRightIndex][i];
             }
         }
 
@@ -852,7 +842,7 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
 
         int node1 = f + 1;
         int node0 = 0;
-        for (int i = 0; i < numConnectedNodes; i++)
+        for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
         {
             m_Gxi[topologyIndex][f][i] = facxiL * m_Az[topologyIndex][faceLeftIndex][i];
             m_Geta[topologyIndex][f][i] = facetaL * m_Az[topologyIndex][faceLeftIndex][i];
@@ -898,7 +888,7 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
     }
 
     //compute the node-to-node gradients
-    for (int f = 0; f < numSharedFaces; f++)
+    for (int f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
         // internal edge
         if (mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 2)
@@ -908,7 +898,7 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
             {
                 rightNode += mesh.m_nodesNumEdges[currentNode];
             }
-            for (int i = 0; i < numConnectedNodes; i++)
+            for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
             {
                 m_Jxi[topologyIndex][i] += m_Divxi[topologyIndex][f] * 0.5 * (m_Az[topologyIndex][f][i] + m_Az[topologyIndex][rightNode][i]);
                 m_Jeta[topologyIndex][i] += m_Diveta[topologyIndex][f] * 0.5 * (m_Az[topologyIndex][f][i] + m_Az[topologyIndex][rightNode][i]);
@@ -927,7 +917,7 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
     std::fill(m_ww2[topologyIndex].begin(), m_ww2[topologyIndex].end(), 0.0);
     for (int n = 0; n < mesh.m_nodesNumEdges[currentNode]; n++)
     {
-        for (int i = 0; i < numConnectedNodes; i++)
+        for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
         {
             m_ww2[topologyIndex][i] += m_Divxi[topologyIndex][n] * m_Gxi[topologyIndex][n][i] + m_Diveta[topologyIndex][n] * m_Geta[topologyIndex][n][i];
         }
@@ -939,16 +929,11 @@ bool GridGeom::Orthogonalization::ComputeOperatorsNode(const Mesh& mesh, int cur
 
 bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
     int currentNode,
-    const std::vector<int>& sharedFaces,
     const int& numSharedFaces,
-    const std::vector<std::size_t>& connectedNodes,
-    const std::size_t& numConnectedNodes,
-    const std::vector<std::vector<std::size_t>>& faceNodeMapping,
-    std::vector<double>& xi,
-    std::vector<double>& eta)
+    const int& numConnectedNodes)
 {
-    std::fill(xi.begin(), xi.end(), 0.0);
-    std::fill(eta.begin(), eta.end(), 0.0);
+    std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);
+    std::fill(m_etaCache.begin(), m_etaCache.end(), 0.0);
     // the angles for the squared nodes connected to the stencil nodes, first the ones directly connected, then the others
     std::vector<double> thetaSquare(numConnectedNodes, doubleMissingValue);
     // for each shared face, a bollean indicating if it is squared or not
@@ -960,7 +945,7 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
     for (int f = 0; f < numSharedFaces; f++)
     {
         auto edgeIndex = mesh.m_nodesEdges[currentNode][f];
-        auto nextNode = connectedNodes[f + 1]; // the first entry is always the stencil node 
+        auto nextNode = m_connectedNodesCache[f + 1]; // the first entry is always the stencil node 
         int faceLeft = mesh.m_edgesFaces[edgeIndex][0];
         int faceRigth = faceLeft;
 
@@ -1008,13 +993,13 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
                 thetaSquare[f + 1] = 0.5 * M_PI;
             }
 
-            if (sharedFaces[f] > 1)
+            if (m_sharedFacesCache[f] > 1)
             {
-                if (mesh.GetNumFaceEdges(sharedFaces[f]) == 4) numNonStencilQuad += 1;
+                if (mesh.GetNumFaceEdges(m_sharedFacesCache[f]) == 4) numNonStencilQuad += 1;
             }
-            if (sharedFaces[leftFaceIndex] > 1)
+            if (m_sharedFacesCache[leftFaceIndex] > 1)
             {
-                if (mesh.GetNumFaceEdges(sharedFaces[leftFaceIndex]) == 4) numNonStencilQuad += 1;
+                if (mesh.GetNumFaceEdges(m_sharedFacesCache[leftFaceIndex]) == 4) numNonStencilQuad += 1;
             }
             if (numNonStencilQuad > 3)
             {
@@ -1029,15 +1014,15 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
     for (int f = 0; f < numSharedFaces; f++)
     {
         // boundary face
-        if (sharedFaces[f] < 0) continue;
+        if (m_sharedFacesCache[f] < 0) continue;
 
         // non boundary face 
-        if (mesh.GetNumFaceEdges(sharedFaces[f]) == 4)
+        if (mesh.GetNumFaceEdges(m_sharedFacesCache[f]) == 4)
         {
-            for (int n = 0; n < mesh.GetNumFaceEdges(sharedFaces[f]); n++)
+            for (int n = 0; n < mesh.GetNumFaceEdges(m_sharedFacesCache[f]); n++)
             {
-                if (faceNodeMapping[f][n] <= numSharedFaces) continue;
-                thetaSquare[faceNodeMapping[f][n]] = 0.5 * M_PI;
+                if (m_faceNodeMappingCache[f][n] <= numSharedFaces) continue;
+                thetaSquare[m_faceNodeMappingCache[f][n]] = 0.5 * M_PI;
             }
         }
     }
@@ -1053,9 +1038,9 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
     for (int f = 0; f < numSharedFaces; f++)
     {
         // boundary face
-        if (sharedFaces[f] < 0) continue;
+        if (m_sharedFacesCache[f] < 0) continue;
 
-        auto numFaceNodes = mesh.GetNumFaceEdges(sharedFaces[f]);
+        auto numFaceNodes = mesh.GetNumFaceEdges(m_sharedFacesCache[f]);
         double phi = OptimalEdgeAngle(numFaceNodes);
 
         if (isSquareFace[f] || numFaceNodes == 4)
@@ -1124,7 +1109,7 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
     for (int f = 0; f < numSharedFaces; f++)
     {
         phi0 = phi0 + 0.5 * dPhi;
-        if (sharedFaces[f] < 0)
+        if (m_sharedFacesCache[f] < 0)
         {
             if (mesh.m_nodesTypes[currentNode] == 2)
             {
@@ -1146,7 +1131,7 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
             continue;
         }
 
-        int numFaceNodes = mesh.GetNumFaceEdges(sharedFaces[f]);
+        int numFaceNodes = mesh.GetNumFaceEdges(m_sharedFacesCache[f]);
         if (numFaceNodes > maximumNumberOfEdgesPerNode)
         {
             //TODO: add logger
@@ -1173,7 +1158,7 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
         phi0 = phi0 + 0.5 * dPhi;
 
         // determine the index of the current stencil node
-        int nodeIndex = FindIndex(mesh.m_facesNodes[sharedFaces[f]], currentNode);
+        int nodeIndex = FindIndex(mesh.m_facesNodes[m_sharedFacesCache[f]], currentNode);
 
         // optimal angle
         dTheta = 2.0 * M_PI / double(numFaceNodes);
@@ -1182,8 +1167,8 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
         int previousNode = NextCircularForwardIndex(nodeIndex, numFaceNodes);
         int nextNode = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
 
-        if ((faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode]) == -1 ||
-            (faceNodeMapping[f][nextNode] - faceNodeMapping[f][previousNode]) == mesh.m_nodesNumEdges[currentNode])
+        if ((m_faceNodeMappingCache[f][nextNode] - m_faceNodeMappingCache[f][previousNode]) == -1 ||
+            (m_faceNodeMappingCache[f][nextNode] - m_faceNodeMappingCache[f][previousNode]) == mesh.m_nodesNumEdges[currentNode])
         {
             dTheta = -dTheta;
         }
@@ -1197,17 +1182,17 @@ bool GridGeom::Orthogonalization::ComputeXiEta(const Mesh& mesh,
             double xip = radius - radius * std::cos(theta);
             double ethap = -radius * std::sin(theta);
 
-            xi[faceNodeMapping[f][n]] = xip * std::cos(phi0) - aspectRatio * ethap * std::sin(phi0);
-            eta[faceNodeMapping[f][n]] = xip * std::sin(phi0) + aspectRatio * ethap * std::cos(phi0);
+            m_xiCache[m_faceNodeMappingCache[f][n]] = xip * std::cos(phi0) - aspectRatio * ethap * std::sin(phi0);
+            m_etaCache[m_faceNodeMappingCache[f][n]] = xip * std::sin(phi0) + aspectRatio * ethap * std::cos(phi0);
         }
     }
 
     return true;
 }
 
-bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& mesh, const int currentNode, std::vector<int>& sharedFaces, int& numSharedFaces, std::vector<std::size_t>& connectedNodes, int& numConnectedNodes, std::vector<std::vector<std::size_t>>& faceNodeMapping)
+bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& mesh, const int currentNode, int& numSharedFaces, int& numConnectedNodes)
 {
-    for (auto& f : sharedFaces)  f = -1;
+    for (auto& f : m_sharedFacesCache)  f = -1;
 
     if (mesh.m_nodesNumEdges[currentNode] < 2) return true;
 
@@ -1249,17 +1234,17 @@ bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& me
         //corner face (already found in the first iteration)
         if (mesh.m_nodesNumEdges[currentNode] == 2 && e == 1 && mesh.m_nodesTypes[currentNode] == 3)
         {
-            if (sharedFaces[0] == newFaceIndex) newFaceIndex = -999;
+            if (m_sharedFacesCache[0] == newFaceIndex) newFaceIndex = -999;
         }
-        sharedFaces[numSharedFaces] = newFaceIndex;
+        m_sharedFacesCache[numSharedFaces] = newFaceIndex;
         numSharedFaces += 1;
     }
 
     if (numSharedFaces < 1) return true;
 
-    for (auto& v : connectedNodes) v = 0;
+    for (auto& v : m_connectedNodesCache) v = 0;
     int connectedNodesIndex = 0;
-    connectedNodes[connectedNodesIndex] = currentNode;
+    m_connectedNodesCache[connectedNodesIndex] = currentNode;
 
     // edge connected nodes
     for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
@@ -1267,7 +1252,7 @@ bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& me
         auto edgeIndex = mesh.m_nodesEdges[currentNode][e];
         auto node = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
         connectedNodesIndex++;
-        connectedNodes[connectedNodesIndex] = node;
+        m_connectedNodesCache[connectedNodesIndex] = node;
         if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
         {
             m_connectedNodes[currentNode].resize(connectedNodesIndex);
@@ -1276,15 +1261,15 @@ bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& me
     }
 
     // for each face store the positions of the its nodes in the connectedNodes (compressed array)
-    if (faceNodeMapping.size() < numSharedFaces)
+    if (m_faceNodeMappingCache.size() < numSharedFaces)
     {
-        faceNodeMapping.resize(numSharedFaces, std::vector<std::size_t>(maximumNumberOfNodesPerFace, 0));
+        m_faceNodeMappingCache.resize(numSharedFaces, std::vector<std::size_t>(maximumNumberOfNodesPerFace, 0));
     }
 
 
     for (int f = 0; f < numSharedFaces; f++)
     {
-        int faceIndex = sharedFaces[f];
+        int faceIndex = m_sharedFacesCache[f];
         if (faceIndex < 0) continue;
 
         // find the stencil node position  in the current face
@@ -1313,10 +1298,10 @@ bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& me
             bool isNewNode = true;
             for (int n = 0; n < connectedNodesIndex + 1; n++)
             {
-                if (node == connectedNodes[n])
+                if (node == m_connectedNodesCache[n])
                 {
                     isNewNode = false;
-                    faceNodeMapping[f][faceNodeIndex] = n;
+                    m_faceNodeMappingCache[f][faceNodeIndex] = n;
                     break;
                 }
             }
@@ -1324,8 +1309,8 @@ bool GridGeom::Orthogonalization::OrthogonalizationAdministration(const Mesh& me
             if (isNewNode)
             {
                 connectedNodesIndex++;
-                connectedNodes[connectedNodesIndex] = node;
-                faceNodeMapping[f][faceNodeIndex] = connectedNodesIndex;
+                m_connectedNodesCache[connectedNodesIndex] = node;
+                m_faceNodeMappingCache[f][faceNodeIndex] = connectedNodesIndex;
                 if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
                 {
                     m_connectedNodes[currentNode].resize(connectedNodesIndex);
@@ -1491,13 +1476,8 @@ bool GridGeom::Orthogonalization::AspectRatio(const Mesh& mesh)
     return true;
 }
 
-bool GridGeom::Orthogonalization::ComputeWeightsOrthogonalizer(const Mesh& mesh)
+bool GridGeom::Orthogonalization::ComputeWeightsAndRhsOrthogonalizer(const Mesh& mesh)
 {
-    double localOrthogonalizationToSmoothingFactor = 1.0;
-    double localOrthogonalizationToSmoothingFactorSymmetric = 1.0 - localOrthogonalizationToSmoothingFactor;
-    constexpr double mu = 1.0;
-    Point normal;
-
     std::fill(m_rightHandSide.begin(), m_rightHandSide.end(), std::vector<double>(2, 0.0));
     for (auto n = 0; n < mesh.GetNumNodes() ; n++)
     {
@@ -1508,22 +1488,29 @@ bool GridGeom::Orthogonalization::ComputeWeightsOrthogonalizer(const Mesh& mesh)
 
         for (auto nn = 0; nn < mesh.m_nodesNumEdges[n]; nn++)
         {
-            auto edgeIndex = mesh.m_nodesEdges[n][nn];
+
+            const auto edgeIndex = mesh.m_nodesEdges[n][nn];
             double aspectRatio = m_aspectRatios[edgeIndex];
+            m_weights[n][nn] = 0.0;
 
             if (aspectRatio != doubleMissingValue)
             {
-                m_weights[n][nn] = localOrthogonalizationToSmoothingFactor * aspectRatio + localOrthogonalizationToSmoothingFactorSymmetric * mu;
+                // internal nodes
+                m_weights[n][nn] = aspectRatio;
 
                 if (mesh.m_edgesNumFaces[edgeIndex] == 1)
                 {
                     //boundary nodes
+                    m_weights[n][nn] = 0.5 * aspectRatio;
+
+                    // compute the edge length
                     Point neighbouringNode = mesh.m_nodes[m_nodesNodes[n][nn]];
                     double neighbouringNodeDistance = Distance(neighbouringNode, mesh.m_nodes[n], mesh.m_projection);
                     double aspectRatioByNodeDistance = aspectRatio * neighbouringNodeDistance;
 
                     auto leftFace = mesh.m_edgesFaces[edgeIndex][0];
                     bool flippedNormal;
+                    Point normal;
                     NormalVectorInside(mesh.m_nodes[n], neighbouringNode, mesh.m_facesMassCenters[leftFace], normal, flippedNormal, mesh.m_projection);
                     
                     if(mesh.m_projection==Projections::spherical && mesh.m_projection != Projections::sphericalAccurate)
@@ -1531,20 +1518,10 @@ bool GridGeom::Orthogonalization::ComputeWeightsOrthogonalizer(const Mesh& mesh)
                         normal.x = normal.x * std::cos(degrad_hp * 0.5 * (mesh.m_nodes[n].y + neighbouringNode.y));
                     }
 
-                    m_rightHandSide[n][0] += localOrthogonalizationToSmoothingFactor * neighbouringNodeDistance * normal.x / 2.0 +
-                        localOrthogonalizationToSmoothingFactorSymmetric * aspectRatioByNodeDistance * normal.x * 0.5 / mu;
-
-                    m_rightHandSide[n][1] += localOrthogonalizationToSmoothingFactor * neighbouringNodeDistance * normal.y / 2.0 +
-                        localOrthogonalizationToSmoothingFactorSymmetric * aspectRatioByNodeDistance * normal.y * 0.5 / mu;
-
-                    m_weights[n][nn] = localOrthogonalizationToSmoothingFactor * 0.5 * aspectRatio +
-                        localOrthogonalizationToSmoothingFactorSymmetric * 0.5 * mu;
+                    m_rightHandSide[n][0] +=  neighbouringNodeDistance * normal.x * 0.5;
+                    m_rightHandSide[n][1] +=  neighbouringNodeDistance * normal.y * 0.5;
                 }
 
-            }
-            else
-            {
-                m_weights[n][nn] = 0.0;
             }
         }
 
@@ -1570,18 +1547,56 @@ double GridGeom::Orthogonalization::MatrixNorm(const std::vector<double>& x, con
 }
 
 
-bool GridGeom::Orthogonalization::InitializeTopologies(const Mesh& mesh)
+bool GridGeom::Orthogonalization::InitializeSmoother(const Mesh& mesh)
 {
-    // topology 
+    // local matrices caches
+    m_numConnectedNodes.resize(mesh.GetNumNodes());
+    std::fill(m_numConnectedNodes.begin(), m_numConnectedNodes.end(), 0.0);
+
+    m_connectedNodes.resize(mesh.GetNumNodes());
+    std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<std::size_t>(maximumNumberOfConnectedNodes));
+
+    m_sharedFacesCache.resize(maximumNumberOfEdgesPerNode, -1);
+    std::fill(m_sharedFacesCache.begin(), m_sharedFacesCache.end(), -1);
+
+    m_connectedNodesCache.resize(maximumNumberOfConnectedNodes, 0);
+    std::fill(m_connectedNodesCache.begin(), m_connectedNodesCache.end(), 0);
+
+    m_faceNodeMappingCache.resize(maximumNumberOfConnectedNodes);
+    std::fill(m_faceNodeMappingCache.begin(), m_faceNodeMappingCache.end(), std::vector<std::size_t>(maximumNumberOfNodesPerFace, 0));
+
+    m_xiCache.resize(maximumNumberOfConnectedNodes, 0.0);
+    std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);
+
+    m_etaCache.resize(maximumNumberOfConnectedNodes, 0.0);
+    std::fill(m_etaCache.begin(), m_etaCache.end(), 0.0);
+
+    // topology
     m_numTopologies = 0;
-    m_nodeTopologyMapping.resize(mesh.GetNumNodes() , -1);
-    m_numTopologyNodes.resize(m_topologyInitialSize, -1);
-    m_numTopologyFaces.resize(m_topologyInitialSize, -1);
-    m_topologyXi.resize(m_topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
-    m_topologyEta.resize(m_topologyInitialSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
-    m_topologySharedFaces.resize(m_topologyInitialSize, std::vector<int>(maximumNumberOfConnectedNodes, -1));
-    m_topologyConnectedNodes.resize(m_topologyInitialSize, std::vector<std::size_t>(maximumNumberOfConnectedNodes, -1));
-    m_topologyFaceNodeMapping.resize(m_topologyInitialSize, std::vector<std::vector<std::size_t>>(maximumNumberOfConnectedNodes, std::vector<std::size_t>(maximumNumberOfConnectedNodes, -1)));
+
+    m_nodeTopologyMapping.resize(mesh.GetNumNodes());
+    std::fill(m_nodeTopologyMapping.begin(), m_nodeTopologyMapping.end(), -1);
+
+    m_numTopologyNodes.resize(m_topologyInitialSize);
+    std::fill(m_numTopologyNodes.begin(), m_numTopologyNodes.end(),-1);
+
+    m_numTopologyFaces.resize(m_topologyInitialSize);
+    std::fill(m_numTopologyFaces.begin(), m_numTopologyFaces.end(),-1);
+
+    m_topologyXi.resize(m_topologyInitialSize);
+    std::fill(m_topologyXi.begin(), m_topologyXi.end(), std::vector<double>(maximumNumberOfConnectedNodes, 0));
+
+    m_topologyEta.resize(m_topologyInitialSize);
+    std::fill(m_topologyEta.begin(), m_topologyEta.end(), std::vector<double>(maximumNumberOfConnectedNodes, 0));
+
+    m_topologySharedFaces.resize(m_topologyInitialSize);
+    std::fill(m_topologySharedFaces.begin(), m_topologySharedFaces.end(), std::vector<int>(maximumNumberOfConnectedNodes, -1));
+
+    m_topologyConnectedNodes.resize(m_topologyInitialSize);
+    std::fill(m_topologyConnectedNodes.begin(), m_topologyConnectedNodes.end(), std::vector<std::size_t>(maximumNumberOfConnectedNodes, -1));
+
+    m_topologyFaceNodeMapping.resize(m_topologyInitialSize);
+    std::fill(m_topologyFaceNodeMapping.begin(), m_topologyFaceNodeMapping.end(), std::vector<std::vector<std::size_t>>(maximumNumberOfConnectedNodes, std::vector<std::size_t>(maximumNumberOfConnectedNodes, -1)));
 
     return true;
 }
@@ -1606,13 +1621,8 @@ bool GridGeom::Orthogonalization::AllocateNodeOperators(int topologyIndex)
 
 
 bool GridGeom::Orthogonalization::SaveTopology(int currentNode,
-    const std::vector<int>& sharedFaces,
-    int numSharedFaces,
-    const std::vector<std::size_t>& connectedNodes,
-    int numConnectedNodes,
-    const std::vector<std::vector<std::size_t>>& faceNodeMapping,
-    const std::vector<double>& xi,
-    const std::vector<double>& eta)
+                                               int numSharedFaces,
+                                               int numConnectedNodes)
 {
     bool isNewTopology = true;
     for (int topo = 0; topo < m_numTopologies; topo++)
@@ -1625,7 +1635,7 @@ bool GridGeom::Orthogonalization::SaveTopology(int currentNode,
         isNewTopology = false;
         for (int n = 1; n < numConnectedNodes; n++)
         {
-            double thetaLoc = std::atan2(eta[n], xi[n]);
+            double thetaLoc = std::atan2(m_etaCache[n], m_xiCache[n]);
             double thetaTopology = std::atan2(m_topologyEta[topo][n], m_topologyXi[topo][n]);
             if (std::abs(thetaLoc - thetaTopology) > m_thetaTolerance)
             {
@@ -1659,12 +1669,12 @@ bool GridGeom::Orthogonalization::SaveTopology(int currentNode,
 
         int topologyIndex = m_numTopologies - 1;
         m_numTopologyNodes[topologyIndex] = numConnectedNodes;
-        m_topologyConnectedNodes[topologyIndex] = connectedNodes;
+        m_topologyConnectedNodes[topologyIndex] = m_connectedNodesCache;
         m_numTopologyFaces[topologyIndex] = numSharedFaces;
-        m_topologySharedFaces[topologyIndex] = sharedFaces;
-        m_topologyXi[topologyIndex] = xi;
-        m_topologyEta[topologyIndex] = eta;
-        m_topologyFaceNodeMapping[topologyIndex] = faceNodeMapping;
+        m_topologySharedFaces[topologyIndex] = m_sharedFacesCache;
+        m_topologyXi[topologyIndex] = m_xiCache;
+        m_topologyEta[topologyIndex] = m_etaCache;
+        m_topologyFaceNodeMapping[topologyIndex] = m_faceNodeMappingCache;
         m_nodeTopologyMapping[currentNode] = topologyIndex;
     }
 
