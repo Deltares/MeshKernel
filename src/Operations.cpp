@@ -866,6 +866,7 @@ namespace GridGeom
             }
             return dis;
         }
+
         if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstNodeCartesian;
@@ -921,6 +922,7 @@ namespace GridGeom
                 return dis;
             }
         }
+
         return -1.0;
     }
 
