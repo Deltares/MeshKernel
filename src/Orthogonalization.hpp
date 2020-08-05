@@ -1,4 +1,5 @@
 #pragma once
+/// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize the internal mesh angles).
 
 #include <vector>
 #include "LandBoundaries.hpp"
@@ -11,140 +12,75 @@ namespace GridGeom
     enum class Projections;
     class Mesh;
 
-    /// <summary>
-    /// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize the internal mesh angles).
-    /// </summary>
     class Orthogonalization
     {
 
     public:
         
-        bool Set(Mesh& mesh,
-            int& isTriangulationRequired,
-            int& isAccountingForLandBoundariesRequired,
-            int& projectToLandBoundaryOption,
-            GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
-            const Polygons& polygon,
-            std::vector<Point>& landBoundaries);
+        /// <summary>
+        /// Set algorithm parameters
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="isTriangulationRequired"></param>
+        /// <param name="isAccountingForLandBoundariesRequired"></param>
+        /// <param name="projectToLandBoundaryOption"></param>
+        /// <param name="orthogonalizationParametersNative"></param>
+        /// <param name="polygon"></param>
+        /// <param name="landBoundaries"></param>
+        /// <returns></returns>
+        bool Set( Mesh& mesh,
+                  int& isTriangulationRequired,
+                  int& isAccountingForLandBoundariesRequired,
+                  int& projectToLandBoundaryOption,
+                  GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
+                  const Polygons& polygon,
+                  std::vector<Point>& landBoundaries );
 
+        /// <summary>
+        /// Executes the algorithm
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
         bool Iterate(Mesh& mesh);
 
+        /// <summary>
+        /// Prepares the outer iteration, calculates orthogonalizer and smoother coefficents.
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
         bool PrapareOuterIteration(const Mesh& mesh);
 
+        /// <summary>
+        /// Performs an inner iteration
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
         bool InnerIteration(Mesh& mesh);
 
+        /// <summary>
+        /// Performs an outer iteration
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
         bool FinalizeOuterIteration(Mesh& mesh);
 
+        /// <summary>
+        /// Gets the orthogonality values
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="orthogonality"></param>
+        /// <returns></returns>
         bool GetOrthogonality(const Mesh& mesh, double* orthogonality);
 
+        /// <summary>
+        /// Gets the smoothness values
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="smoothness"></param>
+        /// <returns></returns>
         bool GetSmoothness(const Mesh& mesh, double* smoothness);
 
     private:
-
-        /// <summary>
-        /// Project mesh nodes back to the boundary of an original mesh (orthonet_project_on_boundary)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool ProjectOnOriginalMeshBoundary(Mesh& mesh);
-
-        /// snapping nodes to land boundaries
-
-        /// <summary>
-        /// Project nodes on land boundaries 
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="landBoundaries"></param>
-        /// <returns></returns>
-        bool ProjectOnLandBoundary(Mesh& mesh, const LandBoundaries& landBoundaries);
-
-        /// <summary>
-        /// Inverse-mapping elliptic smoother (orthonet_compweights_smooth)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool ComputeWeightsSmoother(const Mesh& mesh);
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool ComputeSmootherOperators(const Mesh& mesh);
-
-        /// comp_local_coords
-
-        /// <summary>
-        /// Compute nodes local coordinates, only for sphericalAccurate projections (comp_local_coords)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool ComputeLocalCoordinates(const Mesh& mesh);
-
-        /// <summary>
-        /// Compute coefficient matrix G of gradient at edge, compute coefficientmatrix Div of gradient in node, compute coefficientmatrix Az of face center (orthonet_comp_operators)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="numConnectedNodes"></param>
-        /// <param name="connectedNodes"></param>
-        /// <param name="numSharedFaces"></param>
-        /// <param name="sharedFaces"></param>
-        /// <param name="xi"></param>
-        /// <param name="eta"></param>
-        /// <param name="faceNodeMapping"></param>
-        /// <returns></returns>
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="currentTopology"></param>
-        /// <returns></returns>
-        bool ComputeOperatorsNode(const Mesh& mesh, 
-                                  int currentNode, 
-                                  int currentTopology);
-
-        /// <summary>
-        /// Assign xi and eta to all nodes in the stencil (orthonet_assign_xieta)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="numSharedFaces"></param>
-        /// <param name="numConnectedNodes"></param>
-        /// <returns></returns>
-        bool ComputeXiEta(const Mesh& mesh, 
-                          int currentNode, 
-                          const int& numSharedFaces, 
-                          const int& numConnectedNodes);
-
-
-        /// <summary>
-        /// Computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="numSharedFaces"></param>
-        /// <param name="numConnectedNodes"></param>
-        /// <returns></returns>
-        bool OrthogonalizationAdministration(const Mesh& mesh, 
-                                             const int currentNode, 
-                                             int& numSharedFaces, 
-                                             int& numConnectedNodes);
-
-        /// <summary>
-        /// Compute optimal angle
-        /// </summary>
-        /// <param name="numFaceNodes"></param>
-        /// <param name="theta1"></param>
-        /// <param name="theta2"></param>
-        /// <param name="isBoundaryEdge"></param>
-        /// <returns></returns>
-        double OptimalEdgeAngle(int numFaceNodes, 
-                                double theta1 = -1.0, 
-                                double theta2 = -1.0, 
-                                bool isBoundaryEdge = false);
 
         /// <summary>
         /// Computes the aspect ratio of each edge (orthonet_compute_aspect)
@@ -161,7 +97,7 @@ namespace GridGeom
         bool ComputeWeightsAndRhsOrthogonalizer(const Mesh& mesh);
 
         /// <summary>
-        /// Initialize mesh topologies. A topology is determined by how many nodes are connected to a specific node.
+        /// Initialize mesh topologies. A topology is determined by how many nodes are connected to the current node.
         /// There are at maximum mesh.m_numNodes topologies
         /// </summary>
         /// <param name="mesh"></param>
@@ -169,32 +105,113 @@ namespace GridGeom
         bool InitializeSmoother(const Mesh& mesh);
 
         /// <summary>
+        /// Computes all operators of the elliptic smoother 
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
+        bool ComputeSmootherOperators(const Mesh& mesh);
+
+        /// <summary>
+        /// Compute nodes local coordinates, only for sphericalAccurate projections (comp_local_coords)
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
+        bool ComputeLocalCoordinates(const Mesh& mesh);
+
+        /// <summary>
+        /// Inverse-mapping elliptic smoother, mesh monitor matrix (orthonet_compweights_smooth)
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
+        bool ComputeSmootherWeights(const Mesh& mesh);
+
+        /// <summary>
+        /// Computes operators of the elliptic smoother by Node (orthonet_comp_operators)
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="currentNode"></param>
+        /// <returns></returns>
+        bool ComputeSmootherOperatorsNode(const Mesh& mesh,
+                                          int currentNode);
+
+        /// <summary>
+        /// Compute compute current node xi and eta (orthonet_assign_xieta)
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="currentNode"></param>
+        /// <param name="numSharedFaces"></param>
+        /// <param name="numConnectedNodes"></param>
+        /// <returns></returns>
+        bool SmootherComputeNodeXiEta(const Mesh& mesh, 
+                                      int currentNode, 
+                                      const int& numSharedFaces, 
+                                      const int& numConnectedNodes);
+
+        /// <summary>
+        /// Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="currentNode"></param>
+        /// <param name="numSharedFaces"></param>
+        /// <param name="numConnectedNodes"></param>
+        /// <returns></returns>
+        bool SmootherNodeAdministration(const Mesh& mesh, 
+                                        const int currentNode, 
+                                        int& numSharedFaces, 
+                                        int& numConnectedNodes);
+
+        /// <summary>
+        /// Project mesh nodes back to the boundary of an original mesh (orthonet_project_on_boundary)
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
+        bool ProjectOnOriginalMeshBoundary(Mesh& mesh);
+
+        /// <summary>
+        /// Compute optimal angle
+        /// </summary>
+        /// <param name="numFaceNodes"></param>
+        /// <param name="theta1"></param>
+        /// <param name="theta2"></param>
+        /// <param name="isBoundaryEdge"></param>
+        /// <returns></returns>
+        double OptimalEdgeAngle(int numFaceNodes, 
+                                double theta1 = -1.0, 
+                                double theta2 = -1.0, 
+                                bool isBoundaryEdge = false);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="topologyIndex"></param>
         /// <returns></returns>
-        bool AllocateNodeOperators(int topologyIndex);
-
-        /// save only the unique topologies
+        bool AllocateSmootherNodeOperators(int topologyIndex);
 
         /// <summary>
-        /// Save unique topologies
+        /// If it is a new topology, save it
         /// </summary>
         /// <param name="currentNode"></param>
-        /// <param name="sharedFaces"></param>
         /// <param name="numSharedFaces"></param>
-        /// <param name="connectedNodes"></param>
         /// <param name="numConnectedNodes"></param>
-        /// <param name="faceNodeMapping"></param>
-        /// <param name="xi"></param>
-        /// <param name="eta"></param>
         /// <returns></returns>
-        bool SaveTopology(int currentNode, 
-                          int numSharedFaces, 
-                          int numConnectedNodes);
+        bool SmootherSaveNodeTopologyIfNeeded(int currentNode, 
+                                  int numSharedFaces, 
+                                  int numConnectedNodes);
 
+        /// <summary>
+        /// Computes how much the coordinates have to be incremented every inner iteration
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
         bool ComputeIncrements(const Mesh& mesh);
 
+        /// <summary>
+        /// Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
+        /// </summary>
+        /// <param name="currentNode"></param>
+        /// <param name="mesh"></param>
+        /// <param name="J"></param>
+        /// <returns></returns>
         bool ComputeJacobian(int currentNode, const Mesh& mesh, std::vector<double>& J) const;
 
         /// <summary>
@@ -209,7 +226,7 @@ namespace GridGeom
                           const std::vector<double>& matCoefficents);
 
         /// <summary>
-        /// Compute local increments
+        /// 
         /// </summary>
         /// <param name="wwx"></param>
         /// <param name="wwy"></param>
@@ -250,101 +267,98 @@ namespace GridGeom
         /// <returns></returns>
         bool DeallocateCaches();
 
-        std::vector<std::vector<std::vector<double>>> m_Az;
-        std::vector<std::vector<std::vector<double>>> m_Gxi;
-        std::vector<std::vector<std::vector<double>>> m_Geta;
-        std::vector<std::vector<double>> m_Divxi;
-        std::vector<std::vector<double>> m_Diveta;
-        std::vector<std::vector<double>> m_Jxi;
-        std::vector<std::vector<double>> m_Jeta;
-        std::vector<std::vector<double>> m_ww2;
+        // land boundaries
+        LandBoundaries m_landBoundaries;
 
-        // caching smoother arrays
-        std::vector<int> m_sharedFacesCache;
-        std::vector<std::size_t> m_connectedNodesCache;
-        std::vector<std::vector<std::size_t>> m_faceNodeMappingCache;
-        std::vector<double> m_xiCache;
-        std::vector<double> m_etaCache;
+        // polygons
+        Polygons m_polygons;
 
-        int m_numTopologies = 0;
-        std::vector<int> m_nodeTopologyMapping;
-        std::vector<int> m_numTopologyNodes;
-        std::vector<int> m_numTopologyFaces;
-        std::vector<std::vector<double>> m_topologyXi;
-        std::vector<std::vector<double>> m_topologyEta;
-        std::vector<std::vector<int>> m_topologySharedFaces;
+        // elliptic smoother
+        std::vector<std::vector<std::vector<double>>>      m_Gxi;                    // Node to edge xi derivative
+        std::vector<std::vector<std::vector<double>>>      m_Geta;                   // Node to edge etha derivative
+        std::vector<std::vector<double>>                   m_Divxi;                  // Edge to node xi derivative
+        std::vector<std::vector<double>>                   m_Diveta;                 // Edge to node etha derivative
+        std::vector<std::vector<std::vector<double>>>      m_Az;                     // Coefficents to estimate values at cell circumcenters
+                                                                                     
+        std::vector<std::vector<double>>                   m_Jxi;                    // Node to node xi derivative (Jacobian)
+        std::vector<std::vector<double>>                   m_Jeta;                   // Node to node eta derivative (Jacobian)
+        std::vector<std::vector<double>>                   m_ww2;                    // weights
+                                                                           
+        std::vector<int>                                   m_sharedFacesCache;
+        std::vector<std::size_t>                           m_connectedNodesCache;
+        std::vector<std::vector<std::size_t>>              m_faceNodeMappingCache;
+        std::vector<double>                                m_xiCache;
+        std::vector<double>                                m_etaCache;
+
+        std::vector<int>                                   m_boundaryEdgesCache;
+        std::vector<double>                                m_leftXFaceCenterCache;
+        std::vector<double>                                m_leftYFaceCenterCache;
+        std::vector<double>                                m_rightXFaceCenterCache;
+        std::vector<double>                                m_rightYFaceCenterCache;
+        std::vector<double>                                m_xisCache;
+        std::vector<double>                                m_etasCache;
+
+        std::vector<double>                                m_rightHandSideCache;
+        std::vector<int>                                   m_startCacheIndex;
+        std::vector<int>                                   m_endCacheIndex;
+        int m_cacheSize = 0;
+                                                           
+        int m_numTopologies = 0;                           
+        std::vector<int>                                   m_nodeTopologyMapping;
+        std::vector<int>                                   m_numTopologyNodes;
+        std::vector<int>                                   m_numTopologyFaces;
+        std::vector<std::vector<double>>                   m_topologyXi;
+        std::vector<std::vector<double>>                   m_topologyEta;
+        std::vector<std::vector<int>>                      m_topologySharedFaces;
         std::vector<std::vector<std::vector<std::size_t>>> m_topologyFaceNodeMapping;
-        std::vector < std::vector<std::size_t>>  m_topologyConnectedNodes;
+        std::vector < std::vector<std::size_t>>            m_topologyConnectedNodes;
 
-        std::vector<double> m_aspectRatios;
-        std::vector<std::vector<double>> m_ww2Global;
-        std::vector<int> m_numConnectedNodes;                                    // nmk2, determined from local node administration
-        std::vector<std::vector<std::size_t>> m_connectedNodes;                  // kk2, determined from local node administration
-        std::vector<int> m_localCoordinatesIndexes;                              // iloc
-        std::vector<Point> m_localCoordinates;                                   // xloc,yloc 
-                                                                                 
-        // run-time options                                                      
+        std::vector<double>                                m_aspectRatios;
+        std::vector<std::vector<double>>                   m_ww2Global;
+        std::vector<int>                                   m_numConnectedNodes;        // nmk2, determined from local node administration
+        std::vector<std::vector<std::size_t>>              m_connectedNodes;           // kk2, determined from local node administration
+        std::vector<int>                                   m_localCoordinatesIndexes;  // iloc
+        std::vector<Point>                                 m_localCoordinates;         // xloc,yloc 
+
+        std::vector<std::vector<double>>                   m_weights;
+        std::vector<std::vector<double>>                   m_rightHandSide;
+        std::size_t                                        m_maxNumNeighbours;
+        std::vector< std::vector<int>>                     m_nodesNodes;               //node neighbours 
+
+        // orthogonalization iterations
+        std::vector<std::vector<double>>                   m_ww2x;
+        std::vector<std::vector<double>>                   m_ww2y;
+        std::vector<Point>                                 m_orthogonalCoordinates;
+        std::vector<int>                                   m_nearestPoints;
+        std::vector<Point>                                 m_originalNodes;
+
+        std::vector<int>                                   m_k1;
+        std::vector<double>                                m_wwx;
+        std::vector<double>                                m_wwy;
+
+        // nodes with errors
+        std::vector<double>                                m_nodeXErrors;
+        std::vector<double>                                m_nodeYErrors;
+        std::vector<int>                                   m_nodeErrorCode;
+
+        // run-time paramters                                                      
         bool m_keepCircumcentersAndMassCenters = false;                          
-        double m_orthogonalizationToSmoothingFactor = 0.975;                     // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
-        double m_orthogonalizationToSmoothingFactorBoundary = 1.0;               // ATPF_B minimum ATPF on the boundary
-        double m_smoothorarea = 1.0;                                             // Factor between smoother(1.0) and area - homogenizer(0.0)
+        double m_orthogonalizationToSmoothingFactor = 0.975;                          // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
+        double m_orthogonalizationToSmoothingFactorBoundary = 1.0;                    // ATPF_B minimum ATPF on the boundary
+        double m_smoothorarea = 1.0;                                                  // Factor between smoother(1.0) and area - homogenizer(0.0)
         int m_orthogonalizationOuterIterations = 2;
         int m_orthogonalizationBoundaryIterations = 25;
         int m_orthogonalizationInnerIterations = 25;
 
         static constexpr int m_topologyInitialSize = 10;
         static constexpr double m_thetaTolerance = 1e-4;
-
-        std::vector<std::vector<double>>  m_weights;
-        std::vector<std::vector<double>>  m_rightHandSide;
-
         int m_maximumNumConnectedNodes = 0;
         int m_maximumNumSharedFaces = 0;
-        std::size_t m_maxNumNeighbours;
-        std::vector< std::vector<int>> m_nodesNodes;                              //node neighbours 
-
-        //local caches (avoid re-allocation)
-        std::vector<int> m_boundaryEdges;
-        std::vector<double> m_leftXFaceCenter;
-        std::vector<double> m_leftYFaceCenter;
-        std::vector<double> m_rightXFaceCenter;
-        std::vector<double> m_rightYFaceCenter;
-        std::vector<double> m_xis;
-        std::vector<double> m_etas;
-
-        // orthogonalization iterations
-        std::vector<std::vector<double>> m_ww2x;
-        std::vector<std::vector<double>> m_ww2y;
-        std::vector<Point> m_orthogonalCoordinates;
-        std::vector<int> m_nearestPoints;
-        std::vector<Point> m_originalNodes;
-
-        std::vector<int> m_k1;
-        std::vector<double> m_wwx;
-        std::vector<double> m_wwy;
-        std::vector<double> m_rightHandSideCache;
-        std::vector<int> m_startCacheIndex;
-        std::vector<int> m_endCacheIndex;
-        int m_cacheSize = 0;
-        
         double m_mumax;
         double m_mu;
 
-        // nodes with errors
-        std::vector<double> m_nodeXErrors;
-        std::vector<double> m_nodeYErrors;
-        std::vector<int>    m_nodeErrorCode;
-
-        // the land boundaries
-        LandBoundaries m_landBoundaries;
-
-        // polygons
-        Polygons m_polygons;
-
         int m_isTriangulationRequired;
-
         int m_isAccountingForLandBoundariesRequired;
-        
         int m_projectToLandBoundaryOption;
     };
 }
