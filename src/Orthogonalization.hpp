@@ -11,6 +11,9 @@ namespace GridGeom
     enum class Projections;
     class Mesh;
 
+    /// <summary>
+    /// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize the internal mesh angles).
+    /// </summary>
     class Orthogonalization
     {
 
@@ -63,7 +66,7 @@ namespace GridGeom
         bool ComputeWeightsSmoother(const Mesh& mesh);
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -72,7 +75,7 @@ namespace GridGeom
         /// comp_local_coords
 
         /// <summary>
-        /// (comp_local_coords)
+        /// Compute nodes local coordinates, only for sphericalAccurate projections (comp_local_coords)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -91,57 +94,44 @@ namespace GridGeom
         /// <param name="eta"></param>
         /// <param name="faceNodeMapping"></param>
         /// <returns></returns>
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="currentNode"></param>
+        /// <param name="currentTopology"></param>
+        /// <returns></returns>
         bool ComputeOperatorsNode(const Mesh& mesh, 
                                   int currentNode, 
-                                  const std::size_t& numConnectedNodes, 
-                                  const std::vector<std::size_t>& connectedNodes, 
-                                  const std::size_t& numSharedFaces, 
-                                  const std::vector<int>& sharedFaces,
-                                  const std::vector<double>& xi, 
-                                  const std::vector<double>& eta, 
-                                  const std::vector<std::vector<std::size_t>>& faceNodeMapping);
+                                  int currentTopology);
 
         /// <summary>
         /// Assign xi and eta to all nodes in the stencil (orthonet_assign_xieta)
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="currentNode"></param>
-        /// <param name="sharedFaces"></param>
         /// <param name="numSharedFaces"></param>
-        /// <param name="connectedNodes"></param>
         /// <param name="numConnectedNodes"></param>
-        /// <param name="faceNodeMapping"></param>
-        /// <param name="xi"></param>
-        /// <param name="eta"></param>
         /// <returns></returns>
         bool ComputeXiEta(const Mesh& mesh, 
                           int currentNode, 
-                          const std::vector<int>& sharedFaces, 
                           const int& numSharedFaces, 
-                          const std::vector<std::size_t>& connectedNodes,
-                          const std::size_t& numConnectedNodes, 
-                          const std::vector<std::vector<std::size_t>>& faceNodeMapping, 
-                          std::vector<double>& xi, 
-                          std::vector<double>& eta);
+                          const int& numConnectedNodes);
+
 
         /// <summary>
         /// Computes the shared faces and the connected nodes of a stencil node and the faceNodeMapping in the connectedNodes array for each shared face
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="currentNode"></param>
-        /// <param name="sharedFaces"></param>
         /// <param name="numSharedFaces"></param>
-        /// <param name="connectedNodes"></param>
         /// <param name="numConnectedNodes"></param>
-        /// <param name="faceNodeMapping"></param>
         /// <returns></returns>
         bool OrthogonalizationAdministration(const Mesh& mesh, 
                                              const int currentNode, 
-                                             std::vector<int>& sharedFaces, 
                                              int& numSharedFaces, 
-                                             std::vector<std::size_t>& connectedNodes, 
-                                             int& numConnectedNodes, 
-                                             std::vector<std::vector<std::size_t>>& faceNodeMapping);
+                                             int& numConnectedNodes);
 
         /// <summary>
         /// Compute optimal angle
@@ -164,18 +154,19 @@ namespace GridGeom
         bool AspectRatio(const Mesh& mesh);
 
         /// <summary>
-        /// compute weights ww and right - hand side rhs in orthogonalizer (orthonet_compweights)
+        /// compute orthogonalizer weights equation 3.10 of dflowfm manual (orthonet_compweights)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ComputeWeightsOrthogonalizer(const Mesh& mesh);
+        bool ComputeWeightsAndRhsOrthogonalizer(const Mesh& mesh);
 
         /// <summary>
-        /// Initialize available mesh topologies
+        /// Initialize mesh topologies. A topology is determined by how many nodes are connected to a specific node.
+        /// There are at maximum mesh.m_numNodes topologies
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool InitializeTopologies(const Mesh& mesh);
+        bool InitializeSmoother(const Mesh& mesh);
 
         /// <summary>
         /// 
@@ -199,13 +190,8 @@ namespace GridGeom
         /// <param name="eta"></param>
         /// <returns></returns>
         bool SaveTopology(int currentNode, 
-                          const std::vector<int>& sharedFaces, 
                           int numSharedFaces, 
-                          const std::vector<std::size_t>& connectedNodes, 
-                          int numConnectedNodes,
-                          const std::vector<std::vector<std::size_t>>& faceNodeMapping, 
-                          const std::vector<double>& xi, 
-                          const std::vector<double>& eta);
+                          int numConnectedNodes);
 
         bool ComputeIncrements(const Mesh& mesh);
 
@@ -272,6 +258,13 @@ namespace GridGeom
         std::vector<std::vector<double>> m_Jxi;
         std::vector<std::vector<double>> m_Jeta;
         std::vector<std::vector<double>> m_ww2;
+
+        // caching smoother arrays
+        std::vector<int> m_sharedFacesCache;
+        std::vector<std::size_t> m_connectedNodesCache;
+        std::vector<std::vector<std::size_t>> m_faceNodeMappingCache;
+        std::vector<double> m_xiCache;
+        std::vector<double> m_etaCache;
 
         int m_numTopologies = 0;
         std::vector<int> m_nodeTopologyMapping;

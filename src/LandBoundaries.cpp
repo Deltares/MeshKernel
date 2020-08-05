@@ -39,9 +39,7 @@ namespace GridGeom
         return true;
     };
 
-    /// admin_landboundary_segments
-    /// The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary
-    /// TODO: ? Why splitting in two segments is required?
+
     bool LandBoundaries::Administrate(Mesh& mesh, Polygons& polygons)
     {
         if (m_numNode<=0)
