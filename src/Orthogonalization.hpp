@@ -308,8 +308,6 @@ namespace GridGeom
         std::vector<double>                                m_rightYFaceCenterCache;
         std::vector<double>                                m_xisCache;
         std::vector<double>                                m_etasCache;
-        std::vector<int>                                   m_compressedEndNodeIndex;
-        std::vector<int>                                   m_compressedStartNodeIndex;
         int m_nodeCacheSize = 0;
                   
         // Smoother topologies
@@ -341,6 +339,8 @@ namespace GridGeom
         std::vector<Point>                                 m_originalNodes;
 
         // Linear system terms
+        std::vector<int>                                   m_compressedEndNodeIndex;
+        std::vector<int>                                   m_compressedStartNodeIndex;
         std::vector<double>                                m_compressedWeightX;
         std::vector<double>                                m_compressedWeightY;
         std::vector<double>                                m_compressedRhs;
