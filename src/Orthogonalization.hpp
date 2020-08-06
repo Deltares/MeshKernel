@@ -1,5 +1,5 @@
 #pragma once
-/// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize the internal mesh angles).
+/// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize internal face angles).
 
 #include <vector>
 #include "LandBoundaries.hpp"
@@ -41,7 +41,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool Iterate(Mesh& mesh);
+        bool Compute(Mesh& mesh);
 
         /// <summary>
         /// Prepares the outer iteration, calculates orthogonalizer and smoother coefficents.
@@ -90,7 +90,7 @@ namespace GridGeom
         bool AspectRatio(const Mesh& mesh);
 
         /// <summary>
-        /// compute orthogonalizer weights equation 3.10 of dflowfm manual (orthonet_compweights)
+        /// Computes orthogonalizer weights equation 3.10 of dflowfm technical reference manual (orthonet_compweights)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -98,7 +98,7 @@ namespace GridGeom
 
         /// <summary>
         /// Initialize mesh topologies. A topology is determined by how many nodes are connected to the current node.
-        /// There are at maximum mesh.m_numNodes topologies
+        /// There are at maximum mesh.m_numNodes topologies, most likeley much less
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -109,10 +109,18 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
+        bool ComputeSmootherTopologies(const Mesh& mesh);
+
+
+        /// <summary>
+        /// Computes all operators of the elliptic smoother 
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
         bool ComputeSmootherOperators(const Mesh& mesh);
 
         /// <summary>
-        /// Compute nodes local coordinates, only for sphericalAccurate projections (comp_local_coords)
+        /// Compute nodes local coordinates, only for sphericalAccurate projection (comp_local_coords)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -126,7 +134,7 @@ namespace GridGeom
         bool ComputeSmootherWeights(const Mesh& mesh);
 
         /// <summary>
-        /// Computes operators of the elliptic smoother by Node (orthonet_comp_operators)
+        /// Computes operators of the elliptic smoother by node (orthonet_comp_operators)
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="currentNode"></param>
@@ -148,7 +156,7 @@ namespace GridGeom
                                       const int& numConnectedNodes);
 
         /// <summary>
-        /// Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node
+        /// Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="currentNode"></param>
@@ -168,7 +176,7 @@ namespace GridGeom
         bool ProjectOnOriginalMeshBoundary(Mesh& mesh);
 
         /// <summary>
-        /// Compute optimal angle
+        /// Compute optimal edge angle
         /// </summary>
         /// <param name="numFaceNodes"></param>
         /// <param name="theta1"></param>
@@ -181,7 +189,7 @@ namespace GridGeom
                                 bool isBoundaryEdge = false);
 
         /// <summary>
-        /// 
+        /// Allocate smoother operators
         /// </summary>
         /// <param name="topologyIndex"></param>
         /// <returns></returns>
@@ -194,16 +202,17 @@ namespace GridGeom
         /// <param name="numSharedFaces"></param>
         /// <param name="numConnectedNodes"></param>
         /// <returns></returns>
-        bool SmootherSaveNodeTopologyIfNeeded(int currentNode, 
-                                  int numSharedFaces, 
-                                  int numConnectedNodes);
+        bool SaveSmootherNodeTopologyIfNeeded(int currentNode, 
+                                              int numSharedFaces, 
+                                              int numConnectedNodes);
 
         /// <summary>
-        /// Computes how much the coordinates have to be incremented every inner iteration
+        /// Computes how much the coordinates have to be incremented every inner iteration.
+        /// Assembles the contributions of smoother and orthogonalizer
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ComputeIncrements(const Mesh& mesh);
+        bool ComputeSmootherAndOrthogonalizerIncrements(const Mesh& mesh);
 
         /// <summary>
         /// Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
@@ -215,7 +224,7 @@ namespace GridGeom
         bool ComputeJacobian(int currentNode, const Mesh& mesh, std::vector<double>& J) const;
 
         /// <summary>
-        /// Compute the matric norm
+        /// Compute the matrix norm
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -267,29 +276,28 @@ namespace GridGeom
         /// <returns></returns>
         bool DeallocateCaches();
 
-        // land boundaries
+        // Land boundaries
         LandBoundaries m_landBoundaries;
 
-        // polygons
+        // Polygons
         Polygons m_polygons;
 
-        // elliptic smoother
+        // Smoother operators
         std::vector<std::vector<std::vector<double>>>      m_Gxi;                    // Node to edge xi derivative
         std::vector<std::vector<std::vector<double>>>      m_Geta;                   // Node to edge etha derivative
         std::vector<std::vector<double>>                   m_Divxi;                  // Edge to node xi derivative
         std::vector<std::vector<double>>                   m_Diveta;                 // Edge to node etha derivative
-        std::vector<std::vector<std::vector<double>>>      m_Az;                     // Coefficents to estimate values at cell circumcenters
-                                                                                     
+        std::vector<std::vector<std::vector<double>>>      m_Az;                     // Coefficents to estimate values at cell circumcenters                                                                         
         std::vector<std::vector<double>>                   m_Jxi;                    // Node to node xi derivative (Jacobian)
         std::vector<std::vector<double>>                   m_Jeta;                   // Node to node eta derivative (Jacobian)
         std::vector<std::vector<double>>                   m_ww2;                    // weights
-                                                                           
+           
+        // Smoother local caches
         std::vector<int>                                   m_sharedFacesCache;
         std::vector<std::size_t>                           m_connectedNodesCache;
         std::vector<std::vector<std::size_t>>              m_faceNodeMappingCache;
         std::vector<double>                                m_xiCache;
         std::vector<double>                                m_etaCache;
-
         std::vector<int>                                   m_boundaryEdgesCache;
         std::vector<double>                                m_leftXFaceCenterCache;
         std::vector<double>                                m_leftYFaceCenterCache;
@@ -297,12 +305,11 @@ namespace GridGeom
         std::vector<double>                                m_rightYFaceCenterCache;
         std::vector<double>                                m_xisCache;
         std::vector<double>                                m_etasCache;
-
-        std::vector<double>                                m_rightHandSideCache;
-        std::vector<int>                                   m_startCacheIndex;
-        std::vector<int>                                   m_endCacheIndex;
-        int m_cacheSize = 0;
-                                                           
+        std::vector<int>                                   m_compressedEndNodeIndex;
+        std::vector<int>                                   m_compressedStartNodeIndex;
+        int m_nodeCacheSize = 0;
+                  
+        // Smoother topologies
         int m_numTopologies = 0;                           
         std::vector<int>                                   m_nodeTopologyMapping;
         std::vector<int>                                   m_numTopologyNodes;
@@ -314,34 +321,40 @@ namespace GridGeom
         std::vector < std::vector<std::size_t>>            m_topologyConnectedNodes;
 
         std::vector<double>                                m_aspectRatios;
-        std::vector<std::vector<double>>                   m_ww2Global;
-        std::vector<int>                                   m_numConnectedNodes;        // nmk2, determined from local node administration
-        std::vector<std::vector<std::size_t>>              m_connectedNodes;           // kk2, determined from local node administration
-        std::vector<int>                                   m_localCoordinatesIndexes;  // iloc
-        std::vector<Point>                                 m_localCoordinates;         // xloc,yloc 
+        std::vector<std::vector<double>>                   m_wSmoother;
+        std::vector<int>                                   m_numConnectedNodes;        // (nmk2)
+        std::vector<std::vector<std::size_t>>              m_connectedNodes;           // (kk2)
+        std::vector<int>                                   m_localCoordinatesIndexes;  // (iloc)
+        std::vector<Point>                                 m_localCoordinates;         // (xloc,yloc) 
 
-        std::vector<std::vector<double>>                   m_weights;
-        std::vector<std::vector<double>>                   m_rightHandSide;
+        std::vector<std::vector<double>>                   m_wOrthogonalizer;
+        std::vector<std::vector<double>>                   m_rhsOrthogonalizer;
         std::size_t                                        m_maxNumNeighbours;
-        std::vector< std::vector<int>>                     m_nodesNodes;               //node neighbours 
+        std::vector<std::vector<int>>                      m_nodesNodes;               // node neighbours 
 
         // orthogonalization iterations
-        std::vector<std::vector<double>>                   m_ww2x;
-        std::vector<std::vector<double>>                   m_ww2y;
         std::vector<Point>                                 m_orthogonalCoordinates;
         std::vector<int>                                   m_nearestPoints;
         std::vector<Point>                                 m_originalNodes;
 
-        std::vector<int>                                   m_k1;
-        std::vector<double>                                m_wwx;
-        std::vector<double>                                m_wwy;
+        // Linear system terms
+        std::vector<double>                                m_compressedWeightX;
+        std::vector<double>                                m_compressedWeightY;
+        std::vector<double>                                m_compressedRhs;
+        std::vector<int>                                   m_compressedNodesNodes;
+
+        // Class variables
+        int m_maximumNumConnectedNodes = 0;
+        int m_maximumNumSharedFaces = 0;
+        double m_mumax;
+        double m_mu;
 
         // nodes with errors
         std::vector<double>                                m_nodeXErrors;
         std::vector<double>                                m_nodeYErrors;
         std::vector<int>                                   m_nodeErrorCode;
 
-        // run-time paramters                                                      
+        // run-time algorithm parameters                                                      
         bool m_keepCircumcentersAndMassCenters = false;                          
         double m_orthogonalizationToSmoothingFactor = 0.975;                          // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
         double m_orthogonalizationToSmoothingFactorBoundary = 1.0;                    // ATPF_B minimum ATPF on the boundary
@@ -349,16 +362,11 @@ namespace GridGeom
         int m_orthogonalizationOuterIterations = 2;
         int m_orthogonalizationBoundaryIterations = 25;
         int m_orthogonalizationInnerIterations = 25;
-
-        static constexpr int m_topologyInitialSize = 10;
-        static constexpr double m_thetaTolerance = 1e-4;
-        int m_maximumNumConnectedNodes = 0;
-        int m_maximumNumSharedFaces = 0;
-        double m_mumax;
-        double m_mu;
-
         int m_isTriangulationRequired;
         int m_isAccountingForLandBoundariesRequired;
         int m_projectToLandBoundaryOption;
+
+        static constexpr int m_topologyInitialSize = 10;
+        static constexpr double m_thetaTolerance = 1e-4;
     };
 }

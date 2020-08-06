@@ -298,7 +298,7 @@ namespace GridGeomApi
             orthogonalizationParametersNative,
             polygon,
             landBoundaries);
-        ortogonalization.Iterate(meshInstances[gridStateId]);
+        ortogonalization.Compute(meshInstances[gridStateId]);
         return 0;
     }
 
