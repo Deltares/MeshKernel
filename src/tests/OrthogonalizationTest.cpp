@@ -55,7 +55,7 @@ TEST(Orthogonalization, OrthogonalizationOneQuadOneTriangle)
         polygon,
         landBoundary);
 
-    orthogonalization.Iterate(mesh);
+    orthogonalization.Compute(mesh);
 
     // Assert
     constexpr double tolerance = 1e-8;
@@ -101,7 +101,7 @@ TEST(Orthogonalization, OrthogonalizationSmallTriangularGrid)
         polygon,
         landBoundary);
 
-    orthogonalization.Iterate(mesh);
+    orthogonalization.Compute(mesh);
 
     constexpr double tolerance = 1e-2;
 
@@ -157,7 +157,7 @@ TEST(Orthogonalization, OrthogonalizationSmallTriangularGridAsNcFile)
         polygon,
         landBoundary);
 
-    orthogonalization.Iterate(mesh);
+    orthogonalization.Compute(mesh);
 
     constexpr double tolerance = 1e-2;
 
@@ -223,7 +223,7 @@ TEST(Orthogonalization, OrthogonalizationMediumTriangularGridWithPolygon)
         polygon,
         landBoundary);
 
-    orthogonalization.Iterate(mesh);
+    orthogonalization.Compute(mesh);
 
     constexpr double tolerance =1.8;
     // check the first 10 points
@@ -279,7 +279,7 @@ TEST(Orthogonalization, OrthogonalizationMediumTriangularGrid)
         polygon,
         landBoundary);
 
-    orthogonalization.Iterate(mesh);
+    orthogonalization.Compute(mesh);
 
     constexpr double tolerance = 1.2;
 
@@ -379,7 +379,7 @@ TEST(Orthogonalization, OrthogonalizeAndSnapToLandBoundaries)
         polygon,
         landBoundary);
 
-    orthogonalization.Iterate(mesh);
+    orthogonalization.Compute(mesh);
 
     // check the values
     constexpr double tolerance = 0.15;
@@ -436,7 +436,7 @@ TEST(Orthogonalization, OrthogonalizationSphericalRectangular)
         polygon,
         landBoundary);
 
-    orthogonalization.Iterate(mesh);
+    orthogonalization.Compute(mesh);
 
     // check the values
     constexpr double tolerance = 1e-6;
@@ -524,7 +524,7 @@ TEST(MeshRefinement, SmallTriangulargridSpherical)
         polygon,
         landBoundary);
 
-    orthogonalization.Iterate(mesh);
+    orthogonalization.Compute(mesh);
 
     constexpr double tolerance = 1e-3;
 
