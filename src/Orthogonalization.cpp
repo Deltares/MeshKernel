@@ -1758,10 +1758,10 @@ bool GridGeom::Orthogonalization::GetSmoothness(const Mesh& mesh, double* smooth
         {
             if (e < mesh.GetNumEdges() && mesh.m_edgesNumFaces[e] == 2)
             {
-                int leftFace = mesh.m_edgesFaces[e][0];
-                int rightFace = mesh.m_edgesFaces[e][1];
-                double leftFaceArea = mesh.m_faceArea[leftFace];
-                double rightFaceArea = mesh.m_faceArea[rightFace];
+                const auto leftFace = mesh.m_edgesFaces[e][0];
+                const auto rightFace = mesh.m_edgesFaces[e][1];
+                const auto leftFaceArea = mesh.m_faceArea[leftFace];
+                const auto rightFaceArea = mesh.m_faceArea[rightFace];
 
                 if (leftFaceArea< minimumCellArea || rightFaceArea< minimumCellArea)
                 {

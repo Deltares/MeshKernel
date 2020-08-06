@@ -46,28 +46,28 @@ namespace GridGeom
         bool Compute(Mesh& mesh);
 
         /// <summary>
-        /// Prepares the outer iteration, calculates orthogonalizer and smoother coefficents.
+        /// Prepares the outer iteration, calculates orthogonalizer and smoother coefficents
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
         bool PrapareOuterIteration(const Mesh& mesh);
 
         /// <summary>
-        /// Performs an inner iteration
+        /// Performs an inner iteration (update of node positions)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
         bool InnerIteration(Mesh& mesh);
 
         /// <summary>
-        /// Performs an outer iteration
+        /// Performs an outer iteration (re-computes the operators)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
         bool FinalizeOuterIteration(Mesh& mesh);
 
         /// <summary>
-        /// Gets the orthogonality values
+        /// Gets the orthogonality values (innerproduct edges and face circumcenter connecting segments)
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="orthogonality"></param>
@@ -75,7 +75,7 @@ namespace GridGeom
         bool GetOrthogonality(const Mesh& mesh, double* orthogonality);
 
         /// <summary>
-        /// Gets the smoothness values
+        /// Gets the smoothness values (face area ratios)
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="smoothness"></param>
@@ -99,7 +99,7 @@ namespace GridGeom
         bool ComputeWeightsAndRhsOrthogonalizer(const Mesh& mesh);
 
         /// <summary>
-        /// Initialize mesh topologies. A topology is determined by how many nodes are connected to the current node.
+        /// Initialize smoother topologies. A topology is determined by how many nodes are connected to the current node.
         /// There are at maximum mesh.m_numNodes topologies, most likeley much less
         /// </summary>
         /// <param name="mesh"></param>
@@ -107,12 +107,11 @@ namespace GridGeom
         bool InitializeSmoother(const Mesh& mesh);
 
         /// <summary>
-        /// Computes all operators of the elliptic smoother 
+        /// Computes all topologies of the elliptic smoother 
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
         bool ComputeSmootherTopologies(const Mesh& mesh);
-
 
         /// <summary>
         /// Computes all operators of the elliptic smoother 
@@ -122,14 +121,14 @@ namespace GridGeom
         bool ComputeSmootherOperators(const Mesh& mesh);
 
         /// <summary>
-        /// Compute nodes local coordinates, only for sphericalAccurate projection (comp_local_coords)
+        /// Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
         bool ComputeLocalCoordinates(const Mesh& mesh);
 
         /// <summary>
-        /// Inverse-mapping elliptic smoother, mesh monitor matrix (orthonet_compweights_smooth)
+        /// Computes the smoother weights from the operators (orthonet_compweights_smooth)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -145,6 +144,19 @@ namespace GridGeom
                                           int currentNode);
 
         /// <summary>
+        /// Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="currentNode"></param>
+        /// <param name="numSharedFaces"></param>
+        /// <param name="numConnectedNodes"></param>
+        /// <returns></returns>
+        bool SmootherNodeAdministration(const Mesh& mesh,
+            const int currentNode,
+            int& numSharedFaces,
+            int& numConnectedNodes);
+
+        /// <summary>
         /// Compute compute current node xi and eta (orthonet_assign_xieta)
         /// </summary>
         /// <param name="mesh"></param>
@@ -157,18 +169,7 @@ namespace GridGeom
                                       const int& numSharedFaces, 
                                       const int& numConnectedNodes);
 
-        /// <summary>
-        /// Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="numSharedFaces"></param>
-        /// <param name="numConnectedNodes"></param>
-        /// <returns></returns>
-        bool SmootherNodeAdministration(const Mesh& mesh, 
-                                        const int currentNode, 
-                                        int& numSharedFaces, 
-                                        int& numConnectedNodes);
+
 
         /// <summary>
         /// Project mesh nodes back to the boundary of an original mesh (orthonet_project_on_boundary)
@@ -266,14 +267,14 @@ namespace GridGeom
         bool UpdateNodeCoordinates(int nodeIndex, const Mesh& mesh);
 
         /// <summary>
-        /// Allocate caches
+        /// Allocate linear system arrays
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
         bool AllocateLinearSystem(const Mesh& mesh);
 
         /// <summary>
-        /// Deallocate caches
+        /// Deallocate linear system arrays
         /// </summary>
         /// <returns></returns>
         bool DeallocateLinearSystem();
