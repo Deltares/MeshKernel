@@ -1,5 +1,4 @@
 #pragma once
-/// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize internal face angles).
 
 #include <vector>
 #include "LandBoundaries.hpp"
@@ -12,6 +11,9 @@ namespace GridGeom
     enum class Projections;
     class Mesh;
 
+    /// <summary>
+    /// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize internal face angles or area).
+    /// </summary>
     class Orthogonalization
     {
 
@@ -212,7 +214,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ComputeSmootherAndOrthogonalizerIncrements(const Mesh& mesh);
+        bool ComputeLinearSystemTerms(const Mesh& mesh);
 
         /// <summary>
         /// Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
@@ -261,20 +263,20 @@ namespace GridGeom
         /// <param name="nodeIndex"></param>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ComputeOrthogonalCoordinates(int nodeIndex, const Mesh& mesh);
+        bool UpdateNodeCoordinates(int nodeIndex, const Mesh& mesh);
 
         /// <summary>
         /// Allocate caches
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool AllocateCaches(const Mesh& mesh);
+        bool AllocateLinearSystem(const Mesh& mesh);
 
         /// <summary>
         /// Deallocate caches
         /// </summary>
         /// <returns></returns>
-        bool DeallocateCaches();
+        bool DeallocateLinearSystem();
 
         // Land boundaries
         LandBoundaries m_landBoundaries;

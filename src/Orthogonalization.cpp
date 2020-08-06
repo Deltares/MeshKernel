@@ -124,20 +124,18 @@ bool GridGeom::Orthogonalization::Compute(Mesh& mesh)
                 if (successful)
                 {
                     successful = InnerIteration(mesh);
-                }
-                    
-            } // inner iter, inner iteration
+                }        
+            } // inner iteration
         } // boundary iter
 
         //update mu
         if (successful)
         {
             successful = FinalizeOuterIteration(mesh);
-        }
-            
+        }    
     }// outer iter
 
-    DeallocateCaches();
+    DeallocateLinearSystem();
 
     return true;
 }
@@ -166,39 +164,40 @@ bool GridGeom::Orthogonalization::PrapareOuterIteration(const Mesh& mesh)
         successful = ComputeLocalCoordinates(mesh);
     }
 
-    //compute smoother topologies
+    // compute smoother topologies
     if (successful)
     {
         successful = ComputeSmootherTopologies(mesh);
     }
 
-    //compute smoother topologies
+    // compute smoother topologies
     if (successful)
     {
         successful = ComputeSmootherOperators(mesh);
     }
 
-    //compute weights smoother
+    // compute weights smoother
     if (successful)
     {
         successful = ComputeSmootherWeights(mesh);
     }
     
-    //allocate orthogonalization caches
+    // allocate linear system for smoother and orthogonalizer
     if (successful)
     {
-        successful = AllocateCaches(mesh);
+        successful = AllocateLinearSystem(mesh);
     }
 
+    // compute linear system terms for smoother and orthogonalizer
     if (successful)
     {
-        successful = ComputeSmootherAndOrthogonalizerIncrements(mesh);
+        successful = ComputeLinearSystemTerms(mesh);
     }
     return successful;
 }
 
 
-bool GridGeom::Orthogonalization::AllocateCaches(const Mesh& mesh) 
+bool GridGeom::Orthogonalization::AllocateLinearSystem(const Mesh& mesh) 
 {
     bool successful = true;
     // reallocate caches
@@ -228,7 +227,7 @@ bool GridGeom::Orthogonalization::AllocateCaches(const Mesh& mesh)
 }
 
 
-bool GridGeom::Orthogonalization::DeallocateCaches() 
+bool GridGeom::Orthogonalization::DeallocateLinearSystem() 
 {
     m_compressedRhs.resize(0);
     m_compressedEndNodeIndex.resize(0);
@@ -254,7 +253,7 @@ bool GridGeom::Orthogonalization::FinalizeOuterIteration(Mesh& mesh)
     return true;
 }
 
-bool GridGeom::Orthogonalization::ComputeSmootherAndOrthogonalizerIncrements(const Mesh& mesh)
+bool GridGeom::Orthogonalization::ComputeLinearSystemTerms(const Mesh& mesh)
 {
     double max_aptf = std::max(m_orthogonalizationToSmoothingFactorBoundary, m_orthogonalizationToSmoothingFactor);
 #pragma omp parallel for
@@ -314,7 +313,7 @@ bool GridGeom::Orthogonalization::InnerIteration(Mesh& mesh)
 #pragma omp parallel for
 	for (int n = 0; n < mesh.GetNumNodes() ; n++)
     {
-	    ComputeOrthogonalCoordinates(n, mesh);   
+	    UpdateNodeCoordinates(n, mesh);   
     }
 	
     // update mesh node coordinates
@@ -1815,6 +1814,60 @@ bool GridGeom::Orthogonalization::ComputeJacobian(int currentNode, const Mesh& m
     return true;
 }
 
+bool GridGeom::Orthogonalization::UpdateNodeCoordinates(int nodeIndex, const Mesh& mesh)
+{
+    int numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];    
+    double dx0 = 0.0;
+    double dy0 = 0.0;
+    double increments[2]{ 0.0, 0.0 };
+    for (int nn = 1, cacheIndex = m_compressedEndNodeIndex[nodeIndex]; nn < numConnectedNodes; nn++, cacheIndex++)
+    {
+        ComputeLocalIncrements(m_compressedWeightX[cacheIndex], m_compressedWeightY[cacheIndex], m_compressedNodesNodes[cacheIndex], nodeIndex, mesh, dx0, dy0, increments);
+    }
+
+    if (increments[0] <= 1e-8 || increments[1] <= 1e-8)
+    {
+        return true;
+    }
+
+    int firstCacheIndex = nodeIndex * 2;
+    dx0 = (dx0 + m_compressedRhs[firstCacheIndex]) / increments[0];
+    dy0 = (dy0 + m_compressedRhs[firstCacheIndex + 1]) / increments[1];
+    constexpr double relaxationFactor = 0.75;
+    if (mesh.m_projection == Projections::cartesian || mesh.m_projection == Projections::spherical)
+    {
+        double x0 = mesh.m_nodes[nodeIndex].x + dx0;
+        double y0 = mesh.m_nodes[nodeIndex].y + dy0;
+        static constexpr double relaxationFactorCoordinates = 1.0 - relaxationFactor;
+
+        m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * mesh.m_nodes[nodeIndex].x;
+        m_orthogonalCoordinates[nodeIndex].y = relaxationFactor * y0 + relaxationFactorCoordinates * mesh.m_nodes[nodeIndex].y;
+    }
+    if (mesh.m_projection == Projections::sphericalAccurate)
+    {
+        Point localPoint{ relaxationFactor * dx0, relaxationFactor * dy0 };
+
+        double exxp[3];
+        double eyyp[3];
+        double ezzp[3];
+        ComputeThreeBaseComponents(mesh.m_nodes[nodeIndex], exxp, eyyp, ezzp);
+
+        //get 3D-coordinates in rotated frame
+        Cartesian3DPoint cartesianLocalPoint;
+        SphericalToCartesian(localPoint, cartesianLocalPoint);
+
+        //project to fixed frame
+        Cartesian3DPoint transformedCartesianLocalPoint;
+        transformedCartesianLocalPoint.x = exxp[0] * cartesianLocalPoint.x + eyyp[0] * cartesianLocalPoint.y + ezzp[0] * cartesianLocalPoint.z;
+        transformedCartesianLocalPoint.y = exxp[1] * cartesianLocalPoint.x + eyyp[1] * cartesianLocalPoint.y + ezzp[1] * cartesianLocalPoint.z;
+        transformedCartesianLocalPoint.z = exxp[2] * cartesianLocalPoint.x + eyyp[2] * cartesianLocalPoint.y + ezzp[2] * cartesianLocalPoint.z;
+
+        //tranform to spherical coordinates
+        CartesianToSpherical(transformedCartesianLocalPoint, mesh.m_nodes[nodeIndex].x, m_orthogonalCoordinates[nodeIndex]);
+    }
+    return true;
+}
+
 bool GridGeom::Orthogonalization::ComputeLocalIncrements(double wwx, double wwy, int currentNode, int n, const Mesh& mesh, double& dx0, double& dy0, double* increments)
 {
 
@@ -1827,7 +1880,7 @@ bool GridGeom::Orthogonalization::ComputeLocalIncrements(double wwx, double wwy,
         dx0 = dx0 + wwxTransformed * (mesh.m_nodes[currentNode].x - mesh.m_nodes[n].x);
         dy0 = dy0 + wwyTransformed * (mesh.m_nodes[currentNode].y - mesh.m_nodes[n].y);
     }
-        
+
     if (mesh.m_projection == Projections::spherical)
     {
         wwxTransformed = wwx * earth_radius * degrad_hp *
@@ -1850,64 +1903,5 @@ bool GridGeom::Orthogonalization::ComputeLocalIncrements(double wwx, double wwy,
     increments[0] += wwxTransformed;
     increments[1] += wwyTransformed;
 
-    return true;
-}
-
-bool GridGeom::Orthogonalization::ComputeOrthogonalCoordinates(int nodeIndex, const Mesh& mesh)
-{
-    int maxnn = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];    
- 
-    double dx0 = 0.0;
-    double dy0 = 0.0;
-    double increments[2]{ 0.0, 0.0 };
-    for (int nn = 1, cacheIndex = m_compressedEndNodeIndex[nodeIndex]; nn < maxnn; nn++, cacheIndex++)
-    {
-        auto wwx = m_compressedWeightX[cacheIndex];
-        auto wwy = m_compressedWeightY[cacheIndex];
-        auto k1 = m_compressedNodesNodes[cacheIndex];
-
-        ComputeLocalIncrements(wwx, wwy, m_compressedNodesNodes[cacheIndex], nodeIndex, mesh, dx0, dy0, increments);
-    }
-
-    if (increments[0] <= 1e-8 || increments[1] <= 1e-8)
-    {
-        return true;
-    }
-
-    int firstCacheIndex = nodeIndex * 2;
-    dx0 = (dx0 + m_compressedRhs[firstCacheIndex]) / increments[0];
-    dy0 = (dy0 + m_compressedRhs[firstCacheIndex + 1]) / increments[1];
-
-    if (mesh.m_projection == Projections::cartesian || mesh.m_projection == Projections::spherical)
-    {
-        double x0 = mesh.m_nodes[nodeIndex].x + dx0;
-        double y0 = mesh.m_nodes[nodeIndex].y + dy0;
-        static constexpr double relaxationFactorCoordinates = 1.0 - relaxationFactorOrthogonalizationUpdate;
-
-        m_orthogonalCoordinates[nodeIndex].x = relaxationFactorOrthogonalizationUpdate * x0 + relaxationFactorCoordinates * mesh.m_nodes[nodeIndex].x;
-        m_orthogonalCoordinates[nodeIndex].y = relaxationFactorOrthogonalizationUpdate * y0 + relaxationFactorCoordinates * mesh.m_nodes[nodeIndex].y;
-    }
-    if (mesh.m_projection == Projections::sphericalAccurate)
-    {
-        Point localPoint{ relaxationFactorOrthogonalizationUpdate * dx0, relaxationFactorOrthogonalizationUpdate * dy0 };
-
-        double exxp[3];
-        double eyyp[3];
-        double ezzp[3];
-        ComputeThreeBaseComponents(mesh.m_nodes[nodeIndex], exxp, eyyp, ezzp);
-
-        //get 3D-coordinates in rotated frame
-        Cartesian3DPoint cartesianLocalPoint;
-        SphericalToCartesian(localPoint, cartesianLocalPoint);
-
-        //project to fixed frame
-        Cartesian3DPoint transformedCartesianLocalPoint;
-        transformedCartesianLocalPoint.x = exxp[0] * cartesianLocalPoint.x + eyyp[0] * cartesianLocalPoint.y + ezzp[0] * cartesianLocalPoint.z;
-        transformedCartesianLocalPoint.y = exxp[1] * cartesianLocalPoint.x + eyyp[1] * cartesianLocalPoint.y + ezzp[1] * cartesianLocalPoint.z;
-        transformedCartesianLocalPoint.z = exxp[2] * cartesianLocalPoint.x + eyyp[2] * cartesianLocalPoint.y + ezzp[2] * cartesianLocalPoint.z;
-
-        //tranform to spherical coordinates
-        CartesianToSpherical(transformedCartesianLocalPoint, mesh.m_nodes[nodeIndex].x, m_orthogonalCoordinates[nodeIndex]);
-    }
     return true;
 }
