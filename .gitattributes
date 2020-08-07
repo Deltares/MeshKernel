@@ -674,6 +674,8 @@ src/OrthogonalizationParametersNative.hpp -text
 src/Polygons.cpp -text
 src/Polygons.hpp -text
 src/SampleRefineParametersNative.hpp -text
+src/Smoother.cpp -text
+src/Smoother.hpp -text
 src/SpatialTrees.hpp -text
 src/Splines.cpp -text
 src/Splines.hpp -text
