@@ -1927,3 +1927,23 @@ bool GridGeom::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
 
     return true;
 }
+
+bool GridGeom::Mesh::ComputeNodeNeighbours() 
+{
+    m_maxNumNeighbours = *(std::max_element(m_nodesNumEdges.begin(), m_nodesNumEdges.end()));
+    m_maxNumNeighbours += 1;
+
+    m_nodesNodes.resize(GetNumNodes(), std::vector<int>(m_maxNumNeighbours, intMissingValue));
+    //for each node, determine the neighbouring nodes
+    for (auto n = 0; n < GetNumNodes(); n++)
+    {
+        for (auto nn = 0; nn < m_nodesNumEdges[n]; nn++)
+        {
+            Edge edge = m_edges[m_nodesEdges[n][nn]];
+            m_nodesNodes[n][nn] = edge.first + edge.second - n;
+        }
+    }
+
+    return true;
+}
+

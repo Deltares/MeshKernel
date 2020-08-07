@@ -341,11 +341,19 @@ namespace GridGeom
             const double weightCircumCenter,
             Point& result);
 
+        /// <summary>
+        /// Computes the node neighbours
+        /// </summary>
+        /// <returns></returns>
+        bool ComputeNodeNeighbours();
+
         // nodes
         std::vector<Point>              m_nodes;                    // (xk, yk)
         std::vector<std::vector<int>>   m_nodesEdges;               // (nod)
         std::vector<int>                m_nodesNumEdges;            // (nmk)
         std::vector<int>                m_nodeMask;                 // (kc)
+        std::vector<std::vector<int>>   m_nodesNodes;               // node neighbours 
+        int m_maxNumNeighbours = 0;
 
         // edges
         std::vector<Edge>               m_edges;                    // (kn)
