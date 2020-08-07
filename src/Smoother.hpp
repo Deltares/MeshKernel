@@ -10,7 +10,6 @@ namespace GridGeom
     /// </summary>
     class Smoother
     {
-        
 
     public:
 
@@ -29,7 +28,7 @@ namespace GridGeom
 
         
         /// <summary>
-        /// Gets the smoother weight for a certain node and connected node
+        /// Gets the weight for a certain node and connected node
         /// </summary>
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>

@@ -2,8 +2,9 @@
 #include "../Entities.hpp"
 #include "../Polygons.hpp"
 #include "../Constants.cpp"
-#include "../Orthogonalization.cpp"
+#include "../OrthogonalizationAndSmoothing.cpp"
 #include "../Smoother.cpp"
+#include "../Orthogonalizer.cpp"
 #include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 #include <chrono>
@@ -12,7 +13,7 @@
 #include <Windows.h>
 #endif
 
-TEST(Orthogonalization, OrthogonalizationOneQuadOneTriangle)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 {
     // Preparation
     std::vector<GridGeom::Point> nodes;
@@ -44,7 +45,7 @@ TEST(Orthogonalization, OrthogonalizationOneQuadOneTriangle)
     GridGeom::Mesh mesh;
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
-    GridGeom::Orthogonalization orthogonalization;
+    GridGeom::OrthogonalizationAndSmoothing orthogonalization;
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
 
@@ -73,7 +74,7 @@ TEST(Orthogonalization, OrthogonalizationOneQuadOneTriangle)
     ASSERT_NEAR(0.0, mesh.m_nodes[4].y, tolerance);
 }
 
-TEST(Orthogonalization, OrthogonalizationSmallTriangularGrid)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
 {
    
     // now build node-edge mapping
@@ -90,7 +91,7 @@ TEST(Orthogonalization, OrthogonalizationSmallTriangularGrid)
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
 
 
-    GridGeom::Orthogonalization orthogonalization;
+    GridGeom::OrthogonalizationAndSmoothing orthogonalization;
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
 
@@ -129,7 +130,7 @@ TEST(Orthogonalization, OrthogonalizationSmallTriangularGrid)
     ASSERT_NEAR(327.102805172725, mesh.m_nodes[9].y, tolerance);
 }
 
-TEST(Orthogonalization, OrthogonalizationSmallTriangularGridAsNcFile)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile)
 {
 
     // now build node-edge mapping
@@ -146,7 +147,7 @@ TEST(Orthogonalization, OrthogonalizationSmallTriangularGridAsNcFile)
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
 
 
-    GridGeom::Orthogonalization orthogonalization;
+    GridGeom::OrthogonalizationAndSmoothing orthogonalization;
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
 
@@ -185,7 +186,7 @@ TEST(Orthogonalization, OrthogonalizationSmallTriangularGridAsNcFile)
     ASSERT_NEAR(327.102805172725, mesh.m_nodes[9].y, tolerance);
 }
 
-TEST(Orthogonalization, OrthogonalizationMediumTriangularGridWithPolygon)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPolygon)
 {
     // now build node-edge mapping
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
@@ -200,7 +201,7 @@ TEST(Orthogonalization, OrthogonalizationMediumTriangularGridWithPolygon)
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
 
-    GridGeom::Orthogonalization orthogonalization;
+    GridGeom::OrthogonalizationAndSmoothing orthogonalization;
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> nodes;
     nodes.push_back({ 342.987518, 471.121002 });
@@ -253,7 +254,7 @@ TEST(Orthogonalization, OrthogonalizationMediumTriangularGridWithPolygon)
 
 }
 
-TEST(Orthogonalization, OrthogonalizationMediumTriangularGrid)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
 {
     // now build node-edge mapping
     auto mesh = MakeMediumSizeTriangularMeshForTesting();
@@ -268,7 +269,7 @@ TEST(Orthogonalization, OrthogonalizationMediumTriangularGrid)
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.5;
 
-    GridGeom::Orthogonalization orthogonalization;
+    GridGeom::OrthogonalizationAndSmoothing orthogonalization;
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
 
@@ -310,7 +311,7 @@ TEST(Orthogonalization, OrthogonalizationMediumTriangularGrid)
 }
 
 
-TEST(Orthogonalization, OrthogonalizationFourQuads)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 {
     auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, GridGeom::Projections::cartesian);
 
@@ -327,7 +328,7 @@ TEST(Orthogonalization, OrthogonalizationFourQuads)
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
 
-    GridGeom::Orthogonalization orthogonalization;
+    GridGeom::OrthogonalizationAndSmoothing orthogonalization;
     orthogonalization.Set(mesh,
         isTriangulationRequired,
         isAccountingForLandBoundariesRequired,
@@ -337,7 +338,7 @@ TEST(Orthogonalization, OrthogonalizationFourQuads)
         landBoundary);
 }
 
-TEST(Orthogonalization, OrthogonalizeAndSnapToLandBoundaries)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 {
     // Prepare
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
@@ -371,7 +372,7 @@ TEST(Orthogonalization, OrthogonalizeAndSnapToLandBoundaries)
     
     // no enclosing polygon
     GridGeom::Polygons polygon;
-    GridGeom::Orthogonalization orthogonalization;
+    GridGeom::OrthogonalizationAndSmoothing orthogonalization;
     orthogonalization.Set(mesh,
         isTriangulationRequired,
         isAccountingForLandBoundariesRequired,
@@ -407,7 +408,7 @@ TEST(Orthogonalization, OrthogonalizeAndSnapToLandBoundaries)
     ASSERT_NEAR(340.875100904741, mesh.m_nodes[9].y, tolerance);
 }
 
-TEST(Orthogonalization, OrthogonalizationSphericalRectangular)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 {
     //1 Setup
     GridGeom::Polygons polygons;
@@ -425,7 +426,7 @@ TEST(Orthogonalization, OrthogonalizationSphericalRectangular)
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
 
-    GridGeom::Orthogonalization orthogonalization;
+    GridGeom::OrthogonalizationAndSmoothing orthogonalization;
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
 
@@ -513,7 +514,7 @@ TEST(MeshRefinement, SmallTriangulargridSpherical)
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
 
-    GridGeom::Orthogonalization orthogonalization;
+    GridGeom::OrthogonalizationAndSmoothing orthogonalization;
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
 
