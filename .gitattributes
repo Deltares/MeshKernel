@@ -668,9 +668,11 @@ src/MeshGeometryDimensions.hpp -text
 src/MeshRefinement.cpp -text
 src/MeshRefinement.hpp -text
 src/Operations.cpp -text
-src/Orthogonalization.cpp -text
-src/Orthogonalization.hpp -text
+src/OrthogonalizationAndSmoothing.cpp -text
+src/OrthogonalizationAndSmoothing.hpp -text
 src/OrthogonalizationParametersNative.hpp -text
+src/Orthogonalizer.cpp -text
+src/Orthogonalizer.hpp -text
 src/Polygons.cpp -text
 src/Polygons.hpp -text
 src/SampleRefineParametersNative.hpp -text

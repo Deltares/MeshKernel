@@ -2,7 +2,7 @@
 
 #include "Gridgeom.hpp"
 #include "Mesh.hpp"
-#include "Orthogonalization.hpp"
+#include "OrthogonalizationAndSmoothing.hpp"
 #include "CurvilinearGrid.hpp"
 #include "Splines.hpp"
 #include "Entities.hpp"
@@ -13,7 +13,7 @@
 static std::vector<GridGeom::Mesh> meshInstances;
 
 // For supporting interactivity for orthogonalization and orthogonal curvilinear grid from splines, we need to save some instances
-static std::map<int, GridGeom::Orthogonalization> orthogonalizationInstances;
+static std::map<int, GridGeom::OrthogonalizationAndSmoothing> orthogonalizationInstances;
 static std::map<int, GridGeom::Splines> splineInstances;
 
 namespace GridGeomApi
@@ -270,7 +270,7 @@ namespace GridGeomApi
             return 0;
         }
         
-        GridGeom::Orthogonalization ortogonalization;
+        GridGeom::OrthogonalizationAndSmoothing ortogonalization;
 
         // build enclosing polygon
         std::vector<GridGeom::Point> nodes(geometryListNativePolygon.numberOfCoordinates);

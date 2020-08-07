@@ -4,6 +4,7 @@
 #include "LandBoundaries.hpp"
 #include "Polygons.hpp"
 #include "Smoother.hpp"
+#include "Orthogonalizer.hpp"
 #include "OrthogonalizationParametersNative.hpp"
 
 namespace GridGeom
@@ -15,7 +16,7 @@ namespace GridGeom
     /// <summary>
     /// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize internal face angles or area).
     /// </summary>
-    class Orthogonalization
+    class OrthogonalizationAndSmoothing
     {
 
     public:
@@ -51,7 +52,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool PrapareOuterIteration(const Mesh& mesh);
+        bool PrapareOuterIteration(Mesh& mesh);
 
         /// <summary>
         /// Performs an inner iteration (update of node positions)
@@ -84,13 +85,6 @@ namespace GridGeom
         bool GetSmoothness(const Mesh& mesh, double* smoothness);
 
     private:
-
-        /// <summary>
-        /// Computes the aspect ratio of each edge (orthonet_compute_aspect)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool AspectRatio(const Mesh& mesh);
 
         /// <summary>
         /// Computes orthogonalizer weights equation 3.10 of dflowfm technical reference manual (orthonet_compweights)
@@ -172,21 +166,16 @@ namespace GridGeom
         // Smoother
         Smoother m_smoother;
 
-        std::vector<std::vector<double>>                   m_wOrthogonalizer;
-        std::vector<std::vector<double>>                   m_rhsOrthogonalizer;
-        std::size_t                                        m_maxNumNeighbours;
-        std::vector<std::vector<int>>                      m_nodesNodes;               // node neighbours 
+        // Orthogonalizer
+        Orthogonalizer m_orthogonalizer;
         
         // Local coordinates for sphericalAccurate projection
         std::vector<int>                                   m_localCoordinatesIndexes;  // (iloc)
         std::vector<Point>                                 m_localCoordinates;         // (xloc,yloc) 
 
-
         // orthogonalization iterations
         std::vector<Point>                                 m_orthogonalCoordinates;
-        std::vector<int>                                   m_nearestPoints;
         std::vector<Point>                                 m_originalNodes;
-        std::vector<double>                                m_aspectRatios;
 
         // Linear system terms
         int m_nodeCacheSize = 0;
