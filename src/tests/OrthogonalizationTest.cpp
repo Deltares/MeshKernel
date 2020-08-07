@@ -3,6 +3,7 @@
 #include "../Polygons.hpp"
 #include "../Constants.cpp"
 #include "../Orthogonalization.cpp"
+#include "../Smoother.cpp"
 #include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 #include <chrono>
