@@ -1,50 +1,15 @@
-M
+A
 dir
-/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/engines_gpl
+/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/third_party_open/libsigwatch/cmake_deltares
+/branches/research/Deltares/20200423_DELFT3D-37453_cmake_compilation/src/third_party_open/libsigwatch/cmake_deltares
+66733
 
 
-
-
-M
+A
 dir
-/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/utils_gpl
-
-
-
-
-M
-dir
-/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/engines_gpl/dflowfm
-
-
-
-
-M
-dir
-/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/utils_lgpl/deltares_common
-
-
-
-
-M
-dir
-/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/utils_lgpl/ec_module
-
-
-
-
-M
-dir
-/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/utils_lgpl/ec_module/packages/ec_module
-
-
-
-
-M
-dir
-/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/utils_gpl/trachytopes
-
-
+/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/third_party_open/shapelib/cmake_deltares
+/branches/research/Deltares/20200423_DELFT3D-37453_cmake_compilation/src/third_party_open/shapelib/cmake_deltares
+66733
 
 
 M
@@ -52,6 +17,34 @@ dir
 /branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk
 
 
+
+
+A
+dir
+/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/third_party_open/md5/cmake_deltares
+/branches/research/Deltares/20200423_DELFT3D-37453_cmake_compilation/src/third_party_open/md5/cmake_deltares
+66733
+
+
+A
+dir
+/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/third_party_open/kdtree2/cmake_deltares
+/branches/research/Deltares/20200423_DELFT3D-37453_cmake_compilation/src/third_party_open/kdtree2/cmake_deltares
+66733
+
+
+A
+dir
+/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/third_party_open/proj4/cmake_deltares
+/branches/research/Deltares/20200423_DELFT3D-37453_cmake_compilation/src/third_party_open/proj4/cmake_deltares
+66733
+
+
+A
+dir
+/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/third_party_open/petsc/cmake_deltares
+/branches/research/Deltares/20200423_DELFT3D-37453_cmake_compilation/src/third_party_open/petsc/cmake_deltares
+66733
 
 
 M
@@ -63,9 +56,23 @@ dir
 
 A
 dir
-/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/cmake
-/branches/research/Deltares/20200423_DELFT3D-37453_cmake_compilation/src/cmake
-66716
+/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/third_party_open/netcdf/cmake_deltares
+/branches/research/Deltares/20200423_DELFT3D-37453_cmake_compilation/src/third_party_open/netcdf/cmake_deltares
+66733
+
+
+A
+dir
+/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/third_party_open/triangle/cmake_deltares
+/branches/research/Deltares/20200423_DELFT3D-37453_cmake_compilation/src/third_party_open/triangle/cmake_deltares
+66733
+
+
+A
+dir
+/branches/research/Deltares/20200807_DELFT3D-37453_cmake_compilation_trunk/src/third_party_open/metis/cmake_deltares
+/branches/research/Deltares/20200423_DELFT3D-37453_cmake_compilation/src/third_party_open/metis/cmake_deltares
+66733
 
 
 
