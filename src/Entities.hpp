@@ -7,11 +7,6 @@
 
 namespace GridGeom
 {
-    enum OperationTypes 
-    {
-        cartesianOperations,
-        sphericalOperations
-    };
 
     enum class Projections
     {
@@ -127,12 +122,6 @@ namespace GridGeom
         }
     };
 
-    struct Vector
-    {
-        double x;
-        double y;
-    };
-
     struct Cartesian3DPoint
     {
         double x;
@@ -145,12 +134,6 @@ namespace GridGeom
         double x;
         double y;
         double value;
-    };
-
-    struct Nodes
-    {
-        std::vector<double> x;
-        std::vector<double> y;
     };
 
     typedef std::pair<int, int> Edge;

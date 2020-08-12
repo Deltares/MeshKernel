@@ -15,7 +15,6 @@
 
 GridGeom::Mesh::Mesh() 
 {
-
 }
 
 bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, 

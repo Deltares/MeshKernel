@@ -86,12 +86,6 @@ namespace GridGeom
 
     private:
 
-        /// <summary>
-        /// Computes orthogonalizer weights equation 3.10 of dflowfm technical reference manual (orthonet_compweights)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool ComputeWeightsAndRhsOrthogonalizer(const Mesh& mesh);
 
         /// <summary>
         /// Project mesh nodes back to the boundary of an original mesh (orthonet_project_on_boundary)
