@@ -12,7 +12,7 @@ namespace GridGeom
 {
     class CurvilinearGrid;
     
-    class Splines
+    class CurvilinearGridFromSplines
     {
 
     public:
@@ -21,7 +21,7 @@ namespace GridGeom
         /// Ctor
         /// </summary>
         /// <returns></returns>
-        Splines();
+        CurvilinearGridFromSplines();
 
         /// <summary>
         /// Computes the spline properties, such as cross splines (get_splineprops)
@@ -29,37 +29,6 @@ namespace GridGeom
         /// <param name="restoreOriginalProperties"></param>
         /// <returns></returns>
         bool ComputeSplineProperties(bool restoreOriginalProperties);
-
-        /// <summary>
-        /// Returns the interpolated coordinate from the adimensional position along the spline (splint)
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="coordinates"></param>
-        /// <param name="coordinatesDerivatives"></param>
-        /// <param name="pointAdimensionalCoordinate"></param>
-        /// <param name="pointCoordinate"></param>
-        /// <returns></returns>
-        template<typename T>
-        static bool Interpolate(const std::vector<T>& coordinates,
-                                const std::vector<T>& coordinatesDerivatives,
-                                double pointAdimensionalCoordinate,
-                                T& pointCoordinate);
-
-        /// <summary>
-        /// Ctor and set projection
-        /// </summary>
-        /// <param name="projection">The map projection</param>
-        /// <returns></returns>
-        Splines(Projections projection);
-
-        /// <summary>
-        /// Adds a new spline to m_splineCornerPoints 
-        /// </summary>
-        /// <param name="splines">A vector containing the spline corner points</param>
-        /// <param name="start">The index in splines of the starting node to add</param>
-        /// <param name="size">The index in splines of the last node to add</param>
-        /// <returns></returns>
-        bool AddSpline(const std::vector<Point>& splines, int start, int size);
 
         /// <summary>
         /// Computes a curvilinear grid using the growing front method (spline2curvi). OrthogonalCurvilinearGrid algorithm.
@@ -72,49 +41,27 @@ namespace GridGeom
         /// </summary>
         /// <param name="curvilinearGrid">The computed curvilinear grid</param>
         /// <returns></returns>
-        bool OrthogonalCurvilinearGridFromSplines(CurvilinearGrid& curvilinearGrid);
+        bool Compute(CurvilinearGrid& curvilinearGrid);
 
         /// <summary>
         /// Initialize the OrthogonalCurvilinearGrid algorithm.
         /// </summary>
         /// <returns></returns>
-        bool OrthogonalCurvilinearGridFromSplinesInitialize();
+        bool Initialize();
 
         /// <summary>
         /// Performs one iteration for generating another layer on the advancing fronts
         /// </summary>
         /// <param name="layer">The index of the layer to be generated</param>
         /// <returns></returns>
-        bool OrthogonalCurvilinearGridFromSplinesIteration(int layer);
-
-        /// <summary>
-        /// Second order derivative at spline corner points
-        /// </summary>
-        /// <param name="coordinates"></param>
-        /// <param name="numNodes"></param>
-        /// <param name="coordinatesDerivatives"></param>
-        /// <returns></returns>
-        static bool SecondOrderDerivative(const std::vector<Point>& coordinates,
-                                          int numNodes,
-                                          std::vector<Point>& coordinatesDerivatives);
-
-        /// <summary>
-        /// Second order derivative at spline corner points (result in a flat array)
-        /// </summary>
-        /// <param name="coordinates"></param>
-        /// <param name="numNodes"></param>
-        /// <param name="coordinatesDerivatives"></param>
-        /// <returns></returns>
-        static bool SecondOrderDerivative(const std::vector<double>& coordinates,
-                                          int numNodes,
-                                          std::vector<double>& coordinatesDerivatives);
+        bool Iterate(int layer);
 
         /// <summary>
         /// Get the curvilinear grid
         /// </summary>
         /// <param name="curvilinearGrid"></param>
         /// <returns></returns>
-        bool OrthogonalCurvilinearGridFromSplinesRefreshMesh(CurvilinearGrid& curvilinearGrid);
+        bool ComputeCurvilinearGrid(CurvilinearGrid& curvilinearGrid);
 
         /// <summary>
         /// Sets the parameters for the OrthogonalCurvilinearGridFromSplines algorithm
@@ -125,44 +72,8 @@ namespace GridGeom
         bool SetParameters(const GridGeomApi::CurvilinearParametersNative& curvilinearParametersNative,
                            const GridGeomApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
 
-        /// <summary>
-        /// Computes the intersection of two splines (sect3r)
-        /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <param name="projection"></param>
-        /// <param name="crossProductIntersection"></param>
-        /// <param name="intersectionPoint"></param>
-        /// <param name="firstSplineRatio"></param>
-        /// <param name="secondSplineRatio"></param>
-        /// <returns></returns>
-        bool GetSplinesIntersection(int first,
-                                    int second,
-                                    const Projections& projection,
-                                    double& crossProductIntersection,
-                                    Point& intersectionPoint,
-                                    double& firstSplineRatio,
-                                    double& secondSplineRatio);
 
 
-        /// <summary>
-        /// Computes the spline length in s coordinates (splinelength)
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="beginFactor"></param>
-        /// <param name="endFactor"></param>
-        /// <param name="numSamples"></param>
-        /// <param name="accountForCurvature"></param>
-        /// <param name="height"></param>
-        /// <param name="assignedDelta"></param>
-        /// <returns></returns>
-        double GetSplineLength(int index,
-            double beginFactor,
-            double endFactor,
-            int numSamples = 100,
-            bool accountForCurvature = false,
-            double height = 1.0,
-            double assignedDelta = -1);
 
         /// <summary>
         /// For the central spline, computes the spline subdivisions along the spline (make_wholegridline)
@@ -174,12 +85,6 @@ namespace GridGeom
         std::vector<Point> m_gridLine;                           // coordinates of the first gridline (xg1, yg1)
         std::vector<double> m_gridLineDimensionalCoordinates;    // center spline coordinates of the first gridline (sg1)
         std::vector<double> m_maximumGridHeights;                // maximum transversal grid height ()
-        std::vector<std::vector<Point>> m_splineCornerPoints;    // The spline corner points
-        std::vector<std::vector<Point>> m_splineDerivatives;     // The spline derivatives at the corner points  
-        std::vector<int> m_numSplineNodes;                       // Number of spline nodes in each spline
-        std::vector<int> m_numAllocatedSplineNodes;              // Number of allocated node in each spline
-        int m_numSplines = 0;                                    // Current number of splines
-        int m_numAllocatedSplines = 0;                           // Total number of allocated splines
         int m_numM = 0;                                          // Number of columns in the curvilinear grid
 
     private:

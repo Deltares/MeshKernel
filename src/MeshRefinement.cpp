@@ -1156,6 +1156,7 @@ bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask()
                     auto firstEdgeIndex = m_mesh.m_facesEdges[f][e];
                     auto secondEdgeIndex = m_mesh.m_facesEdges[f][ee];
 
+                    //do not refine edges with an hanging node
                     if (m_brotherEdges[edgeIndex] != firstEdgeIndex && m_brotherEdges[edgeIndex] != secondEdgeIndex)
                     {
                         m_edgeMask[edgeIndex] = 1;
