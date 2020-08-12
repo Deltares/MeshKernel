@@ -1095,8 +1095,7 @@ namespace GridGeomApi
         }
 
         // use the default constructor, no instance present
-        GridGeom::Polygons polygon;
-        GridGeom::Splines spline(meshInstances[gridStateId].m_projection, polygon);
+        GridGeom::Splines spline(meshInstances[gridStateId].m_projection);
 
         bool successful = SetSplines(geometryListIn, spline);
         if(!successful)
@@ -1120,8 +1119,7 @@ namespace GridGeomApi
             return 0;
         }
 
-        GridGeom::Polygons polygon;
-        GridGeom::Splines spline(meshInstances[gridStateId].m_projection, polygon);
+        GridGeom::Splines spline(meshInstances[gridStateId].m_projection);
 
         bool successful = SetSplines(geometryListNative, spline);
         if (!successful)
