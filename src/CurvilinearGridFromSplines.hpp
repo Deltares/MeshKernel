@@ -1,20 +1,17 @@
 #pragma once
 
-/// TODO: CHECK FOR FRONT COLLISION
-
 #include <vector>
 #include "Entities.hpp"
-#include "Polygons.hpp"
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
+#include "Splines.hpp"
 
 namespace GridGeom
 {
     class CurvilinearGrid;
-    
+
     class CurvilinearGridFromSplines
     {
-
     public:
 
         /// <summary>
@@ -22,6 +19,12 @@ namespace GridGeom
         /// </summary>
         /// <returns></returns>
         CurvilinearGridFromSplines();
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <returns></returns>
+        CurvilinearGridFromSplines(Splines& splines);
 
         /// <summary>
         /// Computes the spline properties, such as cross splines (get_splineprops)
@@ -73,8 +76,6 @@ namespace GridGeom
                            const GridGeomApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
 
 
-
-
         /// <summary>
         /// For the central spline, computes the spline subdivisions along the spline (make_wholegridline)
         /// </summary>
@@ -86,28 +87,10 @@ namespace GridGeom
         std::vector<double> m_gridLineDimensionalCoordinates;    // center spline coordinates of the first gridline (sg1)
         std::vector<double> m_maximumGridHeights;                // maximum transversal grid height ()
         int m_numM = 0;                                          // Number of columns in the curvilinear grid
+        
+        Splines* m_splines;                                      // A pointer to spline
 
     private:
-
-        /// <summary>
-        /// The spline type
-        /// </summary>
-        enum class SplineTypes
-        {
-            central,
-            crossing,
-            arficial,
-            lateral
-        };
-
-
-        /// <summary>
-        /// Adds a new corner point in an existing spline
-        /// </summary>
-        /// <param name="splineIndex">The spline index</param>
-        /// <param name="point">The point to add</param>
-        /// <returns></returns>
-        bool AddPointInExistingSpline(int splineIndex, const Point& point);
 
         /// <summary>
         /// From the layer index gets the previous grid layer where start growing and the transversal sublayer index (get_isub)
@@ -356,7 +339,7 @@ namespace GridGeom
                                            Point& tangentialVector);
 
         /// <summary>
-        /// Remove skinny triangles
+        /// Remove skewed cells and cells whose aspect ratio exceeds a prescibed value (postgrid)
         /// </summary>
         /// <returns></returns>
         bool RemoveSkinnyTriangles();
@@ -374,7 +357,17 @@ namespace GridGeom
         /// <returns></returns>
         bool AllocateSplinesProperties();
 
-        Projections m_projection;                                                      // The map projection                                                           
+        /// <summary>
+        /// The spline type
+        /// </summary>
+        enum class SplineTypes
+        {
+            central,
+            crossing,
+            arficial,
+            lateral
+        };
+
 
         // OrthogonalCurvilinearGridFromSplines
         double m_aspectRatioFirstLayer = 0.10;
@@ -400,7 +393,7 @@ namespace GridGeom
         std::vector<int> m_centralSplineIndex;                                          // for each spline the index to its central
         std::vector<int> m_numCrossingSplines;                                          // ncs num of cross splines
         std::vector<std::vector<int>> m_crossingSplinesIndexses;                        // ics for each cross spline, the indexses of the center splines
-        std::vector<double> m_splinesLength;                                            // splinesLength spline path length
+  
         std::vector<std::vector<bool>> m_isLeftOriented;                                // isLeftOriented cross spline is left to right(.true.) or not (.false.) w.r.t.center spline
         std::vector<std::vector<double>>  m_crossSplineCoordinates;                     // t center spline coordinates of cross splines
         std::vector<std::vector<double>> m_cosCrossingAngle;                            // cosPhi cosine of crossing angle
@@ -438,11 +431,11 @@ namespace GridGeom
 
     struct FuncDimensionalToAdimensionalDistance
     {
-        FuncDimensionalToAdimensionalDistance(Splines& spline,
+        FuncDimensionalToAdimensionalDistance(CurvilinearGridFromSplines& curvilinearGridFromSplines,
             int splineIndex,
             bool isSpacingCurvatureAdapted,
             double h) :
-            m_spline(spline),
+            m_spline(curvilinearGridFromSplines.m_splines),
             m_splineIndex(splineIndex),
             m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
             m_h(h)
@@ -457,12 +450,12 @@ namespace GridGeom
         // this is the function we want to find the root
         double operator()(double adimensionalDistancereferencePoint)
         {
-            double distanceFromReferencePoint = m_spline.GetSplineLength(m_splineIndex, 0, adimensionalDistancereferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
+            double distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0, adimensionalDistancereferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
             distanceFromReferencePoint = std::abs(distanceFromReferencePoint - m_DimensionalDistance);
             return distanceFromReferencePoint;
         }
 
-        Splines& m_spline;
+        Splines* m_spline;
         int m_splineIndex;
         bool m_isSpacingCurvatureAdapted;
         double m_h;
