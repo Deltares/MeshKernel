@@ -644,9 +644,9 @@ doc/GridEditorClassDiagram.cd -text
 doc/ProjectplanGridGeomInC++Phase3_V00.docx -text
 doc/ProjectplanGridGeomInC++_v00.docx -text
 doc/TechnicalDesignDocument/ClassDiagram.TIF -text
-doc/TechnicalDesignDocument/GridEditorTechnicalDesignDocument.docx -text
 doc/TechnicalDesignDocument/GridgeomPictures.jpg -text
 doc/TechnicalDesignDocument/GridgeomPictures.pptx -text
+doc/TechnicalDesignDocument/GridgeomTechnicalDesignDocument.docx -text
 doc/TechnicalDesignDocument/MeshRefinement.jpg -text
 doc/TechnicalDesignDocument/MeshRefinement.uxf -text
 doc/TechnicalDesignDocument/OrthogonalizationAndSmoothing.jpg -text
