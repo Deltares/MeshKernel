@@ -1347,5 +1347,36 @@ namespace GridGeom
         return index;
     }
 
+    template<typename T> 
+    bool InterpolateSplinePoint( const std::vector<T>& coordinates,
+                            const std::vector<T>& coordinatesDerivatives,
+                            double pointAdimensionalCoordinate,
+                            T& pointCoordinate)
+    {
+        if (pointAdimensionalCoordinate < 0)
+        {
+            return false;
+        }
+
+        const double eps = 1e-5;
+        const double splFac = 1.0;
+        int intCoordinate = std::floor(pointAdimensionalCoordinate);
+        if (pointAdimensionalCoordinate - intCoordinate < eps)
+        {
+            pointCoordinate = coordinates[intCoordinate];
+            return true;
+        }
+
+        int low = intCoordinate;
+        int high = low + 1;
+        double a = high - pointAdimensionalCoordinate;
+        double b = pointAdimensionalCoordinate - low;
+
+        pointCoordinate = coordinates[low] * a + coordinates[high] * b +
+            (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;
+
+        return true;
+    }
+
 
 }

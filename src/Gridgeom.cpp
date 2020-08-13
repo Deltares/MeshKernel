@@ -3,6 +3,7 @@
 #include "Gridgeom.hpp"
 #include "Mesh.hpp"
 #include "OrthogonalizationAndSmoothing.hpp"
+#include "CurvilinearGridFromSplines.hpp"
 #include "CurvilinearGrid.hpp"
 #include "Splines.hpp"
 #include "Entities.hpp"
@@ -14,7 +15,7 @@ static std::vector<GridGeom::Mesh> meshInstances;
 
 // For supporting interactivity for orthogonalization and orthogonal curvilinear grid from splines, we need to save some instances
 static std::map<int, GridGeom::OrthogonalizationAndSmoothing> orthogonalizationInstances;
-static std::map<int, GridGeom::Splines> splineInstances;
+static std::map<int, GridGeom::CurvilinearGridFromSplines> splineInstances;
 
 namespace GridGeomApi
 {
@@ -474,7 +475,7 @@ namespace GridGeomApi
 
                     double pointAdimensionalCoordinate = n + double(p)/ double(number_of_points_between_vertices);
                     GridGeom::Point pointCoordinate;
-                    GridGeom::Splines::Interpolate(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+                    InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
                     geometry_list_out.xCoordinates[index] = pointCoordinate.x;
                     geometry_list_out.yCoordinates[index] = pointCoordinate.y;
                     geometry_list_out.zCoordinates[index] = GridGeom::doubleMissingValue;
@@ -1096,16 +1097,16 @@ namespace GridGeomApi
 
         // use the default constructor, no instance present
         GridGeom::Splines spline(meshInstances[gridStateId].m_projection);
-
         bool successful = SetSplines(geometryListIn, spline);
         if(!successful)
         {
             return -1;
         }
 
-        spline.SetParameters(curvilinearParameters, splineToCurvilinearParameters);
+        GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(spline);
+        curvilinearGridFromSplines.SetParameters(curvilinearParameters, splineToCurvilinearParameters);
         GridGeom::CurvilinearGrid curvilinearGrid;
-        spline.OrthogonalCurvilinearGridFromSplines(curvilinearGrid);
+        curvilinearGridFromSplines.Compute(curvilinearGrid);
         meshInstances[gridStateId] += GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
 
         return 0;
@@ -1126,15 +1127,17 @@ namespace GridGeomApi
         {
             return -1;
         }
-        splineInstances[gridStateId] = spline;
+        GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(spline);
 
-        successful = splineInstances[gridStateId].SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
+        successful = curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
         if (!successful)
         {
             return -1;
         }
 
-        successful = splineInstances[gridStateId].OrthogonalCurvilinearGridFromSplinesInitialize();
+        splineInstances.insert({ gridStateId, curvilinearGridFromSplines });
+ 
+        successful = splineInstances[gridStateId].Initialize();
         if (!successful)
         {
             return -1;
@@ -1149,7 +1152,7 @@ namespace GridGeomApi
             return 0;
         }
 
-        const bool successful = splineInstances[gridStateId].OrthogonalCurvilinearGridFromSplinesIteration(layer);
+        const bool successful = splineInstances[gridStateId].Iterate(layer);
         return successful ? 0 : 1;
     }
 
@@ -1162,7 +1165,7 @@ namespace GridGeomApi
         }
 
         GridGeom::CurvilinearGrid curvilinearGrid;
-        const bool successful = splineInstances[gridStateId].OrthogonalCurvilinearGridFromSplinesRefreshMesh(curvilinearGrid);
+        const bool successful = splineInstances[gridStateId].ComputeCurvilinearGrid(curvilinearGrid);
 
         meshInstances[gridStateId] += GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
 

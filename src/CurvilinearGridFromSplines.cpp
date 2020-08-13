@@ -1,4 +1,4 @@
-/// TODO: CHECK FOR FRONT COLLISION
+#pragma once
 
 #include <vector>
 #include <algorithm>
@@ -8,48 +8,21 @@
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
 #include "Splines.hpp"
+#include "CurvilinearGridFromSplines.hpp"
 #include "CurvilinearGrid.hpp"
 
-GridGeom::Splines::Splines() : m_projection(Projections::cartesian)
+GridGeom::CurvilinearGridFromSplines::CurvilinearGridFromSplines()
 {
-};
-
-GridGeom::Splines::Splines(Projections projection) : m_projection(projection)
-{
-};
-
-/// add a new spline, return the index
-bool GridGeom::Splines::AddSpline(const std::vector<Point>& splines, int start, int size)
-{
-    ResizeVectorIfNeededWithMinimumSize(m_numSplines + 1, m_splineCornerPoints, m_allocationSize, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }));
-
-    m_numAllocatedSplines = m_splineCornerPoints.size();
-    m_numAllocatedSplineNodes.resize(m_numAllocatedSplines, 10);
-
-    m_numSplineNodes.resize(m_numAllocatedSplines, 0);
-    m_numSplineNodes[m_numSplines] = size;
-
-    m_splineDerivatives.resize(m_numAllocatedSplines);
-    int index = 0;
-    for (int n = start; n < start + size; ++n)
-    {
-        m_splineCornerPoints[m_numSplines][index] = splines[n];
-        index++;
-    }
-
-    m_splinesLength.resize(m_numAllocatedSplines);
-    m_type.resize(m_numAllocatedSplines);
-
-    // compute basic properties
-    SecondOrderDerivative(m_splineCornerPoints[m_numSplines], m_numSplineNodes[m_numSplines], m_splineDerivatives[m_numSplines]);
-    m_splinesLength[m_numSplines] = GetSplineLength(m_numSplines, 0, m_numSplineNodes[m_numSplines] - 1);
-    m_numSplines++;
-
-    return true;
+    m_splines = nullptr;
 }
 
-bool GridGeom::Splines::SetParameters(const GridGeomApi::CurvilinearParametersNative& curvilinearParametersNative,
-                                      const GridGeomApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
+GridGeom::CurvilinearGridFromSplines::CurvilinearGridFromSplines(Splines& splines) : m_splines(&splines)
+{
+};
+
+
+bool GridGeom::CurvilinearGridFromSplines::SetParameters(const GridGeomApi::CurvilinearParametersNative& curvilinearParametersNative,
+                                                         const GridGeomApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
 {
     m_aspectRatio = splinesToCurvilinearParametersNative.AspectRatio;
     m_aspectRatioGrowFactor = splinesToCurvilinearParametersNative.AspectRatioGrowFactor;
@@ -67,103 +40,81 @@ bool GridGeom::Splines::SetParameters(const GridGeomApi::CurvilinearParametersNa
     return true;
 }
 
-bool GridGeom::Splines::DeleteSpline(int splineIndex)
-{
-    m_splineCornerPoints.erase(m_splineCornerPoints.begin() + splineIndex);
-    m_numSplineNodes.erase(m_numSplineNodes.begin() + splineIndex);
-    m_splineDerivatives.erase(m_splineDerivatives.begin() + splineIndex);
-    m_splinesLength.erase(m_splinesLength.begin() + splineIndex);
-    m_numSplines--;
-    return true;
-}
-
 /// to be called after all splines have been stored
-bool GridGeom::Splines::AllocateSplinesProperties()
+bool GridGeom::CurvilinearGridFromSplines::AllocateSplinesProperties()
 {
-    m_type.resize(m_numSplines);
+    const int numSplines = m_splines->m_numSplines;
+    m_type.resize(numSplines);
 
-    m_centralSplineIndex.resize(m_numSplines);
+    m_centralSplineIndex.resize(numSplines);
     std::fill(m_centralSplineIndex.begin(), m_centralSplineIndex.end(), intMissingValue);
 
-    m_numCrossingSplines.resize(m_numSplines, 0);
+    m_numCrossingSplines.resize(numSplines, 0);
     std::fill(m_numCrossingSplines.begin(), m_numCrossingSplines.end(), 0);
 
-    m_maximumGridHeights.resize(m_numSplines);
+    m_maximumGridHeights.resize(numSplines);
     std::fill(m_maximumGridHeights.begin(), m_maximumGridHeights.end(), doubleMissingValue);
 
     // multi-dimensional arrays
-    m_crossingSplinesIndexses.resize(m_numSplines);
-    m_isLeftOriented.resize(m_numSplines);
-    m_crossSplineCoordinates.resize(m_numSplines);
-    m_cosCrossingAngle.resize(m_numSplines);
-    m_crossSplineLeftHeights.resize(m_numSplines);
-    m_crossSplineRightHeights.resize(m_numSplines);
-    m_numCrossSplineLeftHeights.resize(m_numSplines);
-    m_numCrossSplineRightHeights.resize(m_numSplines);
-    m_nfacL.resize(m_numSplines);
-    m_nfacR.resize(m_numSplines);
-    for (int s = 0; s < m_numSplines; ++s)
+    m_crossingSplinesIndexses.resize(numSplines);
+    m_isLeftOriented.resize(numSplines);
+    m_crossSplineCoordinates.resize(numSplines);
+    m_cosCrossingAngle.resize(numSplines);
+    m_crossSplineLeftHeights.resize(numSplines);
+    m_crossSplineRightHeights.resize(numSplines);
+    m_numCrossSplineLeftHeights.resize(numSplines);
+    m_numCrossSplineRightHeights.resize(numSplines);
+    m_nfacL.resize(numSplines);
+    m_nfacR.resize(numSplines);
+    for (int s = 0; s < numSplines; ++s)
     {
-        m_crossingSplinesIndexses[s].resize(m_numSplines);
+        m_crossingSplinesIndexses[s].resize(numSplines);
         std::fill(m_crossingSplinesIndexses[s].begin(), m_crossingSplinesIndexses[s].end(), -1);
 
-        m_isLeftOriented[s].resize(m_numSplines, true);
+        m_isLeftOriented[s].resize(numSplines, true);
         std::fill(m_isLeftOriented[s].begin(), m_isLeftOriented[s].end(), true);
 
-        m_crossSplineCoordinates[s].resize(m_numSplines);
+        m_crossSplineCoordinates[s].resize(numSplines);
         std::fill(m_crossSplineCoordinates[s].begin(), m_crossSplineCoordinates[s].end(), doubleMissingValue);
 
-        m_cosCrossingAngle[s].resize(m_numSplines, doubleMissingValue);
+        m_cosCrossingAngle[s].resize(numSplines, doubleMissingValue);
         std::fill(m_cosCrossingAngle[s].begin(), m_cosCrossingAngle[s].end(), doubleMissingValue);
 
-        m_crossSplineLeftHeights[s].resize(m_numSplines);
+        m_crossSplineLeftHeights[s].resize(numSplines);
         std::fill(m_crossSplineLeftHeights[s].begin(), m_crossSplineLeftHeights[s].end(), std::vector<double>(m_maxNumCenterSplineHeights, doubleMissingValue));
 
-        m_crossSplineRightHeights[s].resize(m_numSplines);
+        m_crossSplineRightHeights[s].resize(numSplines);
         std::fill(m_crossSplineRightHeights[s].begin(), m_crossSplineRightHeights[s].end(), std::vector<double>(m_maxNumCenterSplineHeights, doubleMissingValue));
 
-        m_numCrossSplineLeftHeights[s].resize(m_numSplines);
+        m_numCrossSplineLeftHeights[s].resize(numSplines);
         std::fill(m_numCrossSplineLeftHeights[s].begin(), m_numCrossSplineLeftHeights[s].end(), 0);
 
-        m_numCrossSplineRightHeights[s].resize(m_numSplines, doubleMissingValue);
+        m_numCrossSplineRightHeights[s].resize(numSplines, doubleMissingValue);
         std::fill(m_numCrossSplineRightHeights[s].begin(), m_numCrossSplineRightHeights[s].end(), 0);
 
-        m_nfacL[s].resize(m_numSplines);
+        m_nfacL[s].resize(numSplines);
         std::fill(m_nfacL[s].begin(), m_nfacL[s].end(), 0);
 
-        m_nfacR[s].resize(m_numSplines);
+        m_nfacR[s].resize(numSplines);
         std::fill(m_nfacR[s].begin(), m_nfacR[s].end(), 0);
     }
 
-    m_numMSpline.resize(m_numSplines);
+    m_numMSpline.resize(numSplines);
     std::fill(m_numMSpline.begin(), m_numMSpline.end(), 0);
-    m_leftGridLineIndex.resize(m_numSplines);
+    m_leftGridLineIndex.resize(numSplines);
     std::fill(m_leftGridLineIndex.begin(), m_leftGridLineIndex.end(), intMissingValue);
-    m_rightGridLineIndex.resize(m_numSplines);
+    m_rightGridLineIndex.resize(numSplines);
     std::fill(m_rightGridLineIndex.begin(), m_rightGridLineIndex.end(), intMissingValue);
 
     return true;
 }
 
-/// add a new spline point in an existing spline
-bool GridGeom::Splines::AddPointInExistingSpline(int splineIndex, const Point& point)
-{
-    if (splineIndex > m_numSplines)
-    {
-        return false;
-    }
-    ResizeVectorIfNeededWithMinimumSize(m_numSplineNodes[splineIndex] + 1, m_splineCornerPoints[splineIndex], m_allocationSize, { doubleMissingValue, doubleMissingValue });
-    m_numAllocatedSplineNodes[splineIndex] = m_splineCornerPoints[splineIndex].size();
 
-    m_splineCornerPoints[splineIndex][m_numSplineNodes[splineIndex]] = point;
-    m_numSplineNodes[splineIndex]++;
-    return true;
-}
 
-bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplines(CurvilinearGrid& curvilinearGrid)
+bool GridGeom::CurvilinearGridFromSplines::Compute(CurvilinearGrid& curvilinearGrid)
 {
 
-    bool successful = OrthogonalCurvilinearGridFromSplinesInitialize();
+    bool successful = Initialize();
     if (!successful)
     {
         return false;
@@ -172,7 +123,7 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplines(CurvilinearGrid& cu
     // Grow grid, from the second layer
     for (int layer = 1; layer <= m_maxNumN; ++layer)
     {
-        successful = OrthogonalCurvilinearGridFromSplinesIteration(layer);
+        successful = Iterate(layer);
         if (!successful)
         {
             break;
@@ -184,12 +135,12 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplines(CurvilinearGrid& cu
         RemoveSkinnyTriangles();
     }
 
-    successful = OrthogonalCurvilinearGridFromSplinesRefreshMesh(curvilinearGrid);
+    successful = ComputeCurvilinearGrid(curvilinearGrid);
     return successful;
 }
 
 
-bool GridGeom::Splines::RemoveSkinnyTriangles()
+bool GridGeom::CurvilinearGridFromSplines::RemoveSkinnyTriangles()
 {
     int numMaxIterations = 10;
     int numN = m_gridPoints.size() - 2;
@@ -228,7 +179,7 @@ bool GridGeom::Splines::RemoveSkinnyTriangles()
 
                 GetNeighbours(m_gridPoints[j], i, firstLeftIndex, firstRightIndex);
 
-                double squaredRightDistance = ComputeSquaredDistance(m_gridPoints[j][i], m_gridPoints[j][firstRightIndex], m_projection);
+                double squaredRightDistance = ComputeSquaredDistance(m_gridPoints[j][i], m_gridPoints[j][firstRightIndex], m_splines->m_projection);
 
                 if (squaredRightDistance < squaredDistanceTolerance)
                 {
@@ -242,7 +193,7 @@ bool GridGeom::Splines::RemoveSkinnyTriangles()
                 }
 
                 //GetNeighbours(m_gridPoints[j+1], i, secondLeftIndex, secondRightIndex);
-                double squaredLeftDistance = ComputeSquaredDistance(m_gridPoints[j][firstLeftIndex], m_gridPoints[j][i], m_projection);
+                double squaredLeftDistance = ComputeSquaredDistance(m_gridPoints[j][firstLeftIndex], m_gridPoints[j][i], m_splines->m_projection);
                 if (squaredLeftDistance < squaredDistanceTolerance)
                 {
                     firstLeftIndex = i;
@@ -250,13 +201,13 @@ bool GridGeom::Splines::RemoveSkinnyTriangles()
 
                 if (m_gridPoints[j + 1][firstRightIndex].IsValid())
                 {
-                    double squaredCurrentDistance = ComputeSquaredDistance(m_gridPoints[j + 1][i], m_gridPoints[j + 1][firstRightIndex], m_projection);
+                    double squaredCurrentDistance = ComputeSquaredDistance(m_gridPoints[j + 1][i], m_gridPoints[j + 1][firstRightIndex], m_splines->m_projection);
                     double currentCosPhi = NormalizedInnerProductTwoSegments(
                         m_gridPoints[j + 1][i],
                         m_gridPoints[j][i],
                         m_gridPoints[j + 1][i],
                         m_gridPoints[j][firstRightIndex],
-                        m_projection);
+                        m_splines->m_projection);
                     if (squaredCurrentDistance < squaredDistanceTolerance && currentCosPhi > maxCosine)
                     {
 
@@ -266,14 +217,14 @@ bool GridGeom::Splines::RemoveSkinnyTriangles()
                             m_gridPoints[j][i],
                             m_gridPoints[j][i],
                             m_gridPoints[j + 1][i],
-                            m_projection);
+                            m_splines->m_projection);
 
                         double rightCosPhi = NormalizedInnerProductTwoSegments(
                             m_gridPoints[j - 1][firstRightIndex],
                             m_gridPoints[j][firstRightIndex],
                             m_gridPoints[j][firstRightIndex],
                             m_gridPoints[j + 1][firstRightIndex],
-                            m_projection);
+                            m_splines->m_projection);
 
 
                         int secondLeftIndex;
@@ -327,10 +278,10 @@ bool GridGeom::Splines::RemoveSkinnyTriangles()
     return true;
 }
 
-bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
+bool GridGeom::CurvilinearGridFromSplines::Initialize()
 {
     // no splines
-    if (m_numSplines < 2)
+    if (m_splines->m_numSplines < 2)
     {
         return false;
     }
@@ -352,7 +303,7 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
 
     // Store original number of splines
     std::vector<Point> newCrossSpline(2);
-    m_numOriginalSplines = m_numSplines;
+    m_numOriginalSplines = m_splines->m_numSplines;
     for (int s = 0; s < m_numOriginalSplines; ++s)
     {
         // mirrow only center splines
@@ -365,7 +316,7 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
         for (int i = m_leftGridLineIndex[s]; i < m_leftGridLineIndex[s] + m_numMSpline[s]; ++i)
         {
             Point normal;
-            NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], normal, m_projection);
+            NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], normal, m_splines->m_projection);
 
             double xMiddle = (m_gridLine[i].x + m_gridLine[i + 1].x) * 0.5;
             double yMiddle = (m_gridLine[i].y + m_gridLine[i + 1].y) * 0.5;
@@ -375,14 +326,14 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
             double ys1;
             double ys2;
 
-            if (m_projection == Projections::cartesian)
+            if (m_splines->m_projection == Projections::cartesian)
             {
                 xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x;
                 xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x;
                 ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y;
                 ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y;
             }
-            if (m_projection == Projections::spherical)
+            if (m_splines->m_projection == Projections::spherical)
             {
                 const double factor = 1.0 / (earth_radius * degrad_hp);
                 xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x * factor;
@@ -393,9 +344,10 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
 
             newCrossSpline[0] = { xs1, ys1 };
             newCrossSpline[1] = { xs2, ys2 };
-            AddSpline(newCrossSpline, 0, newCrossSpline.size());
+            m_splines->AddSpline(newCrossSpline, 0, newCrossSpline.size());
             // flag the cross spline as artificially added
-            m_type[m_numSplines-1] = SplineTypes::arficial;
+            ResizeVectorIfNeeded(m_splines->m_numAllocatedSplines, m_type);
+            m_type[m_splines->m_numSplines - 1] = SplineTypes::arficial;
         }
     }
 
@@ -486,7 +438,7 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
         {
             continue;
         }
-        squaredMaximumGridWidth = std::max(squaredMaximumGridWidth, ComputeSquaredDistance(m_gridPoints[0][i], m_gridPoints[0][i + 1], m_projection));
+        squaredMaximumGridWidth = std::max(squaredMaximumGridWidth, ComputeSquaredDistance(m_gridPoints[0][i], m_gridPoints[0][i + 1], m_splines->m_projection));
     }
     m_onTopOfEachOtherSquaredTolerance = m_onTopOfEachOtherSquaredTolerance * squaredMaximumGridWidth;
 
@@ -496,7 +448,7 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesInitialize()
     return true;
 }
 
-bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesIteration(int layer)
+bool GridGeom::CurvilinearGridFromSplines::Iterate(int layer)
 {
     bool successful = GrowLayer(layer);
     if (!successful)
@@ -552,7 +504,7 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesIteration(int layer)
     return true;
 }
 
-bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesRefreshMesh(CurvilinearGrid& curvilinearGrid)
+bool GridGeom::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearGrid& curvilinearGrid)
 {
     std::vector<std::vector<int>> mIndexsesThisSide(1, std::vector<int>(2));
     std::vector<std::vector<int>> mIndexsesOtherSide(1, std::vector<int>(2));
@@ -602,7 +554,7 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesRefreshMesh(Curvilin
             }
             else
             {
-                double squaredDistance = ComputeSquaredDistance(m_gridPoints[0][i], m_gridPoints[0][mOther], m_projection);
+                double squaredDistance = ComputeSquaredDistance(m_gridPoints[0][i], m_gridPoints[0][mOther], m_splines->m_projection);
                 if (squaredDistance > squaredDistanceTolerance)
                 {
                     isConnected = false;
@@ -666,7 +618,7 @@ bool GridGeom::Splines::OrthogonalCurvilinearGridFromSplinesRefreshMesh(Curvilin
     return true;
 }
 
-bool GridGeom::Splines::GetSubIntervalAndGridLayer(int layer, int& gridLayer, int& subLayerIndex)
+bool GridGeom::CurvilinearGridFromSplines::GetSubIntervalAndGridLayer(int layer, int& gridLayer, int& subLayerIndex)
 {
     gridLayer = layer - 1;
     int sum = std::accumulate(m_subLayerGridPoints.begin(), m_subLayerGridPoints.end(), 0);
@@ -688,7 +640,7 @@ bool GridGeom::Splines::GetSubIntervalAndGridLayer(int layer, int& gridLayer, in
     return true;
 }
 
-bool GridGeom::Splines::GrowLayer(int layerIndex)
+bool GridGeom::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
 {
     assert(layerIndex - 1 >= 0);
     std::vector<Point> velocityVectorAtGridPoints(m_numM);
@@ -856,7 +808,7 @@ bool GridGeom::Splines::GrowLayer(int layerIndex)
                 m_gridPoints[layerIndex - 1][i],
                 m_gridPoints[layerIndex - 1][i],
                 activeLayerPoints[i],
-                m_projection);
+                m_splines->m_projection);
             if (cosphi < -0.5)
             {
                 int currentLeftIndex;
@@ -877,7 +829,7 @@ bool GridGeom::Splines::GrowLayer(int layerIndex)
     return true;
 }
 
-bool GridGeom::Splines::ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
+bool GridGeom::CurvilinearGridFromSplines::ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
                                                         const std::vector<Point>& velocities,
                                                         std::vector<double>& maximumGridLayerGrowTime)
 {
@@ -892,7 +844,7 @@ bool GridGeom::Splines::ComputeMaximumGridLayerGrowTime(const std::vector<Point>
             continue;
         }
 
-        edgeWidth[i] = Distance(coordinates[i], coordinates[i + 1], m_projection);
+        edgeWidth[i] = Distance(coordinates[i], coordinates[i + 1], m_splines->m_projection);
 
         if (edgeWidth[i] < minEdgeWidth)
         {
@@ -901,13 +853,7 @@ bool GridGeom::Splines::ComputeMaximumGridLayerGrowTime(const std::vector<Point>
 
         Point firstPointIncremented(coordinates[i] + velocities[i] * dt);
         Point secondPointIncremented(coordinates[i + 1] + velocities[i + 1] * dt);;
-        edgeIncrement[i] = InnerProductTwoSegments
-        (
-            coordinates[i],
-            coordinates[i + 1],
-            firstPointIncremented,
-            secondPointIncremented, m_projection) / edgeWidth[i] - edgeWidth[i];
-
+        edgeIncrement[i] = InnerProductTwoSegments ( coordinates[i], coordinates[i + 1], firstPointIncremented, secondPointIncremented, m_splines->m_projection) / edgeWidth[i] - edgeWidth[i];
         edgeIncrement[i] = edgeIncrement[i] / dt;
     }
 
@@ -922,7 +868,7 @@ bool GridGeom::Splines::ComputeMaximumGridLayerGrowTime(const std::vector<Point>
     return true;
 }
 
-bool GridGeom::Splines::CopyVelocitiesToFront(const int layerIndex,
+bool GridGeom::CurvilinearGridFromSplines::CopyVelocitiesToFront(const int layerIndex,
                                               const std::vector<Point>& previousVelocities,
                                               int& numFrontPoints,
                                               std::vector<std::vector<int>>& gridPointsIndexses,
@@ -990,7 +936,7 @@ bool GridGeom::Splines::CopyVelocitiesToFront(const int layerIndex,
 }
 
 
-bool GridGeom::Splines::FindFront( std::vector<std::vector<int>>& gridPointsIndexses,
+bool GridGeom::CurvilinearGridFromSplines::FindFront( std::vector<std::vector<int>>& gridPointsIndexses,
                                    std::vector<Point>& frontGridPoints,
                                    int& numFrontPoints)
 {
@@ -1103,7 +1049,7 @@ bool GridGeom::Splines::FindFront( std::vector<std::vector<int>>& gridPointsInde
 
 
 //comp_vel
-bool GridGeom::Splines::ComputeVelocitiesAtGridPoints
+bool GridGeom::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints
 (
     int layerIndex,
     std::vector<Point>& velocityVector
@@ -1125,9 +1071,9 @@ bool GridGeom::Splines::ComputeVelocitiesAtGridPoints
         int currentRightIndex;
         GetNeighbours(m_gridPoints[layerIndex], m, currentLeftIndex, currentRightIndex);
 
-        double squaredLeftRightDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][currentRightIndex], m_projection);
-        double squaredLeftDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][m], m_projection);
-        double squaredRightDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], m_projection);
+        double squaredLeftRightDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][currentRightIndex], m_splines->m_projection);
+        double squaredLeftDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][m], m_splines->m_projection);
+        double squaredRightDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], m_splines->m_projection);
 
         if (squaredLeftRightDistance <= m_onTopOfEachOtherSquaredTolerance)
         {
@@ -1136,8 +1082,8 @@ bool GridGeom::Splines::ComputeVelocitiesAtGridPoints
 
         if (squaredLeftDistance <= m_onTopOfEachOtherSquaredTolerance || squaredRightDistance <= m_onTopOfEachOtherSquaredTolerance)
         {
-            NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][currentLeftIndex], normalVectorLeft, m_projection);
-            if (m_projection == Projections::spherical)
+            NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][currentLeftIndex], normalVectorLeft, m_splines->m_projection);
+            if (m_splines->m_projection == Projections::spherical)
             {
                 normalVectorLeft.x = normalVectorLeft.x * std::cos(degrad_hp * 0.5 * (m_gridPoints[layerIndex][currentLeftIndex].y + m_gridPoints[layerIndex][currentRightIndex].y));
             }
@@ -1145,10 +1091,10 @@ bool GridGeom::Splines::ComputeVelocitiesAtGridPoints
         }
         else
         {
-            NormalVectorOutside(m_gridPoints[layerIndex][m], m_gridPoints[layerIndex][currentLeftIndex], normalVectorLeft, m_projection);
-            NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], normalVectorRight, m_projection);
+            NormalVectorOutside(m_gridPoints[layerIndex][m], m_gridPoints[layerIndex][currentLeftIndex], normalVectorLeft, m_splines->m_projection);
+            NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], normalVectorRight, m_splines->m_projection);
 
-            if (m_projection == Projections::spherical)
+            if (m_splines->m_projection == Projections::spherical)
             {
                 normalVectorLeft.x = normalVectorLeft.x * std::cos(degrad_hp * 0.5 * (m_gridPoints[layerIndex][currentLeftIndex].y + m_gridPoints[layerIndex][m].y));
                 normalVectorRight.x = normalVectorRight.x * std::cos(degrad_hp * 0.5 * (m_gridPoints[layerIndex][currentRightIndex].y + m_gridPoints[layerIndex][m].y));
@@ -1184,7 +1130,7 @@ bool GridGeom::Splines::ComputeVelocitiesAtGridPoints
             velocityVector[m] = rightVelocity * 1.0 / (rightLeftVelocityRatio * cosphi);
         }
 
-        if (m_projection == Projections::spherical)
+        if (m_splines->m_projection == Projections::spherical)
         {
             velocityVector[m].x = velocityVector[m].x * one_over_earth_radius * raddeg_hp / std::cos(degrad_hp * m_gridPoints[layerIndex][m].y);
             velocityVector[m].y = velocityVector[m].y * one_over_earth_radius * raddeg_hp;
@@ -1193,12 +1139,10 @@ bool GridGeom::Splines::ComputeVelocitiesAtGridPoints
     return true;
 }
 
-/// get_LR
-bool GridGeom::Splines::GetNeighbours(
-    const std::vector<Point>& gridPoints,
-    int index,
-    int& currentLeftIndex,
-    int& currentRightIndex)
+bool GridGeom::CurvilinearGridFromSplines::GetNeighbours( const std::vector<Point>& gridPoints,
+                                                          int index,
+                                                          int& currentLeftIndex,
+                                                          int& currentRightIndex)
 {
     bool circularConnection = false;
     currentLeftIndex = index;
@@ -1207,7 +1151,7 @@ bool GridGeom::Splines::GetNeighbours(
     int end = gridPoints.size() - 1;
 
     // left
-    while (ComputeSquaredDistance(gridPoints[currentLeftIndex], gridPoints[index], m_projection) < m_onTopOfEachOtherSquaredTolerance)
+    while (ComputeSquaredDistance(gridPoints[currentLeftIndex], gridPoints[index], m_splines->m_projection) < m_onTopOfEachOtherSquaredTolerance)
     {
         if (!circularConnection)
         {
@@ -1229,7 +1173,7 @@ bool GridGeom::Splines::GetNeighbours(
     }
 
     // right
-    while (ComputeSquaredDistance(gridPoints[currentRightIndex], gridPoints[index], m_projection) < m_onTopOfEachOtherSquaredTolerance)
+    while (ComputeSquaredDistance(gridPoints[currentRightIndex], gridPoints[index], m_splines->m_projection) < m_onTopOfEachOtherSquaredTolerance)
     {
         if (!circularConnection)
         {
@@ -1252,7 +1196,7 @@ bool GridGeom::Splines::GetNeighbours(
     return true;
 }
 
-bool GridGeom::Splines::ComputeEdgeVelocities( std::vector<double>& edgeVelocities, // edgevel
+bool GridGeom::CurvilinearGridFromSplines::ComputeEdgeVelocities( std::vector<double>& edgeVelocities, // edgevel
                                                std::vector<std::vector<double>>& growFactorOnSubintervalAndEdge, //dgrow1
                                                std::vector<std::vector<int>>& numPerpendicularFacesOnSubintervalAndEdge //nfac1
 )
@@ -1269,7 +1213,7 @@ bool GridGeom::Splines::ComputeEdgeVelocities( std::vector<double>& edgeVelociti
         numPerpendicularFacesOnSubintervalAndEdge[0][i] = 1;
     }
 
-    for (int s = 0; s < m_numSplines; s++)
+    for (int s = 0; s < m_splines->m_numSplines; s++)
     {
         double maxHeight = std::numeric_limits<double>::min();
         for (int i = 0; i < m_gridHeights[0].size(); ++i)
@@ -1356,7 +1300,7 @@ bool GridGeom::Splines::ComputeEdgeVelocities( std::vector<double>& edgeVelociti
     }
 
     // compute local grow factors
-    for (int s = 0; s < m_numSplines; s++)
+    for (int s = 0; s < m_splines->m_numSplines; s++)
     {
         if (m_numMSpline[s] < 1)
         {
@@ -1384,7 +1328,7 @@ bool GridGeom::Splines::ComputeEdgeVelocities( std::vector<double>& edgeVelociti
 }
 
 ///comp_dgrow: this is another root finding algorithm, could go in the general part
-bool GridGeom::Splines::ComputeGrowFactor(
+bool GridGeom::CurvilinearGridFromSplines::ComputeGrowFactor(
     double totalGridHeight,
     double firstGridLayerHeight,
     double numberOfGridLayers,
@@ -1434,7 +1378,7 @@ bool GridGeom::Splines::ComputeGrowFactor(
     return true;
 }
 
-double GridGeom::Splines::ComputeTotalExponentialHeight(double aspectRatioGrowFactor, double firstGridLayerHeights, int numberOfGridLayers)
+double GridGeom::CurvilinearGridFromSplines::ComputeTotalExponentialHeight(double aspectRatioGrowFactor, double firstGridLayerHeights, int numberOfGridLayers)
 {
     double height;
     if (std::abs(aspectRatioGrowFactor - 1.0) > 1e-8)
@@ -1450,7 +1394,7 @@ double GridGeom::Splines::ComputeTotalExponentialHeight(double aspectRatioGrowFa
 
 ///comp_nfac
 ///compute the number of grid layers for a given grow factor, first grid layer height and total grid height
-int GridGeom::Splines::ComputeNumberExponentialIntervals(const double hhMaxRatio)
+int GridGeom::CurvilinearGridFromSplines::ComputeNumberExponentialIntervals(const double hhMaxRatio)
 {
     int numIntervals = 0;
     if (m_aspectRatioGrowFactor - 1.0 > 1e-8)
@@ -1464,7 +1408,7 @@ int GridGeom::Splines::ComputeNumberExponentialIntervals(const double hhMaxRatio
     return numIntervals;
 }
 
-bool GridGeom::Splines::ComputeVelocitiesSubIntervals( const int s,
+bool GridGeom::CurvilinearGridFromSplines::ComputeVelocitiesSubIntervals( const int s,
                                                        const int startGridLineIndex,
                                                        const int endGridLineIndex,
                                                        const int numHeights,
@@ -1531,21 +1475,23 @@ bool GridGeom::Splines::ComputeVelocitiesSubIntervals( const int s,
     return true;
 }
 
-bool GridGeom::Splines::ComputeGridHeights()
+bool GridGeom::CurvilinearGridFromSplines::ComputeGridHeights()
 {
+    const int numSplines = m_splines->m_numSplines;
+
     m_gridHeights.resize(m_maxNumCenterSplineHeights, std::vector<double>(m_numM - 1));
     std::fill(m_gridHeights.begin(), m_gridHeights.end(), std::vector<double>(m_numM - 1, doubleMissingValue));
 
     std::vector<std::vector<double>> heightsLeft(m_maxNumCenterSplineHeights, std::vector<double>(m_maxNumM, 0.0));
     std::vector<std::vector<double>> heightsRight(m_maxNumCenterSplineHeights, std::vector<double>(m_maxNumM, 0.0));
     std::vector<double> edgesCenterPoints(m_numM, 0.0);
-    std::vector<double> crossingSplinesDimensionalCoordinates(m_numSplines, 0.0);
-    std::vector<int> numHeightsLeft(m_numSplines, 0.0);
-    std::vector<int> numHeightsRight(m_numSplines, 0.0);
-    std::vector<double> localSplineDerivatives(m_numSplines, 0.0);
-    std::vector<int> localValidSplineIndexes(m_numSplines, 0.0);
+    std::vector<double> crossingSplinesDimensionalCoordinates(numSplines, 0.0);
+    std::vector<int> numHeightsLeft(numSplines, 0.0);
+    std::vector<int> numHeightsRight(numSplines, 0.0);
+    std::vector<double> localSplineDerivatives(numSplines, 0.0);
+    std::vector<int> localValidSplineIndexes(numSplines, 0.0);
 
-    for (int s = 0; s < m_numSplines; s++)
+    for (int s = 0; s < numSplines; s++)
     {
         if (m_type[s] != SplineTypes::central)
         {
@@ -1577,10 +1523,10 @@ bool GridGeom::Splines::ComputeGridHeights()
         else
         {
             int leftGridLineIndex = m_leftGridLineIndex[s];
-            edgesCenterPoints[0] = GetSplineLength(s, 0, m_gridLineDimensionalCoordinates[leftGridLineIndex]);
+            edgesCenterPoints[0] = m_splines->GetSplineLength(s, 0, m_gridLineDimensionalCoordinates[leftGridLineIndex]);
             for (int i = 0; i < numM; ++i)
             {
-                edgesCenterPoints[i + 1] = edgesCenterPoints[i] + GetSplineLength(s, m_gridLineDimensionalCoordinates[leftGridLineIndex + i], m_gridLineDimensionalCoordinates[leftGridLineIndex + i + 1]);
+                edgesCenterPoints[i + 1] = edgesCenterPoints[i] + m_splines->GetSplineLength(s, m_gridLineDimensionalCoordinates[leftGridLineIndex + i], m_gridLineDimensionalCoordinates[leftGridLineIndex + i + 1]);
             }
 
             // compute at edge center points
@@ -1591,10 +1537,10 @@ bool GridGeom::Splines::ComputeGridHeights()
             edgesCenterPoints[numM] = doubleMissingValue;
 
             //compute center spline path length of cross splines
-            crossingSplinesDimensionalCoordinates[0] = GetSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
+            crossingSplinesDimensionalCoordinates[0] = m_splines->GetSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
             for (int i = 0; i < m_numCrossingSplines[s] - 1; ++i)
             {
-                crossingSplinesDimensionalCoordinates[i + 1] = crossingSplinesDimensionalCoordinates[i] + GetSplineLength(s, m_crossSplineCoordinates[s][i], m_crossSplineCoordinates[s][i + 1]);
+                crossingSplinesDimensionalCoordinates[i + 1] = crossingSplinesDimensionalCoordinates[i] + m_splines->GetSplineLength(s, m_crossSplineCoordinates[s][i], m_crossSplineCoordinates[s][i + 1]);
             }
 
             for (int i = 0; i < m_numCrossingSplines[s]; ++i)
@@ -1654,7 +1600,7 @@ bool GridGeom::Splines::ComputeGridHeights()
     return true;
 }
 
-bool GridGeom::Splines::FindNearestCrossSplines(const int s,
+bool GridGeom::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s,
                                                 const int j,
                                                 const std::vector<int>& numHeightsLeft,
                                                 const std::vector<double>& edgesCenterPoints,
@@ -1683,9 +1629,9 @@ bool GridGeom::Splines::FindNearestCrossSplines(const int s,
         localCornerPoints[i] = crossSplineLeftHeights[index][j];
     }
 
-    SecondOrderDerivative(localCornerPoints, numValid, localSplineDerivatives);
+    m_splines->SecondOrderDerivative(localCornerPoints, numValid, localSplineDerivatives);
 
-    crossingSplinesDimensionalCoordinates[0] = GetSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
+    crossingSplinesDimensionalCoordinates[0] = m_splines->GetSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
     for (int i = 0; i < numM; ++i)
     {
         int leftIndex = 0;
@@ -1717,7 +1663,7 @@ bool GridGeom::Splines::FindNearestCrossSplines(const int s,
 
         factor = std::max(std::min(double(leftIndex + 1) + factor - 1.0, double(numValid - 1)), 0.0);
 
-        bool success = Interpolate(localCornerPoints, localSplineDerivatives, factor, heights[j][i]);
+        bool success = InterpolateSplinePoint(localCornerPoints, localSplineDerivatives, factor, heights[j][i]);
         if (!success)
         {
             return false;
@@ -1729,7 +1675,7 @@ bool GridGeom::Splines::FindNearestCrossSplines(const int s,
 
 
 // GetValidSplineIndexses
-bool GridGeom::Splines::GetValidSplineIndexses(const int s, const int numValues, const std::vector<int>& v, std::vector<int>& validIndexses, int& numValid)
+bool GridGeom::CurvilinearGridFromSplines::GetValidSplineIndexses(const int s, const int numValues, const std::vector<int>& v, std::vector<int>& validIndexses, int& numValid)
 {
     numValid = 0;
     for (int i = 0; i < numValues; ++i)
@@ -1743,197 +1689,22 @@ bool GridGeom::Splines::GetValidSplineIndexses(const int s, const int numValues,
     return true;
 };
 
-bool GridGeom::Splines::GetSplinesIntersection(const int first, const int second,
-    const Projections& projection,
-    double& crossProductIntersection,
-    Point& intersectionPoint,
-    double& firstSplineRatio,
-    double& secondSplineRatio)
-{
-    double minimumCrossingDistance = std::numeric_limits<double>::max();
-    double crossingDistance;
-    int numCrossing = 0;
-    double firstCrossingRatio;
-    double secondCrossingRatio;
-    int firstCrossingIndex = 0;
-    int secondCrossingIndex = 0;
-    Point closestIntersection;
-
-    // First find a valid crossing, the closest to spline central point
-    for (int n = 0; n < m_numSplineNodes[first] - 1; n++)
-    {
-        for (int nn = 0; nn < m_numSplineNodes[second] - 1; nn++)
-        {
-            Point intersection;
-            double crossProduct;
-            double firstRatio;
-            double secondRatio;
-            bool areCrossing = AreLinesCrossing(m_splineCornerPoints[first][n],
-                m_splineCornerPoints[first][n + 1],
-                m_splineCornerPoints[second][nn],
-                m_splineCornerPoints[second][nn + 1],
-                false,
-                intersection,
-                crossProduct,
-                firstRatio,
-                secondRatio,
-                projection);
-
-
-            if (areCrossing)
-            {
-                if (m_numSplineNodes[first] == 2)
-                {
-                    crossingDistance = std::min(minimumCrossingDistance, std::abs(firstRatio - 0.5));
-                }
-                else if (m_numSplineNodes[second] == 2)
-                {
-                    crossingDistance = std::abs(secondRatio - 0.5);
-                }
-                else
-                {
-                    crossingDistance = minimumCrossingDistance;
-                }
-
-                if (crossingDistance < minimumCrossingDistance || numCrossing == 0)
-                {
-                    minimumCrossingDistance = crossingDistance;
-                    numCrossing = 1;
-                    firstCrossingIndex = n;             //TI0
-                    secondCrossingIndex = nn;           //TJ0
-                    firstCrossingRatio = firstRatio;    //SL
-                    secondCrossingRatio = secondRatio;  //SM
-                }
-            }
-            closestIntersection = intersection;
-        }
-    }
-
-    // if no crossing found, return
-    if (numCrossing == 0)
-    {
-        return false;
-    }
-
-    double firstCrossing = firstCrossingRatio == -1 ? 0 : firstCrossingIndex + firstCrossingRatio;
-    double secondCrossing = secondCrossingRatio == -1 ? 0 : secondCrossingIndex + secondCrossingRatio;
-
-    // use bisection to find the intersection 
-    double squaredDistanceBetweenCrossings = std::numeric_limits<double>::max();
-    double maxSquaredDistanceBetweenCrossings = 1e-12;
-    double maxDistanceBetweenVertices = 0.0001;
-    double firstRatioIterations = 1.0;
-    double secondRatioIterations = 1.0;
-    double previousFirstCrossing;
-    double previousSecondCrossing;
-    int numIterations = 0;
-    while (squaredDistanceBetweenCrossings > maxSquaredDistanceBetweenCrossings&& numIterations < 20)
-    {
-        // increment counter
-        numIterations++;
-
-        if (firstCrossingRatio > 0 && firstCrossingRatio < 1.0)
-        {
-            firstRatioIterations = 0.5 * firstRatioIterations;
-        }
-        if (secondCrossingRatio > 0 && secondCrossingRatio < 1.0)
-        {
-            secondRatioIterations = 0.5 * secondRatioIterations;
-        }
-
-        firstCrossing = std::max(0.0, std::min(firstCrossing, double(m_numSplineNodes[first])));
-        secondCrossing = std::max(0.0, std::min(secondCrossing, double(m_numSplineNodes[second])));
-
-        double firstLeft = std::max(0.0, std::min(double(m_numSplineNodes[first] - 1), firstCrossing - firstRatioIterations / 2.0));
-        double firstRight = std::max(0.0, std::min(double(m_numSplineNodes[first] - 1), firstCrossing + firstRatioIterations / 2.0));
-
-        double secondLeft = std::max(0.0, std::min(double(m_numSplineNodes[second] - 1), secondCrossing - secondRatioIterations / 2.0));
-        double secondRight = std::max(0.0, std::min(double(m_numSplineNodes[second] - 1), secondCrossing + secondRatioIterations / 2.0));
-
-        firstRatioIterations = firstRight - firstLeft;
-        secondRatioIterations = secondRight - secondLeft;
-
-        Point firstLeftSplinePoint;
-        Interpolate(m_splineCornerPoints[first], m_splineDerivatives[first], firstLeft, firstLeftSplinePoint);
-        Point firstRightSplinePoint;
-        Interpolate(m_splineCornerPoints[first], m_splineDerivatives[first], firstRight, firstRightSplinePoint);
-
-        Point secondLeftSplinePoint;
-        Interpolate(m_splineCornerPoints[second], m_splineDerivatives[second], secondLeft, secondLeftSplinePoint);
-        Point secondRightSplinePoint;
-        Interpolate(m_splineCornerPoints[second], m_splineDerivatives[second], secondRight, secondRightSplinePoint);
-
-        Point oldIntersection = closestIntersection;
-
-        double crossProduct;
-        double firstRatio;
-        double secondRatio;
-        bool areCrossing = AreLinesCrossing(firstLeftSplinePoint, firstRightSplinePoint,
-            secondLeftSplinePoint, secondRightSplinePoint,
-            true,
-            closestIntersection,
-            crossProduct,
-            firstRatio,
-            secondRatio,
-            projection);
-
-        // search close by
-        if (-2.0 < firstRatio < 3.0 && -2.0 < secondRatio < 3.0)
-        {
-            previousFirstCrossing = firstCrossing;
-            previousSecondCrossing = secondCrossing;
-
-            firstCrossing = firstLeft + firstRatio * (firstRight - firstLeft);
-            secondCrossing = secondLeft + secondRatio * (secondRight - secondLeft);
-
-            firstCrossing = std::max(0.0, std::min(m_numSplineNodes[first] - 1.0, firstCrossing));
-            secondCrossing = std::max(0.0, std::min(m_numSplineNodes[second] - 1.0, secondCrossing));
-
-            if (areCrossing)
-            {
-                numCrossing = 1;
-                crossProductIntersection = crossProduct;
-            }
-
-            if (std::abs(firstCrossing - previousFirstCrossing) > maxDistanceBetweenVertices ||
-                std::abs(secondCrossing - previousSecondCrossing) > maxDistanceBetweenVertices)
-            {
-                squaredDistanceBetweenCrossings = ComputeSquaredDistance(oldIntersection, closestIntersection, projection);
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
-
-    if (numCrossing == 1)
-    {
-        intersectionPoint = closestIntersection;
-        firstSplineRatio = firstCrossing;
-        secondSplineRatio = secondCrossing;
-        return true;
-    }
-
-    //not crossing
-    return false;
-}
-
 /// get_crosssplines
 /// compute the intersection of two splines, one must have only two nodes
-bool GridGeom::Splines::GetSplineIntersections(const int index)
+bool GridGeom::CurvilinearGridFromSplines::GetSplineIntersections(const int index)
 {
     m_numCrossingSplines[index] = 0;
+    const int numSplines = m_splines->m_numSplines;
     std::fill(m_crossingSplinesIndexses[index].begin(), m_crossingSplinesIndexses[index].end(), -1);
     std::fill(m_isLeftOriented[index].begin(), m_isLeftOriented[index].end(), true);
     std::fill(m_crossSplineCoordinates[index].begin(), m_crossSplineCoordinates[index].end(), std::numeric_limits<double>::max());
     std::fill(m_cosCrossingAngle[index].begin(), m_cosCrossingAngle[index].end(), doubleMissingValue);
 
-    for (int s = 0; s < m_numSplines; ++s)
+    for (int s = 0; s < numSplines; ++s)
     {
         // a crossing is a spline with 2 nodes and another with more than 2 nodes
-        if (m_numSplineNodes[s] == 2 && m_numSplineNodes[index] == 2 ||
-            m_numSplineNodes[s] > 2 && m_numSplineNodes[index] > 2)
+        if (m_splines->m_numSplineNodes[s] == 2 && m_splines->m_numSplineNodes[index] == 2 ||
+            m_splines->m_numSplineNodes[s] > 2 && m_splines->m_numSplineNodes[index] > 2)
         {
             continue;
         }
@@ -1942,7 +1713,7 @@ bool GridGeom::Splines::GetSplineIntersections(const int index)
         Point intersectionPoint;
         double firstSplineRatio;
         double secondSplineRatio;
-        bool crossing = GetSplinesIntersection(index, s, m_projection, crossProductIntersection, intersectionPoint, firstSplineRatio, secondSplineRatio);
+        bool crossing = m_splines->GetSplinesIntersection(index, s, m_splines->m_projection, crossProductIntersection, intersectionPoint, firstSplineRatio, secondSplineRatio);
 
         if (std::abs(crossProductIntersection) < m_dtolcos)
         {
@@ -1971,11 +1742,11 @@ bool GridGeom::Splines::GetSplineIntersections(const int index)
     return true;
 }
 
-bool GridGeom::Splines::MakeAllGridLines(bool isSpacingCurvatureAdapeted)
+bool GridGeom::CurvilinearGridFromSplines::MakeAllGridLines(bool isSpacingCurvatureAdapeted)
 {
 
     int numCenterSplines = 0;
-    for (int s = 0; s < m_numSplines; ++s)
+    for (int s = 0; s < m_splines->m_numSplines; ++s)
     {
         //center splines only
         if (m_type[s] != SplineTypes::central)
@@ -1992,7 +1763,7 @@ bool GridGeom::Splines::MakeAllGridLines(bool isSpacingCurvatureAdapeted)
 
 
     int gridLineIndex = 0;
-    for (int s = 0; s < m_numSplines; ++s)
+    for (int s = 0; s < m_splines->m_numSplines; ++s)
     {
         //center splines only
         if (m_type[s] != SplineTypes::central)
@@ -2050,21 +1821,21 @@ bool GridGeom::Splines::MakeAllGridLines(bool isSpacingCurvatureAdapeted)
 
 /// make_gridline, generate a gridline on a spline with a prescribed maximum mesh width
 /// generate a gridline on a spline with a prescribed maximum mesh width
-bool GridGeom::Splines::MakeGridLine(int splineIndex,
+bool GridGeom::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
     int startingIndex,
     std::vector<Point>& gridLine,
     std::vector<double>& adimensionalCoordinates,
     int& numM)
 {
     // first estimation of nodes along m
-    numM = 1 + std::floor(m_splinesLength[splineIndex] / m_averageMeshWidth);
+    numM = 1 + std::floor(m_splines->m_splinesLength[splineIndex] / m_averageMeshWidth);
     numM = std::min(numM, m_maxNumM);
 
-    double endSplineAdimensionalCoordinate = m_numSplineNodes[splineIndex] - 1;
-    double splineLength = GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
+    double endSplineAdimensionalCoordinate = m_splines->m_numSplineNodes[splineIndex] - 1;
+    double splineLength = m_splines->GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
 
-    gridLine[startingIndex] = m_splineCornerPoints[splineIndex][0];
-    FuncDimensionalToAdimensionalDistance func(*this, splineIndex, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
+    gridLine[startingIndex] = m_splines->m_splineCornerPoints[splineIndex][0];
+    GridGeom::FuncDimensionalToAdimensionalDistance func(*this, splineIndex, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
 
     double currentMaxWidth = std::numeric_limits<double>::max();
     while (currentMaxWidth > m_averageMeshWidth)
@@ -2073,11 +1844,19 @@ bool GridGeom::Splines::MakeGridLine(int splineIndex,
         for (int n = 1; n <= numM; ++n)
         {
             int index = startingIndex + n;
+            
             double dimensionalDistance = splineLength * double(n) / double(numM);
+            
             func.SetDimensionalDistance(dimensionalDistance);
+            
             adimensionalCoordinates[index] = FindFunctionRootWithGoldenSectionSearch(func, 0, endSplineAdimensionalCoordinate);
-            Interpolate(m_splineCornerPoints[splineIndex], m_splineDerivatives[splineIndex], adimensionalCoordinates[index], gridLine[index]);
-            currentMaxWidth = std::max(currentMaxWidth, Distance(gridLine[index - 1], gridLine[index], m_projection));
+            
+            InterpolateSplinePoint(m_splines->m_splineCornerPoints[splineIndex], 
+                                 m_splines->m_splineDerivatives[splineIndex], 
+                                 adimensionalCoordinates[index], 
+                                 gridLine[index]);
+
+            currentMaxWidth = std::max(currentMaxWidth, Distance(gridLine[index - 1], gridLine[index], m_splines->m_projection));
         }
 
         // a gridline is computed
@@ -2095,7 +1874,7 @@ bool GridGeom::Splines::MakeGridLine(int splineIndex,
     return true;
 }
 
-bool GridGeom::Splines::ComputeSplineProperties(const bool restoreOriginalProperties)
+bool GridGeom::CurvilinearGridFromSplines::ComputeSplineProperties(const bool restoreOriginalProperties)
 {
     bool successful = AllocateSplinesProperties();
     if (!successful)
@@ -2103,7 +1882,7 @@ bool GridGeom::Splines::ComputeSplineProperties(const bool restoreOriginalProper
         return false;
     }
 
-    for (int s = 0; s < m_numSplines; ++s)
+    for (int s = 0; s < m_splines->m_numSplines; ++s)
     {
         successful = GetSplineIntersections(s);
 
@@ -2113,20 +1892,20 @@ bool GridGeom::Splines::ComputeSplineProperties(const bool restoreOriginalProper
         }
     }
     // select all non-cross splines only
-    for (int s = 0; s < m_numSplines; ++s)
+    for (int s = 0; s < m_splines->m_numSplines; ++s)
     {
         m_type[s] = SplineTypes::crossing;
         // select all non-cross splines for growing the grid
-        if (m_numSplineNodes[s] > 2)
+        if (m_splines->m_numSplineNodes[s] > 2)
         {
             m_type[s] = SplineTypes::central;
         }
     }
     // check the cross splines. The center spline is the middle spline that crosses the cross spline
-    for (int s = 0; s < m_numSplines; ++s)
+    for (int s = 0; s < m_splines->m_numSplines; ++s)
     {
         // only crossing splines with one or more center spline
-        if (m_numSplineNodes[s] != 2 || m_numCrossingSplines[s] < 1)
+        if (m_splines->m_numSplineNodes[s] != 2 || m_numCrossingSplines[s] < 1)
         {
             continue;
         }
@@ -2173,7 +1952,7 @@ bool GridGeom::Splines::ComputeSplineProperties(const bool restoreOriginalProper
         }
 
         //mark new splines as artificial cross splines
-        for (int s = m_numOriginalSplines; s < m_numSplines; ++s)
+        for (int s = m_numOriginalSplines; s < m_splines->m_numSplines; ++s)
         {
             m_type[s] = SplineTypes::arficial;
         }
@@ -2183,12 +1962,12 @@ bool GridGeom::Splines::ComputeSplineProperties(const bool restoreOriginalProper
     return successfull;
 }
 
-bool GridGeom::Splines::ComputeHeights()
+bool GridGeom::CurvilinearGridFromSplines::ComputeHeights()
 {
-    for (int i = 0; i < m_numSplines; ++i)
+    for (int i = 0; i < m_splines->m_numSplines; ++i)
     {
         // Heights should be computed only for center splines
-        if (m_numSplineNodes[i] <= 2)
+        if (m_splines->m_numSplineNodes[i] <= 2)
         {
             continue;
         }
@@ -2204,11 +1983,11 @@ bool GridGeom::Splines::ComputeHeights()
     }
 
     // compute m_maximumGridHeight
-    for (int s = 0; s < m_numSplines; ++s)
+    for (int s = 0; s < m_splines->m_numSplines; ++s)
     {
         if (m_numCrossingSplines[s] == 0)
         {
-            m_maximumGridHeights[s] = m_aspectRatioFirstLayer * m_splinesLength[s];
+            m_maximumGridHeights[s] = m_aspectRatioFirstLayer * m_splines->m_splinesLength[s];
             continue;
         }
         double maximumHeight = 0.0;
@@ -2232,7 +2011,7 @@ bool GridGeom::Splines::ComputeHeights()
     return true;
 }
 
-bool GridGeom::Splines::ComputeSubHeights( int centerSplineIndex,  int crossingSplineLocalIndex)
+bool GridGeom::CurvilinearGridFromSplines::ComputeSubHeights( int centerSplineIndex,  int crossingSplineLocalIndex)
 {
     // find center spline index
     int centerSplineLocalIndex = 0;
@@ -2263,13 +2042,13 @@ bool GridGeom::Splines::ComputeSubHeights( int centerSplineIndex,  int crossingS
         }
         leftCenterSplineIndex = rightCenterSplineIndex;
         rightCenterSplineIndex = s + 1;
-        m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsRight] = GetSplineLength(crossingSplineIndex,
+        m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsRight] = m_splines->GetSplineLength(crossingSplineIndex,
             m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex], m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex]);
         numSubIntervalsRight++;
     }
 
-    m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsRight] = GetSplineLength(crossingSplineIndex,
-        m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex], m_numSplineNodes[crossingSplineIndex] - 1);
+    m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsRight] = m_splines->GetSplineLength(crossingSplineIndex,
+        m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex], m_splines->m_numSplineNodes[crossingSplineIndex] - 1);
 
     numSubIntervalsRight++;
     std::fill(m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex].begin() + numSubIntervalsRight, m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex].end(), 0.0);
@@ -2291,12 +2070,12 @@ bool GridGeom::Splines::ComputeSubHeights( int centerSplineIndex,  int crossingS
         }
         rightCenterSplineIndex = leftCenterSplineIndex;
         leftCenterSplineIndex = s - 1;
-        m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsLeft] = GetSplineLength(crossingSplineIndex,
+        m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsLeft] = m_splines->GetSplineLength(crossingSplineIndex,
             m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex], m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex]);
         numSubIntervalsLeft++;
     }
 
-    m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsLeft] = GetSplineLength(crossingSplineIndex,
+    m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsLeft] = m_splines->GetSplineLength(crossingSplineIndex,
         0.0, m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex]);
 
     numSubIntervalsLeft++;
@@ -2313,177 +2092,6 @@ bool GridGeom::Splines::ComputeSubHeights( int centerSplineIndex,  int crossingS
         m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex] = m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex];
         m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex] = leftSubIntervalsTemp;
     }
-
-    return true;
-}
-
-double GridGeom::Splines::GetSplineLength(int index,
-    double beginFactor,
-    double endFactor,
-    int numSamples,
-    bool accountForCurvature,
-    double height,
-    double assignedDelta)
-{
-    double delta = assignedDelta;
-    int numPoints = endFactor / delta + 1;
-    if (delta < 0.0)
-    {
-        delta = 1.0 / numSamples;
-        numPoints = std::max(std::floor(0.9999 + (endFactor - beginFactor) / delta), 10.0);
-        delta = (endFactor - beginFactor) / numPoints;
-    }
-
-    // first point
-    Point leftPoint;
-    Interpolate(m_splineCornerPoints[index], m_splineDerivatives[index], beginFactor, leftPoint);
-
-    double splineLength = 0.0;
-
-    double rightPointCoordinateOnSpline = beginFactor;
-    double leftPointCoordinateOnSpline;
-    for (int p = 0; p < numPoints; ++p)
-    {
-        leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
-        rightPointCoordinateOnSpline += delta;
-        if (rightPointCoordinateOnSpline > endFactor)
-        {
-            rightPointCoordinateOnSpline = endFactor;
-        }
-
-        Point rightPoint;
-        Interpolate(m_splineCornerPoints[index], m_splineDerivatives[index], rightPointCoordinateOnSpline, rightPoint);
-        double curvatureFactor = 0.0;
-        if (accountForCurvature)
-        {
-            Point normalVector;
-            Point tangentialVector;
-            ComputeCurvatureOnSplinePoint(index, 0.5 * (rightPointCoordinateOnSpline + leftPointCoordinateOnSpline), curvatureFactor, normalVector, tangentialVector);
-        }
-        splineLength = splineLength + Distance(leftPoint, rightPoint, m_projection) * (1.0 + curvatureFactor * height);
-        leftPoint = rightPoint;
-    }
-
-    return splineLength;
-}
-
-bool GridGeom::Splines::ComputeCurvatureOnSplinePoint( int splineIndex,
-                                                       double adimensionalPointCoordinate,
-                                                       double& curvatureFactor,
-                                                       Point& normalVector,
-                                                       Point& tangentialVector)
-{
-    auto const leftCornerPoint = int(std::max(std::min(double(std::floor(adimensionalPointCoordinate)), double(m_numSplineNodes[splineIndex] - 1)), 0.0));
-    auto const rightCornerPoint = int(std::max(double(leftCornerPoint + 1.0), 0.0));
-
-    double leftSegment = rightCornerPoint - adimensionalPointCoordinate;
-    double rightSegment = adimensionalPointCoordinate - leftCornerPoint;
-
-    Point pointCoordinate;
-    Interpolate(m_splineCornerPoints[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate, pointCoordinate);
-
-    Point p = m_splineCornerPoints[splineIndex][rightCornerPoint] - m_splineCornerPoints[splineIndex][leftCornerPoint] + 
-              (m_splineDerivatives[splineIndex][leftCornerPoint] * (-3.0 * leftSegment * leftSegment + 1.0) + 
-               m_splineDerivatives[splineIndex][rightCornerPoint] * (3.0 * rightSegment * rightSegment - 1.0)) / 6.0;
-
-    Point pp = m_splineDerivatives[splineIndex][leftCornerPoint] * leftSegment + 
-               m_splineDerivatives[splineIndex][rightCornerPoint] * rightSegment;
-
-    if (m_projection == Projections::spherical)
-    {
-        p.TransformSphericalToCartesian(pointCoordinate.y);
-        pp.TransformSphericalToCartesian(pointCoordinate.y);
-    }
-
-    curvatureFactor = std::abs(pp.x * p.y - pp.y * p.x) / std::pow((p.x * p.x + p.y * p.y + 1e-8), 1.5);
-
-    Point incremenetedPointCoordinate = pointCoordinate + p * 1e-4;
-    NormalVectorOutside(pointCoordinate, incremenetedPointCoordinate, normalVector, m_projection);
-
-    double distance = Distance(pointCoordinate, incremenetedPointCoordinate, m_projection);
-    double dx = GetDx(pointCoordinate, incremenetedPointCoordinate, m_projection);
-    double dy = GetDy(pointCoordinate, incremenetedPointCoordinate, m_projection);
-
-    tangentialVector.x = dx / distance;
-    tangentialVector.y = dy / distance;
-
-    return true;
-}
-
-bool GridGeom::Splines::SecondOrderDerivative(const std::vector<Point>& coordinates, int numNodes, std::vector<Point>& coordinatesDerivatives)
-{
-    std::vector<Point> u(numNodes);
-    u[0] = { 0.0, 0.0 };
-    coordinatesDerivatives.resize(coordinates.size(), { 0.0, 0.0 });
-    coordinatesDerivatives[0] = { 0.0, 0.0 };
-
-    for (int i = 1; i < numNodes - 1; i++)
-    {
-        const Point p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
-        coordinatesDerivatives[i].x = -0.5 / p.x;
-        coordinatesDerivatives[i].y = -0.5 / p.y;
-
-        const Point delta = coordinates[i + 1] - coordinates[i] - (coordinates[i] - coordinates[i - 1]);
-        u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
-    }
-
-    coordinatesDerivatives[numNodes - 1] = { 0.0, 0.0 };
-    for (int i = numNodes - 2; i >= 0; i--)
-    {
-        coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
-    }
-
-    return true;
-}
-
-bool GridGeom::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, int numNodes, std::vector<double>& coordinatesDerivatives)
-{
-    std::vector<double> u(numNodes);
-    u[0] = 0.0;
-    coordinatesDerivatives[0] = 0.0;
-
-    for (int i = 1; i < numNodes - 1; i++)
-    {
-        const double p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
-        coordinatesDerivatives[i] = -0.5 / p;
-
-        const double delta = coordinates[i + 1] - coordinates[i] - (coordinates[i] - coordinates[i - 1]);
-        u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
-    }
-
-    coordinatesDerivatives[numNodes - 1] = 0.0;
-    for (int i = numNodes - 2; i >= 0; i--)
-    {
-        coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
-    }
-
-    return true;
-}
-
-template<typename T>
-bool GridGeom::Splines::Interpolate(const std::vector<T>& coordinates, const std::vector<T>& coordinatesDerivatives, double pointAdimensionalCoordinate, T& pointCoordinate)
-{
-    if (pointAdimensionalCoordinate < 0)
-    {
-        return false;
-    }
-
-    const double eps = 1e-5;
-    const double splFac = 1.0;
-    int intCoordinate = std::floor(pointAdimensionalCoordinate);
-    if (pointAdimensionalCoordinate - intCoordinate < eps)
-    {
-        pointCoordinate = coordinates[intCoordinate];
-        return true;
-    }
-
-    int low = intCoordinate;
-    int high = low + 1;
-    double a = high - pointAdimensionalCoordinate;
-    double b = pointAdimensionalCoordinate - low;
-
-    pointCoordinate = coordinates[low] * a + coordinates[high] * b +
-        (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;
 
     return true;
 }
