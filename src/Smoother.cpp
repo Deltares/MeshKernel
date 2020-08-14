@@ -15,40 +15,44 @@ GridGeom::Smoother::Smoother()
 {
 }
 
-bool GridGeom::Smoother::Compute(const Mesh& mesh)
+GridGeom::Smoother::Smoother(Mesh& mesh): m_mesh(&mesh)
+{
+}
+
+bool GridGeom::Smoother::Compute()
 {
     bool successful = true;
 
     // compute smoother topologies
     if (successful)
     {
-        successful = ComputeTopologies(mesh);
+        successful = ComputeTopologies();
     }
 
     // compute smoother operators
     if (successful)
     {
-        successful = ComputeOperators(mesh);
+        successful = ComputeOperators();
     }
 
     // compute weights 
     if (successful)
     {
-        successful = ComputeWeights(mesh);
+        successful = ComputeWeights();
     }
     return true;
 }
 
-bool GridGeom::Smoother::ComputeTopologies(const Mesh& mesh)
+bool GridGeom::Smoother::ComputeTopologies()
 {
-    bool successful = Initialize(mesh);
+    bool successful = Initialize();
 
     if (!successful)
     {
         return false;
     }
 
-    for (auto n = 0; n < mesh.GetNumNodes(); n++)
+    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
         int numSharedFaces = 0;
         int numConnectedNodes = 0;
@@ -56,14 +60,14 @@ bool GridGeom::Smoother::ComputeTopologies(const Mesh& mesh)
         {
             std::fill(m_sharedFacesCache.begin(), m_sharedFacesCache.end(), -1);
             std::fill(m_connectedNodesCache.begin(), m_connectedNodesCache.end(), 0);
-            successful = NodeAdministration(mesh, n, numSharedFaces, numConnectedNodes);
+            successful = NodeAdministration(n, numSharedFaces, numConnectedNodes);
         }
 
         if (successful)
         {
             std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);
             std::fill(m_etaCache.begin(), m_etaCache.end(), 0.0);
-            successful = ComputeNodeXiEta(mesh, n, numSharedFaces, numConnectedNodes);
+            successful = ComputeNodeXiEta(n, numSharedFaces, numConnectedNodes);
         }
 
         if (successful)
@@ -86,7 +90,7 @@ bool GridGeom::Smoother::ComputeTopologies(const Mesh& mesh)
 
 }
 
-bool GridGeom::Smoother::ComputeOperators(const Mesh& mesh)
+bool GridGeom::Smoother::ComputeOperators()
 {
     // allocate local operators for unique topologies
     m_Az.resize(m_numTopologies);
@@ -111,7 +115,7 @@ bool GridGeom::Smoother::ComputeOperators(const Mesh& mesh)
 
     bool successful = true;
 
-    for (auto n = 0; n < mesh.GetNumNodes(); n++)
+    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
         // for each node, the associated topology
         int currentTopology = m_nodeTopologyMapping[n];
@@ -128,7 +132,7 @@ bool GridGeom::Smoother::ComputeOperators(const Mesh& mesh)
 
             if (successful)
             {
-                successful = ComputeOperatorsNode(mesh, n);
+                successful = ComputeOperatorsNode(n);
             }
         }
     }
@@ -136,22 +140,22 @@ bool GridGeom::Smoother::ComputeOperators(const Mesh& mesh)
     return successful;
 }
 
-bool GridGeom::Smoother::ComputeWeights(const Mesh& mesh)
+bool GridGeom::Smoother::ComputeWeights()
 {
-    std::vector<std::vector<double>> J(mesh.GetNumNodes() , std::vector<double>(4, 0));    // Jacobian
-    std::vector<std::vector<double>> Ginv(mesh.GetNumNodes() , std::vector<double>(4, 0)); // Mesh monitor matrices
+    std::vector<std::vector<double>> J(m_mesh->GetNumNodes() , std::vector<double>(4, 0));    // Jacobian
+    std::vector<std::vector<double>> Ginv(m_mesh->GetNumNodes() , std::vector<double>(4, 0)); // Mesh monitor matrices
 
-    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
+    for (auto n = 0; n < m_mesh->GetNumNodes() ; n++)
     {
-        if (mesh.m_nodesTypes[n] != 1 && mesh.m_nodesTypes[n] != 2 && mesh.m_nodesTypes[n] != 4) 
+        if (m_mesh->m_nodesTypes[n] != 1 && m_mesh->m_nodesTypes[n] != 2 && m_mesh->m_nodesTypes[n] != 4) 
         {
             continue;
         }
-        ComputeJacobian(n, mesh, J[n]);
+        ComputeJacobian(n, J[n]);
     }
 
     // TODO: Account for samples: call orthonet_comp_Ginv(u, ops, J, Ginv)
-    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
+    for (auto n = 0; n < m_mesh->GetNumNodes() ; n++)
     {
         Ginv[n][0] = 1.0;
         Ginv[n][1] = 0.0;
@@ -159,7 +163,7 @@ bool GridGeom::Smoother::ComputeWeights(const Mesh& mesh)
         Ginv[n][3] = 1.0;
     }
 
-    m_weights.resize(mesh.GetNumNodes() , std::vector<double>(m_maximumNumConnectedNodes, 0));
+    m_weights.resize(m_mesh->GetNumNodes() , std::vector<double>(m_maximumNumConnectedNodes, 0));
     std::vector<double> a1(2);
     std::vector<double> a2(2);
 
@@ -171,17 +175,17 @@ bool GridGeom::Smoother::ComputeWeights(const Mesh& mesh)
     std::vector<double> GxiByDiveta(m_maximumNumConnectedNodes, 0.0);
     std::vector<double> GetaByDivxi(m_maximumNumConnectedNodes, 0.0);
     std::vector<double> GetaByDiveta(m_maximumNumConnectedNodes, 0.0);
-    for (auto n = 0; n < mesh.GetNumNodes() ; n++)
+    for (auto n = 0; n < m_mesh->GetNumNodes() ; n++)
     {
 
-        if (mesh.m_nodesNumEdges[n] < 2) continue;
+        if (m_mesh->m_nodesNumEdges[n] < 2) continue;
 
         // Internal nodes and boundary nodes
-        if (mesh.m_nodesTypes[n] == 1 || mesh.m_nodesTypes[n] == 2)
+        if (m_mesh->m_nodesTypes[n] == 1 || m_mesh->m_nodesTypes[n] == 2)
         {
             int currentTopology = m_nodeTopologyMapping[n];
 
-            ComputeJacobian(n, mesh, J[n]);
+            ComputeJacobian(n, J[n]);
 
             //compute the contravariant base vectors
             double determinant = J[n][0] * J[n][3] - J[n][3] * J[n][1];
@@ -267,15 +271,14 @@ bool GridGeom::Smoother::ComputeWeights(const Mesh& mesh)
     return true;
 }
 
-bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
-                                                               int currentNode)
+bool GridGeom::Smoother::ComputeOperatorsNode(int currentNode)
 {
     // the current topology index
     const int currentTopology = m_nodeTopologyMapping[currentNode];
 
     for (int f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
-        if (m_topologySharedFaces[currentTopology][f] < 0 || mesh.m_nodesTypes[currentNode] == 3) 
+        if (m_topologySharedFaces[currentTopology][f] < 0 || m_mesh->m_nodesTypes[currentNode] == 3) 
         {
             continue;
         }
@@ -295,13 +298,13 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
         const double edgeLeftSquaredDistance = std::sqrt(xiLeft * xiLeft + etaLeft * etaLeft + 1e-16);
         const double edgeRightSquaredDistance = std::sqrt(xiRight * xiRight + etaRight * etaRight + 1e-16);
         const double cPhi = (xiLeft * xiRight + etaLeft * etaRight) / (edgeLeftSquaredDistance * edgeRightSquaredDistance);
-        const auto numFaceNodes = mesh.GetNumFaceEdges(m_topologySharedFaces[currentTopology][f]);
+        const auto numFaceNodes = m_mesh->GetNumFaceEdges(m_topologySharedFaces[currentTopology][f]);
 
         // the value of xi and eta needs to be estimated at the circumcenters, calculated the contributions of each node 
         if (numFaceNodes == 3)
         {
             // for triangular faces
-            int nodeIndex = FindIndex(mesh.m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
+            int nodeIndex = FindIndex(m_mesh->m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
             const auto nodeLeft = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
             const auto nodeRight = NextCircularForwardIndex(nodeIndex, numFaceNodes);
 
@@ -339,9 +342,9 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
 
     for (int f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
-        auto edgeIndex = mesh.m_nodesEdges[currentNode][f];
-        int otherNode = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
-        int leftFace = mesh.m_edgesFaces[edgeIndex][0];
+        auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
+        int otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - currentNode;
+        int leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
         faceLeftIndex = FindIndex(m_topologySharedFaces[currentTopology], leftFace);
 
         // face not found, this happens when the cell is outside of the polygon
@@ -360,7 +363,7 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
         double rightXi = 0.0;
         double rightEta = 0.0;
         double alpha_x = 0.0;
-        if (mesh.m_edgesNumFaces[edgeIndex] == 1)
+        if (m_mesh->m_edgesNumFaces[edgeIndex] == 1)
         {
             // Boundary face
             if (m_boundaryEdgesCache[0] < 0)
@@ -383,8 +386,8 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
             {
                 leftXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
                 leftEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
-                m_leftXFaceCenterCache[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[currentTopology][faceLeftIndex][i];
-                m_leftYFaceCenterCache[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[currentTopology][faceLeftIndex][i];
+                m_leftXFaceCenterCache[f] += m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[currentTopology][faceLeftIndex][i];
+                m_leftYFaceCenterCache[f] += m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[currentTopology][faceLeftIndex][i];
             }
 
 
@@ -398,8 +401,8 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
             rightXi = 2.0 * xiBoundary - leftXi;
             rightEta = 2.0 * etaBoundary - leftEta;
 
-            const double xBc = (1.0 - alpha) * mesh.m_nodes[currentNode].x + alpha * mesh.m_nodes[otherNode].x;
-            const double yBc = (1.0 - alpha) * mesh.m_nodes[currentNode].y + alpha * mesh.m_nodes[otherNode].y;
+            const double xBc = (1.0 - alpha) * m_mesh->m_nodes[currentNode].x + alpha * m_mesh->m_nodes[otherNode].x;
+            const double yBc = (1.0 - alpha) * m_mesh->m_nodes[currentNode].y + alpha * m_mesh->m_nodes[otherNode].y;
             m_leftYFaceCenterCache[f] = 2.0 * xBc - m_leftXFaceCenterCache[f];
             m_rightYFaceCenterCache[f] = 2.0 * yBc - m_leftYFaceCenterCache[f];
         }
@@ -414,8 +417,8 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
             auto faceLeft = m_topologySharedFaces[currentTopology][faceLeftIndex];
             auto faceRight = m_topologySharedFaces[currentTopology][faceRightIndex];
 
-            if ((faceLeft != mesh.m_edgesFaces[edgeIndex][0] && faceLeft != mesh.m_edgesFaces[edgeIndex][1]) ||
-                (faceRight != mesh.m_edgesFaces[edgeIndex][0] && faceRight != mesh.m_edgesFaces[edgeIndex][1]))
+            if ((faceLeft != m_mesh->m_edgesFaces[edgeIndex][0] && faceLeft != m_mesh->m_edgesFaces[edgeIndex][1]) ||
+                (faceRight != m_mesh->m_edgesFaces[edgeIndex][0] && faceRight != m_mesh->m_edgesFaces[edgeIndex][1]))
             {
                 return false;
             }
@@ -427,10 +430,10 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
                 rightXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceRightIndex][i];
                 rightEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceRightIndex][i];
 
-                m_leftXFaceCenterCache[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[currentTopology][faceLeftIndex][i];
-                m_leftYFaceCenterCache[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[currentTopology][faceLeftIndex][i];
-                m_rightXFaceCenterCache[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[currentTopology][faceRightIndex][i];
-                m_rightYFaceCenterCache[f] += mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[currentTopology][faceRightIndex][i];
+                m_leftXFaceCenterCache[f] += m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[currentTopology][faceLeftIndex][i];
+                m_leftYFaceCenterCache[f] += m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[currentTopology][faceLeftIndex][i];
+                m_rightXFaceCenterCache[f] += m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * m_Az[currentTopology][faceRightIndex][i];
+                m_rightYFaceCenterCache[f] += m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y * m_Az[currentTopology][faceRightIndex][i];
             }
         }
 
@@ -454,7 +457,7 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
         double facetaL = -facetaR;
 
         //boundary link
-        if (mesh.m_edgesNumFaces[edgeIndex] == 1)
+        if (m_mesh->m_edgesNumFaces[edgeIndex] == 1)
         {
             facxi1 +=  -facxiL * 2.0 * alpha_x;
             facxi0 +=  -facxiL * 2.0 * (1.0 - alpha_x);
@@ -471,7 +474,7 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
         {
             m_Gxi[currentTopology][f][i] = facxiL * m_Az[currentTopology][faceLeftIndex][i];
             m_Geta[currentTopology][f][i] = facetaL * m_Az[currentTopology][faceLeftIndex][i];
-            if (mesh.m_edgesNumFaces[edgeIndex] == 2)
+            if (m_mesh->m_edgesNumFaces[edgeIndex] == 2)
             {
                 m_Gxi[currentTopology][f][i] +=  facxiR * m_Az[currentTopology][faceRightIndex][i];
                 m_Geta[currentTopology][f][i] += facetaR * m_Az[currentTopology][faceRightIndex][i];
@@ -489,7 +492,7 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
         m_Diveta[currentTopology][f] = exiLR * leftRightSwap;
 
         // boundary link
-        if (mesh.m_edgesNumFaces[edgeIndex] == 1)
+        if (m_mesh->m_edgesNumFaces[edgeIndex] == 1)
         {
             m_Divxi[currentTopology][f] = 0.5 * m_Divxi[currentTopology][f] + etaBoundary * leftRightSwap;
             m_Diveta[currentTopology][f] = 0.5 * m_Diveta[currentTopology][f] - xiBoundary * leftRightSwap;
@@ -497,7 +500,7 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
     }
 
     double volxi = 0.0;
-    for (int i = 0; i < mesh.m_nodesNumEdges[currentNode]; i++)
+    for (int i = 0; i < m_mesh->m_nodesNumEdges[currentNode]; i++)
     {
         volxi += 0.5 * (m_Divxi[currentTopology][i] * m_xisCache[i] + m_Diveta[currentTopology][i] * m_etasCache[i]);
     }
@@ -506,7 +509,7 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
         volxi = 1.0;
     }
 
-    for (int i = 0; i < mesh.m_nodesNumEdges[currentNode]; i++)
+    for (int i = 0; i < m_mesh->m_nodesNumEdges[currentNode]; i++)
     {
         m_Divxi[currentTopology][i] = m_Divxi[currentTopology][i] / volxi;
         m_Diveta[currentTopology][i] = m_Diveta[currentTopology][i] / volxi;
@@ -516,12 +519,12 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
     for (int f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
         // internal edge
-        if (mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 2)
+        if (m_mesh->m_edgesNumFaces[m_mesh->m_nodesEdges[currentNode][f]] == 2)
         {
             int rightNode = f - 1;
             if (rightNode < 0)
             {
-                rightNode += mesh.m_nodesNumEdges[currentNode];
+                rightNode += m_mesh->m_nodesNumEdges[currentNode];
             }
             for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
             {
@@ -540,7 +543,7 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
 
     //compute the weights in the Laplacian smoother
     std::fill(m_ww2[currentTopology].begin(), m_ww2[currentTopology].end(), 0.0);
-    for (int n = 0; n < mesh.m_nodesNumEdges[currentNode]; n++)
+    for (int n = 0; n < m_mesh->m_nodesNumEdges[currentNode]; n++)
     {
         for (int i = 0; i < m_numTopologyNodes[currentTopology]; i++)
         {
@@ -552,10 +555,9 @@ bool GridGeom::Smoother::ComputeOperatorsNode(const Mesh& mesh,
 }
 
 
-bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
-    int currentNode,
-    const int& numSharedFaces,
-    const int& numConnectedNodes)
+bool GridGeom::Smoother::ComputeNodeXiEta( int currentNode,
+                                           const int& numSharedFaces,
+                                           const int& numConnectedNodes)
 {
     // the angles for the squared nodes connected to the stencil nodes, first the ones directly connected, then the others
     std::vector<double> thetaSquare(numConnectedNodes, doubleMissingValue);
@@ -567,27 +569,27 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
     //loop over the connected edges
     for (int f = 0; f < numSharedFaces; f++)
     {
-        auto edgeIndex = mesh.m_nodesEdges[currentNode][f];
+        auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
         auto nextNode = m_connectedNodesCache[f + 1]; // the first entry is always the stencil node 
-        int faceLeft = mesh.m_edgesFaces[edgeIndex][0];
+        int faceLeft = m_mesh->m_edgesFaces[edgeIndex][0];
         int faceRigth = faceLeft;
 
-        if (mesh.m_edgesNumFaces[edgeIndex] == 2) 
+        if (m_mesh->m_edgesNumFaces[edgeIndex] == 2) 
         {
-            faceRigth = mesh.m_edgesFaces[edgeIndex][1];
+            faceRigth = m_mesh->m_edgesFaces[edgeIndex][1];
         }
         
         //check if it is a rectangular node (not currentNode itself) 
         bool isSquare = true;
-        for (int e = 0; e < mesh.m_nodesNumEdges[nextNode]; e++)
+        for (int e = 0; e < m_mesh->m_nodesNumEdges[nextNode]; e++)
         {
-            auto edge = mesh.m_nodesEdges[nextNode][e];
-            for (int ff = 0; ff < mesh.m_edgesNumFaces[edge]; ff++)
+            auto edge = m_mesh->m_nodesEdges[nextNode][e];
+            for (int ff = 0; ff < m_mesh->m_edgesNumFaces[edge]; ff++)
             {
-                auto face = mesh.m_edgesFaces[edge][ff];
+                auto face = m_mesh->m_edgesFaces[edge][ff];
                 if (face != faceLeft && face != faceRigth)
                 {
-                    isSquare = isSquare && mesh.GetNumFaceEdges(face) == 4;
+                    isSquare = isSquare && m_mesh->GetNumFaceEdges(face) == 4;
                 }
             }
             if (!isSquare)
@@ -605,19 +607,19 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
 
         if (isSquare)
         {
-            if (mesh.m_nodesTypes[nextNode] == 1 || mesh.m_nodesTypes[nextNode] == 4)
+            if (m_mesh->m_nodesTypes[nextNode] == 1 || m_mesh->m_nodesTypes[nextNode] == 4)
             {
                 // Inner node
-                numNonStencilQuad = mesh.m_nodesNumEdges[nextNode] - 2;
+                numNonStencilQuad = m_mesh->m_nodesNumEdges[nextNode] - 2;
                 thetaSquare[f + 1] = (2.0 - double(numNonStencilQuad) * 0.5) * M_PI;
             }
-            if (mesh.m_nodesTypes[nextNode] == 2)
+            if (m_mesh->m_nodesTypes[nextNode] == 2)
             {
                 // boundary node
-                numNonStencilQuad = mesh.m_nodesNumEdges[nextNode] - 1 - mesh.m_edgesNumFaces[edgeIndex];
+                numNonStencilQuad = m_mesh->m_nodesNumEdges[nextNode] - 1 - m_mesh->m_edgesNumFaces[edgeIndex];
                 thetaSquare[f + 1] = (1.0 - double(numNonStencilQuad) * 0.5) * M_PI;
             }
-            if (mesh.m_nodesTypes[nextNode] == 3)
+            if (m_mesh->m_nodesTypes[nextNode] == 3)
             {
                 //corner node
                 thetaSquare[f + 1] = 0.5 * M_PI;
@@ -625,11 +627,11 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
 
             if (m_sharedFacesCache[f] > 1)
             {
-                if (mesh.GetNumFaceEdges(m_sharedFacesCache[f]) == 4) numNonStencilQuad += 1;
+                if (m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]) == 4) numNonStencilQuad += 1;
             }
             if (m_sharedFacesCache[leftFaceIndex] > 1)
             {
-                if (mesh.GetNumFaceEdges(m_sharedFacesCache[leftFaceIndex]) == 4) numNonStencilQuad += 1;
+                if (m_mesh->GetNumFaceEdges(m_sharedFacesCache[leftFaceIndex]) == 4) numNonStencilQuad += 1;
             }
             if (numNonStencilQuad > 3)
             {
@@ -647,9 +649,9 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
         if (m_sharedFacesCache[f] < 0) continue;
 
         // non boundary face 
-        if (mesh.GetNumFaceEdges(m_sharedFacesCache[f]) == 4)
+        if (m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]) == 4)
         {
-            for (int n = 0; n < mesh.GetNumFaceEdges(m_sharedFacesCache[f]); n++)
+            for (int n = 0; n < m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]); n++)
             {
                 if (m_faceNodeMappingCache[f][n] <= numSharedFaces) continue;
                 thetaSquare[m_faceNodeMappingCache[f][n]] = 0.5 * M_PI;
@@ -670,7 +672,7 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
         // boundary face
         if (m_sharedFacesCache[f] < 0) continue;
 
-        auto numFaceNodes = mesh.GetNumFaceEdges(m_sharedFacesCache[f]);
+        auto numFaceNodes = m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]);
         double phi = OptimalEdgeAngle(numFaceNodes);
 
         if (isSquareFace[f] || numFaceNodes == 4)
@@ -680,7 +682,7 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
             {
                 nextNode = nextNode - numSharedFaces;
             }
-            bool isBoundaryEdge = mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 1;
+            bool isBoundaryEdge = m_mesh->m_edgesNumFaces[m_mesh->m_nodesEdges[currentNode][f]] == 1;
             phi = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], isBoundaryEdge);
             if (numFaceNodes == 3)
             {
@@ -703,8 +705,8 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
 
 
     double factor = 1.0;
-    if (mesh.m_nodesTypes[currentNode] == 2) factor = 0.5;
-    if (mesh.m_nodesTypes[currentNode] == 3) factor = 0.25;
+    if (m_mesh->m_nodesTypes[currentNode] == 2) factor = 0.5;
+    if (m_mesh->m_nodesTypes[currentNode] == 3) factor = 0.25;
     double mu = 1.0;
     double muSquaredTriangles = 1.0;
     double muTriangles = 1.0;
@@ -727,8 +729,8 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
     {
         //TODO: add logger and cirr(xk(k0), yk(k0), ncolhl)
         std::string message{ "fatal error in ComputeXiEta: phiTot=0'" };
-        m_nodeXErrors.push_back(mesh.m_nodes[currentNode].x);
-        m_nodeXErrors.push_back(mesh.m_nodes[currentNode].y);
+        m_nodeXErrors.push_back(m_mesh->m_nodes[currentNode].x);
+        m_nodeXErrors.push_back(m_mesh->m_nodes[currentNode].y);
         return false;
     }
 
@@ -741,11 +743,11 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
         phi0 = phi0 + 0.5 * dPhi;
         if (m_sharedFacesCache[f] < 0)
         {
-            if (mesh.m_nodesTypes[currentNode] == 2)
+            if (m_mesh->m_nodesTypes[currentNode] == 2)
             {
                 dPhi = M_PI;
             }
-            else if (mesh.m_nodesTypes[currentNode] == 3)
+            else if (m_mesh->m_nodesTypes[currentNode] == 3)
             {
                 dPhi = 1.5 * M_PI;
             }
@@ -753,15 +755,15 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
             {
                 //TODO: add logger and cirr(xk(k0), yk(k0), ncolhl)
                 std::string message{ "fatal error in ComputeXiEta: inappropriate fictitious boundary cell" };
-                m_nodeXErrors.push_back(mesh.m_nodes[currentNode].x);
-                m_nodeXErrors.push_back(mesh.m_nodes[currentNode].y);
+                m_nodeXErrors.push_back(m_mesh->m_nodes[currentNode].x);
+                m_nodeXErrors.push_back(m_mesh->m_nodes[currentNode].y);
                 return false;
             }
             phi0 = phi0 + 0.5 * dPhi;
             continue;
         }
 
-        int numFaceNodes = mesh.GetNumFaceEdges(m_sharedFacesCache[f]);
+        int numFaceNodes = m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]);
         if (numFaceNodes > maximumNumberOfEdgesPerNode)
         {
             //TODO: add logger
@@ -772,7 +774,7 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
         if (isSquareFace[f])
         {
             int nextNode = f + 2; if (nextNode > numSharedFaces) nextNode = nextNode - numSharedFaces;
-            bool isBoundaryEdge = mesh.m_edgesNumFaces[mesh.m_nodesEdges[currentNode][f]] == 1;
+            bool isBoundaryEdge = m_mesh->m_edgesNumFaces[m_mesh->m_nodesEdges[currentNode][f]] == 1;
             dPhi0 = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], isBoundaryEdge);
             if (numFaceNodes == 3)
             {
@@ -788,7 +790,7 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
         phi0 = phi0 + 0.5 * dPhi;
 
         // determine the index of the current stencil node
-        int nodeIndex = FindIndex(mesh.m_facesNodes[m_sharedFacesCache[f]], currentNode);
+        int nodeIndex = FindIndex(m_mesh->m_facesNodes[m_sharedFacesCache[f]], currentNode);
 
         // optimal angle
         dTheta = 2.0 * M_PI / double(numFaceNodes);
@@ -798,7 +800,7 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
         int nextNode = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
 
         if ((m_faceNodeMappingCache[f][nextNode] - m_faceNodeMappingCache[f][previousNode]) == -1 ||
-            (m_faceNodeMappingCache[f][nextNode] - m_faceNodeMappingCache[f][previousNode]) == mesh.m_nodesNumEdges[currentNode])
+            (m_faceNodeMappingCache[f][nextNode] - m_faceNodeMappingCache[f][previousNode]) == m_mesh->m_nodesNumEdges[currentNode])
         {
             dTheta = -dTheta;
         }
@@ -820,12 +822,11 @@ bool GridGeom::Smoother::ComputeNodeXiEta(const Mesh& mesh,
     return true;
 }
 
-bool GridGeom::Smoother::NodeAdministration(const Mesh& mesh,
-                                                    const int currentNode, 
-                                                    int& numSharedFaces, 
-                                                    int& numConnectedNodes)
+bool GridGeom::Smoother::NodeAdministration(const int currentNode, 
+                                            int& numSharedFaces, 
+                                            int& numConnectedNodes)
 {
-    if (mesh.m_nodesNumEdges[currentNode] < 2) 
+    if (m_mesh->m_nodesNumEdges[currentNode] < 2) 
     {
         return true;
     }
@@ -833,37 +834,37 @@ bool GridGeom::Smoother::NodeAdministration(const Mesh& mesh,
     // For the currentNode, find the shared faces
     int newFaceIndex = intMissingValue;
     numSharedFaces = 0;
-    for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
+    for (int e = 0; e < m_mesh->m_nodesNumEdges[currentNode]; e++)
     {
-        auto firstEdge = mesh.m_nodesEdges[currentNode][e];
+        auto firstEdge = m_mesh->m_nodesEdges[currentNode][e];
 
         int secondEdgeIndex = e + 1;
-        if (secondEdgeIndex >= mesh.m_nodesNumEdges[currentNode]) 
+        if (secondEdgeIndex >= m_mesh->m_nodesNumEdges[currentNode]) 
         {
             secondEdgeIndex = 0;
         }
         
-        auto secondEdge = mesh.m_nodesEdges[currentNode][secondEdgeIndex];
-        if (mesh.m_edgesNumFaces[firstEdge] < 1 || mesh.m_edgesNumFaces[secondEdge] < 1) 
+        auto secondEdge = m_mesh->m_nodesEdges[currentNode][secondEdgeIndex];
+        if (m_mesh->m_edgesNumFaces[firstEdge] < 1 || m_mesh->m_edgesNumFaces[secondEdge] < 1) 
         {
             continue;
         }
 
         // find the face shared by the two edges
-        int firstFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[firstEdge], int(2)), int(1)) - 1;
-        int secondFaceIndex = std::max(std::min(mesh.m_edgesNumFaces[secondEdge], int(2)), int(1)) - 1;
+        int firstFaceIndex = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], int(2)), int(1)) - 1;
+        int secondFaceIndex = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], int(2)), int(1)) - 1;
 
-        if (mesh.m_edgesFaces[firstEdge][0] != newFaceIndex &&
-           (mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][0] || 
-            mesh.m_edgesFaces[firstEdge][0] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
+        if (m_mesh->m_edgesFaces[firstEdge][0] != newFaceIndex &&
+           (m_mesh->m_edgesFaces[firstEdge][0] == m_mesh->m_edgesFaces[secondEdge][0] || 
+            m_mesh->m_edgesFaces[firstEdge][0] == m_mesh->m_edgesFaces[secondEdge][secondFaceIndex]))
         {
-            newFaceIndex = mesh.m_edgesFaces[firstEdge][0];
+            newFaceIndex = m_mesh->m_edgesFaces[firstEdge][0];
         }
-        else if (mesh.m_edgesFaces[firstEdge][firstFaceIndex] != newFaceIndex &&
-                (mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][0] || 
-                 mesh.m_edgesFaces[firstEdge][firstFaceIndex] == mesh.m_edgesFaces[secondEdge][secondFaceIndex]))
+        else if (m_mesh->m_edgesFaces[firstEdge][firstFaceIndex] != newFaceIndex &&
+                (m_mesh->m_edgesFaces[firstEdge][firstFaceIndex] == m_mesh->m_edgesFaces[secondEdge][0] || 
+                 m_mesh->m_edgesFaces[firstEdge][firstFaceIndex] == m_mesh->m_edgesFaces[secondEdge][secondFaceIndex]))
         {
-            newFaceIndex = mesh.m_edgesFaces[firstEdge][firstFaceIndex];
+            newFaceIndex = m_mesh->m_edgesFaces[firstEdge][firstFaceIndex];
         }
         else
         {
@@ -871,7 +872,7 @@ bool GridGeom::Smoother::NodeAdministration(const Mesh& mesh,
         }
 
         //corner face (already found in the first iteration)
-        if (mesh.m_nodesNumEdges[currentNode] == 2 && e == 1 && mesh.m_nodesTypes[currentNode] == 3)
+        if (m_mesh->m_nodesNumEdges[currentNode] == 2 && e == 1 && m_mesh->m_nodesTypes[currentNode] == 3)
         {
             if (m_sharedFacesCache[0] == newFaceIndex) newFaceIndex = intMissingValue;
         }
@@ -889,10 +890,10 @@ bool GridGeom::Smoother::NodeAdministration(const Mesh& mesh,
     m_connectedNodesCache[connectedNodesIndex] = currentNode;
 
     // edge connected nodes
-    for (int e = 0; e < mesh.m_nodesNumEdges[currentNode]; e++)
+    for (int e = 0; e < m_mesh->m_nodesNumEdges[currentNode]; e++)
     {
-        const auto edgeIndex = mesh.m_nodesEdges[currentNode][e];
-        const auto node = mesh.m_edges[edgeIndex].first + mesh.m_edges[edgeIndex].second - currentNode;
+        const auto edgeIndex = m_mesh->m_nodesEdges[currentNode][e];
+        const auto node = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - currentNode;
         connectedNodesIndex++;
         m_connectedNodesCache[connectedNodesIndex] = node;
         if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
@@ -917,10 +918,10 @@ bool GridGeom::Smoother::NodeAdministration(const Mesh& mesh,
 
         // find the stencil node position  in the current face
         int faceNodeIndex = 0;
-        auto numFaceNodes = mesh.GetNumFaceEdges(faceIndex);
+        auto numFaceNodes = m_mesh->GetNumFaceEdges(faceIndex);
         for (int n = 0; n < numFaceNodes; n++)
         {
-            if (mesh.m_facesNodes[faceIndex][n] == currentNode)
+            if (m_mesh->m_facesNodes[faceIndex][n] == currentNode)
             {
                 faceNodeIndex = n;
                 break;
@@ -936,7 +937,7 @@ bool GridGeom::Smoother::NodeAdministration(const Mesh& mesh,
             }
 
 
-            int node = mesh.m_facesNodes[faceIndex][faceNodeIndex];
+            int node = m_mesh->m_facesNodes[faceIndex][faceNodeIndex];
 
             bool isNewNode = true;
             for (int n = 0; n < connectedNodesIndex + 1; n++)
@@ -998,13 +999,13 @@ double GridGeom::Smoother::MatrixNorm(const std::vector<double>& x, const std::v
 }
 
 
-bool GridGeom::Smoother::Initialize(const Mesh& mesh)
+bool GridGeom::Smoother::Initialize()
 {
     // local matrices caches
-    m_numConnectedNodes.resize(mesh.GetNumNodes());
+    m_numConnectedNodes.resize(m_mesh->GetNumNodes());
     std::fill(m_numConnectedNodes.begin(), m_numConnectedNodes.end(), 0.0);
 
-    m_connectedNodes.resize(mesh.GetNumNodes());
+    m_connectedNodes.resize(m_mesh->GetNumNodes());
     std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<std::size_t>(maximumNumberOfConnectedNodes));
 
     m_sharedFacesCache.resize(maximumNumberOfEdgesPerNode, -1);
@@ -1025,7 +1026,7 @@ bool GridGeom::Smoother::Initialize(const Mesh& mesh)
     // topology
     m_numTopologies = 0;
 
-    m_nodeTopologyMapping.resize(mesh.GetNumNodes());
+    m_nodeTopologyMapping.resize(m_mesh->GetNumNodes());
     std::fill(m_nodeTopologyMapping.begin(), m_nodeTopologyMapping.end(), -1);
 
     m_numTopologyNodes.resize(m_topologyInitialSize);
@@ -1148,11 +1149,11 @@ bool GridGeom::Smoother::SaveNodeTopologyIfNeeded(int currentNode,
     return true;
 }
 
-bool GridGeom::Smoother::ComputeJacobian(int currentNode, const Mesh& mesh, std::vector<double>& J) const
+bool GridGeom::Smoother::ComputeJacobian(int currentNode, std::vector<double>& J) const
 {
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
     const auto numNodes = m_numTopologyNodes[currentTopology];
-    if (mesh.m_projection == Projections::cartesian)
+    if (m_mesh->m_projection == Projections::cartesian)
     {
         J[0] = 0.0;
         J[1] = 0.0;
@@ -1160,25 +1161,25 @@ bool GridGeom::Smoother::ComputeJacobian(int currentNode, const Mesh& mesh, std:
         J[3] = 0.0;
         for (int i = 0; i < numNodes; i++)
         {
-            J[0] += m_Jxi[currentTopology][i] * mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x;
-            J[1] += m_Jxi[currentTopology][i] * mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
-            J[2] += m_Jeta[currentTopology][i] * mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x;
-            J[3] += m_Jeta[currentTopology][i] * mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
+            J[0] += m_Jxi[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].x;
+            J[1] += m_Jxi[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
+            J[2] += m_Jeta[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].x;
+            J[3] += m_Jeta[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
         }
     }
-    if (mesh.m_projection == Projections::spherical || mesh.m_projection == Projections::sphericalAccurate)
+    if (m_mesh->m_projection == Projections::spherical || m_mesh->m_projection == Projections::sphericalAccurate)
     {
-        double cosFactor = std::cos(mesh.m_nodes[currentNode].y * degrad_hp);
+        double cosFactor = std::cos(m_mesh->m_nodes[currentNode].y * degrad_hp);
         J[0] = 0.0;
         J[1] = 0.0;
         J[2] = 0.0;
         J[3] = 0.0;
         for (int i = 0; i < numNodes; i++)
         {
-            J[0] += m_Jxi[currentTopology][i] * mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * cosFactor;
-            J[1] += m_Jxi[currentTopology][i] * mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
-            J[2] += m_Jeta[currentTopology][i] * mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * cosFactor;
-            J[3] += m_Jeta[currentTopology][i] * mesh.m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
+            J[0] += m_Jxi[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * cosFactor;
+            J[1] += m_Jxi[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
+            J[2] += m_Jeta[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].x * cosFactor;
+            J[3] += m_Jeta[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
         }
     }
     return true;
