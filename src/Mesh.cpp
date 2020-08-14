@@ -1946,3 +1946,191 @@ bool GridGeom::Mesh::ComputeNodeNeighbours()
     return true;
 }
 
+bool GridGeom::Mesh::GetOrthogonality(double* orthogonality)
+{
+    for (int e = 0; e < GetNumEdges(); e++)
+    {
+        orthogonality[e] = doubleMissingValue;
+        int firstVertex = m_edges[e].first;
+        int secondVertex = m_edges[e].second;
+
+        if (firstVertex != 0 && secondVertex != 0)
+        {
+            if (e < GetNumEdges() && m_edgesNumFaces[e] == 2)
+            {
+                orthogonality[e] = NormalizedInnerProductTwoSegments(m_nodes[firstVertex],
+                    m_nodes[secondVertex],
+                    m_facesCircumcenters[m_edgesFaces[e][0]],
+                    m_facesCircumcenters[m_edgesFaces[e][1]],
+                    m_projection);
+                if (orthogonality[e] != doubleMissingValue)
+                {
+                    orthogonality[e] = std::abs(orthogonality[e]);
+
+                }
+            }
+        }
+    }
+    return true;
+}
+
+bool GridGeom::Mesh::GetSmoothness(double* smoothness)
+{
+    for (int e = 0; e < GetNumEdges(); e++)
+    {
+        smoothness[e] = doubleMissingValue;
+        int firstVertex = m_edges[e].first;
+        int secondVertex = m_edges[e].second;
+
+        if (firstVertex != 0 && secondVertex != 0)
+        {
+            if (e < GetNumEdges() && m_edgesNumFaces[e] == 2)
+            {
+                const auto leftFace = m_edgesFaces[e][0];
+                const auto rightFace = m_edgesFaces[e][1];
+                const auto leftFaceArea = m_faceArea[leftFace];
+                const auto rightFaceArea = m_faceArea[rightFace];
+
+                if (leftFaceArea < minimumCellArea || rightFaceArea < minimumCellArea)
+                {
+                    smoothness[e] = rightFaceArea / leftFaceArea;
+                }
+                if (smoothness[e] < 1.0)
+                {
+                    smoothness[e] = 1.0 / smoothness[e];
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool GridGeom::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
+{
+    std::vector<std::vector<double>> averageEdgesLength(GetNumEdges(), std::vector<double>(2, doubleMissingValue));
+    std::vector<double> averageFlowEdgesLength(GetNumEdges(), doubleMissingValue);
+    std::vector<bool> curvilinearGridIndicator(GetNumNodes(), true);
+    std::vector<double> edgesLength(GetNumEdges(), 0.0);
+    aspectRatios.resize(GetNumEdges(), 0.0);
+
+    for (auto e = 0; e < GetNumEdges(); e++)
+    {
+        auto first = m_edges[e].first;
+        auto second = m_edges[e].second;
+
+        if (first == second) continue;
+        double edgeLength = Distance(m_nodes[first], m_nodes[second], m_projection);
+        edgesLength[e] = edgeLength;
+
+        Point leftCenter;
+        Point rightCenter;
+        if (m_edgesNumFaces[e] > 0)
+        {
+            leftCenter = m_facesCircumcenters[m_edgesFaces[e][0]];
+        }
+        else
+        {
+            leftCenter = m_nodes[first];
+        }
+
+        //find right cell center, if it exists
+        if (m_edgesNumFaces[e] == 2)
+        {
+            rightCenter = m_facesCircumcenters[m_edgesFaces[e][1]];
+        }
+        else
+        {
+            //otherwise, make ghost node by imposing boundary condition
+            double dinry = InnerProductTwoSegments(m_nodes[first], m_nodes[second], m_nodes[first], leftCenter, m_projection);
+            dinry = dinry / std::max(edgeLength * edgeLength, minimumEdgeLength);
+
+            double x0_bc = (1.0 - dinry) * m_nodes[first].x + dinry * m_nodes[second].x;
+            double y0_bc = (1.0 - dinry) * m_nodes[first].y + dinry * m_nodes[second].y;
+            rightCenter.x = 2.0 * x0_bc - leftCenter.x;
+            rightCenter.y = 2.0 * y0_bc - leftCenter.y;
+        }
+
+        averageFlowEdgesLength[e] = Distance(leftCenter, rightCenter, m_projection);
+    }
+
+    // Compute normal length
+    for (int f = 0; f < GetNumFaces(); f++)
+    {
+        auto numberOfFaceNodes = GetNumFaceEdges(f);
+        if (numberOfFaceNodes < 3) continue;
+
+        for (int n = 0; n < numberOfFaceNodes; n++)
+        {
+            if (numberOfFaceNodes != 4) curvilinearGridIndicator[m_facesNodes[f][n]] = false;
+            auto edgeIndex = m_facesEdges[f][n];
+
+            if (m_edgesNumFaces[edgeIndex] < 1) continue;
+
+            //get the other links in the right numbering
+            //TODO: ask why only 3 are requested, why an average length stored in averageEdgesLength is needed?
+            //int kkm1 = n - 1; if (kkm1 < 0) kkm1 = kkm1 + numberOfFaceNodes;
+            //int kkp1 = n + 1; if (kkp1 >= numberOfFaceNodes) kkp1 = kkp1 - numberOfFaceNodes;
+            //
+            //std::size_t klinkm1 = m_facesEdges[f][kkm1];
+            //std::size_t klinkp1 = m_facesEdges[f][kkp1];
+            //
+
+            double edgeLength = edgesLength[edgeIndex];
+            if (edgeLength != 0.0)
+            {
+                aspectRatios[edgeIndex] = averageFlowEdgesLength[edgeIndex] / edgeLength;
+            }
+
+            //quads
+            if (numberOfFaceNodes == 4)
+            {
+                int kkp2 = n + 2; if (kkp2 >= numberOfFaceNodes) kkp2 = kkp2 - numberOfFaceNodes;
+                auto klinkp2 = m_facesEdges[f][kkp2];
+                edgeLength = 0.5 * (edgesLength[edgeIndex] + edgesLength[klinkp2]);
+            }
+
+            if (averageEdgesLength[edgeIndex][0] == doubleMissingValue)
+            {
+                averageEdgesLength[edgeIndex][0] = edgeLength;
+            }
+            else
+            {
+                averageEdgesLength[edgeIndex][1] = edgeLength;
+            }
+        }
+    }
+
+    if (curvilinearToOrthogonalRatio == 1.0)
+        return true;
+
+    for (auto e = 0; e < GetNumEdges(); e++)
+    {
+        auto first = m_edges[e].first;
+        auto second = m_edges[e].second;
+
+        if (first < 0 || second < 0) continue;
+        if (m_edgesNumFaces[e] < 1) continue;
+        // Consider only quads
+        if (!curvilinearGridIndicator[first] || !curvilinearGridIndicator[second]) continue;
+
+        if (m_edgesNumFaces[e] == 1)
+        {
+            if (averageEdgesLength[e][0] != 0.0 && averageEdgesLength[e][0] != doubleMissingValue)
+            {
+                aspectRatios[e] = averageFlowEdgesLength[e] / averageEdgesLength[e][0];
+            }
+        }
+        else
+        {
+            if (averageEdgesLength[e][0] != 0.0 && averageEdgesLength[e][1] != 0.0 &&
+                averageEdgesLength[e][0] != doubleMissingValue && averageEdgesLength[e][1] != doubleMissingValue)
+            {
+                aspectRatios[e] = curvilinearToOrthogonalRatio * aspectRatios[e] +
+                    (1.0 - curvilinearToOrthogonalRatio) * averageFlowEdgesLength[e] / (0.5 * (averageEdgesLength[e][0] + averageEdgesLength[e][1]));
+            }
+        }
+    }
+
+    return true;
+}

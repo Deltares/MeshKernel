@@ -18,13 +18,19 @@ namespace GridGeom
         /// </summary>
         /// <returns></returns>
         Orthogonalizer();
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <returns></returns>
+        Orthogonalizer(Mesh& mesh);
         
         /// <summary>
         /// Computes the smoother weights
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool Compute(Mesh& mesh);
+        bool Compute();
 
         /// <summary>
         /// Gets the weight for a certain node and connected node
@@ -61,6 +67,7 @@ namespace GridGeom
         std::vector<double>                                m_aspectRatios;
         std::vector<std::vector<double>>                   m_weights;
         std::vector<std::vector<double>>                   m_rhs;
+        Mesh* m_mesh;
 
     };
 }
