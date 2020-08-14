@@ -14,19 +14,25 @@ namespace GridGeom
     public:
 
         /// <summary>
-        /// Ctor
+        /// Default Ctor
         /// </summary>
         /// <returns></returns>
         Smoother();
+
+        /// <summary>
+        /// Mesh ctor
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
+        Smoother(Mesh& mesh);
         
         /// <summary>
         /// Computes the smoother weights
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool Compute(const Mesh& mesh);
+        bool Compute();
 
-        
         /// <summary>
         /// Gets the weight for a certain node and connected node
         /// </summary>
@@ -66,35 +72,35 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool Initialize(const Mesh& mesh);
+        bool Initialize();
 
         /// <summary>
         /// Computes all topologies of the elliptic smoother 
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ComputeTopologies(const Mesh& mesh);
+        bool ComputeTopologies();
 
         /// <summary>
         /// Computes all operators of the elliptic smoother 
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ComputeOperators(const Mesh& mesh);
+        bool ComputeOperators();
 
         /// <summary>
         /// Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ComputeCoordinates(const Mesh& mesh);
+        bool ComputeCoordinates();
 
         /// <summary>
         /// Computes the smoother weights from the operators (orthonet_compweights_smooth)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ComputeWeights(const Mesh& mesh);
+        bool ComputeWeights();
 
         /// <summary>
         /// Computes operators of the elliptic smoother by node (orthonet_comp_operators)
@@ -102,8 +108,7 @@ namespace GridGeom
         /// <param name="mesh"></param>
         /// <param name="currentNode"></param>
         /// <returns></returns>
-        bool ComputeOperatorsNode(const Mesh& mesh,
-                                          int currentNode);
+        bool ComputeOperatorsNode(int currentNode);
 
         /// <summary>
         /// Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
@@ -113,10 +118,9 @@ namespace GridGeom
         /// <param name="numSharedFaces"></param>
         /// <param name="numConnectedNodes"></param>
         /// <returns></returns>
-        bool NodeAdministration(const Mesh& mesh,
-            const int currentNode,
-            int& numSharedFaces,
-            int& numConnectedNodes);
+        bool NodeAdministration( const int currentNode,
+                                 int& numSharedFaces,
+                                 int& numConnectedNodes);
 
         /// <summary>
         /// Compute compute current node xi and eta (orthonet_assign_xieta)
@@ -126,10 +130,9 @@ namespace GridGeom
         /// <param name="numSharedFaces"></param>
         /// <param name="numConnectedNodes"></param>
         /// <returns></returns>
-        bool ComputeNodeXiEta(const Mesh& mesh, 
-                                      int currentNode, 
-                                      const int& numSharedFaces, 
-                                      const int& numConnectedNodes);
+        bool ComputeNodeXiEta(int currentNode, 
+                              const int& numSharedFaces, 
+                              const int& numConnectedNodes);
 
         /// <summary>
         /// Compute optimal edge angle
@@ -167,10 +170,9 @@ namespace GridGeom
         /// Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
         /// </summary>
         /// <param name="currentNode"></param>
-        /// <param name="mesh"></param>
         /// <param name="J"></param>
         /// <returns></returns>
-        bool ComputeJacobian(int currentNode, const Mesh& mesh, std::vector<double>& J) const;
+        bool ComputeJacobian(int currentNode, std::vector<double>& J) const;
 
         /// <summary>
         /// Compute the matrix norm
@@ -183,6 +185,9 @@ namespace GridGeom
                           const std::vector<double>& y,
                           const std::vector<double>& matCoefficents);
 
+
+        // The mesh to smooth
+        Mesh* m_mesh;
         
         // Smoother weights
         std::vector<std::vector<double>>                   m_weights;

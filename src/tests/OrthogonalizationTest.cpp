@@ -57,7 +57,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
         polygon,
         landBoundary);
 
-    orthogonalization.Compute(mesh);
+    orthogonalization.Compute();
 
     // Assert
     constexpr double tolerance = 1e-8;
@@ -103,7 +103,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
         polygon,
         landBoundary);
 
-    orthogonalization.Compute(mesh);
+    orthogonalization.Compute();
 
     constexpr double tolerance = 1e-2;
 
@@ -159,7 +159,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
         polygon,
         landBoundary);
 
-    orthogonalization.Compute(mesh);
+    orthogonalization.Compute();
 
     constexpr double tolerance = 1e-2;
 
@@ -225,7 +225,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
         polygon,
         landBoundary);
 
-    orthogonalization.Compute(mesh);
+    orthogonalization.Compute();
 
     constexpr double tolerance =1.8;
     // check the first 10 points
@@ -281,7 +281,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
         polygon,
         landBoundary);
 
-    orthogonalization.Compute(mesh);
+    orthogonalization.Compute();
 
     constexpr double tolerance = 1.2;
 
@@ -381,7 +381,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
         polygon,
         landBoundary);
 
-    orthogonalization.Compute(mesh);
+    orthogonalization.Compute();
 
     // check the values
     constexpr double tolerance = 0.15;
@@ -438,7 +438,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
         polygon,
         landBoundary);
 
-    orthogonalization.Compute(mesh);
+    orthogonalization.Compute();
 
     // check the values
     constexpr double tolerance = 1e-6;
@@ -526,7 +526,7 @@ TEST(MeshRefinement, SmallTriangulargridSpherical)
         polygon,
         landBoundary);
 
-    orthogonalization.Compute(mesh);
+    orthogonalization.Compute();
 
     constexpr double tolerance = 1e-3;
 

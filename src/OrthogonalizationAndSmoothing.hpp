@@ -20,6 +20,12 @@ namespace GridGeom
     {
 
     public:
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <returns></returns>
+        OrthogonalizationAndSmoothing();
         
         /// <summary>
         /// Set algorithm parameters
@@ -45,44 +51,28 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool Compute(Mesh& mesh);
+        bool Compute();
 
         /// <summary>
         /// Prepares the outer iteration, calculates orthogonalizer and smoother coefficents
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool PrapareOuterIteration(Mesh& mesh);
+        bool PrapareOuterIteration();
 
         /// <summary>
         /// Performs an inner iteration (update of node positions)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool InnerIteration(Mesh& mesh);
+        bool InnerIteration();
 
         /// <summary>
         /// Performs an outer iteration (re-computes the operators)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool FinalizeOuterIteration(Mesh& mesh);
-
-        /// <summary>
-        /// Gets the orthogonality values (innerproduct edges and face circumcenter connecting segments)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="orthogonality"></param>
-        /// <returns></returns>
-        bool GetOrthogonality(const Mesh& mesh, double* orthogonality);
-
-        /// <summary>
-        /// Gets the smoothness values (face area ratios)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="smoothness"></param>
-        /// <returns></returns>
-        bool GetSmoothness(const Mesh& mesh, double* smoothness);
+        bool FinalizeOuterIteration();
 
     private:
 
@@ -92,7 +82,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ProjectOnOriginalMeshBoundary(Mesh& mesh);
+        bool ProjectOnOriginalMeshBoundary();
 
         /// <summary>
         /// Computes how much the coordinates have to be incremented every inner iteration.
@@ -100,7 +90,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ComputeLinearSystemTerms(const Mesh& mesh);
+        bool ComputeLinearSystemTerms();
 
         /// <summary>
         /// 
@@ -118,7 +108,6 @@ namespace GridGeom
                                     double wwy, 
                                     int currentNode, 
                                     int n, 
-                                    const Mesh& mesh, 
                                     double& dx0, 
                                     double& dy0, 
                                     double* increments);
@@ -129,14 +118,14 @@ namespace GridGeom
         /// <param name="nodeIndex"></param>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool UpdateNodeCoordinates(int nodeIndex, const Mesh& mesh);
+        bool UpdateNodeCoordinates(int nodeIndex);
 
         /// <summary>
         /// Allocate linear system arrays
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool AllocateLinearSystem(const Mesh& mesh);
+        bool AllocateLinearSystem();
 
         /// <summary>
         /// Deallocate linear system arrays
@@ -149,7 +138,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool ComputeCoordinates(const Mesh& mesh);
+        bool ComputeCoordinates();
 
         // Land boundaries
         LandBoundaries m_landBoundaries;
@@ -162,6 +151,9 @@ namespace GridGeom
 
         // Orthogonalizer
         Orthogonalizer m_orthogonalizer;
+
+        // A pointer to mesh
+        Mesh* m_mesh;
         
         // Local coordinates for sphericalAccurate projection
         std::vector<int>                                   m_localCoordinatesIndexes;  // (iloc)

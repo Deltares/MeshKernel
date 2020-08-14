@@ -347,6 +347,27 @@ namespace GridGeom
         /// <returns></returns>
         bool ComputeNodeNeighbours();
 
+        /// <summary>
+        /// Gets the orthogonality values (innerproduct edges and face circumcenter connecting segments)
+        /// </summary>
+        /// <param name="orthogonality">The orthogonality at the edges</param>
+        /// <returns></returns>
+        bool GetOrthogonality(double* orthogonality);
+
+        /// <summary>
+        /// Gets the smoothness values (face area ratios)
+        /// </summary>
+        /// <param name="smoothness">The smoothness at the edges</param>
+        /// <returns></returns>
+        bool GetSmoothness(double* smoothness);
+
+        /// <summary>
+        /// Gets the aspect ratios
+        /// </summary>
+        /// <param name="aspectRatio"></param>
+        /// <returns></returns>
+        bool GetAspectRatios(std::vector<double>& aspectRatios);
+
         // nodes
         std::vector<Point>              m_nodes;                    // (xk, yk)
         std::vector<std::vector<int>>   m_nodesEdges;               // (nod)

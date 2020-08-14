@@ -271,8 +271,6 @@ namespace GridGeomApi
             return 0;
         }
         
-        GridGeom::OrthogonalizationAndSmoothing ortogonalization;
-
         // build enclosing polygon
         std::vector<GridGeom::Point> nodes(geometryListNativePolygon.numberOfCoordinates);
         for (int i = 0; i < geometryListNativePolygon.numberOfCoordinates; i++)
@@ -292,6 +290,8 @@ namespace GridGeomApi
             landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
         }
 
+        GridGeom::OrthogonalizationAndSmoothing ortogonalization;
+
         ortogonalization.Set(meshInstances[gridStateId],
             isTriangulationRequired,
             isAccountingForLandBoundariesRequired,
@@ -299,7 +299,7 @@ namespace GridGeomApi
             orthogonalizationParametersNative,
             polygon,
             landBoundaries);
-        ortogonalization.Compute(meshInstances[gridStateId]);
+        ortogonalization.Compute();
         return 0;
     }
 
@@ -339,13 +339,17 @@ namespace GridGeomApi
             landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
         }
 
-        orthogonalizationInstances[gridStateId].Set(meshInstances[gridStateId],
+        GridGeom::OrthogonalizationAndSmoothing orthogonalizationInstance;
+        orthogonalizationInstance.Set(meshInstances[gridStateId],
             isTriangulationRequired,
             isAccountingForLandBoundariesRequired,
             projectToLandBoundaryOption,
             orthogonalizationParametersNative,
             polygon,
             landBoundaries);
+
+        orthogonalizationInstances.insert({ gridStateId, orthogonalizationInstance });
+
         return 0;
     }
 
@@ -361,7 +365,7 @@ namespace GridGeomApi
             return 0;
         }
 
-        bool status = orthogonalizationInstances[gridStateId].PrapareOuterIteration(meshInstances[gridStateId]);
+        bool status = orthogonalizationInstances[gridStateId].PrapareOuterIteration();
         return status == true ? 0 : 1;
     }
 
@@ -376,7 +380,7 @@ namespace GridGeomApi
         {
             return 0;
         }
-        const bool status = orthogonalizationInstances[gridStateId].InnerIteration(meshInstances[gridStateId]);
+        const bool status = orthogonalizationInstances[gridStateId].InnerIteration();
         return status == true ? 0 : 1;
     }
 
@@ -391,7 +395,7 @@ namespace GridGeomApi
         {
             return 0;
         }
-        const bool status = orthogonalizationInstances[gridStateId].FinalizeOuterIteration(meshInstances[gridStateId]);
+        const bool status = orthogonalizationInstances[gridStateId].FinalizeOuterIteration();
         return status == true ? 0 : 1;
     }
 
@@ -422,7 +426,7 @@ namespace GridGeomApi
         {
             return 0;
         }
-        const bool status = orthogonalizationInstances[gridStateId].GetOrthogonality(meshInstances[gridStateId], geometryList.zCoordinates);
+        const bool status = meshInstances[gridStateId].GetOrthogonality(geometryList.zCoordinates);
         return status == true ? 0 : 1;
     }
 
@@ -438,7 +442,7 @@ namespace GridGeomApi
             return 0;
         }
 
-        const bool status = orthogonalizationInstances[gridStateId].GetSmoothness(meshInstances[gridStateId], geometryList.zCoordinates);
+        const bool status = meshInstances[gridStateId].GetSmoothness(geometryList.zCoordinates);
         return status == true ? 0 : 1;
     }
 
