@@ -42,7 +42,9 @@ src/SpatialTrees.hpp -text
 src/Splines.cpp -text
 src/Splines.hpp -text
 src/SplinesToCurvilinearParametersNative.hpp -text
+src/gridgeomStateful_dll_version.h -text
 src/gridgeomStateful_dll_version.h.svn -text
+src/gridgeomStateful_dll_version.rc -text
 src/gridgeomStateful_dll_version.rc.svn -text
 src/resource.h -text
 src/tests/CurvilinearGridFromSplinesTest.cpp -text
