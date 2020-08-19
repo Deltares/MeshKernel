@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2020.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #pragma once
 #include <vector>
 
@@ -14,7 +41,7 @@ namespace GridGeom
     public:
 
         /// <summary>
-        /// Default Ctor
+        /// Default ctor
         /// </summary>
         /// <returns></returns>
         Smoother();
@@ -39,7 +66,7 @@ namespace GridGeom
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>
         /// <returns></returns>
-        inline double GetWeight(int node, int connectedNode)
+        inline auto GetWeight(int node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
@@ -50,7 +77,7 @@ namespace GridGeom
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>
         /// <returns></returns>
-        inline std::size_t GetCoonectedNodeIndex(int node, int connectedNode)
+        inline auto GetCoonectedNodeIndex(int node, int connectedNode)
         {
             return m_connectedNodes[node][connectedNode];
         }
@@ -60,7 +87,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        inline int GetNumConnectedNodes(int node)
+        inline auto GetNumConnectedNodes(int node)
         {
             return m_numConnectedNodes[node];
         }
