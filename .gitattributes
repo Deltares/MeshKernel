@@ -1,6 +1,7 @@
 * text=auto !eol
 /CMakeLists.txt -text
 /CMakeLists.txt.in -text
+/COPYING -text
 GridEditor/Doc/OverviewGridEditorNew.eapx -text
 GridEditor/GridEditor.sln -text
 GridEditor/build/SonarQubeRun.bat -text
@@ -695,7 +696,6 @@ src/Splines.hpp -text
 src/SplinesToCurvilinearParametersNative.hpp -text
 src/gridgeomStateful_dll_version.h.svn -text
 src/gridgeomStateful_dll_version.rc.svn -text
-src/main.cpp -text
 src/resource.h -text
 src/tests/CurvilinearGridFromSplinesTest.cpp -text
 src/tests/FunctionsTest.cpp -text
