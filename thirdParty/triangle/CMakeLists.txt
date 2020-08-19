@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.8)
-project(triangle)
-set( TRIANGLE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.c ${CMAKE_CURRENT_SOURCE_DIR}/src/TriangleFacade.c ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.h)
+set( TRIANGLE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.c 
+                      ${CMAKE_CURRENT_SOURCE_DIR}/src/TriangleFacade.c 
+                      ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.h)
 
 add_definitions(-DTRILIBRARY )
 add_definitions(-DNO_TIMER)
