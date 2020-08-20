@@ -861,7 +861,7 @@ bool GridGeom::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<Sam
     m_polygonNodesCache.resize(maximumNumberOfNodesPerFace + 1);
     m_localNodeIndexsesCache.resize(maximumNumberOfNodesPerFace + 1, intMissingValue);
     m_edgeIndexsesCache.resize(maximumNumberOfEdgesPerFace + 1, intMissingValue);
-    m_refineEdgeCache.resize(maximumNumberOfEdgesPerFace);
+    std::vector<int> refineEdgeCache(maximumNumberOfEdgesPerFace);
     std::fill(m_subtractedSample.begin(), m_subtractedSample.end(), false);
 
     for (int f = 0; f < m_mesh.GetNumFaces(); f++)
@@ -878,9 +878,9 @@ bool GridGeom::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<Sam
             return false;
         }
 
-        std::fill(m_refineEdgeCache.begin(), m_refineEdgeCache.end(), 0);
+        std::fill(refineEdgeCache.begin(), refineEdgeCache.end(), 0);
         int numEdgesToBeRefined = 0;
-        successful = ComputeEdgesRefinementMaskFromSamples(m_mesh.GetNumFaceEdges(f), samples, numEdgesToBeRefined);
+        successful = ComputeEdgesRefinementMaskFromSamples(m_mesh.GetNumFaceEdges(f), samples, refineEdgeCache, numEdgesToBeRefined);
         if (!successful)
         {
             return false;
@@ -893,7 +893,7 @@ bool GridGeom::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<Sam
 
             for (int n = 0; n < m_mesh.GetNumFaceEdges(f); n++)
             {
-                if (m_refineEdgeCache[n] == 1)
+                if (refineEdgeCache[n] == 1)
                 {
                     int node = m_localNodeIndexsesCache[n];
                     if (node < 0)
@@ -984,13 +984,12 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(
-    int numPolygonNodes,
-    std::vector<Sample>& samples,
-    int& numEdgesToBeRefined)
+bool GridGeom::MeshRefinement::ComputeEdgesRefinementMaskFromSamples( int numPolygonNodes,
+                                                                      std::vector<Sample>& samples,
+                                                                      std::vector<int>& refineEdgeCache,
+                                                                      int& numEdgesToBeRefined )
 {
     numEdgesToBeRefined = 0;
-
     // Not implemented yet
     if (m_refinementType == RefinementType::RidgeRefinement)
     {
@@ -1088,7 +1087,7 @@ bool GridGeom::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(
         if (doRefinement)
         {
             numEdgesToBeRefined++;
-            m_refineEdgeCache[i] = 1;
+            refineEdgeCache[i] = 1;
         }
     }
 
@@ -1098,7 +1097,7 @@ bool GridGeom::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(
         numEdgesToBeRefined = 0;
         for (int i = 0; i < numPolygonNodes; i++)
         {
-            if (m_refineEdgeCache[i] == 1 || m_isHangingNodeCache[i])
+            if (refineEdgeCache[i] == 1 || m_isHangingNodeCache[i])
             {
                 numEdgesToBeRefined++;
             }
@@ -1113,7 +1112,7 @@ bool GridGeom::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(
             {
                 if (!m_isHangingNodeCache[i])
                 {
-                    m_refineEdgeCache[i] = 1;
+                    refineEdgeCache[i] = 1;
                 }
             }
         }
