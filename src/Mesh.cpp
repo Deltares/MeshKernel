@@ -648,15 +648,14 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
     }
 }
 
-bool GridGeom::Mesh::FindFacesRecursive(
-    int startingNode,
-    int node,
-    int index,
-    int previusEdge,
-    std::vector<int>& edges,
-    std::vector<int>& nodes,
-    std::vector<int>& sortedEdgesFaces,
-    std::vector<int>& sortedNodes)
+bool GridGeom::Mesh::FindFacesRecursive( int startingNode,
+                                         int node,
+                                         int index,
+                                         int previusEdge,
+                                         std::vector<int>& edges,
+                                         std::vector<int>& nodes,
+                                         std::vector<int>& sortedEdgesFaces,
+                                         std::vector<int>& sortedNodes)
 {
     if (index >= edges.size())
     {
@@ -1833,7 +1832,7 @@ bool GridGeom::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
     std::vector<Point>& normals,
     int numNodes,
     const std::vector<int>& edgesNumFaces,
-    const double weightCircumCenter,
+    double weightCircumCenter,
     Point& result)
 {
     const int maximumNumberCircumcenterIterations = 100;
@@ -2101,7 +2100,6 @@ bool GridGeom::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
             //
             //std::size_t klinkm1 = m_facesEdges[f][kkm1];
             //std::size_t klinkp1 = m_facesEdges[f][kkp1];
-            //
 
             double edgeLength = edgesLength[edgeIndex];
             if (edgeLength != 0.0)

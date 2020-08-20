@@ -34,12 +34,11 @@
 
 namespace GridGeom 
 {
-
+    // Forward declarations
     class CurvilinearGrid;
     class Polygons;
     class MakeGridParametersNative;
     class GeometryListNative;
-
 
     class Mesh
     {
@@ -65,7 +64,7 @@ namespace GridGeom
             onRing,
             cornerNode,
             hangingNode,
-            other              // e.g. 1d node
+            other              // e.g. a 1d node
         };
 
         /// <summary>
@@ -92,35 +91,35 @@ namespace GridGeom
         Mesh(std::vector<Point>& nodes, const Polygons& polygons, Projections projection);
 
         /// <summary>
-        /// Add meshes: result is an unique mesh composed of the additions 
+        /// Add meshes: result is a mesh composed of the additions 
         /// firstMesh += secondmesh results in the second mesh being added to the first
         /// </summary>
-        /// <param name="rhs"></param>
-        /// <returns></returns>
+        /// <param name="rhs">The mesh to add</param>
+        /// <returns>The resulting mesh</returns>
         Mesh& operator+=(Mesh const& rhs);
 
         /// <summary>
-        /// Set the mesh starting from the edges and the nodes
+        /// Set the mesh starting from the edges and nodes
         /// </summary>
         /// <param name="edges">The input edges</param>
         /// <param name="nodes">The input nodes</param>
         /// <param name="projection">Projection to use</param>
         /// <param name="administration">Type of administration to perform</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
         
         /// <summary>
-        /// Set internal flat arrays copies of nodes and edges, so they can be communicated to the front-end
+        /// Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         /// </summary>
         /// <param name="administrationOption">Type of administration to perform</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool SetFlatCopies(AdministrationOptions administrationOption);
 
         /// <summary>
         /// Perform mesh administration
         /// </summary>
         /// <param name="administrationOption">Type of administration to perform</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool Administrate(AdministrationOptions administrationOption);
 
         /// <summary>
@@ -129,7 +128,7 @@ namespace GridGeom
         void ComputeFaceCircumcentersMassCentersAndAreas();
 
         /// <summary>
-        /// Find faces: constructs node to faces mapping. (findcells)
+        /// Find faces: constructs the m_facesNodes mapping. (findcells)
         /// </summary>
         void FindFaces();
 
@@ -138,22 +137,22 @@ namespace GridGeom
         /// </summary>
         /// <param name="lowerLeft">Lower left corner</param>
         /// <param name="upperRight">Upper right corner</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool GetBoundingBox(Point& lowerLeft, Point& upperRight) const;
 
         /// <summary>
-        /// Offset the x coordinates if ptojection is spherical
+        /// Offset the x coordinates if m_projection is spherical
         /// </summary>
         /// <param name="minx"></param>
         /// <param name="miny"></param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool OffsetSphericalCoordinates(double minx, double miny);
 
         /// <summary>
-        /// Merge mesh nodes in a polygon (MERGENODESINPOLYGON)
+        /// Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
         /// </summary>
         /// <param name="polygons">Polygon where to perform the merging</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool MergeNodesInPolygon(const Polygons& polygons);
 
         /// <summary>
@@ -161,34 +160,33 @@ namespace GridGeom
         /// </summary>
         /// <param name="startNode">The index of the first node to be merged</param>
         /// <param name="endNode">The second of the second node to be merged</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool MergeTwoNodes(int startNode, int endNode);
 
         /// <summary>
-        /// Make a new mesh (makenet)
+        /// Make a new rectangular mesh, composed of quads (makenet)
         /// </summary>
         /// <param name="makeGridParametersNative">The structure containing the make grid parameters </param>
         /// <param name="polygons">The polygon to account for</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
 
         /// <summary>
-        /// Deletes a mesh in a polygon using several options (delnet)
+        /// Deletes a mesh in a polygon, using several options (delnet)
         /// </summary>
-        /// <param name="gridStateId">Id of the grid state</param>
         /// <param name="polygons">The polygon where to perform the operation</param>
         /// <param name="deletionOption">The deletion option</param>
-        /// <param name="invertDeletion">Inverts the deletion of selected features</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <param name="invertDeletion">Inverts the selected node to delete (instead of outside the polygon, inside the polygon) </param>
+        /// <returns>If the method succeeded</returns>
         bool DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion);
 
         /// <summary>
-        /// Connect two existing nodes, forming a new wdge index (connectdbn)
+        /// Connect two existing nodes, forming a new edge (connectdbn)
         /// </summary>
-        /// <param name="startNode"></param>
-        /// <param name="endNode"></param>
-        /// <param name="newEdgeIndex"></param>
-        /// <returns>If the operation succeeded</returns>
+        /// <param name="startNode">The start node index</param>
+        /// <param name="endNode">The end node index</param>
+        /// <param name="newEdgeIndex">The index of the new edge</param>
+        /// <returns>If the method succeeded</returns>
         bool ConnectNodes(int startNode, int endNode, int& newEdgeIndex);
 
         /// <summary>
@@ -196,25 +194,25 @@ namespace GridGeom
         /// </summary>
         /// <param name="newPoint">The coordinate of the new point</param>
         /// <param name="newNodeIndex">The index of the new node</param>
-        /// <param name="updateRTree">Update the nodes RTree </param>
-        /// <returns>If the operation succeeded</returns>
+        /// <param name="updateRTree">Update m_nodesRTree</param>
+        /// <returns>If the method succeeded</returns>
         bool InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree = false);
 
         /// <summary>
         /// Delete a node
         /// </summary>
-        /// <param name="nodeIndex"></param>
-        /// <param name="updateRTree"></param>
-        /// <returns>If the operation succeeded</returns>
+        /// <param name="nodeIndex">The index of the node to delete</param>
+        /// <param name="updateRTree">Update m_nodesRTree</param>
+        /// <returns>If the method succeeded</returns>
         bool DeleteNode(int nodeIndex, bool updateRTree = false);
 
         /// <summary>
         /// Find the edge sharing two nodes
         /// </summary>
-        /// <param name="firstNodeIndex">The index of the first node to be merged</param>
-        /// <param name="secondNodeIndex">The index of the second node to be merged</param>
-        /// <param name="edgeIndex"></param>
-        /// <returns>If the operation succeeded</returns>
+        /// <param name="firstNodeIndex">The index of the first node</param>
+        /// <param name="secondNodeIndex">The index of the second node</param>
+        /// <param name="edgeIndex">The edge index</param>
+        /// <returns>If the method succeeded</returns>
         bool FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
 
         /// <summary>
@@ -222,7 +220,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="newPoint">The new location</param>
         /// <param name="nodeindex">The index of the node to move</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool MoveNode(Point newPoint, int nodeindex);
 
         /// <summary>
@@ -231,14 +229,14 @@ namespace GridGeom
         /// <param name="point">The starting point from where to start the search </param>
         /// <param name="searchRadius">The search radius</param>
         /// <param name="nodeIndex">The node index (-1 if no node is found)</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool GetNodeIndex(Point point, double searchRadius, int& nodeIndex);
 
         /// <summary>
         /// Deletes an edge
         /// </summary>
-        /// <param name="edgeIndex"></param>
-        /// <returns>If the operation succeeded</returns>
+        /// <param name="edgeIndex">The edge index</param>
+        /// <returns>If the method succeeded</returns>
         bool DeleteEdge(int edgeIndex);
 
         /// <summary>
@@ -250,18 +248,18 @@ namespace GridGeom
         int FindEdgeCloseToAPoint(Point point, double searchRadius);
 
         /// <summary>
-        /// Masks the edges of the faces included in a polygon
+        /// Masks the edges of all faces included in a polygon
         /// </summary>
         /// <param name="polygons">The selection polygon</param>
         /// <param name="invertSelection">Invert selection</param>
         /// <param name="includeIntersected">Included the edges intersected by the polygon</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected);
 
         /// <summary>
         /// From the masked edges compute the masked nodes
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool ComputeNodeMaskFromEdgeMask();
 
         /// <summary>
@@ -272,27 +270,29 @@ namespace GridGeom
         /// <param name="localNodeIndexsesCache">The consecutive node index in polygonNodesCache (0, 1, 2,...)</param>
         /// <param name="edgeIndexsesCache">The edge cache array filled with edge indexses</param>
         /// <param name="numClosedPolygonNodes">The number of valid values in the array above</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool FaceClosedPolygon(int faceIndex, 
-            std::vector<Point>& polygonNodesCache, 
-            std::vector<int>& localNodeIndexsesCache,
-            std::vector<int>& edgeIndexsesCache,
-            int& numClosedPolygonNodes) const;
+                               std::vector<Point>& polygonNodesCache, 
+                               std::vector<int>& localNodeIndexsesCache,
+                               std::vector<int>& edgeIndexsesCache,
+                               int& numClosedPolygonNodes) const;
 
         /// <summary>
-        /// For a face, fills the polygon nodes cache
+        /// For a face, fills the polygonNodesCache with the face nodes
         /// </summary>
         /// <param name="faceIndex">The face index</param>
-        /// <param name="polygonNodesCache">The node cache array filled with the nodes values</param>
-        /// <param name="numClosedPolygonNodes">The number of valid values in the array above</param>
-        /// <returns>If the operation succeeded</returns>
-        bool FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numClosedPolygonNodes) const;
+        /// <param name="polygonNodesCache">The cache array to be filled </param>
+        /// <param name="numClosedPolygonNodes">The number of valid face nodes</param>
+        /// <returns>If the method succeeded</returns>
+        bool FaceClosedPolygon(int faceIndex, 
+                               std::vector<Point>& polygonNodesCache, 
+                               int& numClosedPolygonNodes) const;
 
         /// <summary>
         /// Determine if a face is fully contained in polygon or not, based on m_nodeMask
         /// </summary>
         /// <param name="faceIndex">The face index</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool IsFullFaceNotInPolygon(int faceIndex) const;
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="polygons">The input polygon</param>
         /// <param name="inside">Inside/outside option</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool MaskNodesInPolygons(const Polygons& polygons, bool inside);
 
         /// <summary>
@@ -309,7 +309,7 @@ namespace GridGeom
         /// <param name="firstEdgeIndex">The index of the first edge</param>
         /// <param name="secondEdgeIndex">The index of the second edge</param>
         /// <param name="node">The shared node (-1 if no node is found)</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 
         /// <summary>
@@ -320,119 +320,120 @@ namespace GridGeom
         /// <summary>
         /// Get the number of valid nodes
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>The number of valid node</returns>
         int GetNumNodes() const { return m_numNodes; }
 
         /// <summary>
         /// Get the number of valid edges
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>The number of valid edges</returns>
         int GetNumEdges() const { return m_numEdges; }
 
         /// <summary>
         /// Get the number of valid faces
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>The number of valid faces</returns>
         int GetNumFaces() const { return m_numFaces; }
 
         /// <summary>
         /// Get the number of edges for a face
         /// </summary>
-        /// <param name="faceIndex"></param>
-        /// <returns>If the operation succeeded</returns>
+        /// <param name="faceIndex">The face index</param>
+        /// <returns>The number of edges for a face</returns>
         int GetNumFaceEdges(const int faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
         /// <summary>
         /// Get the number of faces an edges shares
         /// </summary>
-        /// <param name="edgeIndex"></param>
-        /// <returns>If the operation succeeded</returns>
+        /// <param name="edgeIndex">The edge index</param>
+        /// <returns>The number of faces an edges shares</returns>
         int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
         /// <summary>
         ///  Circumcenter of a face (getcircumcenter)
         /// </summary>
-        /// <param name="polygon">Caching array for face nodes</param>
+        /// <param name="polygon">Cache storing the face nodes</param>
         /// <param name="middlePoints">Caching array for the edges middle points</param>
         /// <param name="normals">Caching array for normals</param>
-        /// <param name="numNodes">Number of nodes</param>
-        /// <param name="edgesNumFaces">For meshes, the number of faces sharing the polygon edge</param>
-        /// <param name="weightCircumCenter">circumcenter weight</param>
-        /// <param name="result">The computed polygon result</param>
-        /// <returns>If the operation succeeded</returns>
-        bool ComputeFaceCircumenter(std::vector<Point>& polygon,
-            std::vector<Point>& middlePoints,
-            std::vector<Point>& normals,
-            int numNodes,
-            const std::vector<int>& edgesNumFaces,
-            const double weightCircumCenter,
-            Point& result);
+        /// <param name="numNodes">Number of valid nodes in the cache</param>
+        /// <param name="edgesNumFaces">For meshes, the number of faces sharing the edges</param>
+        /// <param name="weightCircumCenter">Circumcenter weight</param>
+        /// <param name="result">The computed circumcenter</param>
+        /// <returns>If the method succeeded</returns>
+        bool ComputeFaceCircumenter( std::vector<Point>& polygon,
+                                     std::vector<Point>& middlePoints,
+                                     std::vector<Point>& normals,
+                                     int numNodes,
+                                     const std::vector<int>& edgesNumFaces,
+                                     double weightCircumCenter,
+                                     Point& result );
 
         /// <summary>
-        /// Computes the node neighbours
+        /// Computes m_nodesNodes, see class members
         /// </summary>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool ComputeNodeNeighbours();
 
         /// <summary>
-        /// Gets the orthogonality values (innerproduct edges and face circumcenter connecting segments)
+        /// Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters
         /// </summary>
-        /// <param name="orthogonality">The orthogonality at the edges</param>
-        /// <returns></returns>
+        /// <param name="orthogonality">The edge orthogonality, passed to the client</param>
+        /// <returns>If the method succeeded</returns>
         bool GetOrthogonality(double* orthogonality);
 
         /// <summary>
-        /// Gets the smoothness values (face area ratios)
+        /// Gets the smoothness values, ratios of the face areas
         /// </summary>
         /// <param name="smoothness">The smoothness at the edges</param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool GetSmoothness(double* smoothness);
 
         /// <summary>
-        /// Gets the aspect ratios
+        /// Gets the aspect ratios, the ratio edges to segments connecting the face circumcenters lengths
         /// </summary>
-        /// <param name="aspectRatio"></param>
-        /// <returns></returns>
+        /// <param name="aspectRatio">The aspect ratios</param>
+        /// <returns>If the method succeeded</returns>
         bool GetAspectRatios(std::vector<double>& aspectRatios);
 
         // nodes
-        std::vector<Point>              m_nodes;                    // (xk, yk)
-        std::vector<std::vector<int>>   m_nodesEdges;               // (nod)
-        std::vector<int>                m_nodesNumEdges;            // (nmk)
-        std::vector<int>                m_nodeMask;                 // (kc)
-        std::vector<std::vector<int>>   m_nodesNodes;               // node neighbours 
-        int m_maxNumNeighbours = 0;
+        std::vector<Point>              m_nodes;                    // The mesh nodes (xk, yk)
+        std::vector<std::vector<int>>   m_nodesEdges;               // For each node, the indexses of connected edges (nod)
+        std::vector<int>                m_nodesNumEdges;            // For each node, the number of connected edges (nmk)
+        std::vector<int>                m_nodeMask;                 // The node mask (kc)
+        std::vector<std::vector<int>>   m_nodesNodes;               // For each node, its neighbours 
+        std::vector<int>                m_nodesTypes;               // The node types
 
         // edges
-        std::vector<Edge>               m_edges;                    // (kn)
-        std::vector<int>                m_edgesNumFaces;            // (lnn)
-        std::vector<std::vector<int>>   m_edgesFaces;               // (lne)
-        std::vector<double>             m_edgeLengths;
-        std::vector<int>                m_edgeMask;                 // (lc)
+        std::vector<Edge>               m_edges;                    // The edges, defined as first and second node(kn)
+        std::vector<std::vector<int>>   m_edgesFaces;               // For each edge, the shared face index (lne)
+        std::vector<int>                m_edgesNumFaces;            // For each edge, the number of shared faces(lnn)
+        std::vector<double>             m_edgeLengths;              // The edge lenghts
+        std::vector<int>                m_edgeMask;                 // The edge mask (lc)
 
         // faces
-        std::vector<std::vector<int>>   m_facesNodes;               // netcell%Nod, the nodes composing the faces, in ccw order
-        std::vector<int>                m_numFacesNodes;            // netcell%N
-        std::vector<std::vector<int>>   m_facesEdges;               // netcell%lin
-        std::vector<Point>              m_facesCircumcenters;       // xz  the face circumcenter
-        std::vector<Point>              m_facesMassCenters;         // xzw the faces canters of mass
+        std::vector<std::vector<int>>   m_facesNodes;               // The nodes composing the faces, in ccw order (netcell%Nod) 
+        std::vector<int>                m_numFacesNodes;            // The number of nodes composing the face (netcell%N)
+        std::vector<std::vector<int>>   m_facesEdges;               // The edge indexses composing the face (netcell%lin)
+        std::vector<Point>              m_facesCircumcenters;       // The face circumcenters the face circumcenter (xz, yz)
+        std::vector<Point>              m_facesMassCenters;         // The faces centers of mass (xzw, yzw)  
+        std::vector<double>             m_faceArea;                 // The face area   
+        std::vector<Point>              m_polygonNodesCache;        // Cache to store the face nodes
 
-        std::vector<double> m_faceArea;                             // Face area   
-        std::vector<int> m_nodesTypes;                              // Node types
+        // vectors for communicating with the client
+        std::vector<double>              m_nodex;                   // The nodes x-coordinate
+        std::vector<double>              m_nodey;                   // The nodes y-coordinate
+        std::vector<double>              m_nodez;                   // The nodes z-coordinate
+        std::vector<int>                 m_edgeNodes;               // For each edge, the nodes
+        std::vector<int>                 m_faceNodes;               // For each face, the nodes
+        std::vector<double>              m_facesCircumcentersx;     // The circumcenters x-coordinate
+        std::vector<double>              m_facesCircumcentersy;     // The circumcenters y-coordinate
+        std::vector<double>              m_facesCircumcentersz;     // The circumcenters z-coordinate
 
-        // flat arrays for communication with the client
-        std::vector<double>              m_nodex;
-        std::vector<double>              m_nodey;
-        std::vector<double>              m_nodez;
-        std::vector<int>                 m_edgeNodes;
-        std::vector<int>                 m_faceNodes;
-        std::vector<double>              m_facesCircumcentersx;
-        std::vector<double>              m_facesCircumcentersy;
-        std::vector<double>              m_facesCircumcentersz;
+        Projections                      m_projection;              // The projection used
 
-        Projections                      m_projection;
-        std::vector<Point>               m_polygonNodesCache;       // Cache to store polygon points
-        SpatialTrees::RTree              m_nodesRTree;              // Spatial tree to inquire node vertices
+        SpatialTrees::RTree              m_nodesRTree;              // Spatial R-Tree used to inquire node vertices
+
+        int m_maxNumNeighbours = 0;
 
     private:
 
@@ -449,15 +450,15 @@ namespace GridGeom
         /// <summary>
         /// Find cells recursive, works with an arbitrary number of edges
         /// </summary>
-        /// <param name="startingNode">Th starting node</param>
+        /// <param name="startingNode">The starting node</param>
         /// <param name="node">The current node</param>
         /// <param name="numEdges">The number of edges visited so far</param>
         /// <param name="previousEdge">The previously visited edge</param>
         /// <param name="edges">The vector storing the current edges forming a face</param>
         /// <param name="nodes">The vector storing the current nodes forming a face</param>
-        /// <param name="sortedEdges">A caching array used for sorting the edges and inquire if an edge has been already visited</param>
-        /// <param name="sortedNodes">A caching array used for sorting the nodes and inquire if a node has been already visited</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <param name="sortedEdges">The caching array used for sorting the edges, used to inquire if an edge has been already visited</param>
+        /// <param name="sortedNodes">The caching array used for sorting the nodes, used to inquire if a node has been already visited</param>
+        /// <returns>If the method succeeded</returns>
         bool FindFacesRecursive(int startingNode, 
                                 int node, 
                                 int numEdges, 
@@ -470,25 +471,25 @@ namespace GridGeom
         /// <summary>
         /// Classifies the nodes (makenetnodescoding)
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool ClassifyNodes();
 
         /// <summary>
         /// Checks if a triangle has an acute angle (checktriangle)
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes);
 
         /// <summary>
         /// Removes all invalid nodes and edges
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool RemoveInvalidNodesAndEdges();
 
         /// <summary>
         /// Refresh nodes RTree if needed
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool RefreshNodesRTreeIfNeeded();
 
         int m_numFaces = 0;                                       // number of valid faces (nump)

@@ -74,7 +74,7 @@ namespace GridGeom
         /// <param name="polygon">The samples with values used for refinement (option 2, refine in polygon)</param>
         /// <param name="sampleRefineParametersNative">Sample's related parameters</param>
         /// <param name="interpolationParametersNative">Interpolation parameters</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool Refine(std::vector<Sample>& sample,
                     const Polygons& polygon,
                     GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
@@ -85,21 +85,21 @@ namespace GridGeom
         /// <summary>
         /// Finds if two edges are brothers, for example sharing an hanging node.
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool FindBrotherEdges();
 
         /// <summary>
         /// Modifies the initial m_mesh.m_nodeMask, all mesh nodes of faces at the polygon perimeter included in the polygon will get a node mask value of -2 (set_initial_mask)
         /// The mask value of the other nodes will not be modified.
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool ComputeNodeMaskAtPolygonPerimeter();
 
         /// <summary>
         /// Computes the edge and face refinement mask from sample values (compute_jarefine_poly)
         /// </summary>
         /// <param name="samples"> the sample to use for computing masking</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool ComputeRefinementMasksFromSamples(std::vector<Sample>& samples);
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace GridGeom
         /// <param name="numPolygonNodes">The number of face nodes</param>
         /// <param name="samples"> The samples to use for refinement</param>
         /// <param name="numEdgesToBeRefined"> The computed numebr of edges to be refined</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool ComputeEdgesRefinementMaskFromSamples(int numPolygonNodes,
                                                    std::vector<Sample>& samples,
                                                    int& numEdgesToBeRefined);
@@ -117,7 +117,7 @@ namespace GridGeom
         /// <summary>
         /// Computes the edge refinement mask (comp_jalink)
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool ComputeEdgesRefinementMask();
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace GridGeom
         /// <param name="numHangingEdges"></param>
         /// <param name="numHangingNodes"></param>
         /// <param name="numEdgesToRefine"></param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool FindHangingNodes(int faceIndex,
                               int& numHangingEdges,
                               int& numHangingNodes,
@@ -137,32 +137,32 @@ namespace GridGeom
         /// Remove isolated hanging nodes(remove_isolated_hanging_nodes)
         /// </summary>
         /// <param name="numRemovedIsolatedHangingNodes"></param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool RemoveIsolatedHangingnodes(int& numRemovedIsolatedHangingNodes);
 
         /// <summary>
         /// Connect the hanging nodes with triangles (connect_hanging_nodes)
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool ConnectHangingNodes();
 
         /// <summary>
         /// Smooth the face refinement mask (smooth_jarefine)
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool SmoothEdgeRefinementMask();
 
         /// <summary>
         /// Computes m_faceMask, if a face must be splitted later on (split_cells)
         /// </summary>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool ComputeIfFaceShouldBeSplitted();
 
         /// <summary>
         /// Actual refinement operation by splitting the face (refine_cells)
         /// </summary>
         /// <param name="numEdgesBeforeRefinemet">Numer of edges before the refinement</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         bool RefineFacesBySplittingEdges(int numEdgesBeforeRefinemet);
 
         /// <summary>

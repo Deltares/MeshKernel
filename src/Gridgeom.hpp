@@ -72,7 +72,7 @@ namespace GridGeomApi
         /// <param name="disposableGeometryList">The polygon where to perform the operation</param>
         /// <param name="deletionOption">The deletion option (to be detailed)</param>
         /// <param name="invertDeletion">Inverts the deletion of selected features</param>
-        /// <returns>If the operation succeeded</returns>
+        /// <returns>If the method succeeded</returns>
         GRIDGEOM_API int ggeo_delete_mesh(int gridStateId, GeometryListNative& disposableGeometryList, int deletionOption, bool invertDeletion);
 
         /// <summary>
