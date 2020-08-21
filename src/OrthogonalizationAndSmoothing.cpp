@@ -38,22 +38,24 @@
 #include "Mesh.hpp"
 
 
-GridGeom::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(): m_mesh(nullptr)
+GridGeom::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(): m_mesh(nullptr), m_smoother(nullptr), m_orthogonalizer(nullptr)
 {
 }
 
 
-bool GridGeom::OrthogonalizationAndSmoothing::Set(Mesh& mesh,
-    int& isTriangulationRequired,
-    int& isAccountingForLandBoundariesRequired,
-    int& projectToLandBoundaryOption,
-    GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
-    const Polygons& polygon,
-    std::vector<Point>& landBoundaries)
+bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh& mesh,
+                                                   Smoother& smoother,
+                                                   Orthogonalizer& orthogonalizer,
+                                                   int isTriangulationRequired,
+                                                   int isAccountingForLandBoundariesRequired,
+                                                   int projectToLandBoundaryOption,
+                                                   GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
+                                                   const Polygons& polygon,
+                                                   std::vector<Point>& landBoundaries)
 {    
     m_polygons = polygon;
-    m_smoother = Smoother(mesh);
-    m_orthogonalizer = Orthogonalizer(mesh);
+    m_smoother = &smoother;
+    m_orthogonalizer = &orthogonalizer;
  
     // pointer to mesh
     m_mesh = &mesh;
@@ -119,7 +121,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::Set(Mesh& mesh,
         m_localCoordinatesIndexes[0] = 1;
         for (int n = 0; n < m_mesh->GetNumNodes(); ++n)
         {
-            m_localCoordinatesIndexes[n + 1] = m_localCoordinatesIndexes[n] + std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother.GetNumConnectedNodes(n));
+            m_localCoordinatesIndexes[n + 1] = m_localCoordinatesIndexes[n] + std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
         }
 
         m_localCoordinates.resize(m_localCoordinatesIndexes.back() - 1, { doubleMissingValue, doubleMissingValue });
@@ -170,13 +172,13 @@ bool GridGeom::OrthogonalizationAndSmoothing::PrapareOuterIteration()
     // compute weights and rhs of orthogonalizer
     if (successful)
     {
-        successful = m_orthogonalizer.Compute();
+        successful = m_orthogonalizer->Compute();
     }
 
     // computes the smoother weights
     if (successful)
     {
-        successful = m_smoother.Compute();
+        successful = m_smoother->Compute();
     }
      
     // allocate linear system for smoother and orthogonalizer
@@ -211,7 +213,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::AllocateLinearSystem()
         for (int n = 0; n < m_mesh->GetNumNodes() ; n++)
         {
             m_compressedEndNodeIndex[n] = m_nodeCacheSize;
-            m_nodeCacheSize += std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother.GetNumConnectedNodes(n));
+            m_nodeCacheSize += std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
             m_compressedStartNodeIndex[n] = m_nodeCacheSize;
         }
 
@@ -276,28 +278,28 @@ bool GridGeom::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             // Smoother
             if (atpf1Loc > 0.0 && m_mesh->m_nodesTypes[n] == 1)
             {
-                wwx = atpf1Loc * m_smoother.GetWeight(n, nn);
-                wwy = atpf1Loc * m_smoother.GetWeight(n, nn);
+                wwx = atpf1Loc * m_smoother->GetWeight(n, nn);
+                wwy = atpf1Loc * m_smoother->GetWeight(n, nn);
             }
             
             // Orthogonalizer
             if (nn < m_mesh->m_nodesNumEdges[n] + 1)
             {
-                wwx += atpfLoc * m_orthogonalizer.GetWeight(n,nn - 1);
-                wwy += atpfLoc * m_orthogonalizer.GetWeight(n,nn - 1);
+                wwx += atpfLoc * m_orthogonalizer->GetWeight(n,nn - 1);
+                wwy += atpfLoc * m_orthogonalizer->GetWeight(n,nn - 1);
                 m_compressedNodesNodes[cacheIndex] = m_mesh->m_nodesNodes[n][nn - 1];
             }
             else
             {
-                m_compressedNodesNodes[cacheIndex] = m_smoother.GetCoonectedNodeIndex(n,nn);
+                m_compressedNodesNodes[cacheIndex] = m_smoother->GetCoonectedNodeIndex(n,nn);
             }
 
             m_compressedWeightX[cacheIndex] = wwx;
             m_compressedWeightY[cacheIndex] = wwy;
         }
         int firstCacheIndex = n * 2;
-        m_compressedRhs[firstCacheIndex] = atpfLoc * m_orthogonalizer.GetRightHandSide(n, 0);
-        m_compressedRhs[firstCacheIndex+1] = atpfLoc * m_orthogonalizer.GetRightHandSide(n, 1);
+        m_compressedRhs[firstCacheIndex] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 0);
+        m_compressedRhs[firstCacheIndex+1] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 1);
 	}
 
 	return true;
