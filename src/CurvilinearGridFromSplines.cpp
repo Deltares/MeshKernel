@@ -1738,7 +1738,7 @@ bool GridGeom::CurvilinearGridFromSplines::GetSplineIntersections(const int inde
         Point intersectionPoint;
         double firstSplineRatio;
         double secondSplineRatio;
-        bool crossing = m_splines->GetSplinesIntersection(index, s, m_splines->m_projection, crossProductIntersection, intersectionPoint, firstSplineRatio, secondSplineRatio);
+        bool crossing = m_splines->GetSplinesIntersection(index, s, crossProductIntersection, intersectionPoint, firstSplineRatio, secondSplineRatio);
 
         if (std::abs(crossProductIntersection) < m_dtolcos)
         {
@@ -1859,7 +1859,7 @@ bool GridGeom::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
     double endSplineAdimensionalCoordinate = m_splines->m_numSplineNodes[splineIndex] - 1;
     double splineLength = m_splines->GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
 
-    gridLine[startingIndex] = m_splines->m_splineCornerPoints[splineIndex][0];
+    gridLine[startingIndex] = m_splines->m_splineNodes[splineIndex][0];
     GridGeom::FuncDimensionalToAdimensionalDistance func(*this, splineIndex, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
 
     double currentMaxWidth = std::numeric_limits<double>::max();
@@ -1876,7 +1876,7 @@ bool GridGeom::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
             
             adimensionalCoordinates[index] = FindFunctionRootWithGoldenSectionSearch(func, 0, endSplineAdimensionalCoordinate);
             
-            InterpolateSplinePoint(m_splines->m_splineCornerPoints[splineIndex], 
+            InterpolateSplinePoint(m_splines->m_splineNodes[splineIndex], 
                                  m_splines->m_splineDerivatives[splineIndex], 
                                  adimensionalCoordinates[index], 
                                  gridLine[index]);

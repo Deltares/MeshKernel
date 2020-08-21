@@ -83,7 +83,7 @@ namespace GridGeom
     private:
 
         /// <summary>
-        /// Finds if two edges are brothers, sharing an hanging node.
+        /// Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh
         /// </summary>
         /// <returns>If the method succeeded</returns>
         bool FindBrotherEdges();
