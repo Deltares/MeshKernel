@@ -48,9 +48,9 @@ GridGeom::Splines::Splines(Projections projection) : m_projection(projection)
 /// add a new spline, return the index
 bool GridGeom::Splines::AddSpline(const std::vector<Point>& splines, int start, int size)
 {
-    ResizeVectorIfNeededWithMinimumSize(m_numSplines + 1, m_splineCornerPoints, m_allocationSize, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }));
+    ResizeVectorIfNeededWithMinimumSize(m_numSplines + 1, m_splineNodes, m_allocationSize, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }));
 
-    m_numAllocatedSplines = m_splineCornerPoints.size();
+    m_numAllocatedSplines = m_splineNodes.size();
     m_numAllocatedSplineNodes.resize(m_numAllocatedSplines, 10);
 
     m_numSplineNodes.resize(m_numAllocatedSplines, 0);
@@ -60,13 +60,13 @@ bool GridGeom::Splines::AddSpline(const std::vector<Point>& splines, int start, 
     int index = 0;
     for (int n = start; n < start + size; ++n)
     {
-        m_splineCornerPoints[m_numSplines][index] = splines[n];
+        m_splineNodes[m_numSplines][index] = splines[n];
         index++;
     }
     m_splinesLength.resize(m_numAllocatedSplines);
 
     // compute basic properties
-    SecondOrderDerivative(m_splineCornerPoints[m_numSplines], m_numSplineNodes[m_numSplines], m_splineDerivatives[m_numSplines]);
+    SecondOrderDerivative(m_splineNodes[m_numSplines], m_numSplineNodes[m_numSplines], m_splineDerivatives[m_numSplines]);
     m_splinesLength[m_numSplines] = GetSplineLength(m_numSplines, 0, m_numSplineNodes[m_numSplines] - 1);
     m_numSplines++;
 
@@ -75,7 +75,7 @@ bool GridGeom::Splines::AddSpline(const std::vector<Point>& splines, int start, 
 
 bool GridGeom::Splines::DeleteSpline(int splineIndex)
 {
-    m_splineCornerPoints.erase(m_splineCornerPoints.begin() + splineIndex);
+    m_splineNodes.erase(m_splineNodes.begin() + splineIndex);
     m_numSplineNodes.erase(m_numSplineNodes.begin() + splineIndex);
     m_splineDerivatives.erase(m_splineDerivatives.begin() + splineIndex);
     m_splinesLength.erase(m_splinesLength.begin() + splineIndex);
@@ -90,20 +90,20 @@ bool GridGeom::Splines::AddPointInExistingSpline(int splineIndex, const Point& p
     {
         return false;
     }
-    ResizeVectorIfNeededWithMinimumSize(m_numSplineNodes[splineIndex] + 1, m_splineCornerPoints[splineIndex], m_allocationSize, { doubleMissingValue, doubleMissingValue });
-    m_numAllocatedSplineNodes[splineIndex] = m_splineCornerPoints[splineIndex].size();
+    ResizeVectorIfNeededWithMinimumSize(m_numSplineNodes[splineIndex] + 1, m_splineNodes[splineIndex], m_allocationSize, { doubleMissingValue, doubleMissingValue });
+    m_numAllocatedSplineNodes[splineIndex] = m_splineNodes[splineIndex].size();
 
-    m_splineCornerPoints[splineIndex][m_numSplineNodes[splineIndex]] = point;
+    m_splineNodes[splineIndex][m_numSplineNodes[splineIndex]] = point;
     m_numSplineNodes[splineIndex]++;
     return true;
 }
 
-bool GridGeom::Splines::GetSplinesIntersection(const int first, const int second,
-    const Projections& projection,
-    double& crossProductIntersection,
-    Point& intersectionPoint,
-    double& firstSplineRatio,
-    double& secondSplineRatio)
+bool GridGeom::Splines::GetSplinesIntersection(const int first, 
+                                               const int second,
+                                               double& crossProductIntersection,
+                                               Point& intersectionPoint,
+                                               double& firstSplineRatio,
+                                               double& secondSplineRatio)
 {
     double minimumCrossingDistance = std::numeric_limits<double>::max();
     double crossingDistance;
@@ -123,16 +123,16 @@ bool GridGeom::Splines::GetSplinesIntersection(const int first, const int second
             double crossProduct;
             double firstRatio;
             double secondRatio;
-            bool areCrossing = AreLinesCrossing(m_splineCornerPoints[first][n],
-                m_splineCornerPoints[first][n + 1],
-                m_splineCornerPoints[second][nn],
-                m_splineCornerPoints[second][nn + 1],
-                false,
-                intersection,
-                crossProduct,
-                firstRatio,
-                secondRatio,
-                projection);
+            bool areCrossing = AreLinesCrossing(m_splineNodes[first][n],
+                                                m_splineNodes[first][n + 1],
+                                                m_splineNodes[second][nn],
+                                                m_splineNodes[second][nn + 1],
+                                                false,
+                                                intersection,
+                                                crossProduct,
+                                                firstRatio,
+                                                secondRatio,
+                                                m_projection);
 
 
             if (areCrossing)
@@ -209,31 +209,33 @@ bool GridGeom::Splines::GetSplinesIntersection(const int first, const int second
         secondRatioIterations = secondRight - secondLeft;
 
         Point firstLeftSplinePoint;
-        InterpolateSplinePoint( m_splineCornerPoints[first], 
+        InterpolateSplinePoint( m_splineNodes[first], 
                      m_splineDerivatives[first], 
                      firstLeft, 
                      firstLeftSplinePoint);
         Point firstRightSplinePoint;
-        InterpolateSplinePoint(m_splineCornerPoints[first], m_splineDerivatives[first], firstRight, firstRightSplinePoint);
+        InterpolateSplinePoint(m_splineNodes[first], m_splineDerivatives[first], firstRight, firstRightSplinePoint);
 
         Point secondLeftSplinePoint;
-        InterpolateSplinePoint(m_splineCornerPoints[second], m_splineDerivatives[second], secondLeft, secondLeftSplinePoint);
+        InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondLeft, secondLeftSplinePoint);
         Point secondRightSplinePoint;
-        InterpolateSplinePoint(m_splineCornerPoints[second], m_splineDerivatives[second], secondRight, secondRightSplinePoint);
+        InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondRight, secondRightSplinePoint);
 
         Point oldIntersection = closestIntersection;
 
         double crossProduct;
         double firstRatio;
         double secondRatio;
-        bool areCrossing = AreLinesCrossing(firstLeftSplinePoint, firstRightSplinePoint,
-            secondLeftSplinePoint, secondRightSplinePoint,
-            true,
-            closestIntersection,
-            crossProduct,
-            firstRatio,
-            secondRatio,
-            projection);
+        bool areCrossing = AreLinesCrossing( firstLeftSplinePoint, 
+                                             firstRightSplinePoint,
+                                             secondLeftSplinePoint, 
+                                             secondRightSplinePoint,
+                                             true,
+                                             closestIntersection,
+                                             crossProduct,
+                                             firstRatio,
+                                             secondRatio,
+                                             m_projection );
 
         // search close by
         if (-2.0 < firstRatio < 3.0 && -2.0 < secondRatio < 3.0)
@@ -256,7 +258,7 @@ bool GridGeom::Splines::GetSplinesIntersection(const int first, const int second
             if (std::abs(firstCrossing - previousFirstCrossing) > maxDistanceBetweenVertices ||
                 std::abs(secondCrossing - previousSecondCrossing) > maxDistanceBetweenVertices)
             {
-                squaredDistanceBetweenCrossings = ComputeSquaredDistance(oldIntersection, closestIntersection, projection);
+                squaredDistanceBetweenCrossings = ComputeSquaredDistance(oldIntersection, closestIntersection, m_projection);
             }
             else
             {
@@ -278,41 +280,41 @@ bool GridGeom::Splines::GetSplinesIntersection(const int first, const int second
 }
 
 double GridGeom::Splines::GetSplineLength(int index,
-    double beginFactor,
-    double endFactor,
-    int numSamples,
-    bool accountForCurvature,
-    double height,
-    double assignedDelta)
+                                          double startIndex,
+                                          double endIndex,
+                                          int numSamples,
+                                          bool accountForCurvature,
+                                          double height,
+                                          double assignedDelta)
 {
     double delta = assignedDelta;
-    int numPoints = endFactor / delta + 1;
+    int numPoints = endIndex / delta + 1;
     if (delta < 0.0)
     {
         delta = 1.0 / numSamples;
-        numPoints = std::max(std::floor(0.9999 + (endFactor - beginFactor) / delta), 10.0);
-        delta = (endFactor - beginFactor) / numPoints;
+        numPoints = std::max(std::floor(0.9999 + (endIndex - startIndex) / delta), 10.0);
+        delta = (endIndex - startIndex) / numPoints;
     }
 
     // first point
     Point leftPoint;
-    InterpolateSplinePoint(m_splineCornerPoints[index], m_splineDerivatives[index], beginFactor, leftPoint);
+    InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], startIndex, leftPoint);
 
     double splineLength = 0.0;
 
-    double rightPointCoordinateOnSpline = beginFactor;
+    double rightPointCoordinateOnSpline = startIndex;
     double leftPointCoordinateOnSpline;
     for (int p = 0; p < numPoints; ++p)
     {
         leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
         rightPointCoordinateOnSpline += delta;
-        if (rightPointCoordinateOnSpline > endFactor)
+        if (rightPointCoordinateOnSpline > endIndex)
         {
-            rightPointCoordinateOnSpline = endFactor;
+            rightPointCoordinateOnSpline = endIndex;
         }
 
         Point rightPoint;
-        InterpolateSplinePoint(m_splineCornerPoints[index], m_splineDerivatives[index], rightPointCoordinateOnSpline, rightPoint);
+        InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], rightPointCoordinateOnSpline, rightPoint);
         double curvatureFactor = 0.0;
         if (accountForCurvature)
         {
@@ -340,9 +342,9 @@ bool GridGeom::Splines::ComputeCurvatureOnSplinePoint( int splineIndex,
     double rightSegment = adimensionalPointCoordinate - leftCornerPoint;
 
     Point pointCoordinate;
-    InterpolateSplinePoint(m_splineCornerPoints[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate, pointCoordinate);
+    InterpolateSplinePoint(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate, pointCoordinate);
 
-    Point p = m_splineCornerPoints[splineIndex][rightCornerPoint] - m_splineCornerPoints[splineIndex][leftCornerPoint] + 
+    Point p = m_splineNodes[splineIndex][rightCornerPoint] - m_splineNodes[splineIndex][leftCornerPoint] + 
               (m_splineDerivatives[splineIndex][leftCornerPoint] * (-3.0 * leftSegment * leftSegment + 1.0) + 
                m_splineDerivatives[splineIndex][rightCornerPoint] * (3.0 * rightSegment * rightSegment - 1.0)) / 6.0;
 
@@ -370,11 +372,11 @@ bool GridGeom::Splines::ComputeCurvatureOnSplinePoint( int splineIndex,
     return true;
 }
 
-bool GridGeom::Splines::SecondOrderDerivative(const std::vector<Point>& coordinates, int numNodes, std::vector<Point>& coordinatesDerivatives)
+bool GridGeom::Splines::SecondOrderDerivative(const std::vector<Point>& spline, int numNodes, std::vector<Point>& coordinatesDerivatives)
 {
     std::vector<Point> u(numNodes);
     u[0] = { 0.0, 0.0 };
-    coordinatesDerivatives.resize(coordinates.size(), { 0.0, 0.0 });
+    coordinatesDerivatives.resize(spline.size(), { 0.0, 0.0 });
     coordinatesDerivatives[0] = { 0.0, 0.0 };
 
     for (int i = 1; i < numNodes - 1; i++)
@@ -383,7 +385,7 @@ bool GridGeom::Splines::SecondOrderDerivative(const std::vector<Point>& coordina
         coordinatesDerivatives[i].x = -0.5 / p.x;
         coordinatesDerivatives[i].y = -0.5 / p.y;
 
-        const Point delta = coordinates[i + 1] - coordinates[i] - (coordinates[i] - coordinates[i - 1]);
+        const Point delta = spline[i + 1] - spline[i] - (spline[i] - spline[i - 1]);
         u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
     }
 
