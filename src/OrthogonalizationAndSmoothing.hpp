@@ -30,15 +30,15 @@
 #include <vector>
 #include "LandBoundaries.hpp"
 #include "Polygons.hpp"
-#include "Smoother.hpp"
-#include "Orthogonalizer.hpp"
 #include "OrthogonalizationParametersNative.hpp"
 
 namespace GridGeom
 {
     struct Point;
-    enum class Projections;
     class Mesh;
+    class Smoother;
+    class Orthogonalizer;
+    enum class Projections;
 
     /// <summary>
     /// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize internal face angles or area).
@@ -58,6 +58,8 @@ namespace GridGeom
         /// Set the parameters
         /// </summary>
         /// <param name="mesh">The mesh to orthogonalize</param>
+        /// <param name="smoother">The mesh to smoother</param>
+        /// <param name="orthogonalizer">The mesh to orthogonalizer</param>
         /// <param name="isTriangulationRequired">Not used</param>
         /// <param name="isAccountingForLandBoundariesRequired">Not used</param>
         /// <param name="projectToLandBoundaryOption">Snap to land boundaries (1) or not (0)</param>
@@ -66,9 +68,11 @@ namespace GridGeom
         /// <param name="landBoundaries">The land boundaries</param>
         /// <returns>If the method succeeded</returns>
         bool Set( Mesh& mesh,
-                  int& isTriangulationRequired,
-                  int& isAccountingForLandBoundariesRequired,
-                  int& projectToLandBoundaryOption,
+                  Smoother& smoother,
+                  Orthogonalizer& orthogonalizer,
+                  int isTriangulationRequired,
+                  int isAccountingForLandBoundariesRequired,
+                  int projectToLandBoundaryOption,
                   GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
                   const Polygons& polygon,
                   std::vector<Point>& landBoundaries );
@@ -158,8 +162,8 @@ namespace GridGeom
 
         LandBoundaries                                     m_landBoundaries;            // The land boundaries
         Polygons                                           m_polygons;                  // The polygon where to perform the orthogonalization
-        Smoother                                           m_smoother;                  // The smoother
-        Orthogonalizer                                     m_orthogonalizer;            // The orthogonalizer
+        Smoother*                                          m_smoother;                  // The smoother
+        Orthogonalizer*                                    m_orthogonalizer;            // The orthogonalizer
         Mesh*                                              m_mesh;                      // A pointer to mesh
         
         std::vector<int>                                   m_localCoordinatesIndexes;   // Used in sphericalAccurate projection (iloc)
