@@ -20,7 +20,7 @@ TEST(Splines, SetSpline)
     ASSERT_TRUE(success);
 
     ASSERT_EQ(1, splines.m_numSplines);
-    ASSERT_EQ(10, splines.m_splineCornerPoints[0].size());
+    ASSERT_EQ(10, splines.m_splineNodes[0].size());
     ASSERT_EQ(5, splines.m_numAllocatedSplines);
     ASSERT_EQ(10, splines.m_numAllocatedSplineNodes[0]);
 }
@@ -87,8 +87,7 @@ TEST(Splines, SplineIntersection)
     double firstSplineRatio;
     double secondSplineRatio;
 
-    splines.GetSplinesIntersection(0, 1, GridGeom::Projections::cartesian,
-        crossProductIntersection, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
+    splines.GetSplinesIntersection(0, 1, crossProductIntersection, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
 
     const double tolerance = 1e-6;
     ASSERT_NEAR(261.736770097059, dimensionalIntersection.x, tolerance);

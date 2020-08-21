@@ -49,7 +49,7 @@ namespace GridGeom
         Splines();
 
         /// <summary>
-        /// Ctor and set projection
+        /// Ctor, set projection
         /// </summary>
         /// <param name="projection">The map projection</param>
         /// <returns></returns>
@@ -58,30 +58,30 @@ namespace GridGeom
         /// <summary>
         /// Adds a new spline to m_splineCornerPoints 
         /// </summary>
-        /// <param name="splines">A vector containing the spline corner points</param>
-        /// <param name="start">The index in splines of the starting node to add</param>
-        /// <param name="size">The index in splines of the last node to add</param>
-        /// <returns></returns>
+        /// <param name="splines">The spline corner points</param>
+        /// <param name="start">The starting index in splines</param>
+        /// <param name="size">The end index splines</param>
+        /// <returns>If the method succeeded</returns>
         bool AddSpline(const std::vector<Point>& splines, int start, int size);
 
         /// <summary>
         /// Second order derivative at spline corner points
         /// </summary>
-        /// <param name="coordinates"></param>
-        /// <param name="numNodes"></param>
-        /// <param name="coordinatesDerivatives"></param>
-        /// <returns></returns>
-        static bool SecondOrderDerivative(const std::vector<Point>& coordinates,
+        /// <param name="splines">The spline corner points</param>
+        /// <param name="numNodes">The number of corner points</param>
+        /// <param name="coordinatesDerivatives">The second order derivative at corner points</param>
+        /// <returns>If the method succeeded</returns>
+        static bool SecondOrderDerivative(const std::vector<Point>& splines,
                                           int numNodes,
                                           std::vector<Point>& coordinatesDerivatives);
 
         /// <summary>
         /// Second order derivative at spline corner points (result in a flat array)
         /// </summary>
-        /// <param name="coordinates"></param>
-        /// <param name="numNodes"></param>
-        /// <param name="coordinatesDerivatives"></param>
-        /// <returns></returns>
+        /// <param name="coordinates">The spline corner point coordinate (x or y)</param>
+        /// <param name="numNodes">The number of corner points</param>
+        /// <param name="coordinatesDerivatives">The second order derivative at corner points (x derivative or y derivative)</param>
+        /// <returns>If the method succeeded</returns>
         static bool SecondOrderDerivative(const std::vector<double>& coordinates,
                                           int numNodes,
                                           std::vector<double>& coordinatesDerivatives);
@@ -89,17 +89,15 @@ namespace GridGeom
         /// <summary>
         /// Computes the intersection of two splines (sect3r)
         /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <param name="projection"></param>
-        /// <param name="crossProductIntersection"></param>
-        /// <param name="intersectionPoint"></param>
-        /// <param name="firstSplineRatio"></param>
-        /// <param name="secondSplineRatio"></param>
-        /// <returns></returns>
+        /// <param name="first">The index of the first spline</param>
+        /// <param name="second">The index of the second spline</param>
+        /// <param name="crossProductIntersection">The cross product of the intersection</param>
+        /// <param name="intersectionPoint">The intersection point</param>
+        /// <param name="firstSplineRatio">The ratio of the first spline length where the intersection occours</param>
+        /// <param name="secondSplineRatio">The ratio of the second spline length where the intersection occours</param>
+        /// <returns>If the method succeeded</returns>
         bool GetSplinesIntersection(int first,
                                     int second,
-                                    const Projections& projection,
                                     double& crossProductIntersection,
                                     Point& intersectionPoint,
                                     double& firstSplineRatio,
@@ -108,23 +106,23 @@ namespace GridGeom
         /// <summary>
         /// Computes the spline length in s coordinates (splinelength)
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="beginFactor"></param>
-        /// <param name="endFactor"></param>
-        /// <param name="numSamples"></param>
-        /// <param name="accountForCurvature"></param>
-        /// <param name="height"></param>
-        /// <param name="assignedDelta"></param>
-        /// <returns></returns>
+        /// <param name="index">The spline index</param>
+        /// <param name="startIndex">Corner node start index</param>
+        /// <param name="endIndex">Corner node end index</param>
+        /// <param name="numSamples">How many intervals to use between the startIndex and endIndex</param>
+        /// <param name="accountForCurvature">Accounting for curvature</param>
+        /// <param name="height">When accounting for curvature, the height to use</param>
+        /// <param name="assignedDelta">When larger than zero, the number of intervals the spline is devided when computing the length</param>
+        /// <returns>The computed length</returns>
         double GetSplineLength(int index,
-                               double beginFactor,
-                               double endFactor,
+                               double startIndex,
+                               double endIndex,
                                int numSamples = 100,
                                bool accountForCurvature = false,
                                double height = 1.0,
                                double assignedDelta = -1);
 
-        std::vector<std::vector<Point>> m_splineCornerPoints;    // The spline corner points
+        std::vector<std::vector<Point>> m_splineNodes;           // The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives;     // The spline derivatives at the corner points  
         std::vector<int> m_numSplineNodes;                       // Number of spline nodes in each spline
         std::vector<int> m_numAllocatedSplineNodes;              // Number of allocated node in each spline
@@ -142,18 +140,18 @@ namespace GridGeom
         /// </summary>
         /// <param name="splineIndex">The spline index</param>
         /// <param name="point">The point to add</param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool AddPointInExistingSpline(int splineIndex, const Point& point);
         
         /// <summary>
-        /// Computes curvature in a point on a spline (comp_curv)
+        /// Computes curvature in a spline point (comp_curv)
         /// </summary>
-        /// <param name="splineIndex"></param>
-        /// <param name="adimensionalPointCoordinate"></param>
-        /// <param name="curvatureFactor"></param>
-        /// <param name="normalVector"></param>
-        /// <param name="tangentialVector"></param>
-        /// <returns></returns>
+        /// <param name="splineIndex">the spline index</param>
+        /// <param name="adimensionalPointCoordinate">The adimensional coordinate of the point along the spline</param>
+        /// <param name="curvatureFactor">The computed curvature factor</param>
+        /// <param name="normalVector">The computed normal vector</param>
+        /// <param name="tangentialVector">The computed tangential vector</param>
+        /// <returns>If the method succeeded</returns>
         bool ComputeCurvatureOnSplinePoint(int splineIndex,
                                            double adimensionalPointCoordinate,
                                            double& curvatureFactor,
@@ -163,14 +161,14 @@ namespace GridGeom
         /// <summary>
         /// Delete a spline
         /// </summary>
-        /// <param name="splineIndex">The spline index to delete</param>
-        /// <returns></returns>
+        /// <param name="splineIndex">The index of the spline to delete</param>
+        /// <returns>If the method succeeded</returns>
         bool DeleteSpline(int splineIndex);
 
         /// <summary>
-        /// Allocate spline properties arrays 
+        /// Allocate spline properties vectors 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool AllocateSplinesProperties();
 
     };

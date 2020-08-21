@@ -1107,17 +1107,17 @@ namespace GridGeom
         return true;
     }
 
-    //CROSS
+    /// (CROSS)
     static bool AreLinesCrossing(const Point& firstSegmentFistPoint,
-        const Point& firstSegmentSecondPoint,
-        const Point& secondSegmentFistPoint,
-        const Point& secondSegmentSecondPoint,
-        bool adimensional,
-        Point& intersection,
-        double& crossProduct,
-        double& firstRatio,
-        double& secondRatio,
-        const Projections& projection)
+                                 const Point& firstSegmentSecondPoint,
+                                 const Point& secondSegmentFistPoint,
+                                 const Point& secondSegmentSecondPoint,
+                                 bool adimensional,
+                                 Point& intersection,
+                                 double& crossProduct,
+                                 double& firstRatio,
+                                 double& secondRatio,
+                                 const Projections& projection)
     {
         bool isCrossing = false;
 
