@@ -119,7 +119,7 @@ namespace GridGeom
         bool ComputeLinearSystemTerms();
 
         /// <summary>
-        /// Computes how much the coordinates of a node need to be incremented at every inner iteration.
+        /// Computes how much the coordinates of a node need to be incremented at each inner iteration.
         /// </summary>
         /// <param name="cacheIndex">The node index</param>
         /// <param name="connectedNode">The connected node</param>
@@ -162,8 +162,8 @@ namespace GridGeom
 
         LandBoundaries                                     m_landBoundaries;            // The land boundaries
         Polygons                                           m_polygons;                  // The polygon where to perform the orthogonalization
-        Smoother*                                          m_smoother;                  // The smoother
-        Orthogonalizer*                                    m_orthogonalizer;            // The orthogonalizer
+        Smoother*                                          m_smoother;                  // A pointer to the smoother
+        Orthogonalizer*                                    m_orthogonalizer;            // A pointer to the orthogonalizer
         Mesh*                                              m_mesh;                      // A pointer to mesh
         
         std::vector<int>                                   m_localCoordinatesIndexes;   // Used in sphericalAccurate projection (iloc)
