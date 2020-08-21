@@ -55,16 +55,16 @@ namespace GridGeom
         OrthogonalizationAndSmoothing();
         
         /// <summary>
-        /// Set algorithm parameters
+        /// Set the parameters
         /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="isTriangulationRequired"></param>
-        /// <param name="isAccountingForLandBoundariesRequired"></param>
-        /// <param name="projectToLandBoundaryOption"></param>
-        /// <param name="orthogonalizationParametersNative"></param>
-        /// <param name="polygon"></param>
-        /// <param name="landBoundaries"></param>
-        /// <returns></returns>
+        /// <param name="mesh">The mesh to orthogonalize</param>
+        /// <param name="isTriangulationRequired">Not used</param>
+        /// <param name="isAccountingForLandBoundariesRequired">Not used</param>
+        /// <param name="projectToLandBoundaryOption">Snap to land boundaries (1) or not (0)</param>
+        /// <param name="orthogonalizationParametersNative">The orthogonalization parameters</param>
+        /// <param name="polygon">The polygon where orthogonalization should occour</param>
+        /// <param name="landBoundaries">The land boundaries</param>
+        /// <returns>If the method succeeded</returns>
         bool Set( Mesh& mesh,
                   int& isTriangulationRequired,
                   int& isAccountingForLandBoundariesRequired,
@@ -74,150 +74,124 @@ namespace GridGeom
                   std::vector<Point>& landBoundaries );
 
         /// <summary>
-        /// Executes the algorithm
+        /// Executes the entire algorithm
         /// </summary>
         /// <param name="mesh"></param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool Compute();
 
         /// <summary>
-        /// Prepares the outer iteration, calculates orthogonalizer and smoother coefficents
+        /// Prepares the outer iteration, calculates orthogonalizer and smoother coefficents and assable the linear system
         /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool PrapareOuterIteration();
 
         /// <summary>
-        /// Performs an inner iteration (update of node positions)
+        /// Performs an inner iteration, update the mesh node positions
         /// </summary>
         /// <param name="mesh"></param>
-        /// <returns></returns>
         bool InnerIteration();
 
         /// <summary>
-        /// Performs an outer iteration (re-computes the operators)
+        /// Finalize the outer iteration, computes new mu and face areas, masscenters, circumcenters
         /// </summary>
         /// <param name="mesh"></param>
-        /// <returns></returns>
         bool FinalizeOuterIteration();
 
     private:
 
-
         /// <summary>
-        /// Project mesh nodes back to the boundary of an original mesh (orthonet_project_on_boundary)
+        /// Project mesh nodes back to the original mesh boundary (orthonet_project_on_boundary)
         /// </summary>
         /// <param name="mesh"></param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool ProjectOnOriginalMeshBoundary();
 
         /// <summary>
-        /// Computes how much the coordinates have to be incremented every inner iteration.
         /// Assembles the contributions of smoother and orthogonalizer
         /// </summary>
         /// <param name="mesh"></param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool ComputeLinearSystemTerms();
 
         /// <summary>
-        /// 
+        /// Computes how much the coordinates of a node need to be incremented at every inner iteration.
         /// </summary>
-        /// <param name="wwx"></param>
-        /// <param name="wwy"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="n"></param>
-        /// <param name="mesh"></param>
-        /// <param name="dx0"></param>
-        /// <param name="dy0"></param>
-        /// <param name="increments"></param>
+        /// <param name="cacheIndex">The node index</param>
+        /// <param name="connectedNode">The connected node</param>
+        /// <param name="dx0">The computed x increment</param>
+        /// <param name="dy0">The computed y increment</param>
+        /// <param name="increments">The sum of the weights in x and y</param>
         /// <returns></returns>
-        bool ComputeLocalIncrements(double wwx, 
-                                    double wwy, 
-                                    int currentNode, 
-                                    int n, 
+        bool ComputeLocalIncrements(int nodeIndex,
                                     double& dx0, 
                                     double& dy0, 
-                                    double* increments);
+                                    double* weightsSum);
 
         /// <summary>
-        /// Compute orthogonal coordinates
+        /// Update the nodal coordinates based on the increments
         /// </summary>
         /// <param name="nodeIndex"></param>
         /// <param name="mesh"></param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool UpdateNodeCoordinates(int nodeIndex);
 
         /// <summary>
-        /// Allocate linear system arrays
+        /// Allocate linear system vectors
         /// </summary>
         /// <param name="mesh"></param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool AllocateLinearSystem();
 
         /// <summary>
-        /// Deallocate linear system arrays
+        /// Deallocate linear system vectors
         /// </summary>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool DeallocateLinearSystem();
 
         /// <summary>
         /// Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
         /// </summary>
         /// <param name="mesh"></param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool ComputeCoordinates();
 
-        // Land boundaries
-        LandBoundaries m_landBoundaries;
-
-        // Polygons
-        Polygons m_polygons;
-
-        // Smoother
-        Smoother m_smoother;
-
-        // Orthogonalizer
-        Orthogonalizer m_orthogonalizer;
-
-        // A pointer to mesh
-        Mesh* m_mesh;
+        LandBoundaries                                     m_landBoundaries;            // The land boundaries
+        Polygons                                           m_polygons;                  // The polygon where to perform the orthogonalization
+        Smoother                                           m_smoother;                  // The smoother
+        Orthogonalizer                                     m_orthogonalizer;            // The orthogonalizer
+        Mesh*                                              m_mesh;                      // A pointer to mesh
         
-        // Local coordinates for sphericalAccurate projection
-        std::vector<int>                                   m_localCoordinatesIndexes;  // (iloc)
-        std::vector<Point>                                 m_localCoordinates;         // (xloc,yloc) 
-
-        // orthogonalization iterations
-        std::vector<Point>                                 m_orthogonalCoordinates;
-        std::vector<Point>                                 m_originalNodes;
+        std::vector<int>                                   m_localCoordinatesIndexes;   // Used in sphericalAccurate projection (iloc)
+        std::vector<Point>                                 m_localCoordinates;          // Used in sphericalAccurate projection (xloc,yloc) 
+        std::vector<Point>                                 m_orthogonalCoordinates;     // A copy of the mesh node, orthogonalized
+        std::vector<Point>                                 m_originalNodes;             // The original mesh
 
         // Linear system terms
         int m_nodeCacheSize = 0;
-        std::vector<int>                                   m_compressedEndNodeIndex;
-        std::vector<int>                                   m_compressedStartNodeIndex;
-        std::vector<double>                                m_compressedWeightX;
-        std::vector<double>                                m_compressedWeightY;
-        std::vector<double>                                m_compressedRhs;
-        std::vector<int>                                   m_compressedNodesNodes;
+        std::vector<int>                                   m_compressedEndNodeIndex;    // Start index in m_compressedWeightX
+        std::vector<int>                                   m_compressedStartNodeIndex;  // End index in m_compressedWeightY
+        std::vector<double>                                m_compressedWeightX;         // The computed weights X
+        std::vector<double>                                m_compressedWeightY;         // The computed weights Y
+        std::vector<double>                                m_compressedRhs;             // The right hand side
+        std::vector<int>                                   m_compressedNodesNodes;      // The indexses of the neighbouring nodes 
+        std::vector<int>                                   m_nodeErrorCode;             // nodes with errors
 
-        // Class variables
+        // run-time parameters                                                      
         int m_maximumNumConnectedNodes = 0;
         int m_maximumNumSharedFaces = 0;
         double m_mumax;
         double m_mu;
-
-        // nodes with errors
-        std::vector<int>                                   m_nodeErrorCode;
-
-        // run-time algorithm parameters                                                      
         bool m_keepCircumcentersAndMassCenters = false;                          
-        double m_orthogonalizationToSmoothingFactor = 0.975;                          // Factor(0. <= ATPF <= 1.) between grid smoothing and grid ortho resp.
-        double m_orthogonalizationToSmoothingFactorBoundary = 1.0;                    // ATPF_B minimum ATPF on the boundary
-        double m_smoothorarea = 1.0;                                                  // Factor between smoother(1.0) and area - homogenizer(0.0)
+        double m_orthogonalizationToSmoothingFactor = 0.975;                            // Factor between grid smoothing (0) and orthogonality (1)
+        double m_orthogonalizationToSmoothingFactorBoundary = 1.0;                      // ATPF_B minimum ATPF on the boundary
+        double m_smoothorarea = 1.0;                                                    // Factor between smoother(1.0) and area - homogenizer(0.0)
         int m_orthogonalizationOuterIterations = 2;
         int m_orthogonalizationBoundaryIterations = 25;
         int m_orthogonalizationInnerIterations = 25;
         int m_isTriangulationRequired;
         int m_isAccountingForLandBoundariesRequired;
         int m_projectToLandBoundaryOption;
+
     };
 }

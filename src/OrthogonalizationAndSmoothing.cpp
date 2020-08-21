@@ -103,7 +103,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::Set(Mesh& mesh,
         m_landBoundaries.FindNearestMeshBoundary(mesh, m_polygons, m_projectToLandBoundaryOption);
     }
 
-    // for spherical accurate computations we need to call orthonet_comp_ops 
+    // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops) 
     if(m_mesh->m_projection == Projections::sphericalAccurate)
     {
         if(m_orthogonalizationToSmoothingFactor<1.0)
@@ -421,14 +421,11 @@ bool GridGeom::OrthogonalizationAndSmoothing::ComputeCoordinates()
 
 bool GridGeom::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIndex)
 {
-    int numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];    
+
     double dx0 = 0.0;
     double dy0 = 0.0;
-    double increments[2]{ 0.0, 0.0 };
-    for (int nn = 1, cacheIndex = m_compressedEndNodeIndex[nodeIndex]; nn < numConnectedNodes; nn++, cacheIndex++)
-    {
-        ComputeLocalIncrements(m_compressedWeightX[cacheIndex], m_compressedWeightY[cacheIndex], m_compressedNodesNodes[cacheIndex], nodeIndex, dx0, dy0, increments);
-    }
+    double increments[2]{ 0.0, 0.0 };    
+    ComputeLocalIncrements(nodeIndex, dx0, dy0, increments);
 
     if (increments[0] <= 1e-8 || increments[1] <= 1e-8)
     {
@@ -473,40 +470,48 @@ bool GridGeom::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeInde
     return true;
 }
 
-bool GridGeom::OrthogonalizationAndSmoothing::ComputeLocalIncrements(double wwx, double wwy, int currentNode, int n, double& dx0, double& dy0, double* increments)
+
+bool GridGeom::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeIndex, double& dx0, double& dy0, double* weightsSum)
 {
-
-    double wwxTransformed;
-    double wwyTransformed;
-    if (m_mesh->m_projection == Projections::cartesian)
+    int numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
+    for (int nn = 1, cacheIndex = m_compressedEndNodeIndex[nodeIndex]; nn < numConnectedNodes; nn++, cacheIndex++)
     {
-        wwxTransformed = wwx;
-        wwyTransformed = wwy;
-        dx0 = dx0 + wwxTransformed * (m_mesh->m_nodes[currentNode].x - m_mesh->m_nodes[n].x);
-        dy0 = dy0 + wwyTransformed * (m_mesh->m_nodes[currentNode].y - m_mesh->m_nodes[n].y);
+        const auto wwx = m_compressedWeightX[cacheIndex];
+        const auto wwy = m_compressedWeightY[cacheIndex];
+        const auto currentNode = m_compressedNodesNodes[cacheIndex];
+
+        double wwxTransformed;
+        double wwyTransformed;
+        if (m_mesh->m_projection == Projections::cartesian)
+        {
+            wwxTransformed = wwx;
+            wwyTransformed = wwy;
+            dx0 = dx0 + wwxTransformed * (m_mesh->m_nodes[currentNode].x - m_mesh->m_nodes[nodeIndex].x);
+            dy0 = dy0 + wwyTransformed * (m_mesh->m_nodes[currentNode].y - m_mesh->m_nodes[nodeIndex].y);
+        }
+
+        if (m_mesh->m_projection == Projections::spherical)
+        {
+            wwxTransformed = wwx * earth_radius * degrad_hp *
+                std::cos(0.5 * (m_mesh->m_nodes[nodeIndex].y + m_mesh->m_nodes[currentNode].y) * degrad_hp);
+            wwyTransformed = wwy * earth_radius * degrad_hp;
+
+            dx0 = dx0 + wwxTransformed * (m_mesh->m_nodes[currentNode].x - m_mesh->m_nodes[nodeIndex].x);
+            dy0 = dy0 + wwyTransformed * (m_mesh->m_nodes[currentNode].y - m_mesh->m_nodes[nodeIndex].y);
+
+        }
+        if (m_mesh->m_projection == Projections::sphericalAccurate)
+        {
+            wwxTransformed = wwx * earth_radius * degrad_hp;
+            wwyTransformed = wwy * earth_radius * degrad_hp;
+
+            dx0 = dx0 + wwxTransformed * m_localCoordinates[m_localCoordinatesIndexes[nodeIndex] + currentNode - 1].x;
+            dy0 = dy0 + wwyTransformed * m_localCoordinates[m_localCoordinatesIndexes[nodeIndex] + currentNode - 1].y;
+        }
+
+        weightsSum[0] += wwxTransformed;
+        weightsSum[1] += wwyTransformed;
     }
-
-    if (m_mesh->m_projection == Projections::spherical)
-    {
-        wwxTransformed = wwx * earth_radius * degrad_hp *
-            std::cos(0.5 * (m_mesh->m_nodes[n].y + m_mesh->m_nodes[currentNode].y) * degrad_hp);
-        wwyTransformed = wwy * earth_radius * degrad_hp;
-
-        dx0 = dx0 + wwxTransformed * (m_mesh->m_nodes[currentNode].x - m_mesh->m_nodes[n].x);
-        dy0 = dy0 + wwyTransformed * (m_mesh->m_nodes[currentNode].y - m_mesh->m_nodes[n].y);
-
-    }
-    if (m_mesh->m_projection == Projections::sphericalAccurate)
-    {
-        wwxTransformed = wwx * earth_radius * degrad_hp;
-        wwyTransformed = wwy * earth_radius * degrad_hp;
-
-        dx0 = dx0 + wwxTransformed * m_localCoordinates[m_localCoordinatesIndexes[n] + currentNode - 1].x;
-        dy0 = dy0 + wwyTransformed * m_localCoordinates[m_localCoordinatesIndexes[n] + currentNode - 1].y;
-    }
-
-    increments[0] += wwxTransformed;
-    increments[1] += wwyTransformed;
 
     return true;
 }
