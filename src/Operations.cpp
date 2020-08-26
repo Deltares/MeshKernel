@@ -76,9 +76,9 @@ namespace GridGeom
     }
 
     template <typename T>
-    T FindIndex(const std::vector<T>& vec, const T& el)
+    int FindIndex(const std::vector<T>& vec, T el)
     {
-        T index = 0;
+        int index = 0;
         for (int n = 0; n < vec.size(); n++)
         {
             if (vec[n] == el)
@@ -1405,5 +1405,19 @@ namespace GridGeom
         return true;
     }
 
+    template<class T>
+    void SwapVectorElements(std::vector<T>& v, int numElements)
+    {
+        if (numElements > v.size()) 
+        {
+            return;
+        }
 
+        for (int i = 0; i < numElements / 2; i++)
+        {
+            const auto a = v[i];
+            v[i] = v[i + 1];
+            v[i + 1] = a;
+        }
+    }
 }

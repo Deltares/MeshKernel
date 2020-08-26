@@ -95,7 +95,7 @@ namespace GridGeom
         /// <param name="intersectionPoint">The intersection point</param>
         /// <param name="firstSplineRatio">The ratio of the first spline length where the intersection occours</param>
         /// <param name="secondSplineRatio">The ratio of the second spline length where the intersection occours</param>
-        /// <returns>If the method succeeded</returns>
+        /// <returns>If a valid intersection is found</returns>
         bool GetSplinesIntersection(int first,
                                     int second,
                                     double& crossProductIntersection,
@@ -104,11 +104,11 @@ namespace GridGeom
                                     double& secondSplineRatio);
 
         /// <summary>
-        /// Computes the spline length in s coordinates (splinelength)
+        /// Computes the spline length in s coordinates (GETDIS)
         /// </summary>
         /// <param name="index">The spline index</param>
-        /// <param name="startIndex">Corner node start index</param>
-        /// <param name="endIndex">Corner node end index</param>
+        /// <param name="startIndex">Adimensional start spline</param>
+        /// <param name="endIndex">Adimensional end spline</param>
         /// <param name="numSamples">How many intervals to use between the startIndex and endIndex</param>
         /// <param name="accountForCurvature">Accounting for curvature</param>
         /// <param name="height">When accounting for curvature, the height to use</param>
@@ -121,6 +121,20 @@ namespace GridGeom
                                bool accountForCurvature = false,
                                double height = 1.0,
                                double assignedDelta = -1);
+
+        /// <summary>
+        /// Compute the points on a spline lying at certain distance
+        /// </summary>
+        /// <param name="index">The spline index</param>
+        /// <param name="distances">The distances</param>
+        /// <param name="points">The resulting point along the spline</param>
+        /// <returns>If the method succeeded</returns>
+        bool InterpolatePointsOnSpline(int index, 
+            double maximumGridHeight, 
+            bool isSpacingCurvatureAdapted, 
+            const std::vector<double>& distances, 
+            std::vector<Point>& points,
+            std::vector<double>& adimensionalDistances);
 
         std::vector<std::vector<Point>> m_splineNodes;           // The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives;     // The spline derivatives at the corner points  
@@ -172,6 +186,41 @@ namespace GridGeom
         bool AllocateSplinesProperties();
 
     };
+
+    struct FuncDimensionalToAdimensionalDistance
+    {
+        FuncDimensionalToAdimensionalDistance(Splines* splines,
+            int splineIndex,
+            bool isSpacingCurvatureAdapted,
+            double h) :
+            m_spline(splines),
+            m_splineIndex(splineIndex),
+            m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
+            m_h(h)
+        {
+        };
+
+        void SetDimensionalDistance(double distance)
+        {
+            m_DimensionalDistance = distance;
+        }
+
+        // this is the function we want to find the root
+        double operator()(double adimensionalDistancereferencePoint)
+        {
+            double distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0, adimensionalDistancereferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
+            distanceFromReferencePoint = std::abs(distanceFromReferencePoint - m_DimensionalDistance);
+            return distanceFromReferencePoint;
+        }
+
+        Splines* m_spline;
+        int m_splineIndex;
+        bool m_isSpacingCurvatureAdapted;
+        double m_h;
+        int m_numSamples = 10;
+        double m_DimensionalDistance;
+    };
+
 }
 
 
