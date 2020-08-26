@@ -455,41 +455,6 @@ namespace GridGeom
         std::vector<std::vector<double>> m_growFactorOnSubintervalAndEdge;
 
     };
-
-    struct FuncDimensionalToAdimensionalDistance
-    {
-        FuncDimensionalToAdimensionalDistance(CurvilinearGridFromSplines& curvilinearGridFromSplines,
-            int splineIndex,
-            bool isSpacingCurvatureAdapted,
-            double h) :
-            m_spline(curvilinearGridFromSplines.m_splines),
-            m_splineIndex(splineIndex),
-            m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
-            m_h(h)
-        {
-        };
-
-        void SetDimensionalDistance(double distance)
-        {
-            m_DimensionalDistance = distance;
-        }
-
-        // this is the function we want to find the root
-        double operator()(double adimensionalDistancereferencePoint)
-        {
-            double distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0, adimensionalDistancereferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
-            distanceFromReferencePoint = std::abs(distanceFromReferencePoint - m_DimensionalDistance);
-            return distanceFromReferencePoint;
-        }
-
-        Splines* m_spline;
-        int m_splineIndex;
-        bool m_isSpacingCurvatureAdapted;
-        double m_h;
-        int m_numSamples = 10;
-        double m_DimensionalDistance;
-    };
-
 }
 
 
