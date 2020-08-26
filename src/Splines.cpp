@@ -98,8 +98,8 @@ bool GridGeom::Splines::AddPointInExistingSpline(int splineIndex, const Point& p
     return true;
 }
 
-bool GridGeom::Splines::GetSplinesIntersection(const int first, 
-                                               const int second,
+bool GridGeom::Splines::GetSplinesIntersection(int first, 
+                                               int second,
                                                double& crossProductIntersection,
                                                Point& intersectionPoint,
                                                double& firstSplineRatio,
@@ -417,6 +417,25 @@ bool GridGeom::Splines::SecondOrderDerivative(const std::vector<double>& coordin
     for (int i = numNodes - 2; i >= 0; i--)
     {
         coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
+    }
+
+    return true;
+}
+
+bool GridGeom::Splines::InterpolatePointsOnSpline( int index,
+                                                   double maximumGridHeight,
+                                                   bool isSpacingCurvatureAdapted,
+                                                   const std::vector<double>& distances,
+                                                   std::vector<Point>& points,
+                                                   std::vector<double>& adimensionalDistances)
+{
+    GridGeom::FuncDimensionalToAdimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
+
+    for (int i = 0; i < distances.size(); i++)
+    {
+        func.SetDimensionalDistance(distances[i]);
+        adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, m_numSplineNodes[index] - 1);
+        InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i], points[i]);
     }
 
     return true;

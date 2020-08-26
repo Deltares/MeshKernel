@@ -15,7 +15,7 @@
 #define modname_major "1"
 #define modname_minor "00"
 #define modname_revision "00"
-#define modname_build "67438"
+#define modname_build "000000"
 
 #define modname_company "Deltares"
 #define modname_company_url "http://www.deltares.nl"

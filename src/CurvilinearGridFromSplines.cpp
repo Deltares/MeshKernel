@@ -1844,13 +1844,11 @@ bool GridGeom::CurvilinearGridFromSplines::MakeAllGridLines(bool isSpacingCurvat
     return true;
 }
 
-/// make_gridline, generate a gridline on a spline with a prescribed maximum mesh width
-/// generate a gridline on a spline with a prescribed maximum mesh width
-bool GridGeom::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
-    int startingIndex,
-    std::vector<Point>& gridLine,
-    std::vector<double>& adimensionalCoordinates,
-    int& numM)
+bool GridGeom::CurvilinearGridFromSplines::MakeGridLine( int splineIndex,
+                                                         int startingIndex,
+                                                         std::vector<Point>& gridLine,
+                                                         std::vector<double>& adimensionalCoordinates,
+                                                         int& numM )
 {
     // first estimation of nodes along m
     numM = 1 + std::floor(m_splines->m_splinesLength[splineIndex] / m_averageMeshWidth);
@@ -1860,28 +1858,32 @@ bool GridGeom::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
     double splineLength = m_splines->GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
 
     gridLine[startingIndex] = m_splines->m_splineNodes[splineIndex][0];
-    GridGeom::FuncDimensionalToAdimensionalDistance func(*this, splineIndex, m_isSpacingCurvatureAdapted, m_maximumGridHeights[splineIndex]);
 
     double currentMaxWidth = std::numeric_limits<double>::max();
+    std::vector<double> distances(numM);
+    std::vector<double> adimensionalDistances(numM);
+    std::vector<Point> points(numM);
     while (currentMaxWidth > m_averageMeshWidth)
     {
         currentMaxWidth = 0.0;
-        for (int n = 1; n <= numM; ++n)
+        for (int n = 0; n < numM; ++n)
         {
-            int index = startingIndex + n;
-            
-            double dimensionalDistance = splineLength * double(n) / double(numM);
-            
-            func.SetDimensionalDistance(dimensionalDistance);
-            
-            adimensionalCoordinates[index] = FindFunctionRootWithGoldenSectionSearch(func, 0, endSplineAdimensionalCoordinate);
-            
-            InterpolateSplinePoint(m_splines->m_splineNodes[splineIndex], 
-                                 m_splines->m_splineDerivatives[splineIndex], 
-                                 adimensionalCoordinates[index], 
-                                 gridLine[index]);
+            distances[n] = splineLength * double(n + 1.0) / double(numM);
+        }
+        
+        m_splines->InterpolatePointsOnSpline(splineIndex,
+                                             m_maximumGridHeights[splineIndex],
+                                             m_isSpacingCurvatureAdapted,
+                                             distances,
+                                             points,
+                                             adimensionalDistances);
 
-            currentMaxWidth = std::max(currentMaxWidth, Distance(gridLine[index - 1], gridLine[index], m_splines->m_projection));
+        for (int n = 0; n < numM; ++n)
+        {
+            int index = startingIndex + n + 1;
+            adimensionalCoordinates[index] = adimensionalDistances[n];
+            gridLine[index] = points[n];
+            currentMaxWidth = std::max(currentMaxWidth, Distance(gridLine[index-1], gridLine[index], m_splines->m_projection));
         }
 
         // a gridline is computed
@@ -1894,6 +1896,9 @@ bool GridGeom::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
         if (currentMaxWidth > m_averageMeshWidth)
         {
             numM = std::min(std::max(int(m_maxNumM / m_maximumGridHeights[splineIndex] * numM), numM + 1), m_maxNumM);
+            distances.resize(numM);
+            adimensionalDistances.resize(numM);
+            points.resize(numM);
         }
     }
     return true;

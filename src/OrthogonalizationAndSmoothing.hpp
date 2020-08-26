@@ -107,14 +107,12 @@ namespace GridGeom
         /// <summary>
         /// Project mesh nodes back to the original mesh boundary (orthonet_project_on_boundary)
         /// </summary>
-        /// <param name="mesh"></param>
         /// <returns>If the method succeeded</returns>
         bool ProjectOnOriginalMeshBoundary();
 
         /// <summary>
         /// Assembles the contributions of smoother and orthogonalizer
         /// </summary>
-        /// <param name="mesh"></param>
         /// <returns>If the method succeeded</returns>
         bool ComputeLinearSystemTerms();
 
