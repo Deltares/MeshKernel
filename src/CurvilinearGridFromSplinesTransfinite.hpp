@@ -86,7 +86,7 @@ namespace GridGeom
         std::vector<int>                 m_splineType;
         std::vector<std::vector<double>> m_splineIntersectionRatios;
         std::vector<std::vector<int>>    m_countSplineIntersections;  // spline index, 0 n splines intersections, 1 m spline intersections 
-        int                              m_firstNSplines = -1;
+        int                              m_firstMSplines = -1;
         int                              m_numM = 0;
         int                              m_numN = 0;
 

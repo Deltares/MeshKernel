@@ -38,17 +38,13 @@ namespace GridGeom
 
     public:
 
-        bool IncreaseGrid(const int m, const int n) 
+        bool Set(int m, int n) 
         {
 
             int mMax = m + 1;
             int nMax = n + 1;
 
-            m_grid.resize(mMax);
-            for (int i = 0; i < m_grid.size(); ++i)
-            {
-                m_grid[i].resize(nMax,{doubleMissingValue,doubleMissingValue});
-            }
+            m_grid.resize(mMax, std::vector<Point>(nMax, { doubleMissingValue,doubleMissingValue }));
 
             return true;
         }
@@ -60,7 +56,6 @@ namespace GridGeom
         }
 
         std::vector<std::vector<Point>> m_grid;
-
         int m_n;
         int m_m;
 

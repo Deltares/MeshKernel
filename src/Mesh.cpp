@@ -978,7 +978,7 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
         }
 
 
-        CurvilinearGrid.IncreaseGrid(numN, numM);
+        CurvilinearGrid.Set(numN, numM);
         for (int n = 0; n < numN; ++n)
         {
             for (int m = 0; m < numM; ++m)

@@ -44,30 +44,114 @@ GridGeom::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTrans
 
 GridGeom::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(Splines* splines) : m_splines(splines)
 {
+    m_numN = 40;
+    m_numM = 20;
+
 };
 
 
 bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& curvilinearGrid)
 {
-    // compute the  intersections
-    if (m_numN == 0 || m_numN == 0) 
+    // compute the intersections
+    if (m_numN == 0 || m_numM == 0)
+    {
+        return false;
+    }
+
+    // if the number of splines is less than 4 return false
+    const auto numSplines = m_splines->m_numSplines;
+    if (numSplines < 4)
     {
         return false;
     }
 
     // compute the intersections 
-    auto successful = ComputeSplineIntersections();
-    
-    std::vector<double> nDistances(m_numN);
-    for(int i = 0; i < m_firstNSplines; i++)
+    bool successful = ComputeSplineIntersections();
+    if (!successful)
     {
-        double startDistance = m_splines->GetSplineLength(i, 0.0, m_splineIntersectionRatios[i][0], 10, false);
-        double endDistance = m_splines->GetSplineLength(i, 0.0, m_splineIntersectionRatios[i][1], 10, false);
+        return false;
+    }
 
-        for (int j = 0; j < m_numN; j++)
+    const int maxNumPoints = std::max(m_numM + 1, m_numN + 1);
+    std::vector<double> distances;
+    std::vector<double> adimensionalDistances;
+    std::vector<double> intersectionDistances;
+    std::vector<Point> points;
+
+    distances.reserve(maxNumPoints);
+    adimensionalDistances.reserve(maxNumPoints);
+    points.reserve(maxNumPoints);
+    intersectionDistances.resize(numSplines);
+
+    curvilinearGrid.Set(m_numM, m_numN);
+    for (int splineIndex = 0; splineIndex < numSplines; splineIndex++)
+    {
+        int numIntersections = 0;
+        for (int i = 0; i < m_splineIntersectionRatios[splineIndex].size(); i++)
         {
-            nDistances[j] = startDistance + (startDistance - endDistance) * j / m_numN;
+            if (std::abs(m_splineIntersectionRatios[splineIndex][i]) > 0.0)
+            {
+                intersectionDistances[numIntersections] = m_splines->GetSplineLength(splineIndex, 0.0, m_splineIntersectionRatios[splineIndex][i], 10, false);
+                numIntersections++;
+            }
         }
+
+        if (numIntersections < 0)
+        {
+            return false;
+        }
+
+        int numPoints;
+        int position;
+        int from;
+        int to;
+        if (splineIndex < m_firstMSplines)
+        {
+            numPoints = m_numM;
+            position = (m_countSplineIntersections[splineIndex][0] - 1) * m_numN;
+            from = (m_countSplineIntersections[splineIndex][1] - 1) * m_numM;
+            to = (m_countSplineIntersections[splineIndex][2] - 1) * m_numM;
+        }
+        else
+        {
+            numPoints = m_numN;
+            position = (m_countSplineIntersections[splineIndex][0] - 1) * m_numM;
+            from = (m_countSplineIntersections[splineIndex][1] - 1) * m_numN;
+            to = (m_countSplineIntersections[splineIndex][2] - 1) * m_numN;
+        }
+
+        distances.resize(numPoints + 1);
+        adimensionalDistances.resize(numPoints + 1);
+        points.resize(numPoints + 1);
+
+        for (int i = 0; i < distances.size(); i++)
+        {
+            distances[i] = intersectionDistances[0] + (intersectionDistances[1] - intersectionDistances[0]) * i / numPoints;
+        }
+
+        m_splines->InterpolatePointsOnSpline(splineIndex,
+            doubleMissingValue,
+            false,
+            distances,
+            points,
+            adimensionalDistances);
+
+        //// start filling the curvilinear grid
+        int index = 0;
+        for (int i = from; i < to; i++)
+        {
+
+            if (splineIndex < m_firstMSplines)
+            {
+                curvilinearGrid.m_grid[i][position] = points[index];
+            }
+            else
+            {
+                curvilinearGrid.m_grid[position][i] = points[index];
+            }
+            index++;
+        }
+
 
     }
 
@@ -78,11 +162,6 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
 bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections()
 {
     const auto numSplines = m_splines->m_numSplines;
-    // number of splines cannot be less than 4
-    if (numSplines < 4)
-    {
-        return false;
-    }
 
     // fill the splines with zeros
     m_splineType.resize(numSplines);
@@ -152,7 +231,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections
     }
 
     // find the first non m spline
-    m_firstNSplines = FindIndex(m_splineType, -1);
+    m_firstMSplines = FindIndex(m_splineType, -1);
 
     int maxExternalIterations = 10;
     for (int i = 0; i < maxExternalIterations; i++)
@@ -161,7 +240,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections
         int maxInternalIterations = 100;
         for (int j = 0; j < maxInternalIterations; j++)
         {
-            auto succeded = OrderSplines(0, m_firstNSplines, m_firstNSplines, numSplines);
+            auto succeded = OrderSplines(0, m_firstMSplines, m_firstMSplines, numSplines);
             if (succeded)
             {
                 break;
@@ -172,7 +251,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections
         bool nSplineSortingHasNotChanged = true;
         for (int j = 0; j < maxInternalIterations; j++)
         {
-            auto succeded = OrderSplines(m_firstNSplines, numSplines, 0, m_firstNSplines);
+            auto succeded = OrderSplines(m_firstMSplines, numSplines, 0, m_firstMSplines);
             if (succeded)
             {
                 break;
@@ -193,9 +272,9 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections
     m_countSplineIntersections.resize(numSplines, std::vector<int>(3, 0));
 
     // n direction
-    for (int i = 0; i < m_firstNSplines; i++)
+    for (int i = 0; i < m_firstMSplines; i++)
     {
-        for (int j = m_firstNSplines; j < numSplines; j++)
+        for (int j = m_firstMSplines; j < numSplines; j++)
         {
             int maxIndex = 0;
             int lastIndex = 0;
@@ -210,7 +289,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections
             m_countSplineIntersections[j][1] = maxIndex;
         }
         int maxIndex = 0;
-        for (int j = m_firstNSplines; j < numSplines; j++)
+        for (int j = m_firstMSplines; j < numSplines; j++)
         {
             if (std::abs(m_splineIntersectionRatios[j][i]) > 0.0)
             {
@@ -222,13 +301,13 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections
 
 
     // m direction
-    for (int i = m_firstNSplines; i < numSplines; i++)
+    for (int i = m_firstMSplines; i < numSplines; i++)
     {
-        for (int j = 0; j < m_firstNSplines; j++)
+        for (int j = 0; j < m_firstMSplines; j++)
         {
             int maxIndex = 0;
-            int lastIndex = m_firstNSplines;
-            for (int k = m_firstNSplines; k <= i; k++)
+            int lastIndex = m_firstMSplines;
+            for (int k = m_firstMSplines; k <= i; k++)
             {
                 if (std::abs(m_splineIntersectionRatios[j][k]) > 0.0)
                 {
@@ -239,7 +318,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections
             m_countSplineIntersections[j][2] = maxIndex;
         }
         int maxIndex = 0;
-        for (int j = 0; j < m_firstNSplines; j++)
+        for (int j = 0; j < m_firstMSplines; j++)
         {
             if (std::abs(m_splineIntersectionRatios[j][i]) > 0.0)
             {
@@ -256,9 +335,9 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections
     }
 
     // n constant, spline start end end
-    for (int i = 0; i < m_firstNSplines; i++)
+    for (int i = 0; i < m_firstMSplines; i++)
     {
-        for (int j = m_firstNSplines; j < numSplines; j++)
+        for (int j = m_firstMSplines; j < numSplines; j++)
         {
             if (std::abs(m_splineIntersectionRatios[i][j]) > 0.0)
             {
@@ -272,9 +351,9 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections
     }
 
     // m constant, spline start end end
-    for (int i = m_firstNSplines; i < numSplines; i++)
+    for (int i = m_firstMSplines; i < numSplines; i++)
     {
-        for (int j = 0; j < m_firstNSplines; j++)
+        for (int j = 0; j < m_firstMSplines; j++)
         {
             if (std::abs(m_splineIntersectionRatios[i][j]) > 0.0)
             {

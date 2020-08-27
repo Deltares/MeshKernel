@@ -37,7 +37,8 @@ TEST(CurvilinearGridFromSplinesTransfinite, ComputeSplineIntersections)
     ASSERT_TRUE(success);
 
     GridGeom::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(&splines);
-    success = curvilinearGridFromSplinesTransfinite.ComputeSplineIntersections();
+    GridGeom::CurvilinearGrid curvilinearGrid;
+    success = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
 }
 
@@ -72,6 +73,7 @@ TEST(CurvilinearGridFromSplinesTransfinite, ComputeSplineTypeSwappedN)
     ASSERT_TRUE(success);
 
     GridGeom::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(&splines);
-    success = curvilinearGridFromSplinesTransfinite.ComputeSplineIntersections();
+    GridGeom::CurvilinearGrid curvilinearGrid;
+    success = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
 }
