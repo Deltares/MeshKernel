@@ -637,7 +637,7 @@ bool GridGeom::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearGri
         startGridLine = endGridlineIndex + 2;
     }
 
-    curvilinearGrid.IncreaseGrid(curvilinearMeshPoints.size(), curvilinearMeshPoints[0].size());
+    curvilinearGrid.Set(curvilinearMeshPoints.size(), curvilinearMeshPoints[0].size());
     curvilinearGrid.Set(curvilinearMeshPoints);
 
     return true;
