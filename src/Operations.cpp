@@ -1406,9 +1406,9 @@ namespace GridGeom
     }
 
     template<class T>
-    void SwapVectorElements(std::vector<T>& v, int numElements)
+    static void SwapVectorElements(std::vector<T>& v, int numElements)
     {
-        if (numElements > v.size()) 
+        if (numElements > v.size())
         {
             return;
         }
@@ -1419,5 +1419,23 @@ namespace GridGeom
             v[i] = v[i + 1];
             v[i + 1] = a;
         }
+    }
+
+    static bool ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, Projections projection, std::vector<double>& result) 
+    {
+        result[0] = 0;
+        for (int i = 1; i < v.size(); i++)
+        {
+            result[i] = result[i - 1] + Distance(v[i - 1], v[i], projection);
+        }
+        
+        const double inverseTotalDistance = 1.0 / result.back();
+        // normalize
+        for (int i = 1; i < v.size(); i++)
+        {
+            result[i] = result[i] * inverseTotalDistance;
+        }
+
+        return true;
     }
 }
