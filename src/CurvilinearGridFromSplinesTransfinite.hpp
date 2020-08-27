@@ -66,15 +66,31 @@ namespace GridGeom
         /// <param name="curvilinearGrid"></param>
         /// <returns></returns>
         bool Compute(CurvilinearGrid& curvilinearGrid);
+
+
+        /// <summary>
+        /// Perform transfinite interpolation given the points at the 4 sides
+        /// </summary>
+        /// <param name="sideOne"></param>
+        /// <param name="sideTwo"></param>
+        /// <param name="sideThree"></param>
+        /// <param name="sideFour"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        bool Interpolate(const std::vector<Point>& sideOne,
+            const std::vector<Point>& sideTwo,
+            const std::vector<Point>& sideThree,
+            const std::vector<Point>& sideFour,
+            std::vector<Point>& result);
         
         Splines* m_splines;                                      // A pointer to spline
 
     private:
 
         bool OrderSplines(int startFirst,
-            int endFirst,
-            int startSecond,
-            int endSecond);
+                          int endFirst,
+                          int startSecond,
+                          int endSecond);
 
         template<typename T>
         bool SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow);
@@ -85,7 +101,7 @@ namespace GridGeom
 
         std::vector<int>                 m_splineType;
         std::vector<std::vector<double>> m_splineIntersectionRatios;
-        std::vector<std::vector<int>>    m_countSplineIntersections;  // spline index, 0 n splines intersections, 1 m spline intersections 
+        std::vector<std::vector<int>>    m_splineGroupIndexAndFromToIntersections;  // for each spline: position in m or n group, from and to spline crossing indexses (MN12)
         int                              m_firstMSplines = -1;
         int                              m_numM = 0;
         int                              m_numN = 0;
