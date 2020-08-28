@@ -9,19 +9,28 @@ The API namespace contains several structures used as parameters for the API met
 
 1. Creating a triangular mesh inside a polygon
 
-In this example a mesh is created by discretizing the polygon perimeter with the desired edge size:
+In this example a mesh is created by discretizing the polygon perimeter with the desired edge size
+
+![alt tag](doc/figures/TriangularMeshInPolygon.jpg)
 
 2. Mesh orthogonalization
 
-Finite element staggered flow solvers require the mesh to be as much orthogonal as possible. The library provides an algorithm to adapt the mesh in order to maximize orthogonality or mesh smothness:
+Finite element staggered flow solvers require the mesh to be as much orthogonal as possible. The library provides an algorithm to adapt the mesh in order to maximize orthogonality or mesh smothness
+
+![alt tag](doc/figures/MeshOrthogonalization.jpg)
 
 3. Curvilinear mesh generation
 
-Curvilinear meshes for rivers are generated using splines.
+Curvilinear meshes for rivers can be generated using splines
+
+![alt tag](doc/figures/OrthogonalCurvilinearGrid.jpg)
 
 4. Mesh refinement
 
-A mesh can be refined based on samples 
+A mesh can be on certaing areas based on samples 
+
+![alt tag](doc/figures/GridRefinement.jpg)
+
 
 ## API usage
 
