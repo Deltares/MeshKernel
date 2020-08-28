@@ -66,28 +66,45 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
     }
 
     // compute the intersections 
-    bool successful = ComputeSplineIntersections();
+    bool successful = ComputeIntersections();
     if (!successful)
     {
         return false;
     }
 
-    const int maxNumPoints = std::max(m_numM + 1, m_numN + 1);
+    const int numMPoints = m_numM + 1;
+    const int numNPoints = m_numN + 1;
+    const int maxNumPoints = std::max(numMPoints, numNPoints);
     std::vector<double> distances;
     std::vector<double> adimensionalDistances;
     std::vector<double> intersectionDistances;
     std::vector<Point> points;
 
+    // For each side of the plane reserve a vector
+    std::vector<Point> sideOne;
+    std::vector<Point> sideTwo;
+    std::vector<Point> sideThree;
+    std::vector<Point> sideFour;
+
+    // The vector storing the transfinite interpolation results
+    std::vector<std::vector<Point>> interpolationResult(numMPoints, std::vector<Point>(numNPoints));
+
+    // allocate local vectors
     distances.reserve(maxNumPoints);
     adimensionalDistances.reserve(maxNumPoints);
     points.reserve(maxNumPoints);
     intersectionDistances.resize(numSplines);
 
+    sideOne.reserve(maxNumPoints);
+    sideTwo.reserve(maxNumPoints);
+    sideThree.reserve(maxNumPoints);
+    sideFour.reserve(maxNumPoints);
+
+    // allocate the curvilinear grid
     curvilinearGrid.Set(m_numM, m_numN);
 
     int numMSplines = 0;
     int numNSplines = 0;
-
     for (int splineIndex = 0; splineIndex < numSplines; splineIndex++)
     {
         int numIntersections = 0;
@@ -114,7 +131,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
             numPoints = m_numM;
             position = (m_splineGroupIndexAndFromToIntersections[splineIndex][0] - 1) * m_numN;
             from = (m_splineGroupIndexAndFromToIntersections[splineIndex][1] - 1) * m_numM;
-            to = (m_splineGroupIndexAndFromToIntersections[splineIndex][2] - 1) * m_numM;
+            to = (m_splineGroupIndexAndFromToIntersections[splineIndex][2] - 1) * m_numM + 1;
             numNSplines = std::max(numNSplines, m_splineGroupIndexAndFromToIntersections[splineIndex][0]);
         }
         else
@@ -122,7 +139,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
             numPoints = m_numN;
             position = (m_splineGroupIndexAndFromToIntersections[splineIndex][0] - 1) * m_numM;
             from = (m_splineGroupIndexAndFromToIntersections[splineIndex][1] - 1) * m_numN;
-            to = (m_splineGroupIndexAndFromToIntersections[splineIndex][2] - 1) * m_numN;
+            to = (m_splineGroupIndexAndFromToIntersections[splineIndex][2] - 1) * m_numN + 1;
             numMSplines = std::max(numMSplines, m_splineGroupIndexAndFromToIntersections[splineIndex][0]);
         }
 
@@ -136,11 +153,11 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
         }
 
         m_splines->InterpolatePointsOnSpline(splineIndex,
-                                             doubleMissingValue,
-                                             false,
-                                             distances,
-                                             points,
-                                             adimensionalDistances);
+            doubleMissingValue,
+            false,
+            distances,
+            points,
+            adimensionalDistances);
 
         // Start filling curvilinear grid
         int index = 0;
@@ -159,36 +176,29 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
         }
     }
 
-    // For each side of the plane to fill, put the points
-    std::vector<Point> sideOne;
-    std::vector<Point> sideTwo;
-    std::vector<Point> sideThree;
-    std::vector<Point> sideFour;
-
-    sideOne.reserve(maxNumPoints);
-    sideTwo.reserve(maxNumPoints);
-    sideThree.reserve(maxNumPoints);
-    sideFour.reserve(maxNumPoints);
-    
+    sideOne.resize(numNPoints);
+    sideTwo.resize(numNPoints);
+    sideThree.resize(numMPoints);
+    sideFour.resize(numMPoints);
     for (int i = 0; i < numMSplines - 1; i++)
     {
         for (int j = 0; j < numNSplines - 1; j++)
         {
             //Fill each block of the interpolation plane
-            for (int k = 0; k < m_numM + 1; k++)
+            for (int k = 0; k < numMPoints; k++)
             {
-                for (int l = 0; l < m_numN + 1; l++)
+                for (int l = 0; l < numNPoints; l++)
                 {
-                    const int m = (i - 1) * m_numM + k;
-                    const int n = (j - 1) * m_numN + k;
+                    const int m = i * m_numM + k;
+                    const int n = j * m_numN + l;
 
                     // We are at the boundary 
-                    if (!curvilinearGrid.m_grid[m][n].IsValid()) 
+                    if (!curvilinearGrid.m_grid[m][n].IsValid())
                     {
                         continue;
                     }
 
-                    if ( k == 0) 
+                    if (k == 0)
                     {
                         sideOne[l] = curvilinearGrid.m_grid[m][n];
                     }
@@ -198,21 +208,34 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
                     }
                     if (l == 0)
                     {
-                        sideThree[l] = curvilinearGrid.m_grid[m][n];
+                        sideThree[k] = curvilinearGrid.m_grid[m][n];
                     }
                     if (l == m_numN)
                     {
-                        sideFour[l] = curvilinearGrid.m_grid[m][n];
+                        sideFour[k] = curvilinearGrid.m_grid[m][n];
                     }
                 }
             }
 
-            // check that all has been properly assigned
-
             // call transfinite interpolation
+            Interpolate(sideOne, sideTwo, sideThree, sideFour, interpolationResult);
 
             // assign the points
+            for (int k = 0; k < numMPoints; k++)
+            {
+                for (int l = 0; l < numNPoints; l++)
+                {
+                    const int m = i * m_numM + k;
+                    const int n = j * m_numN + l;
 
+                    if (curvilinearGrid.m_grid[m][n].IsValid())
+                    {
+                        continue;
+                    }
+
+                    curvilinearGrid.m_grid[m][n] = interpolationResult[k][l];
+                }
+            }
         }
     }
 
@@ -224,26 +247,31 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Interpolate(const std::vec
                                                                   const std::vector<Point>& sideTwo,
                                                                   const std::vector<Point>& sideThree,
                                                                   const std::vector<Point>& sideFour,
-                                                                  std::vector<Point>& result)
+                                                                  std::vector<std::vector<Point>>& result)
 {
 
-    std::vector<double> sideOneAdimensional(sideOne.size() - 1);
-    ComputeAdimensionalDistancesFromPointSerie(sideOne, m_splines->m_projection, sideOneAdimensional);
+    double totalLengthOne;
+    std::vector<double> sideOneAdimensional(sideOne.size());
+    ComputeAdimensionalDistancesFromPointSerie(sideOne, m_splines->m_projection, sideOneAdimensional, totalLengthOne);
 
-    std::vector<double> sideTwoAdimensional(sideTwo.size() - 1);
-    ComputeAdimensionalDistancesFromPointSerie(sideTwo, m_splines->m_projection, sideTwoAdimensional);
+    double totalLengthTwo;
+    std::vector<double> sideTwoAdimensional(sideTwo.size());
+    ComputeAdimensionalDistancesFromPointSerie(sideTwo, m_splines->m_projection, sideTwoAdimensional, totalLengthTwo);
 
-    std::vector<double> sideThreeAdimensional(sideThree.size() - 1);
-    ComputeAdimensionalDistancesFromPointSerie(sideThree, m_splines->m_projection, sideThreeAdimensional);
+    double totalLengthThree;
+    std::vector<double> sideThreeAdimensional(sideThree.size());
+    ComputeAdimensionalDistancesFromPointSerie(sideThree, m_splines->m_projection, sideThreeAdimensional, totalLengthThree);
 
-    std::vector<double> sideFourAdimensional(sideFour.size() - 1);
-    ComputeAdimensionalDistancesFromPointSerie(sideFour, m_splines->m_projection, sideFourAdimensional);
+    double totalLengthFour;
+    std::vector<double> sideFourAdimensional(sideFour.size());
+    ComputeAdimensionalDistancesFromPointSerie(sideFour, m_splines->m_projection, sideFourAdimensional, totalLengthFour);
 
     // now compute the adimensional distance of each point to be filled
     const int numMPoints = m_numM + 1;
     const int numNPoints = m_numN + 1;
 
-    std::vector<std::vector<Point>> weightedAdimensionalDistances(numMPoints, std::vector<Point>(m_numN));
+    std::vector<std::vector<double>> iWeightFactor(numMPoints, std::vector<double>(numNPoints));
+    std::vector<std::vector<double>> jWeightFactor(numMPoints, std::vector<double>(numNPoints));
     for (int i = 0; i < numMPoints; i++)
     {
         for (int j = 0; j < numNPoints; j++)
@@ -251,21 +279,138 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Interpolate(const std::vec
             const double mWeight = i / m_numM;
             const double nWeight = j / m_numN;
 
-            weightedAdimensionalDistances[i][j].x = (1.0 - nWeight) * sideThreeAdimensional[i] + nWeight * sideFourAdimensional[i];
-            weightedAdimensionalDistances[i][j].y = (1.0 - mWeight) * sideOneAdimensional[i] + mWeight * sideTwoAdimensional[i];
+            iWeightFactor[i][j] = (1.0 - nWeight) * sideThreeAdimensional[i] + nWeight * sideFourAdimensional[i];
+            jWeightFactor[i][j] = (1.0 - mWeight) * sideOneAdimensional[j] + mWeight * sideTwoAdimensional[j];
+        }
+    }
+
+    std::vector<std::vector<double>> weightOne(numMPoints, std::vector<double>(numNPoints));
+    std::vector<std::vector<double>> weightTwo(numMPoints, std::vector<double>(numNPoints));
+    std::vector<std::vector<double>> weightThree(numMPoints, std::vector<double>(numNPoints));
+    std::vector<std::vector<double>> weightFour(numMPoints, std::vector<double>(numNPoints));
+    for (int i = 0; i < numMPoints; i++)
+    {
+        for (int j = 0; j < numNPoints; j++)
+        {
+
+            weightOne[i][j] = (1.0 - jWeightFactor[i][j]) * totalLengthThree + jWeightFactor[i][j] * totalLengthFour;
+            weightTwo[i][j] = (1.0 - iWeightFactor[i][j]) * totalLengthOne + iWeightFactor[i][j] * totalLengthTwo;
+            weightThree[i][j] = weightTwo[i][j] / weightOne[i][j];
+            weightFour[i][j] = weightOne[i][j] / weightTwo[i][j];
+            const double wa = 1.0 / (weightThree[i][j] + weightFour[i][j]);
+            weightOne[i][j] = wa * weightThree[i][j];
+            weightTwo[i][j] = wa * weightFour[i][j];
+        }
+    }
+
+    //border points
+    result.resize(numMPoints, std::vector<Point>(numNPoints));
+    for (int i = 0; i < numMPoints; i++)
+    {
+        result[i][0] = sideThree[i];
+        result[i][m_numN] = sideFour[i];
+    }
+    for (int i = 0; i < numNPoints; i++)
+    {
+        result[0][i] = sideOne[i];
+        result[m_numM][i] = sideTwo[i];
+    }
+
+    // first interpolation
+    for (int i = 1; i < m_numM; i++)
+    {
+        for (int j = 1; j < m_numN; j++)
+        {
+
+            result[i][j].x = (sideOne[j].x * (1.0 - iWeightFactor[i][j]) + sideTwo[j].x * iWeightFactor[i][j]) * weightOne[i][j] +
+                             (sideThree[i].x * (1.0 - jWeightFactor[i][j]) + sideFour[i].x * jWeightFactor[i][j]) * weightTwo[i][j];
+
+            result[i][j].y = (sideOne[j].y * (1.0 - iWeightFactor[i][j]) + sideTwo[j].y * iWeightFactor[i][j]) * weightOne[i][j] +
+                             (sideThree[i].y * (1.0 - jWeightFactor[i][j]) + sideFour[i].y * jWeightFactor[i][j]) * weightTwo[i][j];
+        }
+    }
+
+    // update weights
+    for (int i = 0; i < numMPoints; i++)
+    {
+        for (int j = 0; j < numNPoints; j++)
+        {
+            weightOne[i][j] = (1.0 - jWeightFactor[i][j]) * sideThreeAdimensional[i] * totalLengthThree +
+                jWeightFactor[i][j] * sideFourAdimensional[i] * totalLengthFour;
+            weightTwo[i][j] = (1.0 - iWeightFactor[i][j]) * sideOneAdimensional[j] * totalLengthOne +
+                iWeightFactor[i][j] * sideTwoAdimensional[j] * totalLengthTwo;
+        }
+    }
+
+    for (int i = 1; i < numMPoints; i++)
+    {
+        for (int j = 0; j < numNPoints; j++)
+        {
+            weightThree[i][j] = weightOne[i][j] - weightOne[i - 1][j];
+        }
+    }
+
+    for (int i = 0; i < numMPoints; i++)
+    {
+        for (int j = 1; j < numNPoints; j++)
+        {
+            weightFour[i][j] = weightTwo[i][j] - weightTwo[i][j - 1];
+        }
+    }
+
+    for (int i = 1; i < numMPoints; i++)
+    {
+        for (int j = 1; j < numNPoints - 1; j++)
+        {
+            weightOne[i][j] = 0.25 * (weightFour[i][j] + weightFour[i][j + 1] + weightFour[i - 1][j] + weightFour[i - 1][j + 1]) / weightThree[i][j];
         }
     }
 
 
+    for (int i = 1; i < numMPoints - 1; i++)
+    {
+        for (int j = 1; j < numNPoints; j++)
+        {
+            weightTwo[i][j] = 0.25 * (weightThree[i][j] + weightThree[i][j - 1] + weightThree[i + 1][j] + weightThree[i + 1][j - 1]) / weightFour[i][j];
+        }
+    }
+
+    // Iterate several times over
+    const int numIterations = 25;
+    for (int iter = 0; iter < numIterations; iter++)
+    {
+        // re-assign the weights
+        for (int i = 0; i < numMPoints; i++)
+        {
+            for (int j = 0; j < numNPoints; j++)
+            {
+                weightThree[i][j] = result[i][j].x;
+                weightFour[i][j] = result[i][j].y;
+            }
+        }
 
 
+        for (int i = 1; i < m_numM; i++)
+        {
+            for (int j = 1; j < m_numN; j++)
+            {
 
+                const double wa = 1.0 / (weightOne[i][j] + weightOne[i + 1][j] + weightTwo[i][j] + weightTwo[i][j + 1]);
+
+                result[i][j].x = wa * (weightThree[i][j] * weightOne[i][j] + weightThree[i][j] * weightOne[i + 1][j] +
+                    weightThree[i][j] * weightTwo[i][j] + weightThree[i][j] * weightTwo[i][j + 1]);
+
+                result[i][j].y = wa * (weightFour[i][j] * weightOne[i][j] + weightFour[i][j] * weightOne[i + 1][j] +
+                    weightFour[i][j] * weightTwo[i][j] + weightFour[i][j] * weightTwo[i][j + 1]);
+            }
+        }
+    }
 
     return true;
 }
 
 
-bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeSplineIntersections()
+bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
 {
     const auto numSplines = m_splines->m_numSplines;
 
