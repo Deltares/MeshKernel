@@ -1421,15 +1421,15 @@ namespace GridGeom
         }
     }
 
-    static bool ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, Projections projection, std::vector<double>& result) 
+    static bool ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, Projections projection, std::vector<double>& result, double& totalDistance) 
     {
         result[0] = 0;
         for (int i = 1; i < v.size(); i++)
         {
             result[i] = result[i - 1] + Distance(v[i - 1], v[i], projection);
         }
-        
-        const double inverseTotalDistance = 1.0 / result.back();
+        totalDistance = result.back();
+        const double inverseTotalDistance = 1.0 / totalDistance;
         // normalize
         for (int i = 1; i < v.size(); i++)
         {

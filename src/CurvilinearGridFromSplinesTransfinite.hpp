@@ -58,7 +58,7 @@ namespace GridGeom
         /// Also orders the n splines (the horizontal ones) before the m splines (the vertical ones)
         /// </summary>
         /// <returns></returns>
-        bool ComputeSplineIntersections();
+        bool ComputeIntersections();
 
         /// <summary>
         /// Computes the curvilinear grid from the splines
@@ -66,7 +66,6 @@ namespace GridGeom
         /// <param name="curvilinearGrid"></param>
         /// <returns></returns>
         bool Compute(CurvilinearGrid& curvilinearGrid);
-
 
         /// <summary>
         /// Perform transfinite interpolation given the points at the 4 sides
@@ -78,10 +77,10 @@ namespace GridGeom
         /// <param name="result"></param>
         /// <returns></returns>
         bool Interpolate(const std::vector<Point>& sideOne,
-            const std::vector<Point>& sideTwo,
-            const std::vector<Point>& sideThree,
-            const std::vector<Point>& sideFour,
-            std::vector<Point>& result);
+                         const std::vector<Point>& sideTwo,
+                         const std::vector<Point>& sideThree,
+                         const std::vector<Point>& sideFour,
+                         std::vector<std::vector<Point>>& result);
         
         Splines* m_splines;                                      // A pointer to spline
 
@@ -97,7 +96,6 @@ namespace GridGeom
 
         template<typename T>
         bool SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn);
-
 
         std::vector<int>                 m_splineType;
         std::vector<std::vector<double>> m_splineIntersectionRatios;
