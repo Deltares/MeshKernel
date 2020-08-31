@@ -124,8 +124,8 @@ bool GridGeom::CurvilinearGridFromSplines::AllocateSplinesProperties()
         std::fill(m_nfacR[s].begin(), m_nfacR[s].end(), 0);
     }
 
-    m_numMSpline.resize(numSplines);
-    std::fill(m_numMSpline.begin(), m_numMSpline.end(), 0);
+    m_numMSplines.resize(numSplines);
+    std::fill(m_numMSplines.begin(), m_numMSplines.end(), 0);
     m_leftGridLineIndex.resize(numSplines);
     std::fill(m_leftGridLineIndex.begin(), m_leftGridLineIndex.end(), intMissingValue);
     m_rightGridLineIndex.resize(numSplines);
@@ -338,7 +338,7 @@ bool GridGeom::CurvilinearGridFromSplines::Initialize()
         }
 
         // construct the cross splines through the edges, along m discretization
-        for (int i = m_leftGridLineIndex[s]; i < m_leftGridLineIndex[s] + m_numMSpline[s]; ++i)
+        for (int i = m_leftGridLineIndex[s]; i < m_leftGridLineIndex[s] + m_numMSplines[s]; ++i)
         {
             Point normal;
             NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], normal, m_splines->m_projection);
@@ -386,7 +386,7 @@ bool GridGeom::CurvilinearGridFromSplines::Initialize()
     {
         m_leftGridLineIndexOriginal[s] = m_leftGridLineIndex[s];
         m_rightGridLineIndexOriginal[s] = m_rightGridLineIndex[s];
-        m_mfacOriginal[s] = m_numMSpline[s];
+        m_mfacOriginal[s] = m_numMSplines[s];
         m_maximumGridHeightsOriginal[s] = m_maximumGridHeights[s];
         m_originalTypes[s] = m_type[s];
     }
@@ -1276,9 +1276,9 @@ bool GridGeom::CurvilinearGridFromSplines::ComputeEdgeVelocities( std::vector<do
 
 
         int startGridLineLeft = m_leftGridLineIndex[s];
-        int endGridLineLeft = startGridLineLeft + m_numMSpline[s];
+        int endGridLineLeft = startGridLineLeft + m_numMSplines[s];
         int startGridLineRight = m_rightGridLineIndex[s];
-        int endGridLineRight = startGridLineRight + m_numMSpline[s];
+        int endGridLineRight = startGridLineRight + m_numMSplines[s];
 
         double hh0LeftMaxRatio;
         double hh0RightMaxRatio;
@@ -1327,12 +1327,12 @@ bool GridGeom::CurvilinearGridFromSplines::ComputeEdgeVelocities( std::vector<do
     // compute local grow factors
     for (int s = 0; s < m_splines->m_numSplines; s++)
     {
-        if (m_numMSpline[s] < 1)
+        if (m_numMSplines[s] < 1)
         {
             continue;
         }
 
-        for (int i = m_leftGridLineIndex[s]; i < m_rightGridLineIndex[s] + m_numMSpline[s]; ++i)
+        for (int i = m_leftGridLineIndex[s]; i < m_rightGridLineIndex[s] + m_numMSplines[s]; ++i)
         {
             if (m_gridLine[i].x == doubleMissingValue || m_gridLine[i + 1].x == doubleMissingValue || numPerpendicularFacesOnSubintervalAndEdge[1][i] < 1)
             {
@@ -1470,7 +1470,7 @@ bool GridGeom::CurvilinearGridFromSplines::ComputeVelocitiesSubIntervals( const 
             edgeVelocities[i] = firstHeight;
 
             //compare with other side of spline
-            int otherSideIndex = otherGridLineIndex[s] + m_numMSpline[s] - (i - gridLineIndex[s] + 1);
+            int otherSideIndex = otherGridLineIndex[s] + m_numMSplines[s] - (i - gridLineIndex[s] + 1);
 
             if (edgeVelocities[otherSideIndex] != doubleMissingValue)
             {
@@ -1523,7 +1523,7 @@ bool GridGeom::CurvilinearGridFromSplines::ComputeGridHeights()
             continue;
         }
 
-        int numM = m_numMSpline[s];
+        int numM = m_numMSplines[s];
 
         // Get the minimum number of sub-intervals in the cross splines for this center spline
         int minNumLeftIntervals = *std::min_element(m_numCrossSplineLeftHeights[s].begin(), m_numCrossSplineLeftHeights[s].end());
@@ -1614,10 +1614,10 @@ bool GridGeom::CurvilinearGridFromSplines::ComputeGridHeights()
         // store grid height
         for (int j = 0; j < m_maxNumCenterSplineHeights; ++j)
         {
-            for (int i = 0; i < m_numMSpline[s]; ++i)
+            for (int i = 0; i < m_numMSplines[s]; ++i)
             {
                 m_gridHeights[j][m_leftGridLineIndex[s] + i] = heightsLeft[j][i];
-                m_gridHeights[j][m_rightGridLineIndex[s] + m_numMSpline[s] - i - 1] = heightsRight[j][i];
+                m_gridHeights[j][m_rightGridLineIndex[s] + m_numMSplines[s] - i - 1] = heightsRight[j][i];
             }
         }
     }
@@ -1644,7 +1644,7 @@ bool GridGeom::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s,
         return true;
     }
 
-    int numM = m_numMSpline[s];
+    int numM = m_numMSplines[s];
     std::vector<double> localCornerPoints(numValid);
 
     // TODO: strided memory access
@@ -1837,7 +1837,7 @@ bool GridGeom::CurvilinearGridFromSplines::MakeAllGridLines(bool isSpacingCurvat
 
         m_gridLine[gridLineIndex] = Point{ doubleMissingValue,  doubleMissingValue };
         m_gridLineDimensionalCoordinates[gridLineIndex] = doubleMissingValue;
-        m_numMSpline[s] = numM;
+        m_numMSplines[s] = numM;
         m_numM = gridLineIndex;
     }
 
@@ -1976,7 +1976,7 @@ bool GridGeom::CurvilinearGridFromSplines::ComputeSplineProperties(const bool re
         {
             m_leftGridLineIndex[s] = m_leftGridLineIndexOriginal[s];
             m_rightGridLineIndex[s] = m_rightGridLineIndexOriginal[s];
-            m_numMSpline[s] = m_mfacOriginal[s];
+            m_numMSplines[s] = m_mfacOriginal[s];
             m_maximumGridHeights[s] = m_maximumGridHeightsOriginal[s];
             m_type[s] = m_originalTypes[s];
         }
