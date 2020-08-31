@@ -485,8 +485,8 @@ TEST(Mesh, NodeMerging)
 
 TEST(Mesh, MillionQuads)
 {
-    const int n = 11; // x
-    const int m = 11; // y
+    const int n = 1001; // x
+    const int m = 1001; // y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
     std::vector<GridGeom::Point> nodes(n * m);
@@ -541,5 +541,5 @@ TEST(Mesh, MillionQuads)
     //std::cout << "Second face " << faces[1][0] << " " << faces[1][1] << " " << faces[1][2] << " " << faces[1][3] << std::endl;
 
     // to beat fortran interactor, we need to perform the entire administration in less than 1.5 seconds
-    EXPECT_LE(elapsedTime, 2.0);
+    EXPECT_LE(elapsedTime, 3.0);
 }
