@@ -865,7 +865,6 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     ASSERT_NEAR(-45.7933216922166, mesh.m_nodes[23].x, tolerance);
     ASSERT_NEAR(-102.656846558853, mesh.m_nodes[24].x, tolerance);
 
-
     ASSERT_NEAR(466.770557740332, mesh.m_nodes[0].y, tolerance);
     ASSERT_NEAR(444.407393763762, mesh.m_nodes[1].y, tolerance);
     ASSERT_NEAR(429.951215447599, mesh.m_nodes[2].y, tolerance);

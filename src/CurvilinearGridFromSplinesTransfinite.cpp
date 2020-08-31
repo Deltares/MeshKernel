@@ -44,11 +44,15 @@ GridGeom::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTrans
 
 GridGeom::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(Splines* splines) : m_splines(splines)
 {
-    m_numN = 40;
-    m_numM = 20;
-
 };
 
+bool GridGeom::CurvilinearGridFromSplinesTransfinite::Set(GridGeomApi::CurvilinearParametersNative curvilinearParametersNative)
+{
+    m_numN = curvilinearParametersNative.NRefinement;
+    m_numM = curvilinearParametersNative.MRefinement;
+
+    return true;
+};
 
 bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& curvilinearGrid)
 {

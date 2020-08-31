@@ -54,6 +54,13 @@ namespace GridGeom
         CurvilinearGridFromSplinesTransfinite(Splines* splines);
 
         /// <summary>
+        /// Set the algorithm parameters
+        /// </summary>
+        /// <param name="curvilinearParametersNative"></param>
+        /// <returns></returns>
+        bool Set(GridGeomApi::CurvilinearParametersNative curvilinearParametersNative);
+
+        /// <summary>
         /// Computes the adimensional intersections between splines.
         /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)
         /// </summary>
