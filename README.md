@@ -3,25 +3,27 @@
 Deltares C++ library for creating and editing 2D unstructured and curvilinear meshes, suitable for the DFlowFM simulator.
 
 The library is separated in an API namespace (GridGeomApi), used for communication with the client and a backend namespace (GridGeom), where the algorithms are implemented. 
-The API namespace contains several structures used as parameters for the API methods (see API usage). These structures must be mirrored in the client application and filled with appropriate values.
+The API namespace contains several structures used as parameters for the API methods (see API usage section). 
+These structures must be mirrored in the client application and filled with appropriate values.
 
 ## Examples
 
 1. Creating a triangular mesh inside a polygon
 
-In this example a mesh is created by discretizing the polygon perimeter with the desired edge size
+In this example a mesh is created by discretizing the polygon perimeter with the desired edge length
 
 ![alt tag](doc/figures/TriangularMeshInPolygon.jpg)
 
 2. Mesh orthogonalization
 
-Finite element staggered flow solvers require the mesh to be as much orthogonal as possible. The library provides an algorithm to adapt the mesh in order to maximize orthogonality or mesh smothness
+Finite element staggered flow solvers require the mesh to be as much orthogonal as possible. 
+GridGeom provides an algorithm to adapt the mesh in order to balance between mesh orthogonality and smothness.
 
 ![alt tag](doc/figures/MeshOrthogonalization.jpg)
 
 3. Curvilinear mesh generation
 
-Curvilinear meshes for rivers can be generated using splines
+Curvilinear meshes for rivers can be generated using splines.
 
 ![alt tag](doc/figures/OrthogonalCurvilinearGrid.jpg)
 
