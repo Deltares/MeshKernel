@@ -37,6 +37,12 @@ TEST(CurvilinearGridFromSplinesTransfinite, ComputeIntersections)
     ASSERT_TRUE(success);
 
     GridGeom::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(&splines);
+
+    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
+    curvilinearParametersNative.NRefinement = 40;
+    curvilinearParametersNative.MRefinement = 20;
+    curvilinearGridFromSplinesTransfinite.Set(curvilinearParametersNative);
+
     GridGeom::CurvilinearGrid curvilinearGrid;
     success = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
@@ -123,6 +129,12 @@ TEST(CurvilinearGridFromSplinesTransfinite, ComputeCurvilinearGridWithFourSpline
     ASSERT_TRUE(success);
 
     GridGeom::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(&splines);
+    
+    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
+    curvilinearParametersNative.NRefinement = 40;
+    curvilinearParametersNative.MRefinement = 20;
+    curvilinearGridFromSplinesTransfinite.Set(curvilinearParametersNative);
+    
     GridGeom::CurvilinearGrid curvilinearGrid;
     success = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
@@ -215,6 +227,12 @@ TEST(CurvilinearGridFromSplinesTransfinite, ComputeCurvilinearGridWithFiveSpline
     ASSERT_TRUE(success);
 
     GridGeom::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(&splines);
+    
+    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
+    curvilinearParametersNative.NRefinement = 40;
+    curvilinearParametersNative.MRefinement = 20;
+    curvilinearGridFromSplinesTransfinite.Set(curvilinearParametersNative);
+    
     GridGeom::CurvilinearGrid curvilinearGrid;
     success = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
