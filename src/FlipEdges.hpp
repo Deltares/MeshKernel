@@ -36,6 +36,7 @@ namespace GridGeom
 {
     class CurvilinearGrid;
     class Mesh;
+    class LandBoundaries;
 
     class FlipEdges
     {
@@ -48,19 +49,38 @@ namespace GridGeom
         FlipEdges();
 
         /// <summary>
-        /// Ctor with mesh
+        /// 
+        /// </summary>
+        /// <param name="mesh">The mesh to use</param>
+        /// <param name="landBoundary">The land boundaries</param>
+        /// <returns></returns>
+        FlipEdges(Mesh* mesh, LandBoundaries* landBoundary);
+
+        /// <summary>
+        /// Flip the edges
         /// </summary>
         /// <returns></returns>
-        FlipEdges(Mesh* splines);
-
-        
         bool Compute();
-
 
     private:
 
+        bool TriangulateFaces();
+
+        bool TopologyFunctional( int edge,
+                                 int& k1,
+                                 int& k2,
+                                 int& kl,
+                                 int& kr,
+                                 int& faceL,
+                                 int& faceR,
+                                 int& ntopo ) const;
+
+        int OptimalNumberOfConnectedNodes(int nodeIndex) const;
        
         Mesh* m_mesh;                                      // A pointer to mesh
+        LandBoundaries* m_landBoundaries;                   // A pointer to land boundaries
+        bool m_triangulateFaces = false;
+        bool m_projectToLandBoundary = false;
 
     };
 

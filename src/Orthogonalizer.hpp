@@ -50,7 +50,7 @@ namespace GridGeom
         /// Ctor
         /// </summary>
         /// <returns></returns>
-        Orthogonalizer(Mesh& mesh);
+        Orthogonalizer(Mesh* mesh);
         
         /// <summary>
         /// Computes the smoother weights

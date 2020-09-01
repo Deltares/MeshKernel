@@ -43,25 +43,23 @@ GridGeom::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(): m_mesh
 }
 
 
-bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh& mesh,
-                                                   Smoother& smoother,
-                                                   Orthogonalizer& orthogonalizer,
+bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh* mesh,
+                                                   Smoother* smoother,
+                                                   Orthogonalizer* orthogonalizer,
+                                                   Polygons* polygon,
                                                    int isTriangulationRequired,
                                                    int isAccountingForLandBoundariesRequired,
                                                    int projectToLandBoundaryOption,
                                                    GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
-                                                   const Polygons& polygon,
                                                    std::vector<Point>& landBoundaries)
 {    
     m_polygons = polygon;
-    m_smoother = &smoother;
-    m_orthogonalizer = &orthogonalizer;
- 
-    // pointer to mesh
-    m_mesh = &mesh;
+    m_smoother = smoother;
+    m_orthogonalizer = orthogonalizer;
+    m_mesh = mesh;
 
     // Sets the node mask
-    m_mesh->MaskNodesInPolygons(m_polygons, true);
+    m_mesh->MaskNodesInPolygons(*m_polygons, true);
     // Flag nodes outside the polygon as corner points
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
@@ -89,7 +87,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh& mesh,
     m_orthogonalizationBoundaryIterations = orthogonalizationParametersNative.BoundaryIterations;
     m_orthogonalizationInnerIterations = orthogonalizationParametersNative.InnerIterations;
 
-    m_landBoundaries.Set(landBoundaries);
+    m_landBoundaries.Set(landBoundaries, m_mesh, m_polygons);
 
     m_isTriangulationRequired = isTriangulationRequired;
 
@@ -101,8 +99,8 @@ bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh& mesh,
     if (m_projectToLandBoundaryOption >= 1)
     {
         // account for enclosing polygon
-        m_landBoundaries.Administrate(mesh, m_polygons);
-        m_landBoundaries.FindNearestMeshBoundary(mesh, m_polygons, m_projectToLandBoundaryOption);
+        m_landBoundaries.Administrate();
+        m_landBoundaries.FindNearestMeshBoundary(m_projectToLandBoundaryOption);
     }
 
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops) 
@@ -326,7 +324,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::InnerIteration()
     // project on land boundary
     if (m_projectToLandBoundaryOption >= 1)
     {
-        m_landBoundaries.SnapMeshToLandBoundaries(*m_mesh);
+        m_landBoundaries.SnapMeshToLandBoundaries();
     }
 
     return true;
