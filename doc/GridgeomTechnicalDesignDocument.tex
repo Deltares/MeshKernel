@@ -1,0 +1,243 @@
+\documentclass[biblatex]{deltares_manual}
+
+\newcommand{\dflowfm}{D-Flow~FM\xspace}
+\newcommand{\cpp}{C\texttt{++}\xspace}
+\newcommand{\csharp}{C\#\xspace}
+
+\begin{document}
+\title{GridEditor}
+\subtitle{Design document}
+\manualtype{Technical Reference Manual}
+\version{001}
+\author{Luca Carniato}
+%\partner{---}
+\maketitle
+%------------------------------------------------------------------------------
+\chapter{Introduction}
+
+The Gridgeom library is a \cpp dynamic library that performs generation and manipulations of 2D grids. The library originates from the \dflowfm Fortran code base (interactor). The code was re-written in \cpp for the following reasons:
+\begin{itemize}
+\item Introduce some design in the existing algorithms by separating concerns.
+\item Introduce unit testing.
+\item Enabling the visualization of the meshes during creation (interactivity).
+\item Simplify the connection with C like languages, such \csharp.
+\cpp and \csharp have the same array memory layout and pointers can be passed seamlessly, without the need for pointer conversion.
+\end{itemize}
+This document describes the development strategies (section 2), the Gridgeom design (section 2), and the responsibilities of the main classes (section 4 and ahead).
+%------------------------------------------------------------------------------
+\chapter{Gridgeom development strategies}
+
+The following strategies were adopted when developing the Gridgeom in \cpp.
+Note that the following strategies are not immutable and can be revised.
+Performance:
+\begin{itemize}
+\item Avoid abstractions of low-level components: when iterating over millions of nodes, edges or faces polymorphic calls are expensive. Compile-time static polymorphism could be used as an alternative to run-time polymorphism but has not been applied yet.
+\item to achieve the same level of performance as the Fortran code, contiguous arrays are extensively used (std::vectors).
+\item Computed quantities are often cached in private class members.
+\end{itemize}
+Coding:
+\begin{itemize}
+\item Internal class members are prefixed with m\_ to distinguish them from non-class members.
+\item Classes and class methods start with capital letters.
+\item Input parameters in methods or functions come first, output parameters come second.
+\item Whenever possible methods or functions return a successful state, to allow the calling methods to act based on the return value.
+\item Pass by reference non-primitive types, to avoid deep copies.
+\item Use the const qualifier whenever possible.
+\item Avoid overloading copy constructors and assignment operators because the compiler can generate them automatically.
+\end{itemize}
+Re-usability:
+\begin{itemize}
+\item Promote reusability by separating code logic in separate functions or classes.
+\item Promote reusability by using templates (the same logic can be used for different types).
+\end{itemize}
+Resource management:
+\begin{itemize}
+\item Avoid the use of new or malloc to allocate heap memory. Use containers instead, such as std::vectors that auto-destroy when out of scope.
+\item Use resource acquisition is initialization (RAII).
+\end{itemize}
+Usage of external libraries:
+\begin{itemize}
+\item Promote the use of libraries when possible in this order: standard template library (stl algorithms operating on containers), boost, and then others.
+\end{itemize}
+
+%------------------------------------------------------------------------------
+\chapter{Gridgeom design}
+
+The design of a geometrical library is influenced by the choices made for the representation of the mesh entities. In Gridgeom an unstructured mesh is uniquely defined by two entities:
+\begin{itemize}
+\item The nodes vector: represented using an std::vector<Point>, where Points is a structure containing the point coordinates (cartesian or spherical).
+\item The edges vector: represented using an std::vector<std:: pair<int,int>>, containing the start and the end index of the edges in the Nodes vector.
+\end{itemize}
+All other mesh properties are computed from these two entities, such as the face nodes, the face edges, the faces mass centers, and the faces circumcenters. See section 5 for some more details.
+
+The library is separated in an API namespace (GridGeomApi) used for communication with the client and a backend namespace (GridGeom), where the classes implementing the algorithms are included (Figure 1). The API namespace contains the library API methods (Gridgeom.cpp) and several structures used for communicating with the clients. These structures are mirrored in the client application and filled with appropriate values.
+
+An example of the mesh refinement algorithm execution is shown in Figure 2. When the client application creates a new mesh two API calls are required: in the first call (ggeo\_new\_mesh) a new entry in the meshInstances vector is pushed, in the second call (ggeo\_set\_state) the Mesh class is created and assigned to the entry of the meshInstance vector pushed before. Now the mesh is stored in the library and ready to be used by the algorithms.
+
+The client now calls the ggeo\_refine\_mesh\_based\_on\_samples function. In the local scope of the function an instance of the MeshRefinement class is created, the Refine method executed and the resulting mesh saved in the meshInstances vector. Finally, the last state of the mesh is retrieved using the ggeo\_get\_mesh function, whereby all information required for rendering the new mesh (nodes, edges, and faces) are retrieved from the meshInstances vector and returned to the client.
+
+By using this design only the mesh instances are saved throughout the executions and all other algorithm classes (modifiers) are automatically destroyed when the algorithm execution is complete. Exceptions are the algorithms that support interactivity. In these cases, the algorithms are divided into several API calls, and their instances survive until an explicit ''delete'' API call.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics*[width=1.0\textwidth]{figures/GridEditorClassDiagram.png}
+	\caption{Gridgeom library simplified class diagram. Rectangles with right corners represent structures, rectangles with round corners represent classes and yellow rectangles represent collections of methods (e.g. the API interface or collections of static functions).}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	%\includegraphics*[width=0.9\textwidth]{pictures/imod_structure.png}
+	\caption{Sequence diagram for creating a new grid and performing mesh refinement.}
+\end{figure}
+
+%------------------------------------------------------------------------------
+\chapter{The Operations file}
+
+In the current implementation, several geometrical methods acting on arrays or simple data structures (e.g. Points) are collected in the Operation.cpp file. This choice was made for reusing such methods in several other classes. Operations include:
+\begin{itemize}
+\item Vector dot product.
+\item Resize and filling a vector with a default value.
+\item Find the indexes in a vector equal to a certain value.
+\item Sort a vector returning its permutation array.
+\item Root finding using the golden section search algorithm.
+\item Performing coordinate transformations.
+\item Inquire if a point is in a polygon.
+\item The outer and inner products of two segments.
+\item Compute the normal vector of a segment.
+\item Compute the distances and the squared distances.
+\item Compute the circumcenter of a triangle.
+\item Compute if two lines are crossing.
+\item Interpolating values using the averaging algorithm.
+\end{itemize}
+All operations reported above supports cartesian, spherical, and spherical accurate coordinate systems.
+
+%------------------------------------------------------------------------------
+\chapter{The mesh class}
+
+The mesh class represents an unstructured mesh. When communicating with the client only unstructured meshes are used. Some algorithms generate curvilinear grids (see section 9), but these are converted to a mesh instance when communicating with the client. The mesh class has the following responsibilities:
+\begin{itemize}
+\item Construct the mesh faces from the nodes and edges and other mesh mappings required by all algorithms (Mesh::FindFaces). Mesh::FindFaces is using recursion to find faces with up to 6 edges. This is an improvement over the Fortran implementation, where several functions were coded for each face type by repeating code (triangular face, quadrilateral face, etc..).
+\item Enabling mesh editing, namely:
+\begin{itemize}
+\item Node merging
+\item Node insertion
+\item Moving a node
+\item Inserting edges
+\item Deleting edges
+\item Merging nodes (merging two nodes placed at very close distance).
+\end{itemize}
+These algorithms can be separated into different classes.
+\item Converting a curvilinear grid to an unstructured mesh (converting constructor).
+\item Holding the mesh projection (cartesian, spherical, or spherical accurate).
+\item Making a quad mesh from a polygon or from parameters (this algorithm can be separated into different classes).
+\item Making a triangular mesh from a polygon (this algorithm can be separated to a different class).
+\end{itemize}
+This algorithm introduces a dependency on the Richard Shewchuk Triangle.c library.
+The mesh class stores a reference to an RTree instance. RTree is a class wrapping the boost::geometry::index::rtree code, implemented in SpatialTree.hpp. This is required for inquiring adjacent nodes in the merging algorithm.
+
+%------------------------------------------------------------------------------
+\chapter{The mesh OrthogonalizationAndSmoothing class}
+
+This class implements the mesh orthogonalization and smoothing algorithm as described in \dflowfm technical manual (consult this manual for the mathematical details on the equations). The algorithm is composed of two differential equations: the first equation maximizes orthogonalization between edges and flow links and the second equation reduces the differences of the internal mesh angles (mesh smoothness). For this reason, the OrthogonalizationAndSmoothing class is composed of a smoother and an orthogonalizer, where the nodal contributions are computed by separate classes, as opposed to the original Fortran implementation. Essentially, the algorithm executes two loops:
+\begin{itemize}
+\item An outer loop, which itself is composed of the following steps:
+\begin{enumerate}
+\item Computation of the orthogonalizer contributions.
+\item Computation of the smoother contributions.
+\item Allocation of the linear system to be solved.
+\item Summation of the two contributions (matrix assembly).
+The two contributions are weighted based on the desired smoothing to orthogonality ratio. OpenMP thread parallelization is used when summing the terms (loop iterations are independent).
+\end{enumerate}
+\item An inner iteration: the resulting linear system is solved explicitly. The nodal coordinates are updated and the nodes moving on the mesh boundary are projected to the original mesh boundary. If the project to land boundary flag is activated, the boundary nodes are projected to the land boundaries. Also in this case OpenMP parallelization is used in OrthogonalizationAndSmoothing::InnerIteration() because the update of the nodal coordinates has been made iteration-independent.
+\end{itemize}
+Gridgeom API has five functions to enable the client to display the mesh during the computations (interactivity). These functions are:
+\begin{itemize}
+\item ggeo\_orthogonalize\_initialize
+\item ggeo\_orthogonalize\_prepare\_outer\_iteration
+\item ggeo\_orthogonalize\_inner\_iteration
+\item ggeo\_orthogonalize\_finalize\_outer\_iteration
+\item ggeo\_orthogonalize\_delete
+\end{itemize}
+The execution flow of these functions is shown in Figure A1 of the Appendix. Additional details about these functions can be retrieved from the API documentation.
+%------------------------------------------------------------------------------
+\chapter{The MeshRefinement class}
+
+Mesh refinement is based on iteratively splitting the edges until the desired level of refinement or the maximum number of iterations is reached. Refinement can be based on samples or based on a polygon. The refinement based on samples uses the averaging interpolation algorithm to compute the level of refinement from the samples to the centers of the edges.
+At a high level, the mesh refinement is performed as follow:
+\begin{itemize}
+\item Flag the nodes inside the refinement polygon.
+\item Flag all face nodes of the faces not fully included in the polygon.
+\item Execute the refinement iterations
+\begin{enumerate}
+\item For each edge store the index of its neighboring edge sharing a hanging node (the so-called brother edge). This is required for the following steps because edges with hanging nodes will not be divided further.
+\item Compute edge and face refinement masks from the samples.
+\item Compute if a face should be divided based on the computed refinement value.
+\item Split the face by dividing the edges.
+\end{enumerate}
+\item Connect the hanging nodes if required, thus forming triangular faces in the transition area.
+\end{itemize}
+As with OrthogonalizationAndSmoothing, MeshRefinement modifies an existing mesh instance.
+%------------------------------------------------------------------------------
+\chapter{The spline class}
+
+The spline class stores the corner points of each spline. Besides the corner points, the derivatives at the corner points are also stored. The coordinates of the points between the corner points are computed in the static method Splines::Interpolate.
+%------------------------------------------------------------------------------
+\chapter{The CurvilinearGridFromSplines class}
+
+In this class, the algorithm to gradually develop a mesh from the centreline of the channel towards the boundaries is implemented. It is the most complex algorithm in the library. The curvilinear mesh is developed from the center spline by the following steps:
+\begin{itemize}
+\item Initialization step
+\begin{itemize}
+\item The splines are labelled (central or transversal spline) based on the number of corner points and the intersecting angles.
+\item The canal heights at a different position along the central spline are computed from the crossing splines.
+%\item The central spline is divided into parts (''m discretizations'').
+\item The normal vectors of each m part are computed, as these determine the growing front directions.
+\item The edge velocities to apply to each normal direction are computed.
+\end{itemize}
+\item Iteration step, where the mesh is grown of one layer at the time from the left and right sides of the central spline:
+\begin{itemize}
+\item Compute the node velocities from the edge velocities.
+\item Find the nodes at the front (the front might miss some faces and be irregular).
+\item Compute the maximum growth time to avoid faces with intersecting edges.
+\item Grow the grid by translating the nodes at the front by an amount equal to the product of the nodal velocity by the maximum grow time.
+\end{itemize}
+\item Post-processing
+\begin{itemize}
+\item Remove the skewed faces whose aspect rati0 exceeds a prescribed value.
+\item Compute the resulting CurvilinearGrid from the internal table of computed nodes (m\_gridPoints).
+\end{itemize}
+\end{itemize}
+to support interactivity with the client, the original Fortran algorithm was divided into separate API calls:
+\begin{itemize}
+\item ggeo\_curvilinear\_mesh\_from\_splines\_ortho\_initialize, corresponding to the initialization step above.
+\item ggeo\_curvilinear\_mesh\_from\_splines\_iteration, corresponding to the iteration step above.
+\item ggeo\_curvilinear\_mesh\_from\_splines\_ortho\_refresh\_mesh, corresponding to the post-processing above, plus the conversion of the CurvilinearGrid to an unstructured mesh.
+\item ggeo\_curvilinear\_mesh\_from\_splines\_ortho\_delete, necessary to delete the CurvilinearGridFromSplines instance used in the previous API calls.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+%------------------------------------------------------------------------------
+\appendix
+\chapter{Appendix}
+
+
+\begin{figure}[H]
+	\centering
+	%\includegraphics*[width=0.9\textwidth]{pictures/imod_structure.png}
+	\caption{Sequence diagram for orthogonalization and smoothing.}
+\end{figure}
+
+
+%------------------------------------------------------------------------------
+\LastPage
+%
+%------------------------------------------------------------------------------
+\end{document}
+
