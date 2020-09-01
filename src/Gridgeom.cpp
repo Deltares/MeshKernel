@@ -37,6 +37,7 @@
 #include "Splines.hpp"
 #include "Entities.hpp"
 #include "MeshRefinement.hpp"
+#include "LandBoundaries.hpp"
 #include "Constants.cpp"
 
 // The vector containing the mesh instances 
@@ -321,17 +322,19 @@ namespace GridGeomApi
 
         GridGeom::Smoother smoother(&meshInstances[gridStateId]);
         GridGeom::Orthogonalizer orthogonalizer(&meshInstances[gridStateId]);
+        GridGeom::LandBoundaries landBoundary;
+        landBoundary.Set(landBoundaries, &meshInstances[gridStateId], &polygon);
 
         GridGeom::OrthogonalizationAndSmoothing ortogonalization;
         ortogonalization.Set(&meshInstances[gridStateId],
                              &smoother,
                              &orthogonalizer,
                              &polygon,
+                             &landBoundary,
                              isTriangulationRequired,
                              isAccountingForLandBoundariesRequired,
                              projectToLandBoundaryOption,
-                             orthogonalizationParametersNative,
-                             landBoundaries);
+                             orthogonalizationParametersNative);
         ortogonalization.Compute();
         return 0;
     }
@@ -374,17 +377,19 @@ namespace GridGeomApi
 
         GridGeom::Smoother smoother(&meshInstances[gridStateId]);
         GridGeom::Orthogonalizer orthogonalizer(&meshInstances[gridStateId]);
+        GridGeom::LandBoundaries landBoundary;
+        landBoundary.Set(landBoundaries, &meshInstances[gridStateId], &polygon);
 
         GridGeom::OrthogonalizationAndSmoothing orthogonalizationInstance;
         orthogonalizationInstance.Set(&meshInstances[gridStateId],
                                       &smoother,
                                       &orthogonalizer,
                                       &polygon,
+                                      &landBoundary,
                                       isTriangulationRequired,
                                       isAccountingForLandBoundariesRequired,
                                       projectToLandBoundaryOption,
-                                      orthogonalizationParametersNative,
-                                      landBoundaries);
+                                      orthogonalizationParametersNative);
 
         orthogonalizationInstances.insert({ gridStateId, orthogonalizationInstance });
 
