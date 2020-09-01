@@ -403,7 +403,7 @@ namespace GridGeom
 
         // nodes
         std::vector<Point>              m_nodes;                    // The mesh nodes (xk, yk)
-        std::vector<std::vector<int>>   m_nodesEdges;               // For each node, the indexses of connected edges (nod)
+        std::vector<std::vector<int>>   m_nodesEdges;               // For each node, the indexses of connected edges (nod%lin)
         std::vector<int>                m_nodesNumEdges;            // For each node, the number of connected edges (nmk)
         std::vector<int>                m_nodeMask;                 // The node mask (kc)
         std::vector<std::vector<int>>   m_nodesNodes;               // For each node, its neighbours 
