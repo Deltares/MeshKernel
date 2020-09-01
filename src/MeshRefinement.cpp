@@ -49,9 +49,9 @@ GridGeom::MeshRefinement::MeshRefinement(Mesh& mesh) :
 };
 
 bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
-    const Polygons& polygon,
-    GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
-    GridGeomApi::InterpolationParametersNative& interpolationParametersNative)
+                                      const Polygons& polygon,
+                                      GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
+                                      GridGeomApi::InterpolationParametersNative& interpolationParametersNative)
 {
 
     bool isRefinementBasedOnSamples = false;

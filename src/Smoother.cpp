@@ -42,7 +42,7 @@ GridGeom::Smoother::Smoother()
 {
 }
 
-GridGeom::Smoother::Smoother(Mesh& mesh): m_mesh(&mesh)
+GridGeom::Smoother::Smoother(Mesh* mesh): m_mesh(mesh)
 {
 }
 

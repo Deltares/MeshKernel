@@ -319,19 +319,19 @@ namespace GridGeomApi
             landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
         }
 
-        GridGeom::Smoother smoother(meshInstances[gridStateId]);
-        GridGeom::Orthogonalizer orthogonalizer(meshInstances[gridStateId]);
+        GridGeom::Smoother smoother(&meshInstances[gridStateId]);
+        GridGeom::Orthogonalizer orthogonalizer(&meshInstances[gridStateId]);
 
         GridGeom::OrthogonalizationAndSmoothing ortogonalization;
-        ortogonalization.Set(meshInstances[gridStateId],
-            smoother,
-            orthogonalizer,
-            isTriangulationRequired,
-            isAccountingForLandBoundariesRequired,
-            projectToLandBoundaryOption,
-            orthogonalizationParametersNative,
-            polygon,
-            landBoundaries);
+        ortogonalization.Set(&meshInstances[gridStateId],
+                             &smoother,
+                             &orthogonalizer,
+                             &polygon,
+                             isTriangulationRequired,
+                             isAccountingForLandBoundariesRequired,
+                             projectToLandBoundaryOption,
+                             orthogonalizationParametersNative,
+                             landBoundaries);
         ortogonalization.Compute();
         return 0;
     }
@@ -372,18 +372,18 @@ namespace GridGeomApi
             landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
         }
 
-        GridGeom::Smoother smoother(meshInstances[gridStateId]);
-        GridGeom::Orthogonalizer orthogonalizer(meshInstances[gridStateId]);
+        GridGeom::Smoother smoother(&meshInstances[gridStateId]);
+        GridGeom::Orthogonalizer orthogonalizer(&meshInstances[gridStateId]);
 
         GridGeom::OrthogonalizationAndSmoothing orthogonalizationInstance;
-        orthogonalizationInstance.Set(meshInstances[gridStateId],
-                                      smoother,
-                                      orthogonalizer,
+        orthogonalizationInstance.Set(&meshInstances[gridStateId],
+                                      &smoother,
+                                      &orthogonalizer,
+                                      &polygon,
                                       isTriangulationRequired,
                                       isAccountingForLandBoundariesRequired,
                                       projectToLandBoundaryOption,
                                       orthogonalizationParametersNative,
-                                      polygon,
                                       landBoundaries);
 
         orthogonalizationInstances.insert({ gridStateId, orthogonalizationInstance });

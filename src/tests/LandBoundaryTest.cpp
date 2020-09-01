@@ -23,9 +23,9 @@ TEST(LandBoundaries, OneLandBoundary)
     GridGeom::Polygons polygons;
 
     // Execute
-    landboundaries.Set(landBoundaryPolygon);
-    landboundaries.Administrate(mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(mesh, polygons, 2);
+    landboundaries.Set(landBoundaryPolygon, &mesh,&polygons);
+    landboundaries.Administrate();
+    landboundaries.FindNearestMeshBoundary(2);
 
     // Checks
     EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[0]);
@@ -63,9 +63,9 @@ TEST(LandBoundaries, TwoLandBoundaries)
     GridGeom::Polygons polygons;
 
     // Execute
-    landboundaries.Set(landBoundaryPolygon);
-    landboundaries.Administrate(mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(mesh, polygons, 2);
+    landboundaries.Set(landBoundaryPolygon, &mesh, &polygons);
+    landboundaries.Administrate();
+    landboundaries.FindNearestMeshBoundary(2);
 
     // Checks
     EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[0]);
@@ -99,9 +99,9 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
     GridGeom::Polygons polygons;
 
     // Execute
-    landboundaries.Set(landBoundaryPolygon);
-    landboundaries.Administrate(mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(mesh, polygons, 2);
+    landboundaries.Set(landBoundaryPolygon, &mesh, &polygons);
+    landboundaries.Administrate();
+    landboundaries.FindNearestMeshBoundary(2);
 
     // Checks
     EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[0]);
@@ -138,9 +138,9 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
     GridGeom::Polygons polygons;
 
     // Execute
-    landboundaries.Set(landBoundaryPolygon);
-    landboundaries.Administrate(mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(mesh, polygons, 2);
+    landboundaries.Set(landBoundaryPolygon, &mesh,&polygons);
+    landboundaries.Administrate();
+    landboundaries.FindNearestMeshBoundary(2);
 
     // Checks
     EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[0]);

@@ -46,20 +46,20 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
 
 
-    GridGeom::Smoother smoother(mesh);
-    GridGeom::Orthogonalizer orthogonalizer(mesh);
+    GridGeom::Smoother smoother(&mesh);
+    GridGeom::Orthogonalizer orthogonalizer(&mesh);
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
     
     GridGeom::OrthogonalizationAndSmoothing orthogonalization;
-    orthogonalization.Set( mesh, 
-                           smoother,
-                           orthogonalizer,
+    orthogonalization.Set( &mesh, 
+                           &smoother,
+                           &orthogonalizer,
+                           &polygon,
                            isTriangulationRequired, 
                            isAccountingForLandBoundariesRequired, 
                            projectToLandBoundaryOption,
                            orthogonalizationParametersNative,
-                           polygon,
                            landBoundary );
 
     orthogonalization.Compute();
@@ -99,17 +99,17 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
    
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
-    GridGeom::Smoother smoother(mesh);
-    GridGeom::Orthogonalizer orthogonalizer(mesh);
+    GridGeom::Smoother smoother(&mesh);
+    GridGeom::Orthogonalizer orthogonalizer(&mesh);
     GridGeom::OrthogonalizationAndSmoothing orthogonalization;
-    orthogonalization.Set(mesh, 
-                          smoother, 
-                          orthogonalizer,
+    orthogonalization.Set(&mesh,
+                          &smoother,
+                          &orthogonalizer,
+                          &polygon,
                           isTriangulationRequired,
                           isAccountingForLandBoundariesRequired,
                           projectToLandBoundaryOption,
                           orthogonalizationParametersNative,
-                          polygon,
                           landBoundary);
 
     orthogonalization.Compute();
@@ -158,18 +158,18 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
 
-    GridGeom::Smoother smoother(mesh);
-    GridGeom::Orthogonalizer orthogonalizer(mesh);
+    GridGeom::Smoother smoother(&mesh);
+    GridGeom::Orthogonalizer orthogonalizer(&mesh);
     GridGeom::OrthogonalizationAndSmoothing orthogonalization;
 
-    orthogonalization.Set(mesh, 
-                          smoother, 
-                          orthogonalizer,
+    orthogonalization.Set(&mesh, 
+                          &smoother,
+                          &orthogonalizer,
+                          &polygon,
                           isTriangulationRequired,
                           isAccountingForLandBoundariesRequired,
                           projectToLandBoundaryOption,
                           orthogonalizationParametersNative,
-                          polygon,
                           landBoundary);
 
     orthogonalization.Compute();
@@ -230,18 +230,18 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
 
     std::vector<GridGeom::Point> landBoundary;
 
-    GridGeom::Smoother smoother(mesh);
-    GridGeom::Orthogonalizer orthogonalizer(mesh);
+    GridGeom::Smoother smoother(&mesh);
+    GridGeom::Orthogonalizer orthogonalizer(&mesh);
     GridGeom::OrthogonalizationAndSmoothing orthogonalization;
 
-    orthogonalization.Set( mesh, 
-                           smoother, 
-                           orthogonalizer,
+    orthogonalization.Set( &mesh, 
+                           &smoother,
+                           &orthogonalizer,
+                           &polygon,
                            isTriangulationRequired,
                            isAccountingForLandBoundariesRequired,
                            projectToLandBoundaryOption,
                            orthogonalizationParametersNative,
-                           polygon,
                            landBoundary );
 
     orthogonalization.Compute();
@@ -290,18 +290,18 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
 
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
-    GridGeom::Smoother smoother(mesh);
-    GridGeom::Orthogonalizer orthogonalizer(mesh);
+    GridGeom::Smoother smoother(&mesh);
+    GridGeom::Orthogonalizer orthogonalizer(&mesh);
     GridGeom::OrthogonalizationAndSmoothing orthogonalization;
 
-    orthogonalization.Set( mesh, 
-                           smoother, 
-                           orthogonalizer,
+    orthogonalization.Set( &mesh, 
+                           &smoother, 
+                           &orthogonalizer,
+                           &polygon,
                            isTriangulationRequired,
                            isAccountingForLandBoundariesRequired,
                            projectToLandBoundaryOption,
                            orthogonalizationParametersNative,
-                           polygon,
                            landBoundary);
 
     orthogonalization.Compute();
@@ -350,18 +350,18 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
-    GridGeom::Smoother smoother(mesh);
-    GridGeom::Orthogonalizer orthogonalizer(mesh);
+    GridGeom::Smoother smoother(&mesh);
+    GridGeom::Orthogonalizer orthogonalizer(&mesh);
     GridGeom::OrthogonalizationAndSmoothing orthogonalization;
 
-    orthogonalization.Set( mesh, 
-                           smoother, 
-                           orthogonalizer,
+    orthogonalization.Set( &mesh, 
+                           &smoother, 
+                           &orthogonalizer,
+                           &polygon,
                            isTriangulationRequired,
                            isAccountingForLandBoundariesRequired,
                            projectToLandBoundaryOption,
                            orthogonalizationParametersNative,
-                           polygon,
                            landBoundary);
 }
 
@@ -399,18 +399,18 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
     
     // no enclosing polygon
     GridGeom::Polygons polygon;
-    GridGeom::Smoother smoother(mesh);
-    GridGeom::Orthogonalizer orthogonalizer(mesh);
+    GridGeom::Smoother smoother(&mesh);
+    GridGeom::Orthogonalizer orthogonalizer(&mesh);
     GridGeom::OrthogonalizationAndSmoothing orthogonalization;
 
-    orthogonalization.Set(mesh, 
-                          smoother, 
-                          orthogonalizer, 
+    orthogonalization.Set(&mesh, 
+                          &smoother, 
+                          &orthogonalizer, 
+                          &polygon,
                           isTriangulationRequired,
                           isAccountingForLandBoundariesRequired,
                           projectToLandBoundaryOption,
                           orthogonalizationParametersNative,
-                          polygon,
                           landBoundary);
 
     orthogonalization.Compute();
@@ -460,18 +460,18 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
-    GridGeom::Smoother smoother(mesh);
-    GridGeom::Orthogonalizer orthogonalizer(mesh);
+    GridGeom::Smoother smoother(&mesh);
+    GridGeom::Orthogonalizer orthogonalizer(&mesh);
     GridGeom::OrthogonalizationAndSmoothing orthogonalization;
 
-    orthogonalization.Set( mesh, 
-                           smoother, 
-                           orthogonalizer,
+    orthogonalization.Set( &mesh, 
+                           &smoother,
+                           &orthogonalizer,
+                           &polygon,
                            isTriangulationRequired,
                            isAccountingForLandBoundariesRequired,
                            projectToLandBoundaryOption,
                            orthogonalizationParametersNative,
-                           polygon,
                            landBoundary);
 
     orthogonalization.Compute();
@@ -553,18 +553,18 @@ TEST(MeshRefinement, SmallTriangulargridSpherical)
     // no enclosing polygon
     GridGeom::Polygons polygon;
     std::vector<GridGeom::Point> landBoundary;
-    GridGeom::Smoother smoother(mesh);
-    GridGeom::Orthogonalizer orthogonalizer(mesh);
+    GridGeom::Smoother smoother(&mesh);
+    GridGeom::Orthogonalizer orthogonalizer(&mesh);
     GridGeom::OrthogonalizationAndSmoothing orthogonalization;
 
-    orthogonalization.Set( mesh, 
-                           smoother, 
-                           orthogonalizer,
+    orthogonalization.Set( &mesh, 
+                           &smoother,
+                           &orthogonalizer,
+                           &polygon,
                            isTriangulationRequired,
                            isAccountingForLandBoundariesRequired,
                            projectToLandBoundaryOption,
                            orthogonalizationParametersNative,
-                           polygon,
                            landBoundary);
 
     orthogonalization.Compute();
