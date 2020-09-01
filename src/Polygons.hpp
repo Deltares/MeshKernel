@@ -52,9 +52,9 @@ namespace GridGeom
 
         /// copynetboundstopol
         bool MeshBoundaryToPolygon(Mesh& mesh,
-            int counterClockWise,
-            std::vector<Point>& meshBoundaryPolygon,
-            int& numNodesBoundaryPolygons);
+                                   int counterClockWise,
+                                   std::vector<Point>& meshBoundaryPolygon,
+                                   int& numNodesBoundaryPolygons);
 
         /// create a set of points in a polygon 
         bool CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints);

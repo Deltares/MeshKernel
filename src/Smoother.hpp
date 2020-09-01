@@ -51,7 +51,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        Smoother(Mesh& mesh);
+        Smoother(Mesh* mesh);
         
         /// <summary>
         /// Computes the smoother weights
