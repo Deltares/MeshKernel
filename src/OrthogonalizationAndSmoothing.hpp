@@ -28,16 +28,18 @@
 #pragma once
 
 #include <vector>
-#include "LandBoundaries.hpp"
-#include "Polygons.hpp"
 #include "OrthogonalizationParametersNative.hpp"
 
 namespace GridGeom
 {
+    // Forward declare everything to reduce compile time dependency
     struct Point;
     class Mesh;
     class Smoother;
     class Orthogonalizer;
+    class LandBoundaries;
+    class Polygons;
+
     enum class Projections;
 
     /// <summary>
@@ -71,11 +73,11 @@ namespace GridGeom
                   Smoother* smoother,
                   Orthogonalizer* orthogonalizer,
                   Polygons* polygon,
+                  LandBoundaries* landBoundaries,
                   int isTriangulationRequired,
                   int isAccountingForLandBoundariesRequired,
                   int projectToLandBoundaryOption,
-                  GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
-                  std::vector<Point>& landBoundaries );
+                  GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative );
 
         /// <summary>
         /// Executes the entire algorithm
@@ -158,7 +160,7 @@ namespace GridGeom
         /// <returns>If the method succeeded</returns>
         bool ComputeCoordinates();
 
-        LandBoundaries                                     m_landBoundaries;            // The land boundaries
+        LandBoundaries*                                    m_landBoundaries;            // The land boundaries
         Polygons*                                          m_polygons;                  // The polygon where to perform the orthogonalization
         Smoother*                                          m_smoother;                  // A pointer to the smoother
         Orthogonalizer*                                    m_orthogonalizer;            // A pointer to the orthogonalizer

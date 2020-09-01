@@ -1438,4 +1438,25 @@ namespace GridGeom
 
         return true;
     }
+
+    // get the sign
+    template <typename T> 
+    static int sgn(T val) 
+    {
+        return (T(0) < val) - (val < T(0));
+    }
+
+    //(DUITPL)
+    static int TwoSegmentsSign(const Point& p1, const Point& p2, const Point& p3, const Point& p4, Projections projection)
+    {
+        
+        auto dx1 = GetDx(p1, p2, projection);
+        auto dy1 = GetDy(p1, p2, projection);
+        auto dx2 = GetDx(p3, p4, projection);
+        auto dy2 = GetDy(p3, p4, projection);
+        auto val = dx1 * dy2 - dy1 * dx2;
+        return sgn(val);
+    }
+
+
 }

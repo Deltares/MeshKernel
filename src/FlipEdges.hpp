@@ -29,8 +29,6 @@
 
 #include <vector>
 #include "Entities.hpp"
-#include "CurvilinearParametersNative.hpp"
-#include "SplinesToCurvilinearParametersNative.hpp"
 
 namespace GridGeom
 {
@@ -75,10 +73,23 @@ namespace GridGeom
                                  int& faceR,
                                  int& ntopo ) const;
 
+        /// <summary>
+        /// (nmk_opt)
+        /// </summary>
+        /// <param name="nodeIndex"></param>
+        /// <returns></returns>
         int OptimalNumberOfConnectedNodes(int nodeIndex) const;
+
+
+        /// <summary>
+        /// (comp_nnow)
+        /// </summary>
+        /// <returns></returns>
+        int DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const;
+
        
         Mesh* m_mesh;                                      // A pointer to mesh
-        LandBoundaries* m_landBoundaries;                   // A pointer to land boundaries
+        LandBoundaries* m_landBoundaries;                  // A pointer to land boundaries
         bool m_triangulateFaces = false;
         bool m_projectToLandBoundary = false;
 
