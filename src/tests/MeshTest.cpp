@@ -462,26 +462,12 @@ TEST(Mesh, NodeMerging)
 
     // 2. Act
     GridGeom::Polygons polygon;
-    //auto start(std::chrono::steady_clock::now());
     mesh.MergeNodesInPolygon(polygon);
-    //auto end(std::chrono::steady_clock::now());
-
-    //double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
-    //std::cout << "Elapsed time NodeMerging " << elapsedTime << " s " << std::endl;
 
     // 3. Assert
     ASSERT_EQ(mesh.GetNumNodes(), n*m);
     ASSERT_EQ(mesh.GetNumEdges(), (n -1) * m + (m - 1) * n);
 }
-
-//TEST(Mesh, DeleteEdge)
-//{
-//    // 1. Setup
-//    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, GridGeom::Projections::cartesian);
-//
-//    // start deleting nodes
-//
-//}
 
 TEST(Mesh, MillionQuads)
 {
@@ -521,25 +507,15 @@ TEST(Mesh, MillionQuads)
         }
     }
 
-    //std::cout << "Elapsed time " << std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count() << " s " << std::endl;
-
-    //std::cout << "start finding cells " << std::endl;
-    auto start(std::chrono::steady_clock::now());
-    // now build node-edge mapping
     GridGeom::Mesh mesh;
+    // now build node-edge mapping
+    auto start(std::chrono::steady_clock::now());
     mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
-
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
-    std::cout << "Elapsed time " << elapsedTime << " s " << std::endl;
+    // std::cout << "Elapsed time " << elapsedTime << " s " << std::endl;
+    // std::cout << "Number of found cells " << mesh.GetNumFaces() << std::endl;
 
-    // the number of found faces is
-    //auto faces = mesh.m_facesNodes;
-    std::cout << "Number of found cells " << mesh.GetNumFaces() << std::endl;
-    //std::cout << "First face " << faces[0][0] << " " << faces[0][1] << " " << faces[0][2] << " " << faces[0][3] << std::endl;
-    //std::cout << "Second face " << faces[1][0] << " " << faces[1][1] << " " << faces[1][2] << " " << faces[1][3] << std::endl;
-
-    // to beat fortran interactor, we need to perform the entire administration in less than 1.5 seconds
-    EXPECT_LE(elapsedTime, 3.0);
+    EXPECT_LE(elapsedTime, 5.0);
 }
