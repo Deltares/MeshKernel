@@ -105,7 +105,6 @@ bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh* mesh,
     if (m_projectToLandBoundaryOption >= 1)
     {
         // account for enclosing polygon
-        m_landBoundaries->Administrate();
         m_landBoundaries->FindNearestMeshBoundary(m_projectToLandBoundaryOption);
     }
 

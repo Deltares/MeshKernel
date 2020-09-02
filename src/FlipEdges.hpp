@@ -48,12 +48,14 @@ namespace GridGeom
         FlipEdges();
 
         /// <summary>
-        /// 
+        /// Ctor
         /// </summary>
-        /// <param name="mesh">The mesh to use</param>
-        /// <param name="landBoundary">The land boundaries</param>
+        /// <param name="mesh"></param>
+        /// <param name="landBoundary"></param>
+        /// <param name="triangulateFaces"></param>
+        /// <param name="projectToLandBoundary"></param>
         /// <returns></returns>
-        FlipEdges(Mesh* mesh, LandBoundaries* landBoundary);
+        FlipEdges(Mesh* mesh, LandBoundaries* landBoundary, bool triangulateFaces, bool projectToLandBoundary);
 
         /// <summary>
         /// Flip the edges

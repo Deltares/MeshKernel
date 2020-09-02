@@ -125,14 +125,14 @@ namespace GridGeom
                     }
 
                     const double edgeLength = Distance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh->m_projection);
-                    const double minDistance = m_closeToLandBoundaryFactor * edgeLength;
+                    const double minDistance = m_closeFactor * edgeLength;
 
                     Point normalPoint;
                     double rlout;
                     const double distanceFirstMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
                     const double distanceSecondMeshNode = DistanceFromLine(secondMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
 
-                    if (distanceFirstMeshNode <= minDistance || distanceFirstMeshNode <= distanceSecondMeshNode)
+                    if (distanceFirstMeshNode <= minDistance || distanceFirstMeshNode <= minDistance)
                     {
                         landBoundaryIsClose = true;
                         break;
@@ -178,7 +178,7 @@ namespace GridGeom
         {
             int start = m_segmentIndices[i][0];
             int end = m_segmentIndices[i][1];
-            if (end > start)
+            if (end - start > 1)
             {
                 int split = int(start + (end - start) / 2);
                 m_segmentIndices[i][1] = split;
@@ -200,12 +200,16 @@ namespace GridGeom
         }
 
         bool successful = false;
-        bool meshBoundOnly = false;
 
+        bool meshBoundOnly = false;
+        m_closeFactor = m_closeWholeMeshFactor;
         if (snapping == 2 || snapping == 3)
         {
             meshBoundOnly = true;
+            m_closeFactor = m_closeToLandBoundaryFactor;
         }
+        
+        Administrate();
 
         m_nodeMask.resize(m_mesh->GetNumNodes() , intMissingValue);
         m_faceMask.resize(m_mesh->GetNumFaces(), intMissingValue);

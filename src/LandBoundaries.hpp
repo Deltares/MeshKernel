@@ -289,6 +289,7 @@ namespace GridGeom
         const double m_closeToLandBoundaryFactor = 5.0;   // close - to - landboundary tolerance, measured in number of meshwidths
         const double m_closeWholeMeshFactor = 1.0;        // close - to - landboundary tolerance, measured in number of meshwidths
         const double m_minDistanceFromLandFactor = 2.0;
+        double m_closeFactor = 5.0;
     };
 
 }
