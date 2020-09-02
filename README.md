@@ -29,7 +29,7 @@ Curvilinear meshes for rivers can be generated using splines.
 
 4. Mesh refinement
 
-A mesh can be on certaing areas based on samples 
+A mesh can be refined on areas based on samples or polygon selections 
 
 ![alt tag](doc/figures/GridRefinement.jpg)
 
