@@ -1,7 +1,7 @@
 \documentclass[biblatex]{deltares_manual}
 
 \newcommand{\dflowfm}{D-Flow~FM\xspace}
-\newcommand{\cpp}{C\texttt{++}\xspace}
+\newcommand{\cpp}{\mbox{C\texttt{++}}\xspace}
 \newcommand{\csharp}{C\#\xspace}
 
 \begin{document}
@@ -11,7 +11,7 @@
 \version{001}
 \author{Luca Carniato}
 %\partner{---}
-\maketitle
+\deltarestitle
 %------------------------------------------------------------------------------
 \chapter{Introduction}
 
@@ -80,12 +80,12 @@ By using this design only the mesh instances are saved throughout the executions
 
 \begin{figure}[H]
 	\centering
-	\includegraphics*[width=1.0\textwidth]{figures/GridEditorClassDiagram.png}
+	\includegraphics*[width=1.0\textwidth]{figures/GridEditorClassDiagram_1.jpg}
 	\caption{Gridgeom library simplified class diagram. Rectangles with right corners represent structures, rectangles with round corners represent classes and yellow rectangles represent collections of methods (e.g. the API interface or collections of static functions).}
 \end{figure}
 \begin{figure}[H]
 	\centering
-	%\includegraphics*[width=0.9\textwidth]{pictures/imod_structure.png}
+	\includegraphics*[width=1.0\textwidth]{figures/sequence_diagram_refinement.jpg}
 	\caption{Sequence diagram for creating a new grid and performing mesh refinement.}
 \end{figure}
 
@@ -215,14 +215,6 @@ to support interactivity with the client, the original Fortran algorithm was div
 \end{itemize}
 
 
-
-
-
-
-
-
-
-
 %------------------------------------------------------------------------------
 \appendix
 \chapter{Appendix}
@@ -230,7 +222,7 @@ to support interactivity with the client, the original Fortran algorithm was div
 
 \begin{figure}[H]
 	\centering
-	%\includegraphics*[width=0.9\textwidth]{pictures/imod_structure.png}
+	\includegraphics*[width=1.0\textwidth]{figures/sequence_diagram_orthogonalization.jpg}
 	\caption{Sequence diagram for orthogonalization and smoothing.}
 \end{figure}
 
