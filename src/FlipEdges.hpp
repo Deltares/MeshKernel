@@ -30,6 +30,7 @@
 #include <vector>
 #include "Entities.hpp"
 
+
 namespace GridGeom
 {
     // Forward declarations
