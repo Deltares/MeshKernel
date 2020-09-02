@@ -54,6 +54,13 @@ namespace GridGeom
         CurvilinearGridFromSplinesTransfinite(Splines* splines);
 
         /// <summary>
+        /// Set the algorithm parameters
+        /// </summary>
+        /// <param name="curvilinearParametersNative"></param>
+        /// <returns></returns>
+        bool Set(GridGeomApi::CurvilinearParametersNative curvilinearParametersNative);
+
+        /// <summary>
         /// Computes the adimensional intersections between splines.
         /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)
         /// </summary>
@@ -111,7 +118,7 @@ namespace GridGeom
         bool SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow);
 
         /// <summary>
-        /// Swap the columns of a two dimensional vector
+        /// Swap the columns of a two dimensional vector (MAKESR)
         /// </summary>
         /// <typeparam name="T">The input vector</typeparam>
         /// <param name="v"></param>
@@ -120,6 +127,36 @@ namespace GridGeom
         /// <returns>If the method succeeded</returns>
         template<typename T>
         bool SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn);
+
+
+        /// <summary>
+        /// Compute the distances following an exponential increase
+        /// </summary>
+        /// <param name="factor"></param>
+        /// <param name="leftDistance"></param>
+        /// <param name="rightDistance"></param>
+        /// <param name="distances"></param>
+        /// <returns></returns>
+        bool ComputeExponentialDistances(double factor, 
+                                           double leftDistance,
+                                           double rightDistance,
+                                           std::vector<double>& distances) const;
+
+        /// <summary>
+        /// Computes the distances along the spline where to generate the points
+        /// </summary>
+        /// <param name="numIntersections"></param>
+        /// <param name="numPoints"></param>
+        /// <param name="numDiscretizations"></param>
+        /// <param name="intersectionDistances"></param>
+        /// <param name="distances"></param>
+        /// <returns></returns>
+        bool ComputeDiscretizations( int numIntersections,
+                                     int numPoints,
+                                     int numDiscretizations,
+                                     const std::vector<double>& intersectionDistances,
+                                     std::vector<double>& distances ) const;
+
 
         std::vector<int>                 m_splineType;                              // The spline types (1 horizontal, -1 vertical)
         std::vector<std::vector<double>> m_splineIntersectionRatios;                // For each spline, stores the intersections in terms of total spline length
