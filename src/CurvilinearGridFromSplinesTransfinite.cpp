@@ -44,11 +44,15 @@ GridGeom::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTrans
 
 GridGeom::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(Splines* splines) : m_splines(splines)
 {
-    m_numN = 40;
-    m_numM = 20;
-
 };
 
+bool GridGeom::CurvilinearGridFromSplinesTransfinite::Set(GridGeomApi::CurvilinearParametersNative curvilinearParametersNative)
+{
+    m_numN = curvilinearParametersNative.NRefinement;
+    m_numM = curvilinearParametersNative.MRefinement;
+
+    return true;
+};
 
 bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& curvilinearGrid)
 {
@@ -119,7 +123,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
             }
         }
 
-        if (numIntersections < 0)
+        if (numIntersections < 2)
         {
             return false;
         }
@@ -152,35 +156,21 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
         adimensionalDistances.resize(numPoints);
         points.resize(numPoints);
 
-        int index = 0;
-        int discretizationMultiplyer = 0;
-        int numPointsSegment = numDiscretizations + 1;
-        for (int i = 0; i < numIntersections - 1; i++)
-        {
-            const double StartDistance = intersectionDistances[i];
-            const double EndDistance = intersectionDistances[i+1];
-            const double Discretization = (EndDistance - StartDistance) / numDiscretizations;
-            for (int j = 0; j < numPointsSegment; j++)
-            {
-                distances[index] = StartDistance + discretizationMultiplyer * Discretization;
-                index++;
-                discretizationMultiplyer++;
-            }
-            discretizationMultiplyer = 1;
-            numPointsSegment = numDiscretizations;
-        }
-
-
+        bool successful = ComputeDiscretizations( numIntersections,
+                                                numPoints,
+                                                numDiscretizations,
+                                                intersectionDistances,
+                                                distances );
 
         m_splines->InterpolatePointsOnSpline(splineIndex,
-            doubleMissingValue,
-            false,
-            distances,
-            points,
-            adimensionalDistances);
+                                             doubleMissingValue,
+                                             false,
+                                             distances,
+                                             points,
+                                             adimensionalDistances);
 
         // Start filling curvilinear grid
-        index = 0;
+        int index = 0;
         for (int i = from; i < to; i++)
         {
 
@@ -262,6 +252,90 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
     return true;
 }
 
+bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations( int numIntersections,
+                                                                              int numPoints,
+                                                                              int numDiscretizations,
+                                                                              const std::vector<double>& intersectionDistances,
+                                                                              std::vector<double>& distances ) const
+{
+
+    if (numIntersections == 2)
+    {
+        for (int i = 0; i < numPoints; i++)
+        {
+            distances[i] = intersectionDistances[0] + (intersectionDistances[1] - intersectionDistances[0]) * i / numDiscretizations;
+        }
+    }
+    else if (numIntersections > 2)
+    {
+        std::vector<double> ratioSegments(numIntersections, 0.0);
+        for (int i = 1; i < numIntersections - 1; i++)
+        {
+            ratioSegments[i] = (intersectionDistances[i + 1] - intersectionDistances[i]) / (intersectionDistances[i] - intersectionDistances[i - 1]);
+        }
+        ratioSegments[0] = ratioSegments[1];
+        ratioSegments[numIntersections-1] = ratioSegments[numIntersections - 2];
+
+
+        // the ratios
+        std::vector<double> leftDiscretization(numDiscretizations + 1, 0.0);
+        std::vector<double> rightDiscretization(numDiscretizations + 1, 0.0);
+        for (int i = 0; i < numIntersections - 1; i++)
+        {
+            const double rightRatio = std::pow(ratioSegments[i + 1], 1.0 / numDiscretizations);
+            bool succeded = ComputeExponentialDistances(rightRatio,
+                intersectionDistances[i],
+                intersectionDistances[i + 1],
+                rightDiscretization);
+
+            const double leftRatio = std::pow(ratioSegments[i], 1.0 / numDiscretizations);
+            succeded = ComputeExponentialDistances(leftRatio,
+                intersectionDistances[i],
+                intersectionDistances[i + 1],
+                leftDiscretization);
+
+            for (int j = 0; j < numDiscretizations + 1; j++)
+            {
+
+                double ar = double(j) / double(numDiscretizations);
+                double al = 1.0 - ar;
+
+                int index = i * numDiscretizations + j;
+                distances[index] = ar * rightDiscretization[j] + al * leftDiscretization[j];
+
+                //adjust a second time
+                ar = (distances[index] - intersectionDistances[i]) / (intersectionDistances[i + 1] - intersectionDistances[i]);
+                al = 1.0 - ar;
+                distances[index] = ar * rightDiscretization[j] + al * leftDiscretization[j];
+            }
+        }
+    }
+
+    return true;
+}
+
+bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistances( double factor, 
+                                                                                   double leftDistance,
+                                                                                   double rightDistance,
+                                                                                   std::vector<double>& distances ) const 
+{
+    distances[0] = 0.0;
+    double incrementRatio = 1.0;
+    for (int i = 0; i < distances.size() - 1; i++)
+    {
+        distances[i + 1] = distances[i] + incrementRatio;
+        incrementRatio = incrementRatio * factor;
+    }
+
+    incrementRatio = (rightDistance - leftDistance) / distances.back();
+
+    for (int i = 0; i < distances.size(); i++)
+    {
+        distances[i] = leftDistance + incrementRatio * distances[i];
+    }
+
+    return true;
+}
 
 bool GridGeom::CurvilinearGridFromSplinesTransfinite::Interpolate(const std::vector<Point>& sideOne,
                                                                   const std::vector<Point>& sideTwo,

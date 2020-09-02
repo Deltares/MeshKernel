@@ -44,7 +44,7 @@ GridGeom::Orthogonalizer::Orthogonalizer() : m_mesh(nullptr)
 }
 
 
-GridGeom::Orthogonalizer::Orthogonalizer(Mesh& mesh): m_mesh(&mesh)
+GridGeom::Orthogonalizer::Orthogonalizer(Mesh* mesh): m_mesh(mesh)
 {
 }
 

@@ -36,32 +36,38 @@
 #include "OrthogonalizationAndSmoothing.hpp"
 #include "Entities.hpp"
 #include "Mesh.hpp"
+#include "LandBoundaries.hpp"
+#include "Polygons.hpp"
 
 
-GridGeom::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(): m_mesh(nullptr), m_smoother(nullptr), m_orthogonalizer(nullptr)
+GridGeom::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing():
+    m_mesh(nullptr), 
+    m_smoother(nullptr), 
+    m_orthogonalizer(nullptr),
+    m_polygons(nullptr),
+    m_landBoundaries(nullptr)
 {
 }
 
 
-bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh& mesh,
-                                                   Smoother& smoother,
-                                                   Orthogonalizer& orthogonalizer,
+bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh* mesh,
+                                                   Smoother* smoother,
+                                                   Orthogonalizer* orthogonalizer,
+                                                   Polygons* polygon,
+                                                   LandBoundaries* landBoundaries,
                                                    int isTriangulationRequired,
                                                    int isAccountingForLandBoundariesRequired,
                                                    int projectToLandBoundaryOption,
-                                                   GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative,
-                                                   const Polygons& polygon,
-                                                   std::vector<Point>& landBoundaries)
+                                                   GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative)
 {    
     m_polygons = polygon;
-    m_smoother = &smoother;
-    m_orthogonalizer = &orthogonalizer;
- 
-    // pointer to mesh
-    m_mesh = &mesh;
+    m_smoother = smoother;
+    m_orthogonalizer = orthogonalizer;
+    m_mesh = mesh;
+    m_landBoundaries = landBoundaries;
 
     // Sets the node mask
-    m_mesh->MaskNodesInPolygons(m_polygons, true);
+    m_mesh->MaskNodesInPolygons(*m_polygons, true);
     // Flag nodes outside the polygon as corner points
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
@@ -89,8 +95,6 @@ bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh& mesh,
     m_orthogonalizationBoundaryIterations = orthogonalizationParametersNative.BoundaryIterations;
     m_orthogonalizationInnerIterations = orthogonalizationParametersNative.InnerIterations;
 
-    m_landBoundaries.Set(landBoundaries);
-
     m_isTriangulationRequired = isTriangulationRequired;
 
     m_isAccountingForLandBoundariesRequired = isAccountingForLandBoundariesRequired;
@@ -101,8 +105,8 @@ bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh& mesh,
     if (m_projectToLandBoundaryOption >= 1)
     {
         // account for enclosing polygon
-        m_landBoundaries.Administrate(mesh, m_polygons);
-        m_landBoundaries.FindNearestMeshBoundary(mesh, m_polygons, m_projectToLandBoundaryOption);
+        m_landBoundaries->Administrate();
+        m_landBoundaries->FindNearestMeshBoundary(m_projectToLandBoundaryOption);
     }
 
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops) 
@@ -326,7 +330,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::InnerIteration()
     // project on land boundary
     if (m_projectToLandBoundaryOption >= 1)
     {
-        m_landBoundaries.SnapMeshToLandBoundaries(*m_mesh);
+        m_landBoundaries->SnapMeshToLandBoundaries();
     }
 
     return true;
