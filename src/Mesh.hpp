@@ -395,13 +395,19 @@ namespace GridGeom
         /// <returns>If the method succeeded</returns>
         bool GetAspectRatios(std::vector<double>& aspectRatios);
 
+        /// <summary>
+        /// Classifies the nodes (makenetnodescoding)
+        /// </summary>
+        /// <returns>If the method succeeded</returns>
+        bool ClassifyNodes();
+
         // nodes
         std::vector<Point>              m_nodes;                    // The mesh nodes (xk, yk)
-        std::vector<std::vector<int>>   m_nodesEdges;               // For each node, the indexses of connected edges (nod)
+        std::vector<std::vector<int>>   m_nodesEdges;               // For each node, the indexses of connected edges (nod%lin)
         std::vector<int>                m_nodesNumEdges;            // For each node, the number of connected edges (nmk)
         std::vector<int>                m_nodeMask;                 // The node mask (kc)
         std::vector<std::vector<int>>   m_nodesNodes;               // For each node, its neighbours 
-        std::vector<int>                m_nodesTypes;               // The node types
+        std::vector<int>                m_nodesTypes;               // The node types (nb)
 
         // edges
         std::vector<Edge>               m_edges;                    // The edges, defined as first and second node(kn)
@@ -467,12 +473,6 @@ namespace GridGeom
                                 std::vector<int>& nodes,
                                 std::vector<int>& sortedEdges,
                                 std::vector<int>& sortedNodes);
-
-        /// <summary>
-        /// Classifies the nodes (makenetnodescoding)
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool ClassifyNodes();
 
         /// <summary>
         /// Checks if a triangle has an acute angle (checktriangle)

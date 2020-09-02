@@ -42,16 +42,16 @@ namespace GridGeom
 
         LandBoundaries();
 
-        bool Set(const std::vector<Point>& landBoundary);
-       
+        bool Set(const std::vector<Point>& landBoundary, Mesh* mesh, Polygons* polygons);
+
         /// <summary>
         /// The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary (admin_landboundary_segments)
         /// TODO: ? Why splitting in two segments is required?
         /// </summary>
-        /// <param name="mesh"></param>
         /// <param name="polygons"></param>
+        /// <param name="mesh"></param>
         /// <returns></returns>
-        bool Administrate(Mesh& mesh, Polygons& polygons);
+        bool Administrate();
 
         /// <summary>
         /// Find the mesh boundary line closest to the land boundary (find_nearest_meshline)
@@ -60,16 +60,16 @@ namespace GridGeom
         /// <param name="polygon"></param>
         /// <param name="snapping"></param>
         /// <returns></returns>
-        bool FindNearestMeshBoundary(const Mesh& mesh, const Polygons& polygon, int snapping);
+        bool FindNearestMeshBoundary( int snapping);
 
         /// <summary>
         /// Snap mesh nodes to land boundaies (snap_to_landboundary)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        bool SnapMeshToLandBoundaries(Mesh& mesh);
+        bool SnapMeshToLandBoundaries();
 
-        std::vector<int> m_meshNodesLandBoundarySegments; // lanseg_map, mesh nodes to land boundary 
+        std::vector<int> m_meshNodesLandBoundarySegments; // lanseg_map, mesh nodes to land boundary mapping
 
     private:
 
@@ -82,8 +82,7 @@ namespace GridGeom
         /// <param name="nodes"></param>
         /// <param name="numNodes"></param>
         /// <returns></returns>
-        bool AssignSegmentsToAllMeshNodes(const Mesh& mesh, 
-                                          int edgeIndex, 
+        bool AssignSegmentsToAllMeshNodes(int edgeIndex, 
                                           bool initialize, 
                                           std::vector<int>& nodes, 
                                           int numNodes);
@@ -95,8 +94,7 @@ namespace GridGeom
         /// <param name="numNodesLoc"></param>
         /// <param name="nodeIndex"></param>
         /// <returns></returns>
-        bool AddLandBoundary(const Mesh& mesh, 
-                             const std::vector<int>& nodesLoc, 
+        bool AddLandBoundary(const std::vector<int>& nodesLoc, 
                              int numNodesLoc, 
                              int nodeIndex);
 
@@ -110,9 +108,7 @@ namespace GridGeom
         /// <param name="numNodesInPath"></param>
         /// <param name="numRejectedNodesInPath"></param>
         /// <returns></returns>
-        bool MakePath(const Mesh& mesh,
-                      const Polygons& polygons,
-                      int landBoundarySegment,
+        bool MakePath(int landBoundarySegment,
                       bool meshBoundOnly,
                       int& numNodesInPath,
                       int& numRejectedNodesInPath);
@@ -132,9 +128,7 @@ namespace GridGeom
         /// <param name="startLandBoundaryIndex"></param>
         /// <param name="endLandBoundaryIndex"></param>
         /// <returns></returns>
-        bool ComputeMask(const Mesh& mesh,
-                         const Polygons& polygon,
-                         int segmentIndex,
+        bool ComputeMask(int segmentIndex,
                          bool meshBoundOnly,
                          int& leftIndex,
                          int& rightIndex,
@@ -156,8 +150,7 @@ namespace GridGeom
         /// <param name="leftEdgeRatio"></param>
         /// <param name="rightEdgeRatio"></param>
         /// <returns></returns>
-        bool MaskFaces(const Mesh& mesh,
-            const bool& meshBoundOnly,
+        bool MaskFaces(const bool& meshBoundOnly,
             std::vector<int>& landBoundaryFaces,
             int startNodeLandBoundaryIndex,
             int endNodeLandBoundaryindex,
@@ -180,8 +173,7 @@ namespace GridGeom
         /// <param name="rightEdgeRatio"></param>
         /// <param name="landBoundaryNode"></param>
         /// <returns></returns>
-        bool IsMeshEdgeCloseToLandBoundaries(const Mesh& mesh,
-                                             int edgeIndex,
+        bool IsMeshEdgeCloseToLandBoundaries(int edgeIndex,
                                              int startNodeLandBoundaryIndex,
                                              int endNodeLandBoundaryIndex,
                                              bool meshBoundOnly,
@@ -205,9 +197,7 @@ namespace GridGeom
         /// <param name="startMeshNode"></param>
         /// <param name="endMeshNode"></param>
         /// <returns></returns>
-        bool FindStartEndMeshNodes(const Mesh& mesh,
-                                   const Polygons& polygons,
-                                   int startLandBoundaryIndex,
+        bool FindStartEndMeshNodes(int startLandBoundaryIndex,
                                    int endLandBoundaryIndex,
                                    int leftIndex,
                                    int rightIndex,
@@ -229,9 +219,7 @@ namespace GridGeom
         /// <param name="meshBoundOnly"></param>
         /// <param name="connectedNodes"></param>
         /// <returns></returns>
-        bool ShortestPath(const Mesh& mesh,
-                          const Polygons& polygons,
-                          int landBoundarySegment,
+        bool ShortestPath(int landBoundarySegment,
                           int startLandBoundaryIndex,
                           int endLandBoundaryIndex,
                           int startMeshNode,
@@ -267,10 +255,12 @@ namespace GridGeom
         /// <param name="startLandBoundaryIndex"></param>
         /// <param name="endLandBoundaryIndex"></param>
         /// <returns></returns>
-        bool IsFaceCrossedByLandBoundaries(const Mesh& mesh, 
-                                           int face, 
+        bool IsFaceCrossedByLandBoundaries(int face, 
                                            int startLandBoundaryIndex, 
                                            int endLandBoundaryIndex);
+
+        Mesh* m_mesh;                                     // A pointer to mesh 
+        Polygons* m_polygons;                             // A pointer to polygons
 
         std::vector<Point> m_nodes;                       // XLAN, YLAN, ZLAN
         int m_numAllocatedNodes;                          // MAXLAN
