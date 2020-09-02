@@ -291,9 +291,22 @@ int GridGeom::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, int
         return true;
     }
 
-    // start counting
-
-
+    // Start
+    // count the numbers of edges clockwise from the one connecting k1 
+    // that are not in a land/net boundary path
+    int kk = indexFirstNode;
+    edgeIndex = m_mesh->m_nodesEdges[nodeIndex][indexFirstNode];
+    int otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
+    num = 1;
+    while ( m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode]<0 && 
+            kk != indexSecondNode &&
+            m_mesh->m_edgesNumFaces[edgeIndex] > 1 )
+    {
+        kk = NextCircularBackwardIndex(kk, m_mesh->m_nodesNumEdges[nodeIndex]);
+        edgeIndex = m_mesh->m_nodesEdges[nodeIndex][kk];
+        int otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
+        num++;
+    }
 
     
 

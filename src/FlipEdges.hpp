@@ -32,6 +32,7 @@
 
 namespace GridGeom
 {
+    // Forward declarations
     class CurvilinearGrid;
     class Mesh;
     class LandBoundaries;
