@@ -859,6 +859,9 @@ bool GridGeom::Mesh::ClassifyNodes()
     m_nodesTypes.resize(GetNumNodes(), 0);
     std::fill(m_nodesTypes.begin(), m_nodesTypes.end(), 0);
 
+    // threshold for corner points
+    const double cornerCosine = 0.25;
+
     for (int e = 0; e < GetNumEdges(); e++)
     {
         const auto firstNode = m_edges[e].first;
@@ -890,7 +893,41 @@ bool GridGeom::Mesh::ClassifyNodes()
                 //corner point
                 m_nodesTypes[n] = 3;
             }
-            else {}
+            else 
+            {
+                int firstNode = 0;
+                int secondNode = 0;
+                for (int i = 0; i < m_nodesNumEdges[n]; i++)
+                {
+                    const int edgeIndex = m_nodesEdges[n][i];
+                    if (m_edgesNumFaces[edgeIndex] == 1) 
+                    {
+                        if (firstNode == 0) 
+                        {
+                            firstNode = m_edges[edgeIndex].first + m_edges[edgeIndex].second - n;
+                        }
+                        else 
+                        {
+                            secondNode = m_edges[edgeIndex].first + m_edges[edgeIndex].second - n;
+                        }
+                    }
+                }
+
+                // point at the border
+                m_nodesTypes[n] = 2;
+                if (firstNode >= 0 && secondNode >= 0)
+                {
+                    double cosPhi =
+                        NormalizedInnerProductTwoSegments(m_nodes[n], m_nodes[firstNode], m_nodes[n], m_nodes[secondNode], m_projection);
+
+                    // void angle
+                    if (cosPhi > -cornerCosine) 
+                    {
+                        m_nodesTypes[n] = 3;
+                    }
+                }
+            
+            }
         }
         else if (m_nodesTypes[n] > 2)
         {

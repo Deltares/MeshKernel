@@ -24,7 +24,6 @@ TEST(LandBoundaries, OneLandBoundary)
 
     // Execute
     landboundaries.Set(landBoundaryPolygon, &mesh,&polygons);
-    landboundaries.Administrate();
     landboundaries.FindNearestMeshBoundary(2);
 
     // Checks
@@ -64,7 +63,6 @@ TEST(LandBoundaries, TwoLandBoundaries)
 
     // Execute
     landboundaries.Set(landBoundaryPolygon, &mesh, &polygons);
-    landboundaries.Administrate();
     landboundaries.FindNearestMeshBoundary(2);
 
     // Checks
@@ -100,7 +98,6 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
 
     // Execute
     landboundaries.Set(landBoundaryPolygon, &mesh, &polygons);
-    landboundaries.Administrate();
     landboundaries.FindNearestMeshBoundary(2);
 
     // Checks
@@ -139,7 +136,6 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
 
     // Execute
     landboundaries.Set(landBoundaryPolygon, &mesh,&polygons);
-    landboundaries.Administrate();
     landboundaries.FindNearestMeshBoundary(2);
 
     // Checks
