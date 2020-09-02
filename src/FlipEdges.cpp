@@ -41,26 +41,30 @@ GridGeom::FlipEdges::FlipEdges() :
 {
 }
 
-GridGeom::FlipEdges::FlipEdges(Mesh* mesh, LandBoundaries* landBoundary) :
+GridGeom::FlipEdges::FlipEdges(Mesh* mesh, LandBoundaries* landBoundary, bool triangulateFaces, bool projectToLandBoundary):
     m_mesh(mesh),
-    m_landBoundaries(landBoundary)
+    m_landBoundaries(landBoundary),
+    m_triangulateFaces(triangulateFaces),
+    m_projectToLandBoundary(projectToLandBoundary)
 {
     m_triangulateFaces = true;
     m_projectToLandBoundary = true;
-
 };
 
 bool GridGeom::FlipEdges::Compute()
 {
 
-    m_mesh->FindFaces();
-    bool successful = m_mesh->ClassifyNodes();
+    bool successful = m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     if (m_triangulateFaces)
     {
-        successful = TriangulateFaces();
-        m_mesh->FindFaces();
-        successful = m_mesh->ClassifyNodes();
+        successful = successful && TriangulateFaces();
+        successful = successful && m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    }
+
+    if (!successful) 
+    {
+        return false;
     }
 
     if (m_projectToLandBoundary)
@@ -112,8 +116,8 @@ bool GridGeom::FlipEdges::Compute()
 
 
 bool GridGeom::FlipEdges::TopologyFunctional(int e,
-    int& k1,
-    int& k2,
+    int& firstNode,
+    int& secondNode,
     int& kl,
     int& kr,
     int& faceL,
@@ -126,8 +130,8 @@ bool GridGeom::FlipEdges::TopologyFunctional(int e,
         return true;
     }
 
-    k1 = m_mesh->m_edges[e].first;
-    k2 = m_mesh->m_edges[e].second;
+    firstNode = m_mesh->m_edges[e].first;
+    secondNode = m_mesh->m_edges[e].second;
     faceL = m_mesh->m_edgesFaces[e][0];
     faceR = m_mesh->m_edgesFaces[e][1];
 
@@ -148,8 +152,8 @@ bool GridGeom::FlipEdges::TopologyFunctional(int e,
         sumIndexsesRightFace += m_mesh->m_facesNodes[faceR][i];
     }
 
-    kl = sumIndexsesLeftFace - k1 - k2;
-    kr = sumIndexsesRightFace - k1 - k2;
+    kl = sumIndexsesLeftFace - firstNode - secondNode;
+    kr = sumIndexsesRightFace - firstNode - secondNode;
 
     if (kl < 0 || kr < 0)
     {
@@ -189,8 +193,8 @@ bool GridGeom::FlipEdges::TopologyFunctional(int e,
     }
 
     //  compute the change in functional
-    int n1 = m_mesh->m_nodesNumEdges[k1] - OptimalNumberOfConnectedNodes(k1);
-    int n2 = m_mesh->m_nodesNumEdges[k2] - OptimalNumberOfConnectedNodes(k2);
+    int n1 = m_mesh->m_nodesNumEdges[firstNode] - OptimalNumberOfConnectedNodes(firstNode);
+    int n2 = m_mesh->m_nodesNumEdges[secondNode] - OptimalNumberOfConnectedNodes(secondNode);
     int nL = m_mesh->m_nodesNumEdges[kl] - OptimalNumberOfConnectedNodes(kl);
     int nR = m_mesh->m_nodesNumEdges[kr] - OptimalNumberOfConnectedNodes(kr);
 
@@ -202,14 +206,28 @@ bool GridGeom::FlipEdges::TopologyFunctional(int e,
 
     if (m_landBoundaries)
     {
-        if (m_landBoundaries->m_meshNodesLandBoundarySegments[k1] >= 0 && m_landBoundaries->m_meshNodesLandBoundarySegments[k2] >= 0)
+        if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] >= 0 && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] >= 0)
         {
             //edge is associated with a land boundary, keep the edge
             ntopo = 1000;
         }
         else
         {
+            auto n1L = DifferenceFromOptimum(firstNode, secondNode, kl);
+            auto n1R = DifferenceFromOptimum(firstNode, secondNode, kr);
 
+            auto n2R = DifferenceFromOptimum(secondNode, firstNode, kl);
+            auto n2L = DifferenceFromOptimum(secondNode, firstNode, kr);
+
+            auto nL = DifferenceFromOptimum(kl, firstNode, secondNode);
+            auto nR = DifferenceFromOptimum(kr, firstNode, secondNode);
+
+            ntopo = (n1L - 1) * (n1L - 1) +
+                    (n1R - 1) * (n1R - 1) +
+                    (n2L - 1) * (n2L - 1) +
+                    (n2R - 1) * (n2R - 1) +
+                    2.0 * ((nL + 1) * (nL + 1) + (nR + 1) * (nR + 1)) -
+                    (n1L * n1L + n1R * n1R + n2L * n2L + n2R * n2R + 2.0 * (nL * nL + nR * nR));
 
         }
 
@@ -239,10 +257,6 @@ int GridGeom::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, int
         secondNode = firstNodeTemp;
     }
 
-    int optimalNumber = 0;
-    int num = 0;
-    int n = 0;
-
     // find the first edge connecting firstNode
     int indexFirstNode = -1;
     int edgeIndex = -1;
@@ -259,12 +273,12 @@ int GridGeom::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, int
 
     if (indexFirstNode == -1) 
     {
-        return true;
+        return 0;
     }
 
     if (m_mesh->m_edges[edgeIndex].first != nodeIndex && m_mesh->m_edges[edgeIndex].second != nodeIndex)
     {
-        return true;
+        return 0;
     }
 
     // find the first edge connecting secondNode
@@ -283,45 +297,93 @@ int GridGeom::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, int
 
     if (indexSecondNode == -1)
     {
-        return true;
+        return 0;
     }
 
     if (m_mesh->m_edges[edgeIndex].first != nodeIndex && m_mesh->m_edges[edgeIndex].second != nodeIndex)
     {
-        return true;
+        return 0;
     }
 
-    // Start
-    // count the numbers of edges clockwise from the one connecting k1 
-    // that are not in a land/net boundary path
-    int kk = indexFirstNode;
-    edgeIndex = m_mesh->m_nodesEdges[nodeIndex][indexFirstNode];
+    // count the numbers of edges clockwise from the one connecting indexFirstNode 
+    // that are not in a land or mesh boundary path
+
+    int currentNode = indexFirstNode;
+    edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentNode];
     int otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
-    num = 1;
-    while ( m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode]<0 && 
-            kk != indexSecondNode &&
-            m_mesh->m_edgesNumFaces[edgeIndex] > 1 )
+    int num = 1;
+    while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] < 0 &&
+        m_mesh->m_edgesNumFaces[edgeIndex] > 1 &&
+        currentNode != indexSecondNode)
     {
-        kk = NextCircularBackwardIndex(kk, m_mesh->m_nodesNumEdges[nodeIndex]);
-        edgeIndex = m_mesh->m_nodesEdges[nodeIndex][kk];
-        int otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
+        currentNode = NextCircularBackwardIndex(currentNode, m_mesh->m_nodesNumEdges[nodeIndex]);
+        edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentNode];
+        otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
         num++;
     }
 
-    
+    int firstEdgeInPathIndex = -1;
+    if (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] >= 0 ||
+        m_mesh->m_edgesNumFaces[edgeIndex] < 2)
+    {
+        firstEdgeInPathIndex = edgeIndex;
+    }
 
+    // If not all edges are visited, count counterclockwise from the one connecting indexSecondNode
+    int secondEdgeInPathIndex = -1;
+    if (currentNode != indexSecondNode) 
+    {
+        int currentNode = indexSecondNode;
+        edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentNode];
+        int otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
+        num = num + 1;
+        while ( m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] < 0 &&
+                m_mesh->m_edgesNumFaces[edgeIndex] > 1 &&
+                currentNode != indexFirstNode &&
+                edgeIndex != firstEdgeInPathIndex )
+        {
+            currentNode = NextCircularBackwardIndex(currentNode, m_mesh->m_nodesNumEdges[nodeIndex]);
+            edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentNode];
+            otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
 
+            if (currentNode != indexFirstNode && edgeIndex != firstEdgeInPathIndex) 
+            {
+                num++;
+            } 
+        }
 
+        if ((m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] >= 0 ||
+            m_mesh->m_edgesNumFaces[edgeIndex] < 2) && edgeIndex!= firstEdgeInPathIndex)
+        {
+            secondEdgeInPathIndex = edgeIndex;
+        }
+    }
+
+    // the number of nodes is larger than the connected ones, should not happen
+    if (num > m_mesh->m_nodesNumEdges[nodeIndex])
+    {
+        return 0;
+    }
+
+    int numopt = 6;
+    if (firstEdgeInPathIndex >= 0 && secondEdgeInPathIndex >= 0) 
+    {
+        // internal boundary
+        numopt = 4;
+    }
+
+    return numopt;
+        
 };
 
 int GridGeom::FlipEdges::OptimalNumberOfConnectedNodes(int index) const
 {
     int optimalNumber = 6;
-    if (m_mesh->m_nodeMask[index] == 1)
+    if (m_mesh->m_nodesTypes[index] == 2)
     {
         optimalNumber = 4;
     }
-    if (m_mesh->m_nodeMask[index] == 3)
+    if (m_mesh->m_nodesTypes[index] == 3)
     {
         optimalNumber = 3;
     }

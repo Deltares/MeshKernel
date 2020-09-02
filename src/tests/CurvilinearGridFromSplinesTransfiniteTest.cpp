@@ -6,7 +6,7 @@
 #include "../CurvilinearGridFromSplinesTransfinite.cpp"
 #include <gtest/gtest.h>
 
-TEST(CurvilinearGridFromSplinesTransfinite, ComputeIntersections)
+TEST(CurvilinearGridFromSplinesTransfinite, FourSplines)
 {
     std::vector<GridGeom::Point> firstSpline;
     firstSpline.push_back(GridGeom::Point{ 2.172341E+02, -2.415445E+01 });
@@ -98,7 +98,7 @@ TEST(CurvilinearGridFromSplinesTransfinite, ComputeIntersections)
     ASSERT_NEAR(86.130647149070327, curvilinearGrid.m_grid[1][10].y, tolerance);
 }
 
-TEST(CurvilinearGridFromSplinesTransfinite, ComputeCurvilinearGridWithFourSplinesTwoSwapped)
+TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesOneNSwapped)
 {
     std::vector<GridGeom::Point> firstSpline;
     firstSpline.push_back(GridGeom::Point{ 2.172341E+02, -2.415445E+01 });
@@ -190,7 +190,7 @@ TEST(CurvilinearGridFromSplinesTransfinite, ComputeCurvilinearGridWithFourSpline
     ASSERT_NEAR(86.130647149070327, curvilinearGrid.m_grid[1][10].y, tolerance);
 }
 
-TEST(CurvilinearGridFromSplinesTransfinite, ComputeCurvilinearGridWithFiveSplines)
+TEST(CurvilinearGridFromSplinesTransfinite, FiveSplines)
 {
     std::vector<GridGeom::Point> firstSpline;
     firstSpline.push_back(GridGeom::Point{ 2.172341E+02, -2.415445E+01 });
