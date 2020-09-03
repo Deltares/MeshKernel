@@ -69,12 +69,8 @@ namespace GridGeom
         bool TriangulateFaces();
 
         bool TopologyFunctional( int edge,
-                                 int& k1,
-                                 int& k2,
                                  int& kl,
                                  int& kr,
-                                 int& faceL,
-                                 int& faceR,
                                  int& ntopo ) const;
 
         /// <summary>
