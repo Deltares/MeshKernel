@@ -172,7 +172,11 @@ bool GridGeom::Mesh::Administrate(AdministrationOptions administrationOption)
        
     NodeAdministration();
 
-    SortEdgesInCounterClockWiseOrder();
+    for (int n = 0; n < GetNumNodes(); n++)
+    {
+        SortEdgesInCounterClockWiseOrder(n);
+    }
+
 
     if (administrationOption == AdministrationOptions::AdministrateMeshEdges)
     {
@@ -575,77 +579,75 @@ void GridGeom::Mesh::NodeAdministration()
 };
 
 
-void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder()
+void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 {
-    std::vector<double> edgesAngles(GridGeom::maximumNumberOfEdgesPerNode, 0.0);
-    for (auto node = 0; node < GetNumNodes(); node++)
+    if (!m_nodes[node].IsValid())
     {
-        if (!m_nodes[node].IsValid())
+        return;
+    }
+
+    double phi0 = 0.0;
+    double phi;
+    m_edgeAngles.resize(GridGeom::maximumNumberOfEdgesPerNode);
+    std::fill(m_edgeAngles.begin(), m_edgeAngles.end(), 0.0);
+    for (auto edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
+    {
+
+        auto firstNode = m_edges[m_nodesEdges[node][edgeIndex]].first;
+        auto secondNode = m_edges[m_nodesEdges[node][edgeIndex]].second;
+        if (firstNode < 0 || secondNode < 0)
         {
             continue;
         }
 
-        double phi0 = 0.0;
-        double phi;
-        std::fill(edgesAngles.begin(), edgesAngles.end(), 0.0);
-        for (auto edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
+        if (secondNode == node)
         {
+            secondNode = firstNode;
+            firstNode = node;
+        }
 
-            auto firstNode = m_edges[m_nodesEdges[node][edgeIndex]].first;
-            auto secondNode = m_edges[m_nodesEdges[node][edgeIndex]].second;
-            if (firstNode < 0 || secondNode < 0)
+        double deltaX = GetDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
+        double deltaY = GetDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
+        if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
+        {
+            if (deltaY < 0.0)
             {
-                continue;
-            }
-
-            if (secondNode == node)
-            {
-                secondNode = firstNode;
-                firstNode = node;
-            }
-
-            double deltaX = GetDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
-            double deltaY = GetDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
-            if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
-            {
-                if (deltaY < 0.0)
-                {
-                    phi = -M_PI / 2.0;
-                }
-                else
-                {
-                    phi = M_PI / 2.0;
-                }
+                phi = -M_PI / 2.0;
             }
             else
             {
-                phi = atan2(deltaY, deltaX);
-            }
-
-
-            if (edgeIndex == 0)
-            {
-                phi0 = phi;
-            }
-
-            edgesAngles[edgeIndex] = phi - phi0;
-            if (edgesAngles[edgeIndex] < 0.0)
-            {
-                edgesAngles[edgeIndex] = edgesAngles[edgeIndex] + 2.0 * M_PI;
+                phi = M_PI / 2.0;
             }
         }
-
-        // Performing sorting
-        std::vector<std::size_t> indexes(m_nodesNumEdges[node]);
-        std::vector<int> edgeNodeCopy{ m_nodesEdges[node] };
-        iota(indexes.begin(), indexes.end(), 0);
-        sort(indexes.begin(), indexes.end(), [&edgesAngles](std::size_t i1, std::size_t i2) {return edgesAngles[i1] < edgesAngles[i2]; });
-
-        for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
+        else
         {
-            m_nodesEdges[node][edgeIndex] = edgeNodeCopy[indexes[edgeIndex]];
+            phi = atan2(deltaY, deltaX);
+        }
+
+
+        if (edgeIndex == 0)
+        {
+            phi0 = phi;
+        }
+
+        m_edgeAngles[edgeIndex] = phi - phi0;
+        if (m_edgeAngles[edgeIndex] < 0.0)
+        {
+            m_edgeAngles[edgeIndex] = m_edgeAngles[edgeIndex] + 2.0 * M_PI;
         }
     }
+
+    // Performing sorting
+    std::vector<std::size_t> indexes(m_nodesNumEdges[node]);
+    std::vector<int> edgeNodeCopy{ m_nodesEdges[node] };
+    iota(indexes.begin(), indexes.end(), 0);
+    sort(indexes.begin(), indexes.end(), [&](std::size_t i1, std::size_t i2) {return m_edgeAngles[i1] < m_edgeAngles[i2]; });
+
+    for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
+    {
+        m_nodesEdges[node][edgeIndex] = edgeNodeCopy[indexes[edgeIndex]];
+    }
+
 }
 
 bool GridGeom::Mesh::FindFacesRecursive( int startingNode,

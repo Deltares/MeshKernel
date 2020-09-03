@@ -33,3 +33,27 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
     //ASSERT_NEAR(244.84733455150598, curvilinearGrid.m_grid[0][0].x, tolerance);
 
 }
+
+TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
+{
+    //1 Setup
+    auto mesh = MakeMediumSizeTriangularMeshForTesting();
+
+    //set landboundaries
+    GridGeom::Polygons polygon;
+
+    std::vector<GridGeom::Point> landBoundary;
+    GridGeom::LandBoundaries  landBoundaries;
+    landBoundaries.Set(landBoundary, &mesh, &polygon);
+
+    //execute flipedges
+    GridGeom::FlipEdges flipEdges(&mesh, &landBoundaries, true, false);
+
+    auto success = flipEdges.Compute();
+    ASSERT_TRUE(success);
+
+    // check the values
+    //constexpr double tolerance = 1e-6;
+    //ASSERT_NEAR(244.84733455150598, curvilinearGrid.m_grid[0][0].x, tolerance);
+
+}
