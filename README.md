@@ -29,14 +29,14 @@ Curvilinear meshes for rivers can be generated using splines.
 
 4. Mesh refinement
 
-A mesh can be refined on areas based on samples or polygon selections 
+A mesh can be refined in areas based on samples or polygon selections 
 
 ![alt tag](doc/figures/GridRefinement.jpg)
 
 
 ## API usage
 
-Setting a triangular mesh and moving its 2 node to position 1.0, 3.0:
+Setting a triangular mesh and moving its 2nd node to position 1.0, 3.0:
 
     // Create a new mesh entry into GridGeom library
 	int gridStateId;
