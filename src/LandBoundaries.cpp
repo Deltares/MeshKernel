@@ -196,7 +196,7 @@ namespace GridGeom
     {
         if (m_numNode <= 0)
         {
-            return true;
+            return false;
         }
 
         bool successful = false;
