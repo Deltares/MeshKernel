@@ -66,8 +66,20 @@ namespace GridGeom
 
     private:
 
+        /// <summary>
+        /// Transform non triangular faces in triangular faces
+        /// </summary>
+        /// <returns></returns>
         bool TriangulateFaces();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="edge"></param>
+        /// <param name="kl"></param>
+        /// <param name="kr"></param>
+        /// <param name="ntopo"></param>
+        /// <returns></returns>
         bool TopologyFunctional( int edge,
                                  int& kl,
                                  int& kr,
@@ -80,16 +92,21 @@ namespace GridGeom
         /// <returns></returns>
         int OptimalNumberOfConnectedNodes(int nodeIndex) const;
 
-
         /// <summary>
         /// (comp_nnow)
         /// </summary>
         /// <returns></returns>
         int DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const;
 
-       
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        bool DeleteEdgeFromNode(int edge, int firstNode, int secondNode) const;
+
         Mesh* m_mesh;                                      // A pointer to mesh
         LandBoundaries* m_landBoundaries;                  // A pointer to land boundaries
+
         bool m_triangulateFaces = false;
         bool m_projectToLandBoundary = false;
 

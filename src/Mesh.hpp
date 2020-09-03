@@ -401,6 +401,12 @@ namespace GridGeom
         /// <returns>If the method succeeded</returns>
         bool ClassifyNodes();
 
+        /// <summary>
+        ///  Sort edges in conterclockwise orther (Sort_links_ccw)
+        /// </summary>
+        /// <param name="nodeIndex">The node index for which sorting should take place</param>
+        void SortEdgesInCounterClockWiseOrder(int nodeIndex);
+
         // nodes
         std::vector<Point>              m_nodes;                    // The mesh nodes (xk, yk)
         std::vector<std::vector<int>>   m_nodesEdges;               // For each node, the indexses of connected edges (nod%lin)
@@ -449,11 +455,6 @@ namespace GridGeom
         void NodeAdministration();
 
         /// <summary>
-        /// Sort edges in conterclockwise orther (Sort_links_ccw)
-        /// </summary>
-        void SortEdgesInCounterClockWiseOrder();
-
-        /// <summary>
         /// Find cells recursive, works with an arbitrary number of edges
         /// </summary>
         /// <param name="startingNode">The starting node</param>
@@ -495,6 +496,8 @@ namespace GridGeom
         int m_numFaces = 0;                                       // number of valid faces (nump)
         int m_numNodes = 0;                                       // Number of valid nodes in m_nodes
         int m_numEdges = 0;                                       // Number of valid edges in m_edges
+
+        std::vector<double> m_edgeAngles;                        // internal cache for sorting the edges around nodes
 
     };
 }

@@ -17,7 +17,7 @@ In this example a mesh is created by discretizing the polygon perimeter with the
 2. Mesh orthogonalization
 
 Finite element staggered flow solvers require the mesh to be as much orthogonal as possible. 
-GridGeom provides an algorithm to adapt the mesh and achive a good balance between mesh orthogonality and smothness.
+GridGeom provides an algorithm to adapt the mesh and achieve a good balance between mesh orthogonality and smothness.
 
 ![alt tag](doc/figures/MeshOrthogonalization.jpg)
 
