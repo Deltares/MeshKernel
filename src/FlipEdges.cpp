@@ -81,11 +81,9 @@ bool GridGeom::FlipEdges::Compute()
     const int MaxIter = 10;
     const int numNodes = m_mesh->GetNumNodes();
     const int numEdges = m_mesh->GetNumEdges();
-    std::vector<int> nodeMask(numNodes);
     int numFlippedEdges;
     for (int iter = 0; iter < MaxIter; iter++)
     {
-        std::fill(nodeMask.begin(), nodeMask.end(), 0);
         numFlippedEdges = 0;
 
         for (int e = 0; e < numEdges; e++)
@@ -94,45 +92,33 @@ bool GridGeom::FlipEdges::Compute()
             auto const firstNode = m_mesh->m_edges[e].first;
             auto const secondNode = m_mesh->m_edges[e].second;
 
-            if (nodeMask[firstNode] != 0 || nodeMask[secondNode] != 0)
-            {
-                continue;
-            }
-
             if (m_mesh->m_edgesNumFaces[e] != 2)
             {
                 continue;
             }
 
             // triangles only
-            auto const faceL = m_mesh->m_edgesFaces[e][0];
-            auto const faceR = m_mesh->m_edgesFaces[e][1];
+            auto const leftFace = m_mesh->m_edgesFaces[e][0];
+            auto const rightFace = m_mesh->m_edgesFaces[e][1];
 
-            const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(faceL);
-            const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(faceR);
+            const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(leftFace);
+            const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(rightFace);
             if (NumEdgesLeftFace != 3 || NumEdgesRightFace != 3)
             {
                 return true;
             }
 
-            int kl;
-            int kr;
-            int ntopo;
+            int nodeLeft;
+            int nodeRight;
+            int topologyFunctional;
+            bool successful = ComputeTopologyFunctional(e, nodeLeft, nodeRight, topologyFunctional);
 
-            if (e == 14)
+            if (!successful)
             {
-                std::cout << "Debug";
+                return false;
             }
 
-            bool successful = TopologyFunctional(e, kl, kr, ntopo);
-
-            if (nodeMask[kl] != 0 || nodeMask[kr] != 0)
-            {
-                continue;
-            }
-
-
-            if (ntopo < 0)
+            if (topologyFunctional < 0)
             {
                 // Check if the quadrilateral composed by the two adjacent triangles is concave,
                 // in which case the diagonals crosses
@@ -142,8 +128,8 @@ bool GridGeom::FlipEdges::Compute()
                 double secondRatio;
                 const auto areEdgesCrossing = AreLinesCrossing(m_mesh->m_nodes[firstNode],
                     m_mesh->m_nodes[secondNode],
-                    m_mesh->m_nodes[kl],
-                    m_mesh->m_nodes[kr],
+                    m_mesh->m_nodes[nodeLeft],
+                    m_mesh->m_nodes[nodeRight],
                     false,
                     intersection,
                     crossProduct,
@@ -157,120 +143,120 @@ bool GridGeom::FlipEdges::Compute()
                 }
 
                 // Flip the edges
-                m_mesh->m_edges[e].first = kl;
-                m_mesh->m_edges[e].second = kr;
+                m_mesh->m_edges[e].first = nodeLeft;
+                m_mesh->m_edges[e].second = nodeRight;
                 numFlippedEdges++;
 
                 // Find the other edges
-                int L1L;
-                int L1R;
-                int L2L;
-                int L2R;
+                int firstEdgeLeftFace;
+                int firstEdgeRightFace;
+                int secondEdgeLeftFace;
+                int secondEdgeRightFace;
                 for (int i = 0; i < NumEdgesLeftFace; i++)
                 {
-                    int edgeIndex = m_mesh->m_facesEdges[faceL][i];
+                    int edgeIndex = m_mesh->m_facesEdges[leftFace][i];
                     if (edgeIndex == e)
                     {
                         continue;
                     }
-                    const int firstNodeOtherEdge = m_mesh->m_edges[edgeIndex].first;
-                    const int secondNodeOtherEdge = m_mesh->m_edges[edgeIndex].second;
+                    const int first = m_mesh->m_edges[edgeIndex].first;
+                    const int second = m_mesh->m_edges[edgeIndex].second;
 
-                    if (firstNodeOtherEdge == firstNode || secondNodeOtherEdge == firstNode)
+                    if (first == firstNode || second == firstNode)
                     {
-                        L1L = edgeIndex;
+                        firstEdgeLeftFace = edgeIndex;
                     }
-                    if (firstNodeOtherEdge == secondNode || secondNodeOtherEdge == secondNode)
+                    if (first == secondNode || second == secondNode)
                     {
-                        L2L = edgeIndex;
+                        secondEdgeLeftFace = edgeIndex;
                     }
                 }
 
                 for (int i = 0; i < NumEdgesRightFace; i++)
                 {
-                    int edgeIndex = m_mesh->m_facesEdges[faceR][i];
+                    int edgeIndex = m_mesh->m_facesEdges[rightFace][i];
                     if (edgeIndex == e)
                     {
                         continue;
                     }
-                    const int firstNodeOtherEdge = m_mesh->m_edges[edgeIndex].first;
-                    const int secondNodeOtherEdge = m_mesh->m_edges[edgeIndex].second;
+                    const int first = m_mesh->m_edges[edgeIndex].first;
+                    const int second = m_mesh->m_edges[edgeIndex].second;
 
-                    if (firstNodeOtherEdge == firstNode || secondNodeOtherEdge == firstNode)
+                    if (first == firstNode || second == firstNode)
                     {
-                        L1R = edgeIndex;
+                        firstEdgeRightFace = edgeIndex;
                     }
-                    if (firstNodeOtherEdge == secondNode || secondNodeOtherEdge == secondNode)
+                    if (first == secondNode || second == secondNode)
                     {
-                        L2R = edgeIndex;
+                        secondEdgeRightFace = edgeIndex;
                     }
                 }
 
                 // change face orientation
-                m_mesh->m_facesNodes[faceL][0] = kl;
-                m_mesh->m_facesNodes[faceL][1] = kr;
-                m_mesh->m_facesNodes[faceL][2] = firstNode;
+                m_mesh->m_facesNodes[leftFace][0] = nodeLeft;
+                m_mesh->m_facesNodes[leftFace][1] = nodeRight;
+                m_mesh->m_facesNodes[leftFace][2] = firstNode;
 
-                m_mesh->m_facesEdges[faceL][0] = e;
-                m_mesh->m_facesEdges[faceL][1] = L1R;
-                m_mesh->m_facesEdges[faceL][2] = L1L;
+                m_mesh->m_facesEdges[leftFace][0] = e;
+                m_mesh->m_facesEdges[leftFace][1] = firstEdgeRightFace;
+                m_mesh->m_facesEdges[leftFace][2] = firstEdgeLeftFace;
 
-                m_mesh->m_facesNodes[faceR][0] = kl;
-                m_mesh->m_facesNodes[faceR][1] = kr;
-                m_mesh->m_facesNodes[faceR][2] = secondNode;
+                m_mesh->m_facesNodes[rightFace][0] = nodeLeft;
+                m_mesh->m_facesNodes[rightFace][1] = nodeRight;
+                m_mesh->m_facesNodes[rightFace][2] = secondNode;
 
-                m_mesh->m_facesEdges[faceR][0] = e;
-                m_mesh->m_facesEdges[faceR][1] = L2R;
-                m_mesh->m_facesEdges[faceR][2] = L2L;
+                m_mesh->m_facesEdges[rightFace][0] = e;
+                m_mesh->m_facesEdges[rightFace][1] = secondEdgeRightFace;
+                m_mesh->m_facesEdges[rightFace][2] = secondEdgeLeftFace;
 
 
-                if (m_mesh->m_edgesFaces[L1R][0] == faceR)
+                if (m_mesh->m_edgesFaces[firstEdgeRightFace][0] == rightFace)
                 {
-                    m_mesh->m_edgesFaces[L1R][0] = faceL;
+                    m_mesh->m_edgesFaces[firstEdgeRightFace][0] = leftFace;
                 }
                 else
                 {
-                    m_mesh->m_edgesFaces[L1R][1] = faceL;
+                    m_mesh->m_edgesFaces[firstEdgeRightFace][1] = leftFace;
                 }
 
 
-                if (m_mesh->m_edgesFaces[L2L][0] == faceL)
+                if (m_mesh->m_edgesFaces[secondEdgeLeftFace][0] == leftFace)
                 {
-                    m_mesh->m_edgesFaces[L2L][0] = faceR;
+                    m_mesh->m_edgesFaces[secondEdgeLeftFace][0] = rightFace;
                 }
                 else
                 {
-                    m_mesh->m_edgesFaces[L2L][1] = faceR;
+                    m_mesh->m_edgesFaces[secondEdgeLeftFace][1] = rightFace;
                 }
 
                 m_mesh->m_nodesNumEdges[firstNode] = m_mesh->m_nodesNumEdges[firstNode] - 1;
                 m_mesh->m_nodesNumEdges[secondNode] = m_mesh->m_nodesNumEdges[secondNode] - 1;
-                m_mesh->m_nodesNumEdges[kl] = m_mesh->m_nodesNumEdges[kl] + 1;
-                m_mesh->m_nodesNumEdges[kr] = m_mesh->m_nodesNumEdges[kr] + 1;
+                m_mesh->m_nodesNumEdges[nodeLeft] = m_mesh->m_nodesNumEdges[nodeLeft] + 1;
+                m_mesh->m_nodesNumEdges[nodeRight] = m_mesh->m_nodesNumEdges[nodeRight] + 1;
 
                 // Delete edge from m_mesh->m_nodesEdges[firstNode]
-                DeleteEdgeFromNode(e, firstNode, secondNode);
+                DeleteEdgeFromNode(e, firstNode);
 
                 // Delete edge from m_mesh->m_nodesEdges[secondNode]
-                DeleteEdgeFromNode(e, secondNode, firstNode);
+                DeleteEdgeFromNode(e, secondNode);
 
                 // Add edge to m_mesh->m_nodesEdges[kl]
-                ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[kl], m_mesh->m_nodesEdges[kl]);
-                for (int i = 0; i < m_mesh->m_nodesNumEdges[kl] - 1; i++)
+                ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[nodeLeft], m_mesh->m_nodesEdges[nodeLeft]);
+                for (int i = 0; i < m_mesh->m_nodesNumEdges[nodeLeft] - 1; i++)
                 {
-                    m_mesh->m_nodesEdges[kl][i] = m_mesh->m_nodesEdges[kl][i];
+                    m_mesh->m_nodesEdges[nodeLeft][i] = m_mesh->m_nodesEdges[nodeLeft][i];
                 }
-                m_mesh->m_nodesEdges[kl][m_mesh->m_nodesNumEdges[kl]- 1] = e;
-                m_mesh->SortEdgesInCounterClockWiseOrder(kl);
+                m_mesh->m_nodesEdges[nodeLeft][m_mesh->m_nodesNumEdges[nodeLeft] - 1] = e;
+                m_mesh->SortEdgesInCounterClockWiseOrder(nodeLeft);
 
                 // Add edge to m_mesh->m_nodesEdges[kr]
-                ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[kr], m_mesh->m_nodesEdges[kr]);
-                for (int i = 0; i < m_mesh->m_nodesNumEdges[kr] - 1; i++)
+                ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[nodeRight], m_mesh->m_nodesEdges[nodeRight]);
+                for (int i = 0; i < m_mesh->m_nodesNumEdges[nodeRight] - 1; i++)
                 {
-                    m_mesh->m_nodesEdges[kr][i] = m_mesh->m_nodesEdges[kr][i];
+                    m_mesh->m_nodesEdges[nodeRight][i] = m_mesh->m_nodesEdges[nodeRight][i];
                 }
-                m_mesh->m_nodesEdges[kr][m_mesh->m_nodesNumEdges[kr] - 1] = e;
-                m_mesh->SortEdgesInCounterClockWiseOrder(kr);
+                m_mesh->m_nodesEdges[nodeRight][m_mesh->m_nodesNumEdges[nodeRight] - 1] = e;
+                m_mesh->SortEdgesInCounterClockWiseOrder(nodeRight);
 
             }
         }
@@ -286,12 +272,12 @@ bool GridGeom::FlipEdges::Compute()
     return true;
 }
 
-bool GridGeom::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode, int secondNode) const
+bool GridGeom::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
 {
     // Update nod, delete edge from m_mesh->m_nodesEdges[firstNode]
     int kk = 0;
-    while (m_mesh->m_nodesEdges[firstNode][kk] != edge &&
-        kk < m_mesh->m_nodesNumEdges[firstNode])
+    while ( m_mesh->m_nodesEdges[firstNode][kk] != edge &&
+            kk < m_mesh->m_nodesNumEdges[firstNode] )
     {
         kk = kk + 1;
     }
@@ -319,21 +305,21 @@ bool GridGeom::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode, int second
     return true;
 }
 
-bool GridGeom::FlipEdges::TopologyFunctional(int e,
-                                             int& kl,
-                                             int& kr,
-                                             int& ntopo) const
+bool GridGeom::FlipEdges::ComputeTopologyFunctional( int edge,
+                                                     int& nodeLeft,
+                                                     int& nodeRight,
+                                                     int& topologyFunctional ) const
 {
 
-    if (m_mesh->m_edgesNumFaces[e] != 2)
+    if (m_mesh->m_edgesNumFaces[edge] != 2)
     {
         return true;
     }
 
-    const auto firstNode = m_mesh->m_edges[e].first;
-    const auto secondNode = m_mesh->m_edges[e].second;
-    const auto faceL = m_mesh->m_edgesFaces[e][0];
-    const auto faceR = m_mesh->m_edgesFaces[e][1];
+    const auto firstNode = m_mesh->m_edges[edge].first;
+    const auto secondNode = m_mesh->m_edges[edge].second;
+    const auto faceL = m_mesh->m_edgesFaces[edge][0];
+    const auto faceR = m_mesh->m_edgesFaces[edge][1];
     const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(faceL);
     const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(faceR);
 
@@ -351,10 +337,10 @@ bool GridGeom::FlipEdges::TopologyFunctional(int e,
         sumIndexsesRightFace += m_mesh->m_facesNodes[faceR][i];
     }
 
-    kl = sumIndexsesLeftFace - firstNode - secondNode;
-    kr = sumIndexsesRightFace - firstNode - secondNode;
+    nodeLeft = sumIndexsesLeftFace - firstNode - secondNode;
+    nodeRight = sumIndexsesRightFace - firstNode - secondNode;
 
-    if (kl < 0 || kr < 0)
+    if (nodeLeft < 0 || nodeRight < 0)
     {
         return true;
     }
@@ -363,7 +349,7 @@ bool GridGeom::FlipEdges::TopologyFunctional(int e,
     bool nodeFound = false;
     for (int i = 0; i < NumEdgesLeftFace; i++)
     {
-        if (m_mesh->m_facesNodes[faceL][i] == kl)
+        if (m_mesh->m_facesNodes[faceL][i] == nodeLeft)
         {
             nodeFound = true;
             break;
@@ -379,7 +365,7 @@ bool GridGeom::FlipEdges::TopologyFunctional(int e,
     nodeFound = false;
     for (int i = 0; i < NumEdgesRightFace; i++)
     {
-        if (m_mesh->m_facesNodes[faceR][i] == kr)
+        if (m_mesh->m_facesNodes[faceR][i] == nodeRight)
         {
             nodeFound = true;
             break;
@@ -394,29 +380,29 @@ bool GridGeom::FlipEdges::TopologyFunctional(int e,
     //  compute the change in functional
     int n1 = m_mesh->m_nodesNumEdges[firstNode] - OptimalNumberOfConnectedNodes(firstNode);
     int n2 = m_mesh->m_nodesNumEdges[secondNode] - OptimalNumberOfConnectedNodes(secondNode);
-    int nL = m_mesh->m_nodesNumEdges[kl] - OptimalNumberOfConnectedNodes(kl);
-    int nR = m_mesh->m_nodesNumEdges[kr] - OptimalNumberOfConnectedNodes(kr);
+    int nL = m_mesh->m_nodesNumEdges[nodeLeft] - OptimalNumberOfConnectedNodes(nodeLeft);
+    int nR = m_mesh->m_nodesNumEdges[nodeRight] - OptimalNumberOfConnectedNodes(nodeRight);
 
     if (m_projectToLandBoundary)
     {
         if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] >= 0 && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] >= 0)
         {
             //edge is associated with a land boundary, keep the edge
-            ntopo = 1000;
+            topologyFunctional = 1000;
             return true;
         }
         else
         {
-            auto n1L = DifferenceFromOptimum(firstNode, secondNode, kl);
-            auto n1R = DifferenceFromOptimum(firstNode, secondNode, kr);
+            auto n1L = DifferenceFromOptimum(firstNode, secondNode, nodeLeft);
+            auto n1R = DifferenceFromOptimum(firstNode, secondNode, nodeRight);
 
-            auto n2R = DifferenceFromOptimum(secondNode, firstNode, kl);
-            auto n2L = DifferenceFromOptimum(secondNode, firstNode, kr);
+            auto n2R = DifferenceFromOptimum(secondNode, firstNode, nodeLeft);
+            auto n2L = DifferenceFromOptimum(secondNode, firstNode, nodeRight);
 
-            auto nL = DifferenceFromOptimum(kl, firstNode, secondNode);
-            auto nR = DifferenceFromOptimum(kr, firstNode, secondNode);
+            auto nL = DifferenceFromOptimum(nodeLeft, firstNode, secondNode);
+            auto nR = DifferenceFromOptimum(nodeRight, firstNode, secondNode);
 
-            ntopo = (n1L - 1) * (n1L - 1) +
+            topologyFunctional = (n1L - 1) * (n1L - 1) +
                 (n1R - 1) * (n1R - 1) +
                 (n2L - 1) * (n2L - 1) +
                 (n2R - 1) * (n2R - 1) +
@@ -427,7 +413,7 @@ bool GridGeom::FlipEdges::TopologyFunctional(int e,
     }
     else
     {
-        ntopo = (n1 - 1) * (n1 - 1) +
+        topologyFunctional = (n1 - 1) * (n1 - 1) +
                 (n2 - 1) * (n2 - 1) +
                 (nL + 1) * (nL + 1) +
                 (nR + 1) * (nR + 1) -
