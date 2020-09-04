@@ -50,11 +50,11 @@ GridGeom::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing():
 }
 
 
-bool GridGeom::OrthogonalizationAndSmoothing::Set( Mesh* mesh,
-                                                   Smoother* smoother,
-                                                   Orthogonalizer* orthogonalizer,
-                                                   Polygons* polygon,
-                                                   LandBoundaries* landBoundaries,
+bool GridGeom::OrthogonalizationAndSmoothing::Set( std::shared_ptr<Mesh> mesh,
+                                                   std::shared_ptr<Smoother> smoother,
+                                                   std::shared_ptr<Orthogonalizer> orthogonalizer,
+                                                   std::shared_ptr<Polygons> polygon,
+                                                   std::shared_ptr<LandBoundaries> landBoundaries,
                                                    int isTriangulationRequired,
                                                    int isAccountingForLandBoundariesRequired,
                                                    int projectToLandBoundaryOption,
