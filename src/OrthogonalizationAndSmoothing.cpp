@@ -67,6 +67,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::Set( std::shared_ptr<Mesh> mesh,
     m_landBoundaries = landBoundaries;
 
     // Sets the node mask
+    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     m_mesh->MaskNodesInPolygons(*m_polygons, true);
     // Flag nodes outside the polygon as corner points
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
