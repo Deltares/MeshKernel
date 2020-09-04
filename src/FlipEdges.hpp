@@ -51,58 +51,61 @@ namespace GridGeom
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="landBoundary"></param>
-        /// <param name="triangulateFaces"></param>
-        /// <param name="projectToLandBoundary"></param>
-        /// <returns></returns>
+        /// <param name="mesh">The input mesh</param>
+        /// <param name="landBoundary">The land boundary</param>
+        /// <param name="triangulateFaces">Option to triangulate all faces or not</param>
+        /// <param name="projectToLandBoundary">Option to project to land boundaries or not</param>
+        /// <returns>If the method succeeded</returns>
         FlipEdges(Mesh* mesh, LandBoundaries* landBoundary, bool triangulateFaces, bool projectToLandBoundary);
 
         /// <summary>
         /// Flip the edges
         /// </summary>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool Compute();
 
     private:
 
         /// <summary>
-        /// Transform non triangular faces in triangular faces
+        /// Transform non-triangular faces in triangular faces
         /// </summary>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool TriangulateFaces();
 
         /// <summary>
-        /// 
+        /// Computes the change in topology functional and gets the nodes involved (comp_ntopo)
         /// </summary>
-        /// <param name="edge"></param>
-        /// <param name="kl"></param>
-        /// <param name="kr"></param>
-        /// <param name="ntopo"></param>
-        /// <returns></returns>
-        bool TopologyFunctional( int edge,
-                                 int& kl,
-                                 int& kr,
-                                 int& ntopo ) const;
+        /// <param name="edge">The current edge</param>
+        /// <param name="nodeLeft">The node at the left side of the edge</param>
+        /// <param name="nodeRight">The node at the left side of the edge</param>
+        /// <param name="topologyFunctional">The computed functional</param>
+        /// <returns>If the method succeeded</returns>
+        bool ComputeTopologyFunctional( int edge,
+                                 int& nodeLeft,
+                                 int& nodeRight,
+                                 int& topologyFunctional) const;
 
         /// <summary>
-        /// (nmk_opt)
+        /// Determine the optimal number of connected nodes for each node (nmk_opt)
         /// </summary>
         /// <param name="nodeIndex"></param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         int OptimalNumberOfConnectedNodes(int nodeIndex) const;
 
         /// <summary>
-        /// (comp_nnow)
+        /// Compute the difference with the optimal number of edges by counting the numbers of edges that 
+        /// connect nodes firstNode and secondNode, and are on the land boundary path (comp_nnow)
         /// </summary>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         int DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const;
 
         /// <summary>
-        /// 
+        /// Remove a connected edge from a node
         /// </summary>
-        /// <returns></returns>
-        bool DeleteEdgeFromNode(int edge, int firstNode, int secondNode) const;
+        /// <param name="edgeIndex">The index of the edge to remove</param>
+        /// <param name="nodeIndex">The index of the node to process</param>
+        /// <returns>If the method succeeded</returns>
+        bool DeleteEdgeFromNode(int edgeIndex, int nodeIndex) const;
 
         Mesh* m_mesh;                                      // A pointer to mesh
         LandBoundaries* m_landBoundaries;                  // A pointer to land boundaries
