@@ -29,9 +29,7 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
     ASSERT_TRUE(success);
 
     // check the values
-    //constexpr double tolerance = 1e-6;
-    //ASSERT_NEAR(244.84733455150598, curvilinearGrid.m_grid[0][0].x, tolerance);
-
+    ASSERT_EQ(16, mesh.GetNumEdges());
 }
 
 TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
@@ -52,8 +50,23 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     auto success = flipEdges.Compute();
     ASSERT_TRUE(success);
 
-    // check the values
-    //constexpr double tolerance = 1e-6;
-    //ASSERT_NEAR(244.84733455150598, curvilinearGrid.m_grid[0][0].x, tolerance);
+     // get the number of edges
+    ASSERT_EQ(697, mesh.GetNumEdges());
+
+    // check the values of flipped edges
+    ASSERT_EQ(183, mesh.m_edges[14].first);
+    ASSERT_EQ(227, mesh.m_edges[14].second);
+
+    ASSERT_EQ(58, mesh.m_edges[33].first);
+    ASSERT_EQ(141, mesh.m_edges[33].second);
+
+    ASSERT_EQ(147, mesh.m_edges[46].first);
+    ASSERT_EQ(145, mesh.m_edges[46].second);
+
+    ASSERT_EQ(147, mesh.m_edges[49].first);
+    ASSERT_EQ(148, mesh.m_edges[49].second);
+
+    ASSERT_EQ(242, mesh.m_edges[68].first);
+    ASSERT_EQ(148, mesh.m_edges[68].second);
 
 }
