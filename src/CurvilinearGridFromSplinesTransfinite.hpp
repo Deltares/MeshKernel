@@ -51,7 +51,7 @@ namespace GridGeom
         /// Ctor with splines
         /// </summary>
         /// <returns></returns>
-        CurvilinearGridFromSplinesTransfinite(Splines* splines);
+        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines);
 
         /// <summary>
         /// Set the algorithm parameters
@@ -89,7 +89,7 @@ namespace GridGeom
                          const std::vector<Point>& sideFour,
                          std::vector<std::vector<Point>>& result);
         
-        Splines* m_splines;                                      // A pointer to spline
+        std::shared_ptr<Splines> m_splines;                                      // A pointer to spline
 
     private:
 
