@@ -11,7 +11,7 @@ TEST(LandBoundaries, OneLandBoundary)
     // Prepare
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
-    GridGeom::LandBoundaries landboundaries;
+    auto landboundaries =std::make_shared<GridGeom::LandBoundaries>();
     std::vector<GridGeom::Point> landBoundaryPolygon
     {
         { 222.621918, 382.651917 },
@@ -20,23 +20,23 @@ TEST(LandBoundaries, OneLandBoundary)
         { 510.295715, 438.923065 }
     };
 
-    GridGeom::Polygons polygons;
+    auto polygons =std::make_shared<GridGeom::Polygons>();
 
     // Execute
-    landboundaries.Set(landBoundaryPolygon, &mesh,&polygons);
-    landboundaries.FindNearestMeshBoundary(2);
+    landboundaries->Set(landBoundaryPolygon, mesh, polygons);
+    landboundaries->FindNearestMeshBoundary(2);
 
     // Checks
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[0]);
-    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[1]);
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[2]);
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[3]);
-    EXPECT_EQ(3, landboundaries.m_meshNodesLandBoundarySegments[4]);
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[5]);
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[0]);
+    EXPECT_EQ(0, landboundaries->m_meshNodesLandBoundarySegments[1]);
+    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[2]);
+    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[3]);
+    EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[4]);
+    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[5]);
+    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[6]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }
 
 TEST(LandBoundaries, TwoLandBoundaries)
@@ -44,7 +44,7 @@ TEST(LandBoundaries, TwoLandBoundaries)
     // Prepare
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
-    GridGeom::LandBoundaries landboundaries;
+    auto landboundaries =std::make_shared<GridGeom::LandBoundaries>();
     std::vector<GridGeom::Point> landBoundaryPolygon
     {
         { 222.621918, 382.651917 },
@@ -59,23 +59,23 @@ TEST(LandBoundaries, TwoLandBoundaries)
         { 518.873718, 421.415894 }
     };
 
-    GridGeom::Polygons polygons;
+    auto polygons =std::make_shared<GridGeom::Polygons>();
 
     // Execute
-    landboundaries.Set(landBoundaryPolygon, &mesh, &polygons);
-    landboundaries.FindNearestMeshBoundary(2);
+    landboundaries->Set(landBoundaryPolygon, mesh, polygons);
+    landboundaries->FindNearestMeshBoundary(2);
 
     // Checks
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[0]);
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[1]);
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[2]);
-    EXPECT_EQ(3, landboundaries.m_meshNodesLandBoundarySegments[3]);
-    EXPECT_EQ(3, landboundaries.m_meshNodesLandBoundarySegments[4]);
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[5]);
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[0]);
+    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[1]);
+    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[2]);
+    EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[3]);
+    EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[4]);
+    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[5]);
+    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[6]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }
 
 TEST(LandBoundaries, OneCrossingLandBoundary)
@@ -84,7 +84,7 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
 
-    GridGeom::LandBoundaries landboundaries;
+    auto landboundaries =std::make_shared<GridGeom::LandBoundaries>();
     std::vector<GridGeom::Point> landBoundaryPolygon
     {
         { 221.418243, 315.848755 },
@@ -94,23 +94,23 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
         { 528.651428, 292.377380 }
     };
 
-    GridGeom::Polygons polygons;
+    auto polygons =std::make_shared<GridGeom::Polygons>();
 
     // Execute
-    landboundaries.Set(landBoundaryPolygon, &mesh, &polygons);
-    landboundaries.FindNearestMeshBoundary(2);
+    landboundaries->Set(landBoundaryPolygon, mesh, polygons);
+    landboundaries->FindNearestMeshBoundary(2);
 
     // Checks
-    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[0]);
-    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[1]);
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[2]);
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[3]);
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[4]);
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[5]);
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(0, landboundaries->m_meshNodesLandBoundarySegments[0]);
+    EXPECT_EQ(0, landboundaries->m_meshNodesLandBoundarySegments[1]);
+    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[2]);
+    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[3]);
+    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[4]);
+    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[5]);
+    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[6]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }
 
 TEST(LandBoundaries, TwoCrossingLandBoundary)
@@ -118,7 +118,7 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
     // Prepare
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
-    GridGeom::LandBoundaries landboundaries;
+    auto landboundaries =std::make_shared<GridGeom::LandBoundaries>();
     std::vector<GridGeom::Point> landBoundaryPolygon
     {
         { 235.561218, 290.571899 },
@@ -132,21 +132,21 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
         { 553.627319, 327.283539 },
     };
 
-    GridGeom::Polygons polygons;
+    auto polygons =std::make_shared<GridGeom::Polygons>();
 
     // Execute
-    landboundaries.Set(landBoundaryPolygon, &mesh,&polygons);
-    landboundaries.FindNearestMeshBoundary(2);
+    landboundaries->Set(landBoundaryPolygon, mesh,polygons);
+    landboundaries->FindNearestMeshBoundary(2);
 
     // Checks
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[0]);
-    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[1]);
-    EXPECT_EQ(1, landboundaries.m_meshNodesLandBoundarySegments[2]);
-    EXPECT_EQ(3, landboundaries.m_meshNodesLandBoundarySegments[3]);
-    EXPECT_EQ(3, landboundaries.m_meshNodesLandBoundarySegments[4]);
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[5]);
-    EXPECT_EQ(2, landboundaries.m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(-1, landboundaries.m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[0]);
+    EXPECT_EQ(0, landboundaries->m_meshNodesLandBoundarySegments[1]);
+    EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[2]);
+    EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[3]);
+    EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[4]);
+    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[5]);
+    EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[6]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }

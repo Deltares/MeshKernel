@@ -55,7 +55,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="mesh">The mesh to be refined</param>
         /// <returns></returns>
-        MeshRefinement(Mesh& mesh);
+        MeshRefinement(std::shared_ptr<Mesh> mesh);
 
         /// <summary>
         /// Refine a mesh (refinecellsandfaces2). Steps:
@@ -208,6 +208,6 @@ namespace GridGeom
 
         RefinementType      m_refinementType;                            /// The type of refinement to use
 
-        Mesh& m_mesh;
+        std::shared_ptr<Mesh> m_mesh;
     };
 }

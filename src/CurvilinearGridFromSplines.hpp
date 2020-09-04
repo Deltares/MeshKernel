@@ -51,7 +51,7 @@ namespace GridGeom
         /// Ctor
         /// </summary>
         /// <returns></returns>
-        CurvilinearGridFromSplines(Splines& splines);
+        CurvilinearGridFromSplines(std::shared_ptr<Splines> splines);
 
         /// <summary>
         /// Computes the spline properties, such as cross splines (get_splineprops)
@@ -115,7 +115,7 @@ namespace GridGeom
         std::vector<double> m_maximumGridHeights;                // maximum transversal grid height ()
         int m_numM = 0;                                          // Number of columns in the curvilinear grid
         
-        Splines* m_splines;                                      // A pointer to spline
+        std::shared_ptr<Splines> m_splines;                      // A pointer to spline
 
     private:
 

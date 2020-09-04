@@ -41,7 +41,7 @@
 #include "Constants.cpp"
 
 // The vector containing the mesh instances 
-static std::vector<GridGeom::Mesh> meshInstances;
+static std::vector<std::shared_ptr<GridGeom::Mesh>> meshInstances;
 
 // For supporting interactivity for orthogonalization and orthogonal curvilinear grid from splines, we need to save some instances
 static std::map<int, GridGeom::OrthogonalizationAndSmoothing> orthogonalizationInstances;
@@ -134,30 +134,30 @@ namespace GridGeomApi
             return false;
         }
         
-        meshGeometry.nodex = &meshInstances[gridStateId].m_nodex[0];
-        meshGeometry.nodey = &meshInstances[gridStateId].m_nodey[0];
-        meshGeometry.nodez = &meshInstances[gridStateId].m_nodez[0];
-        meshGeometry.edge_nodes = &meshInstances[gridStateId].m_edgeNodes[0];
+        meshGeometry.nodex = &(meshInstances[gridStateId]->m_nodex[0]);
+        meshGeometry.nodey = &(meshInstances[gridStateId]->m_nodey[0]);
+        meshGeometry.nodez = &(meshInstances[gridStateId]->m_nodez[0]);
+        meshGeometry.edge_nodes = &(meshInstances[gridStateId]->m_edgeNodes[0]);
 
         meshGeometryDimensions.maxnumfacenodes = GridGeom::maximumNumberOfNodesPerFace;
-        meshGeometryDimensions.numface = meshInstances[gridStateId].GetNumFaces();
+        meshGeometryDimensions.numface = meshInstances[gridStateId]->GetNumFaces();
         if(meshGeometryDimensions.numface > 0)
         {
-            meshGeometry.face_nodes = &meshInstances[gridStateId].m_faceNodes[0];
-            meshGeometry.facex = &meshInstances[gridStateId].m_facesCircumcentersx[0];
-            meshGeometry.facey = &meshInstances[gridStateId].m_facesCircumcentersy[0];
-            meshGeometry.facez = &meshInstances[gridStateId].m_facesCircumcentersz[0];
+            meshGeometry.face_nodes = &(meshInstances[gridStateId]->m_faceNodes[0]);
+            meshGeometry.facex = &(meshInstances[gridStateId]->m_facesCircumcentersx[0]);
+            meshGeometry.facey = &(meshInstances[gridStateId]->m_facesCircumcentersy[0]);
+            meshGeometry.facez = &(meshInstances[gridStateId]->m_facesCircumcentersz[0]);
         }
 
-        if (meshInstances[gridStateId].GetNumNodes() == 1)
+        if (meshInstances[gridStateId]->GetNumNodes() == 1)
         {
             meshGeometryDimensions.numnode = 0;
             meshGeometryDimensions.numedge = 0;
         }
         else
         {
-            meshGeometryDimensions.numnode = meshInstances[gridStateId].GetNumNodes();
-            meshGeometryDimensions.numedge = meshInstances[gridStateId].GetNumEdges(); 
+            meshGeometryDimensions.numnode = meshInstances[gridStateId]->GetNumNodes();
+            meshGeometryDimensions.numedge = meshInstances[gridStateId]->GetNumEdges(); 
         }
 
         return true;
@@ -168,6 +168,7 @@ namespace GridGeomApi
         int instanceSize = meshInstances.size();
         meshInstances.resize(instanceSize + 1);
         gridStateId = instanceSize;
+        meshInstances[gridStateId] = std::make_shared<GridGeom::Mesh>();
         return 0;
     };
 
@@ -189,7 +190,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        if (meshInstances[gridStateId]->GetNumNodes() <= 0)
         {
             return 0;
         }
@@ -202,13 +203,13 @@ namespace GridGeomApi
         }
 
         GridGeom::Polygons polygon;
-        successful = polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        successful = polygon.Set(polygonPoints, meshInstances[gridStateId]->m_projection);
         if (!successful)
         {
             return -1;
         }
 
-        meshInstances[gridStateId].DeleteMesh(polygon, deletionOption, invertDeletion);
+        meshInstances[gridStateId]->DeleteMesh(polygon, deletionOption, invertDeletion);
 
         return 0;
     }
@@ -241,11 +242,11 @@ namespace GridGeomApi
         // spherical or cartesian
         if (isGeographic)
         {
-            meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::spherical);
+            meshInstances[gridStateId]->Set(edges, nodes, GridGeom::Projections::spherical);
         }
         else
         {
-            meshInstances[gridStateId].Set(edges, nodes, GridGeom::Projections::cartesian);
+            meshInstances[gridStateId]->Set(edges, nodes, GridGeom::Projections::cartesian);
         }
 
         return 0;
@@ -258,7 +259,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        meshInstances[gridStateId].SetFlatCopies(GridGeom::Mesh::AdministrationOptions::AdministrateMeshEdges);
+        meshInstances[gridStateId]->SetFlatCopies(GridGeom::Mesh::AdministrationOptions::AdministrateMeshEdges);
 
         bool successful = SetMeshGeometry(gridStateId, meshGeometryDimensions, meshGeometry);
         if (!successful)
@@ -276,7 +277,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        meshInstances[gridStateId].SetFlatCopies(GridGeom::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        meshInstances[gridStateId]->SetFlatCopies(GridGeom::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         bool successful = SetMeshGeometry(gridStateId,meshGeometryDimensions, meshGeometry);
         if(!successful)
@@ -296,7 +297,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        if (meshInstances[gridStateId]->GetNumNodes() <= 0)
         {
             return 0;
         }
@@ -309,8 +310,8 @@ namespace GridGeomApi
             nodes[i].y = geometryListNativePolygon.yCoordinates[i];
         }
 
-        GridGeom::Polygons polygon;
-        polygon.Set(nodes, meshInstances[gridStateId].m_projection);
+        auto polygon = std::make_shared<GridGeom::Polygons>();
+        polygon->Set(nodes, meshInstances[gridStateId]->m_projection);
 
         // build land boundary
         std::vector<GridGeom::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
@@ -320,17 +321,17 @@ namespace GridGeomApi
             landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
         }
 
-        GridGeom::Smoother smoother(&meshInstances[gridStateId]);
-        GridGeom::Orthogonalizer orthogonalizer(&meshInstances[gridStateId]);
-        GridGeom::LandBoundaries landBoundary;
-        landBoundary.Set(landBoundaries, &meshInstances[gridStateId], &polygon);
+        auto orthogonalizer = std::make_shared<GridGeom::Orthogonalizer>(meshInstances[gridStateId]);
+        auto smoother = std::make_shared<GridGeom::Smoother>(meshInstances[gridStateId]);
+        auto landBoundary = std::make_shared < GridGeom::LandBoundaries>();
+        landBoundary->Set(landBoundaries, meshInstances[gridStateId], polygon);
 
         GridGeom::OrthogonalizationAndSmoothing ortogonalization;
-        ortogonalization.Set(&meshInstances[gridStateId],
-                             &smoother,
-                             &orthogonalizer,
-                             &polygon,
-                             &landBoundary,
+        ortogonalization.Set(meshInstances[gridStateId],
+                             smoother,
+                             orthogonalizer,
+                             polygon,
+                             landBoundary,
                              isTriangulationRequired,
                              isAccountingForLandBoundariesRequired,
                              projectToLandBoundaryOption,
@@ -352,7 +353,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        if (meshInstances[gridStateId]->GetNumNodes() <= 0)
         {
             return 0;
         }
@@ -364,8 +365,6 @@ namespace GridGeomApi
             nodes[i].x = geometryListNativePolygon.xCoordinates[i];
             nodes[i].y = geometryListNativePolygon.yCoordinates[i];
         }
-        GridGeom::Polygons polygon;
-        polygon.Set(nodes, meshInstances[gridStateId].m_projection);
 
         // build land boundary
         std::vector<GridGeom::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
@@ -375,17 +374,20 @@ namespace GridGeomApi
             landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
         }
 
-        GridGeom::Smoother smoother(&meshInstances[gridStateId]);
-        GridGeom::Orthogonalizer orthogonalizer(&meshInstances[gridStateId]);
-        GridGeom::LandBoundaries landBoundary;
-        landBoundary.Set(landBoundaries, &meshInstances[gridStateId], &polygon);
+
+        auto orthogonalizer = std::make_shared<GridGeom::Orthogonalizer>(meshInstances[gridStateId]);
+        auto smoother = std::make_shared<GridGeom::Smoother>(meshInstances[gridStateId]);
+        auto polygon = std::make_shared<GridGeom::Polygons>();
+        polygon->Set(nodes, meshInstances[gridStateId]->m_projection);
+        auto landBoundary = std::make_shared<GridGeom::LandBoundaries>();
+        landBoundary->Set(landBoundaries, meshInstances[gridStateId], polygon);
 
         GridGeom::OrthogonalizationAndSmoothing orthogonalizationInstance;
-        orthogonalizationInstance.Set(&meshInstances[gridStateId],
-                                      &smoother,
-                                      &orthogonalizer,
-                                      &polygon,
-                                      &landBoundary,
+        orthogonalizationInstance.Set(meshInstances[gridStateId],
+                                      smoother,
+                                      orthogonalizer,
+                                      polygon,
+                                      landBoundary,
                                       isTriangulationRequired,
                                       isAccountingForLandBoundariesRequired,
                                       projectToLandBoundaryOption,
@@ -403,7 +405,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        if (meshInstances[gridStateId]->GetNumNodes() <= 0)
         {
             return 0;
         }
@@ -419,7 +421,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        if (meshInstances[gridStateId]->GetNumNodes() <= 0)
         {
             return 0;
         }
@@ -434,7 +436,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        if (meshInstances[gridStateId]->GetNumNodes() <= 0)
         {
             return 0;
         }
@@ -449,7 +451,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        if (meshInstances[gridStateId]->GetNumNodes() <= 0)
         {
             return 0;
         }
@@ -465,11 +467,11 @@ namespace GridGeomApi
             return -1;
         }
 
-        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        if (meshInstances[gridStateId]->GetNumNodes() <= 0)
         {
             return 0;
         }
-        const bool status = meshInstances[gridStateId].GetOrthogonality(geometryList.zCoordinates);
+        const bool status = meshInstances[gridStateId]->GetOrthogonality(geometryList.zCoordinates);
         return status == true ? 0 : 1;
     }
 
@@ -480,12 +482,12 @@ namespace GridGeomApi
             return -1;
         }
 
-        if (meshInstances[gridStateId].GetNumNodes() <= 0)
+        if (meshInstances[gridStateId]->GetNumNodes() <= 0)
         {
             return 0;
         }
 
-        const bool status = meshInstances[gridStateId].GetSmoothness(geometryList.zCoordinates);
+        const bool status = meshInstances[gridStateId]->GetSmoothness(geometryList.zCoordinates);
         return status == true ? 0 : 1;
     }
 
@@ -556,7 +558,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        successful = polygon.Set(result, meshInstances[gridStateId].m_projection);
+        successful = polygon.Set(result, meshInstances[gridStateId]->m_projection);
         if(!successful)
         {
             return -1;
@@ -569,7 +571,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        meshInstances[gridStateId] += mesh;
+        *meshInstances[gridStateId] += mesh;
 
         return 0;
     }
@@ -590,7 +592,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        successful = polygon.Set(result, meshInstances[gridStateId].m_projection);
+        successful = polygon.Set(result, meshInstances[gridStateId]->m_projection);
         if (!successful)
         {
             return -1;
@@ -603,8 +605,8 @@ namespace GridGeomApi
             return -1;
         }
 
-        GridGeom::Mesh mesh(generatedPoints[0], polygon, meshInstances[gridStateId].m_projection);
-        meshInstances[gridStateId] += mesh;
+        GridGeom::Mesh mesh(generatedPoints[0], polygon, meshInstances[gridStateId]->m_projection);
+        *meshInstances[gridStateId] += mesh;
         return 0;
     }
 
@@ -622,8 +624,8 @@ namespace GridGeomApi
             return -1;
         }
         GridGeom::Polygons polygon;
-        GridGeom::Mesh mesh(samplePoints, polygon, meshInstances[gridStateId].m_projection);
-        meshInstances[gridStateId] += mesh;
+        GridGeom::Mesh mesh(samplePoints, polygon, meshInstances[gridStateId]->m_projection);
+        *meshInstances[gridStateId] += mesh;
         return 0;
     }
 
@@ -639,7 +641,7 @@ namespace GridGeomApi
 
         int counterClockWise = 0;
         int numNodesBoundaryPolygons;
-        polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
+        polygon.MeshBoundaryToPolygon(*meshInstances[gridStateId], counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
         bool successful = ConvertPointVectorToGeometryListNative(meshBoundaryPolygon, geometryListNative);
         if (!successful)
@@ -661,7 +663,7 @@ namespace GridGeomApi
         std::vector<GridGeom::Point> meshBoundaryPolygon;
 
         int counterClockWise =0;
-        polygon.MeshBoundaryToPolygon(meshInstances[gridStateId], counterClockWise, meshBoundaryPolygon, numberOfPolygonVertices);
+        polygon.MeshBoundaryToPolygon(*meshInstances[gridStateId], counterClockWise, meshBoundaryPolygon, numberOfPolygonVertices);
 
         return 0;
     }
@@ -681,7 +683,7 @@ namespace GridGeomApi
         }
 
         GridGeom::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        polygon.Set(polygonPoints, meshInstances[gridStateId]->m_projection);
 
         std::vector<GridGeom::Point> refinedPolygon;
         successful = polygon.RefinePart(firstIndex, secondIndex, distance, refinedPolygon);
@@ -714,7 +716,7 @@ namespace GridGeomApi
         }
 
         GridGeom::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        polygon.Set(polygonPoints, meshInstances[gridStateId]->m_projection);
 
         std::vector<GridGeom::Point> refinedPolygon;
         successful = polygon.RefinePart(firstIndex, secondIndex, distance, refinedPolygon);
@@ -745,9 +747,9 @@ namespace GridGeomApi
         }
 
         GridGeom::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        polygon.Set(polygonPoints, meshInstances[gridStateId]->m_projection);
 
-        successful = meshInstances[gridStateId].MergeNodesInPolygon(polygon);
+        successful = meshInstances[gridStateId]->MergeNodesInPolygon(polygon);
         if (!successful)
         {
             return -1;
@@ -762,7 +764,7 @@ namespace GridGeomApi
             return 0;
         }
 
-        bool successful = meshInstances[gridStateId].MergeTwoNodes(startNode, endNode);
+        bool successful = meshInstances[gridStateId]->MergeTwoNodes(startNode, endNode);
         if (!successful)
         {
             return -1;
@@ -786,19 +788,19 @@ namespace GridGeomApi
         }
 
         GridGeom::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        polygon.Set(polygonPoints, meshInstances[gridStateId]->m_projection);
 
         bool selectInside = inside == 1 ? true : false;
-        successful = meshInstances[gridStateId].MaskNodesInPolygons(polygon, selectInside);
+        successful = meshInstances[gridStateId]->MaskNodesInPolygons(polygon, selectInside);
         if (!successful)
         {
             return -1;
         }
 
         int index = 0;
-        for (int i = 0; i < meshInstances[gridStateId].GetNumNodes() ; ++i)
+        for (int i = 0; i < meshInstances[gridStateId]->GetNumNodes() ; ++i)
         {
-            if (meshInstances[gridStateId].m_nodeMask[i]>0) 
+            if (meshInstances[gridStateId]->m_nodeMask[i]>0) 
             {
                 (*selectedVertices)[index] = i;
                 index++;
@@ -823,19 +825,19 @@ namespace GridGeomApi
         }
 
         GridGeom::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        polygon.Set(polygonPoints, meshInstances[gridStateId]->m_projection);
 
         bool selectInside = inside == 1 ? true : false;
-        successful = meshInstances[gridStateId].MaskNodesInPolygons(polygon, selectInside);
+        successful = meshInstances[gridStateId]->MaskNodesInPolygons(polygon, selectInside);
         if (!successful)
         {
             return -1;
         }
 
         numberOfMeshVertices = 0;
-        for (auto i = 0; i < meshInstances[gridStateId].GetNumNodes(); ++i)
+        for (auto i = 0; i < meshInstances[gridStateId]->GetNumNodes(); ++i)
         {
-            if (meshInstances[gridStateId].m_nodeMask[i] > 0)
+            if (meshInstances[gridStateId]->m_nodeMask[i] > 0)
             {
                 numberOfMeshVertices++;
             }
@@ -851,7 +853,7 @@ namespace GridGeomApi
             return 0;
         }
 
-        bool successful = meshInstances[gridStateId].ConnectNodes(startNode, endNode, new_edge_index);
+        bool successful = meshInstances[gridStateId]->ConnectNodes(startNode, endNode, new_edge_index);
         if (!successful)
         {
             return -1;
@@ -866,12 +868,12 @@ namespace GridGeomApi
         if (gridStateId >= meshInstances.size())
         {
             //create a valid instance, by default cartesian
-            meshInstances[gridStateId] = GridGeom::Mesh();
-            meshInstances[gridStateId].m_projection = GridGeom::Projections::cartesian;
+            *meshInstances[gridStateId] = GridGeom::Mesh();
+            meshInstances[gridStateId]->m_projection = GridGeom::Projections::cartesian;
         }
 
         GridGeom::Point newNode{ xCoordinate, yCoordinate };
-        bool successful = meshInstances[gridStateId].InsertNode(newNode, vertexIndex);
+        bool successful = meshInstances[gridStateId]->InsertNode(newNode, vertexIndex);
         if (!successful)
         {
             return -1;
@@ -888,7 +890,7 @@ namespace GridGeomApi
             return 0;
         }
 
-        bool successful = meshInstances[gridStateId].DeleteNode(nodeIndex);
+        bool successful = meshInstances[gridStateId]->DeleteNode(nodeIndex);
         if (!successful)
         {
             return -1;
@@ -911,7 +913,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        successful = meshInstances[gridStateId].MoveNode(newPoint[0],nodeIndex);
+        successful = meshInstances[gridStateId]->MoveNode(newPoint[0],nodeIndex);
         if (!successful)
         {
             return -1;
@@ -934,8 +936,8 @@ namespace GridGeomApi
             return -1;
         }
 
-        auto edgeIndex = meshInstances[gridStateId].FindEdgeCloseToAPoint(newPoint[0], searchRadius);
-        successful = meshInstances[gridStateId].DeleteEdge(edgeIndex);
+        auto edgeIndex = meshInstances[gridStateId]->FindEdgeCloseToAPoint(newPoint[0], searchRadius);
+        successful = meshInstances[gridStateId]->DeleteEdge(edgeIndex);
         if (!successful)
         {
             return -1;
@@ -958,7 +960,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        edgeIndex = meshInstances[gridStateId].FindEdgeCloseToAPoint(newPoint[0], searchRadius);
+        edgeIndex = meshInstances[gridStateId]->FindEdgeCloseToAPoint(newPoint[0], searchRadius);
 
         return 0;
     }
@@ -978,7 +980,7 @@ namespace GridGeomApi
         }
 
         GridGeom::Polygons polygon;
-        successful = polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        successful = polygon.Set(polygonPoints, meshInstances[gridStateId]->m_projection);
         if (!successful)
         {
             return -1;
@@ -1015,7 +1017,7 @@ namespace GridGeomApi
         }
 
         GridGeom::Polygons polygon;
-        successful = polygon.Set(polygonPoints, meshInstances[gridStateId].m_projection);
+        successful = polygon.Set(polygonPoints, meshInstances[gridStateId]->m_projection);
         if (!successful)
         {
             return -1;
@@ -1035,7 +1037,7 @@ namespace GridGeomApi
 
     GRIDGEOM_API int ggeo_refine_mesh_based_on_samples(int gridStateId, GeometryListNative& geometryListIn, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative)
     {
-        if (gridStateId >= meshInstances.size() || meshInstances[gridStateId].GetNumNodes() <= 0)
+        if (gridStateId >= meshInstances.size() || meshInstances[gridStateId]->GetNumNodes() <= 0)
         {
             return 0;
         }
@@ -1069,7 +1071,7 @@ namespace GridGeomApi
     GRIDGEOM_API int ggeo_refine_mesh_based_on_polygon(int gridStateId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative)
     {
         
-        if (gridStateId >= meshInstances.size() || meshInstances[gridStateId].GetNumNodes()<=0)
+        if (gridStateId >= meshInstances.size() || meshInstances[gridStateId]->GetNumNodes()<=0)
         {
             return 0;
         }
@@ -1089,7 +1091,7 @@ namespace GridGeomApi
 
 
         GridGeom::Polygons polygon;
-        successful = polygon.Set(points, meshInstances[gridStateId].m_projection);
+        successful = polygon.Set(points, meshInstances[gridStateId]->m_projection);
         if (!successful)
         {
             return -1;
@@ -1123,7 +1125,7 @@ namespace GridGeomApi
             return -1;
         }
 
-        successful = meshInstances[gridStateId].GetNodeIndex(polygonPoints[0], searchRadius, vertexIndex);
+        successful = meshInstances[gridStateId]->GetNodeIndex(polygonPoints[0], searchRadius, vertexIndex);
         if (!successful)
         {
             return -1;
@@ -1143,8 +1145,8 @@ namespace GridGeomApi
         }
 
         // use the default constructor, no instance present
-        GridGeom::Splines spline(meshInstances[gridStateId].m_projection);
-        bool successful = SetSplines(geometryListIn, spline);
+        auto spline = std::make_shared<GridGeom::Splines>(meshInstances[gridStateId]->m_projection);
+        bool successful = SetSplines(geometryListIn, *spline);
         if(!successful)
         {
             return -1;
@@ -1154,7 +1156,7 @@ namespace GridGeomApi
         curvilinearGridFromSplines.SetParameters(curvilinearParameters, splineToCurvilinearParameters);
         GridGeom::CurvilinearGrid curvilinearGrid;
         curvilinearGridFromSplines.Compute(curvilinearGrid);
-        meshInstances[gridStateId] += GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
+        *meshInstances[gridStateId] += GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId]->m_projection);
 
         return 0;
     }
@@ -1167,9 +1169,8 @@ namespace GridGeomApi
             return 0;
         }
 
-        GridGeom::Splines spline(meshInstances[gridStateId].m_projection);
-
-        bool successful = SetSplines(geometryListNative, spline);
+        auto spline = std::make_shared<GridGeom::Splines>(meshInstances[gridStateId]->m_projection);
+        bool successful = SetSplines(geometryListNative, *spline);
         if (!successful)
         {
             return -1;
@@ -1214,7 +1215,7 @@ namespace GridGeomApi
         GridGeom::CurvilinearGrid curvilinearGrid;
         const bool successful = splineInstances[gridStateId].ComputeCurvilinearGrid(curvilinearGrid);
 
-        meshInstances[gridStateId] += GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId].m_projection);
+        *meshInstances[gridStateId] += GridGeom::Mesh(curvilinearGrid, meshInstances[gridStateId]->m_projection);
 
         return successful ? 0 : 1;
     }
@@ -1248,7 +1249,7 @@ namespace GridGeomApi
 
         
         GridGeom::Polygons polygon;
-        polygon.Set(polygonNodes, meshInstances[gridStateId].m_projection);
+        polygon.Set(polygonNodes, meshInstances[gridStateId]->m_projection);
 
         for (int i = 0; i < points.size(); i++)
         {

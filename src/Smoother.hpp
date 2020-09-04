@@ -41,17 +41,11 @@ namespace GridGeom
     public:
 
         /// <summary>
-        /// Default ctor
-        /// </summary>
-        /// <returns></returns>
-        Smoother();
-
-        /// <summary>
         /// Mesh ctor
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        Smoother(Mesh* mesh);
+        Smoother(std::shared_ptr<Mesh> mesh);
         
         /// <summary>
         /// Computes the smoother weights
@@ -214,7 +208,7 @@ namespace GridGeom
 
 
         // The mesh to smooth
-        Mesh* m_mesh;
+        std::shared_ptr<Mesh> m_mesh;
         
         // Smoother weights
         std::vector<std::vector<double>>                   m_weights;

@@ -50,15 +50,15 @@ TEST(Polygons, MeshBoundaryToPolygon)
     }
 
     // now build node-edge mapping
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    auto mesh=std::make_shared<GridGeom::Mesh>();
+    mesh->Set(edges, nodes, GridGeom::Projections::cartesian);
 
-    GridGeom::Polygons polygons;
+    auto polygons =std::make_shared<GridGeom::Polygons>();
     const std::vector<GridGeom::Point> polygon;
     std::vector<GridGeom::Point> meshBoundaryPolygon;
     int numNodesBoundaryPolygons;
-    polygons.Set(polygon, GridGeom::Projections::cartesian);
-    polygons.MeshBoundaryToPolygon(mesh, 0, meshBoundaryPolygon, numNodesBoundaryPolygons);
+    polygons->Set(polygon, GridGeom::Projections::cartesian);
+    polygons->MeshBoundaryToPolygon(*mesh, 0, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
 
     //constexpr double tolerance = 1e-2;
@@ -89,7 +89,7 @@ TEST(Polygons, MeshBoundaryToPolygon)
 TEST(Polygons, CreatePointsInPolygons)
 {
     // Prepare
-    GridGeom::Polygons polygons;
+    GridGeom::Polygons  polygons;
     std::vector<GridGeom::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });

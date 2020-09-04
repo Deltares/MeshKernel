@@ -42,7 +42,7 @@ GridGeom::CurvilinearGridFromSplines::CurvilinearGridFromSplines(): m_splines(nu
 {
 }
 
-GridGeom::CurvilinearGridFromSplines::CurvilinearGridFromSplines(Splines& splines) : m_splines(&splines)
+GridGeom::CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_ptr<Splines> splines) : m_splines(splines)
 {
 };
 

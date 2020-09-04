@@ -40,9 +40,22 @@ namespace GridGeom
 
     public:
 
+        /// <summary>
+        /// Default Ctor
+        /// </summary>
+        /// <returns></returns>
         LandBoundaries();
 
-        bool Set(const std::vector<Point>& landBoundary, Mesh* mesh, Polygons* polygons);
+        /// <summary>
+        /// Set the landboundaries parameters (admin_landboundary_segments)
+        /// </summary>
+        /// <param name="landBoundary"></param>
+        /// <param name="mesh"></param>
+        /// <param name="polygons"></param>
+        /// <returns></returns>
+        bool Set(const std::vector<Point>& landBoundary, 
+                 std::shared_ptr<Mesh> mesh, 
+                 std::shared_ptr<Polygons> polygons);
 
         /// <summary>
         /// The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary (admin_landboundary_segments)
@@ -259,8 +272,8 @@ namespace GridGeom
                                            int startLandBoundaryIndex, 
                                            int endLandBoundaryIndex);
 
-        Mesh* m_mesh;                                     // A pointer to mesh 
-        Polygons* m_polygons;                             // A pointer to polygons
+        std::shared_ptr<Mesh>     m_mesh;                 // A pointer to mesh 
+        std::shared_ptr<Polygons> m_polygons;             // A pointer to polygons
 
         std::vector<Point> m_nodes;                       // XLAN, YLAN, ZLAN
         int m_numAllocatedNodes;                          // MAXLAN
