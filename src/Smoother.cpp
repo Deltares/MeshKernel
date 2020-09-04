@@ -38,11 +38,7 @@
 #include "Entities.hpp"
 #include "Smoother.hpp"
 
-GridGeom::Smoother::Smoother()
-{
-}
-
-GridGeom::Smoother::Smoother(Mesh* mesh): m_mesh(mesh)
+GridGeom::Smoother::Smoother(std::shared_ptr<Mesh> mesh): m_mesh(mesh)
 {
 }
 

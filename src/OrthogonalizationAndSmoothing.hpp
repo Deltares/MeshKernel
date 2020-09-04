@@ -28,6 +28,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include "OrthogonalizationParametersNative.hpp"
 
 namespace GridGeom
@@ -69,11 +70,11 @@ namespace GridGeom
         /// <param name="polygon">The polygon where orthogonalization should occour</param>
         /// <param name="landBoundaries">The land boundaries</param>
         /// <returns>If the method succeeded</returns>
-        bool Set( Mesh* mesh,
-                  Smoother* smoother,
-                  Orthogonalizer* orthogonalizer,
-                  Polygons* polygon,
-                  LandBoundaries* landBoundaries,
+        bool Set( std::shared_ptr<Mesh> mesh,
+                  std::shared_ptr<Smoother> smoother,
+                  std::shared_ptr<Orthogonalizer> orthogonalizer,
+                  std::shared_ptr<Polygons> polygon,
+                  std::shared_ptr<LandBoundaries> landBoundaries,
                   int isTriangulationRequired,
                   int isAccountingForLandBoundariesRequired,
                   int projectToLandBoundaryOption,
@@ -160,11 +161,11 @@ namespace GridGeom
         /// <returns>If the method succeeded</returns>
         bool ComputeCoordinates();
 
-        LandBoundaries*                                    m_landBoundaries;            // The land boundaries
-        Polygons*                                          m_polygons;                  // The polygon where to perform the orthogonalization
-        Smoother*                                          m_smoother;                  // A pointer to the smoother
-        Orthogonalizer*                                    m_orthogonalizer;            // A pointer to the orthogonalizer
-        Mesh*                                              m_mesh;                      // A pointer to mesh
+        std::shared_ptr<LandBoundaries>                    m_landBoundaries;            // The land boundaries
+        std::shared_ptr<Polygons>                          m_polygons;                  // The polygon where to perform the orthogonalization
+        std::shared_ptr<Smoother>                          m_smoother;                  // A pointer to the smoother
+        std::shared_ptr<Orthogonalizer>                    m_orthogonalizer;            // A pointer to the orthogonalizer
+        std::shared_ptr<Mesh>                              m_mesh;                      // A pointer to mesh
         
         std::vector<int>                                   m_localCoordinatesIndexes;   // Used in sphericalAccurate projection (iloc)
         std::vector<Point>                                 m_localCoordinates;          // Used in sphericalAccurate projection (xloc,yloc) 

@@ -2,7 +2,7 @@
 
 #include "../Mesh.hpp"
 
-static GridGeom::Mesh MakeSmallSizeTriangularMeshForTesting()
+static std::shared_ptr<GridGeom::Mesh> MakeSmallSizeTriangularMeshForTesting()
 {
     // Prepare
     std::vector<GridGeom::Point> nodes;
@@ -46,13 +46,13 @@ static GridGeom::Mesh MakeSmallSizeTriangularMeshForTesting()
         edges[i].second -= 1;
     }
 
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    auto mesh=std::make_shared<GridGeom::Mesh>();
+    mesh->Set(edges, nodes, GridGeom::Projections::cartesian);
 
-    return std::move(mesh);
+    return mesh;
 }
 
-static GridGeom::Mesh MakeSmallSizeTriangularMeshForTestingAsNcFile()
+static std::shared_ptr<GridGeom::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile()
 {
     // Prepare
     std::vector<GridGeom::Point> nodes;
@@ -90,16 +90,16 @@ static GridGeom::Mesh MakeSmallSizeTriangularMeshForTestingAsNcFile()
     edges.push_back({ 5, 9 });
     edges.push_back({ 4, 5 });
 
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    auto mesh=std::make_shared<GridGeom::Mesh>();
+    mesh->Set(edges, nodes, GridGeom::Projections::cartesian);
 
-    return std::move(mesh);
+    return mesh;
 }
 
 
 
 
-static GridGeom::Mesh MakeRectangularMeshForTesting(int n, int m, double delta, GridGeom::Projections projection, GridGeom::Point origin = {0.0,0.0})
+static std::shared_ptr<GridGeom::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, GridGeom::Projections projection, GridGeom::Point origin = {0.0,0.0})
 {
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
     std::vector<GridGeom::Point> nodes(n * m);
@@ -135,14 +135,14 @@ static GridGeom::Mesh MakeRectangularMeshForTesting(int n, int m, double delta, 
         }
     }
 
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, projection);
+    auto mesh=std::make_shared<GridGeom::Mesh>();
+    mesh->Set(edges, nodes, projection);
 
-    return std::move(mesh);
+    return mesh;
 }
 
 
-static GridGeom::Mesh MakeMediumSizeTriangularMeshForTesting()
+static std::shared_ptr<GridGeom::Mesh> MakeMediumSizeTriangularMeshForTesting()
 {
     std::vector<double> xCoordinates{ 62.7625648300453, 161.949072158728, 261.069585881221,
 360.172666249972, 459.142369029805, 558.084265626781, 656.824528757364,
@@ -985,8 +985,8 @@ static GridGeom::Mesh MakeMediumSizeTriangularMeshForTesting()
         edges[i].second -= 1;
     }
 
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    auto mesh=std::make_shared<GridGeom::Mesh>();
+    mesh->Set(edges, nodes, GridGeom::Projections::cartesian);
 
-    return std::move(mesh);
+    return mesh;
 }

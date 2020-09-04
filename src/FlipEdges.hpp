@@ -34,7 +34,6 @@
 namespace GridGeom
 {
     // Forward declarations
-    class CurvilinearGrid;
     class Mesh;
     class LandBoundaries;
 
@@ -56,7 +55,10 @@ namespace GridGeom
         /// <param name="triangulateFaces">Option to triangulate all faces or not</param>
         /// <param name="projectToLandBoundary">Option to project to land boundaries or not</param>
         /// <returns>If the method succeeded</returns>
-        FlipEdges(Mesh* mesh, LandBoundaries* landBoundary, bool triangulateFaces, bool projectToLandBoundary);
+        FlipEdges(std::shared_ptr<Mesh> mesh, 
+                  std::shared_ptr<LandBoundaries> landBoundary, 
+                  bool triangulateFaces, 
+                  bool projectToLandBoundary);
 
         /// <summary>
         /// Flip the edges
@@ -107,8 +109,8 @@ namespace GridGeom
         /// <returns>If the method succeeded</returns>
         bool DeleteEdgeFromNode(int edgeIndex, int nodeIndex) const;
 
-        Mesh* m_mesh;                                      // A pointer to mesh
-        LandBoundaries* m_landBoundaries;                  // A pointer to land boundaries
+        std::shared_ptr<Mesh> m_mesh;                                      // A pointer to mesh
+        std::shared_ptr<LandBoundaries> m_landBoundaries;                  // A pointer to land boundaries
 
         bool m_triangulateFaces = false;
         bool m_projectToLandBoundary = false;

@@ -43,7 +43,10 @@ GridGeom::FlipEdges::FlipEdges() :
 {
 }
 
-GridGeom::FlipEdges::FlipEdges(Mesh* mesh, LandBoundaries* landBoundary, bool triangulateFaces, bool projectToLandBoundary) :
+GridGeom::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh, 
+                               std::shared_ptr<LandBoundaries> landBoundary, 
+                               bool triangulateFaces, 
+                               bool projectToLandBoundary) : 
     m_mesh(mesh),
     m_landBoundaries(landBoundary),
     m_triangulateFaces(triangulateFaces),

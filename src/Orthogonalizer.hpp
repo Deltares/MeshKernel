@@ -44,19 +44,13 @@ namespace GridGeom
         /// Ctor
         /// </summary>
         /// <returns></returns>
-        Orthogonalizer();
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <returns></returns>
-        Orthogonalizer(Mesh* mesh);
+        Orthogonalizer(std::shared_ptr<Mesh> mesh);
         
         /// <summary>
-        /// Computes the smoother weights
+        /// Computes the smoother weights and the right hans side
         /// </summary>
         /// <param name="mesh"></param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool Compute();
 
         /// <summary>
@@ -64,7 +58,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>
-        /// <returns></returns>
+        /// <returns>The contribution of orthogonalizer to the left hand side, the linear system</returns>
         inline double GetWeight(int node, int connectedNode)
         {
             return m_weights[node][connectedNode];
@@ -76,7 +70,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>
-        /// <returns></returns>
+        /// <returns>The contribution of orthogonalizer to the right hand size</returns>
         inline double GetRightHandSide(int node, int connectedNode)
         {
             return m_rhs[node][connectedNode];
@@ -88,13 +82,15 @@ namespace GridGeom
         /// Computes the aspect ratio of each edge (orthonet_compute_aspect)
         /// </summary>
         /// <param name="mesh"></param>
-        /// <returns></returns>
+        /// <returns>If the method succeeded</returns>
         bool AspectRatio(const Mesh& mesh);
 
+
+        std::shared_ptr<Mesh> m_mesh;
         std::vector<double>                                m_aspectRatios;
         std::vector<std::vector<double>>                   m_weights;
         std::vector<std::vector<double>>                   m_rhs;
-        Mesh* m_mesh;
+
 
     };
 }

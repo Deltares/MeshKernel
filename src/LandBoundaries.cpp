@@ -37,8 +37,7 @@
 
 namespace GridGeom
 {
-    LandBoundaries::LandBoundaries() :
-        m_numAllocatedNodes(0)
+    LandBoundaries::LandBoundaries() : m_numAllocatedNodes(0)
     {
         ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
         m_numAllocatedNodes = m_nodes.size();
@@ -46,8 +45,9 @@ namespace GridGeom
         m_polygonNodesCache.resize(maximumNumberOfNodesPerFace);
     }
 
-    /// admin_landboundary_segments
-    bool LandBoundaries::Set(const std::vector<Point>& landBoundary, Mesh* mesh, Polygons* polygons)
+    bool LandBoundaries::Set( const std::vector<Point>& landBoundary, 
+                              std::shared_ptr<Mesh> mesh, 
+                              std::shared_ptr<Polygons> polygons)
     {
         // assign internal pointer
         m_mesh = mesh;
