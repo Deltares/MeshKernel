@@ -8,7 +8,7 @@
     <Copy SourceFiles="@(_FilesToCopyGridgGeomLibs)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\DeltaShell\%(RecursiveDir)" SkipUnchangedFiles="true"/>
   </Target>
   
-  <Target Name="DimrLibsClean" AfterTargets="Clean">
+  <Target Name="GridGeomLibsClean" AfterTargets="Clean">
     <ItemGroup>
       <_OriginalFilesGridGeom Include="$(MSBuildThisFileDirectory)..\..\content\x64\**\*"/>
       <_FilesToCleanGridGeom Include="$(SolutionDir)bin\$(Configuration)\DeltaShell\%(_OriginalFilesGridGeom.RecursiveDir)%(_OriginalFilesGridGeom.FileName)%(_OriginalFilesGridGeom.Extension)"/>
