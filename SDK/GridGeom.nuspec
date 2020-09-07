@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package >
+    <metadata>
+        <id>Deltares.Gridgeom</id>
+        <version>1.0.0</version>
+        <description>Deltares back end mesh editing engine</description>
+        <authors>Deltares</authors>
+    </metadata>
+    <files>
+        <file src="..\build\Release\lib\**\*.*" target=""/>
+    </files>
+</package>
