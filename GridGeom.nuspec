@@ -12,6 +12,6 @@
   </metadata>
   
   <files>
-    <file src=".\build\$configuration$\gridgeomStateful_dll.dll"/>
+    <file src=".\build\$configuration$\lib\**\*.*"/>
   </files>
 </package>

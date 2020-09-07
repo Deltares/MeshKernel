@@ -57,6 +57,12 @@ add_custom_command( TARGET gridgeomStateful_dll
                     PRE_BUILD
                     COMMAND  call ${update_version_script} ${rc_version_file_path} ${version_directory} ${ini_version_file})
                     
+set(build_config $<CONFIG>) 
+set_target_properties( gridgeomStateful_dll PROPERTIES 
+                                            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib"
+                                            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib"
+                                            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib")
+                    
 # Add Google tests
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
