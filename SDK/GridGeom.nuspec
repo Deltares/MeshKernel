@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <package >
     <metadata>
-        <id>Deltares.Gridgeom</id>
+        <id>Deltares.GridGeom</id>
         <version>1.0.0</version>
-        <description>Deltares back end mesh editing engine</description>
         <authors>Deltares</authors>
+        <owners>Deltares</owners>
+        <description>Deltares back end mesh editing engine</description>
     </metadata>
     <files>
-        <file src="..\build\Release\lib\**\*.*" target=""/>
+        <file src="..\build\Release\lib\gridgeomStateful_dll.dll" target="content\x64" />
+        <file src="GridGeom.Libs.targets" target="build\net461\GridGeom.Libs.targets" />
     </files>
 </package>
