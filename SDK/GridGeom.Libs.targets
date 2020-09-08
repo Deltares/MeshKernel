@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Target Name="GridGeomLibsPostBuild" AfterTargets="Build">
     <ItemGroup>
-      <_FilesToCopyGridgGeomLibs Include="$(MSBuildThisFileDirectory)..\..\content\x64\**\*"/>      
+      <_FilesToCopyGridgGeomLibs Include="$(MSBuildThisFileDirectory)..\..\content\Lib\**\*"/>      
     </ItemGroup>
     
     <Copy SourceFiles="@(_FilesToCopyGridgGeomLibs)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\DeltaShell\%(RecursiveDir)" SkipUnchangedFiles="true"/>
@@ -10,7 +10,7 @@
   
   <Target Name="GridGeomLibsClean" AfterTargets="Clean">
     <ItemGroup>
-      <_OriginalFilesGridGeom Include="$(MSBuildThisFileDirectory)..\..\content\x64\**\*"/>
+      <_OriginalFilesGridGeom Include="$(MSBuildThisFileDirectory)..\..\content\Lib\**\*"/>
       <_FilesToCleanGridGeom Include="$(SolutionDir)bin\$(Configuration)\DeltaShell\%(_OriginalFilesGridGeom.RecursiveDir)%(_OriginalFilesGridGeom.FileName)%(_OriginalFilesGridGeom.Extension)"/>
     </ItemGroup>
     <Delete Files="@(_FilesToCleanGridGeom)"/>    
