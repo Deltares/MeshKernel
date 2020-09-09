@@ -37,16 +37,16 @@
 #include "Splines.hpp"
 #include "CurvilinearGrid.hpp"
 
-GridGeom::Splines::Splines() : m_projection(Projections::cartesian)
+MeshKernel::Splines::Splines() : m_projection(Projections::cartesian)
 {
 };
 
-GridGeom::Splines::Splines(Projections projection) : m_projection(projection)
+MeshKernel::Splines::Splines(Projections projection) : m_projection(projection)
 {
 };
 
 /// add a new spline, return the index
-bool GridGeom::Splines::AddSpline(const std::vector<Point>& splines, int start, int size)
+bool MeshKernel::Splines::AddSpline(const std::vector<Point>& splines, int start, int size)
 {
     ResizeVectorIfNeededWithMinimumSize(m_numSplines + 1, m_splineNodes, m_allocationSize, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }));
 
@@ -73,7 +73,7 @@ bool GridGeom::Splines::AddSpline(const std::vector<Point>& splines, int start, 
     return true;
 }
 
-bool GridGeom::Splines::DeleteSpline(int splineIndex)
+bool MeshKernel::Splines::DeleteSpline(int splineIndex)
 {
     m_splineNodes.erase(m_splineNodes.begin() + splineIndex);
     m_numSplineNodes.erase(m_numSplineNodes.begin() + splineIndex);
@@ -84,7 +84,7 @@ bool GridGeom::Splines::DeleteSpline(int splineIndex)
 }
 
 /// add a new spline point in an existing spline
-bool GridGeom::Splines::AddPointInExistingSpline(int splineIndex, const Point& point)
+bool MeshKernel::Splines::AddPointInExistingSpline(int splineIndex, const Point& point)
 {
     if (splineIndex > m_numSplines)
     {
@@ -98,7 +98,7 @@ bool GridGeom::Splines::AddPointInExistingSpline(int splineIndex, const Point& p
     return true;
 }
 
-bool GridGeom::Splines::GetSplinesIntersection(int first, 
+bool MeshKernel::Splines::GetSplinesIntersection(int first, 
                                                int second,
                                                double& crossProductIntersection,
                                                Point& intersectionPoint,
@@ -279,7 +279,7 @@ bool GridGeom::Splines::GetSplinesIntersection(int first,
     return false;
 }
 
-double GridGeom::Splines::GetSplineLength(int index,
+double MeshKernel::Splines::GetSplineLength(int index,
                                           double startIndex,
                                           double endIndex,
                                           int numSamples,
@@ -329,7 +329,7 @@ double GridGeom::Splines::GetSplineLength(int index,
     return splineLength;
 }
 
-bool GridGeom::Splines::ComputeCurvatureOnSplinePoint( int splineIndex,
+bool MeshKernel::Splines::ComputeCurvatureOnSplinePoint( int splineIndex,
                                                        double adimensionalPointCoordinate,
                                                        double& curvatureFactor,
                                                        Point& normalVector,
@@ -372,7 +372,7 @@ bool GridGeom::Splines::ComputeCurvatureOnSplinePoint( int splineIndex,
     return true;
 }
 
-bool GridGeom::Splines::SecondOrderDerivative(const std::vector<Point>& spline, int numNodes, std::vector<Point>& coordinatesDerivatives)
+bool MeshKernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline, int numNodes, std::vector<Point>& coordinatesDerivatives)
 {
     std::vector<Point> u(numNodes);
     u[0] = { 0.0, 0.0 };
@@ -398,7 +398,7 @@ bool GridGeom::Splines::SecondOrderDerivative(const std::vector<Point>& spline, 
     return true;
 }
 
-bool GridGeom::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, int numNodes, std::vector<double>& coordinatesDerivatives)
+bool MeshKernel::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, int numNodes, std::vector<double>& coordinatesDerivatives)
 {
     std::vector<double> u(numNodes);
     u[0] = 0.0;
@@ -422,14 +422,14 @@ bool GridGeom::Splines::SecondOrderDerivative(const std::vector<double>& coordin
     return true;
 }
 
-bool GridGeom::Splines::InterpolatePointsOnSpline( int index,
+bool MeshKernel::Splines::InterpolatePointsOnSpline( int index,
                                                    double maximumGridHeight,
                                                    bool isSpacingCurvatureAdapted,
                                                    const std::vector<double>& distances,
                                                    std::vector<Point>& points,
                                                    std::vector<double>& adimensionalDistances)
 {
-    GridGeom::FuncDimensionalToAdimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
+    MeshKernel::FuncDimensionalToAdimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
 
     for (int i = 0; i < distances.size(); i++)
     {

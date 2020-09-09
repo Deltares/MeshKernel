@@ -31,7 +31,7 @@
 #include <algorithm>
 #include "Entities.hpp"
 
-namespace GridGeom 
+namespace MeshKernel 
 {
     class CurvilinearGrid
     {

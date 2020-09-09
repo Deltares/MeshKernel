@@ -28,7 +28,7 @@
 #pragma once
 #include <vector>
 
-namespace GridGeom
+namespace MeshKernel
 {
     class Mesh;
 

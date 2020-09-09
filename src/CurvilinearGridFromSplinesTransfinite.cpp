@@ -38,15 +38,15 @@
 #include "Splines.hpp"
 #include "CurvilinearGrid.hpp"
 
-GridGeom::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(): m_splines(nullptr)
+MeshKernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(): m_splines(nullptr)
 {
 }
 
-GridGeom::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines) : m_splines(splines)
+MeshKernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines) : m_splines(splines)
 {
 };
 
-bool GridGeom::CurvilinearGridFromSplinesTransfinite::Set(GridGeomApi::CurvilinearParametersNative curvilinearParametersNative)
+bool MeshKernel::CurvilinearGridFromSplinesTransfinite::Set(MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative)
 {
     m_numN = curvilinearParametersNative.NRefinement;
     m_numM = curvilinearParametersNative.MRefinement;
@@ -54,7 +54,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Set(GridGeomApi::Curviline
     return true;
 };
 
-bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& curvilinearGrid)
+bool MeshKernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& curvilinearGrid)
 {
     // compute the intersections
     if (m_numN == 0 || m_numM == 0)
@@ -252,7 +252,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& c
     return true;
 }
 
-bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations( int numIntersections,
+bool MeshKernel::CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations( int numIntersections,
                                                                               int numPoints,
                                                                               int numDiscretizations,
                                                                               const std::vector<double>& intersectionDistances,
@@ -314,7 +314,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations( in
     return true;
 }
 
-bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistances( double factor, 
+bool MeshKernel::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistances( double factor, 
                                                                                    double leftDistance,
                                                                                    double rightDistance,
                                                                                    std::vector<double>& distances ) const 
@@ -337,7 +337,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistance
     return true;
 }
 
-bool GridGeom::CurvilinearGridFromSplinesTransfinite::Interpolate(const std::vector<Point>& sideOne,
+bool MeshKernel::CurvilinearGridFromSplinesTransfinite::Interpolate(const std::vector<Point>& sideOne,
                                                                   const std::vector<Point>& sideTwo,
                                                                   const std::vector<Point>& sideThree,
                                                                   const std::vector<Point>& sideFour,
@@ -504,7 +504,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::Interpolate(const std::vec
 }
 
 
-bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
+bool MeshKernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
 {
     const auto numSplines = m_splines->m_numSplines;
 
@@ -715,7 +715,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
     return true;
 }
 
-bool GridGeom::CurvilinearGridFromSplinesTransfinite::OrderSplines(int startFirst,
+bool MeshKernel::CurvilinearGridFromSplinesTransfinite::OrderSplines(int startFirst,
     int endFirst,
     int startSecond,
     int endSecond)
@@ -758,7 +758,7 @@ bool GridGeom::CurvilinearGridFromSplinesTransfinite::OrderSplines(int startFirs
 }
 
 template<typename T>
-bool  GridGeom::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow)
+bool  MeshKernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow)
 {
     int minSize = std::min(v[firstRow].size(), v[secondRow].size());
     minSize = std::min(minSize, m_splines->m_numSplines);
@@ -771,7 +771,7 @@ bool  GridGeom::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std:
 }
 
 template<typename T>
-bool  GridGeom::CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn)
+bool  MeshKernel::CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn)
 {
     for (int i = 0; i < m_splines->m_numSplines; i++)
     {

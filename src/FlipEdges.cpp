@@ -37,13 +37,13 @@
 #include "FlipEdges.hpp"
 #include "LandBoundaries.hpp"
 
-GridGeom::FlipEdges::FlipEdges() :
+MeshKernel::FlipEdges::FlipEdges() :
     m_mesh(nullptr),
     m_landBoundaries(nullptr)
 {
 }
 
-GridGeom::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh, 
+MeshKernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh, 
                                std::shared_ptr<LandBoundaries> landBoundary, 
                                bool triangulateFaces, 
                                bool projectToLandBoundary) : 
@@ -65,7 +65,7 @@ GridGeom::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
     }
 };
 
-bool GridGeom::FlipEdges::Compute()
+bool MeshKernel::FlipEdges::Compute()
 {
 
     bool successful = m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -275,7 +275,7 @@ bool GridGeom::FlipEdges::Compute()
     return true;
 }
 
-bool GridGeom::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
+bool MeshKernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
 {
     // Update nod, delete edge from m_mesh->m_nodesEdges[firstNode]
     int kk = 0;
@@ -308,7 +308,7 @@ bool GridGeom::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
     return true;
 }
 
-bool GridGeom::FlipEdges::ComputeTopologyFunctional( int edge,
+bool MeshKernel::FlipEdges::ComputeTopologyFunctional( int edge,
                                                      int& nodeLeft,
                                                      int& nodeRight,
                                                      int& topologyFunctional ) const
@@ -429,7 +429,7 @@ bool GridGeom::FlipEdges::ComputeTopologyFunctional( int edge,
 }
 
 //comp_nnow
-int GridGeom::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const
+int MeshKernel::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const
 {
     if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] < 0)
     {
@@ -553,7 +553,7 @@ int GridGeom::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, int
         
 };
 
-int GridGeom::FlipEdges::OptimalNumberOfConnectedNodes(int index) const
+int MeshKernel::FlipEdges::OptimalNumberOfConnectedNodes(int index) const
 {
     int optimalNumber = 6;
     if (m_mesh->m_nodesTypes[index] == 2)
@@ -568,7 +568,7 @@ int GridGeom::FlipEdges::OptimalNumberOfConnectedNodes(int index) const
     return optimalNumber;
 }
 
-bool GridGeom::FlipEdges::TriangulateFaces()
+bool MeshKernel::FlipEdges::TriangulateFaces()
 {
     for (int i = 0; i < m_mesh->GetNumFaces(); i++)
     {

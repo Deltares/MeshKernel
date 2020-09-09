@@ -30,7 +30,7 @@
 #include <vector>
 #include "Entities.hpp"
 
-namespace GridGeom
+namespace MeshKernel
 {
     class Polygons;
     class Mesh;

@@ -27,7 +27,7 @@
 
 #pragma once
 
-namespace GridGeomApi
+namespace MeshKernelApi
 {
     struct MeshGeometry
     {

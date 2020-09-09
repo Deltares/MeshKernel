@@ -32,7 +32,7 @@
 #endif
 #include <math.h> 
 
-namespace GridGeom
+namespace MeshKernel
 {
     // missing value
     static constexpr double doubleMissingValue = -999.0;

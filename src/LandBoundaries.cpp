@@ -35,7 +35,7 @@
 #include "Polygons.hpp"
 #include "LandBoundaries.hpp"
 
-namespace GridGeom
+namespace MeshKernel
 {
     LandBoundaries::LandBoundaries() : m_numAllocatedNodes(0)
     {
