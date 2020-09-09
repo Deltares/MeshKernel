@@ -5,7 +5,7 @@
         <version>1.0.0</version>
         <authors>Deltares</authors>
         <owners>Deltares</owners>
-        <description>Deltares back end mesh editing engine</description>
+        <description>Deltares back end mesh editing engine (C++ version)</description>
     </metadata>
     <files>
         <file src="..\build\Release\lib\**\*" target="content\Lib" />
