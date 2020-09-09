@@ -33,7 +33,7 @@
 #include "SplinesToCurvilinearParametersNative.hpp"
 #include "Splines.hpp"
 
-namespace GridGeom
+namespace MeshKernel
 {
     class CurvilinearGrid;
 
@@ -99,8 +99,8 @@ namespace GridGeom
         /// <param name="curvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
         /// <param name="splinesToCurvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
         /// <returns></returns>
-        bool SetParameters(const GridGeomApi::CurvilinearParametersNative& curvilinearParametersNative,
-                           const GridGeomApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
+        bool SetParameters(const MeshKernelApi::CurvilinearParametersNative& curvilinearParametersNative,
+                           const MeshKernelApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
 
 
         /// <summary>

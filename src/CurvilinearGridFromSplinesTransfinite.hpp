@@ -32,7 +32,7 @@
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
 
-namespace GridGeom
+namespace MeshKernel
 {
     class CurvilinearGrid;
     class Splines;
@@ -58,7 +58,7 @@ namespace GridGeom
         /// </summary>
         /// <param name="curvilinearParametersNative"></param>
         /// <returns></returns>
-        bool Set(GridGeomApi::CurvilinearParametersNative curvilinearParametersNative);
+        bool Set(MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative);
 
         /// <summary>
         /// Computes the adimensional intersections between splines.

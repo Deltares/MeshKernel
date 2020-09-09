@@ -34,7 +34,7 @@
 #include "Constants.cpp"
 #include "SpatialTrees.hpp"
 
-namespace GridGeom
+namespace MeshKernel
 {
 
     // coordinate reference independent operations

@@ -10,7 +10,7 @@ TEST(SpatialTrees, RTreeOnePoint)
     const int n = 4; // x
     const int m = 4; // y
 
-    std::vector<GridGeom::Point> nodes(n * m);
+    std::vector<MeshKernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -21,9 +21,9 @@ TEST(SpatialTrees, RTreeOnePoint)
         }
     }
 
-    GridGeom::SpatialTrees::RTree rtree;
-    rtree.BuildTree(nodes, GridGeom::Projections::cartesian);
-    std::vector<GridGeom::Point> pointToSearch(1, { (n-1.0)/2.0, (n-1.0)/2.0 });
+    MeshKernel::SpatialTrees::RTree rtree;
+    rtree.BuildTree(nodes, MeshKernel::Projections::cartesian);
+    std::vector<MeshKernel::Point> pointToSearch(1, { (n-1.0)/2.0, (n-1.0)/2.0 });
     double squaredDistance = 0.708 * 0.708;
     auto successful = rtree.NearestNeighboursOnSquaredDistance(pointToSearch[0], squaredDistance);
     ASSERT_EQ(true, successful);
@@ -38,7 +38,7 @@ TEST(SpatialTrees, RTreeRemovePoint)
     const int n = 4; // x
     const int m = 4; // y
 
-    std::vector<GridGeom::Point> nodes(n * m);
+    std::vector<MeshKernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -49,8 +49,8 @@ TEST(SpatialTrees, RTreeRemovePoint)
         }
     }
 
-    GridGeom::SpatialTrees::RTree rtree;
-    rtree.BuildTree(nodes, GridGeom::Projections::cartesian);
+    MeshKernel::SpatialTrees::RTree rtree;
+    rtree.BuildTree(nodes, MeshKernel::Projections::cartesian);
 
     rtree.RemoveNode(0);
 
@@ -61,7 +61,7 @@ TEST(SpatialTrees, RTreeManyPoints)
 {
     const int n = 10; // x
     const int m = 10; // y
-    std::vector<GridGeom::Point> nodes(n * m );
+    std::vector<MeshKernel::Point> nodes(n * m );
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -73,8 +73,8 @@ TEST(SpatialTrees, RTreeManyPoints)
     }
 
     auto start(std::chrono::steady_clock::now());
-    GridGeom::SpatialTrees::RTree rtree;
-    rtree.BuildTree(nodes, GridGeom::Projections::cartesian);
+    MeshKernel::SpatialTrees::RTree rtree;
+    rtree.BuildTree(nodes, MeshKernel::Projections::cartesian);
     auto end = std::chrono::steady_clock::now();
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
     std::cout << "Elapsed time build " << elapsedTime << " s " << std::endl;

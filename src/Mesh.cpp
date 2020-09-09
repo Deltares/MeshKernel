@@ -40,11 +40,11 @@
 #include "Entities.hpp"
 #include "MakeGridParametersNative.hpp"
 
-GridGeom::Mesh::Mesh() 
+MeshKernel::Mesh::Mesh() 
 {
 }
 
-bool GridGeom::Mesh::Set(const std::vector<Edge>& edges, 
+bool MeshKernel::Mesh::Set(const std::vector<Edge>& edges, 
     const std::vector<Point>& nodes, 
     Projections projection,
     AdministrationOptions administration)
@@ -63,7 +63,7 @@ bool GridGeom::Mesh::Set(const std::vector<Edge>& edges,
     return true;
 };
 
-bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
+bool MeshKernel::Mesh::RemoveInvalidNodesAndEdges()
 {
 
     // Invalidate not connected nodes
@@ -152,7 +152,7 @@ bool GridGeom::Mesh::RemoveInvalidNodesAndEdges()
     return true;
 }
 
-bool GridGeom::Mesh::Administrate(AdministrationOptions administrationOption)
+bool MeshKernel::Mesh::Administrate(AdministrationOptions administrationOption)
 {
 
     RemoveInvalidNodesAndEdges();
@@ -210,7 +210,7 @@ bool GridGeom::Mesh::Administrate(AdministrationOptions administrationOption)
 }
 
 //gridtonet
-GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
+MeshKernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
 {
 
     if (curvilinearGrid.m_grid.size() == 0)
@@ -269,7 +269,7 @@ GridGeom::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections project
 
 }
 
-GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& polygons, Projections projection)
+MeshKernel::Mesh::Mesh(std::vector<Point>& inputNodes, const MeshKernel::Polygons& polygons, Projections projection)
 {
     m_projection = projection;
     std::vector<double> xLocalPolygon(inputNodes.size());
@@ -403,7 +403,7 @@ GridGeom::Mesh::Mesh(std::vector<Point>& inputNodes, const GridGeom::Polygons& p
 
 }
 
-bool GridGeom::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes)
+bool MeshKernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes)
 {
     // Used for triangular grids
     constexpr double triangleMinimumAngle = 5.0;
@@ -436,7 +436,7 @@ bool GridGeom::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std:
 }
 
 
-bool GridGeom::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
+bool MeshKernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
 {
     Administrate(administrationOption);
 
@@ -518,7 +518,7 @@ bool GridGeom::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
     return true;
 }
 
-void GridGeom::Mesh::NodeAdministration()
+void MeshKernel::Mesh::NodeAdministration()
 {
     // assume no duplicated links
     for (int e = 0; e < GetNumEdges(); e++)
@@ -579,7 +579,7 @@ void GridGeom::Mesh::NodeAdministration()
 };
 
 
-void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder(int node)
+void MeshKernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 {
     if (!m_nodes[node].IsValid())
     {
@@ -588,7 +588,7 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 
     double phi0 = 0.0;
     double phi;
-    m_edgeAngles.resize(GridGeom::maximumNumberOfEdgesPerNode);
+    m_edgeAngles.resize(MeshKernel::maximumNumberOfEdgesPerNode);
     std::fill(m_edgeAngles.begin(), m_edgeAngles.end(), 0.0);
     for (auto edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
     {
@@ -650,7 +650,7 @@ void GridGeom::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 
 }
 
-bool GridGeom::Mesh::FindFacesRecursive( int startingNode,
+bool MeshKernel::Mesh::FindFacesRecursive( int startingNode,
                                          int node,
                                          int index,
                                          int previusEdge,
@@ -761,7 +761,7 @@ bool GridGeom::Mesh::FindFacesRecursive( int startingNode,
 
 }
 
-void GridGeom::Mesh::FindFaces()
+void MeshKernel::Mesh::FindFaces()
 {
     for (int numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
@@ -790,7 +790,7 @@ void GridGeom::Mesh::FindFaces()
     }
 }
 
-void GridGeom::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
+void MeshKernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
 {
     m_facesCircumcenters.resize(GetNumFaces());
     m_faceArea.resize(GetNumFaces());
@@ -856,7 +856,7 @@ void GridGeom::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
     }
 }
 
-bool GridGeom::Mesh::ClassifyNodes()
+bool MeshKernel::Mesh::ClassifyNodes()
 {
     m_nodesTypes.resize(GetNumNodes(), 0);
     std::fill(m_nodesTypes.begin(), m_nodesTypes.end(), 0);
@@ -952,7 +952,7 @@ bool GridGeom::Mesh::ClassifyNodes()
 }
 
 
-bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons)
+bool MeshKernel::Mesh::MakeMesh(const MeshKernelApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons)
 {
     CurvilinearGrid CurvilinearGrid;
     m_projection = polygons.m_projection;
@@ -1101,7 +1101,7 @@ bool GridGeom::Mesh::MakeMesh(const GridGeomApi::MakeGridParametersNative& makeG
 }
 
 ///MERGENODESINPOLYGON
-bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
+bool MeshKernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 {
     // first filter the nodes in polygon
     std::vector<Point> filteredNodes(GetNumNodes());
@@ -1150,7 +1150,7 @@ bool GridGeom::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 }
 
 ///mergenodes
-bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
+bool MeshKernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
 {
     if(firstNodeIndex>=GetNumNodes() || secondNodeIndex >= GetNumNodes())
     {
@@ -1231,7 +1231,7 @@ bool GridGeom::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     return true;
 }
 
-bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
+bool MeshKernel::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
 {
     int edgeIndex;
     bool successful = FindEdge(startNode, endNode, edgeIndex);
@@ -1254,7 +1254,7 @@ bool GridGeom::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
     return true;
 }
 
-bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree)
+bool MeshKernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree)
 {
     int newSize = GetNumNodes() + 1;
     newNodeIndex = GetNumNodes();
@@ -1277,7 +1277,7 @@ bool GridGeom::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex, bool u
     return true;
 }
 
-bool GridGeom::Mesh::DeleteNode(int nodeIndex, bool updateRTree)
+bool MeshKernel::Mesh::DeleteNode(int nodeIndex, bool updateRTree)
 {
     if(nodeIndex>=GetNumNodes())
     {
@@ -1301,7 +1301,7 @@ bool GridGeom::Mesh::DeleteNode(int nodeIndex, bool updateRTree)
     return true;
 }
 
-bool GridGeom::Mesh::RefreshNodesRTreeIfNeeded()
+bool MeshKernel::Mesh::RefreshNodesRTreeIfNeeded()
 {
     if (m_nodesRTree.Empty())
     {
@@ -1319,7 +1319,7 @@ bool GridGeom::Mesh::RefreshNodesRTreeIfNeeded()
     return true;
 }
 
-bool GridGeom::Mesh::DeleteEdge(int edgeIndex)
+bool MeshKernel::Mesh::DeleteEdge(int edgeIndex)
 {
     if(edgeIndex<0)
     {
@@ -1333,7 +1333,7 @@ bool GridGeom::Mesh::DeleteEdge(int edgeIndex)
 }
 
 
-bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numClosedPolygonNodes) const
+bool MeshKernel::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numClosedPolygonNodes) const
 {
     auto numFaceNodes = GetNumFaceEdges(faceIndex);
     if (polygonNodesCache.size() < numFaceNodes + 1)
@@ -1353,7 +1353,7 @@ bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygo
 }
 
 
-bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex, 
+bool MeshKernel::Mesh::FaceClosedPolygon(int faceIndex, 
     std::vector<Point>& polygonNodesCache, 
     std::vector<int>& localNodeIndexsesCache, 
     std::vector<int>& edgeIndexsesCache,
@@ -1390,7 +1390,7 @@ bool GridGeom::Mesh::FaceClosedPolygon(int faceIndex,
 }
 
 
-bool GridGeom::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
+bool MeshKernel::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
 {
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
     for (int i = 0; i < GetNumNodes(); ++i)
@@ -1410,7 +1410,7 @@ bool GridGeom::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
     return true;
 }
 
-bool GridGeom::Mesh::ComputeEdgeLengths()
+bool MeshKernel::Mesh::ComputeEdgeLengths()
 {
     auto numEdges = GetNumEdges();
     m_edgeLengths.resize(numEdges, doubleMissingValue);
@@ -1423,7 +1423,7 @@ bool GridGeom::Mesh::ComputeEdgeLengths()
     return true;
 }
 
-bool GridGeom::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
+bool MeshKernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
 {
     for (int n = 0; n < GetNumFaceEdges(faceIndex); n++)
     {
@@ -1435,7 +1435,7 @@ bool GridGeom::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
     return false;
 }
 
-bool GridGeom::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const
+bool MeshKernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const
 {
     auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
     auto firstEdgeEdgeSecondNode = m_edges[firstEdgeIndex].second;
@@ -1463,7 +1463,7 @@ bool GridGeom::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int
     return true;
 }
 
-bool GridGeom::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const
+bool MeshKernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const
 {
     if (firstNodeIndex < 0 || secondNodeIndex < 0)
     {
@@ -1484,7 +1484,7 @@ bool GridGeom::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& edge
     return true;
 }
 
-bool GridGeom::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
+bool MeshKernel::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
 {
 
     double minx = std::numeric_limits<double>::max();
@@ -1507,7 +1507,7 @@ bool GridGeom::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
     return true;
 }
 
-bool GridGeom::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
+bool MeshKernel::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
 {
     if(m_projection==Projections::spherical && maxx - minx > 180.0)
     {
@@ -1529,7 +1529,7 @@ bool GridGeom::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
 }
 
 
-bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexIndex)
+bool MeshKernel::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexIndex)
 {
     if (GetNumNodes() == 0)
     {
@@ -1555,7 +1555,7 @@ bool GridGeom::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexI
     return true;
 }
 
-int GridGeom::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius)
+int MeshKernel::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius)
 {
     // linear search of the closest edge. The alternative is to mantain an rtree also for edge centers
     int edgeIndex = -1;
@@ -1584,7 +1584,7 @@ int GridGeom::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius)
     return edgeIndex;
 }
 
-bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)
+bool MeshKernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)
 {
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
@@ -1675,7 +1675,7 @@ bool GridGeom::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inver
     return true;
 }
 
-bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion)
+bool MeshKernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion)
 {
     if (deletionOption == AllVerticesInside)
     {
@@ -1770,7 +1770,7 @@ bool GridGeom::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, bo
     return true;
 };
 
-bool GridGeom::Mesh::MoveNode(Point newPoint, int nodeindex)
+bool MeshKernel::Mesh::MoveNode(Point newPoint, int nodeindex)
 {
     Point nodeToMove = m_nodes[nodeindex];
 
@@ -1793,7 +1793,7 @@ bool GridGeom::Mesh::MoveNode(Point newPoint, int nodeindex)
     return true;
 }
 
-GridGeom::Mesh& GridGeom::Mesh::operator+=(Mesh const& rhs)
+MeshKernel::Mesh& MeshKernel::Mesh::operator+=(Mesh const& rhs)
 {
     if (m_projection != rhs.m_projection || rhs.GetNumNodes() == 0 || rhs.GetNumEdges() == 0)
     {
@@ -1834,7 +1834,7 @@ GridGeom::Mesh& GridGeom::Mesh::operator+=(Mesh const& rhs)
     return *this;
 }
 
-bool GridGeom::Mesh::ComputeNodeMaskFromEdgeMask()
+bool MeshKernel::Mesh::ComputeNodeMaskFromEdgeMask()
 {
     if (m_edgeMask.size() != GetNumEdges() || m_nodeMask.size() != GetNumNodes())
     {
@@ -1866,7 +1866,7 @@ bool GridGeom::Mesh::ComputeNodeMaskFromEdgeMask()
     return true;
 }
 
-bool GridGeom::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
+bool MeshKernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
     std::vector<Point>& middlePoints,
     std::vector<Point>& normals,
     int numNodes,
@@ -1992,7 +1992,7 @@ bool GridGeom::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
     return true;
 }
 
-bool GridGeom::Mesh::ComputeNodeNeighbours() 
+bool MeshKernel::Mesh::ComputeNodeNeighbours() 
 {
     m_maxNumNeighbours = *(std::max_element(m_nodesNumEdges.begin(), m_nodesNumEdges.end()));
     m_maxNumNeighbours += 1;
@@ -2011,7 +2011,7 @@ bool GridGeom::Mesh::ComputeNodeNeighbours()
     return true;
 }
 
-bool GridGeom::Mesh::GetOrthogonality(double* orthogonality)
+bool MeshKernel::Mesh::GetOrthogonality(double* orthogonality)
 {
     for (int e = 0; e < GetNumEdges(); e++)
     {
@@ -2039,7 +2039,7 @@ bool GridGeom::Mesh::GetOrthogonality(double* orthogonality)
     return true;
 }
 
-bool GridGeom::Mesh::GetSmoothness(double* smoothness)
+bool MeshKernel::Mesh::GetSmoothness(double* smoothness)
 {
     for (int e = 0; e < GetNumEdges(); e++)
     {
@@ -2071,7 +2071,7 @@ bool GridGeom::Mesh::GetSmoothness(double* smoothness)
     return true;
 }
 
-bool GridGeom::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
+bool MeshKernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
 {
     std::vector<std::vector<double>> averageEdgesLength(GetNumEdges(), std::vector<double>(2, doubleMissingValue));
     std::vector<double> averageFlowEdgesLength(GetNumEdges(), doubleMissingValue);

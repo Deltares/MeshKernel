@@ -38,11 +38,11 @@
 #include "Entities.hpp"
 #include "Smoother.hpp"
 
-GridGeom::Smoother::Smoother(std::shared_ptr<Mesh> mesh): m_mesh(mesh)
+MeshKernel::Smoother::Smoother(std::shared_ptr<Mesh> mesh): m_mesh(mesh)
 {
 }
 
-bool GridGeom::Smoother::Compute()
+bool MeshKernel::Smoother::Compute()
 {
     bool successful = true;
 
@@ -66,7 +66,7 @@ bool GridGeom::Smoother::Compute()
     return true;
 }
 
-bool GridGeom::Smoother::ComputeTopologies()
+bool MeshKernel::Smoother::ComputeTopologies()
 {
     bool successful = Initialize();
 
@@ -113,7 +113,7 @@ bool GridGeom::Smoother::ComputeTopologies()
 
 }
 
-bool GridGeom::Smoother::ComputeOperators()
+bool MeshKernel::Smoother::ComputeOperators()
 {
     // allocate local operators for unique topologies
     m_Az.resize(m_numTopologies);
@@ -163,7 +163,7 @@ bool GridGeom::Smoother::ComputeOperators()
     return successful;
 }
 
-bool GridGeom::Smoother::ComputeWeights()
+bool MeshKernel::Smoother::ComputeWeights()
 {
     std::vector<std::vector<double>> J(m_mesh->GetNumNodes() , std::vector<double>(4, 0));    // Jacobian
     std::vector<std::vector<double>> Ginv(m_mesh->GetNumNodes() , std::vector<double>(4, 0)); // Mesh monitor matrices
@@ -294,7 +294,7 @@ bool GridGeom::Smoother::ComputeWeights()
     return true;
 }
 
-bool GridGeom::Smoother::ComputeOperatorsNode(int currentNode)
+bool MeshKernel::Smoother::ComputeOperatorsNode(int currentNode)
 {
     // the current topology index
     const int currentTopology = m_nodeTopologyMapping[currentNode];
@@ -578,7 +578,7 @@ bool GridGeom::Smoother::ComputeOperatorsNode(int currentNode)
 }
 
 
-bool GridGeom::Smoother::ComputeNodeXiEta( int currentNode,
+bool MeshKernel::Smoother::ComputeNodeXiEta( int currentNode,
                                            const int& numSharedFaces,
                                            const int& numConnectedNodes)
 {
@@ -845,7 +845,7 @@ bool GridGeom::Smoother::ComputeNodeXiEta( int currentNode,
     return true;
 }
 
-bool GridGeom::Smoother::NodeAdministration(const int currentNode, 
+bool MeshKernel::Smoother::NodeAdministration(const int currentNode, 
                                             int& numSharedFaces, 
                                             int& numConnectedNodes)
 {
@@ -1000,7 +1000,7 @@ bool GridGeom::Smoother::NodeAdministration(const int currentNode,
 }
 
 
-double GridGeom::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge)
+double MeshKernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge)
 {
     double angle = M_PI * (1 - 2.0 / double(numFaceNodes));
 
@@ -1015,14 +1015,14 @@ double GridGeom::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, dou
     return angle;
 }
 
-double GridGeom::Smoother::MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents)
+double MeshKernel::Smoother::MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents)
 {
     double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[2] * x[0] + matCoefficents[3] * x[1]) * y[1];
     return norm;
 }
 
 
-bool GridGeom::Smoother::Initialize()
+bool MeshKernel::Smoother::Initialize()
 {
     // local matrices caches
     m_numConnectedNodes.resize(m_mesh->GetNumNodes());
@@ -1077,7 +1077,7 @@ bool GridGeom::Smoother::Initialize()
 }
 
 
-bool GridGeom::Smoother::AllocateNodeOperators(int topologyIndex)
+bool MeshKernel::Smoother::AllocateNodeOperators(int topologyIndex)
 {
     int numSharedFaces = m_numTopologyFaces[topologyIndex];
     int numConnectedNodes = m_numTopologyNodes[topologyIndex];
@@ -1111,7 +1111,7 @@ bool GridGeom::Smoother::AllocateNodeOperators(int topologyIndex)
 }
 
 
-bool GridGeom::Smoother::SaveNodeTopologyIfNeeded(int currentNode,
+bool MeshKernel::Smoother::SaveNodeTopologyIfNeeded(int currentNode,
                                                int numSharedFaces,
                                                int numConnectedNodes)
 {
@@ -1172,7 +1172,7 @@ bool GridGeom::Smoother::SaveNodeTopologyIfNeeded(int currentNode,
     return true;
 }
 
-bool GridGeom::Smoother::ComputeJacobian(int currentNode, std::vector<double>& J) const
+bool MeshKernel::Smoother::ComputeJacobian(int currentNode, std::vector<double>& J) const
 {
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
     const auto numNodes = m_numTopologyNodes[currentTopology];

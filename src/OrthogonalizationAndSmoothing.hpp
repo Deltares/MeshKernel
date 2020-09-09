@@ -31,7 +31,7 @@
 #include <memory>
 #include "OrthogonalizationParametersNative.hpp"
 
-namespace GridGeom
+namespace MeshKernel
 {
     // Forward declare everything to reduce compile time dependency
     struct Point;
@@ -78,7 +78,7 @@ namespace GridGeom
                   int isTriangulationRequired,
                   int isAccountingForLandBoundariesRequired,
                   int projectToLandBoundaryOption,
-                  GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative );
+                  MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative );
 
         /// <summary>
         /// Executes the entire algorithm

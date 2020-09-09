@@ -33,7 +33,7 @@
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
 
-namespace GridGeom 
+namespace MeshKernel 
 {
     // Forward declarations
     class Mesh;
@@ -77,8 +77,8 @@ namespace GridGeom
         /// <returns>If the method succeeded</returns>
         bool Refine(std::vector<Sample>& sample,
                     const Polygons& polygon,
-                    GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
-                    GridGeomApi::InterpolationParametersNative& interpolationParametersNative);
+                    MeshKernelApi::SampleRefineParametersNative& sampleRefineParametersNative,
+                    MeshKernelApi::InterpolationParametersNative& interpolationParametersNative);
 
     private:
 

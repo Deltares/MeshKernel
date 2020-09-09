@@ -42,7 +42,7 @@
 // boost queries
 // https://www.boost.org/doc/libs/1_66_0/libs/geometry/doc/html/geometry/spatial_indexes/queries.html
 
-namespace GridGeom
+namespace MeshKernel
 {
     namespace SpatialTrees 
     {

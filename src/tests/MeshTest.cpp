@@ -10,21 +10,21 @@
 TEST(Mesh, OneQuadTestConstructor) 
 {
     //1 Setup
-    std::vector<GridGeom::Point> nodes;
+    std::vector<MeshKernel::Point> nodes;
     nodes.push_back({ 0.0,0.0 });
     nodes.push_back({ 0.0,10.0 });
     nodes.push_back({ 10.0,0.0 });
     nodes.push_back({ 10.0,10.0 });
-    std::vector<GridGeom::Edge> edges;
+    std::vector<MeshKernel::Edge> edges;
     edges.push_back({ 0, 2 });
     edges.push_back({ 1, 3 });
     edges.push_back({ 0, 1 });
     edges.push_back({ 2, 3 });
     
-    GridGeom::Mesh mesh;
+    MeshKernel::Mesh mesh;
 
     // 2 Execution
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
 
     // 3 Validation
     // expect nodesEdges to be sorted ccw
@@ -78,8 +78,8 @@ TEST(Mesh, OneQuadTestConstructor)
 TEST(Mesh, MakeMeshInPolygon)
 {
     //1 Setup
-    GridGeom::Polygons polygons;
-    std::vector<GridGeom::Point> nodes;
+    MeshKernel::Polygons polygons;
+    std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
     nodes.push_back({ 144.501526, 253.128174 });
@@ -88,10 +88,10 @@ TEST(Mesh, MakeMeshInPolygon)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    polygons.Set(nodes, GridGeom::Projections::cartesian);
+    polygons.Set(nodes, MeshKernel::Projections::cartesian);
     
-    GridGeom::Mesh mesh;
-    GridGeomApi::MakeGridParametersNative makeGridParametersNative;
+    MeshKernel::Mesh mesh;
+    MeshKernelApi::MakeGridParametersNative makeGridParametersNative;
     makeGridParametersNative.GridType = 0;
     makeGridParametersNative.GridAngle = 0.0;
     makeGridParametersNative.OriginXCoordinate = 0.0;
@@ -111,8 +111,8 @@ TEST(Mesh, MakeMeshInPolygon)
 TEST(Mesh, MakeMeshInPolygonSpherical)
 {
     //1 Setup
-    GridGeom::Polygons polygons;
-    std::vector<GridGeom::Point> nodes;
+    MeshKernel::Polygons polygons;
+    std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
     nodes.push_back({ 144.501526, 253.128174 });
@@ -121,10 +121,10 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    polygons.Set(nodes, GridGeom::Projections::spherical);
+    polygons.Set(nodes, MeshKernel::Projections::spherical);
 
-    GridGeom::Mesh mesh;
-    GridGeomApi::MakeGridParametersNative makeGridParametersNative;
+    MeshKernel::Mesh mesh;
+    MeshKernelApi::MakeGridParametersNative makeGridParametersNative;
     makeGridParametersNative.GridType = 0;
     makeGridParametersNative.GridAngle = 0.0;
     makeGridParametersNative.OriginXCoordinate = 0.0;
@@ -144,13 +144,13 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
 TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
 {
     //1 Setup
-    GridGeom::Polygons polygons;
-    std::vector<GridGeom::Point> nodes;
+    MeshKernel::Polygons polygons;
+    std::vector<MeshKernel::Point> nodes;
 
-    polygons.Set(nodes, GridGeom::Projections::spherical);
+    polygons.Set(nodes, MeshKernel::Projections::spherical);
 
-    GridGeom::Mesh mesh;
-    GridGeomApi::MakeGridParametersNative makeGridParametersNative;
+    MeshKernel::Mesh mesh;
+    MeshKernelApi::MakeGridParametersNative makeGridParametersNative;
     makeGridParametersNative.GridType = 0;
     makeGridParametersNative.GridAngle = 0.0;
     makeGridParametersNative.OriginXCoordinate = 0.0;
@@ -203,8 +203,8 @@ TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
 TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
 {
     // Prepare
-    GridGeom::Polygons polygons;
-    std::vector<GridGeom::Point> nodes;
+    MeshKernel::Polygons polygons;
+    std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
     nodes.push_back({ 144.501526, 253.128174 });
@@ -213,14 +213,14 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    polygons.Set(nodes, GridGeom::Projections::cartesian);
+    polygons.Set(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<GridGeom::Point>> generatedPoints;
+    std::vector<std::vector<MeshKernel::Point>> generatedPoints;
     bool success = polygons.CreatePointsInPolygons(generatedPoints);
     ASSERT_TRUE(success);
 
-    GridGeom::Mesh mesh(generatedPoints[0], polygons, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh(generatedPoints[0], polygons, MeshKernel::Projections::cartesian);
 
     //// Assert
     constexpr double tolerance = 1e-5;
@@ -250,8 +250,8 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
 TEST(Mesh, TriangulateSamples)
 {
     // Prepare
-    GridGeom::Polygons polygons;
-    std::vector<GridGeom::Point> nodes;
+    MeshKernel::Polygons polygons;
+    std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 498.503152894023, 1645.82297461613 });
     nodes.push_back({ -5.90937355559299, 814.854361678898 });
@@ -260,35 +260,35 @@ TEST(Mesh, TriangulateSamples)
     nodes.push_back({ 501.418832237663, 1642.90729527249 });
     nodes.push_back({ 498.503152894023, 1645.82297461613 });
 
-    polygons.Set(nodes, GridGeom::Projections::cartesian);
+    polygons.Set(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<GridGeom::Point>> generatedPoints;
+    std::vector<std::vector<MeshKernel::Point>> generatedPoints;
     bool success = polygons.CreatePointsInPolygons(generatedPoints);
     ASSERT_TRUE(success);
 
-    GridGeom::Mesh mesh(generatedPoints[0], polygons, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh(generatedPoints[0], polygons, MeshKernel::Projections::cartesian);
 }
 
 
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
 {
     //1 Setup
-    std::vector<GridGeom::Point> nodes;
+    std::vector<MeshKernel::Point> nodes;
     nodes.push_back({ 0.0, 0.0 });
     nodes.push_back({ 5.0, -5.0 });
     nodes.push_back({ 10.0, 0.0 });
     nodes.push_back({ 5.0, 5.0 });
-    std::vector<GridGeom::Edge> edges;
+    std::vector<MeshKernel::Edge> edges;
     edges.push_back({ 0, 3 });
     edges.push_back({ 0, 2 });
     edges.push_back({ 2, 3 });
     edges.push_back({ 0, 1 });
     edges.push_back({ 2, 1 });
 
-    GridGeom::Mesh mesh;
+    MeshKernel::Mesh mesh;
     // 2 Execution
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
 
     // 3 Validation
     ASSERT_EQ(2, mesh.GetNumFaces());
@@ -297,25 +297,25 @@ TEST(Mesh, TwoTrianglesDuplicatedEdges)
 TEST(Mesh, MeshBoundaryToPolygon)
 {
     //1 Setup
-    std::vector<GridGeom::Point> nodes;
+    std::vector<MeshKernel::Point> nodes;
     nodes.push_back({ 0.0, 0.0 });
     nodes.push_back({ 5.0, -5.0 });
     nodes.push_back({ 10.0, 0.0 });
     nodes.push_back({ 5.0, 5.0 });
-    std::vector<GridGeom::Edge> edges;
+    std::vector<MeshKernel::Edge> edges;
     edges.push_back({ 0, 3 });
     edges.push_back({ 0, 2 });
     edges.push_back({ 2, 3 });
     edges.push_back({ 0, 1 });
     edges.push_back({ 2, 1 });
 
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh;
+    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
 
-    GridGeom::Polygons polygons;
+    MeshKernel::Polygons polygons;
 
     int counterClockWise = 0;
-    std::vector<GridGeom::Point> meshBoundaryPolygon;
+    std::vector<MeshKernel::Point> meshBoundaryPolygon;
     int numNodesBoundaryPolygons = 0;
     polygons.MeshBoundaryToPolygon(mesh, counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
@@ -336,21 +336,21 @@ TEST(Mesh, MeshBoundaryToPolygon)
 TEST(Mesh, HangingEdge)
 {
     //1 Setup
-    std::vector<GridGeom::Point> nodes;
+    std::vector<MeshKernel::Point> nodes;
     nodes.push_back({ 0.0, 0.0 });
     nodes.push_back({ 5.0, 0.0 });
     nodes.push_back({ 3.0, 2.0 });
     nodes.push_back({ 3.0, 4.0 });
 
-    std::vector<GridGeom::Edge> edges;
+    std::vector<MeshKernel::Edge> edges;
     edges.push_back({ 0, 1 });
     edges.push_back({ 1, 3 });
     edges.push_back({ 3, 0 });
     edges.push_back({ 2, 1 });
 
 
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh;
+    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
 
     ASSERT_EQ(1, mesh.GetNumFaces());
 }
@@ -358,23 +358,23 @@ TEST(Mesh, HangingEdge)
 TEST(Mesh, InsertNodeRtree)
 {
     //1 Setup
-    std::vector<GridGeom::Point> nodes;
+    std::vector<MeshKernel::Point> nodes;
     nodes.push_back({ 0.0, 0.0 });
     nodes.push_back({ 5.0, 0.0 });
     nodes.push_back({ 3.0, 2.0 });
     nodes.push_back({ 3.0, 4.0 });
 
-    std::vector<GridGeom::Edge> edges;
+    std::vector<MeshKernel::Edge> edges;
     edges.push_back({ 0, 1 });
     edges.push_back({ 1, 3 });
     edges.push_back({ 3, 0 });
     edges.push_back({ 2, 1 });
 
 
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh;
+    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
 
-    GridGeom::Point newPoint{ 10.0,10.0 };
+    MeshKernel::Point newPoint{ 10.0,10.0 };
     int newNodeIndex;
     mesh.InsertNode(newPoint, newNodeIndex,true);
 
@@ -389,7 +389,7 @@ TEST(Mesh, NodeMerging)
     const int m = 10; // y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<GridGeom::Point> nodes(n * m);
+    std::vector<MeshKernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -401,7 +401,7 @@ TEST(Mesh, NodeMerging)
         }
     }
 
-    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::vector<MeshKernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -421,11 +421,11 @@ TEST(Mesh, NodeMerging)
         }
     }
 
-    GridGeom::Mesh mesh;
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh;
+    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
 
     // Add overlapping nodes
-    double generatingDistance = std::sqrt(std::pow(GridGeom::mergingDistance*0.9, 2) / 2.0);
+    double generatingDistance = std::sqrt(std::pow(MeshKernel::mergingDistance*0.9, 2) / 2.0);
     std::uniform_real_distribution<double>  xDistrution(0.0, generatingDistance);
     std::uniform_real_distribution<double>  yDistrution(0.0, generatingDistance);
     std::random_device                      rand_dev;
@@ -458,10 +458,10 @@ TEST(Mesh, NodeMerging)
     edges.resize(edgeIndex);
 
     // re set with augmented nodes
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
 
     // 2. Act
-    GridGeom::Polygons polygon;
+    MeshKernel::Polygons polygon;
     mesh.MergeNodesInPolygon(polygon);
 
     // 3. Assert
@@ -475,7 +475,7 @@ TEST(Mesh, MillionQuads)
     const int m = 11; // y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<GridGeom::Point> nodes(n * m);
+    std::vector<MeshKernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -487,7 +487,7 @@ TEST(Mesh, MillionQuads)
         }
     }
 
-    std::vector<GridGeom::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::vector<MeshKernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -507,10 +507,10 @@ TEST(Mesh, MillionQuads)
         }
     }
 
-    GridGeom::Mesh mesh;
+    MeshKernel::Mesh mesh;
     // now build node-edge mapping
     auto start(std::chrono::steady_clock::now());
-    mesh.Set(edges, nodes, GridGeom::Projections::cartesian);
+    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();

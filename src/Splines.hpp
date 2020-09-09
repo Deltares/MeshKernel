@@ -33,7 +33,7 @@
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
 
-namespace GridGeom
+namespace MeshKernel
 {
     class CurvilinearGrid;
     

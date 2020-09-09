@@ -7,7 +7,7 @@
 TEST(Polygons, MeshBoundaryToPolygon)
 {
     //One gets the edges
-    std::vector<GridGeom::Point> nodes;
+    std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 322.252624511719,454.880187988281 });
     nodes.push_back({ 227.002044677734,360.379241943359 });
@@ -20,7 +20,7 @@ TEST(Polygons, MeshBoundaryToPolygon)
     nodes.push_back({ 310.300984548069,319.41005739802 });
     nodes.push_back({ 423.569603308318,326.17986967523 });
 
-    std::vector<GridGeom::Edge> edges;
+    std::vector<MeshKernel::Edge> edges;
     // Local edges
     edges.push_back({ 3, 9 });
     edges.push_back({ 9, 2 });
@@ -50,14 +50,14 @@ TEST(Polygons, MeshBoundaryToPolygon)
     }
 
     // now build node-edge mapping
-    auto mesh=std::make_shared<GridGeom::Mesh>();
-    mesh->Set(edges, nodes, GridGeom::Projections::cartesian);
+    auto mesh=std::make_shared<MeshKernel::Mesh>();
+    mesh->Set(edges, nodes, MeshKernel::Projections::cartesian);
 
-    auto polygons =std::make_shared<GridGeom::Polygons>();
-    const std::vector<GridGeom::Point> polygon;
-    std::vector<GridGeom::Point> meshBoundaryPolygon;
+    auto polygons =std::make_shared<MeshKernel::Polygons>();
+    const std::vector<MeshKernel::Point> polygon;
+    std::vector<MeshKernel::Point> meshBoundaryPolygon;
     int numNodesBoundaryPolygons;
-    polygons->Set(polygon, GridGeom::Projections::cartesian);
+    polygons->Set(polygon, MeshKernel::Projections::cartesian);
     polygons->MeshBoundaryToPolygon(*mesh, 0, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
 
@@ -89,8 +89,8 @@ TEST(Polygons, MeshBoundaryToPolygon)
 TEST(Polygons, CreatePointsInPolygons)
 {
     // Prepare
-    GridGeom::Polygons  polygons;
-    std::vector<GridGeom::Point> nodes;
+    MeshKernel::Polygons  polygons;
+    std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
     nodes.push_back({ 144.501526, 253.128174 });
@@ -99,10 +99,10 @@ TEST(Polygons, CreatePointsInPolygons)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    polygons.Set(nodes, GridGeom::Projections::cartesian);
+    polygons.Set(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<GridGeom::Point>> generatedPoints;
+    std::vector<std::vector<MeshKernel::Point>> generatedPoints;
     bool successful = polygons.CreatePointsInPolygons(generatedPoints);
     ASSERT_TRUE(successful);
 
@@ -128,8 +128,8 @@ TEST(Polygons, CreatePointsInPolygons)
 TEST(Polygons, RefinePolygon)
 {
     // Prepare
-    GridGeom::Polygons polygons;
-    std::vector<GridGeom::Point> nodes;
+    MeshKernel::Polygons polygons;
+    std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 0,0 });
     nodes.push_back({ 3, 0 });
@@ -137,11 +137,11 @@ TEST(Polygons, RefinePolygon)
     nodes.push_back({ 0, 3 });
     nodes.push_back({ 0, 0 });
 
-    polygons.Set(nodes, GridGeom::Projections::cartesian);
+    polygons.Set(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<GridGeom::Point>> generatedPoints;
-    std::vector<GridGeom::Point> refinedPolygon;
+    std::vector<std::vector<MeshKernel::Point>> generatedPoints;
+    std::vector<MeshKernel::Point> refinedPolygon;
     bool successful = polygons.RefinePart(0, 0, 1.0, refinedPolygon);
     ASSERT_TRUE(successful);
 
@@ -180,8 +180,8 @@ TEST(Polygons, RefinePolygon)
 TEST(Polygons, RefinePolygonLongerSquare)
 {
     // Prepare
-    GridGeom::Polygons polygons;
-    std::vector<GridGeom::Point> nodes;
+    MeshKernel::Polygons polygons;
+    std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 0, 0 });
     nodes.push_back({ 3, 0 });
@@ -189,11 +189,11 @@ TEST(Polygons, RefinePolygonLongerSquare)
     nodes.push_back({ 0, 3.5 });
     nodes.push_back({ 0, 0 });
 
-    polygons.Set(nodes, GridGeom::Projections::cartesian);
+    polygons.Set(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<GridGeom::Point>> generatedPoints;
-    std::vector<GridGeom::Point> refinedPolygon;
+    std::vector<std::vector<MeshKernel::Point>> generatedPoints;
+    std::vector<MeshKernel::Point> refinedPolygon;
     bool successful = polygons.RefinePart(0, 0, 1.0, refinedPolygon);
     ASSERT_TRUE(successful);
 
@@ -231,7 +231,7 @@ TEST(Polygons, RefinePolygonLongerSquare)
 
 TEST(Polygon, OffsetCopy)
 {
-    std::vector<GridGeom::Point> nodes;
+    std::vector<MeshKernel::Point> nodes;
     nodes.push_back({ 296.752472, 397.879639 });
     nodes.push_back({ 294.502472, 256.128204 });
     nodes.push_back({ 578.754211, 244.128082 });
@@ -239,11 +239,11 @@ TEST(Polygon, OffsetCopy)
     nodes.push_back({ 308.002533, 397.879639 });
     nodes.push_back({ 296.752472, 397.879639 });
 
-    GridGeom::Polygons polygon;
-    bool successful = polygon.Set(nodes, GridGeom::Projections::cartesian);
+    MeshKernel::Polygons polygon;
+    bool successful = polygon.Set(nodes, MeshKernel::Projections::cartesian);
     ASSERT_TRUE(successful);
 
-    GridGeom::Polygons newPolygon;
+    MeshKernel::Polygons newPolygon;
     double distance = 10.0;
     bool innerAndOuter = false;
     successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
