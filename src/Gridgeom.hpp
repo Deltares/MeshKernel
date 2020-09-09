@@ -129,12 +129,12 @@ namespace GridGeomApi
         /// <param name="geometryListNativeLandBoundaries">The land boundaries to account for in the orthogonalization process</param>
         /// <returns>Error code</returns>
         GRIDGEOM_API int ggeo_orthogonalize_initialize(int gridStateId,
-            int isTriangulationRequired, 
-            int isAccountingForLandBoundariesRequired, 
-            int projectToLandBoundaryOption,
-            OrthogonalizationParametersNative& orthogonalizationParametersNative, 
-            GeometryListNative& geometryListNativePolygon, 
-            GeometryListNative& geometryListNativeLandBoundaries);
+                                                       int isTriangulationRequired, 
+                                                       int isAccountingForLandBoundariesRequired, 
+                                                       int projectToLandBoundaryOption,
+                                                       OrthogonalizationParametersNative& orthogonalizationParametersNative, 
+                                                       GeometryListNative& geometryListNativePolygon, 
+                                                       GeometryListNative& geometryListNativeLandBoundaries);
 
         /// <summary>
         /// Prepare outer orthogonalization iteration (interactive mode)
