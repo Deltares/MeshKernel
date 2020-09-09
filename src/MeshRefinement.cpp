@@ -35,7 +35,7 @@
 #include "SpatialTrees.hpp"
 #include "Operations.cpp"
 
-GridGeom::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) :
+MeshKernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) :
     m_mesh(mesh)
 {
     m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -48,10 +48,10 @@ GridGeom::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) :
     m_refinementType = RefinementType::WaveCourant;
 };
 
-bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
+bool MeshKernel::MeshRefinement::Refine(std::vector<Sample>& sample,
                                       const Polygons& polygon,
-                                      GridGeomApi::SampleRefineParametersNative& sampleRefineParametersNative,
-                                      GridGeomApi::InterpolationParametersNative& interpolationParametersNative)
+                                      MeshKernelApi::SampleRefineParametersNative& sampleRefineParametersNative,
+                                      MeshKernelApi::InterpolationParametersNative& interpolationParametersNative)
 {
 
     bool isRefinementBasedOnSamples = false;
@@ -277,7 +277,7 @@ bool GridGeom::MeshRefinement::Refine(std::vector<Sample>& sample,
     return true;
 }
 
-bool GridGeom::MeshRefinement::RemoveIsolatedHangingnodes(int& numRemovedIsolatedHangingNodes)
+bool MeshKernel::MeshRefinement::RemoveIsolatedHangingnodes(int& numRemovedIsolatedHangingNodes)
 {
 
     numRemovedIsolatedHangingNodes = 0;
@@ -375,7 +375,7 @@ bool GridGeom::MeshRefinement::RemoveIsolatedHangingnodes(int& numRemovedIsolate
 }
 
 
-bool GridGeom::MeshRefinement::ConnectHangingNodes()
+bool MeshKernel::MeshRefinement::ConnectHangingNodes()
 {
     std::vector<int> edgeEndNodeCache(maximumNumberOfNodesPerFace, intMissingValue);
     std::vector<int> hangingNodeCache(maximumNumberOfNodesPerFace, intMissingValue);
@@ -561,7 +561,7 @@ bool GridGeom::MeshRefinement::ConnectHangingNodes()
     return successful;
 }
 
-bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRefinemet)
+bool MeshKernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRefinemet)
 {
 
     //Add new nodes where required
@@ -821,7 +821,7 @@ bool GridGeom::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRef
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
+bool MeshKernel::MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
 {
     for (int f = 0; f < m_mesh->GetNumFaces(); f++)
     {
@@ -854,7 +854,7 @@ bool GridGeom::MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<Sample>& samples)
+bool MeshKernel::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<Sample>& samples)
 {
     std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
     std::fill(m_faceMask.begin(), m_faceMask.end(), 0);
@@ -913,7 +913,7 @@ bool GridGeom::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<Sam
     return true;
 };
 
-bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
+bool MeshKernel::MeshRefinement::FindHangingNodes(int faceIndex,
     int& numHangingEdges,
     int& numHangingNodes,
     int& numEdgesToRefine)
@@ -984,7 +984,7 @@ bool GridGeom::MeshRefinement::FindHangingNodes(int faceIndex,
     return true;
 }
 
-bool GridGeom::MeshRefinement::ComputeEdgesRefinementMaskFromSamples( int numPolygonNodes,
+bool MeshKernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples( int numPolygonNodes,
                                                                       std::vector<Sample>& samples,
                                                                       std::vector<int>& refineEdgeCache,
                                                                       int& numEdgesToBeRefined )
@@ -1125,7 +1125,7 @@ bool GridGeom::MeshRefinement::ComputeEdgesRefinementMaskFromSamples( int numPol
     return true;
 }
 
-double GridGeom::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod, Point centerOfMass)
+double MeshKernel::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod, Point centerOfMass)
 {
     double refinementValue = 0.0;
     bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh->m_projection, m_samplesRTree, averagingMethod, refinementValue);
@@ -1137,7 +1137,7 @@ double GridGeom::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygon
     return refinementValue;
 }
 
-bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask()
+bool  MeshKernel::MeshRefinement::ComputeEdgesRefinementMask()
 {
     bool repeat = true;
     int iter = 0;
@@ -1296,7 +1296,7 @@ bool  GridGeom::MeshRefinement::ComputeEdgesRefinementMask()
     return true;
 }
 
-bool  GridGeom::MeshRefinement::ComputeIfFaceShouldBeSplitted()
+bool  MeshKernel::MeshRefinement::ComputeIfFaceShouldBeSplitted()
 {
     const int maxiter = 1000;
     int num = 1;
@@ -1393,7 +1393,7 @@ bool  GridGeom::MeshRefinement::ComputeIfFaceShouldBeSplitted()
 }
 
 
-bool GridGeom::MeshRefinement::FindBrotherEdges()
+bool MeshKernel::MeshRefinement::FindBrotherEdges()
 {
     m_brotherEdges.resize(m_mesh->GetNumEdges());
     std::fill(m_brotherEdges.begin(), m_brotherEdges.end(), intMissingValue);
@@ -1455,7 +1455,7 @@ bool GridGeom::MeshRefinement::FindBrotherEdges()
     return true;
 }
 
-bool GridGeom::MeshRefinement::SmoothEdgeRefinementMask()
+bool MeshKernel::MeshRefinement::SmoothEdgeRefinementMask()
 {
     return true;
 }

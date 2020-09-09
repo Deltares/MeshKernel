@@ -37,13 +37,13 @@
 #include "LandBoundaries.hpp"
 #include "CurvilinearGridFromPolygon.hpp"
 
-GridGeom::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon() :
+MeshKernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon() :
     m_mesh(nullptr),
     m_polygon(nullptr)
 {
 }
 
-GridGeom::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Mesh> mesh, 
+MeshKernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Mesh> mesh, 
                                                                  std::shared_ptr<Polygons> polygon) :
     m_mesh(mesh),
     m_polygon(polygon)
@@ -51,7 +51,7 @@ GridGeom::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr
 
 };
 
-bool GridGeom::CurvilinearGridFromPolygon::Compute()
+bool MeshKernel::CurvilinearGridFromPolygon::Compute()
 {
     bool successful = true;
     return true;

@@ -10,21 +10,21 @@
 
 TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
 {
-    std::vector<GridGeom::Point> firstSpline;
-    firstSpline.push_back(GridGeom::Point{ 152.001571655273, 86.6264953613281 });
-    firstSpline.push_back(GridGeom::Point{ 374.752960205078, 336.378997802734 });
-    firstSpline.push_back(GridGeom::Point{ 850.255920410156, 499.130676269531 });
+    std::vector<MeshKernel::Point> firstSpline;
+    firstSpline.push_back(MeshKernel::Point{ 152.001571655273, 86.6264953613281 });
+    firstSpline.push_back(MeshKernel::Point{ 374.752960205078, 336.378997802734 });
+    firstSpline.push_back(MeshKernel::Point{ 850.255920410156, 499.130676269531 });
 
-    auto splines = std::make_shared<GridGeom::Splines>(GridGeom::Projections::cartesian);
+    auto splines = std::make_shared<MeshKernel::Splines>(MeshKernel::Projections::cartesian);
     bool success = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> secondSpline;
-    secondSpline.push_back(GridGeom::Point{ 72.5010681152344,391.129577636719 });
-    secondSpline.push_back(GridGeom::Point{ 462.503479003906, 90.3765411376953 });
+    std::vector<MeshKernel::Point> secondSpline;
+    secondSpline.push_back(MeshKernel::Point{ 72.5010681152344,391.129577636719 });
+    secondSpline.push_back(MeshKernel::Point{ 462.503479003906, 90.3765411376953 });
     success = splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
     success = curvilinearGridFromSplines.ComputeSplineProperties(false);
     ASSERT_TRUE(success);
     success = curvilinearGridFromSplines.MakeAllGridLines(true);
@@ -62,35 +62,35 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
 
 TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
 {
-    std::vector<GridGeom::Point> firstSpline;
-    firstSpline.push_back(GridGeom::Point{ 91.2511901855469, 299.628631591797 });
-    firstSpline.push_back(GridGeom::Point{ 354.502838134766, 518.630859375000 });
-    firstSpline.push_back(GridGeom::Point{ 770.755432128906, 607.881774902344 });
+    std::vector<MeshKernel::Point> firstSpline;
+    firstSpline.push_back(MeshKernel::Point{ 91.2511901855469, 299.628631591797 });
+    firstSpline.push_back(MeshKernel::Point{ 354.502838134766, 518.630859375000 });
+    firstSpline.push_back(MeshKernel::Point{ 770.755432128906, 607.881774902344 });
 
-    auto splines = std::make_shared<GridGeom::Splines>(GridGeom::Projections::cartesian);
+    auto splines = std::make_shared<MeshKernel::Splines>(MeshKernel::Projections::cartesian);
     bool success = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> secondSpline;
-    secondSpline.push_back(GridGeom::Point{ 273.502319335938, 86.6264953613281 });
-    secondSpline.push_back(GridGeom::Point{ 557.004089355469, 316.128814697266 });
-    secondSpline.push_back(GridGeom::Point{ 847.255920410156, 409.129730224609 });
+    std::vector<MeshKernel::Point> secondSpline;
+    secondSpline.push_back(MeshKernel::Point{ 273.502319335938, 86.6264953613281 });
+    secondSpline.push_back(MeshKernel::Point{ 557.004089355469, 316.128814697266 });
+    secondSpline.push_back(MeshKernel::Point{ 847.255920410156, 409.129730224609 });
     success = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> thirdSpline;
-    thirdSpline.push_back(GridGeom::Point{ 62.7510070800781, 396.379608154297 });
-    thirdSpline.push_back(GridGeom::Point{ 350.752807617188, 73.8763732910156 });
+    std::vector<MeshKernel::Point> thirdSpline;
+    thirdSpline.push_back(MeshKernel::Point{ 62.7510070800781, 396.379608154297 });
+    thirdSpline.push_back(MeshKernel::Point{ 350.752807617188, 73.8763732910156 });
     success = splines->AddSpline(thirdSpline, 0, thirdSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> fourthSpline;
-    fourthSpline.push_back(GridGeom::Point{ 704.755004882812, 636.382019042969 });
-    fourthSpline.push_back(GridGeom::Point{ 845.005859375000, 285.378509521484 });
+    std::vector<MeshKernel::Point> fourthSpline;
+    fourthSpline.push_back(MeshKernel::Point{ 704.755004882812, 636.382019042969 });
+    fourthSpline.push_back(MeshKernel::Point{ 845.005859375000, 285.378509521484 });
     success = splines->AddSpline(fourthSpline, 0, fourthSpline.size());
     ASSERT_TRUE(success);
 
-    GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
     success = curvilinearGridFromSplines.ComputeSplineProperties(false);
     ASSERT_TRUE(success);
 
@@ -103,27 +103,27 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdapted)
 {
-    std::vector<GridGeom::Point> firstSpline;
-    firstSpline.push_back(GridGeom::Point{ 26.9847544156713,  327.556992634968 });
-    firstSpline.push_back(GridGeom::Point{ 340.139086327869, 819.656657068422 });
-    firstSpline.push_back(GridGeom::Point{ 2048.50780774173, 1644.48279915859 });
+    std::vector<MeshKernel::Point> firstSpline;
+    firstSpline.push_back(MeshKernel::Point{ 26.9847544156713,  327.556992634968 });
+    firstSpline.push_back(MeshKernel::Point{ 340.139086327869, 819.656657068422 });
+    firstSpline.push_back(MeshKernel::Point{ 2048.50780774173, 1644.48279915859 });
 
-    auto splines = std::make_shared<GridGeom::Splines>(GridGeom::Projections::cartesian);
+    auto splines = std::make_shared<MeshKernel::Splines>(MeshKernel::Projections::cartesian);
     bool success = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> secondSpline;
-    secondSpline.push_back(GridGeom::Point{ -179.920786312031,1068.50251010579 });
-    secondSpline.push_back(GridGeom::Point{ 600.169022647819, 321.964950993679 });
+    std::vector<MeshKernel::Point> secondSpline;
+    secondSpline.push_back(MeshKernel::Point{ -179.920786312031,1068.50251010579 });
+    secondSpline.push_back(MeshKernel::Point{ 600.169022647819, 321.964950993679 });
     success = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(success);
 
-    GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
-    GridGeom::CurvilinearGrid curvilinearGrid;
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGrid curvilinearGrid;
     success = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
 
-    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh(curvilinearGrid, MeshKernel::Projections::cartesian);
 
     const double tolerance = 1e-6;
     ASSERT_NEAR(588.142743143705, mesh.m_nodes[0].x, tolerance);
@@ -172,23 +172,23 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNotAdapted)
 {
-    std::vector<GridGeom::Point> firstSpline;
-    firstSpline.push_back(GridGeom::Point{ 26.9847544156713,  327.556992634968 });
-    firstSpline.push_back(GridGeom::Point{ 340.139086327869, 819.656657068422 });
-    firstSpline.push_back(GridGeom::Point{ 2048.50780774173, 1644.48279915859 });
+    std::vector<MeshKernel::Point> firstSpline;
+    firstSpline.push_back(MeshKernel::Point{ 26.9847544156713,  327.556992634968 });
+    firstSpline.push_back(MeshKernel::Point{ 340.139086327869, 819.656657068422 });
+    firstSpline.push_back(MeshKernel::Point{ 2048.50780774173, 1644.48279915859 });
 
-    auto splines = std::make_shared<GridGeom::Splines>(GridGeom::Projections::cartesian);
+    auto splines = std::make_shared<MeshKernel::Splines>(MeshKernel::Projections::cartesian);
     bool success = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> secondSpline;
-    secondSpline.push_back(GridGeom::Point{ -179.920786312031,1068.50251010579 });
-    secondSpline.push_back(GridGeom::Point{ 600.169022647819, 321.964950993679 });
+    std::vector<MeshKernel::Point> secondSpline;
+    secondSpline.push_back(MeshKernel::Point{ -179.920786312031,1068.50251010579 });
+    secondSpline.push_back(MeshKernel::Point{ 600.169022647819, 321.964950993679 });
     success = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(success);
 
-    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
-    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
+    MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
 
     splinesToCurvilinearParametersNative.AspectRatio = 0.1;
     splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
@@ -200,13 +200,13 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
     curvilinearParametersNative.MRefinement = 20;
     curvilinearParametersNative.NRefinement = 40;
 
-    GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
     curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    GridGeom::CurvilinearGrid curvilinearGrid;
+    MeshKernel::CurvilinearGrid curvilinearGrid;
     success = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
 
-    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh(curvilinearGrid, MeshKernel::Projections::cartesian);
 
     const double tolerance = 1e-6;
     ASSERT_NEAR(548.641052099198, mesh.m_nodes[0].x, tolerance);
@@ -255,23 +255,23 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedLargeMRefinement)
 {
-    std::vector<GridGeom::Point> firstSpline;
-    firstSpline.push_back(GridGeom::Point{ 26.9847544156713,  327.556992634968 });
-    firstSpline.push_back(GridGeom::Point{ 340.139086327869, 819.656657068422 });
-    firstSpline.push_back(GridGeom::Point{ 2048.50780774173, 1644.48279915859 });
+    std::vector<MeshKernel::Point> firstSpline;
+    firstSpline.push_back(MeshKernel::Point{ 26.9847544156713,  327.556992634968 });
+    firstSpline.push_back(MeshKernel::Point{ 340.139086327869, 819.656657068422 });
+    firstSpline.push_back(MeshKernel::Point{ 2048.50780774173, 1644.48279915859 });
 
-    auto splines = std::make_shared<GridGeom::Splines>(GridGeom::Projections::cartesian);
+    auto splines = std::make_shared<MeshKernel::Splines>(MeshKernel::Projections::cartesian);
     bool success = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> secondSpline;
-    secondSpline.push_back(GridGeom::Point{ -179.920786312031,1068.50251010579 });
-    secondSpline.push_back(GridGeom::Point{ 600.169022647819, 321.964950993679 });
+    std::vector<MeshKernel::Point> secondSpline;
+    secondSpline.push_back(MeshKernel::Point{ -179.920786312031,1068.50251010579 });
+    secondSpline.push_back(MeshKernel::Point{ 600.169022647819, 321.964950993679 });
     success = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(success);
 
-    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
-    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
+    MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
 
     splinesToCurvilinearParametersNative.AspectRatio = 0.1;
     splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
@@ -284,17 +284,17 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     curvilinearParametersNative.NRefinement = 20;
 
     // create the algorithm
-    GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
 
     // set the parameters
     curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    GridGeom::CurvilinearGrid curvilinearGrid;
+    MeshKernel::CurvilinearGrid curvilinearGrid;
     
     // compute
     success = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
 
-    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh(curvilinearGrid, MeshKernel::Projections::cartesian);
 
     const double tolerance = 1e-6;
 
@@ -383,36 +383,36 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFront)
 {
-    std::vector<GridGeom::Point> firstSpline;
-    firstSpline.push_back(GridGeom::Point{ -93.379753864775, 231.718492951018 });
-    firstSpline.push_back(GridGeom::Point{ 72.8139687226708, 724.468302026077 });
-    firstSpline.push_back(GridGeom::Point{ 746.335897103372, 234.634172294657 });
-    firstSpline.push_back(GridGeom::Point{ 1498.58116776234, 776.950530211586 });
+    std::vector<MeshKernel::Point> firstSpline;
+    firstSpline.push_back(MeshKernel::Point{ -93.379753864775, 231.718492951018 });
+    firstSpline.push_back(MeshKernel::Point{ 72.8139687226708, 724.468302026077 });
+    firstSpline.push_back(MeshKernel::Point{ 746.335897103372, 234.634172294657 });
+    firstSpline.push_back(MeshKernel::Point{ 1498.58116776234, 776.950530211586 });
 
-    auto splines = std::make_shared<GridGeom::Splines>(GridGeom::Projections::cartesian);
+    auto splines = std::make_shared<MeshKernel::Splines>(MeshKernel::Projections::cartesian);
     bool success = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> secondSpline;
-    secondSpline.push_back(GridGeom::Point{ -250.826438421303, 394.996536194825 });
-    secondSpline.push_back(GridGeom::Point{ 101.970762159065, 292.947759167446 });
+    std::vector<MeshKernel::Point> secondSpline;
+    secondSpline.push_back(MeshKernel::Point{ -250.826438421303, 394.996536194825 });
+    secondSpline.push_back(MeshKernel::Point{ 101.970762159065, 292.947759167446 });
     success = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> thirdSpline;
-    thirdSpline.push_back(GridGeom::Point{ 647.202799419633, 482.466916504007 });
-    thirdSpline.push_back(GridGeom::Point{ 486.840435519465, 144.248112641836 });
+    std::vector<MeshKernel::Point> thirdSpline;
+    thirdSpline.push_back(MeshKernel::Point{ 647.202799419633, 482.466916504007 });
+    thirdSpline.push_back(MeshKernel::Point{ 486.840435519465, 144.248112641836 });
     success = splines->AddSpline(thirdSpline, 0, thirdSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> fourthSpline;
-    fourthSpline.push_back(GridGeom::Point{ 1224.50730946023, 747.793736775192 });
-    fourthSpline.push_back(GridGeom::Point{ 1568.55747200968, 464.97284044217 });
+    std::vector<MeshKernel::Point> fourthSpline;
+    fourthSpline.push_back(MeshKernel::Point{ 1224.50730946023, 747.793736775192 });
+    fourthSpline.push_back(MeshKernel::Point{ 1568.55747200968, 464.97284044217 });
     success = splines->AddSpline(fourthSpline, 0, fourthSpline.size());
     ASSERT_TRUE(success);
 
-    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
-    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
+    MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
 
     splinesToCurvilinearParametersNative.AspectRatio = 0.1;
     splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
@@ -425,17 +425,17 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
     curvilinearParametersNative.NRefinement = 20;
 
     // create the algorithm
-    GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
 
     // set the parameters
     curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    GridGeom::CurvilinearGrid curvilinearGrid;
+    MeshKernel::CurvilinearGrid curvilinearGrid;
 
     // compute
     success = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
 
-    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh(curvilinearGrid, MeshKernel::Projections::cartesian);
 
     const double tolerance = 1e-6;
     ASSERT_NEAR(100.529546838174, mesh.m_nodes[0].x, tolerance);
@@ -482,57 +482,57 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
 }
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSplies)
 {
-    auto splines = std::make_shared<GridGeom::Splines>(GridGeom::Projections::cartesian);
+    auto splines = std::make_shared<MeshKernel::Splines>(MeshKernel::Projections::cartesian);
 
-    std::vector<GridGeom::Point> firstCentralSpline;
+    std::vector<MeshKernel::Point> firstCentralSpline;
     firstCentralSpline.push_back({ 1.542516E+02,7.687640E+01 });
     firstCentralSpline.push_back({ 3.192526E+02,2.733784E+02 });
     firstCentralSpline.push_back({ 6.350046E+02,5.231309E+02 });
     bool success = splines->AddSpline(firstCentralSpline, 0, firstCentralSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> secondCentralSpline;
+    std::vector<MeshKernel::Point> secondCentralSpline;
     secondCentralSpline.push_back({ 1.310014E+02,9.637659E+01 });
     secondCentralSpline.push_back({ 2.960025E+02,2.891285E+02 });
     secondCentralSpline.push_back({ 6.222545E+02,5.418811E+02 });
     success = splines->AddSpline(secondCentralSpline, 0, secondCentralSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> thirdCentralSpline;
+    std::vector<MeshKernel::Point> thirdCentralSpline;
     thirdCentralSpline.push_back({ 1.782517E+02,5.662619E+01 });
     thirdCentralSpline.push_back({ 3.335027E+02,2.448781E+02 });
     thirdCentralSpline.push_back({ 6.455046E+02,4.983806E+02 });
     success = splines->AddSpline(thirdCentralSpline, 0, thirdCentralSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> fourthBankSpline;
+    std::vector<MeshKernel::Point> fourthBankSpline;
     fourthBankSpline.push_back({ 3.500084E+01,   1.901275E+02 });
     fourthBankSpline.push_back({ 2.195020E+02,   3.813795E+02 });
     fourthBankSpline.push_back({ 5.727542E+02 ,  6.221319E+02 });
     success = splines->AddSpline(fourthBankSpline, 0, fourthBankSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> fifthBankSpline;
+    std::vector<MeshKernel::Point> fifthBankSpline;
     fifthBankSpline.push_back({ 3.177526E+02, -3.712475E+01 });
     fifthBankSpline.push_back({ 4.377534E+02,1.218768E+02 });
     fifthBankSpline.push_back({ 7.445052E+02, 4.136298E+02 });
     success = splines->AddSpline(fifthBankSpline, 0, fifthBankSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> sixthBankSpline;
+    std::vector<MeshKernel::Point> sixthBankSpline;
     sixthBankSpline.push_back({ 1.250633E+00,  2.748784E+02 });
     sixthBankSpline.push_back({ 3.620029E+02, -3.337471E+01 });
     success = splines->AddSpline(sixthBankSpline, 0, sixthBankSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> seventhBankSpline;
+    std::vector<MeshKernel::Point> seventhBankSpline;
     seventhBankSpline.push_back({ 5.030038E+02, 6.476321E+02 });
     seventhBankSpline.push_back({ 7.542553E+02, 3.378790E+02 });
     success = splines->AddSpline(seventhBankSpline, 0, seventhBankSpline.size());
     ASSERT_TRUE(success);
 
-    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
-    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
+    MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
 
     splinesToCurvilinearParametersNative.AspectRatio = 0.1;
     splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
@@ -546,17 +546,17 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
 
 
     // create the algorithm
-    GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
 
     // set the parameters
     curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    GridGeom::CurvilinearGrid curvilinearGrid;
+    MeshKernel::CurvilinearGrid curvilinearGrid;
 
     // compute
     success = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
 
-    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh(curvilinearGrid, MeshKernel::Projections::cartesian);
 
     const double tolerance = 1e-6;
 
@@ -605,23 +605,23 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedSpherical)
 {
-    std::vector<GridGeom::Point> firstSpline;
-    firstSpline.push_back(GridGeom::Point{ 4.109727E+01, 4.110174E+01 });
-    firstSpline.push_back(GridGeom::Point{ 4.109865E+01, 4.110418E+01 });
-    firstSpline.push_back(GridGeom::Point{ 4.110644E+01, 4.110904E+01 });
+    std::vector<MeshKernel::Point> firstSpline;
+    firstSpline.push_back(MeshKernel::Point{ 4.109727E+01, 4.110174E+01 });
+    firstSpline.push_back(MeshKernel::Point{ 4.109865E+01, 4.110418E+01 });
+    firstSpline.push_back(MeshKernel::Point{ 4.110644E+01, 4.110904E+01 });
 
-    auto splines = std::make_shared<GridGeom::Splines>(GridGeom::Projections::spherical);
+    auto splines = std::make_shared<MeshKernel::Splines>(MeshKernel::Projections::spherical);
     bool success = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> secondSpline;
-    secondSpline.push_back(GridGeom::Point{ 4.109612E+01, 4.110473E+01 });
-    secondSpline.push_back(GridGeom::Point{ 4.109923E+01, 4.110212E+01 });
+    std::vector<MeshKernel::Point> secondSpline;
+    secondSpline.push_back(MeshKernel::Point{ 4.109612E+01, 4.110473E+01 });
+    secondSpline.push_back(MeshKernel::Point{ 4.109923E+01, 4.110212E+01 });
     success = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(success);
 
-    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
-    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
+    MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
 
     splinesToCurvilinearParametersNative.AspectRatio = 0.1;
     splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
@@ -634,17 +634,17 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     curvilinearParametersNative.NRefinement = 20;
 
     // create the algorithm
-    GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
 
     // set the parameters
     curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    GridGeom::CurvilinearGrid curvilinearGrid;
+    MeshKernel::CurvilinearGrid curvilinearGrid;
 
     // compute
     success = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
 
-    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::spherical);
+    MeshKernel::Mesh mesh(curvilinearGrid, MeshKernel::Projections::spherical);
 
     const double tolerance = 1e-6;
 
@@ -694,23 +694,23 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvature)
 {
-    std::vector<GridGeom::Point> firstSpline;
-    firstSpline.push_back(GridGeom::Point{ -103.468336664918, 420.606335102062 });
-    firstSpline.push_back(GridGeom::Point{ 111.984583950396, 845.689124424167 });
-    firstSpline.push_back(GridGeom::Point{ 1465.84415268176, 1608.50892444055 });
+    std::vector<MeshKernel::Point> firstSpline;
+    firstSpline.push_back(MeshKernel::Point{ -103.468336664918, 420.606335102062 });
+    firstSpline.push_back(MeshKernel::Point{ 111.984583950396, 845.689124424167 });
+    firstSpline.push_back(MeshKernel::Point{ 1465.84415268176, 1608.50892444055 });
 
-    auto splines = std::make_shared<GridGeom::Splines>(GridGeom::Projections::cartesian);
+    auto splines = std::make_shared<MeshKernel::Splines>(MeshKernel::Projections::cartesian);
     bool success = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> secondSpline;
-    secondSpline.push_back(GridGeom::Point{ -333.478887051536, 921.388799234953 });
-    secondSpline.push_back(GridGeom::Point{ 167.303577081355, 490.482958004326 });
+    std::vector<MeshKernel::Point> secondSpline;
+    secondSpline.push_back(MeshKernel::Point{ -333.478887051536, 921.388799234953 });
+    secondSpline.push_back(MeshKernel::Point{ 167.303577081355, 490.482958004326 });
     success = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(success);
 
-    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
-    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
+    MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
 
     splinesToCurvilinearParametersNative.AspectRatio = 0.5;
     splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
@@ -723,17 +723,17 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     curvilinearParametersNative.NRefinement = 3;
 
     // create the algorithm
-    GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
 
     // set the parameters
     curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    GridGeom::CurvilinearGrid curvilinearGrid;
+    MeshKernel::CurvilinearGrid curvilinearGrid;
 
     // compute
     success = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
 
-    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh(curvilinearGrid, MeshKernel::Projections::cartesian);
 
     const double tolerance = 1e-6;
 
@@ -792,23 +792,23 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
 
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatureRemoveSkinnyTriangles)
 {
-    std::vector<GridGeom::Point> firstSpline;
-    firstSpline.push_back(GridGeom::Point{ -103.468336664918, 420.606335102062 });
-    firstSpline.push_back(GridGeom::Point{ 111.984583950396, 845.689124424167 });
-    firstSpline.push_back(GridGeom::Point{ 1465.84415268176, 1608.50892444055 });
+    std::vector<MeshKernel::Point> firstSpline;
+    firstSpline.push_back(MeshKernel::Point{ -103.468336664918, 420.606335102062 });
+    firstSpline.push_back(MeshKernel::Point{ 111.984583950396, 845.689124424167 });
+    firstSpline.push_back(MeshKernel::Point{ 1465.84415268176, 1608.50892444055 });
 
-    auto splines = std::make_shared<GridGeom::Splines>(GridGeom::Projections::cartesian);
+    auto splines = std::make_shared<MeshKernel::Splines>(MeshKernel::Projections::cartesian);
     bool success = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(success);
 
-    std::vector<GridGeom::Point> secondSpline;
-    secondSpline.push_back(GridGeom::Point{ -333.478887051536, 921.388799234953 });
-    secondSpline.push_back(GridGeom::Point{ 167.303577081355, 490.482958004326 });
+    std::vector<MeshKernel::Point> secondSpline;
+    secondSpline.push_back(MeshKernel::Point{ -333.478887051536, 921.388799234953 });
+    secondSpline.push_back(MeshKernel::Point{ 167.303577081355, 490.482958004326 });
     success = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(success);
 
-    GridGeomApi::CurvilinearParametersNative curvilinearParametersNative;
-    GridGeomApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
+    MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
 
     splinesToCurvilinearParametersNative.AspectRatio = 0.5;
     splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
@@ -822,17 +822,17 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     curvilinearParametersNative.NRefinement = 3;
 
     // create the algorithm
-    GridGeom::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
 
     // set the parameters
     curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    GridGeom::CurvilinearGrid curvilinearGrid;
+    MeshKernel::CurvilinearGrid curvilinearGrid;
 
     // compute
     success = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(success);
 
-    GridGeom::Mesh mesh(curvilinearGrid, GridGeom::Projections::cartesian);
+    MeshKernel::Mesh mesh(curvilinearGrid, MeshKernel::Projections::cartesian);
 
     const double tolerance = 1e-6;
 

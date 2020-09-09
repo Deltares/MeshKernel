@@ -40,7 +40,7 @@
 #include "Polygons.hpp"
 
 
-GridGeom::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing():
+MeshKernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing():
     m_mesh(nullptr), 
     m_smoother(nullptr), 
     m_orthogonalizer(nullptr),
@@ -50,7 +50,7 @@ GridGeom::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing():
 }
 
 
-bool GridGeom::OrthogonalizationAndSmoothing::Set( std::shared_ptr<Mesh> mesh,
+bool MeshKernel::OrthogonalizationAndSmoothing::Set( std::shared_ptr<Mesh> mesh,
                                                    std::shared_ptr<Smoother> smoother,
                                                    std::shared_ptr<Orthogonalizer> orthogonalizer,
                                                    std::shared_ptr<Polygons> polygon,
@@ -58,7 +58,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::Set( std::shared_ptr<Mesh> mesh,
                                                    int isTriangulationRequired,
                                                    int isAccountingForLandBoundariesRequired,
                                                    int projectToLandBoundaryOption,
-                                                   GridGeomApi::OrthogonalizationParametersNative& orthogonalizationParametersNative)
+                                                   MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative)
 {    
     m_polygons = polygon;
     m_smoother = smoother;
@@ -134,7 +134,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::Set( std::shared_ptr<Mesh> mesh,
     return true;
 }
 
-bool GridGeom::OrthogonalizationAndSmoothing::Compute()
+bool MeshKernel::OrthogonalizationAndSmoothing::Compute()
 {
     bool successful = true;
 
@@ -168,7 +168,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::Compute()
 }
 
 
-bool GridGeom::OrthogonalizationAndSmoothing::PrapareOuterIteration() 
+bool MeshKernel::OrthogonalizationAndSmoothing::PrapareOuterIteration() 
 {
 
     bool successful = true;
@@ -199,7 +199,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::PrapareOuterIteration()
     return successful;
 }
 
-bool GridGeom::OrthogonalizationAndSmoothing::AllocateLinearSystem() 
+bool MeshKernel::OrthogonalizationAndSmoothing::AllocateLinearSystem() 
 {
     bool successful = true;
     // reallocate caches
@@ -229,7 +229,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::AllocateLinearSystem()
 }
 
 
-bool GridGeom::OrthogonalizationAndSmoothing::DeallocateLinearSystem() 
+bool MeshKernel::OrthogonalizationAndSmoothing::DeallocateLinearSystem() 
 {
     m_compressedRhs.resize(0);
     m_compressedEndNodeIndex.resize(0);
@@ -242,7 +242,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::DeallocateLinearSystem()
     return true;
 }
 
-bool GridGeom::OrthogonalizationAndSmoothing::FinalizeOuterIteration()
+bool MeshKernel::OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 {
     m_mu = std::min(2.0 * m_mu, m_mumax);
 
@@ -255,7 +255,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::FinalizeOuterIteration()
     return true;
 }
 
-bool GridGeom::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
+bool MeshKernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
     double max_aptf = std::max(m_orthogonalizationToSmoothingFactorBoundary, m_orthogonalizationToSmoothingFactor);
 #pragma omp parallel for
@@ -310,7 +310,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 }
 
 
-bool GridGeom::OrthogonalizationAndSmoothing::InnerIteration()
+bool MeshKernel::OrthogonalizationAndSmoothing::InnerIteration()
 {
 #pragma omp parallel for
 	for (int n = 0; n < m_mesh->GetNumNodes() ; n++)
@@ -336,7 +336,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::InnerIteration()
     return true;
 }
 
-bool GridGeom::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
+bool MeshKernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
 {
     Point firstPoint;
     Point secondPoint;
@@ -414,7 +414,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
 }
 
 
-bool GridGeom::OrthogonalizationAndSmoothing::ComputeCoordinates()
+bool MeshKernel::OrthogonalizationAndSmoothing::ComputeCoordinates()
 {
     if(m_mesh->m_projection == Projections::sphericalAccurate)
     {
@@ -425,7 +425,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::ComputeCoordinates()
     return true;
 }
 
-bool GridGeom::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIndex)
+bool MeshKernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIndex)
 {
 
     double dx0 = 0.0;
@@ -477,7 +477,7 @@ bool GridGeom::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeInde
 }
 
 
-bool GridGeom::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeIndex, double& dx0, double& dy0, double* weightsSum)
+bool MeshKernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeIndex, double& dx0, double& dy0, double* weightsSum)
 {
     int numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
     for (int nn = 1, cacheIndex = m_compressedEndNodeIndex[nodeIndex]; nn < numConnectedNodes; nn++, cacheIndex++)

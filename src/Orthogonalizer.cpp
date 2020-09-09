@@ -38,11 +38,11 @@
 #include "Entities.hpp"
 #include "Orthogonalizer.hpp"
 
-GridGeom::Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh> mesh): m_mesh(mesh)
+MeshKernel::Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh> mesh): m_mesh(mesh)
 {
 }
 
-bool GridGeom::Orthogonalizer::Compute()
+bool MeshKernel::Orthogonalizer::Compute()
 {
     m_mesh->ComputeNodeNeighbours();
     m_weights.resize(m_mesh->GetNumNodes(), std::vector<double>(m_mesh->m_maxNumNeighbours, 0.0));

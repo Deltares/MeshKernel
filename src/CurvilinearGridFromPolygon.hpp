@@ -32,7 +32,7 @@
 #include "Entities.hpp"
 
 
-namespace GridGeom
+namespace MeshKernel
 {
     // Forward declarations
     class Mesh;

@@ -34,7 +34,7 @@
 #include "Constants.cpp"
 #include "Operations.cpp"
 
-namespace GridGeom
+namespace MeshKernel
 {
     Polygons::Polygons() : m_numNodes(0), m_numAllocatedNodes(0)
     {

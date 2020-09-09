@@ -10,19 +10,19 @@
 TEST(FlipEdges, FlipEdgesWithLandBoundary)
 {
     //1 Setup
-    auto mesh = MakeRectangularMeshForTesting(3, 3, 10, GridGeom::Projections::cartesian, { 0.0,0.0 });
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 10, MeshKernel::Projections::cartesian, { 0.0,0.0 });
     
     //set landboundaries
-    auto polygon =std::make_shared<GridGeom::Polygons>();
-    std::vector<GridGeom::Point> landBoundary{  {-1.369282,21.249086},
+    auto polygon =std::make_shared<MeshKernel::Polygons>();
+    std::vector<MeshKernel::Point> landBoundary{  {-1.369282,21.249086},
                                                 {20.885406,21.539995},
-                                                {GridGeom::doubleMissingValue,GridGeom::doubleMissingValue} };
+                                                {MeshKernel::doubleMissingValue,MeshKernel::doubleMissingValue} };
 
-    auto landBoundaries = std::make_shared<GridGeom::LandBoundaries>();
+    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
     landBoundaries->Set(landBoundary, mesh, polygon);
 
     //execute flipedges
-    GridGeom::FlipEdges flipEdges(mesh, landBoundaries, true, true);
+    MeshKernel::FlipEdges flipEdges(mesh, landBoundaries, true, true);
 
     auto success = flipEdges.Compute();
     ASSERT_TRUE(success);
@@ -37,14 +37,14 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     auto mesh = MakeMediumSizeTriangularMeshForTesting();
 
     //set landboundaries
-    auto polygon =std::make_shared<GridGeom::Polygons>();
+    auto polygon =std::make_shared<MeshKernel::Polygons>();
 
-    std::vector<GridGeom::Point> landBoundary;
-    auto landBoundaries = std::make_shared<GridGeom::LandBoundaries>();
+    std::vector<MeshKernel::Point> landBoundary;
+    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
     landBoundaries->Set(landBoundary, mesh, polygon);
 
     //execute flipedges
-    GridGeom::FlipEdges flipEdges(mesh, landBoundaries, true, false);
+    MeshKernel::FlipEdges flipEdges(mesh, landBoundaries, true, false);
 
     auto success = flipEdges.Compute();
     ASSERT_TRUE(success);
