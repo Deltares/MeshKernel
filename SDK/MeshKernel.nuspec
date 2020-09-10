@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
     <metadata>
-        <id>Deltares.GridGeom</id>
+        <id>Deltares.MeshKernel</id>
         <version>1.0.0</version>
         <authors>Deltares</authors>
         <owners>Deltares</owners>
@@ -10,6 +10,6 @@
     <files>
         <file src="..\build\Release\lib\**\*" target="content\Lib" />
         <file src="..\thirdParty\third_party_open\intel\**\*" target="content\Lib" />
-        <file src="GridGeom.Libs.targets" target="build\net461\GridGeom.Libs.targets" />
+        <file src="MeshKernel.Libs.targets" target="build\net461\MeshKernel.Libs.targets" />
     </files>
 </package>

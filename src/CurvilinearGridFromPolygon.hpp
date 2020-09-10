@@ -37,6 +37,7 @@ namespace MeshKernel
     // Forward declarations
     class Mesh;
     class Polygons;
+    class CurvilinearGrid;
 
     class CurvilinearGridFromPolygon
     {
@@ -54,17 +55,16 @@ namespace MeshKernel
         /// <param name="mesh">The input mesh</param>
         /// <param name="polygon">The input polygon</param>
         /// <returns></returns>
-        CurvilinearGridFromPolygon(std::shared_ptr<Mesh> mesh, std::shared_ptr<Polygons> polygon);
+        CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon);
 
         /// <summary>
-        /// Flip the edges
+        /// Compute curvilinear in a quad (pol2curvi)
         /// </summary>
         /// <returns>If the method succeeded</returns>
-        bool Compute();
+        bool Compute(int firstNode, int secondNode, int thirdNode, bool useFourthSide, CurvilinearGrid& curvilinearGrid) const;
 
     private:
 
-        std::shared_ptr<Mesh> m_mesh;                         // A pointer to mesh
         std::shared_ptr<Polygons> m_polygon;                  // A pointer to Polygons
 
     };

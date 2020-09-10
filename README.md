@@ -1,8 +1,8 @@
-# GridGeom
+# MeshKernel
 
 Deltares C++ library for creating and editing 2D unstructured and curvilinear meshes, suitable for the DFlowFM simulator.
 
-The library is separated in an API namespace (GridGeomApi), used for communication with the client and a backend namespace (GridGeom), where the algorithms are implemented. 
+The library is separated in an API namespace (MeshKernelApi), used for communication with the client and a backend namespace (MeshKernel), where the algorithms are implemented. 
 The API namespace contains several structures used as parameters for the API methods (see API usage section). 
 These structures must be mirrored in the client application and filled with appropriate values.
 
@@ -16,8 +16,8 @@ In this example a mesh is created by discretizing the polygon perimeter with the
 
 2. Mesh orthogonalization
 
-Finite element staggered flow solvers require the mesh to be as much orthogonal as possible. 
-GridGeom provides an algorithm to adapt the mesh and achieve a good balance between mesh orthogonality and smothness.
+Finite volume staggered flow solvers require the mesh to be as much orthogonal as possible. 
+MeshKernel provides an algorithm to adapt the mesh and achieve a good balance between mesh orthogonality and smothness.
 
 ![alt tag](doc/figures/MeshOrthogonalization.jpg)
 
@@ -38,7 +38,7 @@ A mesh can be refined in areas based on samples or polygon selections
 
 Setting a triangular mesh and moving its 2nd node to position 1.0, 3.0:
 
-    // Create a new mesh entry into GridGeom library
+    // Create a new mesh entry into MeshKernel library
 	int gridStateId;
 	int state = ggeo_new_mesh(gridStateId);
 
