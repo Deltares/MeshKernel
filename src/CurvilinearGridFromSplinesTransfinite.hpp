@@ -74,20 +74,6 @@ namespace MeshKernel
         /// <returns>If the method succeeded</returns>
         bool Compute(CurvilinearGrid& curvilinearGrid);
 
-        /// <summary>
-        /// Perform transfinite interpolation given the points at the 4 sides
-        /// </summary>
-        /// <param name="sideOne"></param>
-        /// <param name="sideTwo"></param>
-        /// <param name="sideThree"></param>
-        /// <param name="sideFour"></param>
-        /// <param name="result"></param>
-        /// <returns>If the method succeeded</returns>
-        bool Interpolate(const std::vector<Point>& sideOne,
-                         const std::vector<Point>& sideTwo,
-                         const std::vector<Point>& sideThree,
-                         const std::vector<Point>& sideFour,
-                         std::vector<std::vector<Point>>& result);
         
         std::shared_ptr<Splines> m_splines;                                      // A pointer to spline
 
