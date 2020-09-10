@@ -1,4 +1,4 @@
-project( gridgeomStateful_dll )
+project( MeshKernel )
 cmake_minimum_required(VERSION 2.8.2)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -25,21 +25,21 @@ FILE( GLOB all_cpp_srcs src/*.cpp)
 list(REMOVE_ITEM all_cpp_srcs "src/main.cpp")
 source_group(source FILES ${all_cpp_srcs})
 
-# Add gridgeomStateful_dll library
-add_library( gridgeomStateful_dll SHARED ${all_cpp_headers}  ${all_cpp_srcs} ${header_version_file} ${rc_version_file})
+# Add MeshKernel library
+add_library( MeshKernel SHARED ${all_cpp_headers}  ${all_cpp_srcs} ${header_version_file} ${rc_version_file})
 
 # Add target link dependency on triangle
-target_link_libraries(gridgeomStateful_dll LINK_PUBLIC ${Boost_LIBRARIES} triangle)
+target_link_libraries(MeshKernel LINK_PUBLIC ${Boost_LIBRARIES} triangle)
 
 # Add target link dependency on OpenMP
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(gridgeomStateful_dll PUBLIC OpenMP::OpenMP_CXX )
+    target_link_libraries(MeshKernel PUBLIC OpenMP::OpenMP_CXX )
 endif()
 
 # Add dll versioning
-set(header_version_file "src/gridgeomStateful_dll_version.h")
-set(rc_version_file "src/gridgeomStateful_dll_version.rc")
+set(header_version_file "src/MeshKernel_version.h")
+set(rc_version_file "src/MeshKernel_version.rc")
 
 if(WIN32)
     set(update_version_script "${CMAKE_CURRENT_SOURCE_DIR}/thirdParty/scripts_lgpl/win32/update_version.cmd")
@@ -49,16 +49,16 @@ set(header_version_file_path "${CMAKE_CURRENT_SOURCE_DIR}/${header_version_file}
 set(rc_version_file_path "${CMAKE_CURRENT_SOURCE_DIR}/${rc_version_file}")
 set(version_directory "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-add_custom_command( TARGET gridgeomStateful_dll
+add_custom_command( TARGET MeshKernel
                     PRE_BUILD
                     COMMAND  call ${update_version_script} ${header_version_file_path} ${version_directory} ${ini_version_file})
 
-add_custom_command( TARGET gridgeomStateful_dll
+add_custom_command( TARGET MeshKernel
                     PRE_BUILD
                     COMMAND  call ${update_version_script} ${rc_version_file_path} ${version_directory} ${ini_version_file})
                     
 set(build_config $<CONFIG>) 
-set_target_properties( gridgeomStateful_dll PROPERTIES 
+set_target_properties( MeshKernel PROPERTIES 
                                             LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib"
                                             ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib"
                                             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib")
@@ -89,6 +89,6 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 FILE( GLOB all_test_srcs src/tests/*.cpp)
 source_group(source FILES ${all_test_srcs})
 
-add_executable( GridGeomTest ${all_test_srcs})
-target_link_libraries(GridGeomTest LINK_PUBLIC ${Boost_LIBRARIES} gtest_main triangle )
-add_test( NAME GridGeomTest COMMAND GridGeomTest )
+add_executable( MeshKernelTests ${all_test_srcs})
+target_link_libraries(MeshKernelTests LINK_PUBLIC ${Boost_LIBRARIES} gtest_main triangle )
+add_test( NAME MeshKernelTests COMMAND MeshKernelTests )
