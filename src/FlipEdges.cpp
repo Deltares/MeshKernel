@@ -43,10 +43,10 @@ MeshKernel::FlipEdges::FlipEdges() :
 {
 }
 
-MeshKernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh, 
-                               std::shared_ptr<LandBoundaries> landBoundary, 
-                               bool triangulateFaces, 
-                               bool projectToLandBoundary) : 
+MeshKernel::FlipEdges::FlipEdges( std::shared_ptr<Mesh> mesh, 
+                                  std::shared_ptr<LandBoundaries> landBoundary, 
+                                  bool triangulateFaces, 
+                                  bool projectToLandBoundary ) : 
     m_mesh(mesh),
     m_landBoundaries(landBoundary),
     m_triangulateFaces(triangulateFaces),

@@ -33,6 +33,8 @@
 #include "Orthogonalizer.hpp"
 #include "OrthogonalizationAndSmoothing.hpp"
 #include "CurvilinearGridFromSplines.hpp"
+#include "CurvilinearGridFromSplinesTransfinite.hpp"
+#include "FlipEdges.hpp"
 #include "CurvilinearGrid.hpp"
 #include "Splines.hpp"
 #include "Entities.hpp"
@@ -1259,15 +1261,56 @@ namespace MeshKernelApi
         return successful ? 0 : 1;
     }
 
-    GRIDGEOM_API int ggeo_flip_edges(int gridStateId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption)
+    GRIDGEOM_API int ggeo_flip_edges(int gridStateId, 
+                                     int isTriangulationRequired, 
+                                     int isAccountingForLandBoundariesRequired, 
+                                     int projectToLandBoundaryRequired)
     {
-        // not implemented
-        return 0;
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        std::vector<MeshKernel::Point> landBoundary;
+        auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
+
+        bool triangulateFaces = isTriangulationRequired == 0 ? false : true;
+        bool projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
+        MeshKernel::FlipEdges flipEdges(meshInstances[gridStateId], landBoundaries, triangulateFaces, projectToLandBoundary);
+
+        // compute Flip edges
+        auto successful = flipEdges.Compute();
+
+        return successful;
     }
 
     GRIDGEOM_API int ggeo_curvilinear_mesh_from_splines(int gridStateId, GeometryListNative& geometryListNativeIn, CurvilinearParametersNative& curvilinearParametersNative)
     {
-        // not implemented
+        if (gridStateId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        // Use the default constructor, no instance present
+        auto spline = std::make_shared<MeshKernel::Splines>(meshInstances[gridStateId]->m_projection);
+        bool successful = SetSplines(geometryListNativeIn, *spline);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        // Create algorithm and set the splines
+        MeshKernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(spline);
+        curvilinearGridFromSplinesTransfinite.Set(curvilinearParametersNative);
+        
+        // Compute the curvilinear grid
+        MeshKernel::CurvilinearGrid curvilinearGrid;
+        bool success = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
+
+        // Transform and set mesh pointer
+        meshInstances[gridStateId] = std::make_unique<MeshKernel::Mesh>(curvilinearGrid, meshInstances[gridStateId]->m_projection);
+
+
         return 0;
     }
 
