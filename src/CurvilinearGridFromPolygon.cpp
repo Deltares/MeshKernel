@@ -40,15 +40,11 @@
 MeshKernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon() :
     m_polygon(nullptr)
 {
-
-
-
 }
 
 MeshKernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) :
     m_polygon(polygon)
 {
-
 };
 
 bool MeshKernel::CurvilinearGridFromPolygon::Compute( int firstNode, 
