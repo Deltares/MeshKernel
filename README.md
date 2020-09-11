@@ -40,7 +40,7 @@ Setting a triangular mesh and moving its 2nd node to position 1.0, 3.0:
 
     // Create a new mesh entry into MeshKernel library
 	int meshKernelId;
-	int state = ggeo_new_mesh(meshKernelId);
+	int state = mkernel_new_mesh(meshKernelId);
 
     // Mesh nodes and edges
     std::vector<double> nodex{ 0.0, 3.0, 1.5};
@@ -61,7 +61,7 @@ Setting a triangular mesh and moving its 2nd node to position 1.0, 3.0:
     bool isGeographic = false;
 
     // Set the mesh into the mesh entry created before
-    state = ggeo_set_state(meshKernelId, meshGeometryDimensions, meshGeometry, bool isGeographic);
+    state = mkernel_set_state(meshKernelId, meshGeometryDimensions, meshGeometry, bool isGeographic);
     
     // The new position
     std::vector<double> newPositionX{ 1.0};
@@ -73,9 +73,9 @@ Setting a triangular mesh and moving its 2nd node to position 1.0, 3.0:
 
     // Move the second node to the new position  
     int nodeIndex = 2; 
-    state = ggeo_move_node(meshKernelId, geometryListIn, nodeIndex);
+    state = mkernel_move_node(meshKernelId, geometryListIn, nodeIndex);
 
     // Deallocate the mesh entry
-    state = ggeo_deallocate_state(int meshKernelId);
+    state = mkernel_deallocate_state(int meshKernelId);
 
  
