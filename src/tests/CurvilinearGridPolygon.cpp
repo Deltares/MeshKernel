@@ -129,6 +129,7 @@ TEST(CurvilinearGridInPolygon, ComputeGridTriangle)
     // check the values
     constexpr double tolerance = 1e-6;
 
+
     //ASSERT_NEAR(273.50231900000000, curvilinearGrid.m_grid[0][0].x, tolerance);
     //ASSERT_NEAR(492.12869250000006, curvilinearGrid.m_grid[0][1].x, tolerance);
     //ASSERT_NEAR(710.75506600000006, curvilinearGrid.m_grid[0][2].x, tolerance);
