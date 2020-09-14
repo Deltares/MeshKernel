@@ -1281,7 +1281,7 @@ namespace MeshKernelApi
         // compute Flip edges
         auto successful = flipEdges.Compute();
 
-        return successful;
+        return successful ? 0 : 1;
     }
 
     MESHKERNEL_API int mkernel_curvilinear_mesh_from_splines(int meshKernelId, GeometryListNative& geometryListNativeIn, CurvilinearParametersNative& curvilinearParametersNative)
@@ -1310,7 +1310,7 @@ namespace MeshKernelApi
         // Transform and set mesh pointer
         meshInstances[meshKernelId] = std::make_unique<MeshKernel::Mesh>(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
 
-        return 0;
+        return successful ? 0 : 1;
     }
 
 }
