@@ -271,8 +271,9 @@ bool MeshKernel::FlipEdges::Compute()
     }
 
     // Perform mesh administration
-    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-    return true;
+    successful = m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+    return successful;
 }
 
 bool MeshKernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
