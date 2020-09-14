@@ -58,10 +58,16 @@ namespace MeshKernel
         CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon);
 
         /// <summary>
-        /// Compute curvilinear in a quad (pol2curvi)
+        /// Compute curvilinear in a polygon (pol2curvi)
         /// </summary>
         /// <returns>If the method succeeded</returns>
         bool Compute(int firstNode, int secondNode, int thirdNode, bool useFourthSide, CurvilinearGrid& curvilinearGrid) const;
+
+        /// <summary>
+        /// Compute curvilinear in a triangle (pol2curvi_tri)
+        /// </summary>
+        /// <returns>If the method succeeded</returns>
+        bool Compute(int firstNode, int secondNode, int thirdNode, CurvilinearGrid& curvilinearGrid) const;
 
     private:
 
