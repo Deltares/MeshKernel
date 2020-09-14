@@ -28,11 +28,10 @@
 #pragma once
 
 #include <vector>
-#include <iostream>
 #include <algorithm>
+#include <array>
 #include "Operations.cpp"
 #include "Entities.hpp"
-#include "Mesh.hpp"
 #include "Polygons.hpp"
 #include "CurvilinearGridFromPolygon.hpp"
 #include "CurvilinearGrid.hpp"
@@ -57,6 +56,16 @@ bool MeshKernel::CurvilinearGridFromPolygon::Compute( int firstNode,
     {
         return true;
     }
+
+    const auto areNodesValid = firstNode != secondNode && 
+                               secondNode!= thirdNode && 
+                               firstNode != thirdNode;
+
+    if(!areNodesValid)
+    {
+        return true;
+    }
+
 
     // for the current polygon find the number of nodes
     const auto start = m_polygon->m_indexses[0][0];
@@ -205,4 +214,105 @@ bool MeshKernel::CurvilinearGridFromPolygon::Compute( int firstNode,
     }
 
     return successful;
+}
+
+bool MeshKernel::CurvilinearGridFromPolygon::Compute(int firstNode,
+                                                     int secondNode,
+                                                     int thirdNode,
+                                                     CurvilinearGrid& curvilinearGrid) const
+{
+    if (m_polygon->m_indexses.empty())
+    {
+        return true;
+    }
+
+    const auto areNodesValid = firstNode != secondNode &&
+        secondNode != thirdNode &&
+        firstNode != thirdNode;
+
+    if (!areNodesValid)
+    {
+        return true;
+    }
+
+
+    // for the current polygon find the number of nodes
+    const auto start = m_polygon->m_indexses[0][0];
+    const auto end = m_polygon->m_indexses[0][1];
+    const int numPolygonNodes = end - start + 1;
+
+    // get rid of size and orientation first part
+    int  firstSide = secondNode - firstNode;
+    if (firstSide < 0)
+    {
+        firstSide = firstSide + numPolygonNodes;
+    }
+
+    int  secondSide = thirdNode - secondNode;
+    if (secondSide < 0)
+    {
+        secondSide = secondSide + numPolygonNodes;
+    }
+
+    int thirdSide = numPolygonNodes - (firstSide + secondSide);
+    int blockSize = (firstSide + secondSide + thirdSide) / 2;
+
+    int n1 = blockSize - thirdSide;
+    int n2 = blockSize - secondSide;
+    int n3 = blockSize - firstSide;
+
+    if (n1 < 1 || n2 < 1 || n3 < 1)
+    {
+        return true;
+    }
+
+    // compute the midpoint
+
+    int firstSideMiddlePoint = firstNode + n1;
+    if (firstSideMiddlePoint >= numPolygonNodes)
+    {
+        firstSideMiddlePoint = firstSideMiddlePoint - numPolygonNodes;
+    }
+    int secondSideMiddlePoint = secondNode + n3;
+    if (secondSideMiddlePoint >= numPolygonNodes)
+    {
+        secondSideMiddlePoint = secondSideMiddlePoint - numPolygonNodes;
+    }
+    int thirdSideMiddlePoint = thirdNode + n2;
+    if (thirdSideMiddlePoint >= numPolygonNodes)
+    {
+        thirdSideMiddlePoint = thirdSideMiddlePoint - numPolygonNodes;
+    }
+
+    // set dimensions of blocks   
+    std::vector<int> numM{ n1, n3, n2 };
+    std::vector<int> numN{ n3, n2, n1 };
+
+
+    // set pointers of block corners
+    std::vector<int> i0{ firstSide, secondSide, thirdSide };
+    std::vector<int> iLeft{ thirdSideMiddlePoint, firstSideMiddlePoint, secondSideMiddlePoint };
+    std::vector<int> iRight{ firstSideMiddlePoint, secondSideMiddlePoint, thirdSideMiddlePoint };
+
+    // compute triangle middle point
+    const auto xia = double(n1) / double(firstSide);
+    const auto xib = double(n2) / double(secondSide);
+    const auto xic = double(n3) / double(thirdSide);
+
+    auto triangleCenter = ((m_polygon->m_nodes[firstNode]  * (1.0 - xia) + m_polygon->m_nodes[secondNode] * xia) * xic +  m_polygon->m_nodes[thirdNode] * (1.0 - xic) +
+                           (m_polygon->m_nodes[secondNode] * (1.0 - xib) + m_polygon->m_nodes[thirdNode]  * xib) * xia +  m_polygon->m_nodes[firstNode] * (1.0 - xia) +
+                           (m_polygon->m_nodes[thirdNode]  * (1.0 - xic) + m_polygon->m_nodes[firstNode]  * xic) * xib + m_polygon->m_nodes[secondNode] * (1.0 - xib)) / 3.0;
+
+
+    const auto maxM = *std::max_element(numM.begin(), numM.end());
+    const auto maxN = *std::max_element(numN.begin(), numN.end());
+    const auto maximumNumberOfNodes = std::max(maxM, maxN);
+    std::vector<Point> sideOne(maximumNumberOfNodes, { doubleMissingValue, doubleMissingValue });
+    std::vector<Point> sideTwo(maximumNumberOfNodes, { doubleMissingValue, doubleMissingValue });
+    std::vector<Point> sideThree(maximumNumberOfNodes, { doubleMissingValue, doubleMissingValue });
+    std::vector<Point> sideFour(maximumNumberOfNodes, { doubleMissingValue, doubleMissingValue });
+    
+
+
+    return true;
 }
