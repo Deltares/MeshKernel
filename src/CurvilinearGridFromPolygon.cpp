@@ -53,7 +53,7 @@ bool MeshKernel::CurvilinearGridFromPolygon::Compute( int firstNode,
                                                       bool useFourthSide, 
                                                       CurvilinearGrid& curvilinearGrid ) const
 {
-    if (m_polygon->m_indexses.size() < 0)
+    if (m_polygon->m_indexses.empty())
     {
         return true;
     }
@@ -174,8 +174,9 @@ bool MeshKernel::CurvilinearGridFromPolygon::Compute( int firstNode,
         // Interpolate fourth side
         for (int i = 0; i < numNNodes; i++)
         {
-            const double fac = double(i) / double((numNNodes - 1));
-            sideOne[i] = sideOne[i] * (1.0 - fac) + sideOne[i] * fac;
+            const double fac = double(i) / double(numNNodes - 1);
+            sideOne[i] = m_polygon->m_nodes[firstNode] * (1.0 - fac) + 
+                         m_polygon->m_nodes[fourthNode] * fac;
         }
     }
 

@@ -74,28 +74,28 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplines)
     ASSERT_NEAR(64.403232044419184, curvilinearGrid.m_grid[0][10].y, tolerance);
 
     ASSERT_NEAR(263.67028430842242, curvilinearGrid.m_grid[1][0].x, tolerance);
-    ASSERT_NEAR(259.87111655945489, curvilinearGrid.m_grid[1][1].x, tolerance);
-    ASSERT_NEAR(255.11348812342322, curvilinearGrid.m_grid[1][2].x, tolerance);
-    ASSERT_NEAR(250.35555048158136, curvilinearGrid.m_grid[1][3].x, tolerance);
-    ASSERT_NEAR(245.59773444154465, curvilinearGrid.m_grid[1][4].x, tolerance);
-    ASSERT_NEAR(240.84023176016686, curvilinearGrid.m_grid[1][5].x, tolerance);
-    ASSERT_NEAR(236.08241927564706, curvilinearGrid.m_grid[1][6].x, tolerance);
-    ASSERT_NEAR(231.32479892771738, curvilinearGrid.m_grid[1][7].x, tolerance);
-    ASSERT_NEAR(226.56699197029900, curvilinearGrid.m_grid[1][8].x, tolerance);
-    ASSERT_NEAR(221.80918330170789, curvilinearGrid.m_grid[1][9].x, tolerance);
-    ASSERT_NEAR(217.05157087339163, curvilinearGrid.m_grid[1][10].x, tolerance);
+    ASSERT_NEAR(259.11363739326902, curvilinearGrid.m_grid[1][1].x, tolerance);
+    ASSERT_NEAR(254.53691267796933, curvilinearGrid.m_grid[1][2].x, tolerance);
+    ASSERT_NEAR(249.93698634609487, curvilinearGrid.m_grid[1][3].x, tolerance);
+    ASSERT_NEAR(245.31456069699095, curvilinearGrid.m_grid[1][4].x, tolerance);
+    ASSERT_NEAR(240.66785332275725, curvilinearGrid.m_grid[1][5].x, tolerance);
+    ASSERT_NEAR(235.99933187522288, curvilinearGrid.m_grid[1][6].x, tolerance);
+    ASSERT_NEAR(231.30940727936030, curvilinearGrid.m_grid[1][7].x, tolerance);
+    ASSERT_NEAR(226.60252865287427, curvilinearGrid.m_grid[1][8].x, tolerance);
+    ASSERT_NEAR(221.88022520931327, curvilinearGrid.m_grid[1][9].x, tolerance);
+    ASSERT_NEAR(217.14743651601677, curvilinearGrid.m_grid[1][10].x, tolerance);
 
     ASSERT_NEAR(34.264668045745267, curvilinearGrid.m_grid[1][0].y, tolerance);
-    ASSERT_NEAR(38.464566052057620, curvilinearGrid.m_grid[1][1].y, tolerance);
-    ASSERT_NEAR(43.760683877699215, curvilinearGrid.m_grid[1][2].y, tolerance);
-    ASSERT_NEAR(49.057146729216853, curvilinearGrid.m_grid[1][3].y, tolerance);
-    ASSERT_NEAR(54.353475063988888, curvilinearGrid.m_grid[1][4].y, tolerance);
-    ASSERT_NEAR(59.649455413876531, curvilinearGrid.m_grid[1][5].y, tolerance);
-    ASSERT_NEAR(64.945781472508884, curvilinearGrid.m_grid[1][6].y, tolerance);
-    ASSERT_NEAR(70.241894499612627, curvilinearGrid.m_grid[1][7].y, tolerance);
-    ASSERT_NEAR(75.538216086511994, curvilinearGrid.m_grid[1][8].y, tolerance);
-    ASSERT_NEAR(80.834540418041755, curvilinearGrid.m_grid[1][9].y, tolerance);
-    ASSERT_NEAR(86.130647149070327, curvilinearGrid.m_grid[1][10].y, tolerance);
+    ASSERT_NEAR(39.307546170495868, curvilinearGrid.m_grid[1][1].y, tolerance);
+    ASSERT_NEAR(44.379080332661857, curvilinearGrid.m_grid[1][2].y, tolerance);
+    ASSERT_NEAR(49.481517460105827, curvilinearGrid.m_grid[1][3].y, tolerance);
+    ASSERT_NEAR(54.613111211730796, curvilinearGrid.m_grid[1][4].y, tolerance);
+    ASSERT_NEAR(59.775023214376127, curvilinearGrid.m_grid[1][5].y, tolerance);
+    ASSERT_NEAR(64.963841851929189, curvilinearGrid.m_grid[1][6].y, tolerance);
+    ASSERT_NEAR(70.178519042215470, curvilinearGrid.m_grid[1][7].y, tolerance);
+    ASSERT_NEAR(75.413628528250186, curvilinearGrid.m_grid[1][8].y, tolerance);
+    ASSERT_NEAR(80.667056521594716, curvilinearGrid.m_grid[1][9].y, tolerance);
+    ASSERT_NEAR(85.932983124208747, curvilinearGrid.m_grid[1][10].y, tolerance);
 }
 
 TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesOneNSwapped)
@@ -166,28 +166,28 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesOneNSwapped)
     ASSERT_NEAR(64.403232044419184, curvilinearGrid.m_grid[0][10].y, tolerance);
 
     ASSERT_NEAR(263.67028430842242, curvilinearGrid.m_grid[1][0].x, tolerance);
-    ASSERT_NEAR(259.87111655945489, curvilinearGrid.m_grid[1][1].x, tolerance);
-    ASSERT_NEAR(255.11348812342322, curvilinearGrid.m_grid[1][2].x, tolerance);
-    ASSERT_NEAR(250.35555048158136, curvilinearGrid.m_grid[1][3].x, tolerance);
-    ASSERT_NEAR(245.59773444154465, curvilinearGrid.m_grid[1][4].x, tolerance);
-    ASSERT_NEAR(240.84023176016686, curvilinearGrid.m_grid[1][5].x, tolerance);
-    ASSERT_NEAR(236.08241927564706, curvilinearGrid.m_grid[1][6].x, tolerance);
-    ASSERT_NEAR(231.32479892771738, curvilinearGrid.m_grid[1][7].x, tolerance);
-    ASSERT_NEAR(226.56699197029900, curvilinearGrid.m_grid[1][8].x, tolerance);
-    ASSERT_NEAR(221.80918330170789, curvilinearGrid.m_grid[1][9].x, tolerance);
-    ASSERT_NEAR(217.05157087339163, curvilinearGrid.m_grid[1][10].x, tolerance);
+    ASSERT_NEAR(259.11363739326902, curvilinearGrid.m_grid[1][1].x, tolerance);
+    ASSERT_NEAR(254.53691267796933, curvilinearGrid.m_grid[1][2].x, tolerance);
+    ASSERT_NEAR(249.93698634609487, curvilinearGrid.m_grid[1][3].x, tolerance);
+    ASSERT_NEAR(245.31456069699095, curvilinearGrid.m_grid[1][4].x, tolerance);
+    ASSERT_NEAR(240.66785332275725, curvilinearGrid.m_grid[1][5].x, tolerance);
+    ASSERT_NEAR(235.99933187522288, curvilinearGrid.m_grid[1][6].x, tolerance);
+    ASSERT_NEAR(231.30940727936030, curvilinearGrid.m_grid[1][7].x, tolerance);
+    ASSERT_NEAR(226.60252865287427, curvilinearGrid.m_grid[1][8].x, tolerance);
+    ASSERT_NEAR(221.88022520931327, curvilinearGrid.m_grid[1][9].x, tolerance);
+    ASSERT_NEAR(217.14743651601677, curvilinearGrid.m_grid[1][10].x, tolerance);
 
     ASSERT_NEAR(34.264668045745267, curvilinearGrid.m_grid[1][0].y, tolerance);
-    ASSERT_NEAR(38.464566052057620, curvilinearGrid.m_grid[1][1].y, tolerance);
-    ASSERT_NEAR(43.760683877699215, curvilinearGrid.m_grid[1][2].y, tolerance);
-    ASSERT_NEAR(49.057146729216853, curvilinearGrid.m_grid[1][3].y, tolerance);
-    ASSERT_NEAR(54.353475063988888, curvilinearGrid.m_grid[1][4].y, tolerance);
-    ASSERT_NEAR(59.649455413876531, curvilinearGrid.m_grid[1][5].y, tolerance);
-    ASSERT_NEAR(64.945781472508884, curvilinearGrid.m_grid[1][6].y, tolerance);
-    ASSERT_NEAR(70.241894499612627, curvilinearGrid.m_grid[1][7].y, tolerance);
-    ASSERT_NEAR(75.538216086511994, curvilinearGrid.m_grid[1][8].y, tolerance);
-    ASSERT_NEAR(80.834540418041755, curvilinearGrid.m_grid[1][9].y, tolerance);
-    ASSERT_NEAR(86.130647149070327, curvilinearGrid.m_grid[1][10].y, tolerance);
+    ASSERT_NEAR(39.307546170495868, curvilinearGrid.m_grid[1][1].y, tolerance);
+    ASSERT_NEAR(44.379080332661857, curvilinearGrid.m_grid[1][2].y, tolerance);
+    ASSERT_NEAR(49.481517460105827, curvilinearGrid.m_grid[1][3].y, tolerance);
+    ASSERT_NEAR(54.613111211730796, curvilinearGrid.m_grid[1][4].y, tolerance);
+    ASSERT_NEAR(59.775023214376127, curvilinearGrid.m_grid[1][5].y, tolerance);
+    ASSERT_NEAR(64.963841851929189, curvilinearGrid.m_grid[1][6].y, tolerance);
+    ASSERT_NEAR(70.178519042215470, curvilinearGrid.m_grid[1][7].y, tolerance);
+    ASSERT_NEAR(75.413628528250186, curvilinearGrid.m_grid[1][8].y, tolerance);
+    ASSERT_NEAR(80.667056521594716, curvilinearGrid.m_grid[1][9].y, tolerance);
+    ASSERT_NEAR(85.932983124208747, curvilinearGrid.m_grid[1][10].y, tolerance);
 }
 
 TEST(CurvilinearGridFromSplinesTransfinite, FiveSplines)
@@ -263,26 +263,26 @@ TEST(CurvilinearGridFromSplinesTransfinite, FiveSplines)
     ASSERT_NEAR(64.403232044419184, curvilinearGrid.m_grid[0][10].y, tolerance);
 
     ASSERT_NEAR(255.89614293923407, curvilinearGrid.m_grid[1][0].x, tolerance);
-    ASSERT_NEAR(251.94499680206604, curvilinearGrid.m_grid[1][1].x, tolerance);
-    ASSERT_NEAR(247.16412810980611, curvilinearGrid.m_grid[1][2].x, tolerance);
-    ASSERT_NEAR(242.38294374839489, curvilinearGrid.m_grid[1][3].x, tolerance);
-    ASSERT_NEAR(237.60187401525590, curvilinearGrid.m_grid[1][4].x, tolerance);
-    ASSERT_NEAR(232.82111604316972, curvilinearGrid.m_grid[1][5].x, tolerance);
-    ASSERT_NEAR(228.04005951332920, curvilinearGrid.m_grid[1][6].x, tolerance);
-    ASSERT_NEAR(223.25918473247705, curvilinearGrid.m_grid[1][7].x, tolerance);
-    ASSERT_NEAR(218.47812352940775, curvilinearGrid.m_grid[1][8].x, tolerance);
-    ASSERT_NEAR(213.69705929422133, curvilinearGrid.m_grid[1][9].x, tolerance);
-    ASSERT_NEAR(208.91618836124883, curvilinearGrid.m_grid[1][10].x, tolerance);
+    ASSERT_NEAR(251.26839070344425, curvilinearGrid.m_grid[1][1].x, tolerance);
+    ASSERT_NEAR(246.62717589518911, curvilinearGrid.m_grid[1][2].x, tolerance);
+    ASSERT_NEAR(241.96945582856105, curvilinearGrid.m_grid[1][3].x, tolerance);
+    ASSERT_NEAR(237.29374836322307, curvilinearGrid.m_grid[1][4].x, tolerance);
+    ASSERT_NEAR(232.59945837385263, curvilinearGrid.m_grid[1][5].x, tolerance);
+    ASSERT_NEAR(227.88656387177011, curvilinearGrid.m_grid[1][6].x, tolerance);
+    ASSERT_NEAR(223.15709488341233, curvilinearGrid.m_grid[1][7].x, tolerance);
+    ASSERT_NEAR(218.41314240105709, curvilinearGrid.m_grid[1][8].x, tolerance);
+    ASSERT_NEAR(213.65762819876193, curvilinearGrid.m_grid[1][9].x, tolerance);
+    ASSERT_NEAR(208.89353710816445, curvilinearGrid.m_grid[1][10].x, tolerance);
 
     ASSERT_NEAR(24.731736741118521, curvilinearGrid.m_grid[1][0].y, tolerance);
-    ASSERT_NEAR(29.209237191214346, curvilinearGrid.m_grid[1][1].y, tolerance);
-    ASSERT_NEAR(34.522745499288575, curvilinearGrid.m_grid[1][2].y, tolerance);
-    ASSERT_NEAR(39.836605428332383, curvilinearGrid.m_grid[1][3].y, tolerance);
-    ASSERT_NEAR(45.150338752180389, curvilinearGrid.m_grid[1][4].y, tolerance);
-    ASSERT_NEAR(50.463726365361609, curvilinearGrid.m_grid[1][5].y, tolerance);
-    ASSERT_NEAR(55.777446554148980, curvilinearGrid.m_grid[1][6].y, tolerance);
-    ASSERT_NEAR(61.090965546380446, curvilinearGrid.m_grid[1][7].y, tolerance);
-    ASSERT_NEAR(66.404692503592742, curvilinearGrid.m_grid[1][8].y, tolerance);
-    ASSERT_NEAR(71.718423610914982, curvilinearGrid.m_grid[1][9].y, tolerance);
-    ASSERT_NEAR(77.031940667468888, curvilinearGrid.m_grid[1][10].y, tolerance);
+    ASSERT_NEAR(29.842940652626876, curvilinearGrid.m_grid[1][1].y, tolerance);
+    ASSERT_NEAR(34.982267945763468, curvilinearGrid.m_grid[1][2].y, tolerance);
+    ASSERT_NEAR(40.148526703963910, curvilinearGrid.m_grid[1][3].y, tolerance);
+    ASSERT_NEAR(45.340177298582923, curvilinearGrid.m_grid[1][4].y, tolerance);
+    ASSERT_NEAR(50.555639961868344, curvilinearGrid.m_grid[1][5].y, tolerance);
+    ASSERT_NEAR(55.793467784299104, curvilinearGrid.m_grid[1][6].y, tolerance);
+    ASSERT_NEAR(61.050433278839293, curvilinearGrid.m_grid[1][7].y, tolerance);
+    ASSERT_NEAR(66.323655962424397, curvilinearGrid.m_grid[1][8].y, tolerance);
+    ASSERT_NEAR(71.609593896396262, curvilinearGrid.m_grid[1][9].y, tolerance);
+    ASSERT_NEAR(76.904826220873304, curvilinearGrid.m_grid[1][10].y, tolerance);
 }

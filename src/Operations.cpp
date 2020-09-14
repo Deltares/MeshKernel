@@ -1494,8 +1494,8 @@ namespace MeshKernel
         {
             for (int j = 0; j < numNPoints; j++)
             {
-                const double mWeight = i / numM;
-                const double nWeight = j / numN;
+                const double mWeight = double(i) / double(numM);
+                const double nWeight = double(j) / double(numN);
 
                 iWeightFactor[i][j] = (1.0 - nWeight) * sideThreeAdimensional[i] + nWeight * sideFourAdimensional[i];
                 jWeightFactor[i][j] = (1.0 - mWeight) * sideOneAdimensional[j] + mWeight * sideTwoAdimensional[j];
@@ -1615,11 +1615,11 @@ namespace MeshKernel
 
                     const double wa = 1.0 / (weightOne[i][j] + weightOne[i + 1][j] + weightTwo[i][j] + weightTwo[i][j + 1]);
 
-                    result[i][j].x = wa * (weightThree[i][j] * weightOne[i][j] + weightThree[i][j] * weightOne[i + 1][j] +
-                        weightThree[i][j] * weightTwo[i][j] + weightThree[i][j] * weightTwo[i][j + 1]);
+                    result[i][j].x = wa * (weightThree[i - 1][j] * weightOne[i][j] + weightThree[i + 1][j] * weightOne[i + 1][j] +
+                        weightThree[i][j - 1] * weightTwo[i][j] + weightThree[i][j + 1] * weightTwo[i][j + 1]);
 
-                    result[i][j].y = wa * (weightFour[i][j] * weightOne[i][j] + weightFour[i][j] * weightOne[i + 1][j] +
-                        weightFour[i][j] * weightTwo[i][j] + weightFour[i][j] * weightTwo[i][j + 1]);
+                    result[i][j].y = wa * (weightFour[i - 1][j] * weightOne[i][j] + weightFour[i + 1][j] * weightOne[i + 1][j] +
+                        weightFour[i][j - 1] * weightTwo[i][j] + weightFour[i][j + 1] * weightTwo[i][j + 1]);
                 }
             }
         }
