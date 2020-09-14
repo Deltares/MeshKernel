@@ -1,6 +1,6 @@
 # MeshKernel
 
-Deltares C++ library for creating and editing 2D unstructured and curvilinear meshes, suitable for the DFlowFM simulator.
+Deltares C++ library for creating and editing 2D unstructured and curvilinear meshes, suitable for the D-Flow Flexible Mesh simulator.
 
 The library is separated in an API namespace (MeshKernelApi), used for communication with the client and a backend namespace (MeshKernel), where the algorithms are implemented. 
 The API namespace contains several structures used as parameters for the API methods (see API usage section). 
