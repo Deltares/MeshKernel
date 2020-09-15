@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 
 
-TEST(CurvilinearGridInPolygon, ComputeGridInPolygonWithFourthSide)
+TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
 {
     std::vector<MeshKernel::Point> polygonPoints;
     polygonPoints.push_back(MeshKernel::Point{ 273.502319, 478.880432 });
@@ -53,7 +53,7 @@ TEST(CurvilinearGridInPolygon, ComputeGridInPolygonWithFourthSide)
     ASSERT_TRUE(success);
 }
 
-TEST(CurvilinearGridInPolygon, ComputeGridInPolygonWithoutFourthSide)
+TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithoutFourthSide)
 {
     std::vector<MeshKernel::Point> polygonPoints;
     polygonPoints.push_back(MeshKernel::Point{ 273.502319, 478.880432 });
@@ -100,7 +100,7 @@ TEST(CurvilinearGridInPolygon, ComputeGridInPolygonWithoutFourthSide)
     ASSERT_TRUE(success);
 }
 
-TEST(CurvilinearGridInPolygon, ComputeGridTriangle)
+TEST(CurvilinearGridFromPolygon, ComputeGridTriangle)
 {
     std::vector<MeshKernel::Point> polygonPoints;
 
@@ -125,26 +125,36 @@ TEST(CurvilinearGridInPolygon, ComputeGridTriangle)
     int thirdNode = 6;
     MeshKernel::CurvilinearGrid curvilinearGrid;
     bool success = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
+    ASSERT_TRUE(success);
 
     // check the values
     constexpr double tolerance = 1e-6;
 
+    ASSERT_NEAR(444.50479100000001, curvilinearGrid.m_grid[0][0].x, tolerance);
+    ASSERT_NEAR(444.09570300000001, curvilinearGrid.m_grid[0][1].x, tolerance);
+    ASSERT_NEAR(526.73339799999997, curvilinearGrid.m_grid[0][2].x, tolerance);
+    ASSERT_NEAR(558.64300500000002, curvilinearGrid.m_grid[0][3].x, tolerance);
+    ASSERT_NEAR(593.41625999999997, curvilinearGrid.m_grid[0][4].x, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_grid[0][5].x, tolerance);
 
-    //ASSERT_NEAR(273.50231900000000, curvilinearGrid.m_grid[0][0].x, tolerance);
-    //ASSERT_NEAR(492.12869250000006, curvilinearGrid.m_grid[0][1].x, tolerance);
-    //ASSERT_NEAR(710.75506600000006, curvilinearGrid.m_grid[0][2].x, tolerance);
+    ASSERT_NEAR(437.15594499999997, curvilinearGrid.m_grid[0][0].y, tolerance);
+    ASSERT_NEAR(436.74685699999998, curvilinearGrid.m_grid[0][1].y, tolerance);
+    ASSERT_NEAR(377.83657799999997, curvilinearGrid.m_grid[0][2].y, tolerance);
+    ASSERT_NEAR(324.65368699999999, curvilinearGrid.m_grid[0][3].y, tolerance);
+    ASSERT_NEAR(266.56158399999998, curvilinearGrid.m_grid[0][4].y, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_grid[0][5].y, tolerance);
 
-    //ASSERT_NEAR(478.88043199999998, curvilinearGrid.m_grid[0][0].y, tolerance);
-    //ASSERT_NEAR(484.88049300000000, curvilinearGrid.m_grid[0][1].y, tolerance);
-    //ASSERT_NEAR(490.88055400000002, curvilinearGrid.m_grid[0][2].y, tolerance);
+    ASSERT_NEAR(427.73178100000001, curvilinearGrid.m_grid[1][0].x, tolerance);
+    ASSERT_NEAR(455.85723540740742, curvilinearGrid.m_grid[1][1].x, tolerance);
+    ASSERT_NEAR(483.98268981481488, curvilinearGrid.m_grid[1][2].x, tolerance);
+    ASSERT_NEAR(506.38081040740741, curvilinearGrid.m_grid[1][3].x, tolerance);
+    ASSERT_NEAR(528.77893099999994, curvilinearGrid.m_grid[1][4].x, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_grid[1][5].x, tolerance);
 
-    //ASSERT_NEAR(274.25231900000000, curvilinearGrid.m_grid[1][0].x, tolerance);
-    //ASSERT_NEAR(481.37408996173241, curvilinearGrid.m_grid[1][1].x, tolerance);
-    //ASSERT_NEAR(741.50524900000005, curvilinearGrid.m_grid[1][2].x, tolerance);
-
-    //ASSERT_NEAR(325.12890599999997, curvilinearGrid.m_grid[1][0].y, tolerance);
-    //ASSERT_NEAR(322.93773596204318, curvilinearGrid.m_grid[1][1].y, tolerance);
-    //ASSERT_NEAR(328.12893700000001, curvilinearGrid.m_grid[1][2].y, tolerance);
-
-    ASSERT_TRUE(success);
+    ASSERT_NEAR(382.74575800000002, curvilinearGrid.m_grid[1][0].y, tolerance);
+    ASSERT_NEAR(362.14685592592593, curvilinearGrid.m_grid[1][1].y, tolerance);
+    ASSERT_NEAR(341.54795385185184, curvilinearGrid.m_grid[1][2].y, tolerance);
+    ASSERT_NEAR(302.41837092592596, curvilinearGrid.m_grid[1][3].y, tolerance);
+    ASSERT_NEAR(263.28878800000001, curvilinearGrid.m_grid[1][4].y, tolerance);
+    ASSERT_NEAR(-999.0000000000000, curvilinearGrid.m_grid[1][5].y, tolerance);
 }
