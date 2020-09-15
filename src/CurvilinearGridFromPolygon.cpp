@@ -242,25 +242,26 @@ bool MeshKernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     const int numPolygonNodes = end - start + 1;
 
     // get rid of size and orientation first part
-    int  firstSide = secondNode - firstNode;
-    if (firstSide < 0)
+    int  numPointsFirstSide = secondNode - firstNode;
+    if (numPointsFirstSide < 0)
     {
-        firstSide = firstSide + numPolygonNodes;
+        numPointsFirstSide = numPointsFirstSide + numPolygonNodes;
     }
 
-    int  secondSide = thirdNode - secondNode;
-    if (secondSide < 0)
+    int  numPointsSecondSide = thirdNode - secondNode;
+    if (numPointsSecondSide < 0)
     {
-        secondSide = secondSide + numPolygonNodes;
+        numPointsSecondSide = numPointsSecondSide + numPolygonNodes;
     }
 
-    int thirdSide = numPolygonNodes - (firstSide + secondSide);
-    int blockSize = (firstSide + secondSide + thirdSide) / 2;
+    int numPointsThirdSide = numPolygonNodes - (numPointsFirstSide + numPointsSecondSide);
+    int blockSize = (numPointsFirstSide + numPointsSecondSide + numPointsThirdSide) / 2;
 
-    int n1 = blockSize - thirdSide;
-    int n2 = blockSize - secondSide;
-    int n3 = blockSize - firstSide;
+    int n1 = blockSize - numPointsThirdSide;
+    int n2 = blockSize - numPointsSecondSide;
+    int n3 = blockSize - numPointsFirstSide;
 
+    // for each side, the block size cannot be less than the number of points
     if (n1 < 1 || n2 < 1 || n3 < 1)
     {
         return true;
@@ -290,29 +291,132 @@ bool MeshKernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
 
     // set pointers of block corners
-    std::vector<int> i0{ firstSide, secondSide, thirdSide };
+    std::vector<int> cornerPoints{ firstNode, secondNode, thirdNode };
     std::vector<int> iLeft{ thirdSideMiddlePoint, firstSideMiddlePoint, secondSideMiddlePoint };
     std::vector<int> iRight{ firstSideMiddlePoint, secondSideMiddlePoint, thirdSideMiddlePoint };
 
     // compute triangle middle point
-    const auto xia = double(n1) / double(firstSide);
-    const auto xib = double(n2) / double(secondSide);
-    const auto xic = double(n3) / double(thirdSide);
+    const auto xia = double(n1) / double(numPointsFirstSide);
+    const auto xib = double(n2) / double(numPointsSecondSide);
+    const auto xic = double(n3) / double(numPointsThirdSide);
 
     auto triangleCenter = ((m_polygon->m_nodes[firstNode]  * (1.0 - xia) + m_polygon->m_nodes[secondNode] * xia) * xic +  m_polygon->m_nodes[thirdNode] * (1.0 - xic) +
                            (m_polygon->m_nodes[secondNode] * (1.0 - xib) + m_polygon->m_nodes[thirdNode]  * xib) * xia +  m_polygon->m_nodes[firstNode] * (1.0 - xia) +
-                           (m_polygon->m_nodes[thirdNode]  * (1.0 - xic) + m_polygon->m_nodes[firstNode]  * xic) * xib + m_polygon->m_nodes[secondNode] * (1.0 - xib)) / 3.0;
+                           (m_polygon->m_nodes[thirdNode]  * (1.0 - xic) + m_polygon->m_nodes[firstNode]  * xic) * xib +  m_polygon->m_nodes[secondNode] * (1.0 - xib)) / 3.0;
 
 
     const auto maxM = *std::max_element(numM.begin(), numM.end());
     const auto maxN = *std::max_element(numN.begin(), numN.end());
-    const auto maximumNumberOfNodes = std::max(maxM, maxN);
+    const auto maximumNumberOfNodes = std::max(maxM, maxN) + 1;
     std::vector<Point> sideOne(maximumNumberOfNodes, { doubleMissingValue, doubleMissingValue });
     std::vector<Point> sideTwo(maximumNumberOfNodes, { doubleMissingValue, doubleMissingValue });
     std::vector<Point> sideThree(maximumNumberOfNodes, { doubleMissingValue, doubleMissingValue });
     std::vector<Point> sideFour(maximumNumberOfNodes, { doubleMissingValue, doubleMissingValue });
-    
 
+    curvilinearGrid.Set(n1 + n3 + 1, n2 + n3 + 1);
+    for (int t= 0; t < 3; ++t)
+    {
+        std::fill(sideOne.begin(), sideOne.end(), Point{ doubleMissingValue, doubleMissingValue });
+        std::fill(sideTwo.begin(), sideTwo.end(), Point{ doubleMissingValue, doubleMissingValue });
+        std::fill(sideThree.begin(), sideThree.end(), Point{ doubleMissingValue, doubleMissingValue });
+        std::fill(sideFour.begin(), sideFour.end(), Point{ doubleMissingValue, doubleMissingValue });
+
+        // backward
+        int cornerIndex = cornerPoints[t];
+        for (int i = 0; i < numN[t] + 1; ++i)
+        {
+            sideOne[i] = m_polygon->m_nodes[cornerIndex];
+            cornerIndex -= 1;
+            if (cornerIndex < start)
+            {
+                cornerIndex = cornerIndex + numPolygonNodes;
+            }
+            if (cornerIndex > end)
+            {
+                cornerIndex = cornerIndex - numPolygonNodes;
+            }            
+        }
+
+        // forward
+        cornerIndex = cornerPoints[t];
+        for (int i = 0; i < numM[t] + 1; ++i)
+        {
+            sideThree[i] = m_polygon->m_nodes[cornerIndex];
+            cornerIndex += 1;
+            if (cornerIndex < start)
+            {
+                cornerIndex = cornerIndex + numPolygonNodes;
+            }
+            if (cornerIndex > end)
+            {
+                cornerIndex = cornerIndex - numPolygonNodes;
+            }
+        }
+
+        // fill side four
+        for (int i = 0; i < numM[t] + 1; ++i)
+        {
+            double xia = double(i) / double(numM[t]);
+            sideFour[i] =  m_polygon->m_nodes[iLeft[t]] * (1.0 - xia) + triangleCenter * xia;
+        }
+
+        // fill side two
+        for (int i = 0; i < numN[t] + 1; ++i)
+        {
+            double xia = double(i) / double(numN[t]);
+            sideTwo[i] = m_polygon->m_nodes[iRight[t]] * (1.0 - xia) + triangleCenter * xia;
+        }
+
+        std::vector<std::vector<Point>> result;
+        bool successful = InterpolateTransfinite(sideOne,
+            sideTwo,
+            sideThree,
+            sideFour,
+            m_polygon->m_projection,
+            numM[t],
+            numN[t],
+            result);
+
+        if(!successful)
+        {
+            return true;
+        }
+
+        // add to grid 
+        if (t == 0)
+        {
+            for (int i = 0; i < result.size(); ++i)
+            {
+                for (int j = 0; j < result[0].size(); ++j)
+                {
+                    curvilinearGrid.m_grid[i][j] = result[i][j];
+                }
+            }
+        }
+        if (t == 1)
+        {
+            for (int i = 0; i < result.size(); ++i)
+            {
+                for (int j = 0; j < result[0].size(); ++j)
+                {
+                    int iIndex = n1 + n3 - i;
+                    int jIndex = n2 + n3 - j;
+                    curvilinearGrid.m_grid[iIndex][jIndex] = result[i][j];
+                }
+            }
+        }
+        if (t == 2)
+        {
+            for (int i = 0; i < result[0].size(); ++i)
+            {
+                for (int j = 0; j < result.size(); ++j)
+                {
+                    int jIndex = n2 + n3 - j;
+                    curvilinearGrid.m_grid[i][jIndex] = result[j][i];
+                }
+            }
+        }
+    }
 
     return true;
 }
