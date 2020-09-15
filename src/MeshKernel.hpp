@@ -461,11 +461,36 @@ namespace MeshKernelApi
         /// <summary>
         /// Generates curvilinear grid from splines with transfinite interpolation
         /// </summary>
-        /// <param name="meshKernelId"></param>
+        /// <param name="meshKernelId">Id of the mesh state</param>
         /// <param name="geometryListNativeIn"></param>
         /// <param name="curvilinearParametersNative"></param>
         /// <returns>Error code</returns>
         MESHKERNEL_API int mkernel_curvilinear_mesh_from_splines(int meshKernelId, GeometryListNative& geometryListNativeIn, CurvilinearParametersNative& curvilinearParametersNative);
+
+
+        /// <summary>
+        /// Computes a curvilinear mesh in a polygon. 3 separate polygon nodes need to be selected.
+        /// </summary>
+        /// <param name="meshKernelId">Id of the mesh state</param>
+        /// <param name="polygonNative">The input polygons</param>
+        /// <param name="firstNode">The first selected node</param>
+        /// <param name="secondNode">The second selected node</param>
+        /// <param name="thirdNode">The third node</param>
+        /// <param name="useFourthSide">Use (yes/no) the fourth polygon side to compute the curvilinear grid</param>
+        /// <returns>Error code</returns>
+        MESHKERNEL_API int mkernel_curvilinear_in_polygon(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode, bool useFourthSide);
+
+
+        /// <summary>
+        /// Computes a curvilinear mesh in a triangle. 3 separate polygon nodes need to be selected.
+        /// </summary>
+        /// <param name="meshKernelId">Id of the mesh state</param>
+        /// <param name="polygonNative">The input polygons</param>
+        /// <param name="firstNode">The first selected node</param>
+        /// <param name="secondNode">The second selected node</param>
+        /// <param name="thirdNode">The third node</param>
+        /// <returns>Error code</returns>
+        MESHKERNEL_API int mkernel_curvilinear_in_triangle(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode);
 
 #ifdef __cplusplus
     }

@@ -34,6 +34,7 @@
 #include "OrthogonalizationAndSmoothing.hpp"
 #include "CurvilinearGridFromSplines.hpp"
 #include "CurvilinearGridFromSplinesTransfinite.hpp"
+#include "CurvilinearGridFromPolygon.hpp"
 #include "FlipEdges.hpp"
 #include "CurvilinearGrid.hpp"
 #include "Splines.hpp"
@@ -1309,6 +1310,97 @@ namespace MeshKernelApi
 
         // Transform and set mesh pointer
         meshInstances[meshKernelId] = std::make_unique<MeshKernel::Mesh>(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+
+        return successful ? 0 : 1;
+    }
+
+    MESHKERNEL_API int mkernel_curvilinear_in_polygon( int meshKernelId,
+                                                       GeometryListNative& polygonNative,
+                                                       int firstNode,
+                                                       int secondNode,
+                                                       int thirdNode,
+                                                       bool useFourthSide )
+    {
+        if (meshKernelId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+        {
+            return 0;
+        }
+
+        std::vector<MeshKernel::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        auto polygon = std::make_shared<MeshKernel::Polygons>();
+        successful = polygon->Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        MeshKernel::CurvilinearGrid curvilinearGrid;
+        MeshKernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
+        successful = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
+
+        if (!successful)
+        {
+            return -1;
+        }
+
+        // convert to curvilinear grid and add it to the current mesh
+        *meshInstances[meshKernelId] += MeshKernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+
+        return successful ? 0 : 1;
+    }
+
+    MESHKERNEL_API int mkernel_curvilinear_in_triangle( int meshKernelId,
+                                                        GeometryListNative& polygonNative,
+                                                        int firstNode,
+                                                        int secondNode,
+                                                        int thirdNode )
+    {
+        if (meshKernelId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+        {
+            return 0;
+        }
+
+        std::vector<MeshKernel::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonPoints);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        auto polygon = std::make_shared<MeshKernel::Polygons>();
+        successful = polygon->Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
+        if (!successful)
+        {
+            return -1;
+        }
+
+        MeshKernel::CurvilinearGrid curvilinearGrid;
+        MeshKernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
+        successful = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
+
+        if (!successful)
+        {
+            return -1;
+        }
+
+        // convert to curvilinear grid and add it to the current mesh
+        *meshInstances[meshKernelId] += MeshKernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
 
         return successful ? 0 : 1;
     }
