@@ -4,8 +4,6 @@
 #include "../CurvilinearGrid.hpp"
 #include "../CurvilinearGridFromPolygon.cpp"
 #include <gtest/gtest.h>
-
-
 TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
 {
     std::vector<MeshKernel::Point> polygonPoints;
