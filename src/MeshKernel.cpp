@@ -1326,11 +1326,6 @@ namespace MeshKernelApi
             return -1;
         }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
-        {
-            return 0;
-        }
-
         std::vector<MeshKernel::Point> polygonPoints;
         bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonPoints);
         if (!successful)
@@ -1371,10 +1366,6 @@ namespace MeshKernelApi
             return -1;
         }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
-        {
-            return 0;
-        }
 
         std::vector<MeshKernel::Point> polygonPoints;
         bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonPoints);

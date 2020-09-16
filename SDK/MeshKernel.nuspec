@@ -2,7 +2,7 @@
 <package >
     <metadata>
         <id>Deltares.MeshKernel</id>
-        <version>1.0.0</version>
+        <version>0.0.0</version>
         <authors>Deltares</authors>
         <owners>Deltares</owners>
         <description>Deltares back end mesh editing engine (C++ version)</description>
