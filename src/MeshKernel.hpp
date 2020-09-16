@@ -472,13 +472,13 @@ namespace MeshKernelApi
         /// Computes a curvilinear mesh in a polygon. 3 separate polygon nodes need to be selected.
         /// </summary>
         /// <param name="meshKernelId">Id of the mesh state</param>
-        /// <param name="polygonNative">The input polygons</param>
+        /// <param name="polygonNative">The input polygon</param>
         /// <param name="firstNode">The first selected node</param>
         /// <param name="secondNode">The second selected node</param>
         /// <param name="thirdNode">The third node</param>
-        /// <param name="useFourthSide">Use (yes/no) the fourth polygon side to compute the curvilinear grid</param>
+        /// <param name="useFourthSide">Use (true/false) the fourth polygon side to compute the curvilinear grid</param>
         /// <returns>Error code</returns>
-        MESHKERNEL_API int mkernel_curvilinear_in_polygon(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode, bool useFourthSide);
+        MESHKERNEL_API int mkernel_curvilinear_from_polygon(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode, bool useFourthSide);
 
 
         /// <summary>
@@ -490,7 +490,7 @@ namespace MeshKernelApi
         /// <param name="secondNode">The second selected node</param>
         /// <param name="thirdNode">The third node</param>
         /// <returns>Error code</returns>
-        MESHKERNEL_API int mkernel_curvilinear_in_triangle(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode);
+        MESHKERNEL_API int mkernel_curvilinear_from_triangle(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode);
 
 #ifdef __cplusplus
     }
