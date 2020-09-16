@@ -1314,7 +1314,7 @@ namespace MeshKernelApi
         return successful ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_curvilinear_in_polygon( int meshKernelId,
+    MESHKERNEL_API int mkernel_curvilinear_from_polygon( int meshKernelId,
                                                        GeometryListNative& polygonNative,
                                                        int firstNode,
                                                        int secondNode,
@@ -1360,7 +1360,7 @@ namespace MeshKernelApi
         return successful ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_curvilinear_in_triangle( int meshKernelId,
+    MESHKERNEL_API int mkernel_curvilinear_from_triangle( int meshKernelId,
                                                         GeometryListNative& polygonNative,
                                                         int firstNode,
                                                         int secondNode,
