@@ -1309,7 +1309,7 @@ namespace MeshKernelApi
         bool success = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
 
         // Transform and set mesh pointer
-        meshInstances[meshKernelId] = std::make_unique<MeshKernel::Mesh>(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+        *meshInstances[meshKernelId] += MeshKernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
 
         return successful ? 0 : 1;
     }
