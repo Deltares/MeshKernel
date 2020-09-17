@@ -119,7 +119,7 @@ namespace MeshKernel
 
             bool RemoveNode(int position) 
             {
-                int numberRemoved = m_rtree2D.remove(m_points[position]);
+                const auto numberRemoved = m_rtree2D.remove(m_points[position]);
                 if (numberRemoved != 1) 
                 {
                     return false;
@@ -137,24 +137,24 @@ namespace MeshKernel
             }
 
 
-            int Size() const
+            auto Size() const
             {
                 return m_rtree2D.size();
             }
 
-            bool Empty() const
+            auto Empty() const
             {
                 return m_rtree2D.empty();
 
             }
 
-            bool Clear()
+            auto Clear()
             {
                 m_rtree2D.clear();
                 return true;
             }
 
-            int GetQueryResultSize() const
+            auto GetQueryResultSize() const
             {
                 return m_queryCache.size();
             }
