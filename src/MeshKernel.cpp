@@ -1118,7 +1118,12 @@ namespace MeshKernelApi
     {
         if (meshKernelId >= meshInstances.size())
         {
-            return 0;
+            return -1;
+        }
+
+        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+        {
+            return -1;
         }
 
         std::vector<MeshKernel::Point> polygonPoints;
@@ -1136,6 +1141,52 @@ namespace MeshKernelApi
 
         return 0;
     }
+
+    MESHKERNEL_API int mkernel_get_node_coordinate(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, GeometryListNative& geometryListOut)
+    {
+        if (meshKernelId >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+        {
+            return -1;
+        }
+
+        if (geometryListOut.numberOfCoordinates <= 0)
+        {
+            return -1;
+        }
+
+        std::vector<MeshKernel::Point> polygonPoints;
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+        if (!successful || polygonPoints.empty())
+        {
+            return -1;
+        }
+
+        int vertexIndex;
+        successful = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, vertexIndex);
+        if (!successful || vertexIndex < 0)
+        {
+            return -1;
+        }
+
+        // Set the node coordinate
+        auto node = meshInstances[meshKernelId]->m_nodes[vertexIndex];
+        std::vector<MeshKernel::Point> pointVector;
+        pointVector.push_back(node);
+        ConvertPointVectorToGeometryListNative(pointVector, geometryListOut);
+
+        if (!successful)
+        {
+            return -1;
+        }
+
+        return 0;
+    }
+
 
     MESHKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId,
         GeometryListNative& geometryListIn,

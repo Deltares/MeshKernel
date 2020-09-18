@@ -189,6 +189,17 @@ namespace MeshKernelApi
         /// <returns>Error code</returns>
         MESHKERNEL_API int mkernel_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int number_of_points_between_vertices);
 
+
+        /// <summary>
+        /// Get the coordinates of the closest existing vertex
+        /// </summary>
+        /// <param name="meshKernelId">Id of the grid state</param>
+        /// <param name="geometryListIn">Vertex coordinates</param>
+        /// <param name="searchRadius">the radius where to search for the vertex</param>
+        /// <param name="geometryListOut">Mesh vertex coordinates</param>
+        /// <returns>0 if a vertex has been found</returns>
+        MESHKERNEL_API int mkernel_get_node_coordinate(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, GeometryListNative& geometryListOut);
+
         /// <summary>
         /// Make curvilinear grid from splines with an advancing front.
         /// </summary>
