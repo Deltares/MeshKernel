@@ -866,7 +866,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int& vertexIndex)
+    MESHKERNEL_API int mkernel_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int& nodeIndex)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -876,7 +876,7 @@ namespace MeshKernelApi
         }
 
         MeshKernel::Point newNode{ xCoordinate, yCoordinate };
-        bool successful = meshInstances[meshKernelId]->InsertNode(newNode, vertexIndex);
+        bool successful = meshInstances[meshKernelId]->InsertNode(newNode, nodeIndex);
         if (!successful)
         {
             return -1;
@@ -1114,7 +1114,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_get_node_index(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, int& vertexIndex)
+    MESHKERNEL_API int mkernel_get_node_index(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, int& nodeIndex)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1133,7 +1133,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        successful = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, vertexIndex);
+        successful = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, nodeIndex);
         if (!successful)
         {
             return -1;
@@ -1166,15 +1166,15 @@ namespace MeshKernelApi
             return -1;
         }
 
-        int vertexIndex;
-        successful = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, vertexIndex);
-        if (!successful || vertexIndex < 0)
+        int nodeIndex = -1;
+        successful = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, nodeIndex);
+        if (!successful || nodeIndex < 0)
         {
             return -1;
         }
 
         // Set the node coordinate
-        auto node = meshInstances[meshKernelId]->m_nodes[vertexIndex];
+        auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];
         std::vector<MeshKernel::Point> pointVector;
         pointVector.push_back(node);
         ConvertPointVectorToGeometryListNative(pointVector, geometryListOut);

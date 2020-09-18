@@ -177,6 +177,46 @@ TEST(Polygons, RefinePolygon)
     ASSERT_NEAR(0, refinedPolygon[12].y, tolerance);
 }
 
+TEST(Polygons, RefinePolygonOneSide)
+{
+    // Prepare
+    MeshKernel::Polygons polygons;
+    std::vector<MeshKernel::Point> nodes;
+
+    nodes.push_back({ 0,0 });
+    nodes.push_back({ 3, 0 });
+    nodes.push_back({ 3, 3 });
+    nodes.push_back({ 0, 3 });
+    nodes.push_back({ 0, 0 });
+
+    polygons.Set(nodes, MeshKernel::Projections::cartesian);
+
+    // Execute
+    std::vector<std::vector<MeshKernel::Point>> generatedPoints;
+    std::vector<MeshKernel::Point> refinedPolygon;
+    bool successful = polygons.RefinePart(0, 1, 1.0, refinedPolygon);
+    ASSERT_TRUE(successful);
+
+    ASSERT_EQ(7, refinedPolygon.size());
+    const double tolerance = 1e-5;
+
+    ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
+    ASSERT_NEAR(1.0, refinedPolygon[1].x, tolerance);
+    ASSERT_NEAR(2.0, refinedPolygon[2].x, tolerance);
+    ASSERT_NEAR(3.0, refinedPolygon[3].x, tolerance);
+    ASSERT_NEAR(3.0, refinedPolygon[4].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[5].x, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[6].x, tolerance);
+
+    ASSERT_NEAR(0.0, refinedPolygon[0].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[1].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[2].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[3].y, tolerance);
+    ASSERT_NEAR(3.0, refinedPolygon[4].y, tolerance);
+    ASSERT_NEAR(3.0, refinedPolygon[5].y, tolerance);
+    ASSERT_NEAR(0.0, refinedPolygon[6].y, tolerance);
+}
+
 TEST(Polygons, RefinePolygonLongerSquare)
 {
     // Prepare

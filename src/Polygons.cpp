@@ -381,7 +381,7 @@ namespace MeshKernel
         nodeLengthCoordinate[0] = 0.0;
         for (int i = 1; i < edgeLengths.size(); ++i)
         {
-            nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i-1];
+            nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
         }
 
         int numNodesRefinedPart = std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex);
@@ -401,18 +401,27 @@ namespace MeshKernel
         int nodeIndex = startIndex;
         int nextNodeIndex = nodeIndex + 1;
         Point p0 = m_nodes[nodeIndex];
-        Point p1 = m_nodes[nodeIndex + 1];
+        Point p1 = m_nodes[nextNodeIndex];
         double pointLengthCoordinate = nodeLengthCoordinate[startIndex];
+        bool snappedToLastPoint = false;
         while (nodeIndex < endIndex)
         {
+            // initial point already accounted for
             pointLengthCoordinate += refinementDistance;
             if (pointLengthCoordinate > nodeLengthCoordinate[nextNodeIndex])
             {
-                // find next point 
+                // if not snapped to the original last polygon point, snap it
+                if (!snappedToLastPoint)
+                {
+                    refinedPolygon[refinedNodeIndex] = m_nodes[nextNodeIndex];
+                    refinedNodeIndex++;
+                }
+
+                // find the next point  
                 bool nextNodeFound = false;
                 for (int i = nextNodeIndex + 1; i <= endIndex; ++i)
                 {
-                    if(nodeLengthCoordinate[i]>pointLengthCoordinate)
+                    if (nodeLengthCoordinate[i] > pointLengthCoordinate)
                     {
                         nextNodeFound = true;
                         nodeIndex = i - 1;
@@ -428,7 +437,17 @@ namespace MeshKernel
                 p1 = m_nodes[nextNodeIndex];
             }
             double distanceFromLastNode = pointLengthCoordinate - nodeLengthCoordinate[nodeIndex];
-            Point p = p0 + (p1 - p0) *  distanceFromLastNode / edgeLengths[nodeIndex];
+            double factor = distanceFromLastNode / edgeLengths[nodeIndex];
+            Point p; 
+            if (std::abs(factor - 1.0) < std::numeric_limits<double>::epsilon()) 
+            {
+                snappedToLastPoint = true;
+                p = p1;
+            }
+            else 
+            {
+                p = p0 + (p1 - p0) * distanceFromLastNode / edgeLengths[nodeIndex];
+            }
             refinedPolygon[refinedNodeIndex] = p;
             refinedNodeIndex++;
         }
