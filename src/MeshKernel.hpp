@@ -189,7 +189,6 @@ namespace MeshKernelApi
         /// <returns>Error code</returns>
         MESHKERNEL_API int mkernel_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int number_of_points_between_vertices);
 
-
         /// <summary>
         /// Get the coordinates of the closest existing vertex
         /// </summary>
