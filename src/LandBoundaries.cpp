@@ -40,7 +40,7 @@ namespace MeshKernel
     LandBoundaries::LandBoundaries() : m_numAllocatedNodes(0)
     {
         ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
-        m_numAllocatedNodes = m_nodes.size();
+        m_numAllocatedNodes = int(m_nodes.size());
         m_numNode = 0;
         m_polygonNodesCache.resize(maximumNumberOfNodesPerFace);
     }
@@ -58,8 +58,8 @@ namespace MeshKernel
             return true;
         }
 
-        bool successful = ResizeVectorIfNeededWithMinimumSize(m_numNode + landBoundary.size(), m_nodes, m_allocationSize,{ doubleMissingValue,doubleMissingValue });
-        m_numAllocatedNodes = m_nodes.size();
+        bool successful = ResizeVectorIfNeededWithMinimumSize(m_numNode + int(landBoundary.size()), m_nodes, m_allocationSize,{ doubleMissingValue,doubleMissingValue });
+        m_numAllocatedNodes = int(m_nodes.size());
 
         for (int i = 0; i < landBoundary.size(); i++)
         {
@@ -529,7 +529,7 @@ namespace MeshKernel
         Point nodeOnLandBoundary;
         int currentNodeLandBoundaryNodeIndex;
         double currentNodeEdgeRatio;
-        bool stopPathSearch;    //the path has been temporarily stopped(.true.) or not (.false.)
+        bool stopPathSearch;    //the path has been temporarily stopped(true) or not (false)
         int numConnectedNodes = 0;
         numRejectedNodesInPath = 0;
         numNodesInPath = 0;
@@ -544,7 +544,6 @@ namespace MeshKernel
                 int previousLandBoundarySegment = m_meshNodesLandBoundarySegments[currentNode];
                 int previousStartMeshNode = m_segmentIndices[previousLandBoundarySegment][0];
                 int previousEndMeshNode = m_segmentIndices[previousLandBoundarySegment][1];
-                int previousEndLandBoundaryIndex;
                 double previousMinDistance;
 
                 successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], previousStartMeshNode, previousEndMeshNode,
@@ -1253,7 +1252,6 @@ namespace MeshKernel
                     for (int n = currentNodeLandBoundaryNodeIndex + 1; n < neighbouringNodeLandBoundaryNodeIndex; n++)
                     {
                         double ratio;
-                        Point projectedPoint;
                         middlePointDistance = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, middlePointOnLandBoundary, ratio, m_mesh->m_projection);
                         if (middlePointDistance > maximumDistance)
                             maximumDistance = middlePointDistance;
@@ -1264,7 +1262,6 @@ namespace MeshKernel
                     for (int n = neighbouringNodeLandBoundaryNodeIndex + 1; n < currentNodeLandBoundaryNodeIndex; n++)
                     {
                         double ratio;
-                        Point projectedPoint;
                         middlePointDistance = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, middlePointOnLandBoundary, ratio, m_mesh->m_projection);
                         if (middlePointDistance > maximumDistance)
                             maximumDistance = middlePointDistance;
