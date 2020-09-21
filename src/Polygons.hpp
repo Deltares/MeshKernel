@@ -71,10 +71,10 @@ namespace MeshKernel
         bool PerimeterClosedPolygon(const std::vector<Point>& localPolygon, int numPoints, double& perimeter);
 
         /// refinepolygonpart
-        bool RefinePart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon);
+        bool RefinePolygonPart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon);
 
         /// refinepolygonpart
-        bool EdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths );
+        bool PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths );
 
         ///copypol, copy and move a polygon orthogonally
         bool OffsetCopy(int nodeIndex, double distance, bool Inner, Polygons& newPolygon);
