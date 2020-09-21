@@ -17,6 +17,7 @@ https://sourceforge.net/projects/boost/files/boost-binaries/
 Once installed, modify boost environmental variables accordingly. For example:
 
 BOOST_INCLUDEDIR=C:\Apps\boost_1_70_0
+
 BOOST_LIBRARYDIR=C:\Apps\boost_1_70_0\lib64-msvc-14.1
 
 Install CMAKE (https://cmake.org/download/) and execute bootstrap.bat. The visual studio solution is produced inside the build folder.

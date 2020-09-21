@@ -46,7 +46,8 @@
 // The vector containing the mesh instances 
 static std::vector<std::shared_ptr<MeshKernel::Mesh>> meshInstances;
 
-// For supporting interactivity for orthogonalization and orthogonal curvilinear grid from splines, we need to save some instances
+// For supporting interactivity for orthogonalization and orthogonal curvilinear grid from splines, 
+// we need to save some instances
 static std::map<int, MeshKernel::OrthogonalizationAndSmoothing> orthogonalizationInstances;
 static std::map<int, MeshKernel::CurvilinearGridFromSplines> splineInstances;
 
@@ -166,7 +167,7 @@ namespace MeshKernelApi
         return true;
     }
 
-    MESHKERNEL_API int mkernel_new_mesh(int& meshKernelId)
+    MKERNEL_API int mkernel_new_mesh(int& meshKernelId)
     {
         int instanceSize = meshInstances.size();
         meshInstances.resize(instanceSize + 1);
@@ -175,7 +176,7 @@ namespace MeshKernelApi
         return 0;
     };
 
-    MESHKERNEL_API int mkernel_deallocate_state(int meshKernelId)
+    MKERNEL_API int mkernel_deallocate_state(int meshKernelId)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -186,7 +187,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_delete_mesh(int meshKernelId, GeometryListNative& geometryListIn, int deletionOption, bool invertDeletion)
+    MKERNEL_API int mkernel_delete_mesh(int meshKernelId, GeometryListNative& geometryListIn, int deletionOption, bool invertDeletion)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -218,7 +219,7 @@ namespace MeshKernelApi
     }
 
 
-    MESHKERNEL_API int mkernel_set_state(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool isGeographic)
+    MKERNEL_API int mkernel_set_state(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool isGeographic)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -255,7 +256,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_get_mesh(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    MKERNEL_API int mkernel_get_mesh(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -273,7 +274,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_find_faces(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    MKERNEL_API int mkernel_find_faces(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -291,7 +292,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_orthogonalize(int meshKernelId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
+    MKERNEL_API int mkernel_orthogonalize(int meshKernelId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
         OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
     {
 
@@ -343,7 +344,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_orthogonalize_initialize(int meshKernelId,
+    MKERNEL_API int mkernel_orthogonalize_initialize(int meshKernelId,
         int isTriangulationRequired,
         int isAccountingForLandBoundariesRequired,
         int projectToLandBoundaryOption,
@@ -401,7 +402,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_orthogonalize_prepare_outer_iteration(int meshKernelId)
+    MKERNEL_API int mkernel_orthogonalize_prepare_outer_iteration(int meshKernelId)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -417,7 +418,7 @@ namespace MeshKernelApi
         return status == true ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_orthogonalize_inner_iteration(int meshKernelId)
+    MKERNEL_API int mkernel_orthogonalize_inner_iteration(int meshKernelId)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -432,7 +433,7 @@ namespace MeshKernelApi
         return status == true ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_orthogonalize_finalize_outer_iteration(int meshKernelId)
+    MKERNEL_API int mkernel_orthogonalize_finalize_outer_iteration(int meshKernelId)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -447,7 +448,7 @@ namespace MeshKernelApi
         return status == true ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_orthogonalize_delete(int meshKernelId)
+    MKERNEL_API int mkernel_orthogonalize_delete(int meshKernelId)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -463,7 +464,7 @@ namespace MeshKernelApi
         return returnValue == 1 ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_get_orthogonality(int meshKernelId, GeometryListNative& geometryList)
+    MKERNEL_API int mkernel_get_orthogonality(int meshKernelId, GeometryListNative& geometryList)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -478,7 +479,7 @@ namespace MeshKernelApi
         return status == true ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_get_smoothness(int meshKernelId, GeometryListNative& geometryList)
+    MKERNEL_API int mkernel_get_smoothness(int meshKernelId, GeometryListNative& geometryList)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -494,7 +495,7 @@ namespace MeshKernelApi
         return status == true ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int number_of_points_between_vertices)
+    MKERNEL_API int mkernel_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int number_of_points_between_vertices)
     {
 
         if (geometryListIn.numberOfCoordinates == 0)
@@ -545,7 +546,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_make_mesh(int meshKernelId, MakeGridParametersNative& makeGridParameters, GeometryListNative& geometryListNative)
+    MKERNEL_API int mkernel_make_mesh(int meshKernelId, MakeGridParametersNative& makeGridParameters, GeometryListNative& geometryListNative)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -579,7 +580,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_make_mesh_from_polygon(int meshKernelId, GeometryListNative& disposableGeometryListIn)
+    MKERNEL_API int mkernel_make_mesh_from_polygon(int meshKernelId, GeometryListNative& disposableGeometryListIn)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -613,7 +614,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_make_mesh_from_samples(int meshKernelId, GeometryListNative& geometryListNative)
+    MKERNEL_API int mkernel_make_mesh_from_samples(int meshKernelId, GeometryListNative& geometryListNative)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -632,7 +633,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon(int meshKernelId, GeometryListNative& geometryListNative)
+    MKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon(int meshKernelId, GeometryListNative& geometryListNative)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -655,7 +656,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon_count_vertices(int meshKernelId, int& numberOfPolygonVertices)
+    MKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon_count_vertices(int meshKernelId, int& numberOfPolygonVertices)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -671,7 +672,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_refine_polygon(int meshKernelId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut)
+    MKERNEL_API int mkernel_refine_polygon(int meshKernelId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -689,7 +690,7 @@ namespace MeshKernelApi
         polygon.Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         std::vector<MeshKernel::Point> refinedPolygon;
-        successful = polygon.RefinePart(firstIndex, secondIndex, distance, refinedPolygon);
+        successful = polygon.RefinePolygonPart(firstIndex, secondIndex, distance, refinedPolygon);
         if (!successful)
         {
             return -1;
@@ -704,7 +705,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices)
+    MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -722,7 +723,7 @@ namespace MeshKernelApi
         polygon.Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         std::vector<MeshKernel::Point> refinedPolygon;
-        successful = polygon.RefinePart(firstIndex, secondIndex, distance, refinedPolygon);
+        successful = polygon.RefinePolygonPart(firstIndex, secondIndex, distance, refinedPolygon);
         if (!successful)
         {
             return -1;
@@ -734,7 +735,7 @@ namespace MeshKernelApi
     }
 
 
-    MESHKERNEL_API int mkernel_merge_nodes(int meshKernelId, GeometryListNative& geometryListIn) 
+    MKERNEL_API int mkernel_merge_nodes(int meshKernelId, GeometryListNative& geometryListIn) 
     {
 
         if (meshKernelId >= meshInstances.size()) 
@@ -760,7 +761,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_merge_two_nodes(int meshKernelId, int startNode, int endNode)
+    MKERNEL_API int mkernel_merge_two_nodes(int meshKernelId, int startNode, int endNode)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -776,7 +777,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices)
+    MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -813,7 +814,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices)
+    MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -849,7 +850,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_insert_edge(int meshKernelId, int startNode, int endNode, int& new_edge_index)
+    MKERNEL_API int mkernel_insert_edge(int meshKernelId, int startNode, int endNode, int& new_edge_index)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -866,7 +867,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int& nodeIndex)
+    MKERNEL_API int mkernel_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int& nodeIndex)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -886,7 +887,7 @@ namespace MeshKernelApi
     }
 
 
-    MESHKERNEL_API int mkernel_delete_node(int meshKernelId, int nodeIndex)
+    MKERNEL_API int mkernel_delete_node(int meshKernelId, int nodeIndex)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -902,7 +903,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_move_node(int meshKernelId, GeometryListNative& geometryListIn, int nodeIndex)
+    MKERNEL_API int mkernel_move_node(int meshKernelId, GeometryListNative& geometryListIn, int nodeIndex)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -925,7 +926,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_delete_edge(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius)
+    MKERNEL_API int mkernel_delete_edge(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -949,7 +950,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_find_edge(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, int& edgeIndex)
+    MKERNEL_API int mkernel_find_edge(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, int& edgeIndex)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -968,7 +969,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_offsetted_polygon(int meshKernelId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, GeometryListNative& geometryListOut)
+    MKERNEL_API int mkernel_offsetted_polygon(int meshKernelId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, GeometryListNative& geometryListOut)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1005,7 +1006,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonVertices)
+    MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonVertices)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1038,7 +1039,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_refine_mesh_based_on_samples(int meshKernelId, GeometryListNative& geometryListIn, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative)
+    MKERNEL_API int mkernel_refine_mesh_based_on_samples(int meshKernelId, GeometryListNative& geometryListIn, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative)
     {
         if (meshKernelId >= meshInstances.size() || meshInstances[meshKernelId]->GetNumNodes() <= 0)
         {
@@ -1071,7 +1072,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_refine_mesh_based_on_polygon(int meshKernelId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative)
+    MKERNEL_API int mkernel_refine_mesh_based_on_polygon(int meshKernelId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative)
     {
         
         if (meshKernelId >= meshInstances.size() || meshInstances[meshKernelId]->GetNumNodes()<=0)
@@ -1114,7 +1115,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_get_node_index(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, int& nodeIndex)
+    MKERNEL_API int mkernel_get_node_index(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, int& nodeIndex)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1142,7 +1143,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_get_node_coordinate(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, GeometryListNative& geometryListOut)
+    MKERNEL_API int mkernel_get_node_coordinate(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, GeometryListNative& geometryListOut)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1188,7 +1189,7 @@ namespace MeshKernelApi
     }
 
 
-    MESHKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId,
         GeometryListNative& geometryListIn,
         CurvilinearParametersNative& curvilinearParameters,
         SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
@@ -1216,7 +1217,7 @@ namespace MeshKernelApi
     }
 
 
-    MESHKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_initialize(int meshKernelId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParametersNative, SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
+    MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_initialize(int meshKernelId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParametersNative, SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1247,7 +1248,7 @@ namespace MeshKernelApi
         return 0;
     }
 
-    MESHKERNEL_API int mkernel_curvilinear_mesh_from_splines_iteration(int meshKernelId, int layer)
+    MKERNEL_API int mkernel_curvilinear_mesh_from_splines_iteration(int meshKernelId, int layer)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1259,7 +1260,7 @@ namespace MeshKernelApi
     }
 
 
-    MESHKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_refresh_mesh(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_refresh_mesh(int meshKernelId)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1274,7 +1275,7 @@ namespace MeshKernelApi
         return successful ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_delete(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_delete(int meshKernelId)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1284,7 +1285,7 @@ namespace MeshKernelApi
         return successful;
     }
 
-    MESHKERNEL_API int mkernel_points_in_polygon(int meshKernelId, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative)
+    MKERNEL_API int mkernel_points_in_polygon(int meshKernelId, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative)
     {
     
         std::vector<MeshKernel::Point> polygonNodes;
@@ -1313,7 +1314,7 @@ namespace MeshKernelApi
         return successful ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_flip_edges(int meshKernelId, 
+    MKERNEL_API int mkernel_flip_edges(int meshKernelId, 
                                      int isTriangulationRequired, 
                                      int isAccountingForLandBoundariesRequired, 
                                      int projectToLandBoundaryRequired)
@@ -1336,7 +1337,7 @@ namespace MeshKernelApi
         return successful ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_curvilinear_mesh_from_splines(int meshKernelId, GeometryListNative& geometryListNativeIn, CurvilinearParametersNative& curvilinearParametersNative)
+    MKERNEL_API int mkernel_curvilinear_mesh_from_splines(int meshKernelId, GeometryListNative& geometryListNativeIn, CurvilinearParametersNative& curvilinearParametersNative)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1365,7 +1366,7 @@ namespace MeshKernelApi
         return successful ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_curvilinear_from_polygon( int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_from_polygon( int meshKernelId,
                                                        GeometryListNative& polygonNative,
                                                        int firstNode,
                                                        int secondNode,
@@ -1406,7 +1407,7 @@ namespace MeshKernelApi
         return successful ? 0 : 1;
     }
 
-    MESHKERNEL_API int mkernel_curvilinear_from_triangle( int meshKernelId,
+    MKERNEL_API int mkernel_curvilinear_from_triangle( int meshKernelId,
                                                         GeometryListNative& polygonNative,
                                                         int firstNode,
                                                         int secondNode,
