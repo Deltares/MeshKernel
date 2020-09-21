@@ -6,6 +6,22 @@ The library is separated in an API namespace (MeshKernelApi), used for communica
 The API namespace contains several structures used as parameters for the API methods (see API usage section). 
 These structures must be mirrored in the client application and filled with appropriate values.
 
+## Build
+
+### Windows
+
+MeshKernel depends on boost. On windows precompiled boost binaries (with MSVC compiler) can be downloaded here:
+
+https://sourceforge.net/projects/boost/files/boost-binaries/ 
+
+Once installed, modify boost environmental variables accordingly. For example:
+
+BOOST_INCLUDEDIR=C:\Apps\boost_1_70_0
+BOOST_LIBRARYDIR=C:\Apps\boost_1_70_0\lib64-msvc-14.1
+
+Install CMAKE (https://cmake.org/download/) and execute bootstrap.bat. The visual studio solution is produced inside the build folder.
+
+
 ## Examples
 
 1. Creating a triangular mesh inside a polygon
