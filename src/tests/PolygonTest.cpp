@@ -142,7 +142,7 @@ TEST(Polygons, RefinePolygon)
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;
     std::vector<MeshKernel::Point> refinedPolygon;
-    bool successful = polygons.RefinePart(0, 0, 1.0, refinedPolygon);
+    bool successful = polygons.RefinePolygonPart(0, 0, 1.0, refinedPolygon);
     ASSERT_TRUE(successful);
 
     ASSERT_EQ(13, refinedPolygon.size());
@@ -194,7 +194,7 @@ TEST(Polygons, RefinePolygonOneSide)
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;
     std::vector<MeshKernel::Point> refinedPolygon;
-    bool successful = polygons.RefinePart(0, 1, 1.0, refinedPolygon);
+    bool successful = polygons.RefinePolygonPart(0, 1, 1.0, refinedPolygon);
     ASSERT_TRUE(successful);
 
     ASSERT_EQ(7, refinedPolygon.size());
@@ -234,7 +234,7 @@ TEST(Polygons, RefinePolygonLongerSquare)
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;
     std::vector<MeshKernel::Point> refinedPolygon;
-    bool successful = polygons.RefinePart(0, 0, 1.0, refinedPolygon);
+    bool successful = polygons.RefinePolygonPart(0, 0, 1.0, refinedPolygon);
     ASSERT_TRUE(successful);
 
     ASSERT_EQ(13, refinedPolygon.size());

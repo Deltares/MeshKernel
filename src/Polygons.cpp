@@ -339,14 +339,17 @@ namespace MeshKernel
         return isOnePolygonClosed ? true : false;
     }
 
-    bool Polygons::RefinePart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon)
+    bool Polygons::RefinePolygonPart(int startIndex,
+                                     int endIndex,
+                                     double refinementDistance,
+                                     std::vector<Point>& refinedPolygon)
     {
-        if(m_indexses.empty())
+        if (m_indexses.empty())
         {
             return false;
         }
-        
-        if(startIndex==0 && endIndex==0)
+
+        if (startIndex == 0 && endIndex == 0)
         {
             startIndex = m_indexses[0][0];
             endIndex = m_indexses[0][1];
@@ -358,30 +361,30 @@ namespace MeshKernel
             return false;
         }
 
-        bool polygonFound = false;
+        bool areIndexesValid = false;
         int polygonIndex;
         for (int i = 0; i < m_indexses.size(); ++i)
         {
             if (startIndex >= m_indexses[i][0] && endIndex <= m_indexses[i][1])
             {
-                polygonFound = true;
+                areIndexesValid = true;
                 polygonIndex = i;
                 break;
             }
         }
 
-        if (!polygonFound)
+        if (!areIndexesValid)
         {
             return false;
         }
 
         std::vector<double> edgeLengths;
-        EdgeLengths(m_nodes, edgeLengths);
+        PolygonEdgeLengths(m_nodes, edgeLengths);
         std::vector<double> nodeLengthCoordinate(edgeLengths.size());
         nodeLengthCoordinate[0] = 0.0;
         for (int i = 1; i < edgeLengths.size(); ++i)
         {
-            nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
+            nodeLengthCoordinate[i] = nodeLengthCoordinate[i-1] + edgeLengths[i-1];
         }
 
         int numNodesRefinedPart = std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex);
@@ -438,13 +441,13 @@ namespace MeshKernel
             }
             double distanceFromLastNode = pointLengthCoordinate - nodeLengthCoordinate[nodeIndex];
             double factor = distanceFromLastNode / edgeLengths[nodeIndex];
-            Point p; 
-            if (std::abs(factor - 1.0) < std::numeric_limits<double>::epsilon()) 
+            Point p;
+            if (std::abs(factor - 1.0) < std::numeric_limits<double>::epsilon())
             {
                 snappedToLastPoint = true;
                 p = p1;
             }
-            else 
+            else
             {
                 p = p0 + (p1 - p0) * distanceFromLastNode / edgeLengths[nodeIndex];
             }
@@ -473,12 +476,12 @@ namespace MeshKernel
 
         perimeter = 0.0;
         std::vector<double> edgeLengths;
-        EdgeLengths(localPolygon, edgeLengths);
+        PolygonEdgeLengths(localPolygon, edgeLengths);
         perimeter = std::accumulate(edgeLengths.begin(), edgeLengths.end(), 0.0);
         return true;
     }
 
-    bool Polygons::EdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths)
+    bool Polygons::PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths)
     {
         edgeLengths.resize(localPolygon.size());
         for (int p = 0; p < localPolygon.size(); ++p)
