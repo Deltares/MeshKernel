@@ -117,21 +117,20 @@ namespace MeshKernel
                 return true;
             }
 
-            bool RemoveNode(int position) 
+            bool RemoveNode(int position)
             {
                 const auto numberRemoved = m_rtree2D.remove(m_points[position]);
-                if (numberRemoved != 1) 
+                if (numberRemoved != 1)
                 {
                     return false;
                 }
-                m_points[position] = std::make_pair(Point2D{ doubleMissingValue,doubleMissingValue }, -1);
+                m_points[position] = {Point2D{ doubleMissingValue,doubleMissingValue }, -1};
                 return true;
             }
 
             bool InsertNode(const Point& node)
             {
-                const auto pointToInsert = std::make_pair(Point2D{ node.x, node.y }, m_points.size());
-                m_points.push_back(pointToInsert);
+                m_points.push_back({ Point2D{ node.x, node.y }, m_points.size() });
                 m_rtree2D.insert(m_points.end()-1, m_points.end());
                 return true;
             }
