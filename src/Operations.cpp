@@ -54,7 +54,7 @@ namespace MeshKernel
     template<typename T>
     bool ResizeVectorIfNeeded(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
     {
-        const int currentSize = vectorToResize.size();
+        const int currentSize = int(vectorToResize.size());
         if (newSize > currentSize)
         {
             newSize = std::max(newSize, int(currentSize * 1.2));
@@ -66,7 +66,7 @@ namespace MeshKernel
     template<typename T>
     bool ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
     {
-        const int currentSize = vectorToResize.size();
+        const int currentSize = int(vectorToResize.size());
         if (newSize > currentSize)
         {
             newSize = std::max(minSize, int(5 * newSize));
@@ -1387,7 +1387,7 @@ namespace MeshKernel
 
         const double eps = 1e-5;
         const double splFac = 1.0;
-        int intCoordinate = std::floor(pointAdimensionalCoordinate);
+        int intCoordinate = int(std::floor(pointAdimensionalCoordinate));
         if (pointAdimensionalCoordinate - intCoordinate < eps)
         {
             pointCoordinate = coordinates[intCoordinate];
