@@ -131,7 +131,7 @@ namespace MeshKernel
             bool InsertNode(const Point& node)
             {
                 m_points.push_back({ Point2D{ node.x, node.y }, m_points.size() });
-                m_rtree2D.insert(m_points.end()-1, m_points.end());
+                m_rtree2D.insert(m_points.end() - 1, m_points.end());
                 return true;
             }
 

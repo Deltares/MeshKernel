@@ -99,7 +99,7 @@ bool MeshKernel::Mesh::RemoveInvalidNodesAndEdges()
     }
 
     // nothing to do, return
-    if (numInvalidEdges == 0 && numInvalidNodes == 0 && numInvalidNodes==0)
+    if (numInvalidEdges == 0 && numInvalidNodes == 0)
     {
         m_numNodes = m_nodes.size();
         m_numEdges = m_edges.size();
@@ -296,11 +296,11 @@ MeshKernel::Mesh::Mesh(std::vector<Point>& inputNodes, const MeshKernel::Polygon
     while (numtri < 0)
     {
         numtri = numberOfTriangles;
-        faceNodesFlat.resize(numberOfTriangles * 3);
-        edgeNodesFlat.resize(numberOfTriangles * 2);
-        faceEdgesFlat.resize(numberOfTriangles * 3);
-        xNodesFlat.resize(numberOfTriangles * 3, doubleMissingValue);
-        yNodesFlat.resize(numberOfTriangles * 3, doubleMissingValue);
+        faceNodesFlat.resize(int(numberOfTriangles) * 3);
+        edgeNodesFlat.resize(int(numberOfTriangles) * 2);
+        faceEdgesFlat.resize(int(numberOfTriangles) * 3);
+        xNodesFlat.resize(int(numberOfTriangles) * 3, doubleMissingValue);
+        yNodesFlat.resize(int(numberOfTriangles) * 3, doubleMissingValue);
         Triangulation(&jatri,
             &xLocalPolygon[0],
             &yLocalPolygon[0],
