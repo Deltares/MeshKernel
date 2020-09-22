@@ -305,11 +305,11 @@ namespace MeshKernel
             while(numtri < 0)
             {
                 numtri = numberOfTriangles;
-                faceNodes.resize(numberOfTriangles * 3);
-                edgeNodes.resize(numberOfTriangles * 2);
-                faceEdges.resize(numberOfTriangles * 3);
-                xPoint.resize(numberOfTriangles * 3);
-                yPoint.resize(numberOfTriangles * 3);
+                faceNodes.resize(int(numberOfTriangles) * 3);
+                edgeNodes.resize(int(numberOfTriangles) * 2);
+                faceEdges.resize(int(numberOfTriangles) * 3);
+                xPoint.resize(int(numberOfTriangles) * 3);
+                yPoint.resize(int(numberOfTriangles) * 3);
                 Triangulation(&jatri,
                     &xLocalPolygon[0],
                     &yLocalPolygon[0],
@@ -387,7 +387,7 @@ namespace MeshKernel
             nodeLengthCoordinate[i] = nodeLengthCoordinate[i-1] + edgeLengths[i-1];
         }
 
-        int numNodesRefinedPart = std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex);
+        int numNodesRefinedPart = std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (int(endIndex) - int(startIndex));
         int numNodesNotRefinedPart = startIndex - m_indexses[polygonIndex][0] + m_indexses[polygonIndex][1] - endIndex;
         int totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
         refinedPolygon.resize(totalNumNodes);
@@ -436,13 +436,16 @@ namespace MeshKernel
                 {
                     break;
                 }
+
                 p0 = m_nodes[nodeIndex];
                 p1 = m_nodes[nextNodeIndex];
+                pointLengthCoordinate = nodeLengthCoordinate[nodeIndex] + refinementDistance;
+                snappedToLastPoint = false;
             }
             double distanceFromLastNode = pointLengthCoordinate - nodeLengthCoordinate[nodeIndex];
             double factor = distanceFromLastNode / edgeLengths[nodeIndex];
             Point p;
-            if (std::abs(factor - 1.0) < std::numeric_limits<double>::epsilon())
+            if (std::abs(factor - 1.0) <= std::numeric_limits<double>::epsilon())
             {
                 snappedToLastPoint = true;
                 p = p1;
