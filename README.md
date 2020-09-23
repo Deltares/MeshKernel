@@ -60,8 +60,8 @@ int meshKernelId;
 int state = mkernel_new_mesh(meshKernelId);
 
 // Mesh nodes and edges
-std::vector<double> nodex{ 0.0, 3.0, 1.5};
-std::vector<double> nodey{ 0.0, 0.0, 3.0};
+std::vector<double> nodex{0.0, 3.0, 1.5};
+std::vector<double> nodey{0.0, 0.0, 3.0};
 std::vector<int> edge_nodes{0, 1, 1, 2, 2, 0};
 
 // The MeshGeometry communication structures
@@ -81,8 +81,8 @@ bool isGeographic = false;
 state = mkernel_set_state(meshKernelId, meshGeometryDimensions, meshGeometry, bool isGeographic);
 
 // The new position
-std::vector<double> newPositionX{ 1.0};
-std::vector<double> newPositionY{ 3.0};
+std::vector<double> newPositionX{1.0};
+std::vector<double> newPositionY{3.0};
 
 GeometryListNative geometryListIn;
 geometryListIn.xCoordinates = &newPositionX[0];
