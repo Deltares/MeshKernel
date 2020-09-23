@@ -54,7 +54,7 @@ A mesh can be refined in areas based on samples or polygon selections
 ## API usage
 
 Setting a triangular mesh and moving its 2nd node to position 1.0, 3.0:
-
+```c++
     // Create a new mesh entry into MeshKernel library
 	int meshKernelId;
 	int state = mkernel_new_mesh(meshKernelId);
@@ -94,5 +94,4 @@ Setting a triangular mesh and moving its 2nd node to position 1.0, 3.0:
 
     // Deallocate the mesh entry
     state = mkernel_deallocate_state(int meshKernelId);
-
- 
+```
