@@ -4,7 +4,7 @@ import shutil
 
 from pathlib import Path
 
-SONAR_SCANNER_VERSION = "4.2.0.1873"
+SONAR_SCANNER_VERSION = "4.4.0.2170"
 
 
 def download_file(url: str, save_path: Path, chunk_size=128) -> None:
