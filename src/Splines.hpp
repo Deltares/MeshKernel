@@ -142,7 +142,7 @@ namespace MeshKernel
         std::vector<int> m_numAllocatedSplineNodes;              // Number of allocated node in each spline
         std::vector<double> m_splinesLength;                     // The length of each spline
         Projections m_projection;                                // The map projection  
-        int m_numSplines = 0;                                    // Current number of splines
+        size_t m_numSplines = 0;                                    // Current number of splines
 
         int m_numAllocatedSplines = 0;                           // Total number of allocated splines
         int m_allocationSize = 5;                                // allocation cache size
