@@ -54,7 +54,7 @@ namespace MeshKernel
         }
 
         // find the polygons in the current list of points 
-        std::vector<std::vector<int>> indexes(polygon.size(), std::vector<int>(2,0));
+        std::vector<std::vector<size_t>> indexes(polygon.size(), std::vector<size_t>(2,0));
         int pos = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue, indexes);
         indexes.resize(pos);
 

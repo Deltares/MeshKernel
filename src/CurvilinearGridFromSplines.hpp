@@ -113,7 +113,7 @@ namespace MeshKernel
         std::vector<Point> m_gridLine;                           // coordinates of the first gridline (xg1, yg1)
         std::vector<double> m_gridLineDimensionalCoordinates;    // center spline coordinates of the first gridline (sg1)
         std::vector<double> m_maximumGridHeights;                // maximum transversal grid height ()
-        int m_numM = 0;                                          // Number of columns in the curvilinear grid
+        size_t m_numM = 0;                                       // Number of columns in the curvilinear grid
         
         std::shared_ptr<Splines> m_splines;                      // A pointer to spline
 
@@ -436,7 +436,7 @@ namespace MeshKernel
         std::vector<std::vector<double>> m_gridHeights;                                 // heights of all grid elements        
 
         //original spline chaches
-        int m_numOriginalSplines = 0;
+        size_t m_numOriginalSplines = 0;
         int m_allocationSize = 5;                                                       // allocation cache size
 
         std::vector<int> m_leftGridLineIndexOriginal;

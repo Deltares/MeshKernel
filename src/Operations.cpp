@@ -94,13 +94,14 @@ namespace MeshKernel
                             const size_t start, 
                             const size_t end,
                             const double& separator, 
-                            std::vector<std::vector<int>>& indexes )
+                            std::vector<std::vector<size_t>>& indexes )
     {
         // set an invalid index
+        auto invalidIndex = std::numeric_limits<size_t>::max();
         for (int n = 0; n < indexes.size(); n++)
         {
-            indexes[n][0] = -1;
-            indexes[n][1] = -1;
+            indexes[n][0] = invalidIndex;
+            indexes[n][1] = invalidIndex;
         }
 
         if (start > vec.size() || end > vec.size() || indexes.size() == 0)
@@ -110,14 +111,14 @@ namespace MeshKernel
         }
 
         int pos = 0;
-        for (int n = start; n < end; n++)
+        for (auto n = start; n < end; n++)
         {
 
-            if (vec[n].x != separator && indexes[pos][0] == -1)
+            if (vec[n].x != separator && indexes[pos][0] == invalidIndex)
             {
                 indexes[pos][0] = n;
             }
-            else if (vec[n].x == separator && indexes[pos][1] == -1)
+            else if (vec[n].x == separator && indexes[pos][1] == invalidIndex)
             {
                 indexes[pos][1] = n - 1;
                 pos++;
@@ -128,7 +129,7 @@ namespace MeshKernel
             }
         }
 
-        if (pos < indexes.size() && indexes[pos][1] == -1)
+        if (pos < indexes.size() && indexes[pos][1] == invalidIndex)
         {
             indexes[pos][1] = int(vec.size()) - 1;
             pos++;
