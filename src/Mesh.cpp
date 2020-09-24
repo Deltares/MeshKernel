@@ -282,7 +282,7 @@ MeshKernel::Mesh::Mesh(std::vector<Point>& inputNodes, const MeshKernel::Polygon
 
     int numtri = -1;
     int jatri = 3;
-    int numPointsIn = inputNodes.size();
+    int numPointsIn = int(inputNodes.size());
     int numPointsOut = 0;
     int numberOfTriangles = numPointsIn * 6 + 10;
     double averageTriangleArea = 0.0;
@@ -786,7 +786,7 @@ void MeshKernel::Mesh::FindFaces()
     m_numFacesNodes.resize(m_numFaces);
     for (int f = 0; f < m_numFaces; ++f)
     {
-        m_numFacesNodes[f] = m_facesNodes[f].size();
+        m_numFacesNodes[f] = int(m_facesNodes[f].size());
     }
 }
 

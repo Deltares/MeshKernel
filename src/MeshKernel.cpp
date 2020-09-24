@@ -169,7 +169,7 @@ namespace MeshKernelApi
 
     MKERNEL_API int mkernel_new_mesh(int& meshKernelId)
     {
-        int instanceSize = meshInstances.size();
+        int instanceSize = int(meshInstances.size());
         meshInstances.resize(instanceSize + 1);
         meshKernelId = instanceSize;
         meshInstances[meshKernelId] = std::make_shared<MeshKernel::Mesh>();
@@ -460,7 +460,7 @@ namespace MeshKernelApi
             return 0;
         }
 
-        const int returnValue = orthogonalizationInstances.erase(meshKernelId);
+        const auto returnValue = orthogonalizationInstances.erase(meshKernelId);
         return returnValue == 1 ? 0 : 1;
     }
 
@@ -729,7 +729,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        numberOfPolygonVertices = refinedPolygon.size();
+        numberOfPolygonVertices = int(refinedPolygon.size());
 
         return 0;
     }
@@ -1281,8 +1281,8 @@ namespace MeshKernelApi
         {
             return 0;
         }
-        const int successful = splineInstances.erase(meshKernelId);
-        return successful;
+        const auto returnValue = splineInstances.erase(meshKernelId);
+        return returnValue == 1 ? 0 : 1;
     }
 
     MKERNEL_API int mkernel_points_in_polygon(int meshKernelId, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative)

@@ -397,21 +397,21 @@ bool MeshKernel::FlipEdges::ComputeTopologyFunctional( int edge,
         }
         else
         {
-            auto n1L = DifferenceFromOptimum(firstNode, secondNode, nodeLeft);
-            auto n1R = DifferenceFromOptimum(firstNode, secondNode, nodeRight);
+            const auto n1L = DifferenceFromOptimum(firstNode, secondNode, nodeLeft);
+            const auto n1R = DifferenceFromOptimum(firstNode, secondNode, nodeRight);
 
-            auto n2R = DifferenceFromOptimum(secondNode, firstNode, nodeLeft);
-            auto n2L = DifferenceFromOptimum(secondNode, firstNode, nodeRight);
+            const auto n2R = DifferenceFromOptimum(secondNode, firstNode, nodeLeft);
+            const auto n2L = DifferenceFromOptimum(secondNode, firstNode, nodeRight);
 
-            auto nL = DifferenceFromOptimum(nodeLeft, firstNode, secondNode);
-            auto nR = DifferenceFromOptimum(nodeRight, firstNode, secondNode);
+            const auto nL = DifferenceFromOptimum(nodeLeft, firstNode, secondNode);
+            const auto nR = DifferenceFromOptimum(nodeRight, firstNode, secondNode);
 
             topologyFunctional = (n1L - 1) * (n1L - 1) +
                 (n1R - 1) * (n1R - 1) +
                 (n2L - 1) * (n2L - 1) +
                 (n2R - 1) * (n2R - 1) +
-                2.0 * ((nL + 1) * (nL + 1) + (nR + 1) * (nR + 1)) -
-                (n1L * n1L + n1R * n1R + n2L * n2L + n2R * n2R + 2.0 * (nL * nL + nR * nR));
+                2 * ((nL + 1) * (nL + 1) + (nR + 1) * (nR + 1)) -
+                (n1L * n1L + n1R * n1R + n2L * n2L + n2R * n2R + 2 * (nL * nL + nR * nR));
 
         }
     }

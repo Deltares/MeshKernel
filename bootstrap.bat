@@ -1,4 +1,4 @@
 @echo off
 cd build
-cmake .. -G"Visual Studio 16 2019"
+"C:\Program Files\CMake\bin\cmake" .. -G"Visual Studio 16 2019"
 pause

@@ -378,7 +378,7 @@ TEST(Mesh, InsertNodeRtree)
     int newNodeIndex;
     mesh.InsertNode(newPoint, newNodeIndex,true);
 
-    int rtreeSize = mesh.m_nodesRTree.Size();
+    auto rtreeSize = mesh.m_nodesRTree.Size();
     ASSERT_EQ(5, rtreeSize);
 }
 
