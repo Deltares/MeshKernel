@@ -38,32 +38,25 @@
 #include "CurvilinearGridFromSplines.hpp"
 #include "CurvilinearGrid.hpp"
 
-MeshKernel::CurvilinearGridFromSplines::CurvilinearGridFromSplines(): m_splines(nullptr)
-{
-}
-
-MeshKernel::CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_ptr<Splines> splines) : m_splines(splines)
-{
-};
-
-bool MeshKernel::CurvilinearGridFromSplines::SetParameters(const MeshKernelApi::CurvilinearParametersNative& curvilinearParametersNative,
-                                                           const MeshKernelApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
+MeshKernel::CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
+                                                                   const MeshKernelApi::CurvilinearParametersNative& curvilinearParametersNative,
+                                                                   const MeshKernelApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative) :
+    m_splines(splines)
 {
     m_aspectRatio = splinesToCurvilinearParametersNative.AspectRatio;
     m_aspectRatioGrowFactor = splinesToCurvilinearParametersNative.AspectRatioGrowFactor;
     m_averageMeshWidth = splinesToCurvilinearParametersNative.AverageWidth;
-    m_onTopOfEachOtherSquaredTolerance = splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance * 
+    m_onTopOfEachOtherSquaredTolerance = splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance *
                                          splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance;
     m_dtolcos = splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles;
     m_checkFrontCollisions = splinesToCurvilinearParametersNative.CheckFrontCollisions;
     m_isSpacingCurvatureAdapted = splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing;
-    m_removeSkinnyTriangles = splinesToCurvilinearParametersNative.RemoveSkinnyTriangles == 1? true: false;
-    
+    m_removeSkinnyTriangles = splinesToCurvilinearParametersNative.RemoveSkinnyTriangles == 1 ? true : false;
+
     // curvature adapted grid spacing? to add
     m_maxNumM = curvilinearParametersNative.MRefinement;
     m_maxNumN = curvilinearParametersNative.NRefinement;
-    return true;
-}
+};
 
 /// to be called after all splines have been stored
 bool MeshKernel::CurvilinearGridFromSplines::AllocateSplinesProperties()
