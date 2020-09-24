@@ -115,11 +115,11 @@ namespace MeshKernelApi
             return false;
         }
 
-        std::vector<std::vector<int>> indexes(splineCornerPoints.size(), std::vector<int>(2,0));
+        std::vector<std::vector<size_t>> indexes(splineCornerPoints.size(), std::vector<size_t>(2,0));
         int pos = FindIndexes(splineCornerPoints, 0, splineCornerPoints.size(), MeshKernel::doubleMissingValue, indexes);
         indexes.resize(pos);
 
-        for (int i = 0; i < indexes.size(); i++)
+        for (auto i = 0; i < indexes.size(); i++)
         {
             int size = indexes[i][1] - indexes[i][0] + 1;
             if (size > 0)
@@ -510,7 +510,7 @@ namespace MeshKernelApi
             splines[i].y = geometryListIn.yCoordinates[i];
         }
 
-        std::vector<std::vector<int>> indexes(geometryListIn.numberOfCoordinates, std::vector<int>(2));
+        std::vector<std::vector<size_t>> indexes(geometryListIn.numberOfCoordinates, std::vector<size_t>(2));
         int numSplines = FindIndexes(splines, 0, splines.size(), MeshKernel::doubleMissingValue, indexes);
         std::vector<MeshKernel::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
 

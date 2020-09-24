@@ -601,10 +601,10 @@ bool MeshKernel::CurvilinearGridFromSplinesTransfinite::OrderSplines(int startFi
 template<typename T>
 bool  MeshKernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow)
 {
-    int minSize = std::min(v[firstRow].size(), v[secondRow].size());
+    auto minSize = std::min(v[firstRow].size(), v[secondRow].size());
     minSize = std::min(minSize, m_splines->m_numSplines);
 
-    for (auto i = 0; i < minSize; i++)
+    for (size_t i = 0; i < minSize; i++)
     {
         std::swap(v[firstRow][i], v[secondRow][i]);
     }
@@ -614,7 +614,7 @@ bool  MeshKernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<st
 template<typename T>
 bool  MeshKernel::CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn)
 {
-    for (int i = 0; i < m_splines->m_numSplines; i++)
+    for (size_t i = 0; i < m_splines->m_numSplines; i++)
     {
         if (firstColumn >= v[i].size() || secondColumn >= v[i].size())
         {
