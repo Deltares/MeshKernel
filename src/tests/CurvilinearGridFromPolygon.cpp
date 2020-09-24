@@ -27,7 +27,7 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
     int thirdNode = 4;
     bool useFourthSide = true;
     MeshKernel::CurvilinearGrid curvilinearGrid;
-    bool success = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
+    bool successful = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
 
     // check the values
     constexpr double tolerance = 1e-6;
@@ -48,7 +48,7 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
     ASSERT_NEAR(314.33420290273324, curvilinearGrid.m_grid[1][1].y, tolerance);
     ASSERT_NEAR(328.12893700000001, curvilinearGrid.m_grid[1][2].y, tolerance);
 
-    ASSERT_TRUE(success);
+    ASSERT_TRUE(successful);
 }
 
 TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithoutFourthSide)
@@ -74,7 +74,7 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithoutFourthSide)
     int thirdNode = 4;
     bool useFourthSide = false;
     MeshKernel::CurvilinearGrid curvilinearGrid;
-    bool success = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
+    bool successful = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
 
     // check the values
     constexpr double tolerance = 1e-6;
@@ -95,7 +95,7 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithoutFourthSide)
     ASSERT_NEAR(322.93773596204318, curvilinearGrid.m_grid[1][1].y, tolerance);
     ASSERT_NEAR(328.12893700000001, curvilinearGrid.m_grid[1][2].y, tolerance);
 
-    ASSERT_TRUE(success);
+    ASSERT_TRUE(successful);
 }
 
 TEST(CurvilinearGridFromPolygon, ComputeGridTriangle)
@@ -122,8 +122,8 @@ TEST(CurvilinearGridFromPolygon, ComputeGridTriangle)
     int secondNode = 3;
     int thirdNode = 6;
     MeshKernel::CurvilinearGrid curvilinearGrid;
-    bool success = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
-    ASSERT_TRUE(success);
+    bool successful = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
+    ASSERT_TRUE(successful);
 
     // check the values
     constexpr double tolerance = 1e-6;
