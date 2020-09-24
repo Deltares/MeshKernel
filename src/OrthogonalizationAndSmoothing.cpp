@@ -274,7 +274,7 @@ bool MeshKernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
         const double atpf1Loc = 1.0 - atpfLoc;
         double mumat    = m_mu;
         int maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
-        for (int nn = 1, cacheIndex = m_compressedEndNodeIndex[n]; nn < maxnn; nn++, cacheIndex++)
+        for (auto nn = 1, cacheIndex = m_compressedEndNodeIndex[n]; nn < maxnn; nn++, cacheIndex++)
         {
             double wwx = 0.0;
             double wwy = 0.0;

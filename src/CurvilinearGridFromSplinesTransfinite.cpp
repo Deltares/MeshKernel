@@ -604,7 +604,7 @@ bool  MeshKernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<st
     int minSize = std::min(v[firstRow].size(), v[secondRow].size());
     minSize = std::min(minSize, m_splines->m_numSplines);
 
-    for (int i = 0; i < minSize; i++)
+    for (auto i = 0; i < minSize; i++)
     {
         std::swap(v[firstRow][i], v[secondRow][i]);
     }

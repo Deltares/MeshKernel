@@ -37,7 +37,7 @@
 
 namespace MeshKernel
 {
-    LandBoundaries::LandBoundaries() : m_numAllocatedNodes(0)
+    LandBoundaries::LandBoundaries() : m_numAllocatedNodes(0), m_numNodesLoc(0)
     {
         ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
         m_numAllocatedNodes = int(m_nodes.size());

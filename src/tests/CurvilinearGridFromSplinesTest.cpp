@@ -488,7 +488,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     firstCentralSpline.push_back({ 1.542516E+02,7.687640E+01 });
     firstCentralSpline.push_back({ 3.192526E+02,2.733784E+02 });
     firstCentralSpline.push_back({ 6.350046E+02,5.231309E+02 });
-    bool success = splines->AddSpline(firstCentralSpline, 0, firstCentralSpline.size());
+    bool success = splines->AddSpline(firstCentralSpline, 0,firstCentralSpline.size());
     ASSERT_TRUE(success);
 
     std::vector<MeshKernel::Point> secondCentralSpline;
