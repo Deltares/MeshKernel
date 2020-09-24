@@ -62,7 +62,7 @@ namespace MeshKernel
         /// <param name="start">The starting index in splines</param>
         /// <param name="size">The end index splines</param>
         /// <returns>If the method succeeded</returns>
-        bool AddSpline(const std::vector<Point>& splines, int start, int size);
+        bool AddSpline(const std::vector<Point>& splines, size_t start, size_t size);
 
         /// <summary>
         /// Second order derivative at spline corner points
