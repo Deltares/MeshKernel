@@ -44,14 +44,12 @@ namespace MeshKernel
         /// <summary>
         /// Ctor
         /// </summary>
+        /// <param name="curvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
+        /// <param name="splinesToCurvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
         /// <returns></returns>
-        CurvilinearGridFromSplines();
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <returns></returns>
-        CurvilinearGridFromSplines(std::shared_ptr<Splines> splines);
+        CurvilinearGridFromSplines( std::shared_ptr<Splines> splines,
+                                    const MeshKernelApi::CurvilinearParametersNative& curvilinearParametersNative,
+                                    const MeshKernelApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
 
         /// <summary>
         /// Computes the spline properties, such as cross splines (get_splineprops)
@@ -92,16 +90,6 @@ namespace MeshKernel
         /// <param name="curvilinearGrid"></param>
         /// <returns></returns>
         bool ComputeCurvilinearGrid(CurvilinearGrid& curvilinearGrid);
-
-        /// <summary>
-        /// Sets the parameters for the OrthogonalCurvilinearGridFromSplines algorithm
-        /// </summary>
-        /// <param name="curvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
-        /// <param name="splinesToCurvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
-        /// <returns></returns>
-        bool SetParameters(const MeshKernelApi::CurvilinearParametersNative& curvilinearParametersNative,
-                           const MeshKernelApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
-
 
         /// <summary>
         /// For the central spline, computes the spline subdivisions along the spline (make_wholegridline)

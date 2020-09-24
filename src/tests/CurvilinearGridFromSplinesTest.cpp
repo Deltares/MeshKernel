@@ -24,7 +24,22 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
     secondSpline.push_back(MeshKernel::Point{ 462.503479003906, 90.3765411376953 });
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    // construct CurvilinearGridFromSplines
+    MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
+    MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+
+    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
+    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParametersNative.AverageWidth = 500.0;
+    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
+    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    curvilinearParametersNative.MRefinement = 20;
+    curvilinearParametersNative.NRefinement = 40;
+
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    
     successful = curvilinearGridFromSplines.ComputeSplineProperties(false);
     ASSERT_TRUE(successful);
     successful = curvilinearGridFromSplines.MakeAllGridLines(true);
@@ -90,7 +105,10 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
     successful = splines->AddSpline(fourthSpline, 0, fourthSpline.size());
     ASSERT_TRUE(successful);
 
-    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    // construct CurvilinearGridFromSplines
+    MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
+    MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
     successful = curvilinearGridFromSplines.ComputeSplineProperties(false);
     ASSERT_TRUE(successful);
 
@@ -118,7 +136,21 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(successful);
 
-    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    // construct CurvilinearGridFromSplines
+    MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
+    MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+
+    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
+    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParametersNative.AverageWidth = 500.0;
+    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
+    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    curvilinearParametersNative.MRefinement = 20;
+    curvilinearParametersNative.NRefinement = 40;
+
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
     MeshKernel::CurvilinearGrid curvilinearGrid;
     successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(successful);
@@ -200,10 +232,8 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
     curvilinearParametersNative.MRefinement = 20;
     curvilinearParametersNative.NRefinement = 40;
 
-    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
-    successful = curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    ASSERT_TRUE(successful);
-    
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+
     MeshKernel::CurvilinearGrid curvilinearGrid;
     successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(successful);
@@ -286,11 +316,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     curvilinearParametersNative.NRefinement = 20;
 
     // create the algorithm
-    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
-
-    // set the parameters
-    successful = curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    ASSERT_TRUE(successful);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
 
     // compute
     MeshKernel::CurvilinearGrid curvilinearGrid;
@@ -428,11 +454,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
     curvilinearParametersNative.NRefinement = 20;
 
     // create the algorithm
-    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
-
-    // set the parameters
-    successful = curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    ASSERT_TRUE(successful);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
 
     // compute
     MeshKernel::CurvilinearGrid curvilinearGrid;
@@ -548,13 +570,8 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     curvilinearParametersNative.MRefinement = 20;
     curvilinearParametersNative.NRefinement = 40;
 
-
     // create the algorithm
-    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
-
-    // set the parameters
-    successful = curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    ASSERT_TRUE(successful);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
 
     // compute
     MeshKernel::CurvilinearGrid curvilinearGrid;
@@ -639,13 +656,10 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     curvilinearParametersNative.NRefinement = 20;
 
     // create the algorithm
-    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
-
-    // set the parameters
-    curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    MeshKernel::CurvilinearGrid curvilinearGrid;
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
 
     // compute
+    MeshKernel::CurvilinearGrid curvilinearGrid;
     successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(successful);
 
@@ -728,13 +742,11 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     curvilinearParametersNative.NRefinement = 3;
 
     // create the algorithm
-    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines,curvilinearParametersNative, splinesToCurvilinearParametersNative);
 
-    // set the parameters
-    curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    MeshKernel::CurvilinearGrid curvilinearGrid;
 
     // compute
+    MeshKernel::CurvilinearGrid curvilinearGrid;
     successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
     ASSERT_TRUE(successful);
 
@@ -827,11 +839,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     curvilinearParametersNative.NRefinement = 3;
 
     // create the algorithm
-    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines);
-
-    // set the parameters
-    successful = curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    ASSERT_TRUE(successful);
+    MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
 
 
     // compute
