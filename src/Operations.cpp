@@ -90,7 +90,11 @@ namespace MeshKernel
         return index;
     }
 
-    static int FindIndexes(const std::vector<Point>& vec, const int start, const int end, const double& separator, std::vector<std::vector<int>>& indexes)
+    static int FindIndexes( const std::vector<Point>& vec, 
+                            const size_t start, 
+                            const size_t end,
+                            const double& separator, 
+                            std::vector<std::vector<int>>& indexes )
     {
         // set an invalid index
         for (int n = 0; n < indexes.size(); n++)
