@@ -1128,8 +1128,8 @@ bool MeshKernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples( int numP
 double MeshKernel::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod, Point centerOfMass)
 {
     double refinementValue = 0.0;
-    bool success = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh->m_projection, m_samplesRTree, averagingMethod, refinementValue);
-    if (!success)
+    bool successful = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh->m_projection, m_samplesRTree, averagingMethod, refinementValue);
+    if (!successful)
     {
         return doubleMissingValue;
     }

@@ -42,17 +42,12 @@ MeshKernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTra
 {
 }
 
-MeshKernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines) : m_splines(splines)
+MeshKernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, 
+                                                                                         MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative): m_splines(splines), 
+                                                                                                                                                                  m_numN(curvilinearParametersNative.NRefinement),
+                                                                                                                                                                  m_numM(curvilinearParametersNative.MRefinement)
 {
-};
-
-bool MeshKernel::CurvilinearGridFromSplinesTransfinite::Set(MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative)
-{
-    m_numN = curvilinearParametersNative.NRefinement;
-    m_numM = curvilinearParametersNative.MRefinement;
-
-    return true;
-};
+}
 
 bool MeshKernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid& curvilinearGrid)
 {

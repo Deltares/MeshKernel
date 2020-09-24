@@ -263,22 +263,22 @@ namespace MeshKernel
             isOnePolygonClosed = true;
             double localPolygonArea = 0.0;
             Point centerOfMass;
-            bool success = FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
-            if(!success)
+            bool successful = FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
+            if(!successful)
             {
                 return false;
             }
 
             double perimeter;
-            success = PerimeterClosedPolygon(localPolygon, numLocalPoints, perimeter);
-            if (!success)
+            successful = PerimeterClosedPolygon(localPolygon, numLocalPoints, perimeter);
+            if (!successful)
             {
                 return false;
             }
 
             double maximumEdgeLength;
-            success = MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
-            if (!success)
+            successful = MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
+            if (!successful)
             {
                 return false;
             }

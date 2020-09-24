@@ -109,8 +109,8 @@ namespace MeshKernelApi
         }
 
         std::vector<MeshKernel::Point> splineCornerPoints;
-        bool success = ConvertGeometryListNativeToPointVector(geometryListIn, splineCornerPoints);
-        if (!success)
+        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, splineCornerPoints);
+        if (!successful)
         {
             return false;
         }
@@ -1353,17 +1353,21 @@ namespace MeshKernelApi
         }
 
         // Create algorithm and set the splines
-        MeshKernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(spline);
-        curvilinearGridFromSplinesTransfinite.Set(curvilinearParametersNative);
+        MeshKernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(spline, curvilinearParametersNative);
+
         
         // Compute the curvilinear grid
         MeshKernel::CurvilinearGrid curvilinearGrid;
-        bool success = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
+        successful = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
+        if (!successful)
+        {
+            return -1;
+        }
 
         // Transform and set mesh pointer
         *meshInstances[meshKernelId] += MeshKernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
 
-        return successful ? 0 : 1;
+        return  0;
     }
 
     MKERNEL_API int mkernel_curvilinear_from_polygon( int meshKernelId,
