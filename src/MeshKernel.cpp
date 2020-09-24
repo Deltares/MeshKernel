@@ -49,7 +49,7 @@ static std::vector<std::shared_ptr<MeshKernel::Mesh>> meshInstances;
 // For supporting interactivity for orthogonalization and orthogonal curvilinear grid from splines, 
 // we need to save some instances
 static std::map<int, MeshKernel::OrthogonalizationAndSmoothing> orthogonalizationInstances;
-static std::map<int, MeshKernel::CurvilinearGridFromSplines> splineInstances;
+static std::map<int, std::shared_ptr<MeshKernel::CurvilinearGridFromSplines>> curvilinearGridFromSplinesInstances;
 
 namespace MeshKernelApi
 {
@@ -1207,8 +1207,8 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline);
-        curvilinearGridFromSplines.SetParameters(curvilinearParameters, splineToCurvilinearParameters);
+        MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splineToCurvilinearParameters);
+
         MeshKernel::CurvilinearGrid curvilinearGrid;
         curvilinearGridFromSplines.Compute(curvilinearGrid);
         *meshInstances[meshKernelId] += MeshKernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
@@ -1230,17 +1230,11 @@ namespace MeshKernelApi
         {
             return -1;
         }
-        MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline);
+        auto curvilinearGridFromSplines =std::make_shared<MeshKernel::CurvilinearGridFromSplines>(spline, curvilinearParametersNative, splinesToCurvilinearParametersNative);
 
-        successful = curvilinearGridFromSplines.SetParameters(curvilinearParametersNative, splinesToCurvilinearParametersNative);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        splineInstances.insert({ meshKernelId, curvilinearGridFromSplines });
+        curvilinearGridFromSplinesInstances.insert({ meshKernelId, curvilinearGridFromSplines });
  
-        successful = splineInstances[meshKernelId].Initialize();
+        successful = curvilinearGridFromSplinesInstances[meshKernelId]->Initialize();
         if (!successful)
         {
             return -1;
@@ -1255,7 +1249,7 @@ namespace MeshKernelApi
             return 0;
         }
 
-        const bool successful = splineInstances[meshKernelId].Iterate(layer);
+        const bool successful = curvilinearGridFromSplinesInstances[meshKernelId]->Iterate(layer);
         return successful ? 0 : 1;
     }
 
@@ -1268,7 +1262,7 @@ namespace MeshKernelApi
         }
 
         MeshKernel::CurvilinearGrid curvilinearGrid;
-        const bool successful = splineInstances[meshKernelId].ComputeCurvilinearGrid(curvilinearGrid);
+        const bool successful = curvilinearGridFromSplinesInstances[meshKernelId]->ComputeCurvilinearGrid(curvilinearGrid);
 
         *meshInstances[meshKernelId] += MeshKernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
 
@@ -1281,7 +1275,7 @@ namespace MeshKernelApi
         {
             return 0;
         }
-        const auto returnValue = splineInstances.erase(meshKernelId);
+        const auto returnValue = curvilinearGridFromSplinesInstances.erase(meshKernelId);
         return returnValue == 1 ? 0 : 1;
     }
 
