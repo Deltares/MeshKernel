@@ -47,18 +47,13 @@ namespace MeshKernel
         /// <returns></returns>
         CurvilinearGridFromSplinesTransfinite();
 
-        /// <summary>
-        /// Ctor with splines
-        /// </summary>
-        /// <returns></returns>
-        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines);
 
         /// <summary>
-        /// Set the algorithm parameters
+        /// Ctor with splines and parameters
         /// </summary>
-        /// <param name="curvilinearParametersNative"></param>
         /// <returns></returns>
-        bool Set(MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative);
+        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative);
+
 
         /// <summary>
         /// Computes the adimensional intersections between splines.

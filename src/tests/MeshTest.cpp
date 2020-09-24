@@ -217,8 +217,8 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
 
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;
-    bool success = polygons.CreatePointsInPolygons(generatedPoints);
-    ASSERT_TRUE(success);
+    bool successful = polygons.CreatePointsInPolygons(generatedPoints);
+    ASSERT_TRUE(successful);
 
     MeshKernel::Mesh mesh(generatedPoints[0], polygons, MeshKernel::Projections::cartesian);
 
@@ -264,8 +264,8 @@ TEST(Mesh, TriangulateSamples)
 
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;
-    bool success = polygons.CreatePointsInPolygons(generatedPoints);
-    ASSERT_TRUE(success);
+    bool successful = polygons.CreatePointsInPolygons(generatedPoints);
+    ASSERT_TRUE(successful);
 
     MeshKernel::Mesh mesh(generatedPoints[0], polygons, MeshKernel::Projections::cartesian);
 }
