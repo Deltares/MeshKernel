@@ -219,7 +219,7 @@ namespace MeshKernel
         /// <returns></returns>
         bool ComputeGrowFactor(double totalGridHeight,
                                double firstGridLayerHeight,
-                               double numberOfGridLayers,
+                               int numberOfGridLayers,
                                double& result);
 
         /// <summary>

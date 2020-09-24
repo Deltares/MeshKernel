@@ -369,13 +369,13 @@ bool MeshKernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
         std::vector<std::vector<Point>> result;
         bool successful = InterpolateTransfinite(sideOne,
-            sideTwo,
-            sideThree,
-            sideFour,
-            m_polygon->m_projection,
-            numM[t],
-            numN[t],
-            result);
+                                                 sideTwo,
+                                                 sideThree,
+                                                 sideFour,
+                                                 m_polygon->m_projection,
+                                                 numM[t],
+                                                 numN[t],
+                                                 result);
 
         if(!successful)
         {

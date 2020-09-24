@@ -46,11 +46,11 @@ MeshKernel::Splines::Splines(Projections projection) : m_projection(projection)
 };
 
 /// add a new spline, return the index
-bool MeshKernel::Splines::AddSpline(const std::vector<Point>& splines, int start, int size)
+bool MeshKernel::Splines::AddSpline(const std::vector<Point>& splines, size_t start, size_t size)
 {
     ResizeVectorIfNeededWithMinimumSize(m_numSplines + 1, m_splineNodes, m_allocationSize, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }));
 
-    m_numAllocatedSplines = m_splineNodes.size();
+    m_numAllocatedSplines = int(m_splineNodes.size());
     m_numAllocatedSplineNodes.resize(m_numAllocatedSplines, 10);
 
     m_numSplineNodes.resize(m_numAllocatedSplines, 0);
@@ -91,7 +91,7 @@ bool MeshKernel::Splines::AddPointInExistingSpline(int splineIndex, const Point&
         return false;
     }
     ResizeVectorIfNeededWithMinimumSize(m_numSplineNodes[splineIndex] + 1, m_splineNodes[splineIndex], m_allocationSize, { doubleMissingValue, doubleMissingValue });
-    m_numAllocatedSplineNodes[splineIndex] = m_splineNodes[splineIndex].size();
+    m_numAllocatedSplineNodes[splineIndex] = int(m_splineNodes[splineIndex].size());
 
     m_splineNodes[splineIndex][m_numSplineNodes[splineIndex]] = point;
     m_numSplineNodes[splineIndex]++;
@@ -288,7 +288,7 @@ double MeshKernel::Splines::GetSplineLength(int index,
                                           double assignedDelta)
 {
     double delta = assignedDelta;
-    int numPoints = endIndex / delta + 1;
+    int numPoints = int(endIndex / delta) + 1;
     if (delta < 0.0)
     {
         delta = 1.0 / numSamples;

@@ -959,7 +959,6 @@ bool MeshKernel::Smoother::NodeAdministration(const int currentNode,
                 faceNodeIndex -= numFaceNodes;
             }
 
-
             int node = m_mesh->m_facesNodes[faceIndex][faceNodeIndex];
 
             bool isNewNode = true;

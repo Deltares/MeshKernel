@@ -124,7 +124,7 @@ namespace MeshKernel
                 {
                     return false;
                 }
-                m_points[position] = {Point2D{ doubleMissingValue,doubleMissingValue }, -1};
+                m_points[position] = {Point2D{ doubleMissingValue,doubleMissingValue }, std::numeric_limits<size_t>::max()};
                 return true;
             }
 
@@ -158,7 +158,7 @@ namespace MeshKernel
                 return m_queryCache.size();
             }
 
-            int GetQuerySampleIndex(int index) const
+            auto GetQuerySampleIndex(int index) const
             {
                 return m_queryIndexses[index];
             }
@@ -167,7 +167,7 @@ namespace MeshKernel
 
             Projections m_projection;
             RTree2D m_rtree2D;
-            std::vector<std::pair<Point2D, int>> m_points;
+            std::vector<std::pair<Point2D, size_t>> m_points;
             std::vector<value2D> m_queryCache;
             std::vector<int> m_queryIndexses;
             int m_querySize = 0;

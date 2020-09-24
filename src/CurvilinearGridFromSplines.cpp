@@ -47,7 +47,7 @@ MeshKernel::CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_p
 };
 
 bool MeshKernel::CurvilinearGridFromSplines::SetParameters(const MeshKernelApi::CurvilinearParametersNative& curvilinearParametersNative,
-                                                         const MeshKernelApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
+                                                           const MeshKernelApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
 {
     m_aspectRatio = splinesToCurvilinearParametersNative.AspectRatio;
     m_aspectRatioGrowFactor = splinesToCurvilinearParametersNative.AspectRatioGrowFactor;
@@ -114,7 +114,7 @@ bool MeshKernel::CurvilinearGridFromSplines::AllocateSplinesProperties()
         m_numCrossSplineLeftHeights[s].resize(numSplines);
         std::fill(m_numCrossSplineLeftHeights[s].begin(), m_numCrossSplineLeftHeights[s].end(), 0);
 
-        m_numCrossSplineRightHeights[s].resize(numSplines, doubleMissingValue);
+        m_numCrossSplineRightHeights[s].resize(numSplines, intMissingValue);
         std::fill(m_numCrossSplineRightHeights[s].begin(), m_numCrossSplineRightHeights[s].end(), 0);
 
         m_nfacL[s].resize(numSplines);
@@ -168,11 +168,11 @@ bool MeshKernel::CurvilinearGridFromSplines::Compute(CurvilinearGrid& curvilinea
 bool MeshKernel::CurvilinearGridFromSplines::RemoveSkinnyTriangles()
 {
     int numMaxIterations = 10;
-    int numN = m_gridPoints.size() - 2;
+    auto numN = m_gridPoints.size() - 2;
     const double squaredDistanceTolerance = 1e-4;
     const double cosineTolerance = 1e-2;
     const double maxCosine = 0.93969;
-    for (int j = numN - 1; j >= 1; --j)
+    for (auto j = numN - 1; j >= 1; --j)
     {
         for (int iter = 0; iter < numMaxIterations; ++iter)
         {
@@ -605,7 +605,7 @@ bool MeshKernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
         }
 
         // increment points
-        int oldMSize = curvilinearMeshPoints.size();
+        int oldMSize = int(curvilinearMeshPoints.size());
         curvilinearMeshPoints.resize(endGridlineIndex + 1);
         int NSize = std::max(int(curvilinearMeshPoints[0].size()), maxN + maxNOther + 1);
         for (int i = 0; i < curvilinearMeshPoints.size(); i++)
@@ -637,7 +637,7 @@ bool MeshKernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
         startGridLine = endGridlineIndex + 2;
     }
 
-    curvilinearGrid.Set(curvilinearMeshPoints.size(), curvilinearMeshPoints[0].size());
+    curvilinearGrid.Set(int(curvilinearMeshPoints.size()), int(curvilinearMeshPoints[0].size()));
     curvilinearGrid.Set(curvilinearMeshPoints);
 
     return true;
@@ -685,7 +685,7 @@ bool MeshKernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
         }
     }
 
-    int numGridPoints = m_gridPoints.size() * m_gridPoints[0].size();
+    const auto numGridPoints = m_gridPoints.size() * m_gridPoints[0].size();
     std::vector<std::vector<int>> gridPointsIndexses(numGridPoints, std::vector<int>(2, -1));
     std::vector<Point> frontGridPoints(numGridPoints);
     int numFrontPoints;
@@ -962,11 +962,11 @@ bool MeshKernel::CurvilinearGridFromSplines::CopyVelocitiesToFront(const int lay
 
 
 bool MeshKernel::CurvilinearGridFromSplines::FindFront( std::vector<std::vector<int>>& gridPointsIndexses,
-                                   std::vector<Point>& frontGridPoints,
-                                   int& numFrontPoints)
+                                                        std::vector<Point>& frontGridPoints,
+                                                        int& numFrontPoints )
 {
 
-    std::vector<int> frontPosition(m_gridPoints[0].size() - 2, m_gridPoints.size());
+    std::vector<int> frontPosition(m_gridPoints[0].size() - 2, int(m_gridPoints.size()));
     for (int m = 0; m < frontPosition.size(); ++m)
     {
         for (int n = 0; n < m_gridPoints.size(); ++n)
@@ -1055,7 +1055,7 @@ bool MeshKernel::CurvilinearGridFromSplines::FindFront( std::vector<std::vector<
     }
 
     // add last j-edge, check for circular connectivity
-    int lastPoint = m_gridPoints[0].size() - 2;
+    int lastPoint = int(m_gridPoints[0].size()) - 2;
     GetNeighbours(m_gridPoints[0], lastPoint, currentLeftIndex, currentRightIndex);
     if (currentRightIndex == m_gridPoints[0].size() - 2)
     {
@@ -1165,15 +1165,15 @@ bool MeshKernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints
 }
 
 bool MeshKernel::CurvilinearGridFromSplines::GetNeighbours( const std::vector<Point>& gridPoints,
-                                                          int index,
-                                                          int& currentLeftIndex,
-                                                          int& currentRightIndex)
+                                                            int index,
+                                                            int& currentLeftIndex,
+                                                            int& currentRightIndex)
 {
     bool circularConnection = false;
     currentLeftIndex = index;
     currentRightIndex = index;
     int start = 0;
-    int end = gridPoints.size() - 1;
+    int end = int(gridPoints.size()) - 1;
 
     // left
     while (ComputeSquaredDistance(gridPoints[currentLeftIndex], gridPoints[index], m_splines->m_projection) < m_onTopOfEachOtherSquaredTolerance)
@@ -1356,7 +1356,7 @@ bool MeshKernel::CurvilinearGridFromSplines::ComputeEdgeVelocities( std::vector<
 bool MeshKernel::CurvilinearGridFromSplines::ComputeGrowFactor(
     double totalGridHeight,
     double firstGridLayerHeight,
-    double numberOfGridLayers,
+    int numberOfGridLayers,
     double& result)
 {
     // eheight m_gridHeights
@@ -1417,18 +1417,17 @@ double MeshKernel::CurvilinearGridFromSplines::ComputeTotalExponentialHeight(dou
     return height;
 }
 
-///comp_nfac
-///compute the number of grid layers for a given grow factor, first grid layer height and total grid height
+
 int MeshKernel::CurvilinearGridFromSplines::ComputeNumberExponentialIntervals(const double hhMaxRatio)
 {
     int numIntervals = 0;
     if (m_aspectRatioGrowFactor - 1.0 > 1e-8)
     {
-        numIntervals = std::floor(std::log((m_aspectRatioGrowFactor - 1.0) * hhMaxRatio + 1.0) / log(m_aspectRatioGrowFactor));
+        numIntervals = int(std::floor(std::log((m_aspectRatioGrowFactor - 1.0) * hhMaxRatio + 1.0) / log(m_aspectRatioGrowFactor)));
     }
     else
     {
-        numIntervals = std::floor(0.999 + hhMaxRatio);
+        numIntervals = int(std::floor(0.999 + hhMaxRatio));
     }
     return numIntervals;
 }
@@ -1450,7 +1449,7 @@ bool MeshKernel::CurvilinearGridFromSplines::ComputeVelocitiesSubIntervals( cons
     {
         double maxHeight = *std::max_element(m_gridHeights[0].begin() + startGridLineIndex, m_gridHeights[0].begin() + endGridLineIndex);
 
-        int numNUniformPart = std::floor(maxHeight / firstHeight + 0.99999);
+        int numNUniformPart = int(std::floor(maxHeight / firstHeight + 0.99999));
         numNUniformPart = std::min(numNUniformPart, m_maxNUniformPart);
 
         for (int i = startGridLineIndex; i < endGridLineIndex; ++i)
@@ -1511,10 +1510,10 @@ bool MeshKernel::CurvilinearGridFromSplines::ComputeGridHeights()
     std::vector<std::vector<double>> heightsRight(m_maxNumCenterSplineHeights, std::vector<double>(m_maxNumM, 0.0));
     std::vector<double> edgesCenterPoints(m_numM, 0.0);
     std::vector<double> crossingSplinesDimensionalCoordinates(numSplines, 0.0);
-    std::vector<int> numHeightsLeft(numSplines, 0.0);
-    std::vector<int> numHeightsRight(numSplines, 0.0);
+    std::vector<int> numHeightsLeft(numSplines, 0);
+    std::vector<int> numHeightsRight(numSplines, 0);
     std::vector<double> localSplineDerivatives(numSplines, 0.0);
-    std::vector<int> localValidSplineIndexes(numSplines, 0.0);
+    std::vector<int> localValidSplineIndexes(numSplines, 0);
 
     for (int s = 0; s < numSplines; s++)
     {
@@ -1851,7 +1850,7 @@ bool MeshKernel::CurvilinearGridFromSplines::MakeGridLine( int splineIndex,
                                                          int& numM )
 {
     // first estimation of nodes along m
-    numM = 1 + std::floor(m_splines->m_splinesLength[splineIndex] / m_averageMeshWidth);
+    numM = 1 + int(std::floor(m_splines->m_splinesLength[splineIndex] / m_averageMeshWidth));
     numM = std::min(numM, m_maxNumM);
 
     double endSplineAdimensionalCoordinate = m_splines->m_numSplineNodes[splineIndex] - 1;
