@@ -208,24 +208,39 @@ bool MeshKernel::Splines::GetSplinesIntersection(int first,
         firstRatioIterations = firstRight - firstLeft;
         secondRatioIterations = secondRight - secondLeft;
 
-        Point firstLeftSplinePoint;
-        InterpolateSplinePoint( m_splineNodes[first], 
-                     m_splineDerivatives[first], 
-                     firstLeft, 
-                     firstLeftSplinePoint);
-        Point firstRightSplinePoint;
-        InterpolateSplinePoint(m_splineNodes[first], m_splineDerivatives[first], firstRight, firstRightSplinePoint);
+        Point firstLeftSplinePoint{ doubleMissingValue, doubleMissingValue };
+        bool successful = InterpolateSplinePoint( m_splineNodes[first], m_splineDerivatives[first],  firstLeft, firstLeftSplinePoint);
+        if (!successful) 
+        {
+            return false;
+        }
 
-        Point secondLeftSplinePoint;
-        InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondLeft, secondLeftSplinePoint);
-        Point secondRightSplinePoint;
-        InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondRight, secondRightSplinePoint);
+        Point firstRightSplinePoint{ doubleMissingValue, doubleMissingValue };
+        successful = InterpolateSplinePoint(m_splineNodes[first], m_splineDerivatives[first], firstRight, firstRightSplinePoint);
+        if (!successful)
+        {
+            return false;
+        }
+
+        Point secondLeftSplinePoint{ doubleMissingValue, doubleMissingValue };
+        successful = InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondLeft, secondLeftSplinePoint);
+        if (!successful)
+        {
+            return false;
+        }
+
+        Point secondRightSplinePoint{ doubleMissingValue, doubleMissingValue };
+        successful = InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondRight, secondRightSplinePoint);
+        if (!successful)
+        {
+            return false;
+        }
 
         Point oldIntersection = closestIntersection;
 
         double crossProduct;
-        double firstRatio;
-        double secondRatio;
+        double firstRatio = doubleMissingValue;
+        double secondRatio = doubleMissingValue;
         bool areCrossing = AreLinesCrossing( firstLeftSplinePoint, 
                                              firstRightSplinePoint,
                                              secondLeftSplinePoint, 
