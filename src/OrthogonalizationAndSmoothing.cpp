@@ -479,43 +479,48 @@ bool MeshKernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
 bool MeshKernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeIndex, double& dx0, double& dy0, double* weightsSum)
 {
     int numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
-    for (int nn = 1, cacheIndex = m_compressedEndNodeIndex[nodeIndex]; nn < numConnectedNodes; nn++, cacheIndex++)
+    auto cacheIndex = m_compressedEndNodeIndex[nodeIndex];
+    for (int nn = 1; nn < numConnectedNodes; nn++)
     {
         const auto wwx = m_compressedWeightX[cacheIndex];
         const auto wwy = m_compressedWeightY[cacheIndex];
         const auto currentNode = m_compressedNodesNodes[cacheIndex];
+        cacheIndex++;
 
-        double wwxTransformed;
-        double wwyTransformed;
         if (m_mesh->m_projection == Projections::cartesian)
         {
-            wwxTransformed = wwx;
-            wwyTransformed = wwy;
+            const double wwxTransformed = wwx;
+            const double wwyTransformed = wwy;
             dx0 = dx0 + wwxTransformed * (m_mesh->m_nodes[currentNode].x - m_mesh->m_nodes[nodeIndex].x);
             dy0 = dy0 + wwyTransformed * (m_mesh->m_nodes[currentNode].y - m_mesh->m_nodes[nodeIndex].y);
+            weightsSum[0] += wwxTransformed;
+            weightsSum[1] += wwyTransformed;
         }
 
         if (m_mesh->m_projection == Projections::spherical)
         {
-            wwxTransformed = wwx * earth_radius * degrad_hp *
+            const double wwxTransformed = wwx * earth_radius * degrad_hp *
                 std::cos(0.5 * (m_mesh->m_nodes[nodeIndex].y + m_mesh->m_nodes[currentNode].y) * degrad_hp);
-            wwyTransformed = wwy * earth_radius * degrad_hp;
+            const double wwyTransformed = wwy * earth_radius * degrad_hp;
 
             dx0 = dx0 + wwxTransformed * (m_mesh->m_nodes[currentNode].x - m_mesh->m_nodes[nodeIndex].x);
             dy0 = dy0 + wwyTransformed * (m_mesh->m_nodes[currentNode].y - m_mesh->m_nodes[nodeIndex].y);
+            weightsSum[0] += wwxTransformed;
+            weightsSum[1] += wwyTransformed;
 
         }
         if (m_mesh->m_projection == Projections::sphericalAccurate)
         {
-            wwxTransformed = wwx * earth_radius * degrad_hp;
-            wwyTransformed = wwy * earth_radius * degrad_hp;
+            const double wwxTransformed = wwx * earth_radius * degrad_hp;
+            const double wwyTransformed = wwy * earth_radius * degrad_hp;
 
             dx0 = dx0 + wwxTransformed * m_localCoordinates[m_localCoordinatesIndexes[nodeIndex] + currentNode - 1].x;
             dy0 = dy0 + wwyTransformed * m_localCoordinates[m_localCoordinatesIndexes[nodeIndex] + currentNode - 1].y;
+            weightsSum[0] += wwxTransformed;
+            weightsSum[1] += wwyTransformed;
         }
 
-        weightsSum[0] += wwxTransformed;
-        weightsSum[1] += wwyTransformed;
+
     }
 
     return true;
