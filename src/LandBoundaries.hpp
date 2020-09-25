@@ -43,19 +43,13 @@ namespace MeshKernel
         /// <summary>
         /// Default Ctor
         /// </summary>
-        /// <returns></returns>
-        LandBoundaries();
-
-        /// <summary>
-        /// Set the landboundaries parameters (admin_landboundary_segments)
-        /// </summary>
         /// <param name="landBoundary"></param>
         /// <param name="mesh"></param>
         /// <param name="polygons"></param>
         /// <returns></returns>
-        bool Set(const std::vector<Point>& landBoundary, 
-                 std::shared_ptr<Mesh> mesh, 
-                 std::shared_ptr<Polygons> polygons);
+        LandBoundaries(const std::vector<Point>& landBoundary,
+                       std::shared_ptr<Mesh> mesh,
+                       std::shared_ptr<Polygons> polygons);
 
         /// <summary>
         /// The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary (admin_landboundary_segments)
@@ -278,7 +272,6 @@ namespace MeshKernel
         std::vector<Point> m_nodes;                       // XLAN, YLAN, ZLAN
         int m_numAllocatedNodes;                          // MAXLAN
         int m_numNode;                                    // actual MXLAN
-        int m_numNodesLoc;                                // MXLAN_loc
 
         int m_numSegments = 0;                            // Nlanseg, number of land boundary segments 
         std::vector<std::vector<int>> m_segmentIndices;   // lanseg_startend

@@ -14,12 +14,11 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
     
     //set landboundaries
     auto polygon =std::make_shared<MeshKernel::Polygons>();
-    std::vector<MeshKernel::Point> landBoundary{  {-1.369282,21.249086},
-                                                {20.885406,21.539995},
-                                                {MeshKernel::doubleMissingValue,MeshKernel::doubleMissingValue} };
+    std::vector<MeshKernel::Point> landBoundary{  {-1.369282, 21.249086},
+                                                  { 20.885406, 21.539995},
+                                                  {MeshKernel::doubleMissingValue,MeshKernel::doubleMissingValue} };
 
-    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     //execute flipedges
     MeshKernel::FlipEdges flipEdges(mesh, landBoundaries, true, true);
@@ -40,8 +39,7 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     auto polygon =std::make_shared<MeshKernel::Polygons>();
 
     std::vector<MeshKernel::Point> landBoundary;
-    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     //execute flipedges
     MeshKernel::FlipEdges flipEdges(mesh, landBoundaries, true, false);

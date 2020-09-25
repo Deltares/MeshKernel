@@ -37,28 +37,18 @@
 
 namespace MeshKernel
 {
-    LandBoundaries::LandBoundaries() : m_numAllocatedNodes(0), m_numNodesLoc(0)
+    LandBoundaries::LandBoundaries(const std::vector<Point>& landBoundary,
+                                   std::shared_ptr<Mesh> mesh,
+                                   std::shared_ptr<Polygons> polygons) : 
+        m_mesh(mesh), 
+        m_polygons(polygons)
     {
         ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
         m_numAllocatedNodes = int(m_nodes.size());
         m_numNode = 0;
         m_polygonNodesCache.resize(maximumNumberOfNodesPerFace);
-    }
 
-    bool LandBoundaries::Set( const std::vector<Point>& landBoundary, 
-                              std::shared_ptr<Mesh> mesh, 
-                              std::shared_ptr<Polygons> polygons)
-    {
-        // assign internal pointer
-        m_mesh = mesh;
-        m_polygons = polygons;
-
-        if(landBoundary.empty())
-        {
-            return true;
-        }
-
-        bool successful = ResizeVectorIfNeededWithMinimumSize(m_numNode + int(landBoundary.size()), m_nodes, m_allocationSize,{ doubleMissingValue,doubleMissingValue });
+        bool successful = ResizeVectorIfNeededWithMinimumSize(m_numNode + int(landBoundary.size()), m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
         m_numAllocatedNodes = int(m_nodes.size());
 
         for (int i = 0; i < landBoundary.size(); i++)
@@ -67,9 +57,7 @@ namespace MeshKernel
             m_numNode++;
         }
 
-        return true;
-    };
-
+    }
 
     bool LandBoundaries::Administrate()
     {

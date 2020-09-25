@@ -11,7 +11,7 @@ TEST(LandBoundaries, OneLandBoundary)
     // Prepare
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
-    auto landboundaries =std::make_shared<MeshKernel::LandBoundaries>();
+
     std::vector<MeshKernel::Point> landBoundaryPolygon
     {
         { 222.621918, 382.651917 },
@@ -23,7 +23,7 @@ TEST(LandBoundaries, OneLandBoundary)
     auto polygons =std::make_shared<MeshKernel::Polygons>();
 
     // Execute
-    landboundaries->Set(landBoundaryPolygon, mesh, polygons);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
     landboundaries->FindNearestMeshBoundary(2);
 
     // Checks
@@ -44,7 +44,6 @@ TEST(LandBoundaries, TwoLandBoundaries)
     // Prepare
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
-    auto landboundaries =std::make_shared<MeshKernel::LandBoundaries>();
     std::vector<MeshKernel::Point> landBoundaryPolygon
     {
         { 222.621918, 382.651917 },
@@ -62,7 +61,7 @@ TEST(LandBoundaries, TwoLandBoundaries)
     auto polygons =std::make_shared<MeshKernel::Polygons>();
 
     // Execute
-    landboundaries->Set(landBoundaryPolygon, mesh, polygons);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
     landboundaries->FindNearestMeshBoundary(2);
 
     // Checks
@@ -83,8 +82,6 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
     // Prepare
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
-
-    auto landboundaries =std::make_shared<MeshKernel::LandBoundaries>();
     std::vector<MeshKernel::Point> landBoundaryPolygon
     {
         { 221.418243, 315.848755 },
@@ -97,7 +94,7 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
     auto polygons =std::make_shared<MeshKernel::Polygons>();
 
     // Execute
-    landboundaries->Set(landBoundaryPolygon, mesh, polygons);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
     landboundaries->FindNearestMeshBoundary(2);
 
     // Checks
@@ -118,7 +115,6 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
     // Prepare
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
-    auto landboundaries =std::make_shared<MeshKernel::LandBoundaries>();
     std::vector<MeshKernel::Point> landBoundaryPolygon
     {
         { 235.561218, 290.571899 },
@@ -135,7 +131,7 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
     auto polygons =std::make_shared<MeshKernel::Polygons>();
 
     // Execute
-    landboundaries->Set(landBoundaryPolygon, mesh,polygons);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
     landboundaries->FindNearestMeshBoundary(2);
 
     // Checks

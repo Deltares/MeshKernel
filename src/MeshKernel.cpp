@@ -326,8 +326,7 @@ namespace MeshKernelApi
 
         auto orthogonalizer = std::make_shared<MeshKernel::Orthogonalizer>(meshInstances[meshKernelId]);
         auto smoother = std::make_shared<MeshKernel::Smoother>(meshInstances[meshKernelId]);
-        auto landBoundary = std::make_shared < MeshKernel::LandBoundaries>();
-        landBoundary->Set(landBoundaries, meshInstances[meshKernelId], polygon);
+        auto landBoundary = std::make_shared < MeshKernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
 
         MeshKernel::OrthogonalizationAndSmoothing ortogonalization(meshInstances[meshKernelId],
                                                                    smoother,
@@ -390,8 +389,7 @@ namespace MeshKernelApi
         auto smoother = std::make_shared<MeshKernel::Smoother>(meshInstances[meshKernelId]);
         auto polygon = std::make_shared<MeshKernel::Polygons>();
         polygon->Set(nodes, meshInstances[meshKernelId]->m_projection);
-        auto landBoundary = std::make_shared<MeshKernel::LandBoundaries>();
-        landBoundary->Set(landBoundaries, meshInstances[meshKernelId], polygon);
+        auto landBoundary = std::make_shared<MeshKernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
 
         auto orthogonalizationInstance = std::make_shared<MeshKernel::OrthogonalizationAndSmoothing>( meshInstances[meshKernelId],
                                                                                                       smoother,
@@ -1325,17 +1323,20 @@ namespace MeshKernelApi
     }
 
     MKERNEL_API int mkernel_flip_edges(int meshKernelId, 
-                                     int isTriangulationRequired, 
-                                     int isAccountingForLandBoundariesRequired, 
-                                     int projectToLandBoundaryRequired)
+                                       int isTriangulationRequired, 
+                                       int isAccountingForLandBoundariesRequired, 
+                                       int projectToLandBoundaryRequired)
     {
         if (meshKernelId >= meshInstances.size())
         {
             return -1;
         }
 
+        //set landboundaries
+        auto polygon = std::make_shared<MeshKernel::Polygons>();
+
         std::vector<MeshKernel::Point> landBoundary;
-        auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
+        auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, meshInstances[meshKernelId], polygon);
 
         bool triangulateFaces = isTriangulationRequired == 0 ? false : true;
         bool projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
