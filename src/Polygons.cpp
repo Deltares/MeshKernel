@@ -530,16 +530,16 @@ namespace MeshKernel
         }
         
         std::vector<Point> normalVectors(sizenewPolygon);
-        double dxNormalPreviousEdge;
-        double dyNormalPreviuosEdge;
+        double dxNormalPreviousEdge = 0.0;
+        double dyNormalPreviuosEdge = 0.0;
+        double dxNormal = 0.0;
+        double dyNormal = 0.0;
         for (int n = 0; n < GetNumNodes(); n++)
         {
-            double dxNormal;
-            double dyNormal;
             if (n < GetNumNodes() - 1)
             {
-                auto dx = GetDx(m_nodes[n], m_nodes[n + 1], m_projection);
-                auto dy = GetDy(m_nodes[n], m_nodes[n + 1], m_projection);
+                auto dx = GetDx(m_nodes[n], m_nodes[n+1], m_projection);
+                auto dy = GetDy(m_nodes[n], m_nodes[n+1], m_projection);
                 auto distance = std::sqrt(dx*dx + dy*dy);
                 dxNormal = -dy / distance;
                 dyNormal = dx / distance;
