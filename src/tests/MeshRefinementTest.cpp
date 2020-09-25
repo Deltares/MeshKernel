@@ -621,6 +621,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     sampleRefineParametersNative.MinimumCellSize = 1.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
+    sampleRefineParametersNative.RefinementType = 3;
 
     MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
