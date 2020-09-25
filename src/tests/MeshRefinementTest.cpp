@@ -658,7 +658,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
-
+    sampleRefineParametersNative.RefinementType = 3;
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     ASSERT_EQ(60, mesh->GetNumEdges());

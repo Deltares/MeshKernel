@@ -538,8 +538,13 @@ namespace MeshKernelApi
                 {
 
                     double pointAdimensionalCoordinate = n + double(p)/ double(number_of_points_between_vertices);
-                    MeshKernel::Point pointCoordinate;
-                    InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+                    MeshKernel::Point pointCoordinate{MeshKernel::doubleMissingValue,MeshKernel::doubleMissingValue};
+                    bool successful = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+                    if (!successful) 
+                    {
+                        break;
+                    }
+
                     geometry_list_out.xCoordinates[index] = pointCoordinate.x;
                     geometry_list_out.yCoordinates[index] = pointCoordinate.y;
                     geometry_list_out.zCoordinates[index] = MeshKernel::doubleMissingValue;
