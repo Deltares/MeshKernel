@@ -971,7 +971,7 @@ bool MeshKernel::Mesh::MakeMesh(const MeshKernelApi::MakeGridParametersNative& m
         // in case a polygon is there, re-compute parameters
         if (polygons.m_numNodes >= 3)
         {
-            Point referencePoint;
+            Point referencePoint{ doubleMissingValue, doubleMissingValue };
             // rectangular grid in polygon
             for (int i = 0; i < polygons.m_numNodes; ++i)
             {
@@ -980,6 +980,11 @@ bool MeshKernel::Mesh::MakeMesh(const MeshKernelApi::MakeGridParametersNative& m
                     referencePoint = polygons.m_nodes[i];
                     break;
                 }
+            }
+
+            if (!referencePoint.IsValid())
+            {
+                return false;
             }
 
             // get polygon min/max in rotated (xi,eta) coordinates

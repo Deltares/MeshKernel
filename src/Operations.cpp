@@ -885,7 +885,7 @@ namespace MeshKernel
             if (squaredDistance != 0.0)
             {
                 ratio = (GetDx(firstNode, point, projection) * GetDx(firstNode, secondNode, projection) +
-                    GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) / squaredDistance;
+                         GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) / squaredDistance;
                 double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
                 normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
                 normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
