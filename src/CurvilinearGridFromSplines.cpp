@@ -47,7 +47,8 @@ MeshKernel::CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_p
     m_aspectRatioGrowFactor = splinesToCurvilinearParametersNative.AspectRatioGrowFactor;
     m_averageMeshWidth = splinesToCurvilinearParametersNative.AverageWidth;
     m_onTopOfEachOtherSquaredTolerance = splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance *
-                                         splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance;
+                                     splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance;
+
     m_dtolcos = splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles;
     m_checkFrontCollisions = splinesToCurvilinearParametersNative.CheckFrontCollisions;
     m_isSpacingCurvatureAdapted = splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing;
@@ -1817,10 +1818,12 @@ bool MeshKernel::CurvilinearGridFromSplines::MakeAllGridLines(bool isSpacingCurv
 
         //add other side of gridline
         m_rightGridLineIndex[s] = gridLineIndex;
-        for (int i = m_rightGridLineIndex[s] - 1, j = m_rightGridLineIndex[s] - 1; j >= m_leftGridLineIndex[s]; ++i, --j)
+        int i = m_rightGridLineIndex[s] - 1;
+        for (int j = m_rightGridLineIndex[s] - 1; j >= m_leftGridLineIndex[s]; --j)
         {
             m_gridLine[i] = m_gridLine[j];
             m_gridLineDimensionalCoordinates[i] = m_gridLineDimensionalCoordinates[j];
+            ++i;
         }
 
         //compute new (actual) grid size

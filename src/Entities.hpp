@@ -47,7 +47,7 @@ namespace MeshKernel
         double x;
         double y;
 
-        Point operator+(Point const& rhs) const 
+        Point operator+(Point const& rhs) const
         {
             Point point
             {

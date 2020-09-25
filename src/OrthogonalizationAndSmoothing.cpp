@@ -40,25 +40,15 @@
 #include "Polygons.hpp"
 
 
-MeshKernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing():
-    m_mesh(nullptr), 
-    m_smoother(nullptr), 
-    m_orthogonalizer(nullptr),
-    m_polygons(nullptr),
-    m_landBoundaries(nullptr)
-{
-}
-
-
-bool MeshKernel::OrthogonalizationAndSmoothing::Set( std::shared_ptr<Mesh> mesh,
-                                                   std::shared_ptr<Smoother> smoother,
-                                                   std::shared_ptr<Orthogonalizer> orthogonalizer,
-                                                   std::shared_ptr<Polygons> polygon,
-                                                   std::shared_ptr<LandBoundaries> landBoundaries,
-                                                   int isTriangulationRequired,
-                                                   int isAccountingForLandBoundariesRequired,
-                                                   int projectToLandBoundaryOption,
-                                                   MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative)
+MeshKernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing( std::shared_ptr<Mesh> mesh,
+                                                                          std::shared_ptr<Smoother> smoother,
+                                                                          std::shared_ptr<Orthogonalizer> orthogonalizer,
+                                                                          std::shared_ptr<Polygons> polygon,
+                                                                          std::shared_ptr<LandBoundaries> landBoundaries,
+                                                                          int isTriangulationRequired,
+                                                                          int isAccountingForLandBoundariesRequired,
+                                                                          int projectToLandBoundaryOption,
+                                                                          MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative)
 {    
     m_polygons = polygon;
     m_smoother = smoother;
@@ -66,29 +56,6 @@ bool MeshKernel::OrthogonalizationAndSmoothing::Set( std::shared_ptr<Mesh> mesh,
     m_mesh = mesh;
     m_landBoundaries = landBoundaries;
 
-    // Sets the node mask
-    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-    m_mesh->MaskNodesInPolygons(*m_polygons, true);
-    // Flag nodes outside the polygon as corner points
-    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
-    {
-        if (m_mesh->m_nodeMask[n] == 0) 
-        {
-            m_mesh->m_nodesTypes[n] = 3;
-        }
-    }
-
-    // TODO: calculate volume weights for areal smoother
-    m_mumax = (1.0 - m_smoothorarea) * 0.5;
-    m_mu = std::min(1e-2, m_mumax);
-    m_orthogonalCoordinates.resize(m_mesh->GetNumNodes() );
-
-
-    // back-up original nodes, for projection on original mesh boundary
-    m_originalNodes = m_mesh->m_nodes;
-    m_orthogonalCoordinates = m_mesh->m_nodes;
-
-    // algorithm settings
     m_orthogonalizationToSmoothingFactor = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor;
     m_orthogonalizationToSmoothingFactorBoundary = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary;
     m_smoothorarea = orthogonalizationParametersNative.Smoothorarea;
@@ -97,10 +64,34 @@ bool MeshKernel::OrthogonalizationAndSmoothing::Set( std::shared_ptr<Mesh> mesh,
     m_orthogonalizationInnerIterations = orthogonalizationParametersNative.InnerIterations;
 
     m_isTriangulationRequired = isTriangulationRequired;
-
     m_isAccountingForLandBoundariesRequired = isAccountingForLandBoundariesRequired;
-
     m_projectToLandBoundaryOption = projectToLandBoundaryOption;
+
+}
+
+bool MeshKernel::OrthogonalizationAndSmoothing::Initialize() 
+{
+    // Sets the node mask
+    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh->MaskNodesInPolygons(*m_polygons, true);
+    
+    // Flag nodes outside the polygon as corner points
+    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
+    {
+        if (m_mesh->m_nodeMask[n] == 0)
+        {
+            m_mesh->m_nodesTypes[n] = 3;
+        }
+    }
+
+    // TODO: calculate volume weights for areal smoother
+    m_mumax = (1.0 - m_smoothorarea) * 0.5;
+    m_mu = std::min(1e-2, m_mumax);
+    m_orthogonalCoordinates.resize(m_mesh->GetNumNodes());
+
+    // back-up original nodes, for projection on original mesh boundary
+    m_originalNodes = m_mesh->m_nodes;
+    m_orthogonalCoordinates = m_mesh->m_nodes;
 
     // project on land boundary
     if (m_projectToLandBoundaryOption >= 1)
@@ -110,9 +101,9 @@ bool MeshKernel::OrthogonalizationAndSmoothing::Set( std::shared_ptr<Mesh> mesh,
     }
 
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops) 
-    if(m_mesh->m_projection == Projections::sphericalAccurate)
+    if (m_mesh->m_projection == Projections::sphericalAccurate)
     {
-        if(m_orthogonalizationToSmoothingFactor<1.0)
+        if (m_orthogonalizationToSmoothingFactor < 1.0)
         {
             bool successful = PrapareOuterIteration();
             if (!successful)
