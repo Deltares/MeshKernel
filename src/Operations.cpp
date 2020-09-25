@@ -496,12 +496,12 @@ namespace MeshKernel
         }
         if (projection == Projections::sphericalAccurate)
         {
-            Cartesian3DPoint firstPointCartesianCoordinates;
+            Cartesian3DPoint firstPointCartesianCoordinates{doubleMissingValue, doubleMissingValue};
             SphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
-            Cartesian3DPoint secondPointCartesianCoordinates;
+            Cartesian3DPoint secondPointCartesianCoordinates{ doubleMissingValue, doubleMissingValue };
             SphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
 
-            Cartesian3DPoint middleCartesianPointCoordinate;
+            Cartesian3DPoint middleCartesianPointCoordinate{ doubleMissingValue, doubleMissingValue };
             middleCartesianPointCoordinate.x = 0.5 * (firstPointCartesianCoordinates.x + secondPointCartesianCoordinates.x);
             middleCartesianPointCoordinate.y = 0.5 * (firstPointCartesianCoordinates.y + secondPointCartesianCoordinates.y);
             double referenceLongitude = std::max(firstPoint.x, secondPoint.x);
