@@ -342,7 +342,14 @@ bool MeshKernel::Splines::ComputeCurvatureOnSplinePoint( int splineIndex,
     double rightSegment = adimensionalPointCoordinate - leftCornerPoint;
 
     Point pointCoordinate;
-    InterpolateSplinePoint(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate, pointCoordinate);
+    bool successful = InterpolateSplinePoint(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate, pointCoordinate);
+
+    if (!successful) 
+    {
+        curvatureFactor = 0.0;
+        return false;
+    }
+
 
     Point p = m_splineNodes[splineIndex][rightCornerPoint] - m_splineNodes[splineIndex][leftCornerPoint] + 
               (m_splineDerivatives[splineIndex][leftCornerPoint] * (-3.0 * leftSegment * leftSegment + 1.0) + 
