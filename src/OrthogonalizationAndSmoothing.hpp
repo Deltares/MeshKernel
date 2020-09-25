@@ -40,7 +40,6 @@ namespace MeshKernel
     class Orthogonalizer;
     class LandBoundaries;
     class Polygons;
-
     enum class Projections;
 
     /// <summary>
@@ -51,12 +50,6 @@ namespace MeshKernel
 
     public:
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <returns></returns>
-        OrthogonalizationAndSmoothing();
-        
         /// <summary>
         /// Set the parameters
         /// </summary>
@@ -70,16 +63,19 @@ namespace MeshKernel
         /// <param name="polygon">The polygon where orthogonalization should occour</param>
         /// <param name="landBoundaries">The land boundaries</param>
         /// <returns>If the method succeeded</returns>
-        bool Set( std::shared_ptr<Mesh> mesh,
-                  std::shared_ptr<Smoother> smoother,
-                  std::shared_ptr<Orthogonalizer> orthogonalizer,
-                  std::shared_ptr<Polygons> polygon,
-                  std::shared_ptr<LandBoundaries> landBoundaries,
-                  int isTriangulationRequired,
-                  int isAccountingForLandBoundariesRequired,
-                  int projectToLandBoundaryOption,
-                  MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative );
+        OrthogonalizationAndSmoothing( std::shared_ptr<Mesh> mesh,
+                                       std::shared_ptr<Smoother> smoother,
+                                       std::shared_ptr<Orthogonalizer> orthogonalizer,
+                                       std::shared_ptr<Polygons> polygon,
+                                       std::shared_ptr<LandBoundaries> landBoundaries,
+                                       int isTriangulationRequired,
+                                       int isAccountingForLandBoundariesRequired,
+                                       int projectToLandBoundaryOption,
+                                       MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative );
 
+        
+        bool Initialize();
+        
         /// <summary>
         /// Executes the entire algorithm
         /// </summary>

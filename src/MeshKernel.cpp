@@ -46,9 +46,8 @@
 // The vector containing the mesh instances 
 static std::vector<std::shared_ptr<MeshKernel::Mesh>> meshInstances;
 
-// For supporting interactivity for orthogonalization and orthogonal curvilinear grid from splines, 
-// we need to save some instances
-static std::map<int, MeshKernel::OrthogonalizationAndSmoothing> orthogonalizationInstances;
+// For interactivity
+static std::map<int, std::shared_ptr<MeshKernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
 static std::map<int, std::shared_ptr<MeshKernel::CurvilinearGridFromSplines>> curvilinearGridFromSplinesInstances;
 
 namespace MeshKernelApi
@@ -330,18 +329,26 @@ namespace MeshKernelApi
         auto landBoundary = std::make_shared < MeshKernel::LandBoundaries>();
         landBoundary->Set(landBoundaries, meshInstances[meshKernelId], polygon);
 
-        MeshKernel::OrthogonalizationAndSmoothing ortogonalization;
-        ortogonalization.Set(meshInstances[meshKernelId],
-                             smoother,
-                             orthogonalizer,
-                             polygon,
-                             landBoundary,
-                             isTriangulationRequired,
-                             isAccountingForLandBoundariesRequired,
-                             projectToLandBoundaryOption,
-                             orthogonalizationParametersNative);
-        ortogonalization.Compute();
-        return 0;
+        MeshKernel::OrthogonalizationAndSmoothing ortogonalization(meshInstances[meshKernelId],
+                                                                   smoother,
+                                                                   orthogonalizer,
+                                                                   polygon,
+                                                                   landBoundary,
+                                                                   isTriangulationRequired,
+                                                                   isAccountingForLandBoundariesRequired,
+                                                                   projectToLandBoundaryOption,
+                                                                   orthogonalizationParametersNative);
+        bool successful = ortogonalization.Initialize();
+        if (!successful)
+        {
+            return -1;
+        }
+
+        successful = ortogonalization.Compute();
+        if (!successful)
+        {
+            return -1;
+        }
     }
 
     MKERNEL_API int mkernel_orthogonalize_initialize(int meshKernelId,
@@ -386,16 +393,20 @@ namespace MeshKernelApi
         auto landBoundary = std::make_shared<MeshKernel::LandBoundaries>();
         landBoundary->Set(landBoundaries, meshInstances[meshKernelId], polygon);
 
-        MeshKernel::OrthogonalizationAndSmoothing orthogonalizationInstance;
-        orthogonalizationInstance.Set(meshInstances[meshKernelId],
-                                      smoother,
-                                      orthogonalizer,
-                                      polygon,
-                                      landBoundary,
-                                      isTriangulationRequired,
-                                      isAccountingForLandBoundariesRequired,
-                                      projectToLandBoundaryOption,
-                                      orthogonalizationParametersNative);
+        auto orthogonalizationInstance = std::make_shared<MeshKernel::OrthogonalizationAndSmoothing>( meshInstances[meshKernelId],
+                                                                                                      smoother,
+                                                                                                      orthogonalizer,
+                                                                                                      polygon,
+                                                                                                      landBoundary,
+                                                                                                      isTriangulationRequired,
+                                                                                                      isAccountingForLandBoundariesRequired,
+                                                                                                      projectToLandBoundaryOption,
+                                                                                                      orthogonalizationParametersNative );
+        bool successful = orthogonalizationInstance->Initialize();
+        if (!successful)
+        {
+            return -1;
+        }
 
         orthogonalizationInstances.insert({ meshKernelId, orthogonalizationInstance });
 
@@ -414,7 +425,7 @@ namespace MeshKernelApi
             return 0;
         }
 
-        bool status = orthogonalizationInstances[meshKernelId].PrapareOuterIteration();
+        bool status = orthogonalizationInstances[meshKernelId]->PrapareOuterIteration();
         return status == true ? 0 : 1;
     }
 
@@ -429,7 +440,7 @@ namespace MeshKernelApi
         {
             return 0;
         }
-        const bool status = orthogonalizationInstances[meshKernelId].InnerIteration();
+        const bool status = orthogonalizationInstances[meshKernelId]->InnerIteration();
         return status == true ? 0 : 1;
     }
 
@@ -444,7 +455,7 @@ namespace MeshKernelApi
         {
             return 0;
         }
-        const bool status = orthogonalizationInstances[meshKernelId].FinalizeOuterIteration();
+        const bool status = orthogonalizationInstances[meshKernelId]->FinalizeOuterIteration();
         return status == true ? 0 : 1;
     }
 

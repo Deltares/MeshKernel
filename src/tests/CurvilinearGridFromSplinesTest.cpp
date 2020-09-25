@@ -35,6 +35,7 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
     splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
     splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
     splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
     curvilinearParametersNative.MRefinement = 20;
     curvilinearParametersNative.NRefinement = 40;
 
@@ -108,6 +109,18 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
     // construct CurvilinearGridFromSplines
     MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative;
     MeshKernelApi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+
+    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
+    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParametersNative.AverageWidth = 500.0;
+    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
+    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = false;
+    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
+    curvilinearParametersNative.MRefinement = 20;
+    curvilinearParametersNative.NRefinement = 40;
+
     MeshKernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
     successful = curvilinearGridFromSplines.ComputeSplineProperties(false);
     ASSERT_TRUE(successful);
@@ -147,6 +160,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
     splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
     splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
     curvilinearParametersNative.MRefinement = 20;
     curvilinearParametersNative.NRefinement = 40;
 
@@ -229,6 +243,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
     splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
     splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
     splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = false;
+    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
     curvilinearParametersNative.MRefinement = 20;
     curvilinearParametersNative.NRefinement = 40;
 
@@ -312,6 +327,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
     splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
     splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
     curvilinearParametersNative.MRefinement = 10;
     curvilinearParametersNative.NRefinement = 20;
 
@@ -450,6 +466,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
     splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
     splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
     splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
     curvilinearParametersNative.MRefinement = 10;
     curvilinearParametersNative.NRefinement = 20;
 
@@ -567,6 +584,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
     splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
     splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
     curvilinearParametersNative.MRefinement = 20;
     curvilinearParametersNative.NRefinement = 40;
 
@@ -652,6 +670,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
     splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
     splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
     curvilinearParametersNative.MRefinement = 10;
     curvilinearParametersNative.NRefinement = 20;
 
@@ -738,6 +757,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
     splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
     splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
     curvilinearParametersNative.MRefinement = 20;
     curvilinearParametersNative.NRefinement = 3;
 
