@@ -111,9 +111,9 @@ bool MeshKernel::FlipEdges::Compute()
                 return true;
             }
 
-            int nodeLeft;
-            int nodeRight;
-            int topologyFunctional;
+            int nodeLeft = - 1;
+            int nodeRight = -1;
+            int topologyFunctional = 1000;
             bool successful = ComputeTopologyFunctional(e, nodeLeft, nodeRight, topologyFunctional);
 
             if (!successful)
@@ -310,9 +310,9 @@ bool MeshKernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
 }
 
 bool MeshKernel::FlipEdges::ComputeTopologyFunctional( int edge,
-                                                     int& nodeLeft,
-                                                     int& nodeRight,
-                                                     int& topologyFunctional ) const
+                                                       int& nodeLeft,
+                                                       int& nodeRight,
+                                                       int& topologyFunctional ) const
 {
 
     if (m_mesh->m_edgesNumFaces[edge] != 2)
@@ -407,24 +407,22 @@ bool MeshKernel::FlipEdges::ComputeTopologyFunctional( int edge,
             const auto nR = DifferenceFromOptimum(nodeRight, firstNode, secondNode);
 
             topologyFunctional = (n1L - 1) * (n1L - 1) +
-                (n1R - 1) * (n1R - 1) +
-                (n2L - 1) * (n2L - 1) +
-                (n2R - 1) * (n2R - 1) +
-                2 * ((nL + 1) * (nL + 1) + (nR + 1) * (nR + 1)) -
-                (n1L * n1L + n1R * n1R + n2L * n2L + n2R * n2R + 2 * (nL * nL + nR * nR));
+                                 (n1R - 1) * (n1R - 1) +
+                                 (n2L - 1) * (n2L - 1) +
+                                 (n2R - 1) * (n2R - 1) +
+                                 2 * ((nL + 1) * (nL + 1) + (nR + 1) * (nR + 1)) -
+                                 (n1L * n1L + n1R * n1R + n2L * n2L + n2R * n2R + 2 * (nL * nL + nR * nR));
 
         }
     }
     else
     {
         topologyFunctional = (n1 - 1) * (n1 - 1) +
-                (n2 - 1) * (n2 - 1) +
-                (nL + 1) * (nL + 1) +
-                (nR + 1) * (nR + 1) -
-                (n1 * n1 + n2 * n2 + nL * nL + nR * nR);
+                             (n2 - 1) * (n2 - 1) +
+                             (nL + 1) * (nL + 1) +
+                             (nR + 1) * (nR + 1) -
+                             (n1 * n1 + n2 * n2 + nL * nL + nR * nR);
     }
-
-
 
     return true;
 }
