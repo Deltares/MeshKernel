@@ -1441,7 +1441,7 @@ bool MeshKernel::MeshRefinement::FindBrotherEdges()
             const auto squaredTolerance = 0.0000001 * std::max(firstEdgeSquaredLength, secondEdgeSquaredLength);
 
             //The center of the two edges coincides with the shared node
-            Point centre;
+            Point centre{ doubleMissingValue, doubleMissingValue };
             ComputeMiddlePoint(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[secondEdgeOtherNode], m_mesh->m_projection, centre);
             const auto squaredDistanceFromCentre = ComputeSquaredDistance(centre, m_mesh->m_nodes[n], m_mesh->m_projection);
             if (squaredDistanceFromCentre < squaredTolerance)

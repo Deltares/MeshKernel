@@ -519,6 +519,8 @@ namespace MeshKernel
 
     static bool ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projections& projection, Point& centre)
     {
+        centre.x = doubleMissingValue;
+        centre.y = doubleMissingValue;
         if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
         {
             centre.y = (firstPoint.y + secondPoint.y) / 2.0;
@@ -617,9 +619,9 @@ namespace MeshKernel
 
             //project to rotated frame
             Cartesian3DPoint globalCoordinatesCartesianRotated;
-            globalCoordinatesCartesianRotated.x = exxp[1] * globalCoordinatesCartesian.x + exxp[2] * globalCoordinatesCartesian.y + exxp[3] * globalCoordinatesCartesian.z;
-            globalCoordinatesCartesianRotated.y = eyyp[1] * globalCoordinatesCartesian.x + eyyp[2] * globalCoordinatesCartesian.y + eyyp[3] * globalCoordinatesCartesian.z;
-            globalCoordinatesCartesianRotated.z = ezzp[1] * globalCoordinatesCartesian.x + ezzp[2] * globalCoordinatesCartesian.y + ezzp[3] * globalCoordinatesCartesian.z;
+            globalCoordinatesCartesianRotated.x = exxp[0] * globalCoordinatesCartesian.x + exxp[1] * globalCoordinatesCartesian.y + exxp[2] * globalCoordinatesCartesian.z;
+            globalCoordinatesCartesianRotated.y = eyyp[0] * globalCoordinatesCartesian.x + eyyp[1] * globalCoordinatesCartesian.y + eyyp[2] * globalCoordinatesCartesian.z;
+            globalCoordinatesCartesianRotated.z = ezzp[0] * globalCoordinatesCartesian.x + ezzp[1] * globalCoordinatesCartesian.y + ezzp[2] * globalCoordinatesCartesian.z;
            
             // Compute global base vectors at other point in 3D(xx, yy, zz) frame
             double elambda[3];
@@ -652,7 +654,7 @@ namespace MeshKernel
 
             //compute vectors in other point in local base(elambdaloc, ephiloc)
             localComponents.x = elambdaloc[1] * vxx + elambdaloc[1] * vyy + elambdaloc[2] * vzz;
-            localComponents.y = ephiloc[1] * vxx + ephiloc[2] * vyy + ephiloc[3] * vzz;
+            localComponents.y = ephiloc[0] * vxx + ephiloc[1] * vyy + ephiloc[2] * vzz;
 
             return true;
         }
@@ -836,9 +838,10 @@ namespace MeshKernel
     static double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
 
-        if (firstPoint.x == doubleMissingValue || firstPoint.y == doubleMissingValue ||
-            secondPoint.x == doubleMissingValue || secondPoint.y == doubleMissingValue)
+        if (!firstPoint.IsValid() || !secondPoint.IsValid()) 
+        {
             return 0.0;
+        }
 
         if (projection == Projections::sphericalAccurate)
         {

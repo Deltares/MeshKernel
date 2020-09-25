@@ -262,7 +262,8 @@ bool MeshKernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
         const double atpf1Loc = 1.0 - atpfLoc;
         double mumat    = m_mu;
         int maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
-        for (auto nn = 1, cacheIndex = m_compressedEndNodeIndex[n]; nn < maxnn; nn++, cacheIndex++)
+        auto cacheIndex = m_compressedEndNodeIndex[n];
+        for (auto nn = 1; nn < maxnn; nn++)
         {
             double wwx = 0.0;
             double wwy = 0.0;
@@ -288,6 +289,7 @@ bool MeshKernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 
             m_compressedWeightX[cacheIndex] = wwx;
             m_compressedWeightY[cacheIndex] = wwy;
+            cacheIndex++;
         }
         int firstCacheIndex = n * 2;
         m_compressedRhs[firstCacheIndex] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 0);
