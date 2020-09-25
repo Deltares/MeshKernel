@@ -445,11 +445,11 @@ bool MeshKernel::Splines::SecondOrderDerivative(const std::vector<double>& coord
 }
 
 bool MeshKernel::Splines::InterpolatePointsOnSpline( int index,
-                                                   double maximumGridHeight,
-                                                   bool isSpacingCurvatureAdapted,
-                                                   const std::vector<double>& distances,
-                                                   std::vector<Point>& points,
-                                                   std::vector<double>& adimensionalDistances)
+                                                     double maximumGridHeight,
+                                                     bool isSpacingCurvatureAdapted,
+                                                     const std::vector<double>& distances,
+                                                     std::vector<Point>& points,
+                                                     std::vector<double>& adimensionalDistances)
 {
     MeshKernel::FuncDimensionalToAdimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
 

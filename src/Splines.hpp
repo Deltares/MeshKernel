@@ -189,14 +189,15 @@ namespace MeshKernel
 
     struct FuncDimensionalToAdimensionalDistance
     {
-        FuncDimensionalToAdimensionalDistance(Splines* splines,
-            int splineIndex,
-            bool isSpacingCurvatureAdapted,
-            double h) :
-            m_spline(splines),
-            m_splineIndex(splineIndex),
-            m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
-            m_h(h)
+        FuncDimensionalToAdimensionalDistance( Splines* splines,
+                                               int splineIndex,
+                                               bool isSpacingCurvatureAdapted,
+                                               double h) :
+                                               m_spline(splines),
+                                               m_splineIndex(splineIndex),
+                                               m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
+                                               m_h(h),
+                                               m_DimensionalDistance(0.0)
         {
         };
 
