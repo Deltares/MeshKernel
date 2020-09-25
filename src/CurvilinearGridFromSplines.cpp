@@ -334,7 +334,7 @@ bool MeshKernel::CurvilinearGridFromSplines::Initialize()
         // construct the cross splines through the edges, along m discretization
         for (int i = m_leftGridLineIndex[s]; i < m_leftGridLineIndex[s] + m_numMSplines[s]; ++i)
         {
-            Point normal;
+            Point normal{ doubleMissingValue, doubleMissingValue };
             NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], normal, m_splines->m_projection);
 
             double xMiddle = (m_gridLine[i].x + m_gridLine[i + 1].x) * 0.5;

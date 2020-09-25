@@ -664,6 +664,8 @@ namespace MeshKernel
     ///normalout
     static void NormalVectorOutside(const Point& firstPoint, const Point& secondPoint, Point& result, const Projections& projection)
     {
+        result.x = doubleMissingValue;
+        result.y = doubleMissingValue;
         if (projection == Projections::sphericalAccurate)
         {
             Point middlePoint;
@@ -695,11 +697,6 @@ namespace MeshKernel
                 result.x = dy / distance;
                 result.y = -dx / distance;
             }
-            else
-            {
-                result.x = doubleMissingValue;
-                result.y = doubleMissingValue;
-            }
         }
 
         // cartesian and spherical
@@ -709,8 +706,6 @@ namespace MeshKernel
             double dy = GetDy(firstPoint, secondPoint, projection);
 
             const double squaredDistance = dx * dx + dy * dy;
-            result.x = doubleMissingValue;
-            result.y = doubleMissingValue;
             if (squaredDistance > 0.0)
             {
                 const double distance = sqrt(squaredDistance);
