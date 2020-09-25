@@ -1333,11 +1333,13 @@ namespace MeshKernel
         pointOnLandBoundary = node;
         for (int n = startLandBoundaryIndex; n < endLandBoundaryIndex; n++)
         {
-            if (m_nodes[n].x == doubleMissingValue || m_nodes[n + 1].x == doubleMissingValue)
+            if (m_nodes[n].x == doubleMissingValue || m_nodes[n + 1].x == doubleMissingValue) 
+            {
                 continue;
+            }
 
-            Point normalPoint;
-            double ratio;
+            Point normalPoint{ doubleMissingValue, doubleMissingValue};
+            double ratio = 0.0;
             const double distanceFromLandBoundary = DistanceFromLine(node, m_nodes[n], m_nodes[n + 1], normalPoint, ratio, projection);
 
             if (distanceFromLandBoundary > 0.0 && distanceFromLandBoundary < minimumDistance)

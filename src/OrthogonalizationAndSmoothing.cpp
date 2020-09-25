@@ -329,11 +329,8 @@ bool MeshKernel::OrthogonalizationAndSmoothing::InnerIteration()
 
 bool MeshKernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
 {
-    Point firstPoint;
-    Point secondPoint;
-    Point thirdPoint;
-    Point normalSecondPoint;
-    Point normalThirdPoint;
+    Point normalSecondPoint{ doubleMissingValue, doubleMissingValue };
+    Point normalThirdPoint{ doubleMissingValue, doubleMissingValue };
 
     // in this case the nearest point is the point itself
     std::vector<int>   nearestPoints(m_mesh->GetNumNodes(), 0);
@@ -344,11 +341,18 @@ bool MeshKernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
         int nearestPointIndex = nearestPoints[n];
         if (m_mesh->m_nodesTypes[n] == 2 && m_mesh->m_nodesNumEdges[n] > 0 && m_mesh->m_nodesNumEdges[nearestPointIndex] > 0)
         {
-            firstPoint = m_mesh->m_nodes[n];
+            Point firstPoint = m_mesh->m_nodes[n];
+            if (!firstPoint.IsValid())
+            {
+                continue;
+            }
+
             int numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
             int numNodes = 0;
-            int leftNode;
-            int rightNode;
+            int leftNode = -1;
+            int rightNode = -1;
+            Point secondPoint{ doubleMissingValue, doubleMissingValue };
+            Point thirdPoint{ doubleMissingValue, doubleMissingValue };
             for (auto nn = 0; nn < numEdges; nn++)
             {
                 auto edgeIndex = m_mesh->m_nodesEdges[nearestPointIndex][nn];
@@ -374,6 +378,11 @@ bool MeshKernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
                         thirdPoint = m_originalNodes[rightNode];
                     }
                 }
+            }
+
+            if (!secondPoint.IsValid() || !thirdPoint.IsValid())
+            {
+                continue;
             }
 
             //Project the moved boundary point back onto the closest original edge (either between 0 and 2 or 0 and 3)
