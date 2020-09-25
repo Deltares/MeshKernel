@@ -50,16 +50,15 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
     auto orthogonalizer = std::make_shared<MeshKernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<MeshKernel::Smoother>(mesh);
     auto polygon = std::make_shared<MeshKernel::Polygons>();
-    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
 
     std::vector<MeshKernel::Point> landBoundary;
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
     
     MeshKernel::OrthogonalizationAndSmoothing orthogonalization( mesh, 
                                                                  smoother,
                                                                  orthogonalizer,
                                                                  polygon,
-                                                                 landBoundaries,
+                                                                 landboundaries,
                                                                  isTriangulationRequired, 
                                                                  isAccountingForLandBoundariesRequired, 
                                                                  projectToLandBoundaryOption,
@@ -105,18 +104,16 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
 
     auto orthogonalizer = std::make_shared<MeshKernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<MeshKernel::Smoother>(mesh);
-   
-
     auto polygon = std::make_shared<MeshKernel::Polygons>();
-    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
+
     std::vector<MeshKernel::Point> landBoundary;
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     MeshKernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
                                                                 smoother,
                                                                 orthogonalizer,
                                                                 polygon,
-                                                                landBoundaries,
+                                                                landboundaries,
                                                                 isTriangulationRequired,
                                                                 isAccountingForLandBoundariesRequired,
                                                                 projectToLandBoundaryOption,
@@ -173,15 +170,14 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     auto orthogonalizer = std::make_shared<MeshKernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<MeshKernel::Smoother>(mesh);
     auto polygon = std::make_shared<MeshKernel::Polygons>();
-    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
     std::vector<MeshKernel::Point> landBoundary;
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     MeshKernel::OrthogonalizationAndSmoothing orthogonalization( mesh,
                                                                  smoother,
                                                                  orthogonalizer,
                                                                  polygon,
-                                                                 landBoundaries,
+                                                                 landboundaries,
                                                                  isTriangulationRequired,
                                                                  isAccountingForLandBoundariesRequired,
                                                                  projectToLandBoundaryOption,
@@ -251,16 +247,14 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     auto polygon = std::make_shared<MeshKernel::Polygons>();
     polygon->Set(nodes, MeshKernel::Projections::cartesian);
 
-    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
-
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
 
 
     MeshKernel::OrthogonalizationAndSmoothing orthogonalization( mesh, 
                                                                  smoother,
                                                                  orthogonalizer,
                                                                  polygon,
-                                                                 landBoundaries,
+                                                                 landboundaries,
                                                                  isTriangulationRequired,
                                                                  isAccountingForLandBoundariesRequired,
                                                                  projectToLandBoundaryOption,
@@ -386,9 +380,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
     orthogonalizationParametersNative.Smoothorarea = 1.0;
 
     auto polygon = std::make_shared<MeshKernel::Polygons>();
-    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
     std::vector<MeshKernel::Point> landBoundary;
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     auto orthogonalizer = std::make_shared<MeshKernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<MeshKernel::Smoother>(mesh);
@@ -396,7 +389,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
                                                                  smoother, 
                                                                  orthogonalizer,
                                                                  polygon,
-                                                                 landBoundaries,
+                                                                 landboundaries,
                                                                  isTriangulationRequired,
                                                                  isAccountingForLandBoundariesRequired,
                                                                  projectToLandBoundaryOption,
@@ -444,8 +437,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
     
     // no enclosing polygon
     auto polygon = std::make_shared<MeshKernel::Polygons>();
-    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     auto orthogonalizer = std::make_shared<MeshKernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<MeshKernel::Smoother>(mesh);
@@ -453,7 +445,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
                                                                  smoother, 
                                                                  orthogonalizer, 
                                                                  polygon,
-                                                                 landBoundaries,
+                                                                 landboundaries,
                                                                  isTriangulationRequired,
                                                                  isAccountingForLandBoundariesRequired,
                                                                  projectToLandBoundaryOption,
@@ -513,15 +505,14 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
     auto smoother = std::make_shared<MeshKernel::Smoother>(mesh);
 
     auto polygon = std::make_shared<MeshKernel::Polygons>();
-    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
     std::vector<MeshKernel::Point> landBoundary;
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     MeshKernel::OrthogonalizationAndSmoothing  orthogonalization( mesh,
                                                                   smoother,
                                                                   orthogonalizer,
                                                                   polygon,
-                                                                  landBoundaries,
+                                                                  landboundaries,
                                                                   isTriangulationRequired,
                                                                   isAccountingForLandBoundariesRequired,
                                                                   projectToLandBoundaryOption,
@@ -610,9 +601,8 @@ TEST(MeshRefinement, SmallTriangulargridSpherical)
 
     // no enclosing polygon
     auto polygon = std::make_shared<MeshKernel::Polygons>();
-    auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
     std::vector<MeshKernel::Point> landBoundary;
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     auto orthogonalizer = std::make_shared<MeshKernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<MeshKernel::Smoother>(mesh);
@@ -622,7 +612,7 @@ TEST(MeshRefinement, SmallTriangulargridSpherical)
                                                                  smoother,
                                                                  orthogonalizer,
                                                                  polygon,
-                                                                 landBoundaries,
+                                                                 landboundaries,
                                                                  isTriangulationRequired,
                                                                  isAccountingForLandBoundariesRequired,
                                                                  projectToLandBoundaryOption,
