@@ -488,6 +488,12 @@ namespace MeshKernel
     /// half
     static void MiddlePoint(const Point& firstPoint, const Point& secondPoint, Point& result, const Projections& projection)
     {
+        result.x = doubleMissingValue;
+        result.y = doubleMissingValue;
+        if (!firstPoint.IsValid() || !secondPoint.IsValid()) 
+        {
+            return;
+        }
         if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointCartesianCoordinates;
@@ -1123,16 +1129,16 @@ namespace MeshKernel
 
         firstRatio = doubleMissingValue;
         secondRatio = doubleMissingValue;
-        double x21 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-        double y21 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+        auto const x21 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+        auto const y21 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
 
-        double x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-        double y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+        auto const x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+        auto const y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
 
-        double x31 = GetDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
-        double y31 = GetDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+        auto const x31 = GetDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+        auto const y31 = GetDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
 
-        double det = x43 * y21 - y43 * x21;
+        auto const det = x43 * y21 - y43 * x21;
 
         std::vector<double> values{ x21, y21, x43, y43 };
         double eps = std::max(0.00001 * (*std::max_element(values.begin(), values.end())), std::numeric_limits<double>::denorm_min());

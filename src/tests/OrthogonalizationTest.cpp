@@ -172,9 +172,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
 
     auto orthogonalizer = std::make_shared<MeshKernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<MeshKernel::Smoother>(mesh);
-    ;
-
-
     auto polygon = std::make_shared<MeshKernel::Polygons>();
     auto landBoundaries = std::make_shared<MeshKernel::LandBoundaries>();
     std::vector<MeshKernel::Point> landBoundary;
