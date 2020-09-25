@@ -132,7 +132,7 @@ namespace MeshKernel
                     const double distanceFirstMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
                     const double distanceSecondMeshNode = DistanceFromLine(secondMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
 
-                    if (distanceFirstMeshNode <= minDistance || distanceFirstMeshNode <= minDistance)
+                    if (distanceFirstMeshNode <= minDistance)
                     {
                         landBoundaryIsClose = true;
                         break;
@@ -220,18 +220,22 @@ namespace MeshKernel
         //landBoundarySegment
         for (int landBoundarySegment = 0; landBoundarySegment < m_numSegments; landBoundarySegment++)
         {
-            int numPaths;
-            int numRejectedPaths;
+            int numPaths = 0;
+            int numRejectedPaths = 0;
             successful = MakePath(landBoundarySegment, meshBoundOnly, numPaths, numRejectedPaths);
 
-            if (!successful)
+            if (!successful) 
+            {
                 return false;
+            }
 
             if (numRejectedPaths > 0 && snapping == 3)
             {
                 successful = MakePath(landBoundarySegment, false, numPaths, numRejectedPaths);
-                if (!successful)
+                if (!successful) 
+                {
                     return false;
+                }
             }
         }
 
@@ -499,8 +503,8 @@ namespace MeshKernel
         if (!successful)
             return false;
 
-        int startMeshNode;
-        int endMeshNode;
+        int startMeshNode = - 1;
+        int endMeshNode = -1;
         successful = FindStartEndMeshNodes(startLandBoundaryIndex,
             endLandBoundaryIndex,
             leftIndex,
