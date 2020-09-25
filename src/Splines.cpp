@@ -302,6 +302,7 @@ double MeshKernel::Splines::GetSplineLength(int index,
                                           double height,
                                           double assignedDelta)
 {
+    double splineLength = 0.0;
     double delta = assignedDelta;
     int numPoints = int(endIndex / delta) + 1;
     if (delta < 0.0)
@@ -312,11 +313,13 @@ double MeshKernel::Splines::GetSplineLength(int index,
     }
 
     // first point
-    Point leftPoint;
-    InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], startIndex, leftPoint);
-
-    double splineLength = 0.0;
-
+    Point leftPoint{ doubleMissingValue, doubleMissingValue };
+    bool successful = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], startIndex, leftPoint);
+    if (!successful) 
+    {
+        return 0.0;
+    }
+   
     double rightPointCoordinateOnSpline = startIndex;
     double leftPointCoordinateOnSpline;
     for (int p = 0; p < numPoints; ++p)
@@ -328,8 +331,13 @@ double MeshKernel::Splines::GetSplineLength(int index,
             rightPointCoordinateOnSpline = endIndex;
         }
 
-        Point rightPoint;
-        InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], rightPointCoordinateOnSpline, rightPoint);
+        Point rightPoint{ doubleMissingValue, doubleMissingValue };;
+        successful = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], rightPointCoordinateOnSpline, rightPoint);
+        if (!successful)
+        {
+            return 0.0;
+        }
+
         double curvatureFactor = 0.0;
         if (accountForCurvature)
         {
