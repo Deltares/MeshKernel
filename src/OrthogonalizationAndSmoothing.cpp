@@ -48,25 +48,22 @@ MeshKernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing( std::s
                                                                           int isTriangulationRequired,
                                                                           int isAccountingForLandBoundariesRequired,
                                                                           int projectToLandBoundaryOption,
-                                                                          MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative)
+                                                                          MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative):
+    m_polygons(polygon),
+    m_smoother(smoother),
+    m_orthogonalizer(orthogonalizer),
+    m_mesh(mesh),
+    m_landBoundaries(landBoundaries),
+    m_isTriangulationRequired(isTriangulationRequired),
+    m_isAccountingForLandBoundariesRequired(isAccountingForLandBoundariesRequired),
+    m_projectToLandBoundaryOption(projectToLandBoundaryOption)
 {    
-    m_polygons = polygon;
-    m_smoother = smoother;
-    m_orthogonalizer = orthogonalizer;
-    m_mesh = mesh;
-    m_landBoundaries = landBoundaries;
-
     m_orthogonalizationToSmoothingFactor = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor;
     m_orthogonalizationToSmoothingFactorBoundary = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary;
     m_smoothorarea = orthogonalizationParametersNative.Smoothorarea;
     m_orthogonalizationOuterIterations = orthogonalizationParametersNative.OuterIterations;
     m_orthogonalizationBoundaryIterations = orthogonalizationParametersNative.BoundaryIterations;
     m_orthogonalizationInnerIterations = orthogonalizationParametersNative.InnerIterations;
-
-    m_isTriangulationRequired = isTriangulationRequired;
-    m_isAccountingForLandBoundariesRequired = isAccountingForLandBoundariesRequired;
-    m_projectToLandBoundaryOption = projectToLandBoundaryOption;
-
 }
 
 bool MeshKernel::OrthogonalizationAndSmoothing::Initialize() 
