@@ -385,10 +385,10 @@ bool MeshKernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
             }
 
             //Project the moved boundary point back onto the closest original edge (either between 0 and 2 or 0 and 3)
-            double rl2;
+            double rl2 = 0.0;
             double dis2 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2, m_mesh->m_projection);
 
-            double rl3;
+            double rl3 = 0.0;
             double dis3 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3, m_mesh->m_projection);
 
             if (dis2 < dis3)

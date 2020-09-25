@@ -653,7 +653,7 @@ namespace MeshKernel
             ephiloc[2] = exxp[2] * ephip[0] + eyyp[2] * ephip[1] + ezzp[2] * ephip[2];
 
             //compute vectors in other point in local base(elambdaloc, ephiloc)
-            localComponents.x = elambdaloc[1] * vxx + elambdaloc[1] * vyy + elambdaloc[2] * vzz;
+            localComponents.x = elambdaloc[0] * vxx + elambdaloc[1] * vyy + elambdaloc[2] * vzz;
             localComponents.y = ephiloc[0] * vxx + ephiloc[1] * vyy + ephiloc[2] * vzz;
 
             return true;
@@ -845,13 +845,13 @@ namespace MeshKernel
 
         if (projection == Projections::sphericalAccurate)
         {
-            Cartesian3DPoint firstPointCartesian;
+            Cartesian3DPoint firstPointCartesian{ doubleMissingValue, doubleMissingValue };
             SphericalToCartesian(firstPoint, firstPointCartesian);
             auto xx1 = firstPointCartesian.x;
             auto yy1 = firstPointCartesian.y;
             auto zz1 = firstPointCartesian.z;
 
-            Cartesian3DPoint secondPointCartesian;
+            Cartesian3DPoint secondPointCartesian{ doubleMissingValue, doubleMissingValue };
             SphericalToCartesian(secondPoint, secondPointCartesian);
             auto xx2 = secondPointCartesian.x;
             auto yy2 = secondPointCartesian.y;
