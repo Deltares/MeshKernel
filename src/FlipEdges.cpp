@@ -72,7 +72,7 @@ bool MeshKernel::FlipEdges::Compute()
 
     if (m_triangulateFaces)
     {
-        successful = successful && TriangulateFaces();
+        successful = successful && m_mesh->TriangulateFaces();
         successful = successful && m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 
@@ -129,16 +129,16 @@ bool MeshKernel::FlipEdges::Compute()
                 double crossProduct;
                 double firstRatio;
                 double secondRatio;
-                const auto areEdgesCrossing = AreLinesCrossing(m_mesh->m_nodes[firstNode],
-                    m_mesh->m_nodes[secondNode],
-                    m_mesh->m_nodes[nodeLeft],
-                    m_mesh->m_nodes[nodeRight],
-                    false,
-                    intersection,
-                    crossProduct,
-                    firstRatio,
-                    secondRatio,
-                    m_mesh->m_projection);
+                const auto areEdgesCrossing = AreLinesCrossing( m_mesh->m_nodes[firstNode],
+                                                                m_mesh->m_nodes[secondNode],
+                                                                m_mesh->m_nodes[nodeLeft],
+                                                                m_mesh->m_nodes[nodeRight],
+                                                                false,
+                                                                intersection,
+                                                                crossProduct,
+                                                                firstRatio,
+                                                                secondRatio,
+                                                                m_mesh->m_projection );
 
                 if (!areEdgesCrossing)
                 {
@@ -565,26 +565,4 @@ int MeshKernel::FlipEdges::OptimalNumberOfConnectedNodes(int index) const
     }
 
     return optimalNumber;
-}
-
-bool MeshKernel::FlipEdges::TriangulateFaces()
-{
-    for (int i = 0; i < m_mesh->GetNumFaces(); i++)
-    {
-        const auto NumEdges = m_mesh->GetNumFaceEdges(i);
-
-        if (NumEdges < 4)
-        {
-            continue;
-        }
-
-        int indexFirstNode = m_mesh->m_facesNodes[i][0];
-        for (int j = 2; j < NumEdges - 1; j++)
-        {
-            const auto nodeIndex = m_mesh->m_facesNodes[i][j];
-            int newEdgeIndex;
-            m_mesh->ConnectNodes(indexFirstNode, nodeIndex, newEdgeIndex);
-        }
-    }
-    return true;
 }

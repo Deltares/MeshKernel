@@ -589,8 +589,6 @@ namespace MeshKernelApi
             return -1;
         }
 
-        ;
-
         std::vector<MeshKernel::Point> result;
         bool successful = ConvertGeometryListNativeToPointVector(disposableGeometryListIn, result);
         if (!successful)

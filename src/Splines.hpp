@@ -196,8 +196,7 @@ namespace MeshKernel
                                                m_spline(splines),
                                                m_splineIndex(splineIndex),
                                                m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
-                                               m_h(h),
-                                               m_DimensionalDistance(0.0)
+                                               m_h(h)
         {
         };
 
@@ -219,7 +218,7 @@ namespace MeshKernel
         bool m_isSpacingCurvatureAdapted;
         double m_h;
         int m_numSamples = 10;
-        double m_DimensionalDistance;
+        double m_DimensionalDistance = 0.0;
     };
 
 }
