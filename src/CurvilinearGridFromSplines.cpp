@@ -211,7 +211,6 @@ bool MeshKernel::CurvilinearGridFromSplines::RemoveSkinnyTriangles()
                     continue;
                 }
 
-                //GetNeighbours(m_gridPoints[j+1], i, secondLeftIndex, secondRightIndex);
                 double squaredLeftDistance = ComputeSquaredDistance(m_gridPoints[j][firstLeftIndex], m_gridPoints[j][i], m_splines->m_projection);
                 if (squaredLeftDistance < squaredDistanceTolerance)
                 {
@@ -599,9 +598,9 @@ bool MeshKernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
         }
 
         // increment points
-        int oldMSize = int(curvilinearMeshPoints.size());
         curvilinearMeshPoints.resize(endGridlineIndex + 1);
         const auto NSize = std::max(curvilinearMeshPoints[0].size(), maxN + maxNOther + 1);
+
         for (int i = 0; i < curvilinearMeshPoints.size(); i++)
         {
             curvilinearMeshPoints[i].resize(NSize);
@@ -848,9 +847,9 @@ bool MeshKernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
     return true;
 }
 
-bool MeshKernel::CurvilinearGridFromSplines::ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
-                                                        const std::vector<Point>& velocities,
-                                                        std::vector<double>& maximumGridLayerGrowTime)
+bool MeshKernel::CurvilinearGridFromSplines::ComputeMaximumGridLayerGrowTime( const std::vector<Point>& coordinates,
+                                                                              const std::vector<Point>& velocities,
+                                                                              std::vector<double>& maximumGridLayerGrowTime) const 
 {
     std::vector<double> edgeWidth(coordinates.size() - 1);
     std::vector<double> edgeIncrement(coordinates.size() - 1);
@@ -1161,7 +1160,7 @@ bool MeshKernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints
 bool MeshKernel::CurvilinearGridFromSplines::GetNeighbours( const std::vector<Point>& gridPoints,
                                                             int index,
                                                             int& currentLeftIndex,
-                                                            int& currentRightIndex)
+                                                            int& currentRightIndex) const
 {
     bool circularConnection = false;
     currentLeftIndex = index;

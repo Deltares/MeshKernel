@@ -44,18 +44,12 @@ namespace MeshKernel
     public:
 
         /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <returns></returns>
-        CurvilinearGridFromPolygon();
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="mesh">The input mesh</param>
         /// <param name="polygon">The input polygon</param>
         /// <returns></returns>
-        CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon);
+        explicit CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon);
 
         /// <summary>
         /// Compute curvilinear in a polygon (pol2curvi)

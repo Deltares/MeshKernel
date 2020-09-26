@@ -134,7 +134,7 @@ namespace MeshKernel
         /// <returns></returns>
         bool ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
                                              const std::vector<Point>& velocities,
-                                             std::vector<double>& maximumGridLayerGrowTime);
+                                             std::vector<double>& maximumGridLayerGrowTime) const;
 
         /// <summary>
         /// Copy growth velocities to the advancing front, add points at front corners corners (copy_vel_to_front)
@@ -183,7 +183,7 @@ namespace MeshKernel
         bool GetNeighbours(const std::vector<Point>& gridPoints, 
                            int index, 
                            int& currentLeftIndex, 
-                           int& currentRightIndex);
+                           int& currentRightIndex) const;
 
         /// <summary>
         /// Compute the edge grow velocities (comp_edgevel)
