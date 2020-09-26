@@ -71,7 +71,7 @@ namespace MeshKernel
                                        int isTriangulationRequired,
                                        int isAccountingForLandBoundariesRequired,
                                        int projectToLandBoundaryOption,
-                                       MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative );
+                                       const MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative );
 
         
         bool Initialize();

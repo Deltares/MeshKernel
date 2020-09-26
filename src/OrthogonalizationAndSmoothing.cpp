@@ -48,11 +48,11 @@ MeshKernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing( std::s
                                                                           int isTriangulationRequired,
                                                                           int isAccountingForLandBoundariesRequired,
                                                                           int projectToLandBoundaryOption,
-                                                                          MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative):
-    m_polygons(polygon),
+                                                                          const MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative):
+    m_mesh(mesh),
     m_smoother(smoother),
     m_orthogonalizer(orthogonalizer),
-    m_mesh(mesh),
+    m_polygons(polygon),
     m_landBoundaries(landBoundaries),
     m_isTriangulationRequired(isTriangulationRequired),
     m_isAccountingForLandBoundariesRequired(isAccountingForLandBoundariesRequired),
