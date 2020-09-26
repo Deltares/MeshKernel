@@ -157,14 +157,14 @@ namespace MeshKernel
         /// <param name="leftEdgeRatio"></param>
         /// <param name="rightEdgeRatio"></param>
         /// <returns></returns>
-        bool MaskFaces(const bool& meshBoundOnly,
-            std::vector<int>& landBoundaryFaces,
-            int startNodeLandBoundaryIndex,
-            int endNodeLandBoundaryindex,
-            int& leftIndex,
-            int& rightIndex,
-            double& leftEdgeRatio,
-            double& rightEdgeRatio);
+        bool MaskFaces( const bool& meshBoundOnly,
+                        std::vector<int>& landBoundaryFaces,
+                        int startNodeLandBoundaryIndex,
+                        int endNodeLandBoundaryindex,
+                        int& leftIndex,
+                        int& rightIndex,
+                        double& leftEdgeRatio,
+                        double& rightEdgeRatio );
 
         /// <summary>
         /// Check if a mesh edge is close to a land boundary segment (linkcrossedbyland)

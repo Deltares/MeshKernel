@@ -17,8 +17,7 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
     polygonPoints.push_back(MeshKernel::Point{ 507.503784, 494.630615 });
     polygonPoints.push_back(MeshKernel::Point{ 305.002533, 493.130615 });
 
-    auto polygon = std::make_shared<MeshKernel::Polygons>();
-    polygon->Set(polygonPoints, MeshKernel::Projections::cartesian);
+    auto polygon = std::make_shared<MeshKernel::Polygons>(polygonPoints, MeshKernel::Projections::cartesian);
 
     MeshKernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
 
@@ -64,8 +63,7 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithoutFourthSide)
     polygonPoints.push_back(MeshKernel::Point{ 507.503784, 494.630615 });
     polygonPoints.push_back(MeshKernel::Point{ 305.002533, 493.130615 });
 
-    auto polygon = std::make_shared<MeshKernel::Polygons>();
-    polygon->Set(polygonPoints, MeshKernel::Projections::cartesian);
+    auto polygon = std::make_shared<MeshKernel::Polygons>(polygonPoints, MeshKernel::Projections::cartesian);
 
     MeshKernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
 
@@ -113,8 +111,7 @@ TEST(CurvilinearGridFromPolygon, ComputeGridTriangle)
     polygonPoints.push_back(MeshKernel::Point{ 526.733398, 377.836578 });
     polygonPoints.push_back(MeshKernel::Point{ 444.095703, 436.746857 });
 
-    auto polygon = std::make_shared<MeshKernel::Polygons>();
-    polygon->Set(polygonPoints, MeshKernel::Projections::cartesian);
+    auto polygon = std::make_shared<MeshKernel::Polygons>(polygonPoints, MeshKernel::Projections::cartesian);
 
     MeshKernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
 

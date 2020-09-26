@@ -38,21 +38,14 @@ namespace MeshKernel
 {
     Polygons::Polygons() : m_numNodes(0), m_numAllocatedNodes(0)
     {
-        ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize);
-        m_numAllocatedNodes = m_nodes.size();
     }
 
-    bool Polygons::Set(const std::vector<Point>& polygon, Projections projection)
+    Polygons::Polygons(const std::vector<Point>& polygon, Projections projection) :
+        m_projection(projection)
     {
-        // always set the projection first
-        m_projection = projection;
+        ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize);
+        m_numAllocatedNodes = m_nodes.size();
         
-        // in no points to add, return
-        if (polygon.empty())
-        {
-            return true;
-        }
-
         // find the polygons in the current list of points 
         std::vector<std::vector<size_t>> indexes(polygon.size(), std::vector<size_t>(2,0));
         int pos = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue, indexes);
@@ -84,6 +77,7 @@ namespace MeshKernel
                 m_nodes[currentNodePosition] = { doubleMissingValue,doubleMissingValue };
                 currentNodePosition++;
             }
+            
             for (int n = indexes[p][0]; n <= indexes[p][1]; n++)
             {
                 m_nodes[currentNodePosition] = polygon[indexes[p][0] + indexInIndexes];
@@ -93,15 +87,13 @@ namespace MeshKernel
             m_indexses[numPolygons + p][0] = indexes[p][0] + numNodes;
             m_indexses[numPolygons + p][1] = indexes[p][1] + numNodes;
         }
-
-        return true;
     }
 
     /// copynetboundstopol
-    bool Polygons::MeshBoundaryToPolygon(Mesh& mesh,
-        int counterClockWise,
-        std::vector<Point>& meshBoundaryPolygon,
-        int& numNodesBoundaryPolygons)
+    bool Polygons::MeshBoundaryToPolygon( Mesh& mesh,
+                                          int counterClockWise,
+                                          std::vector<Point>& meshBoundaryPolygon,
+                                          int& numNodesBoundaryPolygons )
     {
         // Find faces
         mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -591,7 +583,7 @@ namespace MeshKernel
         }
 
         // set the new polygon
-        newPolygon.Set(newPolygonPoints, m_projection);
+        newPolygon = { newPolygonPoints, m_projection };
 
         return true;
     }

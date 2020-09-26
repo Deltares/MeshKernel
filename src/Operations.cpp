@@ -96,6 +96,10 @@ namespace MeshKernel
                             const double& separator, 
                             std::vector<std::vector<size_t>>& indexes )
     {
+        if (vec.empty()) 
+        {
+            return 0;
+        }
         // set an invalid index
         auto invalidIndex = std::numeric_limits<size_t>::max();
         for (int n = 0; n < indexes.size(); n++)

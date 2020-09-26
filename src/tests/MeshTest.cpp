@@ -78,7 +78,6 @@ TEST(Mesh, OneQuadTestConstructor)
 TEST(Mesh, MakeMeshInPolygon)
 {
     //1 Setup
-    MeshKernel::Polygons polygons;
     std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
@@ -88,7 +87,7 @@ TEST(Mesh, MakeMeshInPolygon)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    polygons.Set(nodes, MeshKernel::Projections::cartesian);
+    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::cartesian);
     
     MeshKernel::Mesh mesh;
     MeshKernelApi::MakeGridParametersNative makeGridParametersNative;
@@ -111,7 +110,6 @@ TEST(Mesh, MakeMeshInPolygon)
 TEST(Mesh, MakeMeshInPolygonSpherical)
 {
     //1 Setup
-    MeshKernel::Polygons polygons;
     std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
@@ -121,7 +119,7 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    polygons.Set(nodes, MeshKernel::Projections::spherical);
+    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::spherical);
 
     MeshKernel::Mesh mesh;
     MeshKernelApi::MakeGridParametersNative makeGridParametersNative;
@@ -144,10 +142,8 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
 TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
 {
     //1 Setup
-    MeshKernel::Polygons polygons;
     std::vector<MeshKernel::Point> nodes;
-
-    polygons.Set(nodes, MeshKernel::Projections::spherical);
+    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::spherical);
 
     MeshKernel::Mesh mesh;
     MeshKernelApi::MakeGridParametersNative makeGridParametersNative;
@@ -203,7 +199,6 @@ TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
 TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
 {
     // Prepare
-    MeshKernel::Polygons polygons;
     std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
@@ -213,7 +208,7 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    polygons.Set(nodes, MeshKernel::Projections::cartesian);
+    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;
@@ -250,7 +245,6 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
 TEST(Mesh, TriangulateSamples)
 {
     // Prepare
-    MeshKernel::Polygons polygons;
     std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 498.503152894023, 1645.82297461613 });
@@ -260,7 +254,7 @@ TEST(Mesh, TriangulateSamples)
     nodes.push_back({ 501.418832237663, 1642.90729527249 });
     nodes.push_back({ 498.503152894023, 1645.82297461613 });
 
-    polygons.Set(nodes, MeshKernel::Projections::cartesian);
+    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;

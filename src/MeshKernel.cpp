@@ -205,13 +205,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::Polygons polygon;
-        successful = polygon.Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
-        if (!successful)
-        {
-            return -1;
-        }
-
+        MeshKernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
         meshInstances[meshKernelId]->DeleteMesh(polygon, deletionOption, invertDeletion);
 
         return 0;
@@ -313,8 +307,7 @@ namespace MeshKernelApi
             nodes[i].y = geometryListNativePolygon.yCoordinates[i];
         }
 
-        auto polygon = std::make_shared<MeshKernel::Polygons>();
-        polygon->Set(nodes, meshInstances[meshKernelId]->m_projection);
+        auto polygon = std::make_shared<MeshKernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
 
         // build land boundary
         std::vector<MeshKernel::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
@@ -387,8 +380,7 @@ namespace MeshKernelApi
 
         auto orthogonalizer = std::make_shared<MeshKernel::Orthogonalizer>(meshInstances[meshKernelId]);
         auto smoother = std::make_shared<MeshKernel::Smoother>(meshInstances[meshKernelId]);
-        auto polygon = std::make_shared<MeshKernel::Polygons>();
-        polygon->Set(nodes, meshInstances[meshKernelId]->m_projection);
+        auto polygon = std::make_shared<MeshKernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
         auto landBoundary = std::make_shared<MeshKernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
 
         auto orthogonalizationInstance = std::make_shared<MeshKernel::OrthogonalizationAndSmoothing>( meshInstances[meshKernelId],
@@ -567,7 +559,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::Polygons polygon;
+
 
         std::vector<MeshKernel::Point> result;
         bool successful = ConvertGeometryListNativeToPointVector(geometryListNative, result);
@@ -576,11 +568,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        successful = polygon.Set(result, meshInstances[meshKernelId]->m_projection);
-        if(!successful)
-        {
-            return -1;
-        }
+        MeshKernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
 
         MeshKernel::Mesh mesh;
         successful = mesh.MakeMesh(makeGridParameters, polygon);
@@ -601,7 +589,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::Polygons polygon;
+        ;
 
         std::vector<MeshKernel::Point> result;
         bool successful = ConvertGeometryListNativeToPointVector(disposableGeometryListIn, result);
@@ -610,11 +598,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        successful = polygon.Set(result, meshInstances[meshKernelId]->m_projection);
-        if (!successful)
-        {
-            return -1;
-        }
+        MeshKernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
 
         std::vector<std::vector<MeshKernel::Point>> generatedPoints;
         successful = polygon.CreatePointsInPolygons(generatedPoints);
@@ -700,8 +684,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
+        MeshKernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         std::vector<MeshKernel::Point> refinedPolygon;
         successful = polygon.RefinePolygonPart(firstIndex, secondIndex, distance, refinedPolygon);
@@ -733,8 +716,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
+        MeshKernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         std::vector<MeshKernel::Point> refinedPolygon;
         successful = polygon.RefinePolygonPart(firstIndex, secondIndex, distance, refinedPolygon);
@@ -764,8 +746,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
+        MeshKernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         successful = meshInstances[meshKernelId]->MergeNodesInPolygon(polygon);
         if (!successful)
@@ -805,8 +786,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
+        MeshKernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         bool selectInside = inside == 1 ? true : false;
         successful = meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
@@ -842,8 +822,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::Polygons polygon;
-        polygon.Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
+        MeshKernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         bool selectInside = inside == 1 ? true : false;
         successful = meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
@@ -997,12 +976,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::Polygons polygon;
-        successful = polygon.Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
-        if (!successful)
-        {
-            return -1;
-        }
+        MeshKernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         MeshKernel::Polygons newPolygon;
         successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
@@ -1034,12 +1008,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        MeshKernel::Polygons polygon;
-        successful = polygon.Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
-        if (!successful)
-        {
-            return -1;
-        }
+        MeshKernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         MeshKernel::Polygons newPolygon;
         successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
@@ -1108,12 +1077,7 @@ namespace MeshKernelApi
         }
 
 
-        MeshKernel::Polygons polygon;
-        successful = polygon.Set(points, meshInstances[meshKernelId]->m_projection);
-        if (!successful)
-        {
-            return -1;
-        }
+        MeshKernel::Polygons polygon(points, meshInstances[meshKernelId]->m_projection);
 
         MeshKernel::MeshRefinement meshRefinement(meshInstances[meshKernelId]);
 
@@ -1311,8 +1275,7 @@ namespace MeshKernelApi
         }
 
         
-        MeshKernel::Polygons polygon;
-        polygon.Set(polygonNodes, meshInstances[meshKernelId]->m_projection);
+        MeshKernel::Polygons polygon(polygonNodes, meshInstances[meshKernelId]->m_projection);
 
         for (int i = 0; i < points.size(); i++)
         {
@@ -1400,8 +1363,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        auto polygon = std::make_shared<MeshKernel::Polygons>();
-        successful = polygon->Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
+        auto polygon = std::make_shared<MeshKernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
         if (!successful)
         {
             return -1;
@@ -1441,8 +1403,7 @@ namespace MeshKernelApi
             return -1;
         }
 
-        auto polygon = std::make_shared<MeshKernel::Polygons>();
-        successful = polygon->Set(polygonPoints, meshInstances[meshKernelId]->m_projection);
+        auto polygon = std::make_shared<MeshKernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
         if (!successful)
         {
             return -1;

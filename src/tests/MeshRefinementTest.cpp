@@ -243,8 +243,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     point.push_back({ 410.981399284167, 505.55492288947 });
     point.push_back({ 399.638169557229, 504.294564030922 });
 
-    MeshKernel::Polygons polygon;
-    polygon.Set(point, mesh->m_projection);
+    MeshKernel::Polygons polygon(point, mesh->m_projection);
 
     MeshKernel::MeshRefinement  meshRefinement(mesh);
     MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
@@ -546,8 +545,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
     point.push_back({ 45.0 ,-10.0 });
     point.push_back({ 25.0 ,-10.0 });
 
-    MeshKernel::Polygons polygon;
-    polygon.Set(point,mesh->m_projection);
+    MeshKernel::Polygons polygon(point,mesh->m_projection);
 
     MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
@@ -613,8 +611,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     point.push_back({ 9.90983606557378, 34.3852459016394 });
     point.push_back({ 9.09836065573771, 34.016393442623 });
 
-    MeshKernel::Polygons polygon;
-    polygon.Set(point, mesh->m_projection);
+    MeshKernel::Polygons polygon(point, mesh->m_projection);
 
     MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
