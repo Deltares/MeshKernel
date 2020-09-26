@@ -69,12 +69,6 @@ namespace MeshKernel
     private:
 
         /// <summary>
-        /// Transform non-triangular faces in triangular faces
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool TriangulateFaces();
-
-        /// <summary>
         /// Computes the change in topology functional and gets the nodes involved (comp_ntopo)
         /// </summary>
         /// <param name="edge">The current edge</param>

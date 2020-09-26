@@ -64,7 +64,7 @@ namespace MeshKernel
             onRing,
             cornerNode,
             hangingNode,
-            other              // e.g. a 1d node
+            other
         };
 
         /// <summary>
@@ -406,6 +406,12 @@ namespace MeshKernel
         /// </summary>
         /// <param name="nodeIndex">The node index for which sorting should take place</param>
         void SortEdgesInCounterClockWiseOrder(int nodeIndex);
+
+        /// <summary>
+        /// Transform non-triangular faces in triangular faces
+        /// </summary>
+        /// <returns>If the method succeeded</returns>
+        bool TriangulateFaces();
 
         // nodes
         std::vector<Point>              m_nodes;                    // The mesh nodes (xk, yk)

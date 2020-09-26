@@ -331,7 +331,7 @@ double MeshKernel::Splines::GetSplineLength(int index,
             rightPointCoordinateOnSpline = endIndex;
         }
 
-        Point rightPoint{ doubleMissingValue, doubleMissingValue };;
+        Point rightPoint{ doubleMissingValue, doubleMissingValue };
         successful = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], rightPointCoordinateOnSpline, rightPoint);
         if (!successful)
         {

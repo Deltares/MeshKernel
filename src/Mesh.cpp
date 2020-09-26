@@ -45,9 +45,9 @@ MeshKernel::Mesh::Mesh()
 }
 
 bool MeshKernel::Mesh::Set(const std::vector<Edge>& edges, 
-    const std::vector<Point>& nodes, 
-    Projections projection,
-    AdministrationOptions administration)
+                           const std::vector<Point>& nodes, 
+                           Projections projection,
+                           AdministrationOptions administration)
 {
     // copy edges and nodes
     m_edges = edges;
@@ -209,7 +209,6 @@ bool MeshKernel::Mesh::Administrate(AdministrationOptions administrationOption)
     return true;
 }
 
-//gridtonet
 MeshKernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
 {
 
@@ -2201,5 +2200,27 @@ bool MeshKernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
         }
     }
 
+    return true;
+}
+
+bool MeshKernel::Mesh::TriangulateFaces()
+{
+    for (int i = 0; i < GetNumFaces(); i++)
+    {
+        const auto NumEdges = GetNumFaceEdges(i);
+
+        if (NumEdges < 4)
+        {
+            continue;
+        }
+
+        int indexFirstNode = m_facesNodes[i][0];
+        for (int j = 2; j < NumEdges - 1; j++)
+        {
+            const auto nodeIndex = m_facesNodes[i][j];
+            int newEdgeIndex;
+            ConnectNodes(indexFirstNode, nodeIndex, newEdgeIndex);
+        }
+    }
     return true;
 }
