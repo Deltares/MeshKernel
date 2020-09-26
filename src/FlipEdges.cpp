@@ -293,12 +293,7 @@ bool MeshKernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
     int count = 0;
     for (int i = 0; i < m_mesh->m_nodesNumEdges[firstNode] + 1; i++)
     {
-        if (i <= kk - 1)
-        {
-            m_mesh->m_nodesEdges[firstNode][count] = m_mesh->m_nodesEdges[firstNode][i];
-            count++;
-        }
-        else if (i > kk)
+        if (i <= kk - 1 || i > kk)
         {
             m_mesh->m_nodesEdges[firstNode][count] = m_mesh->m_nodesEdges[firstNode][i];
             count++;
