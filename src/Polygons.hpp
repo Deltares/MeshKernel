@@ -48,8 +48,8 @@ namespace MeshKernel
 
         Polygons();
 
-        bool Set( const std::vector<Point>& polygon, 
-                  Projections projection);
+        Polygons(const std::vector<Point>& polygon,
+                 Projections projection);
 
         /// copynetboundstopol
         bool MeshBoundaryToPolygon(Mesh& mesh,
