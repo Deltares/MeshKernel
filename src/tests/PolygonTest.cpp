@@ -53,13 +53,12 @@ TEST(Polygons, MeshBoundaryToPolygon)
     auto mesh=std::make_shared<MeshKernel::Mesh>();
     mesh->Set(edges, nodes, MeshKernel::Projections::cartesian);
 
-    auto polygons =std::make_shared<MeshKernel::Polygons>();
     const std::vector<MeshKernel::Point> polygon;
-    std::vector<MeshKernel::Point> meshBoundaryPolygon;
+    auto polygons = std::make_shared<MeshKernel::Polygons>(polygon, MeshKernel::Projections::cartesian);
+    
     int numNodesBoundaryPolygons;
-    polygons->Set(polygon, MeshKernel::Projections::cartesian);
+    std::vector<MeshKernel::Point> meshBoundaryPolygon;
     polygons->MeshBoundaryToPolygon(*mesh, 0, meshBoundaryPolygon, numNodesBoundaryPolygons);
-
 
     //constexpr double tolerance = 1e-2;
 
@@ -89,7 +88,7 @@ TEST(Polygons, MeshBoundaryToPolygon)
 TEST(Polygons, CreatePointsInPolygons)
 {
     // Prepare
-    MeshKernel::Polygons  polygons;
+
     std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
@@ -99,7 +98,7 @@ TEST(Polygons, CreatePointsInPolygons)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    polygons.Set(nodes, MeshKernel::Projections::cartesian);
+    MeshKernel::Polygons  polygons(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;
@@ -128,7 +127,6 @@ TEST(Polygons, CreatePointsInPolygons)
 TEST(Polygons, RefinePolygon)
 {
     // Prepare
-    MeshKernel::Polygons polygons;
     std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 0,0 });
@@ -137,7 +135,7 @@ TEST(Polygons, RefinePolygon)
     nodes.push_back({ 0, 3 });
     nodes.push_back({ 0, 0 });
 
-    polygons.Set(nodes, MeshKernel::Projections::cartesian);
+    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;
@@ -180,7 +178,6 @@ TEST(Polygons, RefinePolygon)
 TEST(Polygons, RefinePolygonOneSide)
 {
     // Prepare
-    MeshKernel::Polygons polygons;
     std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 0,0 });
@@ -189,7 +186,7 @@ TEST(Polygons, RefinePolygonOneSide)
     nodes.push_back({ 0, 3 });
     nodes.push_back({ 0, 0 });
 
-    polygons.Set(nodes, MeshKernel::Projections::cartesian);
+    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;
@@ -220,7 +217,6 @@ TEST(Polygons, RefinePolygonOneSide)
 TEST(Polygons, RefinePolygonLongerSquare)
 {
     // Prepare
-    MeshKernel::Polygons polygons;
     std::vector<MeshKernel::Point> nodes;
 
     nodes.push_back({ 0, 0 });
@@ -229,7 +225,7 @@ TEST(Polygons, RefinePolygonLongerSquare)
     nodes.push_back({ 3.5, 0 });
     nodes.push_back({ 0, 0 });
 
-    polygons.Set(nodes, MeshKernel::Projections::cartesian);
+    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::cartesian);
 
     // Execute
     std::vector<std::vector<MeshKernel::Point>> generatedPoints;
@@ -283,14 +279,13 @@ TEST(Polygon, OffsetCopy)
     nodes.push_back({ 308.002533, 397.879639 });
     nodes.push_back({ 296.752472, 397.879639 });
 
-    MeshKernel::Polygons polygon;
-    bool successful = polygon.Set(nodes, MeshKernel::Projections::cartesian);
-    ASSERT_TRUE(successful);
+    MeshKernel::Polygons polygon(nodes, MeshKernel::Projections::cartesian);
+
 
     MeshKernel::Polygons newPolygon;
     double distance = 10.0;
     bool innerAndOuter = false;
-    successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
+    bool successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
 
     const double tolerance = 1e-5;
 

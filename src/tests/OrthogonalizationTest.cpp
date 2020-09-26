@@ -43,7 +43,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
     orthogonalizationParametersNative.Smoothorarea = 1.0;
 
     // Execute
-    //auto mesh=std::make_shared<GridGeom::Mesh>();
     auto mesh = std::make_shared < MeshKernel::Mesh>();
     mesh->Set(edges, nodes, MeshKernel::Projections::cartesian);
 
@@ -170,6 +169,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     auto orthogonalizer = std::make_shared<MeshKernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<MeshKernel::Smoother>(mesh);
     auto polygon = std::make_shared<MeshKernel::Polygons>();
+
     std::vector<MeshKernel::Point> landBoundary;
     auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
 
@@ -244,11 +244,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     auto smoother = std::make_shared<MeshKernel::Smoother>(mesh);
 
     std::vector<MeshKernel::Point> landBoundary;
-    auto polygon = std::make_shared<MeshKernel::Polygons>();
-    polygon->Set(nodes, MeshKernel::Projections::cartesian);
-
+    auto polygon = std::make_shared<MeshKernel::Polygons>(nodes, MeshKernel::Projections::cartesian);
     auto landboundaries = std::make_shared<MeshKernel::LandBoundaries>(landBoundary, mesh, polygon);
-
 
     MeshKernel::OrthogonalizationAndSmoothing orthogonalization( mesh, 
                                                                  smoother,
