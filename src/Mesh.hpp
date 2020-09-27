@@ -32,7 +32,7 @@
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
 
-namespace MeshKernel 
+namespace meshkernel 
 {
     // Forward declarations
     class CurvilinearGrid;
@@ -169,7 +169,7 @@ namespace MeshKernel
         /// <param name="makeGridParametersNative">The structure containing the make grid parameters </param>
         /// <param name="polygons">The polygon to account for</param>
         /// <returns>If the method succeeded</returns>
-        bool MakeMesh(const MeshKernelApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
+        bool MakeMesh(const meshkernelapi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
 
         /// <summary>
         /// Deletes a mesh in a polygon, using several options (delnet)

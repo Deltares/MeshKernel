@@ -38,11 +38,11 @@
 #include "Entities.hpp"
 #include "Smoother.hpp"
 
-MeshKernel::Smoother::Smoother(std::shared_ptr<Mesh> mesh): m_mesh(mesh)
+meshkernel::Smoother::Smoother(std::shared_ptr<Mesh> mesh): m_mesh(mesh)
 {
 }
 
-bool MeshKernel::Smoother::Compute()
+bool meshkernel::Smoother::Compute()
 {
     bool successful = true;
 
@@ -66,7 +66,7 @@ bool MeshKernel::Smoother::Compute()
     return true;
 }
 
-bool MeshKernel::Smoother::ComputeTopologies()
+bool meshkernel::Smoother::ComputeTopologies()
 {
     bool successful = Initialize();
 
@@ -113,7 +113,7 @@ bool MeshKernel::Smoother::ComputeTopologies()
 
 }
 
-bool MeshKernel::Smoother::ComputeOperators()
+bool meshkernel::Smoother::ComputeOperators()
 {
     // allocate local operators for unique topologies
     m_Az.resize(m_numTopologies);
@@ -163,7 +163,7 @@ bool MeshKernel::Smoother::ComputeOperators()
     return successful;
 }
 
-bool MeshKernel::Smoother::ComputeWeights()
+bool meshkernel::Smoother::ComputeWeights()
 {
     std::vector<std::vector<double>> J(m_mesh->GetNumNodes() , std::vector<double>(4, 0));    // Jacobian
     std::vector<std::vector<double>> Ginv(m_mesh->GetNumNodes() , std::vector<double>(4, 0)); // Mesh monitor matrices
@@ -294,7 +294,7 @@ bool MeshKernel::Smoother::ComputeWeights()
     return true;
 }
 
-bool MeshKernel::Smoother::ComputeOperatorsNode(int currentNode)
+bool meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
 {
     // the current topology index
     const int currentTopology = m_nodeTopologyMapping[currentNode];
@@ -578,7 +578,7 @@ bool MeshKernel::Smoother::ComputeOperatorsNode(int currentNode)
 }
 
 
-bool MeshKernel::Smoother::ComputeNodeXiEta( int currentNode,
+bool meshkernel::Smoother::ComputeNodeXiEta( int currentNode,
                                            const int& numSharedFaces,
                                            const int& numConnectedNodes)
 {
@@ -845,7 +845,7 @@ bool MeshKernel::Smoother::ComputeNodeXiEta( int currentNode,
     return true;
 }
 
-bool MeshKernel::Smoother::NodeAdministration(const int currentNode, 
+bool meshkernel::Smoother::NodeAdministration(const int currentNode, 
                                             int& numSharedFaces, 
                                             int& numConnectedNodes)
 {
@@ -999,7 +999,7 @@ bool MeshKernel::Smoother::NodeAdministration(const int currentNode,
 }
 
 
-double MeshKernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge)
+double meshkernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge)
 {
     double angle = M_PI * (1 - 2.0 / double(numFaceNodes));
 
@@ -1014,14 +1014,14 @@ double MeshKernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, d
     return angle;
 }
 
-double MeshKernel::Smoother::MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents)
+double meshkernel::Smoother::MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents)
 {
     double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[2] * x[0] + matCoefficents[3] * x[1]) * y[1];
     return norm;
 }
 
 
-bool MeshKernel::Smoother::Initialize()
+bool meshkernel::Smoother::Initialize()
 {
     // local matrices caches
     m_numConnectedNodes.resize(m_mesh->GetNumNodes());
@@ -1076,7 +1076,7 @@ bool MeshKernel::Smoother::Initialize()
 }
 
 
-bool MeshKernel::Smoother::AllocateNodeOperators(int topologyIndex)
+bool meshkernel::Smoother::AllocateNodeOperators(int topologyIndex)
 {
     int numSharedFaces = m_numTopologyFaces[topologyIndex];
     int numConnectedNodes = m_numTopologyNodes[topologyIndex];
@@ -1110,7 +1110,7 @@ bool MeshKernel::Smoother::AllocateNodeOperators(int topologyIndex)
 }
 
 
-bool MeshKernel::Smoother::SaveNodeTopologyIfNeeded(int currentNode,
+bool meshkernel::Smoother::SaveNodeTopologyIfNeeded(int currentNode,
                                                int numSharedFaces,
                                                int numConnectedNodes)
 {
@@ -1171,7 +1171,7 @@ bool MeshKernel::Smoother::SaveNodeTopologyIfNeeded(int currentNode,
     return true;
 }
 
-bool MeshKernel::Smoother::ComputeJacobian(int currentNode, std::vector<double>& J) const
+bool meshkernel::Smoother::ComputeJacobian(int currentNode, std::vector<double>& J) const
 {
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
     const auto numNodes = m_numTopologyNodes[currentTopology];

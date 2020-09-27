@@ -40,11 +40,11 @@
 #include "Entities.hpp"
 #include "MakeGridParametersNative.hpp"
 
-MeshKernel::Mesh::Mesh() 
+meshkernel::Mesh::Mesh() 
 {
 }
 
-bool MeshKernel::Mesh::Set(const std::vector<Edge>& edges, 
+bool meshkernel::Mesh::Set(const std::vector<Edge>& edges, 
                            const std::vector<Point>& nodes, 
                            Projections projection,
                            AdministrationOptions administration)
@@ -63,7 +63,7 @@ bool MeshKernel::Mesh::Set(const std::vector<Edge>& edges,
     return true;
 };
 
-bool MeshKernel::Mesh::RemoveInvalidNodesAndEdges()
+bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
 {
 
     // Invalidate not connected nodes
@@ -152,7 +152,7 @@ bool MeshKernel::Mesh::RemoveInvalidNodesAndEdges()
     return true;
 }
 
-bool MeshKernel::Mesh::Administrate(AdministrationOptions administrationOption)
+bool meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 {
 
     RemoveInvalidNodesAndEdges();
@@ -209,7 +209,7 @@ bool MeshKernel::Mesh::Administrate(AdministrationOptions administrationOption)
     return true;
 }
 
-MeshKernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
+meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
 {
 
     if (curvilinearGrid.m_grid.size() == 0)
@@ -268,7 +268,7 @@ MeshKernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
 
 }
 
-MeshKernel::Mesh::Mesh(std::vector<Point>& inputNodes, const MeshKernel::Polygons& polygons, Projections projection)
+meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygons& polygons, Projections projection)
 {
     m_projection = projection;
     std::vector<double> xLocalPolygon(inputNodes.size());
@@ -402,7 +402,7 @@ MeshKernel::Mesh::Mesh(std::vector<Point>& inputNodes, const MeshKernel::Polygon
 
 }
 
-bool MeshKernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes)
+bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes)
 {
     // Used for triangular grids
     constexpr double triangleMinimumAngle = 5.0;
@@ -435,7 +435,7 @@ bool MeshKernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const st
 }
 
 
-bool MeshKernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
+bool meshkernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
 {
     Administrate(administrationOption);
 
@@ -517,7 +517,7 @@ bool MeshKernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
     return true;
 }
 
-void MeshKernel::Mesh::NodeAdministration()
+void meshkernel::Mesh::NodeAdministration()
 {
     // assume no duplicated links
     for (int e = 0; e < GetNumEdges(); e++)
@@ -578,7 +578,7 @@ void MeshKernel::Mesh::NodeAdministration()
 };
 
 
-void MeshKernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
+void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 {
     if (!m_nodes[node].IsValid())
     {
@@ -587,7 +587,7 @@ void MeshKernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 
     double phi0 = 0.0;
     double phi;
-    m_edgeAngles.resize(MeshKernel::maximumNumberOfEdgesPerNode);
+    m_edgeAngles.resize(meshkernel::maximumNumberOfEdgesPerNode);
     std::fill(m_edgeAngles.begin(), m_edgeAngles.end(), 0.0);
     for (auto edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
     {
@@ -649,7 +649,7 @@ void MeshKernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 
 }
 
-bool MeshKernel::Mesh::FindFacesRecursive( int startingNode,
+bool meshkernel::Mesh::FindFacesRecursive( int startingNode,
                                          int node,
                                          int index,
                                          int previusEdge,
@@ -760,7 +760,7 @@ bool MeshKernel::Mesh::FindFacesRecursive( int startingNode,
 
 }
 
-void MeshKernel::Mesh::FindFaces()
+void meshkernel::Mesh::FindFaces()
 {
     for (int numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
@@ -789,7 +789,7 @@ void MeshKernel::Mesh::FindFaces()
     }
 }
 
-void MeshKernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
+void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
 {
     m_facesCircumcenters.resize(GetNumFaces());
     m_faceArea.resize(GetNumFaces());
@@ -855,7 +855,7 @@ void MeshKernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
     }
 }
 
-bool MeshKernel::Mesh::ClassifyNodes()
+bool meshkernel::Mesh::ClassifyNodes()
 {
     m_nodesTypes.resize(GetNumNodes(), 0);
     std::fill(m_nodesTypes.begin(), m_nodesTypes.end(), 0);
@@ -951,7 +951,7 @@ bool MeshKernel::Mesh::ClassifyNodes()
 }
 
 
-bool MeshKernel::Mesh::MakeMesh(const MeshKernelApi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons)
+bool meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons)
 {
     CurvilinearGrid CurvilinearGrid;
     m_projection = polygons.m_projection;
@@ -1104,8 +1104,7 @@ bool MeshKernel::Mesh::MakeMesh(const MeshKernelApi::MakeGridParametersNative& m
     return true;
 }
 
-///MERGENODESINPOLYGON
-bool MeshKernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
+bool meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 {
     // first filter the nodes in polygon
     std::vector<Point> filteredNodes(GetNumNodes());
@@ -1153,8 +1152,7 @@ bool MeshKernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     return true;
 }
 
-///mergenodes
-bool MeshKernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
+bool meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
 {
     if(firstNodeIndex>=GetNumNodes() || secondNodeIndex >= GetNumNodes())
     {
@@ -1207,7 +1205,7 @@ bool MeshKernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     // add all valid edges starting at firstNode are assigned to the second node
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
-        auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
+        const auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
         if (m_edges[edgeIndex].first >= 0)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
@@ -1235,7 +1233,7 @@ bool MeshKernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     return true;
 }
 
-bool MeshKernel::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
+bool meshkernel::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
 {
     int edgeIndex;
     bool successful = FindEdge(startNode, endNode, edgeIndex);
@@ -1258,7 +1256,7 @@ bool MeshKernel::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeInde
     return true;
 }
 
-bool MeshKernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree)
+bool meshkernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree)
 {
     int newSize = GetNumNodes() + 1;
     newNodeIndex = GetNumNodes();
@@ -1281,7 +1279,7 @@ bool MeshKernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex, bool
     return true;
 }
 
-bool MeshKernel::Mesh::DeleteNode(int nodeIndex, bool updateRTree)
+bool meshkernel::Mesh::DeleteNode(int nodeIndex, bool updateRTree)
 {
     if(nodeIndex>=GetNumNodes())
     {
@@ -1305,7 +1303,7 @@ bool MeshKernel::Mesh::DeleteNode(int nodeIndex, bool updateRTree)
     return true;
 }
 
-bool MeshKernel::Mesh::RefreshNodesRTreeIfNeeded()
+bool meshkernel::Mesh::RefreshNodesRTreeIfNeeded()
 {
     if (m_nodesRTree.Empty())
     {
@@ -1323,7 +1321,7 @@ bool MeshKernel::Mesh::RefreshNodesRTreeIfNeeded()
     return true;
 }
 
-bool MeshKernel::Mesh::DeleteEdge(int edgeIndex)
+bool meshkernel::Mesh::DeleteEdge(int edgeIndex)
 {
     if(edgeIndex<0)
     {
@@ -1337,7 +1335,7 @@ bool MeshKernel::Mesh::DeleteEdge(int edgeIndex)
 }
 
 
-bool MeshKernel::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numClosedPolygonNodes) const
+bool meshkernel::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numClosedPolygonNodes) const
 {
     auto numFaceNodes = GetNumFaceEdges(faceIndex);
     if (polygonNodesCache.size() < numFaceNodes + 1)
@@ -1357,7 +1355,7 @@ bool MeshKernel::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& poly
 }
 
 
-bool MeshKernel::Mesh::FaceClosedPolygon(int faceIndex, 
+bool meshkernel::Mesh::FaceClosedPolygon(int faceIndex, 
     std::vector<Point>& polygonNodesCache, 
     std::vector<int>& localNodeIndexsesCache, 
     std::vector<int>& edgeIndexsesCache,
@@ -1394,7 +1392,7 @@ bool MeshKernel::Mesh::FaceClosedPolygon(int faceIndex,
 }
 
 
-bool MeshKernel::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
+bool meshkernel::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
 {
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
     for (int i = 0; i < GetNumNodes(); ++i)
@@ -1414,7 +1412,7 @@ bool MeshKernel::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
     return true;
 }
 
-bool MeshKernel::Mesh::ComputeEdgeLengths()
+bool meshkernel::Mesh::ComputeEdgeLengths()
 {
     auto numEdges = GetNumEdges();
     m_edgeLengths.resize(numEdges, doubleMissingValue);
@@ -1427,7 +1425,7 @@ bool MeshKernel::Mesh::ComputeEdgeLengths()
     return true;
 }
 
-bool MeshKernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
+bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
 {
     for (int n = 0; n < GetNumFaceEdges(faceIndex); n++)
     {
@@ -1439,7 +1437,7 @@ bool MeshKernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
     return false;
 }
 
-bool MeshKernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const
+bool meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const
 {
     auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
     auto firstEdgeEdgeSecondNode = m_edges[firstEdgeIndex].second;
@@ -1467,7 +1465,7 @@ bool MeshKernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, i
     return true;
 }
 
-bool MeshKernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const
+bool meshkernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const
 {
     if (firstNodeIndex < 0 || secondNodeIndex < 0)
     {
@@ -1488,7 +1486,7 @@ bool MeshKernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& ed
     return true;
 }
 
-bool MeshKernel::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
+bool meshkernel::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
 {
 
     double minx = std::numeric_limits<double>::max();
@@ -1511,7 +1509,7 @@ bool MeshKernel::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
     return true;
 }
 
-bool MeshKernel::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
+bool meshkernel::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
 {
     if(m_projection==Projections::spherical && maxx - minx > 180.0)
     {
@@ -1533,7 +1531,7 @@ bool MeshKernel::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
 }
 
 
-bool MeshKernel::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexIndex)
+bool meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexIndex)
 {
     if (GetNumNodes() == 0)
     {
@@ -1559,7 +1557,7 @@ bool MeshKernel::Mesh::GetNodeIndex(Point point, double searchRadius, int& verte
     return true;
 }
 
-int MeshKernel::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius)
+int meshkernel::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius)
 {
     // linear search of the closest edge. The alternative is to mantain an rtree also for edge centers
     int edgeIndex = -1;
@@ -1588,7 +1586,7 @@ int MeshKernel::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius)
     return edgeIndex;
 }
 
-bool MeshKernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)
+bool meshkernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)
 {
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
@@ -1679,7 +1677,7 @@ bool MeshKernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inv
     return true;
 }
 
-bool MeshKernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion)
+bool meshkernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion)
 {
     if (deletionOption == AllVerticesInside)
     {
@@ -1774,7 +1772,7 @@ bool MeshKernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, 
     return true;
 };
 
-bool MeshKernel::Mesh::MoveNode(Point newPoint, int nodeindex)
+bool meshkernel::Mesh::MoveNode(Point newPoint, int nodeindex)
 {
     Point nodeToMove = m_nodes[nodeindex];
 
@@ -1797,7 +1795,7 @@ bool MeshKernel::Mesh::MoveNode(Point newPoint, int nodeindex)
     return true;
 }
 
-MeshKernel::Mesh& MeshKernel::Mesh::operator+=(Mesh const& rhs)
+meshkernel::Mesh& meshkernel::Mesh::operator+=(Mesh const& rhs)
 {
     if (m_projection != rhs.m_projection || rhs.GetNumNodes() == 0 || rhs.GetNumEdges() == 0)
     {
@@ -1838,7 +1836,7 @@ MeshKernel::Mesh& MeshKernel::Mesh::operator+=(Mesh const& rhs)
     return *this;
 }
 
-bool MeshKernel::Mesh::ComputeNodeMaskFromEdgeMask()
+bool meshkernel::Mesh::ComputeNodeMaskFromEdgeMask()
 {
     if (m_edgeMask.size() != GetNumEdges() || m_nodeMask.size() != GetNumNodes())
     {
@@ -1870,7 +1868,7 @@ bool MeshKernel::Mesh::ComputeNodeMaskFromEdgeMask()
     return true;
 }
 
-bool MeshKernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
+bool meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
     std::vector<Point>& middlePoints,
     std::vector<Point>& normals,
     int numNodes,
@@ -1996,7 +1994,7 @@ bool MeshKernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
     return true;
 }
 
-bool MeshKernel::Mesh::ComputeNodeNeighbours() 
+bool meshkernel::Mesh::ComputeNodeNeighbours() 
 {
     m_maxNumNeighbours = *(std::max_element(m_nodesNumEdges.begin(), m_nodesNumEdges.end()));
     m_maxNumNeighbours += 1;
@@ -2015,7 +2013,7 @@ bool MeshKernel::Mesh::ComputeNodeNeighbours()
     return true;
 }
 
-bool MeshKernel::Mesh::GetOrthogonality(double* orthogonality)
+bool meshkernel::Mesh::GetOrthogonality(double* orthogonality)
 {
     for (int e = 0; e < GetNumEdges(); e++)
     {
@@ -2043,7 +2041,7 @@ bool MeshKernel::Mesh::GetOrthogonality(double* orthogonality)
     return true;
 }
 
-bool MeshKernel::Mesh::GetSmoothness(double* smoothness)
+bool meshkernel::Mesh::GetSmoothness(double* smoothness)
 {
     for (int e = 0; e < GetNumEdges(); e++)
     {
@@ -2075,7 +2073,7 @@ bool MeshKernel::Mesh::GetSmoothness(double* smoothness)
     return true;
 }
 
-bool MeshKernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
+bool meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
 {
     std::vector<std::vector<double>> averageEdgesLength(GetNumEdges(), std::vector<double>(2, doubleMissingValue));
     std::vector<double> averageFlowEdgesLength(GetNumEdges(), doubleMissingValue);
@@ -2203,7 +2201,7 @@ bool MeshKernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
     return true;
 }
 
-bool MeshKernel::Mesh::TriangulateFaces()
+bool meshkernel::Mesh::TriangulateFaces()
 {
     for (int i = 0; i < GetNumFaces(); i++)
     {

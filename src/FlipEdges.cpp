@@ -37,13 +37,13 @@
 #include "FlipEdges.hpp"
 #include "LandBoundaries.hpp"
 
-MeshKernel::FlipEdges::FlipEdges() :
+meshkernel::FlipEdges::FlipEdges() :
     m_mesh(nullptr),
     m_landBoundaries(nullptr)
 {
 }
 
-MeshKernel::FlipEdges::FlipEdges( std::shared_ptr<Mesh> mesh, 
+meshkernel::FlipEdges::FlipEdges( std::shared_ptr<Mesh> mesh, 
                                   std::shared_ptr<LandBoundaries> landBoundary, 
                                   bool triangulateFaces, 
                                   bool projectToLandBoundary ) : 
@@ -65,7 +65,7 @@ MeshKernel::FlipEdges::FlipEdges( std::shared_ptr<Mesh> mesh,
     }
 };
 
-bool MeshKernel::FlipEdges::Compute()
+bool meshkernel::FlipEdges::Compute()
 {
 
     bool successful = m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -276,7 +276,7 @@ bool MeshKernel::FlipEdges::Compute()
     return successful;
 }
 
-bool MeshKernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
+bool meshkernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
 {
     // Update nod, delete edge from m_mesh->m_nodesEdges[firstNode]
     int kk = 0;
@@ -304,7 +304,7 @@ bool MeshKernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
     return true;
 }
 
-bool MeshKernel::FlipEdges::ComputeTopologyFunctional( int edge,
+bool meshkernel::FlipEdges::ComputeTopologyFunctional( int edge,
                                                        int& nodeLeft,
                                                        int& nodeRight,
                                                        int& topologyFunctional ) const
@@ -423,7 +423,7 @@ bool MeshKernel::FlipEdges::ComputeTopologyFunctional( int edge,
 }
 
 //comp_nnow
-int MeshKernel::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const
+int meshkernel::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const
 {
     if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] < 0)
     {
@@ -547,7 +547,7 @@ int MeshKernel::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, i
         
 };
 
-int MeshKernel::FlipEdges::OptimalNumberOfConnectedNodes(int index) const
+int meshkernel::FlipEdges::OptimalNumberOfConnectedNodes(int index) const
 {
     int optimalNumber = 6;
     if (m_mesh->m_nodesTypes[index] == 2)

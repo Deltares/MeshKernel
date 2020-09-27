@@ -28,7 +28,7 @@
 #pragma once
 #include <vector>
 
-namespace MeshKernel
+namespace meshkernel
 {
     class Mesh;
 

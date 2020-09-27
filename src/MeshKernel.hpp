@@ -45,7 +45,7 @@
 #endif
 
 // contains all mesh instances
-namespace MeshKernelApi
+namespace meshkernelapi
 {
 #ifdef __cplusplus
     extern "C"

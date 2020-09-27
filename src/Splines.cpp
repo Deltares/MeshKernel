@@ -37,16 +37,16 @@
 #include "Splines.hpp"
 #include "CurvilinearGrid.hpp"
 
-MeshKernel::Splines::Splines() : m_projection(Projections::cartesian)
+meshkernel::Splines::Splines() : m_projection(Projections::cartesian)
 {
 };
 
-MeshKernel::Splines::Splines(Projections projection) : m_projection(projection)
+meshkernel::Splines::Splines(Projections projection) : m_projection(projection)
 {
 };
 
 /// add a new spline, return the index
-bool MeshKernel::Splines::AddSpline(const std::vector<Point>& splines, size_t start, size_t size)
+bool meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t start, size_t size)
 {
     ResizeVectorIfNeededWithMinimumSize(m_numSplines + 1, m_splineNodes, m_allocationSize, std::vector<Point>(10, { doubleMissingValue, doubleMissingValue }));
 
@@ -73,7 +73,7 @@ bool MeshKernel::Splines::AddSpline(const std::vector<Point>& splines, size_t st
     return true;
 }
 
-bool MeshKernel::Splines::DeleteSpline(int splineIndex)
+bool meshkernel::Splines::DeleteSpline(int splineIndex)
 {
     m_splineNodes.erase(m_splineNodes.begin() + splineIndex);
     m_numSplineNodes.erase(m_numSplineNodes.begin() + splineIndex);
@@ -84,7 +84,7 @@ bool MeshKernel::Splines::DeleteSpline(int splineIndex)
 }
 
 /// add a new spline point in an existing spline
-bool MeshKernel::Splines::AddPointInExistingSpline(int splineIndex, const Point& point)
+bool meshkernel::Splines::AddPointInExistingSpline(int splineIndex, const Point& point)
 {
     if (splineIndex > m_numSplines)
     {
@@ -98,7 +98,7 @@ bool MeshKernel::Splines::AddPointInExistingSpline(int splineIndex, const Point&
     return true;
 }
 
-bool MeshKernel::Splines::GetSplinesIntersection(int first, 
+bool meshkernel::Splines::GetSplinesIntersection(int first, 
                                                int second,
                                                double& crossProductIntersection,
                                                Point& intersectionPoint,
@@ -294,7 +294,7 @@ bool MeshKernel::Splines::GetSplinesIntersection(int first,
     return false;
 }
 
-double MeshKernel::Splines::GetSplineLength(int index,
+double meshkernel::Splines::GetSplineLength(int index,
                                           double startIndex,
                                           double endIndex,
                                           int numSamples,
@@ -352,7 +352,7 @@ double MeshKernel::Splines::GetSplineLength(int index,
     return splineLength;
 }
 
-bool MeshKernel::Splines::ComputeCurvatureOnSplinePoint( int splineIndex,
+bool meshkernel::Splines::ComputeCurvatureOnSplinePoint( int splineIndex,
                                                        double adimensionalPointCoordinate,
                                                        double& curvatureFactor,
                                                        Point& normalVector,
@@ -402,7 +402,7 @@ bool MeshKernel::Splines::ComputeCurvatureOnSplinePoint( int splineIndex,
     return true;
 }
 
-bool MeshKernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline, int numNodes, std::vector<Point>& coordinatesDerivatives)
+bool meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline, int numNodes, std::vector<Point>& coordinatesDerivatives)
 {
     std::vector<Point> u(numNodes);
     u[0] = { 0.0, 0.0 };
@@ -428,7 +428,7 @@ bool MeshKernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline
     return true;
 }
 
-bool MeshKernel::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, int numNodes, std::vector<double>& coordinatesDerivatives)
+bool meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, int numNodes, std::vector<double>& coordinatesDerivatives)
 {
     std::vector<double> u(numNodes);
     u[0] = 0.0;
@@ -452,14 +452,14 @@ bool MeshKernel::Splines::SecondOrderDerivative(const std::vector<double>& coord
     return true;
 }
 
-bool MeshKernel::Splines::InterpolatePointsOnSpline( int index,
+bool meshkernel::Splines::InterpolatePointsOnSpline( int index,
                                                      double maximumGridHeight,
                                                      bool isSpacingCurvatureAdapted,
                                                      const std::vector<double>& distances,
                                                      std::vector<Point>& points,
                                                      std::vector<double>& adimensionalDistances)
 {
-    MeshKernel::FuncDimensionalToAdimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
+    meshkernel::FuncDimensionalToAdimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
 
     for (int i = 0; i < distances.size(); i++)
     {
