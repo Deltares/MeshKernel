@@ -32,7 +32,7 @@
 #endif
 #include <math.h> 
 
-namespace MeshKernel
+namespace meshkernel
 {
     // missing value
     static constexpr double doubleMissingValue = -999.0;

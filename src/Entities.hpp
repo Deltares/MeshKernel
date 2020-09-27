@@ -32,7 +32,7 @@
 #include "Constants.cpp"
 #include <cmath>
 
-namespace MeshKernel
+namespace meshkernel
 {
 
     enum class Projections

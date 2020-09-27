@@ -27,12 +27,12 @@
 
 #pragma once
 
-namespace MeshKernelApi
+namespace meshkernelapi
 {
     struct SplinesToCurvilinearParametersNative
     {
         /// <summary>
-        /// * Aspect ratio (0.1)
+        /// * Aspect ratio (mfacmax, 0.1)
         /// </summary>
         double AspectRatio;
 

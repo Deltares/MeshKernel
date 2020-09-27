@@ -30,7 +30,7 @@
 #include <vector>
 #include "Entities.hpp"
 
-namespace MeshKernel
+namespace meshkernel
 {
     class Polygons;
     class Mesh;
