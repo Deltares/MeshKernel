@@ -2,10 +2,10 @@
 
 #include "../Mesh.hpp"
 
-static std::shared_ptr<MeshKernel::Mesh> MakeSmallSizeTriangularMeshForTesting()
+static std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTesting()
 {
     // Prepare
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
 
     nodes.push_back({ 322.252624511719,454.880187988281 });
     nodes.push_back({ 227.002044677734,360.379241943359 });
@@ -18,7 +18,7 @@ static std::shared_ptr<MeshKernel::Mesh> MakeSmallSizeTriangularMeshForTesting()
     nodes.push_back({ 310.300984548069,319.41005739802 });
     nodes.push_back({ 423.569603308318,326.17986967523 });
 
-    std::vector<MeshKernel::Edge> edges;
+    std::vector<meshkernel::Edge> edges;
     edges.push_back({ 3, 9 });
     edges.push_back({ 9, 2 });
     edges.push_back({ 2, 3 });
@@ -46,16 +46,16 @@ static std::shared_ptr<MeshKernel::Mesh> MakeSmallSizeTriangularMeshForTesting()
         edges[i].second -= 1;
     }
 
-    auto mesh=std::make_shared<MeshKernel::Mesh>();
-    mesh->Set(edges, nodes, MeshKernel::Projections::cartesian);
+    auto mesh=std::make_shared<meshkernel::Mesh>();
+    mesh->Set(edges, nodes, meshkernel::Projections::cartesian);
 
     return mesh;
 }
 
-static std::shared_ptr<MeshKernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile()
+static std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile()
 {
     // Prepare
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
 
     nodes.push_back({ 322.252624511719,454.880187988281 });
     nodes.push_back({ 227.002044677734,360.379241943359 });
@@ -68,7 +68,7 @@ static std::shared_ptr<MeshKernel::Mesh> MakeSmallSizeTriangularMeshForTestingAs
     nodes.push_back({ 310.300984548069,319.41005739802 });
     nodes.push_back({ 423.569603308318,326.17986967523 });
 
-    std::vector<MeshKernel::Edge> edges;
+    std::vector<meshkernel::Edge> edges;
     edges.push_back({ 2, 8 });
     edges.push_back({ 1, 8 });
     edges.push_back({ 1, 2 });
@@ -90,8 +90,8 @@ static std::shared_ptr<MeshKernel::Mesh> MakeSmallSizeTriangularMeshForTestingAs
     edges.push_back({ 5, 9 });
     edges.push_back({ 4, 5 });
 
-    auto mesh=std::make_shared<MeshKernel::Mesh>();
-    mesh->Set(edges, nodes, MeshKernel::Projections::cartesian);
+    auto mesh=std::make_shared<meshkernel::Mesh>();
+    mesh->Set(edges, nodes, meshkernel::Projections::cartesian);
 
     return mesh;
 }
@@ -99,10 +99,10 @@ static std::shared_ptr<MeshKernel::Mesh> MakeSmallSizeTriangularMeshForTestingAs
 
 
 
-static std::shared_ptr<MeshKernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, MeshKernel::Projections projection, MeshKernel::Point origin = {0.0,0.0})
+static std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projections projection, meshkernel::Point origin = {0.0,0.0})
 {
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<MeshKernel::Point> nodes(n * m);
+    std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int i = 0; i < n; ++i)
     {
@@ -114,7 +114,7 @@ static std::shared_ptr<MeshKernel::Mesh> MakeRectangularMeshForTesting(int n, in
         }
     }
 
-    std::vector<MeshKernel::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
 
     for (int i = 0; i < n - 1; ++i)
@@ -135,14 +135,14 @@ static std::shared_ptr<MeshKernel::Mesh> MakeRectangularMeshForTesting(int n, in
         }
     }
 
-    auto mesh=std::make_shared<MeshKernel::Mesh>();
+    auto mesh=std::make_shared<meshkernel::Mesh>();
     mesh->Set(edges, nodes, projection);
 
     return mesh;
 }
 
 
-static std::shared_ptr<MeshKernel::Mesh> MakeMediumSizeTriangularMeshForTesting()
+static std::shared_ptr<meshkernel::Mesh> MakeMediumSizeTriangularMeshForTesting()
 {
     std::vector<double> xCoordinates{ 62.7625648300453, 161.949072158728, 261.069585881221,
 360.172666249972, 459.142369029805, 558.084265626781, 656.824528757364,
@@ -272,7 +272,7 @@ static std::shared_ptr<MeshKernel::Mesh> MakeMediumSizeTriangularMeshForTesting(
     969.157782621974, 936.087467324743, 1415.1359010846, 854.260557538138,
     925.653279962582 };
 
-    std::vector<MeshKernel::Edge> edges{
+    std::vector<meshkernel::Edge> edges{
         {	142	,	184		}	,
         {	184	,	185		}	,
         {	142	,	185		}	,
@@ -971,7 +971,7 @@ static std::shared_ptr<MeshKernel::Mesh> MakeMediumSizeTriangularMeshForTesting(
         {	14	,	15		}	,
         {	90	,	216		} };
 
-    std::vector<MeshKernel::Point> nodes(xCoordinates.size());
+    std::vector<meshkernel::Point> nodes(xCoordinates.size());
 
     for (int i = 0; i < nodes.size(); i++)
     {
@@ -985,8 +985,8 @@ static std::shared_ptr<MeshKernel::Mesh> MakeMediumSizeTriangularMeshForTesting(
         edges[i].second -= 1;
     }
 
-    auto mesh=std::make_shared<MeshKernel::Mesh>();
-    mesh->Set(edges, nodes, MeshKernel::Projections::cartesian);
+    auto mesh=std::make_shared<meshkernel::Mesh>();
+    mesh->Set(edges, nodes, meshkernel::Projections::cartesian);
 
     return mesh;
 }

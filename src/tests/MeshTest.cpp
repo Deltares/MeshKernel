@@ -10,21 +10,21 @@
 TEST(Mesh, OneQuadTestConstructor) 
 {
     //1 Setup
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
     nodes.push_back({ 0.0,0.0 });
     nodes.push_back({ 0.0,10.0 });
     nodes.push_back({ 10.0,0.0 });
     nodes.push_back({ 10.0,10.0 });
-    std::vector<MeshKernel::Edge> edges;
+    std::vector<meshkernel::Edge> edges;
     edges.push_back({ 0, 2 });
     edges.push_back({ 1, 3 });
     edges.push_back({ 0, 1 });
     edges.push_back({ 2, 3 });
     
-    MeshKernel::Mesh mesh;
+    meshkernel::Mesh mesh;
 
     // 2 Execution
-    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
     // 3 Validation
     // expect nodesEdges to be sorted ccw
@@ -78,7 +78,7 @@ TEST(Mesh, OneQuadTestConstructor)
 TEST(Mesh, MakeMeshInPolygon)
 {
     //1 Setup
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
     nodes.push_back({ 144.501526, 253.128174 });
@@ -87,10 +87,10 @@ TEST(Mesh, MakeMeshInPolygon)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
     
-    MeshKernel::Mesh mesh;
-    MeshKernelApi::MakeGridParametersNative makeGridParametersNative;
+    meshkernel::Mesh mesh;
+    meshkernelapi::MakeGridParametersNative makeGridParametersNative;
     makeGridParametersNative.GridType = 0;
     makeGridParametersNative.GridAngle = 0.0;
     makeGridParametersNative.OriginXCoordinate = 0.0;
@@ -110,7 +110,7 @@ TEST(Mesh, MakeMeshInPolygon)
 TEST(Mesh, MakeMeshInPolygonSpherical)
 {
     //1 Setup
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
     nodes.push_back({ 144.501526, 253.128174 });
@@ -119,10 +119,10 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::spherical);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projections::spherical);
 
-    MeshKernel::Mesh mesh;
-    MeshKernelApi::MakeGridParametersNative makeGridParametersNative;
+    meshkernel::Mesh mesh;
+    meshkernelapi::MakeGridParametersNative makeGridParametersNative;
     makeGridParametersNative.GridType = 0;
     makeGridParametersNative.GridAngle = 0.0;
     makeGridParametersNative.OriginXCoordinate = 0.0;
@@ -142,11 +142,11 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
 TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
 {
     //1 Setup
-    std::vector<MeshKernel::Point> nodes;
-    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::spherical);
+    std::vector<meshkernel::Point> nodes;
+    meshkernel::Polygons polygons(nodes, meshkernel::Projections::spherical);
 
-    MeshKernel::Mesh mesh;
-    MeshKernelApi::MakeGridParametersNative makeGridParametersNative;
+    meshkernel::Mesh mesh;
+    meshkernelapi::MakeGridParametersNative makeGridParametersNative;
     makeGridParametersNative.GridType = 0;
     makeGridParametersNative.GridAngle = 0.0;
     makeGridParametersNative.OriginXCoordinate = 0.0;
@@ -199,7 +199,7 @@ TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
 TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
 {
     // Prepare
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
 
     nodes.push_back({ 302.002502,472.130371 });
     nodes.push_back({ 144.501526, 253.128174 });
@@ -208,14 +208,14 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     nodes.push_back({ 301.252502, 471.380371 });
     nodes.push_back({ 302.002502, 472.130371 });
 
-    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<MeshKernel::Point>> generatedPoints;
+    std::vector<std::vector<meshkernel::Point>> generatedPoints;
     bool successful = polygons.CreatePointsInPolygons(generatedPoints);
     ASSERT_TRUE(successful);
 
-    MeshKernel::Mesh mesh(generatedPoints[0], polygons, MeshKernel::Projections::cartesian);
+    meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projections::cartesian);
 
     //// Assert
     constexpr double tolerance = 1e-5;
@@ -245,7 +245,7 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
 TEST(Mesh, TriangulateSamples)
 {
     // Prepare
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
 
     nodes.push_back({ 498.503152894023, 1645.82297461613 });
     nodes.push_back({ -5.90937355559299, 814.854361678898 });
@@ -254,35 +254,35 @@ TEST(Mesh, TriangulateSamples)
     nodes.push_back({ 501.418832237663, 1642.90729527249 });
     nodes.push_back({ 498.503152894023, 1645.82297461613 });
 
-    MeshKernel::Polygons polygons(nodes, MeshKernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<MeshKernel::Point>> generatedPoints;
+    std::vector<std::vector<meshkernel::Point>> generatedPoints;
     bool successful = polygons.CreatePointsInPolygons(generatedPoints);
     ASSERT_TRUE(successful);
 
-    MeshKernel::Mesh mesh(generatedPoints[0], polygons, MeshKernel::Projections::cartesian);
+    meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projections::cartesian);
 }
 
 
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
 {
     //1 Setup
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
     nodes.push_back({ 0.0, 0.0 });
     nodes.push_back({ 5.0, -5.0 });
     nodes.push_back({ 10.0, 0.0 });
     nodes.push_back({ 5.0, 5.0 });
-    std::vector<MeshKernel::Edge> edges;
+    std::vector<meshkernel::Edge> edges;
     edges.push_back({ 0, 3 });
     edges.push_back({ 0, 2 });
     edges.push_back({ 2, 3 });
     edges.push_back({ 0, 1 });
     edges.push_back({ 2, 1 });
 
-    MeshKernel::Mesh mesh;
+    meshkernel::Mesh mesh;
     // 2 Execution
-    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
     // 3 Validation
     ASSERT_EQ(2, mesh.GetNumFaces());
@@ -291,25 +291,25 @@ TEST(Mesh, TwoTrianglesDuplicatedEdges)
 TEST(Mesh, MeshBoundaryToPolygon)
 {
     //1 Setup
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
     nodes.push_back({ 0.0, 0.0 });
     nodes.push_back({ 5.0, -5.0 });
     nodes.push_back({ 10.0, 0.0 });
     nodes.push_back({ 5.0, 5.0 });
-    std::vector<MeshKernel::Edge> edges;
+    std::vector<meshkernel::Edge> edges;
     edges.push_back({ 0, 3 });
     edges.push_back({ 0, 2 });
     edges.push_back({ 2, 3 });
     edges.push_back({ 0, 1 });
     edges.push_back({ 2, 1 });
 
-    MeshKernel::Mesh mesh;
-    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
+    meshkernel::Mesh mesh;
+    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
-    MeshKernel::Polygons polygons;
+    meshkernel::Polygons polygons;
 
     int counterClockWise = 0;
-    std::vector<MeshKernel::Point> meshBoundaryPolygon;
+    std::vector<meshkernel::Point> meshBoundaryPolygon;
     int numNodesBoundaryPolygons = 0;
     polygons.MeshBoundaryToPolygon(mesh, counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
@@ -330,21 +330,21 @@ TEST(Mesh, MeshBoundaryToPolygon)
 TEST(Mesh, HangingEdge)
 {
     //1 Setup
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
     nodes.push_back({ 0.0, 0.0 });
     nodes.push_back({ 5.0, 0.0 });
     nodes.push_back({ 3.0, 2.0 });
     nodes.push_back({ 3.0, 4.0 });
 
-    std::vector<MeshKernel::Edge> edges;
+    std::vector<meshkernel::Edge> edges;
     edges.push_back({ 0, 1 });
     edges.push_back({ 1, 3 });
     edges.push_back({ 3, 0 });
     edges.push_back({ 2, 1 });
 
 
-    MeshKernel::Mesh mesh;
-    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
+    meshkernel::Mesh mesh;
+    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
     ASSERT_EQ(1, mesh.GetNumFaces());
 }
@@ -352,23 +352,23 @@ TEST(Mesh, HangingEdge)
 TEST(Mesh, InsertNodeRtree)
 {
     //1 Setup
-    std::vector<MeshKernel::Point> nodes;
+    std::vector<meshkernel::Point> nodes;
     nodes.push_back({ 0.0, 0.0 });
     nodes.push_back({ 5.0, 0.0 });
     nodes.push_back({ 3.0, 2.0 });
     nodes.push_back({ 3.0, 4.0 });
 
-    std::vector<MeshKernel::Edge> edges;
+    std::vector<meshkernel::Edge> edges;
     edges.push_back({ 0, 1 });
     edges.push_back({ 1, 3 });
     edges.push_back({ 3, 0 });
     edges.push_back({ 2, 1 });
 
 
-    MeshKernel::Mesh mesh;
-    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
+    meshkernel::Mesh mesh;
+    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
-    MeshKernel::Point newPoint{ 10.0,10.0 };
+    meshkernel::Point newPoint{ 10.0,10.0 };
     int newNodeIndex;
     mesh.InsertNode(newPoint, newNodeIndex,true);
 
@@ -383,7 +383,7 @@ TEST(Mesh, NodeMerging)
     const int m = 10; // y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<MeshKernel::Point> nodes(n * m);
+    std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -395,7 +395,7 @@ TEST(Mesh, NodeMerging)
         }
     }
 
-    std::vector<MeshKernel::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -415,11 +415,11 @@ TEST(Mesh, NodeMerging)
         }
     }
 
-    MeshKernel::Mesh mesh;
-    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
+    meshkernel::Mesh mesh;
+    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
     // Add overlapping nodes
-    double generatingDistance = std::sqrt(std::pow(MeshKernel::mergingDistance*0.9, 2) / 2.0);
+    double generatingDistance = std::sqrt(std::pow(meshkernel::mergingDistance*0.9, 2) / 2.0);
     std::uniform_real_distribution<double>  xDistrution(0.0, generatingDistance);
     std::uniform_real_distribution<double>  yDistrution(0.0, generatingDistance);
     std::random_device                      rand_dev;
@@ -452,10 +452,10 @@ TEST(Mesh, NodeMerging)
     edges.resize(edgeIndex);
 
     // re set with augmented nodes
-    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
     // 2. Act
-    MeshKernel::Polygons polygon;
+    meshkernel::Polygons polygon;
     mesh.MergeNodesInPolygon(polygon);
 
     // 3. Assert
@@ -469,7 +469,7 @@ TEST(Mesh, MillionQuads)
     const int m = 11; // y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
-    std::vector<MeshKernel::Point> nodes(n * m);
+    std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -481,7 +481,7 @@ TEST(Mesh, MillionQuads)
         }
     }
 
-    std::vector<MeshKernel::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
@@ -501,10 +501,10 @@ TEST(Mesh, MillionQuads)
         }
     }
 
-    MeshKernel::Mesh mesh;
+    meshkernel::Mesh mesh;
     // now build node-edge mapping
     auto start(std::chrono::steady_clock::now());
-    mesh.Set(edges, nodes, MeshKernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();

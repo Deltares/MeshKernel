@@ -31,7 +31,7 @@
 #include "Entities.hpp"
 
 
-namespace MeshKernel
+namespace meshkernel
 {
     // Forward declarations
     class Mesh;

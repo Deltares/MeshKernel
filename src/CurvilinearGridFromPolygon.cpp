@@ -36,12 +36,12 @@
 #include "CurvilinearGridFromPolygon.hpp"
 #include "CurvilinearGrid.hpp"
 
-MeshKernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) :
+meshkernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) :
     m_polygon(polygon)
 {
 };
 
-bool MeshKernel::CurvilinearGridFromPolygon::Compute( int firstNode, 
+bool meshkernel::CurvilinearGridFromPolygon::Compute( int firstNode, 
                                                       int secondNode, 
                                                       int thirdNode, 
                                                       bool useFourthSide, 
@@ -152,12 +152,12 @@ bool MeshKernel::CurvilinearGridFromPolygon::Compute( int firstNode,
     std::vector<Point> sideFour(maximumNumberOfNodes, { doubleMissingValue, doubleMissingValue });
 
     // Fill boundary coordinates
-    auto assignPolygonPointsToSegment = [&](int nodeIndex, int numPointsSide, int direction, std::vector<Point>& sideToFill)
+    auto assignPolygonPointsToSegment = [this, start, end, numPolygonNodes](int nodeIndex, int numPointsSide, int dir, std::vector<Point>& sideToFill)
     {
         for (int i = 0; i < numPointsSide; i++)
         {
             sideToFill[i] = m_polygon->m_nodes[nodeIndex];
-            nodeIndex = nodeIndex + direction;
+            nodeIndex = nodeIndex + dir;
             if (nodeIndex < start)
             {
                 nodeIndex += numPolygonNodes;
@@ -211,7 +211,7 @@ bool MeshKernel::CurvilinearGridFromPolygon::Compute( int firstNode,
     return successful;
 }
 
-bool MeshKernel::CurvilinearGridFromPolygon::Compute(int firstNode,
+bool meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
                                                      int secondNode,
                                                      int thirdNode,
                                                      CurvilinearGrid& curvilinearGrid) const
@@ -351,15 +351,15 @@ bool MeshKernel::CurvilinearGridFromPolygon::Compute(int firstNode,
         // fill side four
         for (int i = 0; i < numM[t] + 1; ++i)
         {
-            double xia = double(i) / double(numM[t]);
-            sideFour[i] =  m_polygon->m_nodes[iLeft[t]] * (1.0 - xia) + triangleCenter * xia;
+            double localXia = double(i) / double(numM[t]);
+            sideFour[i] =  m_polygon->m_nodes[iLeft[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
         // fill side two
         for (int i = 0; i < numN[t] + 1; ++i)
         {
-            double xia = double(i) / double(numN[t]);
-            sideTwo[i] = m_polygon->m_nodes[iRight[t]] * (1.0 - xia) + triangleCenter * xia;
+            double localXia = double(i) / double(numN[t]);
+            sideTwo[i] = m_polygon->m_nodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
         std::vector<std::vector<Point>> result;

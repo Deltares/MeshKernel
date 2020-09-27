@@ -33,7 +33,7 @@
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
 
-namespace MeshKernel 
+namespace meshkernel 
 {
     // Forward declarations
     class Mesh;
@@ -77,8 +77,8 @@ namespace MeshKernel
         /// <returns>If the method succeeded</returns>
         bool Refine(std::vector<Sample>& sample,
                     const Polygons& polygon,
-                    MeshKernelApi::SampleRefineParametersNative& sampleRefineParametersNative,
-                    MeshKernelApi::InterpolationParametersNative& interpolationParametersNative);
+                    meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
+                    meshkernelapi::InterpolationParametersNative& interpolationParametersNative);
 
     private:
 

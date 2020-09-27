@@ -35,7 +35,7 @@
 #include "Polygons.hpp"
 #include "LandBoundaries.hpp"
 
-namespace MeshKernel
+namespace meshkernel
 {
     LandBoundaries::LandBoundaries(const std::vector<Point>& landBoundary,
                                    std::shared_ptr<Mesh> mesh,

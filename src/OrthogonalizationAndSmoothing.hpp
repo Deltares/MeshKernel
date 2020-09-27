@@ -31,7 +31,7 @@
 #include <memory>
 #include "OrthogonalizationParametersNative.hpp"
 
-namespace MeshKernel
+namespace meshkernel
 {
     // Forward declare everything to reduce compile time dependency
     struct Point;
@@ -71,7 +71,7 @@ namespace MeshKernel
                                        int isTriangulationRequired,
                                        int isAccountingForLandBoundariesRequired,
                                        int projectToLandBoundaryOption,
-                                       const MeshKernelApi::OrthogonalizationParametersNative& orthogonalizationParametersNative );
+                                       const meshkernelapi::OrthogonalizationParametersNative& orthogonalizationParametersNative );
 
         
         bool Initialize();

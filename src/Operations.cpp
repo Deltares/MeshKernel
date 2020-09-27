@@ -34,9 +34,8 @@
 #include "Constants.cpp"
 #include "SpatialTrees.hpp"
 
-namespace MeshKernel
+namespace meshkernel
 {
-
     // coordinate reference independent operations
     template<typename T>
     T DotProduct(const T& dx1, const T& dx2)

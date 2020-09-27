@@ -32,7 +32,7 @@
 #include "CurvilinearParametersNative.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
 
-namespace MeshKernel
+namespace meshkernel
 {
     class CurvilinearGrid;
     class Splines;
@@ -52,7 +52,7 @@ namespace MeshKernel
         /// Ctor with splines and parameters
         /// </summary>
         /// <returns></returns>
-        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, MeshKernelApi::CurvilinearParametersNative curvilinearParametersNative);
+        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, meshkernelapi::CurvilinearParametersNative curvilinearParametersNative);
 
 
         /// <summary>

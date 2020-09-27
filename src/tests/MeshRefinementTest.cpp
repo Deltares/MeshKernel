@@ -9,25 +9,25 @@
 
 TEST(MeshRefinement, FourByFourWithFourSamples) 
 {
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, MeshKernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projections::cartesian);
 
     //sample points
-    std::vector<MeshKernel::Sample> samples;
+    std::vector<meshkernel::Sample> samples;
     samples.push_back({ 14.7153645, 14.5698833, 1.0 });
     samples.push_back({ 24.7033062, 14.4729137, 1.0 });
     samples.push_back({ 15.5396099, 24.2669525, 1.0 });
     samples.push_back({ 23.8305721, 23.9275551, 1.0 });
 
-    MeshKernel::MeshRefinement  meshRefinement(mesh);
-    MeshKernel::Polygons polygon;
-    MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::Polygons polygon;
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
     sampleRefineParametersNative.MinimumCellSize = 1.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
     
 
-    MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
     
@@ -93,24 +93,24 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 
 TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 {
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, MeshKernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projections::cartesian);
 
     //sample points
-    std::vector<MeshKernel::Sample> samples;
+    std::vector<meshkernel::Sample> samples;
     samples.push_back({ 14.7153645, 14.5698833, 1.0 });
     samples.push_back({ 24.7033062, 14.4729137, 1.0 });
     samples.push_back({ 15.5396099, 24.2669525, 1.0 });
     samples.push_back({ 23.8305721, 23.9275551, 1.0 });
 
-    MeshKernel::MeshRefinement  meshRefinement(mesh);
-    MeshKernel::Polygons polygon;
-    MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::Polygons polygon;
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.64;
     sampleRefineParametersNative.MinimumCellSize = 2.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
 
-    MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
     interpolationParametersNative.RefineIntersected = false;
 
@@ -192,20 +192,20 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     //sample points
-    std::vector<MeshKernel::Sample> samples;
+    std::vector<meshkernel::Sample> samples;
     samples.push_back({ 359.8657532,350.3144836, 1.0 });
     samples.push_back({ 387.5152588 ,299.2614746, 1.0 });
 
 
-    MeshKernel::MeshRefinement  meshRefinement(mesh);
-    MeshKernel::Polygons polygon;
-    MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::Polygons polygon;
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 15.97;
     sampleRefineParametersNative.MinimumCellSize = 50.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
 
-    MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
 
@@ -235,7 +235,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     // Polygon sample
-    std::vector<MeshKernel::Point> point;
+    std::vector<meshkernel::Point> point;
     point.push_back({ 399.638169557229, 504.294564030922 });
     point.push_back({ 361.827403800769, 129.967983041964 });
     point.push_back({ 651.709941266965, 113.583317880831 });
@@ -243,16 +243,16 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     point.push_back({ 410.981399284167, 505.55492288947 });
     point.push_back({ 399.638169557229, 504.294564030922 });
 
-    MeshKernel::Polygons polygon(point, mesh->m_projection);
+    meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    MeshKernel::MeshRefinement  meshRefinement(mesh);
-    MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
 
-    MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
 
-    std::vector<MeshKernel::Sample> samples;
+    std::vector<meshkernel::Sample> samples;
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     // total number of edges
@@ -287,10 +287,10 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 {
     // Prepare
 
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, MeshKernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projections::cartesian);
 
     //sample points
-    std::vector<MeshKernel::Sample> samples;
+    std::vector<meshkernel::Sample> samples;
 
     samples.push_back({ 2.7091951,       5.4000854,       0.0000000 });
     samples.push_back({ 6.4910383,       2.4182367,       0.0000000 });
@@ -320,15 +320,15 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     samples.push_back({ 13.5837603,     12.1783361,       3.0000000 });
     samples.push_back({ 17.2156067,      16.9106121,       3.0000000 });
 
-    MeshKernel::MeshRefinement  meshRefinement(mesh);
-    MeshKernel::Polygons polygon;
-    MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::Polygons polygon;
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
     sampleRefineParametersNative.MinimumCellSize = 3.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
 
-    MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
     interpolationParametersNative.RefineIntersected = false;
 
@@ -377,10 +377,10 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 TEST(MeshRefinement, WindowOfRefinementFile)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, MeshKernel::Projections::cartesian, { 197253.0,442281.0 });
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, { 197253.0,442281.0 });
 
     //sample points
-    std::vector<MeshKernel::Sample> samples;
+    std::vector<meshkernel::Sample> samples;
 
     // read sample file
     std::string line;
@@ -400,15 +400,15 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     }
 
 
-    MeshKernel::MeshRefinement  meshRefinement(mesh);
-    MeshKernel::Polygons polygon;
-    MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::Polygons polygon;
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
     sampleRefineParametersNative.MinimumCellSize = 3.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
 
-    MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
     interpolationParametersNative.RefineIntersected = false;
 
@@ -452,10 +452,10 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, MeshKernel::Projections::cartesian, { 197253.0,442281.0 });
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, { 197253.0,442281.0 });
 
     //sample points
-    std::vector<MeshKernel::Sample> samples;
+    std::vector<meshkernel::Sample> samples;
 
     // read sample file
     std::string line;
@@ -475,16 +475,16 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     }
 
 
-    MeshKernel::MeshRefinement  meshRefinement(mesh);
-    MeshKernel::Polygons polygon;
-    MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::Polygons polygon;
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
     sampleRefineParametersNative.MinimumCellSize = 0.5;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
     sampleRefineParametersNative.RefinementType = 3;
 
-    MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 10;
     interpolationParametersNative.RefineIntersected = false;
 
@@ -531,29 +531,29 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 TEST(MeshRefinement, RefineBasedOnPolygon)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, MeshKernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projections::cartesian);
 
     //sample points
-    std::vector<MeshKernel::Sample> samples;
+    std::vector<meshkernel::Sample> samples;
 
-    MeshKernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement  meshRefinement(mesh);
 
-    std::vector<MeshKernel::Point> point;
+    std::vector<meshkernel::Point> point;
     point.push_back({ 25.0 ,-10.0 });
     point.push_back({ 25.0  ,15.0 });
     point.push_back({ 45.0  ,15.0 });
     point.push_back({ 45.0 ,-10.0 });
     point.push_back({ 25.0 ,-10.0 });
 
-    MeshKernel::Polygons polygon(point,mesh->m_projection);
+    meshkernel::Polygons polygon(point,mesh->m_projection);
 
-    MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
     sampleRefineParametersNative.MinimumCellSize = 3.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
 
-    MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
 
@@ -594,14 +594,14 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, MeshKernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projections::cartesian);
 
     //sample points
-    std::vector<MeshKernel::Sample> samples;
+    std::vector<meshkernel::Sample> samples;
 
-    MeshKernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement  meshRefinement(mesh);
 
-    std::vector<MeshKernel::Point> point;
+    std::vector<meshkernel::Point> point;
     point.push_back({ 9.09836065573771, 34.016393442623 });
     point.push_back({ 7.18032786885247, 7.75409836065574 });
     point.push_back({ 34.6229508196721, 6.5 });
@@ -611,16 +611,16 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     point.push_back({ 9.90983606557378, 34.3852459016394 });
     point.push_back({ 9.09836065573771, 34.016393442623 });
 
-    MeshKernel::Polygons polygon(point, mesh->m_projection);
+    meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
     sampleRefineParametersNative.MinimumCellSize = 1.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
     sampleRefineParametersNative.RefinementType = 3;
 
-    MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
     interpolationParametersNative.RefineIntersected = false;
 
@@ -636,24 +636,24 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 {
 
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, MeshKernel::Projections::spherical,{41.1,41.1});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, meshkernel::Projections::spherical,{41.1,41.1});
 
     //sample points
-    std::vector<MeshKernel::Sample> samples;
+    std::vector<meshkernel::Sample> samples;
     samples.push_back({ 41.1050110, 41.1049728, 1.0 });
     samples.push_back({ 41.1084785, 41.1048775, 1.0 });
     samples.push_back({ 41.1085625, 41.1083946, 1.0 });
     samples.push_back({ 41.1052971, 41.1083336, 1.0 });
 
-    MeshKernel::MeshRefinement  meshRefinement(mesh);
-    MeshKernel::Polygons polygon;
-    MeshKernelApi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::Polygons polygon;
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.000527;
     sampleRefineParametersNative.MinimumCellSize = 0.00165;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
 
-    MeshKernelApi::InterpolationParametersNative interpolationParametersNative;
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
     sampleRefineParametersNative.RefinementType = 2;

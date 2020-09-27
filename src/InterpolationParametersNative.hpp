@@ -27,7 +27,7 @@
 
 #pragma once
 
-namespace MeshKernelApi
+namespace meshkernelapi
 {
     struct InterpolationParametersNative
     {

@@ -33,9 +33,10 @@
 #include "SplinesToCurvilinearParametersNative.hpp"
 #include "Splines.hpp"
 
-namespace MeshKernel
+namespace meshkernel
 {
     class CurvilinearGrid;
+    struct SplinesToCurvilinearParametersNative;
 
     class CurvilinearGridFromSplines
     {
@@ -48,8 +49,8 @@ namespace MeshKernel
         /// <param name="splinesToCurvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
         /// <returns></returns>
         CurvilinearGridFromSplines( std::shared_ptr<Splines> splines,
-                                    const MeshKernelApi::CurvilinearParametersNative& curvilinearParametersNative,
-                                    const MeshKernelApi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
+                                    const meshkernelapi::CurvilinearParametersNative& curvilinearParametersNative,
+                                    const meshkernelapi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
 
         /// <summary>
         /// Computes the spline properties, such as cross splines (get_splineprops)
@@ -384,24 +385,16 @@ namespace MeshKernel
         };
 
 
-        // OrthogonalCurvilinearGridFromSplines
-        double m_aspectRatioFirstLayer = 0.10;
-        int m_maxNumM = 20;                                                             // mfacmax
-        int m_maxNumN = 40;                                                             // N - refinement factor for regular grid generation.
-        int m_maxNumCenterSplineHeights = 10;                                           // Nsubmax, naz number of different heights a cross spline can have (is determined by how many crossing spline the user can input).
-        double m_averageMeshWidth = 500.0;
-        double m_dtolcos = 0.95;                                                        // minimum allowed absolute value of crossing - angle cosine
-        double m_aspectRatio = 0.1;                                                     // daspect aspect ratio
-        double m_aspectRatioGrowFactor = 1.1;                                           // dgrow grow factor of aspect ratio
-        double m_gridLayerHeight0 = 10.0;                                               // dheight0 grid layer height
-        double m_maxaspect = 1.0;                                                       // maxaspect maximum cell aspect ratio *inoperative*
-        int m_maxNUniformPart = 5;                                                      // maximum number of layers in the uniform part
-        bool m_growGridOutside = true;                                                  // grow the grid outside the prescribed grid height
-        double m_onTopOfEachOtherSquaredTolerance = 1e-8;                               // On top of each other tolerance
-        bool m_checkFrontCollisions = false;                                            // check front collisions
-        bool m_isSpacingCurvatureAdapted = true;                                        // is curvature adapted
-        bool m_removeSkinnyTriangles = false;
+        // algorithm parameters
+        meshkernelapi::CurvilinearParametersNative          m_curvilinearParametersNative;
+        meshkernelapi::SplinesToCurvilinearParametersNative m_splinesToCurvilinearParametersNative;
 
+        const int m_maxNumCenterSplineHeights = 10;                                     // Nsubmax, naz number of different heights a cross spline can have (is determined by how many crossing spline the user can input)
+        const int m_maxNUniformPart = 5;                                                // maximum number of layers in the uniform part
+        bool m_growGridOutside = true;                                                  // grow the grid outside the prescribed grid height
+        double m_onTopOfEachOtherSquaredTolerance;                                      // On top of each other squared tolerance
+        size_t m_numOriginalSplines = 0;                                                // The original number of splines
+        int m_allocationSize = 5;                                                       // allocation cache size
 
         // Spline properties (first index is the spline number) 
         std::vector<SplineTypes> m_type;
@@ -422,10 +415,6 @@ namespace MeshKernel
         std::vector<int> m_leftGridLineIndex;                                           // iL index in the whole gridline array of the first grid point on the left - hand side of the spline
         std::vector<int> m_rightGridLineIndex;                                          // iR index in the whole gridline array of the first grid point on the right - hand side of the spline
         std::vector<std::vector<double>> m_gridHeights;                                 // heights of all grid elements        
-
-        //original spline chaches
-        size_t m_numOriginalSplines = 0;
-        int m_allocationSize = 5;                                                       // allocation cache size
 
         std::vector<int> m_leftGridLineIndexOriginal;
         std::vector<int> m_rightGridLineIndexOriginal;
