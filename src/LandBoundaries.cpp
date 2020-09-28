@@ -576,13 +576,12 @@ namespace meshkernel
                 if (!successful)
                     return false;
 
-                if (distanceFromLandBoundary < m_minDistanceFromLandFactor * minDinstanceFromLandBoundary)
+                if (distanceFromLandBoundary < m_minDistanceFromLandFactor * minDinstanceFromLandBoundary &&
+                    (meshBoundOnly == false || m_mesh->m_nodesTypes[currentNode] == 2 || m_mesh->m_nodesTypes[currentNode] == 3))
                 {
-                    if (meshBoundOnly == false || m_mesh->m_nodesTypes[currentNode] == 2 || m_mesh->m_nodesTypes[currentNode] == 3)
-                    {
-                        stopPathSearch = false;
-                    }
+                    stopPathSearch = false;
                 }
+
             }
 
             if (stopPathSearch)

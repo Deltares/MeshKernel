@@ -413,7 +413,7 @@ bool meshkernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
 }
 
 
-bool meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates()
+bool meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
 {
     if(m_mesh->m_projection == Projections::sphericalAccurate)
     {

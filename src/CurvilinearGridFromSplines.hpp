@@ -220,14 +220,14 @@ namespace meshkernel
         /// <returns></returns>
         double ComputeTotalExponentialHeight(double aspectRatioGrowFactor, 
                                              double firstGridLayerHeights, 
-                                             int numberOfGridLayers);
+                                             int numberOfGridLayers) const;
 
         /// <summary>
         /// Compute the number of grid layers for a given grow factor, first grid layer height and total grid height (comp_nfac)
         /// </summary>
         /// <param name="hhMaxRatio"></param>
         /// <returns></returns>
-        int ComputeNumberExponentialIntervals(double hhMaxRatio);
+        int ComputeNumberExponentialIntervals(double hhMaxRatio) const;
 
         /// <summary>
         /// Computes the sub-interval velocities (left and right)
@@ -298,7 +298,7 @@ namespace meshkernel
                                     int numValues, 
                                     const std::vector<int>& v, 
                                     std::vector<int>& validIndexses, 
-                                    int& numValid);
+                                    int& numValid) const;
 
         /// <summary>
         /// Computes the intersection of two splines, one must have only two nodes (get_crosssplines)
@@ -425,7 +425,7 @@ namespace meshkernel
         //cache variables during iterations
         std::vector<double> m_edgeVelocities;
         std::vector<int> m_validFrontNodes;
-        std::vector<std::vector<Point>> m_gridPoints;                                   // Generated curvilinear gridpoints
+        std::vector<std::vector<Point>> m_gridPoints;
         double m_timeStep = 1.0;
         std::vector<int> m_subLayerGridPoints;
         std::vector<std::vector<int>> m_numPerpendicularFacesOnSubintervalAndEdge;

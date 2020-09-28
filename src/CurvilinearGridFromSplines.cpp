@@ -1387,7 +1387,7 @@ bool meshkernel::CurvilinearGridFromSplines::ComputeGrowFactor(
     return true;
 }
 
-double meshkernel::CurvilinearGridFromSplines::ComputeTotalExponentialHeight(double aspectRatioGrowFactor, double firstGridLayerHeights, int numberOfGridLayers)
+double meshkernel::CurvilinearGridFromSplines::ComputeTotalExponentialHeight(double aspectRatioGrowFactor, double firstGridLayerHeights, int numberOfGridLayers) const
 {
     double height;
     if (std::abs(aspectRatioGrowFactor - 1.0) > 1e-8)
@@ -1402,7 +1402,7 @@ double meshkernel::CurvilinearGridFromSplines::ComputeTotalExponentialHeight(dou
 }
 
 
-int meshkernel::CurvilinearGridFromSplines::ComputeNumberExponentialIntervals(const double hhMaxRatio)
+int meshkernel::CurvilinearGridFromSplines::ComputeNumberExponentialIntervals(const double hhMaxRatio) const
 {
     int numIntervals = 0;
     if (m_splinesToCurvilinearParametersNative.AspectRatioGrowFactor - 1.0 > 1e-8)
@@ -1682,8 +1682,7 @@ bool meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
 }
 
 
-// GetValidSplineIndexses
-bool meshkernel::CurvilinearGridFromSplines::GetValidSplineIndexses(const int s, const int numValues, const std::vector<int>& v, std::vector<int>& validIndexses, int& numValid)
+bool meshkernel::CurvilinearGridFromSplines::GetValidSplineIndexses(const int s, const int numValues, const std::vector<int>& v, std::vector<int>& validIndexses, int& numValid) const
 {
     numValid = 0;
     for (int i = 0; i < numValues; ++i)

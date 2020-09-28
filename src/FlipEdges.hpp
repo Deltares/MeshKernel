@@ -64,7 +64,7 @@ namespace meshkernel
         /// Flip the edges
         /// </summary>
         /// <returns>If the method succeeded</returns>
-        bool Compute();
+        bool Compute() const;
 
     private:
 
@@ -77,9 +77,9 @@ namespace meshkernel
         /// <param name="topologyFunctional">The computed functional</param>
         /// <returns>If the method succeeded</returns>
         bool ComputeTopologyFunctional( int edge,
-                                 int& nodeLeft,
-                                 int& nodeRight,
-                                 int& topologyFunctional) const;
+                                        int& nodeLeft,
+                                        int& nodeRight,
+                                        int& topologyFunctional) const;
 
         /// <summary>
         /// Determine the optimal number of connected nodes for each node (nmk_opt)
