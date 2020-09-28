@@ -77,8 +77,8 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool Refine(std::vector<Sample>& sample,
                     const Polygons& polygon,
-                    meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
-                    meshkernelapi::InterpolationParametersNative& interpolationParametersNative);
+                    const meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
+                    const meshkernelapi::InterpolationParametersNative& interpolationParametersNative);
 
     private:
 

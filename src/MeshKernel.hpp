@@ -83,7 +83,7 @@ namespace meshkernelapi
         /// <param name="meshGeometry">Mesh data</param>
         /// <param name="isGeographic">Cartesian or spherical mesh</param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_set_state(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool isGeographic);
+        MKERNEL_API int mkernel_set_state(int meshKernelId, const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, bool isGeographic);
 
         /// <summary>
         /// Gets the mesh state as a <see cref="MeshGeometry"/> structure
@@ -114,8 +114,13 @@ namespace meshkernelapi
         /// <param name="geometryListNativePolygon">The polygon where to perform the orthogonalization</param>
         /// <param name="geometryListNativeLandBoundaries">The land boundaries to account for in the orthogonalization process</param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_orthogonalize(int meshKernelId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
-            OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries);
+        MKERNEL_API int mkernel_orthogonalize( int meshKernelId, 
+                                               int isTriangulationRequired, 
+                                               int isAccountingForLandBoundariesRequired, 
+                                               int projectToLandBoundaryOption,
+                                               const OrthogonalizationParametersNative& orthogonalizationParametersNative, 
+                                               const GeometryListNative& geometryListNativePolygon,
+                                               const GeometryListNative& geometryListNativeLandBoundaries );
        
         /// <summary>
         /// Orthogonalization initialization (first function to use in interactive mode)
@@ -187,7 +192,7 @@ namespace meshkernelapi
         /// <param name="disposableGeometryListOut">The output spline </param>
         /// <param name="numberOfPointsBetweenVertices">The number of spline vertices between the corners points</param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int number_of_points_between_vertices);
+        MKERNEL_API int mkernel_get_splines(const GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int number_of_points_between_vertices);
 
         /// <summary>
         /// Get the coordinates of the closest existing vertex
@@ -207,7 +212,7 @@ namespace meshkernelapi
         /// <param name="curvilinearParametersNative">The input parameters to generate the curvilinear grid</param> 
         /// <param name="splinesToCurvilinearParametersNative">The parameters of the advancing front algorithm</param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParameters, SplinesToCurvilinearParametersNative& splineToCurvilinearParameters);
+        MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId, const GeometryListNative& geometryListNative, const CurvilinearParametersNative& curvilinearParameters, const SplinesToCurvilinearParametersNative& splineToCurvilinearParameters);
 
         /// <summary>
         /// Generate a curvilinear grid from splines with the advancing front method. Initialization step (interactive)
@@ -217,7 +222,7 @@ namespace meshkernelapi
         /// <param name="curvilinearParametersNative">The input parameters to generate the curvilinear grid</param>
         /// <param name="splinesToCurvilinearParametersNative">The parameters of the advancing front algorithm</param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_initialize(int meshKernelId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParametersNative, SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
+        MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_initialize(int meshKernelId, const GeometryListNative& geometryListNative, const CurvilinearParametersNative& curvilinearParametersNative, const SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
 
         /// <summary>
         /// One advancment of the front in curvilinear grid from splines (interactive)
@@ -248,7 +253,7 @@ namespace meshkernelapi
         /// <param name="makeGridParameters">The structure containing the make grid parameters </param>
         /// <param name="geometryListNative">The polygon to account for</param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_make_mesh(int meshKernelId, MakeGridParametersNative& makeGridParameters, GeometryListNative& geometryListNative);
+        MKERNEL_API int mkernel_make_mesh(int meshKernelId, const MakeGridParametersNative& makeGridParameters, const GeometryListNative& geometryListNative);
 
         /// <summary>
         /// Make a triangular grid in a polygon
@@ -256,7 +261,7 @@ namespace meshkernelapi
         /// <param name="meshKernelId">Id of the mesh state</param>
         /// <param name="geometryListNative">The polygon where to triangulate</param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_make_mesh_from_polygon(int meshKernelId, GeometryListNative& geometryListNative);
+        MKERNEL_API int mkernel_make_mesh_from_polygon(int meshKernelId, const GeometryListNative& geometryListNative);
 
         /// <summary>
         /// Make a triangular mesh from samples
@@ -292,7 +297,7 @@ namespace meshkernelapi
         /// <param name="distance">The refinement distance</param>
         /// <param name="geometryListOut"></param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_refine_polygon(int meshKernelId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut);
+        MKERNEL_API int mkernel_refine_polygon(int meshKernelId, const GeometryListNative& geometryListIn, int firstIndex, int secondIndex, double distance, GeometryListNative& geometryListOut);
 
         /// <summary>
         /// Count the number of vertices after polygon refinment
@@ -304,7 +309,7 @@ namespace meshkernelapi
         /// <param name="distance">The refinement distance</param>
         /// <param name="numberOfPolygonVertices">The number of vertices after refinement </param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices);
+        MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, int firstIndex, int secondIndex, double distance, int& numberOfPolygonVertices);
 
         /// <summary>
         /// Merges vertices within a distance of 0.001 m, effectively removing small edges 

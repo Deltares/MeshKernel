@@ -285,7 +285,7 @@ TEST(Polygon, OffsetCopy)
     meshkernel::Polygons newPolygon;
     double distance = 10.0;
     bool innerAndOuter = false;
-    bool successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
+    bool successful = polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
 
     const double tolerance = 1e-5;
 
