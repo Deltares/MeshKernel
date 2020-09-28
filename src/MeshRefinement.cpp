@@ -149,7 +149,7 @@ bool meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
         // computes the edge and face refinement mask from samples
         if(isRefinementBasedOnSamples)
         {
-            bool successful = ComputeRefinementMasksFromSamples(sample);
+            successful = ComputeRefinementMasksFromSamples(sample);
             if (!successful)
             {
                 return false;

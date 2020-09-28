@@ -163,14 +163,14 @@ namespace meshkernel
         int numSegmentIndexsesBeforeSplitting = m_numSegments;
         for (int i = 0; i < numSegmentIndexsesBeforeSplitting; i++)
         {
-            int start = m_segmentIndices[i][0];
-            int end = m_segmentIndices[i][1];
-            if (end - start > 1)
+            int startSegmentIndex = m_segmentIndices[i][0];
+            int endSegmentIndex = m_segmentIndices[i][1];
+            if (endSegmentIndex - startSegmentIndex > 1)
             {
-                int split = int(start + (end - start) / 2);
+                int split = int(startSegmentIndex + (endSegmentIndex - startSegmentIndex) / 2);
                 m_segmentIndices[i][1] = split;
                 m_segmentIndices[m_numSegments][0] = split;
-                m_segmentIndices[m_numSegments][1] = end;
+                m_segmentIndices[m_numSegments][1] = endSegmentIndex;
                 m_numSegments++;
             }
         }
