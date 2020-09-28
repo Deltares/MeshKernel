@@ -66,7 +66,7 @@ bool meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
         {
             points[i] = { sample[i].x, sample[i].y };
         }
-        m_samplesRTree.BuildTree(points, m_mesh->m_projection);
+        m_samplesRTree.BuildTree(points);
 
         m_deltaTimeMaxCourant = sampleRefineParametersNative.MinimumCellSize / std::sqrt(gravity);
         m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
@@ -258,7 +258,7 @@ bool meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
     if(m_connectHangingNodes)
     {
         auto numRemovedIsolatedHangingNodes = 0;
-        auto successful = RemoveIsolatedHangingnodes(numRemovedIsolatedHangingNodes);
+        successful = RemoveIsolatedHangingnodes(numRemovedIsolatedHangingNodes);
         if (!successful)
         {
             return false;
@@ -1222,7 +1222,7 @@ bool  meshkernel::MeshRefinement::ComputeEdgesRefinementMask()
                     return false;
                 }
 
-                int numEdgesToRefine = 0;
+                numEdgesToRefine = 0;
                 int firstEdgeIndex = 0;
                 int secondEdgeIndex = 0;
                 for (int i = 0; i < numNodesQuads; i++)

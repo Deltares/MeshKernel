@@ -1124,7 +1124,7 @@ bool meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 
     // Update the R-Tree of the mesh nodes
     m_nodesRTree.Clear();
-    m_nodesRTree.BuildTree(filteredNodes, m_projection);
+    m_nodesRTree.BuildTree(filteredNodes);
     
     // merge the closest nodes
     for (int i = 0; i < filteredNodes.size(); i++)
@@ -1307,7 +1307,7 @@ bool meshkernel::Mesh::RefreshNodesRTreeIfNeeded()
 {
     if (m_nodesRTree.Empty())
     {
-        m_nodesRTree.BuildTree(m_nodes, m_projection);
+        m_nodesRTree.BuildTree(m_nodes);
     }
 
     //insert the missing nodes

@@ -22,7 +22,7 @@ TEST(SpatialTrees, RTreeOnePoint)
     }
 
     meshkernel::SpatialTrees::RTree rtree;
-    rtree.BuildTree(nodes, meshkernel::Projections::cartesian);
+    rtree.BuildTree(nodes);
     std::vector<meshkernel::Point> pointToSearch(1, { (n-1.0)/2.0, (n-1.0)/2.0 });
     double squaredDistance = 0.708 * 0.708;
     auto successful = rtree.NearestNeighboursOnSquaredDistance(pointToSearch[0], squaredDistance);
@@ -50,7 +50,7 @@ TEST(SpatialTrees, RTreeRemovePoint)
     }
 
     meshkernel::SpatialTrees::RTree rtree;
-    rtree.BuildTree(nodes, meshkernel::Projections::cartesian);
+    rtree.BuildTree(nodes);
 
     rtree.RemoveNode(0);
 
@@ -74,7 +74,7 @@ TEST(SpatialTrees, RTreeManyPoints)
 
     auto start(std::chrono::steady_clock::now());
     meshkernel::SpatialTrees::RTree rtree;
-    rtree.BuildTree(nodes, meshkernel::Projections::cartesian);
+    rtree.BuildTree(nodes);
     auto end = std::chrono::steady_clock::now();
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
     std::cout << "Elapsed time build " << elapsedTime << " s " << std::endl;

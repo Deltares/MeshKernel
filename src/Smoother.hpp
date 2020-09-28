@@ -45,7 +45,7 @@ namespace meshkernel
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        Smoother(std::shared_ptr<Mesh> mesh);
+        explicit Smoother(std::shared_ptr<Mesh> mesh);
         
         /// <summary>
         /// Computes the smoother weights

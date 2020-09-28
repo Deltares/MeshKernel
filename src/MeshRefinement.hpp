@@ -55,7 +55,7 @@ namespace meshkernel
         /// </summary>
         /// <param name="mesh">The mesh to be refined</param>
         /// <returns></returns>
-        MeshRefinement(std::shared_ptr<Mesh> mesh);
+        explicit MeshRefinement(std::shared_ptr<Mesh> mesh);
 
         /// <summary>
         /// Refine a mesh (refinecellsandfaces2). Steps:
