@@ -155,7 +155,7 @@ namespace meshkernel
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns>If the method succeeded</returns>
-        bool ComputeCoordinates();
+        bool ComputeCoordinates() const;
 
         std::shared_ptr<LandBoundaries>                    m_landBoundaries;            // The land boundaries
         std::shared_ptr<Polygons>                          m_polygons;                  // The polygon where to perform the orthogonalization

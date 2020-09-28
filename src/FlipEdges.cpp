@@ -65,7 +65,7 @@ meshkernel::FlipEdges::FlipEdges( std::shared_ptr<Mesh> mesh,
     }
 };
 
-bool meshkernel::FlipEdges::Compute()
+bool meshkernel::FlipEdges::Compute() const
 {
 
     bool successful = m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);

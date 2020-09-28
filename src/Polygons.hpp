@@ -74,7 +74,7 @@ namespace meshkernel
         bool RefinePolygonPart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon);
 
         /// refinepolygonpart
-        bool PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths );
+        bool PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths ) const;
 
         ///copypol, copy and move a polygon orthogonally
         bool OffsetCopy(int nodeIndex, double distance, bool Inner, Polygons& newPolygon);
@@ -91,11 +91,11 @@ namespace meshkernel
         /// maximum edge length of a given polygon
         bool MaximumEdgeLength(const std::vector<Point>& localPolygon, int numPoints, double& maximumEdgeLength);
 
-        bool WalkBoundaryFromNode(const Mesh& mesh,
-            std::vector<bool>& isVisited,
-            int& nodeIndex,
-            int& currentNode,
-            std::vector<Point>& meshBoundaryPolygon);
+        bool WalkBoundaryFromNode( const Mesh& mesh,
+                                   std::vector<bool>& isVisited,
+                                   int& nodeIndex,
+                                   int& currentNode,
+                                   std::vector<Point>& meshBoundaryPolygon) const;
 
     };
 

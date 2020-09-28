@@ -648,14 +648,14 @@ bool meshkernel::Smoother::ComputeNodeXiEta( int currentNode,
                 thetaSquare[f + 1] = 0.5 * M_PI;
             }
 
-            if (m_sharedFacesCache[f] > 1)
+            if (m_sharedFacesCache[f] > 1 && m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]) == 4) 
             {
-                if (m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]) == 4) numNonStencilQuad += 1;
-            }
-            if (m_sharedFacesCache[leftFaceIndex] > 1)
+                numNonStencilQuad += 1;
+            } 
+            if (m_sharedFacesCache[leftFaceIndex] > 1 && m_mesh->GetNumFaceEdges(m_sharedFacesCache[leftFaceIndex]) == 4) 
             {
-                if (m_mesh->GetNumFaceEdges(m_sharedFacesCache[leftFaceIndex]) == 4) numNonStencilQuad += 1;
-            }
+                numNonStencilQuad += 1;
+            } 
             if (numNonStencilQuad > 3)
             {
                 isSquare = false;
@@ -895,9 +895,9 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
         }
 
         //corner face (already found in the first iteration)
-        if (m_mesh->m_nodesNumEdges[currentNode] == 2 && e == 1 && m_mesh->m_nodesTypes[currentNode] == 3)
+        if (m_mesh->m_nodesNumEdges[currentNode] == 2 && e == 1 && m_mesh->m_nodesTypes[currentNode] == 3 && m_sharedFacesCache[0] == newFaceIndex)
         {
-            if (m_sharedFacesCache[0] == newFaceIndex) newFaceIndex = intMissingValue;
+            newFaceIndex = intMissingValue;
         }
         m_sharedFacesCache[numSharedFaces] = newFaceIndex;
         numSharedFaces += 1;
@@ -999,7 +999,7 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
 }
 
 
-double meshkernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge)
+double meshkernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge) const
 {
     double angle = M_PI * (1 - 2.0 / double(numFaceNodes));
 
@@ -1014,7 +1014,7 @@ double meshkernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, d
     return angle;
 }
 
-double meshkernel::Smoother::MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents)
+double meshkernel::Smoother::MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents) const
 {
     double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[2] * x[0] + matCoefficents[3] * x[1]) * y[1];
     return norm;

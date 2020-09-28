@@ -96,7 +96,7 @@ namespace meshkernel
         /// <param name="secondRow">The second row</param>
         /// <returnsIf the method succeeded></returns>
         template<typename T>
-        bool SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow);
+        bool SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow) const;
 
         /// <summary>
         /// Swap the columns of a two dimensional vector (MAKESR)
@@ -107,7 +107,7 @@ namespace meshkernel
         /// <param name="secondColumn">The second column</param>
         /// <returns>If the method succeeded</returns>
         template<typename T>
-        bool SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn);
+        bool SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn) const;
 
 
         /// <summary>

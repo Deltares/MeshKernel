@@ -152,7 +152,7 @@ namespace meshkernel
         /// Smooth the face refinement mask (smooth_jarefine)
         /// </summary>
         /// <returns>If the method succeeded</returns>
-        bool SmoothEdgeRefinementMask();
+        bool SmoothEdgeRefinementMask() const;
 
         /// <summary>
         /// Computes m_faceMask, if a face must be splitted later on (split_cells)
