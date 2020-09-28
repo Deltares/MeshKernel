@@ -137,12 +137,12 @@ namespace meshkernel
         /// <returns></returns>
         bool ComputeMask(int segmentIndex,
                          bool meshBoundOnly,
+                         int startLandBoundaryIndex,
+                         int endLandBoundaryIndex,
                          int& leftIndex,
                          int& rightIndex,
                          double& leftEdgeRatio,
-                         double& rightEdgeRatio,
-                         int& startLandBoundaryIndex,
-                         int& endLandBoundaryIndex);
+                         double& rightEdgeRatio);
 
         /// <summary>
         /// Mask the faces that are intersected by the land boundary (maskcells)
