@@ -366,7 +366,7 @@ namespace meshkernel
                                      int numNodes,
                                      const std::vector<int>& edgesNumFaces,
                                      double weightCircumCenter,
-                                     Point& result );
+                                     Point& result ) const;
 
         /// <summary>
         /// Computes m_nodesNodes, see class members
@@ -485,7 +485,7 @@ namespace meshkernel
         /// Checks if a triangle has an acute angle (checktriangle)
         /// </summary>
         /// <returns>If the method succeeded</returns>
-        bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes);
+        bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const;
 
         /// <summary>
         /// Removes all invalid nodes and edges

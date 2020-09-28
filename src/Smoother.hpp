@@ -166,7 +166,7 @@ namespace meshkernel
         double OptimalEdgeAngle(int numFaceNodes, 
                                 double theta1 = -1.0, 
                                 double theta2 = -1.0, 
-                                bool isBoundaryEdge = false);
+                                bool isBoundaryEdge = false) const;
 
         /// <summary>
         /// Allocate smoother operators
@@ -204,7 +204,7 @@ namespace meshkernel
         /// <returns></returns>
         double MatrixNorm(const std::vector<double>& x,
                           const std::vector<double>& y,
-                          const std::vector<double>& matCoefficents);
+                          const std::vector<double>& matCoefficents) const;
 
 
         // The mesh to smooth

@@ -1455,7 +1455,7 @@ bool meshkernel::MeshRefinement::FindBrotherEdges()
     return true;
 }
 
-bool meshkernel::MeshRefinement::SmoothEdgeRefinementMask()
+bool meshkernel::MeshRefinement::SmoothEdgeRefinementMask() const
 {
     return true;
 }

@@ -178,10 +178,10 @@ namespace meshkernel
 
 
     bool Polygons::WalkBoundaryFromNode(const Mesh& mesh,
-        std::vector<bool>& isVisited,
-        int& nodeIndex,
-        int& currentNode,
-        std::vector<Point>& meshBoundaryPolygon)
+                                        std::vector<bool>& isVisited,
+                                        int& nodeIndex,
+                                        int& currentNode,
+                                        std::vector<Point>& meshBoundaryPolygon) const
     {
         int e = 0;
         bool currentNodeInPolygon = false;
@@ -476,7 +476,7 @@ namespace meshkernel
         return true;
     }
 
-    bool Polygons::PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths)
+    bool Polygons::PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths) const
     {
         edgeLengths.resize(localPolygon.size());
         for (int p = 0; p < localPolygon.size(); ++p)

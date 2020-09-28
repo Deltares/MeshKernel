@@ -54,7 +54,7 @@ namespace meshkernel
                 x + rhs.x,
                 y + rhs.y
             };
-            return std::move(point);
+            return point;
         }
 
         Point operator+(double const& rhs) const
@@ -64,7 +64,7 @@ namespace meshkernel
                 x + rhs,
                 y + rhs
             };
-            return std::move(point);
+            return point;
         }
 
         Point operator-(Point const& rhs) const
@@ -74,7 +74,7 @@ namespace meshkernel
                 x - rhs.x,
                 y - rhs.y
             };
-            return std::move(point);
+            return point;
         }
 
         Point operator-(double const& rhs) const
@@ -84,7 +84,7 @@ namespace meshkernel
                 x - rhs,
                 y - rhs
             };
-            return std::move(point);
+            return point;
         }
 
         Point operator*(Point const& rhs) const
@@ -94,7 +94,7 @@ namespace meshkernel
                 x * rhs.x,
                 y * rhs.y
             };
-            return std::move(point);
+            return point;
         }
 
         Point operator*(double const& rhs) const
@@ -104,7 +104,7 @@ namespace meshkernel
                 x * rhs,
                 y * rhs
             };
-            return std::move(point);
+            return point;
         }
 
         Point operator/(Point const& rhs) const
@@ -114,7 +114,7 @@ namespace meshkernel
                 x / rhs.x,
                 y / rhs.y
             };
-            return std::move(point);
+            return point;
         }
 
         Point operator/(double const& rhs) const
@@ -124,7 +124,7 @@ namespace meshkernel
                 x / rhs,
                 y / rhs
             };
-            return std::move(point);
+            return point;
         }
 
         bool operator==(const Point& rhs) const

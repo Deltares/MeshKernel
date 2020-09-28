@@ -402,7 +402,7 @@ meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygon
 
 }
 
-bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes)
+bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const
 {
     // Used for triangular grids
     constexpr double triangleMinimumAngle = 5.0;
@@ -1222,11 +1222,11 @@ bool meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     }
 
     // re-assign edges to second node
-    m_nodesEdges[secondNodeIndex] = std::move(std::vector<int>(secondNodeEdges.begin(), secondNodeEdges.begin() + numSecondNodeEdges));
+    m_nodesEdges[secondNodeIndex] = std::vector<int>(secondNodeEdges.begin(), secondNodeEdges.begin() + numSecondNodeEdges);
     m_nodesNumEdges[secondNodeIndex] = numSecondNodeEdges;
 
     // remove edges to first node
-    m_nodesEdges[firstNodeIndex] = std::move(std::vector<int>(0));
+    m_nodesEdges[firstNodeIndex] = std::vector<int>(0);
     m_nodesNumEdges[firstNodeIndex] = 0;
     m_nodes[firstNodeIndex] = { doubleMissingValue, doubleMissingValue };
 
@@ -1869,12 +1869,12 @@ bool meshkernel::Mesh::ComputeNodeMaskFromEdgeMask()
 }
 
 bool meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
-    std::vector<Point>& middlePoints,
-    std::vector<Point>& normals,
-    int numNodes,
-    const std::vector<int>& edgesNumFaces,
-    double weightCircumCenter,
-    Point& result)
+                                              std::vector<Point>& middlePoints,
+                                              std::vector<Point>& normals,
+                                              int numNodes,
+                                              const std::vector<int>& edgesNumFaces,
+                                              double weightCircumCenter,
+                                              Point& result) const
 {
     const int maximumNumberCircumcenterIterations = 100;
     const double eps = m_projection == Projections::cartesian ? 1e-3 : 9e-10; //111km = 0-e digit.
@@ -2021,22 +2021,20 @@ bool meshkernel::Mesh::GetOrthogonality(double* orthogonality)
         int firstVertex = m_edges[e].first;
         int secondVertex = m_edges[e].second;
 
-        if (firstVertex != 0 && secondVertex != 0)
+        if (firstVertex != 0 && secondVertex != 0 && e < GetNumEdges() && m_edgesNumFaces[e] == 2)
         {
-            if (e < GetNumEdges() && m_edgesNumFaces[e] == 2)
+            orthogonality[e] = NormalizedInnerProductTwoSegments( m_nodes[firstVertex],
+                                                                  m_nodes[secondVertex],
+                                                                  m_facesCircumcenters[m_edgesFaces[e][0]],
+                                                                  m_facesCircumcenters[m_edgesFaces[e][1]],
+                                                                  m_projection );
+            if (orthogonality[e] != doubleMissingValue)
             {
-                orthogonality[e] = NormalizedInnerProductTwoSegments(m_nodes[firstVertex],
-                    m_nodes[secondVertex],
-                    m_facesCircumcenters[m_edgesFaces[e][0]],
-                    m_facesCircumcenters[m_edgesFaces[e][1]],
-                    m_projection);
-                if (orthogonality[e] != doubleMissingValue)
-                {
-                    orthogonality[e] = std::abs(orthogonality[e]);
+                orthogonality[e] = std::abs(orthogonality[e]);
 
-                }
             }
         }
+
     }
     return true;
 }
@@ -2049,23 +2047,20 @@ bool meshkernel::Mesh::GetSmoothness(double* smoothness)
         int firstVertex = m_edges[e].first;
         int secondVertex = m_edges[e].second;
 
-        if (firstVertex != 0 && secondVertex != 0)
+        if (firstVertex != 0 && secondVertex != 0 && e < GetNumEdges() && m_edgesNumFaces[e] == 2)
         {
-            if (e < GetNumEdges() && m_edgesNumFaces[e] == 2)
-            {
-                const auto leftFace = m_edgesFaces[e][0];
-                const auto rightFace = m_edgesFaces[e][1];
-                const auto leftFaceArea = m_faceArea[leftFace];
-                const auto rightFaceArea = m_faceArea[rightFace];
+            const auto leftFace = m_edgesFaces[e][0];
+            const auto rightFace = m_edgesFaces[e][1];
+            const auto leftFaceArea = m_faceArea[leftFace];
+            const auto rightFaceArea = m_faceArea[rightFace];
 
-                if (leftFaceArea < minimumCellArea || rightFaceArea < minimumCellArea)
-                {
-                    smoothness[e] = rightFaceArea / leftFaceArea;
-                }
-                if (smoothness[e] < 1.0)
-                {
-                    smoothness[e] = 1.0 / smoothness[e];
-                }
+            if (leftFaceArea < minimumCellArea || rightFaceArea < minimumCellArea)
+            {
+                smoothness[e] = rightFaceArea / leftFaceArea;
+            }
+            if (smoothness[e] < 1.0)
+            {
+                smoothness[e] = 1.0 / smoothness[e];
             }
         }
     }

@@ -147,7 +147,7 @@ namespace meshkernel
         std::vector<int> idx(v.size());
         iota(idx.begin(), idx.end(), 0);
         std::stable_sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) {return v[i1] < v[i2]; });
-        return std::move(idx);
+        return idx;
     }
 
     //chmike's algorithm
