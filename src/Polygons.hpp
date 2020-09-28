@@ -53,7 +53,6 @@ namespace meshkernel
 
         /// copynetboundstopol
         bool MeshBoundaryToPolygon(Mesh& mesh,
-                                   int counterClockWise,
                                    std::vector<Point>& meshBoundaryPolygon,
                                    int& numNodesBoundaryPolygons);
 

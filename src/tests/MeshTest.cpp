@@ -308,10 +308,9 @@ TEST(Mesh, MeshBoundaryToPolygon)
 
     meshkernel::Polygons polygons;
 
-    int counterClockWise = 0;
     std::vector<meshkernel::Point> meshBoundaryPolygon;
     int numNodesBoundaryPolygons = 0;
-    polygons.MeshBoundaryToPolygon(mesh, counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
+    polygons.MeshBoundaryToPolygon(mesh, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
     const double tolerance = 1e-5;
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);

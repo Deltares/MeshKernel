@@ -58,7 +58,7 @@ TEST(Polygons, MeshBoundaryToPolygon)
     
     int numNodesBoundaryPolygons;
     std::vector<meshkernel::Point> meshBoundaryPolygon;
-    polygons->MeshBoundaryToPolygon(*mesh, 0, meshBoundaryPolygon, numNodesBoundaryPolygons);
+    polygons->MeshBoundaryToPolygon(*mesh, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
     constexpr double tolerance = 1e-2;
 

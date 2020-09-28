@@ -50,7 +50,6 @@ bool meshkernel::Orthogonalizer::Compute()
     std::fill(m_rhs.begin(), m_rhs.end(), std::vector<double>(2, 0.0));
 
     // Compute mesh aspect ratios
-    std::vector<double > m_aspectRatios;
     m_mesh->GetAspectRatios(m_aspectRatios);
 
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)

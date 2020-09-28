@@ -64,7 +64,7 @@ namespace meshkernel
 
         public:
 
-            bool BuildTree(std::vector<Point>& nodes, const Projections projection)
+            bool BuildTree(std::vector<Point>& nodes)
             {
                 m_points.resize(nodes.size());
                 for (int n = 0; n < nodes.size(); ++n)

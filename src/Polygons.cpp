@@ -90,7 +90,6 @@ namespace meshkernel
     }
 
     bool Polygons::MeshBoundaryToPolygon( Mesh& mesh,
-                                          int counterClockWise,
                                           std::vector<Point>& meshBoundaryPolygon,
                                           int& numNodesBoundaryPolygons )
     {
@@ -532,9 +531,9 @@ namespace meshkernel
             {
                 auto dx = GetDx(m_nodes[n], m_nodes[n+1], m_projection);
                 auto dy = GetDy(m_nodes[n], m_nodes[n+1], m_projection);
-                auto distance = std::sqrt(dx*dx + dy*dy);
-                dxNormal = -dy / distance;
-                dyNormal = dx / distance;
+                const auto nodeDistance = std::sqrt( dx * dx + dy * dy );
+                dxNormal = -dy / nodeDistance;
+                dyNormal = dx / nodeDistance;
             }
             else
             {

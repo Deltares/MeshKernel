@@ -304,7 +304,7 @@ bool meshkernel::CurvilinearGridFromSplines::Initialize()
 
     // get the properties of the center splines
     m_numM = 0;
-    successful = MakeAllGridLines(true);
+    successful = MakeAllGridLines();
     if (!successful)
     {
         return false;
@@ -1222,7 +1222,7 @@ bool meshkernel::CurvilinearGridFromSplines::ComputeEdgeVelocities( std::vector<
         numPerpendicularFacesOnSubintervalAndEdge[0][i] = 1;
     }
 
-    for (size_t s = 0; s < m_splines->m_numSplines; s++)
+    for (auto s = 0; s < m_splines->m_numSplines; s++)
     {
         double maxHeight = std::numeric_limits<double>::min();
         for (int i = 0; i < m_gridHeights[0].size(); ++i)
@@ -1619,7 +1619,7 @@ bool meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
                                                 std::vector<std::vector<double>>& heights)
 {
     int numValid;
-    GetValidSplineIndexses(s, m_numCrossingSplines[s], numHeightsLeft, localValidSplineIndexes, numValid);
+    GetValidSplineIndexses(m_numCrossingSplines[s], numHeightsLeft, localValidSplineIndexes, numValid);
 
     // no sub-heights to compute 
     if (numValid == 0)
@@ -1678,7 +1678,7 @@ bool meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
 }
 
 
-bool meshkernel::CurvilinearGridFromSplines::GetValidSplineIndexses(const int s, const int numValues, const std::vector<int>& v, std::vector<int>& validIndexses, int& numValid) const
+bool meshkernel::CurvilinearGridFromSplines::GetValidSplineIndexses(int numValues, const std::vector<int>& v, std::vector<int>& validIndexses, int& numValid) const
 {
     numValid = 0;
     for (int i = 0; i < numValues; ++i)
@@ -1745,7 +1745,7 @@ bool meshkernel::CurvilinearGridFromSplines::GetSplineIntersections(const int in
     return true;
 }
 
-bool meshkernel::CurvilinearGridFromSplines::MakeAllGridLines(bool isSpacingCurvatureAdapeted)
+bool meshkernel::CurvilinearGridFromSplines::MakeAllGridLines()
 {
 
     int numCenterSplines = 0;

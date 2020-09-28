@@ -95,9 +95,8 @@ namespace meshkernel
         /// <summary>
         /// For the central spline, computes the spline subdivisions along the spline (make_wholegridline)
         /// </summary>
-        /// <param name="isSpacingCurvatureAdapeted">Account for spline curvature when computing the subdivisions</param>
         /// <returns></returns>
-        bool MakeAllGridLines(bool isSpacingCurvatureAdapeted);
+        bool MakeAllGridLines();
 
         std::vector<Point> m_gridLine;                           // coordinates of the first gridline (xg1, yg1)
         std::vector<double> m_gridLineDimensionalCoordinates;    // center spline coordinates of the first gridline (sg1)
@@ -288,14 +287,12 @@ namespace meshkernel
         /// <summary>
         /// Gets the valid spline indexses
         /// </summary>
-        /// <param name="s"></param>
         /// <param name="numValues"></param>
         /// <param name="v"></param>
         /// <param name="validIndexses"></param>
         /// <param name="numValid"></param>
         /// <returns></returns>
-        bool GetValidSplineIndexses(int s, 
-                                    int numValues, 
+        bool GetValidSplineIndexses(int numValues, 
                                     const std::vector<int>& v, 
                                     std::vector<int>& validIndexses, 
                                     int& numValid) const;
