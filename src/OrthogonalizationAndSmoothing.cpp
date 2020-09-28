@@ -260,7 +260,6 @@ bool meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 
         const double atpfLoc  = m_mesh->m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationToSmoothingFactor;
         const double atpf1Loc = 1.0 - atpfLoc;
-        double mumat    = m_mu;
         int maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
         auto cacheIndex = m_compressedEndNodeIndex[n];
         for (auto nn = 1; nn < maxnn; nn++)

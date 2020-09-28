@@ -80,7 +80,6 @@ bool meshkernel::Orthogonalizer::Compute()
                     // compute the edge length
                     Point neighbouringNode = m_mesh->m_nodes[m_mesh->m_nodesNodes[n][nn]];
                     double neighbouringNodeDistance = Distance(neighbouringNode, m_mesh->m_nodes[n], m_mesh->m_projection);
-                    double aspectRatioByNodeDistance = aspectRatio * neighbouringNodeDistance;
 
                     auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
                     bool flippedNormal;

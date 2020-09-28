@@ -44,13 +44,8 @@ meshkernel::Smoother::Smoother(std::shared_ptr<Mesh> mesh): m_mesh(mesh)
 
 bool meshkernel::Smoother::Compute()
 {
-    bool successful = true;
-
     // compute smoother topologies
-    if (successful)
-    {
-        successful = ComputeTopologies();
-    }
+    bool successful = ComputeTopologies();
 
     // compute smoother operators
     if (successful)
@@ -63,7 +58,8 @@ bool meshkernel::Smoother::Compute()
     {
         successful = ComputeWeights();
     }
-    return true;
+
+    return successful;
 }
 
 bool meshkernel::Smoother::ComputeTopologies()
