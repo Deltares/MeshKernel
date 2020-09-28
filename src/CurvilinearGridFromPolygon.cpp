@@ -196,7 +196,7 @@ bool meshkernel::CurvilinearGridFromPolygon::Compute( int firstNode,
                                               m_polygon->m_projection,
                                               numMNodes - 1,
                                               numNNodes - 1,
-                                              result);
+                                              result );
 
     // Assign the points to the curvilinear grid
     curvilinearGrid.Set(numMNodes, numNNodes);

@@ -151,11 +151,11 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
         adimensionalDistances.resize(numPoints);
         points.resize(numPoints);
 
-        bool successful = ComputeDiscretizations( numIntersections,
-                                                  numPoints,
-                                                  numDiscretizations,
-                                                  intersectionDistances,
-                                                  distances );
+        successful = ComputeDiscretizations( numIntersections,
+                                             numPoints,
+                                             numDiscretizations,
+                                             intersectionDistances,
+                                             distances );
         if (!successful)
         {
             return false;

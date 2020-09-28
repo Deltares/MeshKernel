@@ -1194,7 +1194,7 @@ bool meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     int numSecondNodeEdges = 0;
     for (auto n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
-        auto edgeIndex = m_nodesEdges[secondNodeIndex][n];
+        edgeIndex = m_nodesEdges[secondNodeIndex][n];
         if (m_edges[edgeIndex].first >= 0)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
@@ -1205,7 +1205,7 @@ bool meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     // add all valid edges starting at firstNode are assigned to the second node
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
-        const auto edgeIndex = m_nodesEdges[firstNodeIndex][n];
+        edgeIndex = m_nodesEdges[firstNodeIndex][n];
         if (m_edges[edgeIndex].first >= 0)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;

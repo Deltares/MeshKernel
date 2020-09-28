@@ -114,7 +114,7 @@ bool meshkernel::FlipEdges::Compute() const
             int nodeLeft = - 1;
             int nodeRight = -1;
             int topologyFunctional = 1000;
-            bool successful = ComputeTopologyFunctional(e, nodeLeft, nodeRight, topologyFunctional);
+            successful = ComputeTopologyFunctional(e, nodeLeft, nodeRight, topologyFunctional);
 
             if (!successful)
             {
@@ -398,8 +398,8 @@ bool meshkernel::FlipEdges::ComputeTopologyFunctional( int edge,
             const auto n2R = DifferenceFromOptimum(secondNode, firstNode, nodeLeft);
             const auto n2L = DifferenceFromOptimum(secondNode, firstNode, nodeRight);
 
-            const auto nL = DifferenceFromOptimum(nodeLeft, firstNode, secondNode);
-            const auto nR = DifferenceFromOptimum(nodeRight, firstNode, secondNode);
+            nL = DifferenceFromOptimum(nodeLeft, firstNode, secondNode);
+            nR = DifferenceFromOptimum(nodeRight, firstNode, secondNode);
 
             topologyFunctional = (n1L - 1) * (n1L - 1) +
                                  (n1R - 1) * (n1R - 1) +
