@@ -52,7 +52,7 @@ static std::map<int, std::shared_ptr<meshkernel::CurvilinearGridFromSplines>> cu
 
 namespace meshkernelapi
 {
-    static bool ConvertGeometryListNativeToPointVector(GeometryListNative& geometryListIn, std::vector<meshkernel::Point>& result)
+    static bool ConvertGeometryListNativeToPointVector(const GeometryListNative& geometryListIn, std::vector<meshkernel::Point>& result)
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
@@ -68,7 +68,7 @@ namespace meshkernelapi
         return true;
     }
 
-    static bool ConvertGeometryListNativeToSampleVector(GeometryListNative& geometryListIn, std::vector<meshkernel::Sample>& result)
+    static bool ConvertGeometryListNativeToSampleVector(const GeometryListNative& geometryListIn, std::vector<meshkernel::Sample>& result)
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
@@ -100,7 +100,7 @@ namespace meshkernelapi
         return true;
     }
 
-    static bool SetSplines(GeometryListNative& geometryListIn, meshkernel::Splines& spline)
+    static bool SetSplines(const GeometryListNative& geometryListIn, meshkernel::Splines& spline)
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
@@ -212,7 +212,7 @@ namespace meshkernelapi
     }
 
 
-    MKERNEL_API int mkernel_set_state(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, bool isGeographic)
+    MKERNEL_API int mkernel_set_state(int meshKernelId, const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, bool isGeographic)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -285,8 +285,13 @@ namespace meshkernelapi
         return 0;
     }
 
-    MKERNEL_API int mkernel_orthogonalize(int meshKernelId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption,
-        OrthogonalizationParametersNative& orthogonalizationParametersNative, GeometryListNative& geometryListNativePolygon, GeometryListNative& geometryListNativeLandBoundaries)
+    MKERNEL_API int mkernel_orthogonalize( int meshKernelId, 
+                                           int isTriangulationRequired, 
+                                           int isAccountingForLandBoundariesRequired, 
+                                           int projectToLandBoundaryOption,
+                                           const OrthogonalizationParametersNative& orthogonalizationParametersNative, 
+                                           const GeometryListNative& geometryListNativePolygon,
+                                           const GeometryListNative& geometryListNativeLandBoundaries)
     {
 
         if (meshKernelId >= meshInstances.size())
@@ -496,7 +501,9 @@ namespace meshkernelapi
         return status == true ? 0 : 1;
     }
 
-    MKERNEL_API int mkernel_get_splines(GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int number_of_points_between_vertices)
+    MKERNEL_API int mkernel_get_splines( const GeometryListNative& geometryListIn, 
+                                         GeometryListNative& geometry_list_out, 
+                                         int number_of_points_between_vertices )
     {
 
         if (geometryListIn.numberOfCoordinates == 0)
@@ -552,14 +559,12 @@ namespace meshkernelapi
         return 0;
     }
 
-    MKERNEL_API int mkernel_make_mesh(int meshKernelId, MakeGridParametersNative& makeGridParameters, GeometryListNative& geometryListNative)
+    MKERNEL_API int mkernel_make_mesh(int meshKernelId, const MakeGridParametersNative& makeGridParameters, const GeometryListNative& geometryListNative)
     {
         if (meshKernelId >= meshInstances.size())
         {
             return -1;
         }
-
-
 
         std::vector<meshkernel::Point> result;
         bool successful = ConvertGeometryListNativeToPointVector(geometryListNative, result);
@@ -582,7 +587,7 @@ namespace meshkernelapi
         return 0;
     }
 
-    MKERNEL_API int mkernel_make_mesh_from_polygon(int meshKernelId, GeometryListNative& disposableGeometryListIn)
+    MKERNEL_API int mkernel_make_mesh_from_polygon(int meshKernelId, const GeometryListNative& disposableGeometryListIn)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -666,7 +671,7 @@ namespace meshkernelapi
         return 0;
     }
 
-    MKERNEL_API int mkernel_refine_polygon(int meshKernelId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, GeometryListNative& geometryListOut)
+    MKERNEL_API int mkernel_refine_polygon(int meshKernelId, const GeometryListNative& geometryListIn, int firstIndex, int secondIndex, double distance, GeometryListNative& geometryListOut)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -698,7 +703,7 @@ namespace meshkernelapi
         return 0;
     }
 
-    MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, int& firstIndex, int& secondIndex, double& distance, int& numberOfPolygonVertices)
+    MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, int firstIndex, int secondIndex, double distance, int& numberOfPolygonVertices)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -975,7 +980,7 @@ namespace meshkernelapi
         meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         meshkernel::Polygons newPolygon;
-        successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
+        successful = polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
         if (!successful)
         {
             return -1;
@@ -1007,7 +1012,7 @@ namespace meshkernelapi
         meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         meshkernel::Polygons newPolygon;
-        successful = polygon.OffsetCopy(0, distance, innerAndOuter, newPolygon);
+        successful = polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
         if (!successful)
         {
             return -1;
@@ -1164,9 +1169,9 @@ namespace meshkernelapi
 
 
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId,
-        GeometryListNative& geometryListIn,
-        CurvilinearParametersNative& curvilinearParameters,
-        SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
+                                                                const GeometryListNative& geometryListIn,
+                                                                const CurvilinearParametersNative& curvilinearParameters,
+                                                                const SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -1191,7 +1196,7 @@ namespace meshkernelapi
     }
 
 
-    MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_initialize(int meshKernelId, GeometryListNative& geometryListNative, CurvilinearParametersNative& curvilinearParametersNative, SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
+    MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_initialize(int meshKernelId, const GeometryListNative& geometryListNative, const CurvilinearParametersNative& curvilinearParametersNative, const SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
     {
         if (meshKernelId >= meshInstances.size())
         {

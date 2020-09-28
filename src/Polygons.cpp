@@ -512,7 +512,7 @@ namespace meshkernel
     }
 
     //copypol: look how the layer thickness is determined when the input distance is not given, but th coordinate of another point
-    bool Polygons::OffsetCopy(int nodeIndex, double distance, bool innerAndOuter, Polygons& newPolygon)
+    bool Polygons::OffsetCopy(double distance, bool innerAndOuter, Polygons& newPolygon)
     {        
         int sizenewPolygon = GetNumNodes();
         if (innerAndOuter) 

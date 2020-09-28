@@ -49,9 +49,9 @@ meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) :
 };
 
 bool meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
-                                      const Polygons& polygon,
-                                      meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
-                                      meshkernelapi::InterpolationParametersNative& interpolationParametersNative)
+                                        const Polygons& polygon,
+                                        const meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
+                                        const meshkernelapi::InterpolationParametersNative& interpolationParametersNative)
 {
 
     bool isRefinementBasedOnSamples = false;

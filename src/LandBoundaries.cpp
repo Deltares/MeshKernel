@@ -482,17 +482,19 @@ namespace meshkernel
         int leftIndex = endLandBoundaryIndex - 1;
         int rightIndex = startLandBoundaryIndex;
 
-        bool successful = ComputeMask(landBoundarySegment,
-            meshBoundOnly,
-            leftIndex,
-            rightIndex,
-            leftEdgeRatio,
-            rightEdgeRatio,
-            startLandBoundaryIndex,
-            endLandBoundaryIndex);
+        bool successful = ComputeMask( landBoundarySegment,
+                                       meshBoundOnly, 
+                                       startLandBoundaryIndex,
+                                       endLandBoundaryIndex,
+                                       leftIndex,
+                                       rightIndex,
+                                       leftEdgeRatio,
+                                       rightEdgeRatio );
 
-        if (!successful)
+        if (!successful) 
+        {
             return false;
+        }
 
         int startMeshNode = - 1;
         int endMeshNode = -1;
@@ -643,14 +645,14 @@ namespace meshkernel
     /// masknodes
     /// mask the m_mesh nodes to be considered in the shortest path algorithm for the current segmentIndex
     /// is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio 
-    bool LandBoundaries::ComputeMask(int segmentIndex,
-        bool meshBoundOnly,
-        int& leftIndex,
-        int& rightIndex,
-        double& leftEdgeRatio,
-        double& rightEdgeRatio,
-        int& startLandBoundaryIndex,
-        int& endLandBoundaryIndex)
+    bool LandBoundaries::ComputeMask( int segmentIndex,
+                                      bool meshBoundOnly,
+                                      int startLandBoundaryIndex,
+                                      int endLandBoundaryIndex,
+                                      int& leftIndex,
+                                      int& rightIndex,
+                                      double& leftEdgeRatio,
+                                      double& rightEdgeRatio )
     {
         if (m_numNode <= 0)
         {
@@ -721,14 +723,14 @@ namespace meshkernel
             m_maskDepth = 0;
             std::vector<int> landBoundaryFaces{ crossedFaceIndex };
 
-            MaskFaces(meshBoundOnly,
-                landBoundaryFaces,
-                startLandBoundaryIndex,
-                endLandBoundaryIndex,
-                leftIndex,
-                rightIndex,
-                leftEdgeRatio,
-                rightEdgeRatio);
+            MaskFaces( meshBoundOnly,
+                       landBoundaryFaces,
+                       startLandBoundaryIndex,
+                       endLandBoundaryIndex,
+                       leftIndex,
+                       rightIndex,
+                       leftEdgeRatio,
+                       rightEdgeRatio );
 
             // Mask all nodes of the masked faces
             for (int f = 0; f < m_mesh->GetNumFaces(); f++)

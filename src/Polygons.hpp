@@ -76,7 +76,7 @@ namespace meshkernel
         bool PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths ) const;
 
         ///copypol, copy and move a polygon orthogonally
-        bool OffsetCopy(int nodeIndex, double distance, bool Inner, Polygons& newPolygon);
+        bool OffsetCopy(double distance, bool Inner, Polygons& newPolygon);
 
         int GetNumNodes() const { return m_numNodes; }
 
