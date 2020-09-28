@@ -43,7 +43,7 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
     
     successful = curvilinearGridFromSplines.ComputeSplineProperties(false);
     ASSERT_TRUE(successful);
-    successful = curvilinearGridFromSplines.MakeAllGridLines(true);
+    successful = curvilinearGridFromSplines.MakeAllGridLines();
     ASSERT_TRUE(successful);
     ASSERT_EQ(7, curvilinearGridFromSplines.m_numM);
 

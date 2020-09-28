@@ -195,7 +195,6 @@ namespace meshkernel
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="polygons"></param>
-        /// <param name="startLandBoundaryIndex"></param>
         /// <param name="endLandBoundaryIndex"></param>
         /// <param name="leftIndex"></param>
         /// <param name="rightIndex"></param>
@@ -204,8 +203,7 @@ namespace meshkernel
         /// <param name="startMeshNode"></param>
         /// <param name="endMeshNode"></param>
         /// <returns></returns>
-        bool FindStartEndMeshNodes(int startLandBoundaryIndex,
-                                   int endLandBoundaryIndex,
+        bool FindStartEndMeshNodes(int endLandBoundaryIndex,
                                    int leftIndex,
                                    int rightIndex,
                                    double leftEdgeRatio,

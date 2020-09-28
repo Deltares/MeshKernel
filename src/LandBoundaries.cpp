@@ -83,10 +83,9 @@ namespace meshkernel
         }
 
         // network boundary to polygon
-        int counterClockWise = 0;
         std::vector<Point> meshBoundaryPolygon;
         int numNodesBoundaryPolygons;
-        const bool successful = m_polygons->MeshBoundaryToPolygon(*m_mesh,counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
+        const bool successful = m_polygons->MeshBoundaryToPolygon(*m_mesh, meshBoundaryPolygon, numNodesBoundaryPolygons);
         if (!successful)
         {
             return false;
@@ -497,14 +496,13 @@ namespace meshkernel
 
         int startMeshNode = - 1;
         int endMeshNode = -1;
-        successful = FindStartEndMeshNodes(startLandBoundaryIndex,
-            endLandBoundaryIndex,
-            leftIndex,
-            rightIndex,
-            leftEdgeRatio,
-            rightEdgeRatio,
-            startMeshNode,
-            endMeshNode);
+        successful = FindStartEndMeshNodes( endLandBoundaryIndex,
+                                            leftIndex,
+                                            rightIndex,
+                                            leftEdgeRatio,
+                                            rightEdgeRatio,
+                                            startMeshNode,
+                                            endMeshNode );
 
         if (!successful)
             return false;
@@ -791,7 +789,6 @@ namespace meshkernel
             // these are the faces that are close (up to a certain tolerance) by a land boundary
             if (face < 0)
             {
-                int endNode = 0;
                 for (int e = 0; e < m_mesh->GetNumEdges(); e++)
                 {
                     if (m_mesh->m_edgesNumFaces[e] != 1 || m_mesh->m_edges[e].first < 0 || m_mesh->m_edges[e].second < 0)
@@ -803,15 +800,15 @@ namespace meshkernel
                     for (int ee = 0; ee < m_mesh->m_facesEdges[otherFace].size(); ee++)
                     {
                         int edge = m_mesh->m_facesEdges[otherFace][ee];
-                        isClose = IsMeshEdgeCloseToLandBoundaries(edge,
-                            startNodeLandBoundaryIndex,
-                            endNodeLandBoundaryindex,
-                            meshBoundOnly,
-                            leftIndex,
-                            rightIndex,
-                            leftEdgeRatio,
-                            rightEdgeRatio,
-                            landBoundaryNode);
+                        isClose = IsMeshEdgeCloseToLandBoundaries( edge,
+                                                                   startNodeLandBoundaryIndex,
+                                                                   endNodeLandBoundaryindex,
+                                                                   meshBoundOnly,
+                                                                   leftIndex,
+                                                                   rightIndex,
+                                                                   leftEdgeRatio,
+                                                                   rightEdgeRatio,
+                                                                   landBoundaryNode );
 
                         if (isClose)
                         {
@@ -1048,14 +1045,13 @@ namespace meshkernel
     /// get_kstartend2
     /// Finds the start and end m_mesh node. These are the nodes that are
     /// on a edge close to the land boundary segment
-    bool LandBoundaries::FindStartEndMeshNodes(int startLandBoundaryIndex,
-        int endLandBoundaryIndex,
-        int leftIndex,
-        int rightIndex,
-        double leftEdgeRatio,
-        double rightEdgeRatio,
-        int& startMeshNode,
-        int& endMeshNode)
+    bool LandBoundaries::FindStartEndMeshNodes( int endLandBoundaryIndex,
+                                                int leftIndex,
+                                                int rightIndex,
+                                                double leftEdgeRatio,
+                                                double rightEdgeRatio,
+                                                int& startMeshNode,
+                                                int& endMeshNode)
     {
         if (m_numNode <= 0)
         {
@@ -1082,8 +1078,8 @@ namespace meshkernel
 
         if (!isStartPointInsideAPolygon)
         {
-            startPoint.x = m_nodes[leftIndex + 1].x;
-            startPoint.y = m_nodes[leftIndex + 1].y;
+            startPoint.x = m_nodes[leftIndex+1].x;
+            startPoint.y = m_nodes[leftIndex+1].y;
         }
         if (!isEndPointInsideAPolygon)
         {
@@ -1178,6 +1174,7 @@ namespace meshkernel
         }
 
         connectedNodes.resize(m_mesh->GetNumNodes() , -1);
+
         // infinite distance for all nodes
         std::vector<double> nodeDistances(m_mesh->GetNumNodes() , std::numeric_limits<double>::max());
         std::vector<bool> isVisited(m_mesh->GetNumNodes() , false);

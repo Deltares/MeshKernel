@@ -958,12 +958,12 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
             int node = m_mesh->m_facesNodes[faceIndex][faceNodeIndex];
 
             bool isNewNode = true;
-            for (int n = 0; n < connectedNodesIndex + 1; n++)
+            for (int i = 0; i < connectedNodesIndex + 1; i++)
             {
-                if (node == m_connectedNodesCache[n])
+                if (node == m_connectedNodesCache[i])
                 {
                     isNewNode = false;
-                    m_faceNodeMappingCache[f][faceNodeIndex] = n;
+                    m_faceNodeMappingCache[f][faceNodeIndex] = i;
                     break;
                 }
             }

@@ -639,9 +639,8 @@ namespace meshkernelapi
         meshkernel::Polygons polygon;
         std::vector<meshkernel::Point> meshBoundaryPolygon;
 
-        int counterClockWise = 0;
         int numNodesBoundaryPolygons;
-        polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId], counterClockWise, meshBoundaryPolygon, numNodesBoundaryPolygons);
+        polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId], meshBoundaryPolygon, numNodesBoundaryPolygons);
 
         bool successful = ConvertPointVectorToGeometryListNative(meshBoundaryPolygon, geometryListNative);
         if (!successful)
@@ -662,8 +661,7 @@ namespace meshkernelapi
         meshkernel::Polygons polygon;
         std::vector<meshkernel::Point> meshBoundaryPolygon;
 
-        int counterClockWise =0;
-        polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId], counterClockWise, meshBoundaryPolygon, numberOfPolygonVertices);
+        polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId], meshBoundaryPolygon, numberOfPolygonVertices);
 
         return 0;
     }
@@ -769,7 +767,7 @@ namespace meshkernelapi
 
         return 0;
     }
-
+    // TO-DO: remove numberOfMeshVertices
     MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices)
     {
         if (meshKernelId >= meshInstances.size())

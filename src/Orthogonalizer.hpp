@@ -44,7 +44,7 @@ namespace meshkernel
         /// Ctor
         /// </summary>
         /// <returns></returns>
-        Orthogonalizer(std::shared_ptr<Mesh> mesh);
+        explicit Orthogonalizer(std::shared_ptr<Mesh> mesh);
         
         /// <summary>
         /// Computes the smoother weights and the right hans side
