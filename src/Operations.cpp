@@ -1228,14 +1228,14 @@ namespace meshkernel
         return true;
     }
 
-    static bool Averaging(const std::vector<Sample>& samples,
-        int numPolygonNodes,
-        const std::vector<Point>& polygon,
-        const Point centerOfMass,
-        const Projections& projection,
-        SpatialTrees::RTree& rtree,
-        int averagingMethod,
-        double& result)
+    static bool Averaging( const std::vector<Sample>& samples,
+                           int numPolygonNodes,
+                           const std::vector<Point>& polygon,
+                           const Point centerOfMass,
+                           const Projections& projection,
+                           SpatialTrees::RTree& rtree,
+                           int averagingMethod,
+                           double& result )
     {
         std::vector<Point> searchPolygon(numPolygonNodes);
 
@@ -1245,6 +1245,7 @@ namespace meshkernel
         double maxx = std::numeric_limits<double>::min();
         double miny = std::numeric_limits<double>::max();
         double maxy = std::numeric_limits<double>::min();
+    
         for (int i = 0; i < numPolygonNodes; i++)
         {
             searchPolygon[i] = polygon[i] * relativeFaceSearchSize + centerOfMass * (1 - relativeFaceSearchSize);
