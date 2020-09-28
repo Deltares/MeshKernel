@@ -89,20 +89,17 @@ namespace meshkernel
         }
     }
 
-    /// copynetboundstopol
     bool Polygons::MeshBoundaryToPolygon( Mesh& mesh,
                                           int counterClockWise,
                                           std::vector<Point>& meshBoundaryPolygon,
                                           int& numNodesBoundaryPolygons )
     {
-        // Find faces
-        mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-
-        std::vector<bool> isVisited(mesh.GetNumEdges(), false);
         numNodesBoundaryPolygons = 0;
 
+        // Find faces
+        mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        std::vector<bool> isVisited(mesh.GetNumEdges(), false);
         meshBoundaryPolygon.resize(mesh.GetNumNodes() , { doubleMissingValue ,doubleMissingValue });
-        int meshBoundaryPolygonSize = meshBoundaryPolygon.size();
 
         for (int e = 0; e < mesh.GetNumEdges(); e++)
         {
@@ -293,6 +290,7 @@ namespace meshkernel
             int numedge = 0;
             int numPoints = 0;
             int numLocalPointsOpenPolygon = numLocalPoints - 1;
+
             // if the number of estimated triangles is not sufficent, tricall must be repeated
             while(numtri < 0)
             {
@@ -302,19 +300,21 @@ namespace meshkernel
                 faceEdges.resize(int(numberOfTriangles) * 3);
                 xPoint.resize(int(numberOfTriangles) * 3);
                 yPoint.resize(int(numberOfTriangles) * 3);
-                Triangulation(&jatri,
-                    &xLocalPolygon[0],
-                    &yLocalPolygon[0],
-                    &numLocalPointsOpenPolygon,
-                    &faceNodes[0],
-                    &numtri,
-                    &edgeNodes[0],
-                    &numedge,
-                    &faceEdges[0],
-                    &xPoint[0],
-                    &yPoint[0],
-                    &numPoints,
-                    &averageTriangleArea);
+                
+                Triangulation( &jatri,
+                               &xLocalPolygon[0],
+                               &yLocalPolygon[0],
+                               &numLocalPointsOpenPolygon,
+                               &faceNodes[0],
+                               &numtri,
+                               &edgeNodes[0],
+                               &numedge,
+                               &faceEdges[0],
+                               &xPoint[0],
+                               &yPoint[0],
+                               &numPoints,
+                               &averageTriangleArea );
+
                 if (numberOfTriangles)
                 {
                     numberOfTriangles = -numtri;

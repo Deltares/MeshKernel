@@ -537,7 +537,7 @@ bool meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
     size_t startGridLine = 0;
     while (startIndex < m_gridPoints[0].size())
     {
-        int pos = FindIndexes(m_gridPoints[0], startIndex, m_numM, doubleMissingValue, mIndexsesThisSide);
+        FindIndexes(m_gridPoints[0], startIndex, m_numM, doubleMissingValue, mIndexsesThisSide);
 
         mIndexsesOtherSide[0][0] = mIndexsesThisSide[0][1] + 2;
         mIndexsesOtherSide[0][1] = mIndexsesOtherSide[0][0] + (mIndexsesThisSide[0][1] - mIndexsesThisSide[0][0]);
@@ -550,7 +550,7 @@ bool meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
         //check if this part is connected to another part
         for (auto i = mIndexsesThisSide[0][0]; i < mIndexsesThisSide[0][1] + 1; ++i)
         {
-            pos = FindIndexes(gridPointsNDirection[i], 0, gridPointsNDirection[i].size(), doubleMissingValue, nIndexsesThisSide);
+            FindIndexes(gridPointsNDirection[i], 0, gridPointsNDirection[i].size(), doubleMissingValue, nIndexsesThisSide);
             minN = std::min(minN, nIndexsesThisSide[0][0]);
             maxN = std::max(maxN, nIndexsesThisSide[0][1]);
 
@@ -570,7 +570,7 @@ bool meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
                 }
                 else
                 {
-                    pos = FindIndexes(gridPointsNDirection[mOther], 0, gridPointsNDirection[mOther].size(), doubleMissingValue, nIndexsesOtherSide);
+                    FindIndexes(gridPointsNDirection[mOther], 0, gridPointsNDirection[mOther].size(), doubleMissingValue, nIndexsesOtherSide);
                     minNOther = std::min(minNOther, nIndexsesOtherSide[0][0]);
                     maxNOther = std::max(maxNOther, nIndexsesOtherSide[0][1]);
                 }
@@ -1664,10 +1664,6 @@ bool meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
         {
             factor = (edgesCenterPoints[i] - leftCoordinate) / (rightCoordinate - leftCoordinate);
         }
-        else
-        {
-            rightIndex = leftIndex;
-        }
 
         factor = std::max(std::min(double(leftIndex + 1) + factor - 1.0, double(numValid - 1)), 0.0);
 
@@ -1987,7 +1983,6 @@ bool meshkernel::CurvilinearGridFromSplines::ComputeHeights()
         }
         for (int j = 0; j < m_numCrossingSplines[i]; ++j)
         {
-            int intersectingSplineIndex = m_crossingSplinesIndexses[i][j];
             bool successful = ComputeSubHeights(i, j);
             if (!successful)
             {

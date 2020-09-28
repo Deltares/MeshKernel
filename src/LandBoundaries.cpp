@@ -48,7 +48,7 @@ namespace meshkernel
         m_numNode = 0;
         m_polygonNodesCache.resize(maximumNumberOfNodesPerFace);
 
-        bool successful = ResizeVectorIfNeededWithMinimumSize(m_numNode + int(landBoundary.size()), m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
+        ResizeVectorIfNeededWithMinimumSize(m_numNode + int(landBoundary.size()), m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
         m_numAllocatedNodes = int(m_nodes.size());
 
         for (int i = 0; i < landBoundary.size(); i++)
@@ -118,7 +118,6 @@ namespace meshkernel
                     Point normalPoint;
                     double rlout;
                     const double distanceFirstMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
-                    const double distanceSecondMeshNode = DistanceFromLine(secondMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
 
                     if (distanceFirstMeshNode <= minDistance)
                     {
@@ -254,7 +253,6 @@ namespace meshkernel
             return true;
         }
 
-        bool successful = false;
         std::vector<int> nodesLoc;
         int numNodesLoc;
 
@@ -300,8 +298,10 @@ namespace meshkernel
         }
 
         int maxNodes = *std::max_element(nodesLoc.begin(), nodesLoc.end() - 1);
-        if (numNodesLoc > maxNodes)
+        if (numNodesLoc > maxNodes) 
+        {
             return true;
+        }
 
         int lastVisitedNode = nodesLoc[numNodesLoc - 1];
 
@@ -339,13 +339,17 @@ namespace meshkernel
                 for (int n = 1; n < numNodesLoc; n++)
                 {
                     int meshNode = nodesLoc[n];
+                    
                     double minimumDistance;
                     Point pointOnLandBoundary;
-                    int nearestLandBoundaryNodeIndex;
+                    int nearestLandBoundaryNodeIndex = -1;
                     double edgeRatio;
+                    bool successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[meshNode], 0, m_numNode, minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio);
 
-                    successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[meshNode], 0, m_numNode,
-                        minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio);
+                    if (!successful) 
+                    {
+                        continue;
+                    }
 
                     // find the segment index of the found point
                     int landboundarySegmentIndex = -1;

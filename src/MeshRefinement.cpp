@@ -1266,8 +1266,6 @@ bool  meshkernel::MeshRefinement::ComputeEdgesRefinementMask()
                     const auto e = NextCircularBackwardIndex(n, numFaceNodes);
                     const auto ee = NextCircularForwardIndex(n, numFaceNodes);
 
-                    auto secondEdgeIndex = m_mesh->m_facesEdges[f][ee];
-
                     if (numOfEdges[n] != numOfEdges[e] && numOfEdges[n] != numOfEdges[ee])
                     {
                         m_edgeMask[edgeIndex] = 1;
