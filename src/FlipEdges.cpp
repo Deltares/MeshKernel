@@ -37,12 +37,6 @@
 #include "FlipEdges.hpp"
 #include "LandBoundaries.hpp"
 
-meshkernel::FlipEdges::FlipEdges() :
-    m_mesh(nullptr),
-    m_landBoundaries(nullptr)
-{
-}
-
 meshkernel::FlipEdges::FlipEdges( std::shared_ptr<Mesh> mesh, 
                                   std::shared_ptr<LandBoundaries> landBoundary, 
                                   bool triangulateFaces, 
@@ -52,9 +46,6 @@ meshkernel::FlipEdges::FlipEdges( std::shared_ptr<Mesh> mesh,
     m_triangulateFaces(triangulateFaces),
     m_projectToLandBoundary(projectToLandBoundary)
 {
-    m_triangulateFaces = true;
-    m_projectToLandBoundary = true;
-
     if (m_projectToLandBoundary)
     {
         bool successful = m_landBoundaries->FindNearestMeshBoundary(4);

@@ -89,7 +89,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
    
     // now build node-edge mapping
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
-
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 0;
     int projectToLandBoundaryOption = 0;

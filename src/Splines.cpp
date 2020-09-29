@@ -253,7 +253,7 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
                                              m_projection );
 
         // search close by
-        if (-2.0 < firstRatio < 3.0 && -2.0 < secondRatio < 3.0)
+        if (firstRatio > -2.0 && firstRatio < 3.0 && secondRatio > -2.0 && secondRatio < 3.0)
         {
             previousFirstCrossing = firstCrossing;
             previousSecondCrossing = secondCrossing;

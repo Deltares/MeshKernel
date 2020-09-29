@@ -981,11 +981,6 @@ bool meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& m
                 }
             }
 
-            if (!referencePoint.IsValid())
-            {
-                return false;
-            }
-
             // get polygon min/max in rotated (xi,eta) coordinates
             double xmin = std::numeric_limits<double>::max();
             double xmax = -xmin;
