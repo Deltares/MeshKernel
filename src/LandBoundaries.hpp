@@ -268,7 +268,6 @@ namespace meshkernel
         std::shared_ptr<Polygons> m_polygons;             // A pointer to polygons
 
         std::vector<Point> m_nodes;                       // XLAN, YLAN, ZLAN
-        int m_numAllocatedNodes;                          // MAXLAN
         int m_numNode;                                    // actual MXLAN
 
         int m_numSegments = 0;                            // Nlanseg, number of land boundary segments 
