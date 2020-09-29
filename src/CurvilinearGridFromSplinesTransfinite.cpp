@@ -38,10 +38,6 @@
 #include "Splines.hpp"
 #include "CurvilinearGrid.hpp"
 
-meshkernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(): m_splines(nullptr)
-{
-}
-
 meshkernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, 
                                                                                          meshkernelapi::CurvilinearParametersNative curvilinearParametersNative): m_splines(splines), 
                                                                                                                                                                   m_numN(curvilinearParametersNative.NRefinement),

@@ -44,12 +44,6 @@ namespace meshkernel
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <returns></returns>
-        FlipEdges();
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
         /// <param name="mesh">The input mesh</param>
         /// <param name="landBoundary">The land boundary</param>
         /// <param name="triangulateFaces">Option to triangulate all faces or not</param>

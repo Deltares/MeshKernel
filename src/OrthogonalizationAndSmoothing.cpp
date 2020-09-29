@@ -54,8 +54,6 @@ meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing( std::s
     m_orthogonalizer(orthogonalizer),
     m_polygons(polygon),
     m_landBoundaries(landBoundaries),
-    m_isTriangulationRequired(isTriangulationRequired),
-    m_isAccountingForLandBoundariesRequired(isAccountingForLandBoundariesRequired),
     m_projectToLandBoundaryOption(projectToLandBoundaryOption)
 {    
     m_orthogonalizationToSmoothingFactor = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor;

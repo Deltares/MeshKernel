@@ -42,13 +42,6 @@ namespace meshkernel
     public:
 
         /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <returns></returns>
-        CurvilinearGridFromSplinesTransfinite();
-
-
-        /// <summary>
         /// Ctor with splines and parameters
         /// </summary>
         /// <returns></returns>
