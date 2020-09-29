@@ -167,11 +167,9 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_new_mesh(int& meshKernelId)
-    {
-        int instanceSize = int(meshInstances.size());
-        meshInstances.resize(instanceSize + 1);
-        meshKernelId = instanceSize;
-        meshInstances[meshKernelId] = std::make_shared<meshkernel::Mesh>();
+    {   
+        meshKernelId = int(meshInstances.size());
+        meshInstances.push_back(std::make_shared<meshkernel::Mesh>());
         return 0;
     };
 
