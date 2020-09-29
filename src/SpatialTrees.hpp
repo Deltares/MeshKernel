@@ -165,12 +165,10 @@ namespace meshkernel
 
         private:
 
-            Projections m_projection;
             RTree2D m_rtree2D;
             std::vector<std::pair<Point2D, size_t>> m_points;
             std::vector<value2D> m_queryCache;
             std::vector<int> m_queryIndexses;
-            int m_querySize = 0;
 
             // Rtree preallocated capacity of the query array 
             int queryCapacity = 100;

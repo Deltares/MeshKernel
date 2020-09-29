@@ -1456,7 +1456,7 @@ namespace meshkernel
     template <typename T> 
     static int sgn(T val) 
     {
-        return (T(0) < val) - (val < T(0));
+        return (T(0) < val ? 1 : 0) - (val < T(0) ? 1: 0);
     }
 
     //(DUITPL)

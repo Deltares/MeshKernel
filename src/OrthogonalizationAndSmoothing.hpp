@@ -178,9 +178,7 @@ namespace meshkernel
         std::vector<int>                                   m_compressedNodesNodes;      // The indexses of the neighbouring nodes 
         std::vector<int>                                   m_nodeErrorCode;             // nodes with errors
 
-        // run-time parameters                                                      
-        int m_maximumNumConnectedNodes = 0;
-        int m_maximumNumSharedFaces = 0;
+        // run-time parameters 
         double m_mumax;
         double m_mu;
         bool m_keepCircumcentersAndMassCenters = false;                          
@@ -190,8 +188,6 @@ namespace meshkernel
         int m_orthogonalizationOuterIterations = 2;
         int m_orthogonalizationBoundaryIterations = 25;
         int m_orthogonalizationInnerIterations = 25;
-        int m_isTriangulationRequired;
-        int m_isAccountingForLandBoundariesRequired;
         int m_projectToLandBoundaryOption;
 
     };
