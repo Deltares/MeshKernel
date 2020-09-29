@@ -51,12 +51,19 @@ namespace meshkernel
         Polygons(const std::vector<Point>& polygon,
                  Projections projection);
 
-        /// copynetboundstopol
+
+        /// <summary>
+        /// (copynetboundstopol)
+        /// </summary>
         bool MeshBoundaryToPolygon(Mesh& mesh,
                                    std::vector<Point>& meshBoundaryPolygon,
                                    int& numNodesBoundaryPolygons);
 
+        /// <summary>
         /// create a set of points in a polygon 
+        /// </summary>
+        /// <param name="generatedPoints"></param>
+        /// <returns></returns>
         bool CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints);
 
         std::vector<Point> m_nodes;                // Polygon nodes
