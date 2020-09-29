@@ -43,18 +43,21 @@ namespace meshkernel
         m_mesh(mesh), 
         m_polygons(polygons)
     {
-        ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
-        m_numAllocatedNodes = int(m_nodes.size());
         m_numNode = 0;
-        m_polygonNodesCache.resize(maximumNumberOfNodesPerFace);
-
-        ResizeVectorIfNeededWithMinimumSize(m_numNode + int(landBoundary.size()), m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
-        m_numAllocatedNodes = int(m_nodes.size());
-
-        for (int i = 0; i < landBoundary.size(); i++)
+        m_numAllocatedNodes = 0;
+        if (!landBoundary.empty())
         {
-            m_nodes[m_numNode] = landBoundary[i];
-            m_numNode++;
+            ResizeVectorIfNeededWithMinimumSize(int(landBoundary.size()), m_nodes, m_allocationSize, { doubleMissingValue,doubleMissingValue });
+            m_numAllocatedNodes = int(m_nodes.size());
+
+            m_numNode = 0;
+            for (int i = 0; i < landBoundary.size(); i++)
+            {
+                m_nodes[m_numNode] = landBoundary[i];
+                m_numNode++;
+            }
+
+            m_polygonNodesCache.resize(maximumNumberOfNodesPerFace);
         }
 
     }
