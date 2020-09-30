@@ -289,8 +289,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
 
 }
 
-/*
-* temporarly disabled, failure maybe due to openmp threading
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
 {
     // now build node-edge mapping
@@ -310,10 +308,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
     auto polygon = std::make_shared<meshkernel::Polygons>();
-    auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>();
-
     std::vector<meshkernel::Point> landBoundary;
-    landBoundaries->Set(landBoundary, mesh, polygon);
+    auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     meshkernel::OrthogonalizationAndSmoothing orthogonalization( mesh, 
                                                                  smoother, 
@@ -358,7 +354,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
     ASSERT_NEAR(1631.412199601948, mesh->m_nodes[9].y, tolerance);
 
 }
-*/
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 {
@@ -415,6 +410,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
         { 351.112183, 237.309906 },
         { 443.191895, 262.285858 },
         { 553.627319, 327.283539 },
+        { meshkernel::doubleMissingValue, meshkernel::doubleMissingValue }
     };
 
     
