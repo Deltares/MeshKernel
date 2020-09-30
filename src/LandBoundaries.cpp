@@ -58,11 +58,11 @@ namespace meshkernel
             return true;
         }
 
-        std::vector<int> landBoundaryMask(m_nodes.size() - 1, 0);
         //mask the landboundary that is inside the selecting polygon
+        std::vector<int> landBoundaryMask(m_nodes.size() - 1, 0);
         for (int n = 0; n < m_nodes.size() - 1; n++)
         {
-            if (m_nodes[n].x != doubleMissingValue && m_nodes[n + 1].x != doubleMissingValue)
+            if (!m_nodes[n].IsValid() && !m_nodes[n + 1].IsValid())
             {
                 bool firstPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n],0);
                 bool secondPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n + 1],0);
@@ -74,7 +74,7 @@ namespace meshkernel
             }
         }
 
-        // network boundary to polygon
+        // mesh boundary to polygon
         std::vector<Point> meshBoundaryPolygon;
         int numNodesBoundaryPolygons;
         const bool successful = m_polygons->MeshBoundaryToPolygon(*m_mesh, meshBoundaryPolygon, numNodesBoundaryPolygons);
@@ -91,14 +91,14 @@ namespace meshkernel
 
                 Point firstPoint = m_nodes[n];
                 Point secondPoint = m_nodes[n + 1];
-
                 bool landBoundaryIsClose = false;
+
                 for (int nn = 0; nn < numNodesBoundaryPolygons - 1; nn++)
                 {
                     Point firstMeshBoundaryNode = meshBoundaryPolygon[nn];
                     Point secondMeshBoundaryNode = meshBoundaryPolygon[nn + 1];
 
-                    if (firstMeshBoundaryNode.x == doubleMissingValue || secondMeshBoundaryNode.x == doubleMissingValue)
+                    if (!firstMeshBoundaryNode.IsValid() || !secondMeshBoundaryNode.IsValid())
                     {
                         continue;
                     }
@@ -124,7 +124,7 @@ namespace meshkernel
             }
         }
 
-        // In m_segmentIndices: start and ending indexses of segments inside polygon
+        // start and ending indexses of segments inside polygon
         m_segmentIndices.reserve(m_nodes.size());
         size_t begin = 0;
         while (begin < m_nodes.size())
@@ -132,7 +132,7 @@ namespace meshkernel
             size_t found = begin;
             for (int n = begin; n < m_nodes.size(); n++)
             {
-                if (m_nodes[n].x == doubleMissingValue)
+                if (!m_nodes[n].IsValid())
                 {
                     found = n;
                     break;
@@ -145,6 +145,7 @@ namespace meshkernel
             {
                 m_segmentIndices.push_back({ startInd, endInd });
             }
+
             begin = found + 1;
         }
 
@@ -173,8 +174,6 @@ namespace meshkernel
             return false;
         }
 
-        bool successful = false;
-
         bool meshBoundOnly = false;
         m_closeFactor = m_closeWholeMeshFactor;
         if (snapping == 2 || snapping == 3)
@@ -191,7 +190,7 @@ namespace meshkernel
         m_meshNodesLandBoundarySegments.resize(m_mesh->GetNumNodes() , -1);
         m_nodesMinDistances.resize(m_mesh->GetNumNodes() , doubleMissingValue);
 
-        //landBoundarySegment
+        bool successful = false;
         for (int landBoundarySegment = 0; landBoundarySegment < m_segmentIndices.size(); landBoundarySegment++)
         {
             int numPaths = 0;
@@ -220,11 +219,17 @@ namespace meshkernel
             int numConnectedNodes = 0;
             for (int e = 0; e < m_mesh->GetNumEdges(); e++)
             {
-                if (m_mesh->m_edgesNumFaces[e] != 1)
+                if (m_mesh->m_edgesNumFaces[e] != 1) 
+                {
                     continue;
-                successful = AssignSegmentsToAllMeshNodes(e, true, connectedNodes, numConnectedNodes);
-                if (!successful)
+                }
+                
+                successful = AssignSegmentsToMeshNodes(e, true, connectedNodes, numConnectedNodes);
+                if (!successful) 
+                {
                     return false;
+                }
+
             }
         }
 
@@ -232,8 +237,7 @@ namespace meshkernel
     };
 
 
-    /// connect_boundary_paths, build an additional boundary for not assigned nodes  
-    bool LandBoundaries::AssignSegmentsToAllMeshNodes(int edgeIndex, bool initialize, std::vector<int>& nodes, int numNodes)
+    bool LandBoundaries::AssignSegmentsToMeshNodes(int edgeIndex, bool initialize, std::vector<int>& nodes, int numNodes)
     {
         if (m_nodes.empty())
         {
@@ -370,7 +374,7 @@ namespace meshkernel
             }
             else
             {
-                AssignSegmentsToAllMeshNodes(edge, false, nodesLoc, numNodesLoc + 1);
+                AssignSegmentsToMeshNodes(edge, false, nodesLoc, numNodesLoc + 1);
             }
         }
         return true;
