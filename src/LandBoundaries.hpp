@@ -89,10 +89,10 @@ namespace meshkernel
         /// <param name="nodes"></param>
         /// <param name="numNodes"></param>
         /// <returns></returns>
-        bool AssignSegmentsToAllMeshNodes(int edgeIndex, 
-                                          bool initialize, 
-                                          std::vector<int>& nodes, 
-                                          int numNodes);
+        bool AssignSegmentsToMeshNodes(int edgeIndex, 
+                                       bool initialize, 
+                                       std::vector<int>& nodes, 
+                                       int numNodes);
         /// <summary>
         /// add new land boundary segment that connects two others (add_land)
         /// </summary>
