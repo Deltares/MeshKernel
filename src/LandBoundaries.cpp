@@ -62,7 +62,7 @@ namespace meshkernel
         std::vector<int> landBoundaryMask(m_nodes.size() - 1, 0);
         for (int n = 0; n < m_nodes.size() - 1; n++)
         {
-            if (!m_nodes[n].IsValid() && !m_nodes[n + 1].IsValid())
+            if (m_nodes[n].IsValid() && m_nodes[n + 1].IsValid())
             {
                 bool firstPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n],0);
                 bool secondPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n + 1],0);
