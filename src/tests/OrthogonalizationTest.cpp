@@ -410,6 +410,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
         { 351.112183, 237.309906 },
         { 443.191895, 262.285858 },
         { 553.627319, 327.283539 },
+        { meshkernel::doubleMissingValue, meshkernel::doubleMissingValue }
     };
 
     
