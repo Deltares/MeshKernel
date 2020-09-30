@@ -266,13 +266,9 @@ namespace meshkernel
 
         std::shared_ptr<Mesh>     m_mesh;                 // A pointer to mesh 
         std::shared_ptr<Polygons> m_polygons;             // A pointer to polygons
+        std::vector<Point>        m_nodes;                // XLAN, YLAN, ZLAN
 
-        std::vector<Point> m_nodes;                       // XLAN, YLAN, ZLAN
-        int m_numAllocatedNodes;                          // MAXLAN
-        int m_numNode;                                    // actual MXLAN
-
-        int m_numSegments = 0;                            // Nlanseg, number of land boundary segments 
-        std::vector<std::vector<int>> m_segmentIndices;   // lanseg_startend
+        std::vector<std::vector<size_t>> m_segmentIndices;   // lanseg_startend
         std::vector<std::vector<double>> m_nodesLand;     // !node to land boundary segment mapping
 
         std::vector<int> m_nodeMask;                      // nodemask, masking the net nodes
@@ -287,7 +283,7 @@ namespace meshkernel
         // caches
         std::vector<Point> m_polygonNodesCache;          // array of points (e.g. points of a face)
         std::vector<double> m_nodesMinDistances;
-        const int m_allocationSize = 10000;               // allocation size for allocateVector
+        const size_t m_allocationSize = 10000;               // allocation size for allocateVector
 
         // Parameters
         const double m_closeToLandBoundaryFactor = 5.0;   // close - to - landboundary tolerance, measured in number of meshwidths
