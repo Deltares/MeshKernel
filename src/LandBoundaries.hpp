@@ -265,16 +265,15 @@ namespace meshkernel
                                            int startLandBoundaryIndex, 
                                            int endLandBoundaryIndex);
 
-        std::shared_ptr<Mesh>     m_mesh;                 // A pointer to mesh 
-        std::shared_ptr<Polygons> m_polygons;             // A pointer to polygons
-        std::vector<Point>        m_nodes;                // XLAN, YLAN, ZLAN
-
+        std::shared_ptr<Mesh>     m_mesh;                    // A pointer to mesh 
+        std::shared_ptr<Polygons> m_polygons;                // A pointer to polygons
+        std::vector<Point>        m_nodes;                   // XLAN, YLAN, ZLAN
         std::vector<std::vector<size_t>> m_segmentIndices;   // lanseg_startend
-        std::vector<std::vector<double>> m_nodesLand;     // !node to land boundary segment mapping
+        std::vector<std::vector<double>> m_nodesLand;        // !node to land boundary segment mapping
 
-        std::vector<int> m_nodeMask;                      // nodemask, masking the net nodes
-        std::vector<int> m_faceMask;                      // masking faces
-        std::vector<int> m_edgeMask;                      // masking edges
+        std::vector<int> m_nodeMask;                         // nodemask, masking the net nodes
+        std::vector<int> m_faceMask;                         // masking faces
+        std::vector<int> m_edgeMask;                         // masking edges
 
         bool m_landMask = true;
         bool m_addLandboundaries = true;
