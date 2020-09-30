@@ -175,12 +175,12 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_deallocate_state(int meshKernelId)
     {
-        if (meshKernelId >= meshInstances.size())
+        if (meshKernelId < 0 && meshKernelId >= meshInstances.size())
         {
             return -1;
         }
 
-        meshInstances.pop_back();
+        meshInstances.erase(meshInstances.begin() + meshKernelId);
         return 0;
     }
 
