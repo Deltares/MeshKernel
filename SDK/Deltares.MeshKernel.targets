@@ -2,16 +2,16 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Target Name="MeshKernelLibsPostBuild" AfterTargets="Build">
     <ItemGroup>
-      <_FilesToCopyMeshKernelLibs Include="$(MSBuildThisFileDirectory)..\..\native\Lib\**\*"/>      
+      <_FilesToCopyMeshKernelLibs Include="$(MSBuildThisFileDirectory)..\..\native\**\*"/>      
     </ItemGroup>
     
-    <Copy SourceFiles="@(_FilesToCopyMeshKernelLibs)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\DeltaShell\%(RecursiveDir)" SkipUnchangedFiles="true"/>
+    <Copy SourceFiles="@(_FilesToCopyMeshKernelLibs)" DestinationFolder="$(OutDir)\%(RecursiveDir)" SkipUnchangedFiles="true"/>    
   </Target>
   
   <Target Name="MeshKernelLibsClean" AfterTargets="Clean">
     <ItemGroup>
-      <_OriginalFilesMeshKernel Include="$(MSBuildThisFileDirectory)..\..\native\Lib\**\*"/>
-      <_FilesToCleanMeshKernel Include="$(SolutionDir)bin\$(Configuration)\DeltaShell\%(_OriginalFilesMeshKernel.RecursiveDir)%(_OriginalFilesMeshKernel.FileName)%(_OriginalFilesMeshKernel.Extension)"/>
+      <_OriginalFilesMeshKernel Include="$(MSBuildThisFileDirectory)..\..\native\**\*"/>
+      <_FilesToCleanMeshKernel Include="$(OutDir)\%(_OriginalFilesDimrLibs.RecursiveDir)%(_OriginalFilesDimrLibs.FileName)%(_OriginalFilesDimrLibs.Extension)"/>      
     </ItemGroup>
     <Delete Files="@(_FilesToCleanMeshKernel)"/>    
   </Target>
