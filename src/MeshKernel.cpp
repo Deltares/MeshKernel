@@ -120,7 +120,7 @@ namespace meshkernelapi
 
         for (auto i = 0; i < indexes.size(); i++)
         {
-            int size = indexes[i][1] - indexes[i][0] + 1;
+            int size = int(indexes[i][1]) - int(indexes[i][0]) + 1;
             if (size > 0)
             {
                 spline.AddSpline(splineCornerPoints, indexes[i][0], size);
@@ -344,6 +344,7 @@ namespace meshkernelapi
         {
             return -1;
         }
+        return 0;
     }
 
     MKERNEL_API int mkernel_orthogonalize_initialize(int meshKernelId,
@@ -523,8 +524,8 @@ namespace meshkernelapi
         int index = 0;
         for (int s = 0; s < numSplines; s++)
         {            
-            std::vector<meshkernel::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + indexes[s][1] + 1);
-            int numNodes = indexes[s][1] - indexes[s][0] + 1;
+            std::vector<meshkernel::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + int(indexes[s][1]) + 1);
+            int numNodes = int(indexes[s][1]) - int(indexes[s][0]) + 1;
             meshkernel::Splines::SecondOrderDerivative(coordinates, numNodes, coordinatesDerivatives);
 
             for (int n = 0; n < numNodes - 1; n++)
