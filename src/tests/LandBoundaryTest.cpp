@@ -17,7 +17,8 @@ TEST(LandBoundaries, OneLandBoundary)
         { 222.621918, 382.651917 },
         { 316.206177, 461.190796 },
         { 350.811279, 465.102692 },
-        { 510.295715, 438.923065 }
+        { 510.295715, 438.923065 },
+        { meshkernel::doubleMissingValue, meshkernel::doubleMissingValue }
     };
 
     auto polygons =std::make_shared<meshkernel::Polygons>();
@@ -55,7 +56,8 @@ TEST(LandBoundaries, TwoLandBoundaries)
         { 250.253036, 235.233246 },
         { 423.158325, 200.652054 },
         { 559.938782, 312.732147 },
-        { 518.873718, 421.415894 }
+        { 518.873718, 421.415894 },
+        { meshkernel::doubleMissingValue, meshkernel::doubleMissingValue }
     };
 
     auto polygons =std::make_shared<meshkernel::Polygons>();
@@ -88,7 +90,8 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
         { 248.801422, 375.129028 },
         { 337.571045, 459.686218 },
         { 516.313965, 419.062683 },
-        { 528.651428, 292.377380 }
+        { 528.651428, 292.377380 },
+        { meshkernel::doubleMissingValue, meshkernel::doubleMissingValue }
     };
 
     auto polygons =std::make_shared<meshkernel::Polygons>();
@@ -126,6 +129,7 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
         { 351.112183, 237.309906 },
         { 443.191895, 262.285858 },
         { 553.627319, 327.283539 },
+        { meshkernel::doubleMissingValue, meshkernel::doubleMissingValue }
     };
 
     auto polygons =std::make_shared<meshkernel::Polygons>();
