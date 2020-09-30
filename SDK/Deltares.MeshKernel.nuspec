@@ -7,7 +7,6 @@
         <owners>Deltares</owners>
         <description>Deltares back end mesh editing engine (C++ version)</description>
         <copyright>Copyright 2020</copyright>
-        <license type="expression">GPL-3.0</license>
     </metadata>
     <files>
         <file src="..\build\Release\lib\**\*" target="native\Lib" />
