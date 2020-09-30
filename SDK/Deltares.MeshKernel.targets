@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Target Name="MeshKernelLibsPostBuild" AfterTargets="Build">
     <ItemGroup>
-      <_FilesToCopyMeshKernelLibs Include="$(MSBuildThisFileDirectory)..\..\content\Lib\**\*"/>      
+      <_FilesToCopyMeshKernelLibs Include="$(MSBuildThisFileDirectory)..\..\native\Lib\**\*"/>      
     </ItemGroup>
     
     <Copy SourceFiles="@(_FilesToCopyMeshKernelLibs)" DestinationFolder="$(SolutionDir)bin\$(Configuration)\DeltaShell\%(RecursiveDir)" SkipUnchangedFiles="true"/>
@@ -10,7 +10,7 @@
   
   <Target Name="MeshKernelLibsClean" AfterTargets="Clean">
     <ItemGroup>
-      <_OriginalFilesMeshKernel Include="$(MSBuildThisFileDirectory)..\..\content\Lib\**\*"/>
+      <_OriginalFilesMeshKernel Include="$(MSBuildThisFileDirectory)..\..\native\Lib\**\*"/>
       <_FilesToCleanMeshKernel Include="$(SolutionDir)bin\$(Configuration)\DeltaShell\%(_OriginalFilesMeshKernel.RecursiveDir)%(_OriginalFilesMeshKernel.FileName)%(_OriginalFilesMeshKernel.Extension)"/>
     </ItemGroup>
     <Delete Files="@(_FilesToCleanMeshKernel)"/>    
