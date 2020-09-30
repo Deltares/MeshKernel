@@ -37,3 +37,9 @@
 *.app
 
 # End of https://www.toptal.com/developers/gitignore/api/c++
+
+# Version files
+src/MeshKernel_version.h
+src/MeshKernel_version.h.svn
+src/MeshKernel_version.rc
+src/MeshKernel_version.rc.svn
