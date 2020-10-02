@@ -107,6 +107,7 @@ namespace meshkernel
             return point;
         }
 
+
         Point operator/(Point const& rhs) const
         {
             Point point
