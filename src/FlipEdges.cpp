@@ -318,16 +318,16 @@ bool meshkernel::FlipEdges::ComputeTopologyFunctional( int edge,
     }
 
     // find the nodes that are connected to both k1 and k
-    int sumIndexsesLeftFace = 0;
-    int sumIndexsesRightFace = 0;
+    int sumIndicesLeftFace = 0;
+    int sumIndicesRightFace = 0;
     for (int i = 0; i < 3; i++)
     {
-        sumIndexsesLeftFace += m_mesh->m_facesNodes[faceL][i];
-        sumIndexsesRightFace += m_mesh->m_facesNodes[faceR][i];
+        sumIndicesLeftFace += m_mesh->m_facesNodes[faceL][i];
+        sumIndicesRightFace += m_mesh->m_facesNodes[faceR][i];
     }
 
-    nodeLeft = sumIndexsesLeftFace - firstNode - secondNode;
-    nodeRight = sumIndexsesRightFace - firstNode - secondNode;
+    nodeLeft = sumIndicesLeftFace - firstNode - secondNode;
+    nodeRight = sumIndicesRightFace - firstNode - secondNode;
 
     if (nodeLeft < 0 || nodeRight < 0)
     {
