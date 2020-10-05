@@ -124,7 +124,7 @@ namespace meshkernel
             }
         }
 
-        // start and ending indexses of segments inside polygon
+        // start and ending indices of segments inside polygon
         m_segmentIndices.reserve(m_nodes.size());
         size_t begin = 0;
         while (begin < m_nodes.size())
@@ -150,8 +150,8 @@ namespace meshkernel
         }
 
         // Generate two segments for closed land boundaries
-        const auto numSegmentIndexsesBeforeSplitting = m_segmentIndices.size();
-        for (size_t i = 0; i < numSegmentIndexsesBeforeSplitting; i++)
+        const auto numSegmentIndicesBeforeSplitting = m_segmentIndices.size();
+        for (size_t i = 0; i < numSegmentIndicesBeforeSplitting; i++)
         {
             const auto startSegmentIndex = m_segmentIndices[i][0];
             const auto endSegmentIndex = m_segmentIndices[i][1];
@@ -439,7 +439,7 @@ namespace meshkernel
         m_nodes.push_back(newNodeRight);
         m_nodes.push_back({ doubleMissingValue, doubleMissingValue });
 
-        // Update segment indexses
+        // Update segment indices
         m_segmentIndices.push_back({ m_nodes.size() - 3,  m_nodes.size() - 2 });
 
         return successful;

@@ -652,7 +652,7 @@ bool meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
         }
 
         int numClosedPolygonNodes = 0;
-        bool successful = m_mesh->FaceClosedPolygon(f, m_polygonNodesCache, m_localNodeIndexsesCache, m_edgeIndexsesCache, numClosedPolygonNodes);
+        bool successful = m_mesh->FaceClosedPolygon(f, m_polygonNodesCache, m_localNodeIndicesCache, m_edgeIndicesCache, numClosedPolygonNodes);
         if (!successful)
         {
             return false;
@@ -669,13 +669,13 @@ bool meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
             const auto firstEdge = NextCircularBackwardIndex(e, numEdges);
             const auto secondEdge = NextCircularForwardIndex(e, numEdges);
 
-            int mappedEdge = m_localNodeIndexsesCache[e];
+            int mappedEdge = m_localNodeIndicesCache[e];
             auto edgeIndex = m_mesh->m_facesEdges[f][mappedEdge];
 
-            mappedEdge = m_localNodeIndexsesCache[firstEdge];
+            mappedEdge = m_localNodeIndicesCache[firstEdge];
             auto firstEdgeIndex = m_mesh->m_facesEdges[f][mappedEdge];
 
-            mappedEdge = m_localNodeIndexsesCache[secondEdge];
+            mappedEdge = m_localNodeIndicesCache[secondEdge];
             auto secondEdgeIndex = m_mesh->m_facesEdges[f][mappedEdge];
 
             if (edgeIndex < 0)
@@ -722,7 +722,7 @@ bool meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
             {
                 facePolygonWithoutHangingNodes[numNonHangingEdges] = m_polygonNodesCache[e];
 
-                auto mappedEdge = m_localNodeIndexsesCache[e];
+                auto mappedEdge = m_localNodeIndicesCache[e];
                 if (mappedEdge > 0)
                 {
                     localEdgesNumFaces[numNonHangingEdges] = m_mesh->m_edgesNumFaces[mappedEdge];
@@ -859,15 +859,15 @@ bool meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<S
     std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
     std::fill(m_faceMask.begin(), m_faceMask.end(), 0);
     m_polygonNodesCache.resize(maximumNumberOfNodesPerFace + 1);
-    m_localNodeIndexsesCache.resize(maximumNumberOfNodesPerFace + 1, intMissingValue);
-    m_edgeIndexsesCache.resize(maximumNumberOfEdgesPerFace + 1, intMissingValue);
+    m_localNodeIndicesCache.resize(maximumNumberOfNodesPerFace + 1, intMissingValue);
+    m_edgeIndicesCache.resize(maximumNumberOfEdgesPerFace + 1, intMissingValue);
     std::vector<int> refineEdgeCache(maximumNumberOfEdgesPerFace);
     std::fill(m_subtractedSample.begin(), m_subtractedSample.end(), false);
 
     for (int f = 0; f < m_mesh->GetNumFaces(); f++)
     {
         int numClosedPolygonNodes = 0;
-        m_mesh->FaceClosedPolygon(f, m_polygonNodesCache, m_localNodeIndexsesCache, m_edgeIndexsesCache, numClosedPolygonNodes);
+        m_mesh->FaceClosedPolygon(f, m_polygonNodesCache, m_localNodeIndicesCache, m_edgeIndicesCache, numClosedPolygonNodes);
 
         int numHangingEdges;
         int numHangingNodes;
@@ -895,7 +895,7 @@ bool meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<S
             {
                 if (refineEdgeCache[n] == 1)
                 {
-                    int node = m_localNodeIndexsesCache[n];
+                    int node = m_localNodeIndicesCache[n];
                     if (node < 0)
                     {
                         continue;
@@ -1000,7 +1000,7 @@ bool meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples( int numP
     m_polygonEdgesLengthsCache.resize(numPolygonNodes);
     for (int i = 0; i < numPolygonNodes; i++)
     {
-        int edgeIndex = m_edgeIndexsesCache[i];
+        int edgeIndex = m_edgeIndicesCache[i];
         m_polygonEdgesLengthsCache[i] = m_mesh->m_edgeLengths[edgeIndex];
     }
     

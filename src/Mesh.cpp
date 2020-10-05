@@ -107,14 +107,14 @@ bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
     }
 
     // Flag invalid nodes
-    std::vector<int> validNodesIndexses(m_nodes.size());
-    std::fill(validNodesIndexses.begin(), validNodesIndexses.end(), -1);
+    std::vector<int> validNodesIndices(m_nodes.size());
+    std::fill(validNodesIndices.begin(), validNodesIndices.end(), -1);
     int validIndex = 0;
     for (int n = 0; n < m_nodes.size(); ++n)
     {
         if (m_nodes[n].IsValid())
         {
-            validNodesIndexses[n] = validIndex;
+            validNodesIndices[n] = validIndex;
             validIndex++;
         }
     }
@@ -127,10 +127,10 @@ bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
             continue;
         }
 
-        if (validNodesIndexses[m_edges[e].first] >= 0 && validNodesIndexses[m_edges[e].second] >= 0)
+        if (validNodesIndices[m_edges[e].first] >= 0 && validNodesIndices[m_edges[e].second] >= 0)
         {
-            m_edges[e].first = validNodesIndexses[m_edges[e].first];
-            m_edges[e].second = validNodesIndexses[m_edges[e].second];
+            m_edges[e].first = validNodesIndices[m_edges[e].first];
+            m_edges[e].second = validNodesIndices[m_edges[e].second];
         }
         else
         {
@@ -219,7 +219,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
 
     std::vector<Point> nodes(curvilinearGrid.m_grid.size()*curvilinearGrid.m_grid[0].size());
     std::vector<Edge>  edges(curvilinearGrid.m_grid.size() * (curvilinearGrid.m_grid[0].size() - 1) + (curvilinearGrid.m_grid.size() - 1) * curvilinearGrid.m_grid[0].size());
-    std::vector<std::vector<int>> indexses(curvilinearGrid.m_grid.size(), std::vector<int>(curvilinearGrid.m_grid[0].size(), intMissingValue));
+    std::vector<std::vector<int>> indices(curvilinearGrid.m_grid.size(), std::vector<int>(curvilinearGrid.m_grid[0].size(), intMissingValue));
 
     int ind = 0;
     for (int m = 0; m < curvilinearGrid.m_grid.size(); m++)
@@ -229,7 +229,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
             if (curvilinearGrid.m_grid[m][n].IsValid())
             {
                 nodes[ind] = curvilinearGrid.m_grid[m][n];
-                indexses[m][n] = ind;
+                indices[m][n] = ind;
                 ind++;
             }
         }
@@ -241,10 +241,10 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
     {
         for (int n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
         {
-            if (indexses[m][n] != intMissingValue && indexses[m + 1][n] != intMissingValue)
+            if (indices[m][n] != intMissingValue && indices[m + 1][n] != intMissingValue)
             {
-                edges[ind].first = indexses[m][n];
-                edges[ind].second = indexses[m + 1][n];
+                edges[ind].first = indices[m][n];
+                edges[ind].second = indices[m + 1][n];
                 ind++;
             }
         }
@@ -254,10 +254,10 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
     {
         for (int n = 0; n < curvilinearGrid.m_grid[0].size() - 1; n++)
         {
-            if (indexses[m][n] != intMissingValue && indexses[m][n + 1] != intMissingValue)
+            if (indices[m][n] != intMissingValue && indices[m][n + 1] != intMissingValue)
             {
-                edges[ind].first = indexses[m][n];
-                edges[ind].second = indexses[m][n + 1];
+                edges[ind].first = indices[m][n];
+                edges[ind].second = indices[m][n + 1];
                 ind++;
             }
         }
@@ -1103,7 +1103,7 @@ bool meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 {
     // first filter the nodes in polygon
     std::vector<Point> filteredNodes(GetNumNodes());
-    std::vector<int> originalNodeIndexses(GetNumNodes(), - 1);
+    std::vector<int> originalNodeIndices(GetNumNodes(), - 1);
     int index = 0;
     for (int i = 0; i < GetNumNodes(); i++)
     {
@@ -1111,7 +1111,7 @@ bool meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
         if (inPolygon)
         {
             filteredNodes[index] = m_nodes[i];
-            originalNodeIndexses[index] = i;
+            originalNodeIndices[index] = i;
             index++;
         }
     }
@@ -1134,7 +1134,7 @@ bool meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
                 auto nodeIndexInFilteredNodes = m_nodesRTree.GetQuerySampleIndex(j);
                 if (nodeIndexInFilteredNodes != i)
                 {
-                    MergeTwoNodes(originalNodeIndexses[i], originalNodeIndexses[nodeIndexInFilteredNodes]);
+                    MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]);
                     m_nodesRTree.RemoveNode(i);
                 }
             }
@@ -1352,8 +1352,8 @@ bool meshkernel::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& poly
 
 bool meshkernel::Mesh::FaceClosedPolygon(int faceIndex, 
     std::vector<Point>& polygonNodesCache, 
-    std::vector<int>& localNodeIndexsesCache, 
-    std::vector<int>& edgeIndexsesCache,
+    std::vector<int>& localNodeIndicesCache, 
+    std::vector<int>& edgeIndicesCache,
     int& numClosedPolygonNodes) const
 {
     auto numFaceNodes = GetNumFaceEdges(faceIndex);
@@ -1362,25 +1362,25 @@ bool meshkernel::Mesh::FaceClosedPolygon(int faceIndex,
         polygonNodesCache.resize(numFaceNodes + 1);
     }
 
-    if (localNodeIndexsesCache.size() < numFaceNodes + 1)
+    if (localNodeIndicesCache.size() < numFaceNodes + 1)
     {
-        localNodeIndexsesCache.resize(numFaceNodes + 1);
+        localNodeIndicesCache.resize(numFaceNodes + 1);
     }
 
-    if (edgeIndexsesCache.size() < numFaceNodes + 1)
+    if (edgeIndicesCache.size() < numFaceNodes + 1)
     {
-        edgeIndexsesCache.resize(numFaceNodes + 1);
+        edgeIndicesCache.resize(numFaceNodes + 1);
     }
 
     for (int n = 0; n < numFaceNodes; n++)
     {
         polygonNodesCache[n] = m_nodes[m_facesNodes[faceIndex][n]];
-        localNodeIndexsesCache[n] = n;
-        edgeIndexsesCache[n] = m_facesEdges[faceIndex][n];
+        localNodeIndicesCache[n] = n;
+        edgeIndicesCache[n] = m_facesEdges[faceIndex][n];
     }
     polygonNodesCache[numFaceNodes] = polygonNodesCache[0];
-    localNodeIndexsesCache[numFaceNodes] = 0;
-    edgeIndexsesCache[numFaceNodes] = m_facesEdges[faceIndex][0];
+    localNodeIndicesCache[numFaceNodes] = 0;
+    edgeIndicesCache[numFaceNodes] = m_facesEdges[faceIndex][0];
     numClosedPolygonNodes = numFaceNodes + 1;
 
     return true;

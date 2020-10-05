@@ -134,7 +134,7 @@ namespace meshkernel
 
         std::vector<int>                 m_splineType;                              // The spline types (1 horizontal, -1 vertical)
         std::vector<std::vector<double>> m_splineIntersectionRatios;                // For each spline, stores the intersections in terms of total spline length
-        std::vector<std::vector<int>>    m_splineGroupIndexAndFromToIntersections;  // For each spline: position in m or n group, from and to spline crossing indexses (MN12)
+        std::vector<std::vector<int>>    m_splineGroupIndexAndFromToIntersections;  // For each spline: position in m or n group, from and to spline crossing indices (MN12)
         int                              m_numMSplines = -1;                        // The index of the last m spline
         int                              m_numNSplines = -1;                        // The index of the last m spline
         int                              m_numM = 0;                                // Number of m columns
@@ -143,5 +143,3 @@ namespace meshkernel
     };
 
 }
-
-

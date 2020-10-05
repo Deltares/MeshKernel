@@ -74,7 +74,7 @@ namespace meshkernel
                 m_rtree2D = RTree2D(m_points.begin(), m_points.end());
                 
                 m_queryCache.reserve(queryCapacity);
-                m_queryIndexses.reserve(queryCapacity);
+                m_queryIndices.reserve(queryCapacity);
 
                 return true;
             }
@@ -92,10 +92,10 @@ namespace meshkernel
                     bgi::satisfies([&](value2D const& v) {return bg::comparable_distance(v.first, nodeSought) < searchRadiusSquared; }),
                     std::back_inserter(m_queryCache));
 
-                m_queryIndexses.resize(m_queryCache.size());
+                m_queryIndices.resize(m_queryCache.size());
                 for (size_t i = 0; i < m_queryCache.size(); i++)
                 {
-                    m_queryIndexses[i] = m_queryCache[i].second;
+                    m_queryIndices[i] = m_queryCache[i].second;
                 }
 
                 return true;
@@ -110,8 +110,8 @@ namespace meshkernel
 
                 if(!m_queryCache.empty())
                 {
-                    m_queryIndexses.resize(1);
-                    m_queryIndexses[0] = m_queryCache[0].second;
+                    m_queryIndices.resize(1);
+                    m_queryIndices[0] = m_queryCache[0].second;
                 }
 
                 return true;
@@ -160,7 +160,7 @@ namespace meshkernel
 
             auto GetQuerySampleIndex(int index) const
             {
-                return m_queryIndexses[index];
+                return m_queryIndices[index];
             }
 
         private:
@@ -168,7 +168,7 @@ namespace meshkernel
             RTree2D m_rtree2D;
             std::vector<std::pair<Point2D, size_t>> m_points;
             std::vector<value2D> m_queryCache;
-            std::vector<int> m_queryIndexses;
+            std::vector<int> m_queryIndices;
 
             // Rtree preallocated capacity of the query array 
             int queryCapacity = 100;
@@ -176,5 +176,3 @@ namespace meshkernel
 
     }
 }
-
-
