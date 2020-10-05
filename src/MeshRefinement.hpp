@@ -191,8 +191,8 @@ namespace meshkernel
         std::vector<bool>   m_isHangingNodeCache;
         std::vector<bool>   m_isHangingEdgeCache;
         std::vector<Point>  m_polygonNodesCache;
-        std::vector<int>    m_localNodeIndexsesCache;
-        std::vector<int>    m_edgeIndexsesCache;
+        std::vector<int>    m_localNodeIndicesCache;
+        std::vector<int>    m_edgeIndicesCache;
         std::vector<double> m_polygonEdgesLengthsCache;
 
         

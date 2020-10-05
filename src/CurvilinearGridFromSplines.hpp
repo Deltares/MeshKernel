@@ -142,25 +142,25 @@ namespace meshkernel
         /// <param name="layerIndex"></param>
         /// <param name="previousVelocities"></param>
         /// <param name="numFrontPoints"></param>
-        /// <param name="gridPointsIndexses"></param>
+        /// <param name="gridPointsIndices"></param>
         /// <param name="frontGridPoints"></param>
         /// <param name="velocities"></param>
         /// <returns></returns>
         bool CopyVelocitiesToFront( const int layerIndex,
                                     const std::vector<Point>& previousVelocities,
                                     int& numFrontPoints,
-                                    std::vector<std::vector<int>>& gridPointsIndexses,
+                                    std::vector<std::vector<int>>& gridPointsIndices,
                                     std::vector<Point>& frontGridPoints,
                                     std::vector<Point>& velocities );
 
         /// <summary>
         /// Computes the points at front, which have to be moved.
         /// </summary>
-        /// <param name="gridPointsIndexses"></param>
+        /// <param name="gridPointsIndices"></param>
         /// <param name="frontGridPoints"></param>
         /// <param name="numFrontPoints"></param>
         /// <returns></returns>
-        bool FindFront(std::vector<std::vector<int>>& gridPointsIndexses,
+        bool FindFront(std::vector<std::vector<int>>& gridPointsIndices,
                        std::vector<Point>& frontGridPoints,
                        int& numFrontPoints);
 
@@ -285,16 +285,16 @@ namespace meshkernel
                                      std::vector<std::vector<double>>& heights);
 
         /// <summary>
-        /// Gets the valid spline indexses
+        /// Gets the valid spline indices
         /// </summary>
         /// <param name="numValues"></param>
         /// <param name="v"></param>
-        /// <param name="validIndexses"></param>
+        /// <param name="validIndices"></param>
         /// <param name="numValid"></param>
         /// <returns></returns>
-        bool GetValidSplineIndexses(int numValues, 
+        bool GetValidSplineIndices(int numValues, 
                                     const std::vector<int>& v, 
-                                    std::vector<int>& validIndexses, 
+                                    std::vector<int>& validIndices, 
                                     int& numValid) const;
 
         /// <summary>
@@ -397,7 +397,7 @@ namespace meshkernel
         std::vector<SplineTypes> m_type;
         std::vector<int> m_centralSplineIndex;                                          // for each spline the index to its central
         std::vector<int> m_numCrossingSplines;                                          // ncs num of cross splines
-        std::vector<std::vector<int>> m_crossingSplinesIndexses;                        // ics for each cross spline, the indexses of the center splines
+        std::vector<std::vector<int>> m_crossingSplinesIndices;                        // ics for each cross spline, the indices of the center splines
   
         std::vector<std::vector<bool>> m_isLeftOriented;                                // isLeftOriented cross spline is left to right(.true.) or not (.false.) w.r.t.center spline
         std::vector<std::vector<double>>  m_crossSplineCoordinates;                     // t center spline coordinates of cross splines
@@ -430,5 +430,3 @@ namespace meshkernel
 
     };
 }
-
-
