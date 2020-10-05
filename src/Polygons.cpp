@@ -67,8 +67,8 @@ namespace meshkernel
         m_numAllocatedNodes = m_nodes.size();
         m_numNodes = m_nodes.size();
 
-        int numPolygons = m_indexses.size();
-        ResizeVectorIfNeeded(numPolygons + indexes.size(), m_indexses, std::vector<int>(2, 0));
+        int numPolygons = m_indices.size();
+        ResizeVectorIfNeeded(numPolygons + indexes.size(), m_indices, std::vector<int>(2, 0));
         for (int p = 0; p < indexes.size(); p++)
         {
             int indexInIndexes = 0;
@@ -84,8 +84,8 @@ namespace meshkernel
                 indexInIndexes++;
                 currentNodePosition++;
             }
-            m_indexses[numPolygons + p][0] = indexes[p][0] + numNodes;
-            m_indexses[numPolygons + p][1] = indexes[p][1] + numNodes;
+            m_indices[numPolygons + p][0] = indexes[p][0] + numNodes;
+            m_indices[numPolygons + p][1] = indexes[p][1] + numNodes;
         }
     }
 
@@ -220,7 +220,7 @@ namespace meshkernel
     /// triangulate..
     bool Polygons::CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints)
     {        
-        generatedPoints.resize(m_indexses.size());
+        generatedPoints.resize(m_indices.size());
         std::vector<Point> localPolygon(GetNumNodes());
         std::vector<double> xLocalPolygon(GetNumNodes());
         std::vector<double> yLocalPolygon(GetNumNodes());
@@ -231,10 +231,10 @@ namespace meshkernel
         std::vector<double> yPoint;
         const int safetySize = 11;
         bool isOnePolygonClosed = false;
-        for (int i = 0; i < m_indexses.size(); ++i)
+        for (int i = 0; i < m_indices.size(); ++i)
         {
             int numLocalPoints = 0;
-            for (int j = m_indexses[i][0]; j <= m_indexses[i][1]; ++j)
+            for (int j = m_indices[i][0]; j <= m_indices[i][1]; ++j)
             {
                 localPolygon[numLocalPoints] = m_nodes[j];
                 xLocalPolygon[numLocalPoints] = m_nodes[j].x;
@@ -335,15 +335,15 @@ namespace meshkernel
                                      double refinementDistance,
                                      std::vector<Point>& refinedPolygon)
     {
-        if (m_indexses.empty())
+        if (m_indices.empty())
         {
             return false;
         }
 
         if (startIndex == 0 && endIndex == 0)
         {
-            startIndex = m_indexses[0][0];
-            endIndex = m_indexses[0][1];
+            startIndex = m_indices[0][0];
+            endIndex = m_indices[0][1];
         }
 
 
@@ -354,9 +354,9 @@ namespace meshkernel
 
         bool areIndexesValid = false;
         int polygonIndex;
-        for (int i = 0; i < m_indexses.size(); ++i)
+        for (int i = 0; i < m_indices.size(); ++i)
         {
-            if (startIndex >= m_indexses[i][0] && endIndex <= m_indexses[i][1])
+            if (startIndex >= m_indices[i][0] && endIndex <= m_indices[i][1])
             {
                 areIndexesValid = true;
                 polygonIndex = i;
@@ -379,13 +379,13 @@ namespace meshkernel
         }
 
         int numNodesRefinedPart = std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (int(endIndex) - int(startIndex));
-        int numNodesNotRefinedPart = startIndex - m_indexses[polygonIndex][0] + m_indexses[polygonIndex][1] - endIndex;
+        int numNodesNotRefinedPart = startIndex - m_indices[polygonIndex][0] + m_indices[polygonIndex][1] - endIndex;
         int totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
         refinedPolygon.resize(totalNumNodes);
 
         // before refinement
         int refinedNodeIndex = 0;
-        for (int i = m_indexses[polygonIndex][0]; i <= startIndex; ++i)
+        for (int i = m_indices[polygonIndex][0]; i <= startIndex; ++i)
         {
             refinedPolygon[refinedNodeIndex] = m_nodes[i];
             refinedNodeIndex++;
@@ -450,7 +450,7 @@ namespace meshkernel
         }
 
         // after refinement
-        for (int i = endIndex + 1; i <= m_indexses[polygonIndex][1]; ++i)
+        for (int i = endIndex + 1; i <= m_indices[polygonIndex][1]; ++i)
         {
             refinedPolygon[refinedNodeIndex] = m_nodes[i];
             refinedNodeIndex++;
@@ -589,12 +589,12 @@ namespace meshkernel
 
     bool Polygons::IsPointInPolygon(const Point& point, int polygonIndex) const
     {
-        if (polygonIndex >= m_indexses.size())
+        if (polygonIndex >= m_indices.size())
         {
             return true;
         }
 
-        bool inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indexses[polygonIndex][0], m_indexses[polygonIndex][1]);
+        bool inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indices[polygonIndex][0], m_indices[polygonIndex][1]);
 
         return inPolygon;
     }
@@ -603,13 +603,13 @@ namespace meshkernel
     {
         
         // empty polygon, always included
-        if (m_indexses.empty())
+        if (m_indices.empty())
         {
             return true;
         }
 
         bool inPolygon = false;
-        for (int p = 0; p < m_indexses.size(); p++)
+        for (int p = 0; p < m_indices.size(); p++)
         {
             // Calculate the bounding box
             double XMin = std::numeric_limits<double>::max();
@@ -617,7 +617,7 @@ namespace meshkernel
             double YMin = std::numeric_limits<double>::max();
             double YMax = std::numeric_limits<double>::min();
 
-            for (int n = m_indexses[p][0]; n <= m_indexses[p][1]; n++)
+            for (int n = m_indices[p][0]; n <= m_indices[p][1]; n++)
             {
                 XMin = std::min(XMin, m_nodes[n].x);
                 XMax = std::max(XMax, m_nodes[n].x);
@@ -628,7 +628,7 @@ namespace meshkernel
             
             if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
             {
-                inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indexses[p][0], m_indexses[p][1]);
+                inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indices[p][0], m_indices[p][1]);
             }
 
             if (inPolygon) 

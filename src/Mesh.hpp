@@ -267,14 +267,14 @@ namespace meshkernel
         /// </summary>
         /// <param name="faceIndex">The face index</param>
         /// <param name="polygonNodesCache">The node cache array filled with the nodes values</param>
-        /// <param name="localNodeIndexsesCache">The consecutive node index in polygonNodesCache (0, 1, 2,...)</param>
-        /// <param name="edgeIndexsesCache">The edge cache array filled with edge indexses</param>
+        /// <param name="localNodeIndicesCache">The consecutive node index in polygonNodesCache (0, 1, 2,...)</param>
+        /// <param name="edgeIndicesCache">The edge cache array filled with edge indices</param>
         /// <param name="numClosedPolygonNodes">The number of valid values in the array above</param>
         /// <returns>If the method succeeded</returns>
         bool FaceClosedPolygon(int faceIndex, 
                                std::vector<Point>& polygonNodesCache, 
-                               std::vector<int>& localNodeIndexsesCache,
-                               std::vector<int>& edgeIndexsesCache,
+                               std::vector<int>& localNodeIndicesCache,
+                               std::vector<int>& edgeIndicesCache,
                                int& numClosedPolygonNodes) const;
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace meshkernel
 
         // nodes
         std::vector<Point>              m_nodes;                    // The mesh nodes (xk, yk)
-        std::vector<std::vector<int>>   m_nodesEdges;               // For each node, the indexses of connected edges (nod%lin)
+        std::vector<std::vector<int>>   m_nodesEdges;               // For each node, the indices of connected edges (nod%lin)
         std::vector<int>                m_nodesNumEdges;            // For each node, the number of connected edges (nmk)
         std::vector<int>                m_nodeMask;                 // The node mask (kc)
         std::vector<std::vector<int>>   m_nodesNodes;               // For each node, its neighbours 
@@ -431,7 +431,7 @@ namespace meshkernel
         // faces
         std::vector<std::vector<int>>   m_facesNodes;               // The nodes composing the faces, in ccw order (netcell%Nod) 
         std::vector<int>                m_numFacesNodes;            // The number of nodes composing the face (netcell%N)
-        std::vector<std::vector<int>>   m_facesEdges;               // The edge indexses composing the face (netcell%lin)
+        std::vector<std::vector<int>>   m_facesEdges;               // The edge indices composing the face (netcell%lin)
         std::vector<Point>              m_facesCircumcenters;       // The face circumcenters the face circumcenter (xz, yz)
         std::vector<Point>              m_facesMassCenters;         // The faces centers of mass (xzw, yzw)  
         std::vector<double>             m_faceArea;                 // The face area   

@@ -47,7 +47,7 @@ bool meshkernel::CurvilinearGridFromPolygon::Compute( int firstNode,
                                                       bool useFourthSide, 
                                                       CurvilinearGrid& curvilinearGrid ) const
 {
-    if (m_polygon->m_indexses.empty())
+    if (m_polygon->m_indices.empty())
     {
         return true;
     }
@@ -63,8 +63,8 @@ bool meshkernel::CurvilinearGridFromPolygon::Compute( int firstNode,
 
 
     // for the current polygon find the number of nodes
-    const auto start = m_polygon->m_indexses[0][0];
-    const auto end = m_polygon->m_indexses[0][1];
+    const auto start = m_polygon->m_indices[0][0];
+    const auto end = m_polygon->m_indices[0][1];
     const int numPolygonNodes = end - start + 1;
 
     // get rid of size and orientation first part
@@ -216,7 +216,7 @@ bool meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
                                                      int thirdNode,
                                                      CurvilinearGrid& curvilinearGrid) const
 {
-    if (m_polygon->m_indexses.empty())
+    if (m_polygon->m_indices.empty())
     {
         return true;
     }
@@ -232,8 +232,8 @@ bool meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
 
     // for the current polygon find the number of nodes
-    const auto start = m_polygon->m_indexses[0][0];
-    const auto end = m_polygon->m_indexses[0][1];
+    const auto start = m_polygon->m_indices[0][0];
+    const auto end = m_polygon->m_indices[0][1];
     const int numPolygonNodes = end - start + 1;
 
     // get rid of size and orientation first part
