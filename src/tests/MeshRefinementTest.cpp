@@ -686,5 +686,34 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 
     ASSERT_EQ(23, mesh->m_edges[47].first);
     ASSERT_EQ(6, mesh->m_edges[47].second);
+}
 
+TEST(MeshRefinement, RefineCurvilinearGrid)
+{
+
+    auto mesh = MakeCurvilinearGridForTesting();
+	
+    std::vector<meshkernel::Sample> samples;
+    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::Polygons polygon;
+    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
+    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.000527;
+    sampleRefineParametersNative.MinimumCellSize = 0.00165;
+    sampleRefineParametersNative.AccountForSamplesOutside = false;
+    sampleRefineParametersNative.ConnectHangingNodes = 1;
+
+    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
+    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
+    interpolationParametersNative.RefineIntersected = false;
+    sampleRefineParametersNative.RefinementType = 2;
+    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+
+    mesh->ComputeEdgeLengths();
+
+	// if the circumcenters are wrongly computed, some links will be smaller than half cell size
+    for (int i = 0; i < mesh->GetNumEdges(); ++i)
+    {
+        ASSERT_GT(mesh->m_edgeLengths[i], 0.4);
+    }
+	
 }
