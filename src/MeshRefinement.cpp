@@ -723,7 +723,7 @@ bool meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
                 facePolygonWithoutHangingNodes[numNonHangingEdges] = m_polygonNodesCache[e];
 
                 auto mappedEdge = m_localNodeIndicesCache[e];
-                if (mappedEdge > 0)
+                if (mappedEdge >= 0)
                 {
                     localEdgesNumFaces[numNonHangingEdges] = m_mesh->m_edgesNumFaces[mappedEdge];
                 }
@@ -740,13 +740,13 @@ bool meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
         if (numNonHangingEdges == numNodesQuads)
         {
 
-            m_mesh->ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
-                middlePointsCache,
-                normalsCache,
-                numNonHangingEdges,
-                localEdgesNumFaces,
-                weightCircumCenter,
-                splittingNode);
+            m_mesh->ComputeFaceCircumenter( facePolygonWithoutHangingNodes,
+                                            middlePointsCache,
+                                            normalsCache,
+                                            numNonHangingEdges,
+                                            localEdgesNumFaces,
+                                            weightCircumCenter,
+                                            splittingNode);
 
             if (m_mesh->m_projection == Projections::spherical)
             {                

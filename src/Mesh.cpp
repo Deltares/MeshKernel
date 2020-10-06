@@ -1933,7 +1933,7 @@ bool meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
                     {
                         double dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
                         double dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);
-                        double increment = -0.1 * DotProduct(dx, dy, normals[n].x, normals[n].y);
+                        double increment = -0.1 * DotProduct(dx, normals[n].x, dy, normals[n].y);
                         Add(estimatedCircumCenter, normals[n], increment, xf, m_projection);
                     }
                 }
