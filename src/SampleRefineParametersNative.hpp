@@ -54,8 +54,5 @@ namespace meshkernelapi
 
         /// Take samples outside face into account , 1 yes 0 no
         int AccountForSamplesOutside;
-
     };
-}
-
-
+} // namespace meshkernelapi

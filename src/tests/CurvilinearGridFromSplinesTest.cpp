@@ -7,21 +7,20 @@
 #include "../CurvilinearGridFromSplines.cpp"
 #include <gtest/gtest.h>
 
-
 TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
 {
     std::vector<meshkernel::Point> firstSpline;
-    firstSpline.push_back(meshkernel::Point{ 152.001571655273, 86.6264953613281 });
-    firstSpline.push_back(meshkernel::Point{ 374.752960205078, 336.378997802734 });
-    firstSpline.push_back(meshkernel::Point{ 850.255920410156, 499.130676269531 });
+    firstSpline.push_back(meshkernel::Point{152.001571655273, 86.6264953613281});
+    firstSpline.push_back(meshkernel::Point{374.752960205078, 336.378997802734});
+    firstSpline.push_back(meshkernel::Point{850.255920410156, 499.130676269531});
 
     auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
     bool successful = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> secondSpline;
-    secondSpline.push_back(meshkernel::Point{ 72.5010681152344,391.129577636719 });
-    secondSpline.push_back(meshkernel::Point{ 462.503479003906, 90.3765411376953 });
+    secondSpline.push_back(meshkernel::Point{72.5010681152344, 391.129577636719});
+    secondSpline.push_back(meshkernel::Point{462.503479003906, 90.3765411376953});
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
 
     // construct CurvilinearGridFromSplines
@@ -40,7 +39,7 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
     curvilinearParametersNative.NRefinement = 40;
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    
+
     successful = curvilinearGridFromSplines.ComputeSplineProperties(false);
     ASSERT_TRUE(successful);
     successful = curvilinearGridFromSplines.MakeAllGridLines();
@@ -79,30 +78,30 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
 TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
 {
     std::vector<meshkernel::Point> firstSpline;
-    firstSpline.push_back(meshkernel::Point{ 91.2511901855469, 299.628631591797 });
-    firstSpline.push_back(meshkernel::Point{ 354.502838134766, 518.630859375000 });
-    firstSpline.push_back(meshkernel::Point{ 770.755432128906, 607.881774902344 });
+    firstSpline.push_back(meshkernel::Point{91.2511901855469, 299.628631591797});
+    firstSpline.push_back(meshkernel::Point{354.502838134766, 518.630859375000});
+    firstSpline.push_back(meshkernel::Point{770.755432128906, 607.881774902344});
 
     auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
     bool successful = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> secondSpline;
-    secondSpline.push_back(meshkernel::Point{ 273.502319335938, 86.6264953613281 });
-    secondSpline.push_back(meshkernel::Point{ 557.004089355469, 316.128814697266 });
-    secondSpline.push_back(meshkernel::Point{ 847.255920410156, 409.129730224609 });
+    secondSpline.push_back(meshkernel::Point{273.502319335938, 86.6264953613281});
+    secondSpline.push_back(meshkernel::Point{557.004089355469, 316.128814697266});
+    secondSpline.push_back(meshkernel::Point{847.255920410156, 409.129730224609});
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> thirdSpline;
-    thirdSpline.push_back(meshkernel::Point{ 62.7510070800781, 396.379608154297 });
-    thirdSpline.push_back(meshkernel::Point{ 350.752807617188, 73.8763732910156 });
+    thirdSpline.push_back(meshkernel::Point{62.7510070800781, 396.379608154297});
+    thirdSpline.push_back(meshkernel::Point{350.752807617188, 73.8763732910156});
     successful = splines->AddSpline(thirdSpline, 0, thirdSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> fourthSpline;
-    fourthSpline.push_back(meshkernel::Point{ 704.755004882812, 636.382019042969 });
-    fourthSpline.push_back(meshkernel::Point{ 845.005859375000, 285.378509521484 });
+    fourthSpline.push_back(meshkernel::Point{704.755004882812, 636.382019042969});
+    fourthSpline.push_back(meshkernel::Point{845.005859375000, 285.378509521484});
     successful = splines->AddSpline(fourthSpline, 0, fourthSpline.size());
     ASSERT_TRUE(successful);
 
@@ -135,17 +134,17 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdapted)
 {
     std::vector<meshkernel::Point> firstSpline;
-    firstSpline.push_back(meshkernel::Point{ 26.9847544156713,  327.556992634968 });
-    firstSpline.push_back(meshkernel::Point{ 340.139086327869, 819.656657068422 });
-    firstSpline.push_back(meshkernel::Point{ 2048.50780774173, 1644.48279915859 });
+    firstSpline.push_back(meshkernel::Point{26.9847544156713, 327.556992634968});
+    firstSpline.push_back(meshkernel::Point{340.139086327869, 819.656657068422});
+    firstSpline.push_back(meshkernel::Point{2048.50780774173, 1644.48279915859});
 
     auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
     bool successful = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> secondSpline;
-    secondSpline.push_back(meshkernel::Point{ -179.920786312031,1068.50251010579 });
-    secondSpline.push_back(meshkernel::Point{ 600.169022647819, 321.964950993679 });
+    secondSpline.push_back(meshkernel::Point{-179.920786312031, 1068.50251010579});
+    secondSpline.push_back(meshkernel::Point{600.169022647819, 321.964950993679});
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(successful);
 
@@ -215,21 +214,20 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     ASSERT_NEAR(457.969060469458, mesh.m_nodes[19].y, tolerance);
 }
 
-
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNotAdapted)
 {
     std::vector<meshkernel::Point> firstSpline;
-    firstSpline.push_back(meshkernel::Point{ 26.9847544156713,  327.556992634968 });
-    firstSpline.push_back(meshkernel::Point{ 340.139086327869, 819.656657068422 });
-    firstSpline.push_back(meshkernel::Point{ 2048.50780774173, 1644.48279915859 });
+    firstSpline.push_back(meshkernel::Point{26.9847544156713, 327.556992634968});
+    firstSpline.push_back(meshkernel::Point{340.139086327869, 819.656657068422});
+    firstSpline.push_back(meshkernel::Point{2048.50780774173, 1644.48279915859});
 
     auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
     bool successful = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> secondSpline;
-    secondSpline.push_back(meshkernel::Point{ -179.920786312031,1068.50251010579 });
-    secondSpline.push_back(meshkernel::Point{ 600.169022647819, 321.964950993679 });
+    secondSpline.push_back(meshkernel::Point{-179.920786312031, 1068.50251010579});
+    secondSpline.push_back(meshkernel::Point{600.169022647819, 321.964950993679});
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(successful);
 
@@ -277,7 +275,6 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
     ASSERT_NEAR(381.946235778882, mesh.m_nodes[18].x, tolerance);
     ASSERT_NEAR(319.396439848637, mesh.m_nodes[19].x, tolerance);
 
-
     ASSERT_NEAR(115.028220973275, mesh.m_nodes[0].y, tolerance);
     ASSERT_NEAR(159.994608184438, mesh.m_nodes[1].y, tolerance);
     ASSERT_NEAR(198.900570077816, mesh.m_nodes[2].y, tolerance);
@@ -303,17 +300,17 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedLargeMRefinement)
 {
     std::vector<meshkernel::Point> firstSpline;
-    firstSpline.push_back(meshkernel::Point{ 26.9847544156713,  327.556992634968 });
-    firstSpline.push_back(meshkernel::Point{ 340.139086327869, 819.656657068422 });
-    firstSpline.push_back(meshkernel::Point{ 2048.50780774173, 1644.48279915859 });
+    firstSpline.push_back(meshkernel::Point{26.9847544156713, 327.556992634968});
+    firstSpline.push_back(meshkernel::Point{340.139086327869, 819.656657068422});
+    firstSpline.push_back(meshkernel::Point{2048.50780774173, 1644.48279915859});
 
     auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
     bool successful = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> secondSpline;
-    secondSpline.push_back(meshkernel::Point{ -179.920786312031,1068.50251010579 });
-    secondSpline.push_back(meshkernel::Point{ 600.169022647819, 321.964950993679 });
+    secondSpline.push_back(meshkernel::Point{-179.920786312031, 1068.50251010579});
+    secondSpline.push_back(meshkernel::Point{600.169022647819, 321.964950993679});
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(successful);
 
@@ -429,30 +426,30 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFront)
 {
     std::vector<meshkernel::Point> firstSpline;
-    firstSpline.push_back(meshkernel::Point{ -93.379753864775, 231.718492951018 });
-    firstSpline.push_back(meshkernel::Point{ 72.8139687226708, 724.468302026077 });
-    firstSpline.push_back(meshkernel::Point{ 746.335897103372, 234.634172294657 });
-    firstSpline.push_back(meshkernel::Point{ 1498.58116776234, 776.950530211586 });
+    firstSpline.push_back(meshkernel::Point{-93.379753864775, 231.718492951018});
+    firstSpline.push_back(meshkernel::Point{72.8139687226708, 724.468302026077});
+    firstSpline.push_back(meshkernel::Point{746.335897103372, 234.634172294657});
+    firstSpline.push_back(meshkernel::Point{1498.58116776234, 776.950530211586});
 
     auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
     bool successful = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> secondSpline;
-    secondSpline.push_back(meshkernel::Point{ -250.826438421303, 394.996536194825 });
-    secondSpline.push_back(meshkernel::Point{ 101.970762159065, 292.947759167446 });
+    secondSpline.push_back(meshkernel::Point{-250.826438421303, 394.996536194825});
+    secondSpline.push_back(meshkernel::Point{101.970762159065, 292.947759167446});
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> thirdSpline;
-    thirdSpline.push_back(meshkernel::Point{ 647.202799419633, 482.466916504007 });
-    thirdSpline.push_back(meshkernel::Point{ 486.840435519465, 144.248112641836 });
+    thirdSpline.push_back(meshkernel::Point{647.202799419633, 482.466916504007});
+    thirdSpline.push_back(meshkernel::Point{486.840435519465, 144.248112641836});
     successful = splines->AddSpline(thirdSpline, 0, thirdSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> fourthSpline;
-    fourthSpline.push_back(meshkernel::Point{ 1224.50730946023, 747.793736775192 });
-    fourthSpline.push_back(meshkernel::Point{ 1568.55747200968, 464.97284044217 });
+    fourthSpline.push_back(meshkernel::Point{1224.50730946023, 747.793736775192});
+    fourthSpline.push_back(meshkernel::Point{1568.55747200968, 464.97284044217});
     successful = splines->AddSpline(fourthSpline, 0, fourthSpline.size());
     ASSERT_TRUE(successful);
 
@@ -528,49 +525,49 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
 
     std::vector<meshkernel::Point> firstCentralSpline;
-    firstCentralSpline.push_back({ 1.542516E+02,7.687640E+01 });
-    firstCentralSpline.push_back({ 3.192526E+02,2.733784E+02 });
-    firstCentralSpline.push_back({ 6.350046E+02,5.231309E+02 });
-    bool successful = splines->AddSpline(firstCentralSpline, 0,firstCentralSpline.size());
+    firstCentralSpline.push_back({1.542516E+02, 7.687640E+01});
+    firstCentralSpline.push_back({3.192526E+02, 2.733784E+02});
+    firstCentralSpline.push_back({6.350046E+02, 5.231309E+02});
+    bool successful = splines->AddSpline(firstCentralSpline, 0, firstCentralSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> secondCentralSpline;
-    secondCentralSpline.push_back({ 1.310014E+02,9.637659E+01 });
-    secondCentralSpline.push_back({ 2.960025E+02,2.891285E+02 });
-    secondCentralSpline.push_back({ 6.222545E+02,5.418811E+02 });
+    secondCentralSpline.push_back({1.310014E+02, 9.637659E+01});
+    secondCentralSpline.push_back({2.960025E+02, 2.891285E+02});
+    secondCentralSpline.push_back({6.222545E+02, 5.418811E+02});
     successful = splines->AddSpline(secondCentralSpline, 0, secondCentralSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> thirdCentralSpline;
-    thirdCentralSpline.push_back({ 1.782517E+02,5.662619E+01 });
-    thirdCentralSpline.push_back({ 3.335027E+02,2.448781E+02 });
-    thirdCentralSpline.push_back({ 6.455046E+02,4.983806E+02 });
+    thirdCentralSpline.push_back({1.782517E+02, 5.662619E+01});
+    thirdCentralSpline.push_back({3.335027E+02, 2.448781E+02});
+    thirdCentralSpline.push_back({6.455046E+02, 4.983806E+02});
     successful = splines->AddSpline(thirdCentralSpline, 0, thirdCentralSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> fourthBankSpline;
-    fourthBankSpline.push_back({ 3.500084E+01,   1.901275E+02 });
-    fourthBankSpline.push_back({ 2.195020E+02,   3.813795E+02 });
-    fourthBankSpline.push_back({ 5.727542E+02 ,  6.221319E+02 });
+    fourthBankSpline.push_back({3.500084E+01, 1.901275E+02});
+    fourthBankSpline.push_back({2.195020E+02, 3.813795E+02});
+    fourthBankSpline.push_back({5.727542E+02, 6.221319E+02});
     successful = splines->AddSpline(fourthBankSpline, 0, fourthBankSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> fifthBankSpline;
-    fifthBankSpline.push_back({ 3.177526E+02, -3.712475E+01 });
-    fifthBankSpline.push_back({ 4.377534E+02,1.218768E+02 });
-    fifthBankSpline.push_back({ 7.445052E+02, 4.136298E+02 });
+    fifthBankSpline.push_back({3.177526E+02, -3.712475E+01});
+    fifthBankSpline.push_back({4.377534E+02, 1.218768E+02});
+    fifthBankSpline.push_back({7.445052E+02, 4.136298E+02});
     successful = splines->AddSpline(fifthBankSpline, 0, fifthBankSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> sixthBankSpline;
-    sixthBankSpline.push_back({ 1.250633E+00,  2.748784E+02 });
-    sixthBankSpline.push_back({ 3.620029E+02, -3.337471E+01 });
+    sixthBankSpline.push_back({1.250633E+00, 2.748784E+02});
+    sixthBankSpline.push_back({3.620029E+02, -3.337471E+01});
     successful = splines->AddSpline(sixthBankSpline, 0, sixthBankSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> seventhBankSpline;
-    seventhBankSpline.push_back({ 5.030038E+02, 6.476321E+02 });
-    seventhBankSpline.push_back({ 7.542553E+02, 3.378790E+02 });
+    seventhBankSpline.push_back({5.030038E+02, 6.476321E+02});
+    seventhBankSpline.push_back({7.542553E+02, 3.378790E+02});
     successful = splines->AddSpline(seventhBankSpline, 0, seventhBankSpline.size());
     ASSERT_TRUE(successful);
 
@@ -646,17 +643,17 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAdaptedSpherical)
 {
     std::vector<meshkernel::Point> firstSpline;
-    firstSpline.push_back(meshkernel::Point{ 4.109727E+01, 4.110174E+01 });
-    firstSpline.push_back(meshkernel::Point{ 4.109865E+01, 4.110418E+01 });
-    firstSpline.push_back(meshkernel::Point{ 4.110644E+01, 4.110904E+01 });
+    firstSpline.push_back(meshkernel::Point{4.109727E+01, 4.110174E+01});
+    firstSpline.push_back(meshkernel::Point{4.109865E+01, 4.110418E+01});
+    firstSpline.push_back(meshkernel::Point{4.110644E+01, 4.110904E+01});
 
     auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::spherical);
     bool successful = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> secondSpline;
-    secondSpline.push_back(meshkernel::Point{ 4.109612E+01, 4.110473E+01 });
-    secondSpline.push_back(meshkernel::Point{ 4.109923E+01, 4.110212E+01 });
+    secondSpline.push_back(meshkernel::Point{4.109612E+01, 4.110473E+01});
+    secondSpline.push_back(meshkernel::Point{4.109923E+01, 4.110212E+01});
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(successful);
 
@@ -729,21 +726,20 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     ASSERT_NEAR(41.1017461082051, mesh.m_nodes[19].y, tolerance);
 }
 
-
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvature)
 {
     std::vector<meshkernel::Point> firstSpline;
-    firstSpline.push_back(meshkernel::Point{ -103.468336664918, 420.606335102062 });
-    firstSpline.push_back(meshkernel::Point{ 111.984583950396, 845.689124424167 });
-    firstSpline.push_back(meshkernel::Point{ 1465.84415268176, 1608.50892444055 });
+    firstSpline.push_back(meshkernel::Point{-103.468336664918, 420.606335102062});
+    firstSpline.push_back(meshkernel::Point{111.984583950396, 845.689124424167});
+    firstSpline.push_back(meshkernel::Point{1465.84415268176, 1608.50892444055});
 
     auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
     bool successful = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> secondSpline;
-    secondSpline.push_back(meshkernel::Point{ -333.478887051536, 921.388799234953 });
-    secondSpline.push_back(meshkernel::Point{ 167.303577081355, 490.482958004326 });
+    secondSpline.push_back(meshkernel::Point{-333.478887051536, 921.388799234953});
+    secondSpline.push_back(meshkernel::Point{167.303577081355, 490.482958004326});
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(successful);
 
@@ -762,8 +758,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     curvilinearParametersNative.NRefinement = 3;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines,curvilinearParametersNative, splinesToCurvilinearParametersNative);
-
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
@@ -830,17 +825,17 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatureRemoveSkinnyTriangles)
 {
     std::vector<meshkernel::Point> firstSpline;
-    firstSpline.push_back(meshkernel::Point{ -103.468336664918, 420.606335102062 });
-    firstSpline.push_back(meshkernel::Point{ 111.984583950396, 845.689124424167 });
-    firstSpline.push_back(meshkernel::Point{ 1465.84415268176, 1608.50892444055 });
+    firstSpline.push_back(meshkernel::Point{-103.468336664918, 420.606335102062});
+    firstSpline.push_back(meshkernel::Point{111.984583950396, 845.689124424167});
+    firstSpline.push_back(meshkernel::Point{1465.84415268176, 1608.50892444055});
 
     auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
     bool successful = splines->AddSpline(firstSpline, 0, firstSpline.size());
     ASSERT_TRUE(successful);
 
     std::vector<meshkernel::Point> secondSpline;
-    secondSpline.push_back(meshkernel::Point{ -333.478887051536, 921.388799234953 });
-    secondSpline.push_back(meshkernel::Point{ 167.303577081355, 490.482958004326 });
+    secondSpline.push_back(meshkernel::Point{-333.478887051536, 921.388799234953});
+    secondSpline.push_back(meshkernel::Point{167.303577081355, 490.482958004326});
     successful = splines->AddSpline(secondSpline, 0, secondSpline.size());
     ASSERT_TRUE(successful);
 
@@ -860,7 +855,6 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
 
     // create the algorithm
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
-
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
@@ -922,6 +916,4 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     ASSERT_NEAR(541.250471813772, mesh.m_nodes[22].y, tolerance);
     ASSERT_NEAR(580.841498361190, mesh.m_nodes[23].y, tolerance);
     ASSERT_NEAR(600.952956688129, mesh.m_nodes[24].y, tolerance);
-
 }
-

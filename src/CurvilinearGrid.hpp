@@ -31,25 +31,24 @@
 #include <algorithm>
 #include "Entities.hpp"
 
-namespace meshkernel 
+namespace meshkernel
 {
     class CurvilinearGrid
     {
 
     public:
-
-        bool Set(int m, int n) 
+        bool Set(int m, int n)
         {
 
             int mMax = m + 1;
             int nMax = n + 1;
 
-            m_grid.resize(mMax, std::vector<Point>(nMax, { doubleMissingValue,doubleMissingValue }));
+            m_grid.resize(mMax, std::vector<Point>(nMax, {doubleMissingValue, doubleMissingValue}));
 
             return true;
         }
 
-        bool Set(const std::vector<std::vector<Point>>& grid )
+        bool Set(const std::vector<std::vector<Point>>& grid)
         {
             m_grid = grid;
             return true;
@@ -58,6 +57,5 @@ namespace meshkernel
         std::vector<std::vector<Point>> m_grid;
         int m_n;
         int m_m;
-
     };
-}
+} // namespace meshkernel

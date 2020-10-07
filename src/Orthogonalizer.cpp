@@ -38,7 +38,7 @@
 #include "Entities.hpp"
 #include "Orthogonalizer.hpp"
 
-meshkernel::Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh> mesh): m_mesh(mesh)
+meshkernel::Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh> mesh) : m_mesh(mesh)
 {
 }
 
@@ -93,7 +93,6 @@ bool meshkernel::Orthogonalizer::Compute()
                     m_rhs[n][0] += neighbouringNodeDistance * normal.x * 0.5;
                     m_rhs[n][1] += neighbouringNodeDistance * normal.y * 0.5;
                 }
-
             }
         }
 
@@ -102,11 +101,11 @@ bool meshkernel::Orthogonalizer::Compute()
         if (std::abs(factor) > 1e-14)
         {
             factor = 1.0 / factor;
-            for (auto& w : m_weights[n]) w = w * factor;
+            for (auto& w : m_weights[n])
+                w = w * factor;
             m_rhs[n][0] = factor * m_rhs[n][0];
             m_rhs[n][1] = factor * m_rhs[n][1];
         }
-
     }
     return true;
 }

@@ -36,12 +36,11 @@
 namespace meshkernel
 {
     class CurvilinearGrid;
-    
+
     class Splines
     {
 
     public:
-
         /// <summary>
         /// Ctor
         /// </summary>
@@ -56,7 +55,7 @@ namespace meshkernel
         explicit Splines(Projections projection);
 
         /// <summary>
-        /// Adds a new spline to m_splineCornerPoints 
+        /// Adds a new spline to m_splineCornerPoints
         /// </summary>
         /// <param name="splines">The spline corner points</param>
         /// <param name="start">The starting index in splines</param>
@@ -129,26 +128,25 @@ namespace meshkernel
         /// <param name="distances">The distances</param>
         /// <param name="points">The resulting point along the spline</param>
         /// <returns>If the method succeeded</returns>
-        bool InterpolatePointsOnSpline(int index, 
-            double maximumGridHeight, 
-            bool isSpacingCurvatureAdapted, 
-            const std::vector<double>& distances, 
-            std::vector<Point>& points,
-            std::vector<double>& adimensionalDistances);
+        bool InterpolatePointsOnSpline(int index,
+                                       double maximumGridHeight,
+                                       bool isSpacingCurvatureAdapted,
+                                       const std::vector<double>& distances,
+                                       std::vector<Point>& points,
+                                       std::vector<double>& adimensionalDistances);
 
-        std::vector<std::vector<Point>> m_splineNodes;           // The spline corner points
-        std::vector<std::vector<Point>> m_splineDerivatives;     // The spline derivatives at the corner points  
-        std::vector<int> m_numSplineNodes;                       // Number of spline nodes in each spline
-        std::vector<int> m_numAllocatedSplineNodes;              // Number of allocated node in each spline
-        std::vector<double> m_splinesLength;                     // The length of each spline
-        Projections m_projection;                                // The map projection  
-        size_t m_numSplines = 0;                                 // Current number of splines
+        std::vector<std::vector<Point>> m_splineNodes;       // The spline corner points
+        std::vector<std::vector<Point>> m_splineDerivatives; // The spline derivatives at the corner points
+        std::vector<int> m_numSplineNodes;                   // Number of spline nodes in each spline
+        std::vector<int> m_numAllocatedSplineNodes;          // Number of allocated node in each spline
+        std::vector<double> m_splinesLength;                 // The length of each spline
+        Projections m_projection;                            // The map projection
+        size_t m_numSplines = 0;                             // Current number of splines
 
-        int m_numAllocatedSplines = 0;                           // Total number of allocated splines
-        int m_allocationSize = 5;                                // allocation cache size
-        
+        int m_numAllocatedSplines = 0; // Total number of allocated splines
+        int m_allocationSize = 5;      // allocation cache size
+
     private:
-
         /// <summary>
         /// Adds a new corner point in an existing spline
         /// </summary>
@@ -156,7 +154,7 @@ namespace meshkernel
         /// <param name="point">The point to add</param>
         /// <returns>If the method succeeded</returns>
         bool AddPointInExistingSpline(int splineIndex, const Point& point);
-        
+
         /// <summary>
         /// Computes curvature in a spline point (comp_curv)
         /// </summary>
@@ -180,25 +178,21 @@ namespace meshkernel
         bool DeleteSpline(int splineIndex);
 
         /// <summary>
-        /// Allocate spline properties vectors 
+        /// Allocate spline properties vectors
         /// </summary>
         /// <returns>If the method succeeded</returns>
         bool AllocateSplinesProperties();
-
     };
 
     struct FuncDimensionalToAdimensionalDistance
     {
-        FuncDimensionalToAdimensionalDistance( Splines* splines,
-                                               int splineIndex,
-                                               bool isSpacingCurvatureAdapted,
-                                               double h) :
-                                               m_spline(splines),
-                                               m_splineIndex(splineIndex),
-                                               m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
-                                               m_h(h)
-        {
-        };
+        FuncDimensionalToAdimensionalDistance(Splines* splines,
+                                              int splineIndex,
+                                              bool isSpacingCurvatureAdapted,
+                                              double h) : m_spline(splines),
+                                                          m_splineIndex(splineIndex),
+                                                          m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
+                                                          m_h(h){};
 
         void SetDimensionalDistance(double distance)
         {
@@ -221,6 +215,4 @@ namespace meshkernel
         double m_DimensionalDistance = 0.0;
     };
 
-}
-
-
+} // namespace meshkernel

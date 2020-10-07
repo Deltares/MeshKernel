@@ -32,11 +32,11 @@ namespace meshkernelapi
     struct MakeGridParametersNative
     {
         /// <summary>
-        /// The type of grid to create : square = 0, wieber = 1, hexagonal type 1 = 2,  hexagonal type 2 = 3, triangular = 4 (0) 
-        /// </summary>  
+        /// The type of grid to create : square = 0, wieber = 1, hexagonal type 1 = 2,  hexagonal type 2 = 3, triangular = 4 (0)
+        /// </summary>
         int GridType;
 
-        /// <summary>   
+        /// <summary>
         /// The number of columns in x direction
         /// </summary>
         int NumberOfColumns;
@@ -91,6 +91,4 @@ namespace meshkernelapi
         /// </summary>
         double YGridBlockSize;
     };
-}
-
-
+} // namespace meshkernelapi

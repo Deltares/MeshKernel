@@ -32,7 +32,7 @@
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
 
-namespace meshkernel 
+namespace meshkernel
 {
     // Forward declarations
     class CurvilinearGrid;
@@ -44,7 +44,6 @@ namespace meshkernel
     {
 
     public:
-
         enum DeleteMeshOptions
         {
             AllVerticesInside = 0,
@@ -72,7 +71,7 @@ namespace meshkernel
         /// </summary>
         /// <returns></returns>
         Mesh();
-        
+
         /// <summary>
         /// Converting constructor, from curvilinear grid to mesh (gridtonet)
         /// </summary>
@@ -80,7 +79,7 @@ namespace meshkernel
         /// <param name="projection"></param>
         /// <returns></returns>
         Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection);
-        
+
         /// <summary>
         /// Create triangular grid from nodes (triangulatesamplestonetwork)
         /// </summary>
@@ -91,7 +90,7 @@ namespace meshkernel
         Mesh(std::vector<Point>& nodes, const Polygons& polygons, Projections projection);
 
         /// <summary>
-        /// Add meshes: result is a mesh composed of the additions 
+        /// Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to the first
         /// </summary>
         /// <param name="rhs">The mesh to add</param>
@@ -107,7 +106,7 @@ namespace meshkernel
         /// <param name="administration">Type of administration to perform</param>
         /// <returns>If the method succeeded</returns>
         bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
-        
+
         /// <summary>
         /// Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         /// </summary>
@@ -271,8 +270,8 @@ namespace meshkernel
         /// <param name="edgeIndicesCache">The edge cache array filled with edge indices</param>
         /// <param name="numClosedPolygonNodes">The number of valid values in the array above</param>
         /// <returns>If the method succeeded</returns>
-        bool FaceClosedPolygon(int faceIndex, 
-                               std::vector<Point>& polygonNodesCache, 
+        bool FaceClosedPolygon(int faceIndex,
+                               std::vector<Point>& polygonNodesCache,
                                std::vector<int>& localNodeIndicesCache,
                                std::vector<int>& edgeIndicesCache,
                                int& numClosedPolygonNodes) const;
@@ -284,8 +283,8 @@ namespace meshkernel
         /// <param name="polygonNodesCache">The cache array to be filled </param>
         /// <param name="numClosedPolygonNodes">The number of valid face nodes</param>
         /// <returns>If the method succeeded</returns>
-        bool FaceClosedPolygon(int faceIndex, 
-                               std::vector<Point>& polygonNodesCache, 
+        bool FaceClosedPolygon(int faceIndex,
+                               std::vector<Point>& polygonNodesCache,
                                int& numClosedPolygonNodes) const;
 
         /// <summary>
@@ -360,13 +359,13 @@ namespace meshkernel
         /// <param name="weightCircumCenter">Circumcenter weight</param>
         /// <param name="result">The computed circumcenter</param>
         /// <returns>If the method succeeded</returns>
-        bool ComputeFaceCircumenter( std::vector<Point>& polygon,
-                                     std::vector<Point>& middlePoints,
-                                     std::vector<Point>& normals,
-                                     int numNodes,
-                                     const std::vector<int>& edgesNumFaces,
-                                     double weightCircumCenter,
-                                     Point& result ) const;
+        bool ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                    std::vector<Point>& middlePoints,
+                                    std::vector<Point>& normals,
+                                    int numNodes,
+                                    const std::vector<int>& edgesNumFaces,
+                                    double weightCircumCenter,
+                                    Point& result) const;
 
         /// <summary>
         /// Computes m_nodesNodes, see class members
@@ -414,47 +413,46 @@ namespace meshkernel
         bool TriangulateFaces();
 
         // nodes
-        std::vector<Point>              m_nodes;                    // The mesh nodes (xk, yk)
-        std::vector<std::vector<int>>   m_nodesEdges;               // For each node, the indices of connected edges (nod%lin)
-        std::vector<int>                m_nodesNumEdges;            // For each node, the number of connected edges (nmk)
-        std::vector<int>                m_nodeMask;                 // The node mask (kc)
-        std::vector<std::vector<int>>   m_nodesNodes;               // For each node, its neighbours 
-        std::vector<int>                m_nodesTypes;               // The node types (nb)
+        std::vector<Point> m_nodes;                 // The mesh nodes (xk, yk)
+        std::vector<std::vector<int>> m_nodesEdges; // For each node, the indices of connected edges (nod%lin)
+        std::vector<int> m_nodesNumEdges;           // For each node, the number of connected edges (nmk)
+        std::vector<int> m_nodeMask;                // The node mask (kc)
+        std::vector<std::vector<int>> m_nodesNodes; // For each node, its neighbours
+        std::vector<int> m_nodesTypes;              // The node types (nb)
 
         // edges
-        std::vector<Edge>               m_edges;                    // The edges, defined as first and second node(kn)
-        std::vector<std::vector<int>>   m_edgesFaces;               // For each edge, the shared face index (lne)
-        std::vector<int>                m_edgesNumFaces;            // For each edge, the number of shared faces(lnn)
-        std::vector<double>             m_edgeLengths;              // The edge lenghts
-        std::vector<int>                m_edgeMask;                 // The edge mask (lc)
+        std::vector<Edge> m_edges;                  // The edges, defined as first and second node(kn)
+        std::vector<std::vector<int>> m_edgesFaces; // For each edge, the shared face index (lne)
+        std::vector<int> m_edgesNumFaces;           // For each edge, the number of shared faces(lnn)
+        std::vector<double> m_edgeLengths;          // The edge lenghts
+        std::vector<int> m_edgeMask;                // The edge mask (lc)
 
         // faces
-        std::vector<std::vector<int>>   m_facesNodes;               // The nodes composing the faces, in ccw order (netcell%Nod) 
-        std::vector<int>                m_numFacesNodes;            // The number of nodes composing the face (netcell%N)
-        std::vector<std::vector<int>>   m_facesEdges;               // The edge indices composing the face (netcell%lin)
-        std::vector<Point>              m_facesCircumcenters;       // The face circumcenters the face circumcenter (xz, yz)
-        std::vector<Point>              m_facesMassCenters;         // The faces centers of mass (xzw, yzw)  
-        std::vector<double>             m_faceArea;                 // The face area   
-        std::vector<Point>              m_polygonNodesCache;        // Cache to store the face nodes
+        std::vector<std::vector<int>> m_facesNodes; // The nodes composing the faces, in ccw order (netcell%Nod)
+        std::vector<int> m_numFacesNodes;           // The number of nodes composing the face (netcell%N)
+        std::vector<std::vector<int>> m_facesEdges; // The edge indices composing the face (netcell%lin)
+        std::vector<Point> m_facesCircumcenters;    // The face circumcenters the face circumcenter (xz, yz)
+        std::vector<Point> m_facesMassCenters;      // The faces centers of mass (xzw, yzw)
+        std::vector<double> m_faceArea;             // The face area
+        std::vector<Point> m_polygonNodesCache;     // Cache to store the face nodes
 
         // vectors for communicating with the client
-        std::vector<double>              m_nodex;                   // The nodes x-coordinate
-        std::vector<double>              m_nodey;                   // The nodes y-coordinate
-        std::vector<double>              m_nodez;                   // The nodes z-coordinate
-        std::vector<int>                 m_edgeNodes;               // For each edge, the nodes
-        std::vector<int>                 m_faceNodes;               // For each face, the nodes
-        std::vector<double>              m_facesCircumcentersx;     // The circumcenters x-coordinate
-        std::vector<double>              m_facesCircumcentersy;     // The circumcenters y-coordinate
-        std::vector<double>              m_facesCircumcentersz;     // The circumcenters z-coordinate
+        std::vector<double> m_nodex;               // The nodes x-coordinate
+        std::vector<double> m_nodey;               // The nodes y-coordinate
+        std::vector<double> m_nodez;               // The nodes z-coordinate
+        std::vector<int> m_edgeNodes;              // For each edge, the nodes
+        std::vector<int> m_faceNodes;              // For each face, the nodes
+        std::vector<double> m_facesCircumcentersx; // The circumcenters x-coordinate
+        std::vector<double> m_facesCircumcentersy; // The circumcenters y-coordinate
+        std::vector<double> m_facesCircumcentersz; // The circumcenters z-coordinate
 
-        Projections                      m_projection;              // The projection used
+        Projections m_projection; // The projection used
 
-        SpatialTrees::RTree              m_nodesRTree;              // Spatial R-Tree used to inquire node vertices
+        SpatialTrees::RTree m_nodesRTree; // Spatial R-Tree used to inquire node vertices
 
         int m_maxNumNeighbours = 0;
 
     private:
-
         /// <summary>
         /// Node administration (setnodadmin)
         /// </summary>
@@ -472,11 +470,11 @@ namespace meshkernel
         /// <param name="sortedEdges">The caching array used for sorting the edges, used to inquire if an edge has been already visited</param>
         /// <param name="sortedNodes">The caching array used for sorting the nodes, used to inquire if a node has been already visited</param>
         /// <returns>If the method succeeded</returns>
-        bool FindFacesRecursive(int startingNode, 
-                                int node, 
-                                int numEdges, 
-                                int previousEdge, 
-                                std::vector<int>& edges, 
+        bool FindFacesRecursive(int startingNode,
+                                int node,
+                                int numEdges,
+                                int previousEdge,
+                                std::vector<int>& edges,
                                 std::vector<int>& nodes,
                                 std::vector<int>& sortedEdges,
                                 std::vector<int>& sortedNodes);
@@ -499,11 +497,10 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool RefreshNodesRTreeIfNeeded();
 
-        int m_numFaces = 0;                                       // number of valid faces (nump)
-        int m_numNodes = 0;                                       // Number of valid nodes in m_nodes
-        int m_numEdges = 0;                                       // Number of valid edges in m_edges
+        int m_numFaces = 0; // number of valid faces (nump)
+        int m_numNodes = 0; // Number of valid nodes in m_nodes
+        int m_numEdges = 0; // Number of valid edges in m_edges
 
-        std::vector<double> m_edgeAngles;                        // internal cache for sorting the edges around nodes
-
+        std::vector<double> m_edgeAngles; // internal cache for sorting the edges around nodes
     };
-}
+} // namespace meshkernel
