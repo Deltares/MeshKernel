@@ -105,4 +105,7 @@
         "xutility": "cpp",
         "*.ipp": "cpp"
     },
+    "[cpp]": {
+        "editor.formatOnSave": true,
+    }
 }
