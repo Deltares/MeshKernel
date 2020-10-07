@@ -1,88 +1,42 @@
 #include "../Mesh.hpp"
 #include "../Entities.hpp"
 #include "../Polygons.hpp"
-#include "../Splines.hpp"
+#include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 
 TEST(Polygons, MeshBoundaryToPolygon)
 {
-    //One gets the edges
-    std::vector<meshkernel::Point> nodes;
-
-    nodes.push_back({ 322.252624511719,454.880187988281 });
-    nodes.push_back({ 227.002044677734,360.379241943359 });
-    nodes.push_back({ 259.252227783203,241.878051757813 });
-    nodes.push_back({ 428.003295898438,210.377746582031 });
-    nodes.push_back({ 536.003967285156,310.878753662109 });
-    nodes.push_back({ 503.753784179688,432.379974365234 });
-    nodes.push_back({ 350.752807617188,458.630249023438 });
-    nodes.push_back({ 343.15053976393,406.232256102912 });
-    nodes.push_back({ 310.300984548069,319.41005739802 });
-    nodes.push_back({ 423.569603308318,326.17986967523 });
-
-    std::vector<meshkernel::Edge> edges;
-    // Local edges
-    edges.push_back({ 3, 9 });
-    edges.push_back({ 9, 2 });
-    edges.push_back({ 2, 3 });
-    edges.push_back({ 3, 4 });
-    edges.push_back({ 4, 9 });
-    edges.push_back({ 2, 8 });
-    edges.push_back({ 8, 1 });
-    edges.push_back({ 1, 2 });
-    edges.push_back({ 9, 8 });
-    edges.push_back({ 8, 7 });
-    edges.push_back({ 7, 1 });
-    edges.push_back({ 9, 10 });
-    edges.push_back({ 10, 8 });
-    edges.push_back({ 4, 5 });
-    edges.push_back({ 5, 10 });
-    edges.push_back({ 10, 4 });
-    edges.push_back({ 8, 6 });
-    edges.push_back({ 6, 7 });
-    edges.push_back({ 10, 6 });
-    edges.push_back({ 5, 6 });
-
-    for (int i = 0; i < edges.size(); i++)
-    {
-        edges[i].first -= 1;
-        edges[i].second -= 1;
-    }
-
-    // now build node-edge mapping
-    auto mesh=std::make_shared<meshkernel::Mesh>();
-    mesh->Set(edges, nodes, meshkernel::Projections::cartesian);
+    auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     const std::vector<meshkernel::Point> polygon;
     auto polygons = std::make_shared<meshkernel::Polygons>(polygon, meshkernel::Projections::cartesian);
-    
+
     int numNodesBoundaryPolygons;
     std::vector<meshkernel::Point> meshBoundaryPolygon;
     polygons->MeshBoundaryToPolygon(*mesh, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
-    constexpr double tolerance = 1e-2;
+    ASSERT_EQ(8, numNodesBoundaryPolygons);
 
-    //ASSERT_NEAR(325.590101919525, mesh->m_nodes[0].x, tolerance);
-    //ASSERT_NEAR(229.213730481198, mesh->m_nodes[1].x, tolerance);
-    //ASSERT_NEAR(263.439319753147, mesh->m_nodes[2].x, tolerance);
-    //ASSERT_NEAR(429.191105834504, mesh->m_nodes[3].x, tolerance);
-    //ASSERT_NEAR(535.865215426468, mesh->m_nodes[4].x, tolerance);
-    //ASSERT_NEAR(503.753784179688, mesh->m_nodes[5].x, tolerance);
-    //ASSERT_NEAR(354.048340705929, mesh->m_nodes[6].x, tolerance);
-    //ASSERT_NEAR(346.790050854504, mesh->m_nodes[7].x, tolerance);
-    //ASSERT_NEAR(315.030130405285, mesh->m_nodes[8].x, tolerance);
-    //ASSERT_NEAR(424.314957449766, mesh->m_nodes[9].x, tolerance);
+    constexpr double tolerance = 1e-5;
 
-    //ASSERT_NEAR(455.319334078551, mesh->m_nodes[0].y, tolerance);
-    //ASSERT_NEAR(362.573521507281, mesh->m_nodes[1].y, tolerance);
-    //ASSERT_NEAR(241.096458631763, mesh->m_nodes[2].y, tolerance);
-    //ASSERT_NEAR(211.483073921775, mesh->m_nodes[3].y, tolerance);
-    //ASSERT_NEAR(311.401495506714, mesh->m_nodes[4].y, tolerance);
-    //ASSERT_NEAR(432.379974365234, mesh->m_nodes[5].y, tolerance);
-    //ASSERT_NEAR(458.064836627594, mesh->m_nodes[6].y, tolerance);
-    //ASSERT_NEAR(405.311585650679, mesh->m_nodes[7].y, tolerance);
-    //ASSERT_NEAR(319.612138503550, mesh->m_nodes[8].y, tolerance);
-    //ASSERT_NEAR(327.102805172725, mesh->m_nodes[9].y, tolerance);
+    ASSERT_NEAR(227.00204467773401, meshBoundaryPolygon[0].x, tolerance);
+    ASSERT_NEAR(259.25222778320301, meshBoundaryPolygon[1].x, tolerance);
+    ASSERT_NEAR(428.00329589843801, meshBoundaryPolygon[2].x, tolerance);
+    ASSERT_NEAR(536.00396728515602, meshBoundaryPolygon[3].x, tolerance);
+    ASSERT_NEAR(503.75378417968801, meshBoundaryPolygon[4].x, tolerance);
+    ASSERT_NEAR(350.75280761718801, meshBoundaryPolygon[5].x, tolerance);
+    ASSERT_NEAR(322.25262451171898, meshBoundaryPolygon[6].x, tolerance);
+    ASSERT_NEAR(227.00204467773401, meshBoundaryPolygon[7].x, tolerance);
+
+    ASSERT_NEAR(360.37924194335898, meshBoundaryPolygon[0].y, tolerance);
+    ASSERT_NEAR(241.87805175781301, meshBoundaryPolygon[1].y, tolerance);
+    ASSERT_NEAR(210.37774658203099, meshBoundaryPolygon[2].y, tolerance);
+    ASSERT_NEAR(310.87875366210898, meshBoundaryPolygon[3].y, tolerance);
+    ASSERT_NEAR(432.37997436523398, meshBoundaryPolygon[4].y, tolerance);
+    ASSERT_NEAR(458.63024902343801, meshBoundaryPolygon[5].y, tolerance);
+    ASSERT_NEAR(454.88018798828102, meshBoundaryPolygon[6].y, tolerance);
+    ASSERT_NEAR(360.37924194335898, meshBoundaryPolygon[7].y, tolerance);
+
 }
 
 TEST(Polygons, CreatePointsInPolygons)
