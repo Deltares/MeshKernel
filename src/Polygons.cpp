@@ -40,14 +40,13 @@ namespace meshkernel
     {
     }
 
-    Polygons::Polygons(const std::vector<Point>& polygon, Projections projection) :
-        m_projection(projection)
+    Polygons::Polygons(const std::vector<Point>& polygon, Projections projection) : m_projection(projection)
     {
         ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize);
         m_numAllocatedNodes = m_nodes.size();
-        
-        // find the polygons in the current list of points 
-        std::vector<std::vector<size_t>> indexes(polygon.size(), std::vector<size_t>(2,0));
+
+        // find the polygons in the current list of points
+        std::vector<std::vector<size_t>> indexes(polygon.size(), std::vector<size_t>(2, 0));
         int pos = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue, indexes);
         indexes.resize(pos);
 
@@ -57,7 +56,7 @@ namespace meshkernel
         if (currentNodePosition != 0)
         {
             ResizeVectorIfNeeded(numNodes + 1 + polygon.size(), m_nodes);
-            m_nodes[currentNodePosition] = { doubleMissingValue,doubleMissingValue };
+            m_nodes[currentNodePosition] = {doubleMissingValue, doubleMissingValue};
         }
         else
         {
@@ -72,12 +71,12 @@ namespace meshkernel
         for (int p = 0; p < indexes.size(); p++)
         {
             int indexInIndexes = 0;
-            if (currentNodePosition > 0) 
+            if (currentNodePosition > 0)
             {
-                m_nodes[currentNodePosition] = { doubleMissingValue,doubleMissingValue };
+                m_nodes[currentNodePosition] = {doubleMissingValue, doubleMissingValue};
                 currentNodePosition++;
             }
-            
+
             for (int n = indexes[p][0]; n <= indexes[p][1]; n++)
             {
                 m_nodes[currentNodePosition] = polygon[indexes[p][0] + indexInIndexes];
@@ -89,16 +88,16 @@ namespace meshkernel
         }
     }
 
-    bool Polygons::MeshBoundaryToPolygon( Mesh& mesh,
-                                          std::vector<Point>& meshBoundaryPolygon,
-                                          int& numNodesBoundaryPolygons )
+    bool Polygons::MeshBoundaryToPolygon(Mesh& mesh,
+                                         std::vector<Point>& meshBoundaryPolygon,
+                                         int& numNodesBoundaryPolygons)
     {
         numNodesBoundaryPolygons = 0;
 
         // Find faces
         mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
         std::vector<bool> isVisited(mesh.GetNumEdges(), false);
-        meshBoundaryPolygon.resize(mesh.GetNumNodes() , { doubleMissingValue ,doubleMissingValue });
+        meshBoundaryPolygon.resize(mesh.GetNumNodes(), {doubleMissingValue, doubleMissingValue});
 
         for (int e = 0; e < mesh.GetNumEdges(); e++)
         {
@@ -112,15 +111,15 @@ namespace meshkernel
             const auto firstNode = mesh.m_nodes[firstNodeIndex];
             const auto secondNode = mesh.m_nodes[secondNodeIndex];
 
-            bool firstNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[firstNodeIndex], m_nodes, 0,GetNumNodes()-1);
-            bool secondNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[secondNodeIndex], m_nodes, 0, GetNumNodes()-1);
+            bool firstNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[firstNodeIndex], m_nodes, 0, GetNumNodes() - 1);
+            bool secondNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[secondNodeIndex], m_nodes, 0, GetNumNodes() - 1);
 
             if (!firstNodeInPolygon && !secondNodeInPolygon)
             {
                 continue;
             }
 
-            ResizeVectorIfNeeded(numNodesBoundaryPolygons + 3, meshBoundaryPolygon,{doubleMissingValue, doubleMissingValue});
+            ResizeVectorIfNeeded(numNodesBoundaryPolygons + 3, meshBoundaryPolygon, {doubleMissingValue, doubleMissingValue});
 
             //Start a new polyline
             if (numNodesBoundaryPolygons > 0)
@@ -167,11 +166,9 @@ namespace meshkernel
             //Start a new polyline
             numNodesBoundaryPolygons++;
         }
-       
 
         return true;
     }
-
 
     bool Polygons::WalkBoundaryFromNode(const Mesh& mesh,
                                         std::vector<bool>& isVisited,
@@ -185,7 +182,7 @@ namespace meshkernel
         {
             if (!currentNodeInPolygon)
             {
-                currentNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[currentNode], m_nodes, 0, GetNumNodes()-1);
+                currentNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[currentNode], m_nodes, 0, GetNumNodes() - 1);
             }
 
             if (!currentNodeInPolygon)
@@ -208,7 +205,7 @@ namespace meshkernel
             currentNodeInPolygon = false;
 
             nodeIndex++;
-            ResizeVectorIfNeeded(nodeIndex + 1, meshBoundaryPolygon,{doubleMissingValue,doubleMissingValue});
+            ResizeVectorIfNeeded(nodeIndex + 1, meshBoundaryPolygon, {doubleMissingValue, doubleMissingValue});
 
             meshBoundaryPolygon[nodeIndex] = mesh.m_nodes[currentNode];
 
@@ -219,7 +216,7 @@ namespace meshkernel
 
     /// triangulate..
     bool Polygons::CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints)
-    {        
+    {
         generatedPoints.resize(m_indices.size());
         std::vector<Point> localPolygon(GetNumNodes());
         std::vector<double> xLocalPolygon(GetNumNodes());
@@ -243,7 +240,7 @@ namespace meshkernel
             }
 
             // not a closed polygon
-            if(localPolygon[numLocalPoints - 1] != localPolygon[0])
+            if (localPolygon[numLocalPoints - 1] != localPolygon[0])
             {
                 continue;
             }
@@ -252,7 +249,7 @@ namespace meshkernel
             double localPolygonArea = 0.0;
             Point centerOfMass;
             bool successful = FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
-            if(!successful)
+            if (!successful)
             {
                 return false;
             }
@@ -271,15 +268,15 @@ namespace meshkernel
                 return false;
             }
 
-            // average edge size 
-            double averageEdgeLength = perimeter / (numLocalPoints-1);
+            // average edge size
+            double averageEdgeLength = perimeter / (numLocalPoints - 1);
 
             // average triangle size
             double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
-            int numberOfTriangles =  safetySize * localPolygonArea / averageTriangleArea;
+            int numberOfTriangles = safetySize * localPolygonArea / averageTriangleArea;
 
-            if(numberOfTriangles<=0)
+            if (numberOfTriangles <= 0)
             {
                 return false;
             }
@@ -291,7 +288,7 @@ namespace meshkernel
             int numLocalPointsOpenPolygon = numLocalPoints - 1;
 
             // if the number of estimated triangles is not sufficent, tricall must be repeated
-            while(numtri < 0)
+            while (numtri < 0)
             {
                 numtri = numberOfTriangles;
                 faceNodes.resize(int(numberOfTriangles) * 3);
@@ -299,20 +296,20 @@ namespace meshkernel
                 faceEdges.resize(int(numberOfTriangles) * 3);
                 xPoint.resize(int(numberOfTriangles) * 3);
                 yPoint.resize(int(numberOfTriangles) * 3);
-                
-                Triangulation( &jatri,
-                               &xLocalPolygon[0],
-                               &yLocalPolygon[0],
-                               &numLocalPointsOpenPolygon,
-                               &faceNodes[0],
-                               &numtri,
-                               &edgeNodes[0],
-                               &numedge,
-                               &faceEdges[0],
-                               &xPoint[0],
-                               &yPoint[0],
-                               &numPoints,
-                               &averageTriangleArea );
+
+                Triangulation(&jatri,
+                              &xLocalPolygon[0],
+                              &yLocalPolygon[0],
+                              &numLocalPointsOpenPolygon,
+                              &faceNodes[0],
+                              &numtri,
+                              &edgeNodes[0],
+                              &numedge,
+                              &faceEdges[0],
+                              &xPoint[0],
+                              &yPoint[0],
+                              &numPoints,
+                              &averageTriangleArea);
 
                 if (numberOfTriangles)
                 {
@@ -322,10 +319,10 @@ namespace meshkernel
             generatedPoints[i].resize(numPoints);
             for (int j = 0; j < numPoints; ++j)
             {
-                generatedPoints[i][j] = { xPoint[j], yPoint[j] };
+                generatedPoints[i][j] = {xPoint[j], yPoint[j]};
             }
             //TODO: CHECK POINTS ARE INSIDE THE POLYGON?
-         }
+        }
 
         return isOnePolygonClosed ? true : false;
     }
@@ -345,7 +342,6 @@ namespace meshkernel
             startIndex = m_indices[0][0];
             endIndex = m_indices[0][1];
         }
-
 
         if (endIndex <= startIndex)
         {
@@ -375,7 +371,7 @@ namespace meshkernel
         nodeLengthCoordinate[0] = 0.0;
         for (int i = 1; i < edgeLengths.size(); ++i)
         {
-            nodeLengthCoordinate[i] = nodeLengthCoordinate[i-1] + edgeLengths[i-1];
+            nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
         }
 
         int numNodesRefinedPart = std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (int(endIndex) - int(startIndex));
@@ -411,7 +407,7 @@ namespace meshkernel
                     refinedNodeIndex++;
                 }
 
-                // find the next point  
+                // find the next point
                 bool nextNodeFound = false;
                 for (int i = nextNodeIndex + 1; i <= endIndex; ++i)
                 {
@@ -463,7 +459,7 @@ namespace meshkernel
     bool Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, const int numPoints, double& perimeter)
     {
 
-        if(numPoints < 0 || localPolygon[0] != localPolygon[numPoints - 1])
+        if (numPoints < 0 || localPolygon[0] != localPolygon[numPoints - 1])
         {
             return false;
         }
@@ -513,13 +509,13 @@ namespace meshkernel
 
     //copypol: look how the layer thickness is determined when the input distance is not given, but th coordinate of another point
     bool Polygons::OffsetCopy(double distance, bool innerAndOuter, Polygons& newPolygon)
-    {        
+    {
         int sizenewPolygon = GetNumNodes();
-        if (innerAndOuter) 
+        if (innerAndOuter)
         {
             sizenewPolygon += GetNumNodes() + 1;
         }
-        
+
         std::vector<Point> normalVectors(sizenewPolygon);
         double dxNormalPreviousEdge = 0.0;
         double dyNormalPreviuosEdge = 0.0;
@@ -529,9 +525,9 @@ namespace meshkernel
         {
             if (n < GetNumNodes() - 1)
             {
-                auto dx = GetDx(m_nodes[n], m_nodes[n+1], m_projection);
-                auto dy = GetDy(m_nodes[n], m_nodes[n+1], m_projection);
-                const auto nodeDistance = std::sqrt( dx * dx + dy * dy );
+                auto dx = GetDx(m_nodes[n], m_nodes[n + 1], m_projection);
+                auto dy = GetDy(m_nodes[n], m_nodes[n + 1], m_projection);
+                const auto nodeDistance = std::sqrt(dx * dx + dy * dy);
                 dxNormal = -dy / nodeDistance;
                 dyNormal = dx / nodeDistance;
             }
@@ -547,9 +543,9 @@ namespace meshkernel
                 dyNormalPreviuosEdge = dyNormal;
             }
 
-            double factor = 1.0 / (1.0 + dxNormalPreviousEdge*dxNormal + dyNormalPreviuosEdge*dyNormal);
-            normalVectors[n].x = factor *(dxNormalPreviousEdge + dxNormal);
-            normalVectors[n].y = factor *(dyNormalPreviuosEdge + dyNormal);
+            double factor = 1.0 / (1.0 + dxNormalPreviousEdge * dxNormal + dyNormalPreviuosEdge * dyNormal);
+            normalVectors[n].x = factor * (dxNormalPreviousEdge + dxNormal);
+            normalVectors[n].y = factor * (dyNormalPreviuosEdge + dyNormal);
 
             dxNormalPreviousEdge = dxNormal;
             dyNormalPreviuosEdge = dyNormal;
@@ -557,7 +553,7 @@ namespace meshkernel
 
         // negative sign introduced because normal vector pointing inward
         distance = -distance;
-        if (m_projection == Projections::spherical) 
+        if (m_projection == Projections::spherical)
         {
             distance = distance / (earth_radius * degrad_hp);
         }
@@ -567,13 +563,13 @@ namespace meshkernel
         {
             auto dx = normalVectors[i].x * distance;
             auto dy = normalVectors[i].y * distance;
-            if (m_projection== Projections::spherical)
+            if (m_projection == Projections::spherical)
             {
-                dx = dx / std::cos((m_nodes[i].y + 0.5 *dy)*degrad_hp);
+                dx = dx / std::cos((m_nodes[i].y + 0.5 * dy) * degrad_hp);
             }
             newPolygonPoints[i].x = m_nodes[i].x + dx;
             newPolygonPoints[i].y = m_nodes[i].y + dy;
-            
+
             if (innerAndOuter)
             {
                 newPolygonPoints[i + GetNumNodes() + 1].x = m_nodes[i].x - dx;
@@ -582,7 +578,7 @@ namespace meshkernel
         }
 
         // set the new polygon
-        newPolygon = { newPolygonPoints, m_projection };
+        newPolygon = {newPolygonPoints, m_projection};
 
         return true;
     }
@@ -601,7 +597,7 @@ namespace meshkernel
 
     bool Polygons::IsPointInPolygons(const Point& point) const
     {
-        
+
         // empty polygon, always included
         if (m_indices.empty())
         {
@@ -625,22 +621,18 @@ namespace meshkernel
                 YMax = std::max(YMax, m_nodes[n].y);
             }
 
-            
             if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
             {
                 inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indices[p][0], m_indices[p][1]);
             }
 
-            if (inPolygon) 
+            if (inPolygon)
             {
                 return true;
-            }  
+            }
         }
 
         return inPolygon;
     }
 
-
-
-
-};
+}; // namespace meshkernel

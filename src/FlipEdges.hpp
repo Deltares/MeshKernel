@@ -30,7 +30,6 @@
 #include <vector>
 #include "Entities.hpp"
 
-
 namespace meshkernel
 {
     // Forward declarations
@@ -40,7 +39,6 @@ namespace meshkernel
     class FlipEdges
     {
     public:
-
         /// <summary>
         /// Ctor
         /// </summary>
@@ -49,9 +47,9 @@ namespace meshkernel
         /// <param name="triangulateFaces">Option to triangulate all faces or not</param>
         /// <param name="projectToLandBoundary">Option to project to land boundaries or not</param>
         /// <returns>If the method succeeded</returns>
-        FlipEdges(std::shared_ptr<Mesh> mesh, 
-                  std::shared_ptr<LandBoundaries> landBoundary, 
-                  bool triangulateFaces, 
+        FlipEdges(std::shared_ptr<Mesh> mesh,
+                  std::shared_ptr<LandBoundaries> landBoundary,
+                  bool triangulateFaces,
                   bool projectToLandBoundary);
 
         /// <summary>
@@ -61,7 +59,6 @@ namespace meshkernel
         bool Compute() const;
 
     private:
-
         /// <summary>
         /// Computes the change in topology functional and gets the nodes involved (comp_ntopo)
         /// </summary>
@@ -70,10 +67,10 @@ namespace meshkernel
         /// <param name="nodeRight">The node at the left side of the edge</param>
         /// <param name="topologyFunctional">The computed functional</param>
         /// <returns>If the method succeeded</returns>
-        bool ComputeTopologyFunctional( int edge,
-                                        int& nodeLeft,
-                                        int& nodeRight,
-                                        int& topologyFunctional) const;
+        bool ComputeTopologyFunctional(int edge,
+                                       int& nodeLeft,
+                                       int& nodeRight,
+                                       int& topologyFunctional) const;
 
         /// <summary>
         /// Determine the optimal number of connected nodes for each node (nmk_opt)
@@ -83,7 +80,7 @@ namespace meshkernel
         int OptimalNumberOfConnectedNodes(int nodeIndex) const;
 
         /// <summary>
-        /// Compute the difference with the optimal number of edges by counting the numbers of edges that 
+        /// Compute the difference with the optimal number of edges by counting the numbers of edges that
         /// connect nodes firstNode and secondNode, and are on the land boundary path (comp_nnow)
         /// </summary>
         /// <returns>If the method succeeded</returns>
@@ -97,14 +94,11 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool DeleteEdgeFromNode(int edgeIndex, int nodeIndex) const;
 
-        std::shared_ptr<Mesh> m_mesh;                                      // A pointer to mesh
-        std::shared_ptr<LandBoundaries> m_landBoundaries;                  // A pointer to land boundaries
+        std::shared_ptr<Mesh> m_mesh;                     // A pointer to mesh
+        std::shared_ptr<LandBoundaries> m_landBoundaries; // A pointer to land boundaries
 
         bool m_triangulateFaces = false;
         bool m_projectToLandBoundary = false;
-
     };
 
-}
-
-
+} // namespace meshkernel

@@ -1,4 +1,4 @@
-# pragma once
+#pragma once
 #include "../Entities.hpp"
 #include "../SpatialTrees.hpp"
 #include <gtest/gtest.h>
@@ -16,20 +16,20 @@ TEST(SpatialTrees, RTreeOnePoint)
     {
         for (int i = 0; i < n; ++i)
         {
-            nodes[nodeIndex] = { (double)i, (double)j };
+            nodes[nodeIndex] = {(double)i, (double)j};
             nodeIndex++;
         }
     }
 
     meshkernel::SpatialTrees::RTree rtree;
     rtree.BuildTree(nodes);
-    std::vector<meshkernel::Point> pointToSearch(1, { (n-1.0)/2.0, (n-1.0)/2.0 });
+    std::vector<meshkernel::Point> pointToSearch(1, {(n - 1.0) / 2.0, (n - 1.0) / 2.0});
     double squaredDistance = 0.708 * 0.708;
     auto successful = rtree.NearestNeighboursOnSquaredDistance(pointToSearch[0], squaredDistance);
     ASSERT_EQ(true, successful);
-    ASSERT_EQ(rtree.GetQueryResultSize(),4);
+    ASSERT_EQ(rtree.GetQueryResultSize(), 4);
     squaredDistance = 0.700 * 0.700;
-    successful  = rtree.NearestNeighboursOnSquaredDistance(pointToSearch[0], squaredDistance);
+    successful = rtree.NearestNeighboursOnSquaredDistance(pointToSearch[0], squaredDistance);
     ASSERT_EQ(rtree.GetQueryResultSize(), 0);
 }
 
@@ -44,7 +44,7 @@ TEST(SpatialTrees, RTreeRemovePoint)
     {
         for (int i = 0; i < n; ++i)
         {
-            nodes[nodeIndex] = { (double)i, (double)j };
+            nodes[nodeIndex] = {(double)i, (double)j};
             nodeIndex++;
         }
     }
@@ -61,13 +61,13 @@ TEST(SpatialTrees, RTreeManyPoints)
 {
     const int n = 10; // x
     const int m = 10; // y
-    std::vector<meshkernel::Point> nodes(n * m );
+    std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
         for (int i = 0; i < n; ++i)
         {
-            nodes[nodeIndex] = { (double)i, (double)j };
+            nodes[nodeIndex] = {(double)i, (double)j};
             nodeIndex++;
         }
     }

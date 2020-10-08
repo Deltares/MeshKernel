@@ -7,20 +7,20 @@
 #include <chrono>
 #include <random>
 
-TEST(Mesh, OneQuadTestConstructor) 
+TEST(Mesh, OneQuadTestConstructor)
 {
     //1 Setup
     std::vector<meshkernel::Point> nodes;
-    nodes.push_back({ 0.0,0.0 });
-    nodes.push_back({ 0.0,10.0 });
-    nodes.push_back({ 10.0,0.0 });
-    nodes.push_back({ 10.0,10.0 });
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({0.0, 10.0});
+    nodes.push_back({10.0, 0.0});
+    nodes.push_back({10.0, 10.0});
     std::vector<meshkernel::Edge> edges;
-    edges.push_back({ 0, 2 });
-    edges.push_back({ 1, 3 });
-    edges.push_back({ 0, 1 });
-    edges.push_back({ 2, 3 });
-    
+    edges.push_back({0, 2});
+    edges.push_back({1, 3});
+    edges.push_back({0, 1});
+    edges.push_back({2, 3});
+
     meshkernel::Mesh mesh;
 
     // 2 Execution
@@ -80,15 +80,15 @@ TEST(Mesh, MakeMeshInPolygon)
     //1 Setup
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({ 302.002502,472.130371 });
-    nodes.push_back({ 144.501526, 253.128174 });
-    nodes.push_back({ 368.752930, 112.876755 });
-    nodes.push_back({ 707.755005, 358.879242 });
-    nodes.push_back({ 301.252502, 471.380371 });
-    nodes.push_back({ 302.002502, 472.130371 });
+    nodes.push_back({302.002502, 472.130371});
+    nodes.push_back({144.501526, 253.128174});
+    nodes.push_back({368.752930, 112.876755});
+    nodes.push_back({707.755005, 358.879242});
+    nodes.push_back({301.252502, 471.380371});
+    nodes.push_back({302.002502, 472.130371});
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
-    
+
     meshkernel::Mesh mesh;
     meshkernelapi::MakeGridParametersNative makeGridParametersNative;
     makeGridParametersNative.GridType = 0;
@@ -112,12 +112,12 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
     //1 Setup
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({ 302.002502,472.130371 });
-    nodes.push_back({ 144.501526, 253.128174 });
-    nodes.push_back({ 368.752930, 112.876755 });
-    nodes.push_back({ 707.755005, 358.879242 });
-    nodes.push_back({ 301.252502, 471.380371 });
-    nodes.push_back({ 302.002502, 472.130371 });
+    nodes.push_back({302.002502, 472.130371});
+    nodes.push_back({144.501526, 253.128174});
+    nodes.push_back({368.752930, 112.876755});
+    nodes.push_back({707.755005, 358.879242});
+    nodes.push_back({301.252502, 471.380371});
+    nodes.push_back({302.002502, 472.130371});
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::spherical);
 
@@ -165,8 +165,8 @@ TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
     // x coordinate
     ASSERT_EQ(0.0, mesh.m_nodes[0].x);
     ASSERT_EQ(makeGridParametersNative.XGridBlockSize, mesh.m_nodes[1].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize*2, mesh.m_nodes[2].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize*3, mesh.m_nodes[3].x);
+    ASSERT_EQ(makeGridParametersNative.XGridBlockSize * 2, mesh.m_nodes[2].x);
+    ASSERT_EQ(makeGridParametersNative.XGridBlockSize * 3, mesh.m_nodes[3].x);
 
     ASSERT_EQ(0.0, mesh.m_nodes[4].x);
     ASSERT_EQ(makeGridParametersNative.XGridBlockSize, mesh.m_nodes[5].x);
@@ -177,7 +177,6 @@ TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
     ASSERT_EQ(makeGridParametersNative.XGridBlockSize, mesh.m_nodes[9].x);
     ASSERT_EQ(makeGridParametersNative.XGridBlockSize * 2, mesh.m_nodes[10].x);
     ASSERT_EQ(makeGridParametersNative.XGridBlockSize * 3, mesh.m_nodes[11].x);
-
 
     // y coordinate
     ASSERT_EQ(0.0, mesh.m_nodes[0].y);
@@ -201,12 +200,12 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     // Prepare
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({ 302.002502,472.130371 });
-    nodes.push_back({ 144.501526, 253.128174 });
-    nodes.push_back({ 368.752930, 112.876755 });
-    nodes.push_back({ 707.755005, 358.879242 });
-    nodes.push_back({ 301.252502, 471.380371 });
-    nodes.push_back({ 302.002502, 472.130371 });
+    nodes.push_back({302.002502, 472.130371});
+    nodes.push_back({144.501526, 253.128174});
+    nodes.push_back({368.752930, 112.876755});
+    nodes.push_back({707.755005, 358.879242});
+    nodes.push_back({301.252502, 471.380371});
+    nodes.push_back({302.002502, 472.130371});
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
@@ -241,18 +240,17 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     ASSERT_EQ(0, mesh.m_edges[5].second);
 }
 
-
 TEST(Mesh, TriangulateSamples)
 {
     // Prepare
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({ 498.503152894023, 1645.82297461613 });
-    nodes.push_back({ -5.90937355559299, 814.854361678898 });
-    nodes.push_back({ 851.30035347439, 150.079471329115 });
-    nodes.push_back({ 1411.11078745316, 1182.22995897746 });
-    nodes.push_back({ 501.418832237663, 1642.90729527249 });
-    nodes.push_back({ 498.503152894023, 1645.82297461613 });
+    nodes.push_back({498.503152894023, 1645.82297461613});
+    nodes.push_back({-5.90937355559299, 814.854361678898});
+    nodes.push_back({851.30035347439, 150.079471329115});
+    nodes.push_back({1411.11078745316, 1182.22995897746});
+    nodes.push_back({501.418832237663, 1642.90729527249});
+    nodes.push_back({498.503152894023, 1645.82297461613});
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
@@ -264,21 +262,20 @@ TEST(Mesh, TriangulateSamples)
     meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projections::cartesian);
 }
 
-
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
 {
     //1 Setup
     std::vector<meshkernel::Point> nodes;
-    nodes.push_back({ 0.0, 0.0 });
-    nodes.push_back({ 5.0, -5.0 });
-    nodes.push_back({ 10.0, 0.0 });
-    nodes.push_back({ 5.0, 5.0 });
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({5.0, -5.0});
+    nodes.push_back({10.0, 0.0});
+    nodes.push_back({5.0, 5.0});
     std::vector<meshkernel::Edge> edges;
-    edges.push_back({ 0, 3 });
-    edges.push_back({ 0, 2 });
-    edges.push_back({ 2, 3 });
-    edges.push_back({ 0, 1 });
-    edges.push_back({ 2, 1 });
+    edges.push_back({0, 3});
+    edges.push_back({0, 2});
+    edges.push_back({2, 3});
+    edges.push_back({0, 1});
+    edges.push_back({2, 1});
 
     meshkernel::Mesh mesh;
     // 2 Execution
@@ -292,16 +289,16 @@ TEST(Mesh, MeshBoundaryToPolygon)
 {
     //1 Setup
     std::vector<meshkernel::Point> nodes;
-    nodes.push_back({ 0.0, 0.0 });
-    nodes.push_back({ 5.0, -5.0 });
-    nodes.push_back({ 10.0, 0.0 });
-    nodes.push_back({ 5.0, 5.0 });
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({5.0, -5.0});
+    nodes.push_back({10.0, 0.0});
+    nodes.push_back({5.0, 5.0});
     std::vector<meshkernel::Edge> edges;
-    edges.push_back({ 0, 3 });
-    edges.push_back({ 0, 2 });
-    edges.push_back({ 2, 3 });
-    edges.push_back({ 0, 1 });
-    edges.push_back({ 2, 1 });
+    edges.push_back({0, 3});
+    edges.push_back({0, 2});
+    edges.push_back({2, 3});
+    edges.push_back({0, 1});
+    edges.push_back({2, 1});
 
     meshkernel::Mesh mesh;
     mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
@@ -330,17 +327,16 @@ TEST(Mesh, HangingEdge)
 {
     //1 Setup
     std::vector<meshkernel::Point> nodes;
-    nodes.push_back({ 0.0, 0.0 });
-    nodes.push_back({ 5.0, 0.0 });
-    nodes.push_back({ 3.0, 2.0 });
-    nodes.push_back({ 3.0, 4.0 });
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({5.0, 0.0});
+    nodes.push_back({3.0, 2.0});
+    nodes.push_back({3.0, 4.0});
 
     std::vector<meshkernel::Edge> edges;
-    edges.push_back({ 0, 1 });
-    edges.push_back({ 1, 3 });
-    edges.push_back({ 3, 0 });
-    edges.push_back({ 2, 1 });
-
+    edges.push_back({0, 1});
+    edges.push_back({1, 3});
+    edges.push_back({3, 0});
+    edges.push_back({2, 1});
 
     meshkernel::Mesh mesh;
     mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
@@ -352,24 +348,23 @@ TEST(Mesh, InsertNodeRtree)
 {
     //1 Setup
     std::vector<meshkernel::Point> nodes;
-    nodes.push_back({ 0.0, 0.0 });
-    nodes.push_back({ 5.0, 0.0 });
-    nodes.push_back({ 3.0, 2.0 });
-    nodes.push_back({ 3.0, 4.0 });
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({5.0, 0.0});
+    nodes.push_back({3.0, 2.0});
+    nodes.push_back({3.0, 4.0});
 
     std::vector<meshkernel::Edge> edges;
-    edges.push_back({ 0, 1 });
-    edges.push_back({ 1, 3 });
-    edges.push_back({ 3, 0 });
-    edges.push_back({ 2, 1 });
-
+    edges.push_back({0, 1});
+    edges.push_back({1, 3});
+    edges.push_back({3, 0});
+    edges.push_back({2, 1});
 
     meshkernel::Mesh mesh;
     mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
-    meshkernel::Point newPoint{ 10.0,10.0 };
+    meshkernel::Point newPoint{10.0, 10.0};
     int newNodeIndex;
-    mesh.InsertNode(newPoint, newNodeIndex,true);
+    mesh.InsertNode(newPoint, newNodeIndex, true);
 
     auto rtreeSize = mesh.m_nodesRTree.Size();
     ASSERT_EQ(5, rtreeSize);
@@ -389,7 +384,7 @@ TEST(Mesh, NodeMerging)
         for (int i = 0; i < n; ++i)
         {
             indexesValues[i][j] = i + j * n;
-            nodes[nodeIndex] = { (double)i, (double)j };
+            nodes[nodeIndex] = {(double)i, (double)j};
             nodeIndex++;
         }
     }
@@ -400,7 +395,7 @@ TEST(Mesh, NodeMerging)
     {
         for (int i = 0; i < n - 1; ++i)
         {
-            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
+            edges[edgeIndex] = {indexesValues[i][j], indexesValues[i + 1][j]};
             edgeIndex++;
         }
     }
@@ -409,7 +404,7 @@ TEST(Mesh, NodeMerging)
     {
         for (int i = 0; i < n; ++i)
         {
-            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
+            edges[edgeIndex] = {indexesValues[i][j + 1], indexesValues[i][j]};
             edgeIndex++;
         }
     }
@@ -418,28 +413,28 @@ TEST(Mesh, NodeMerging)
     mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
     // Add overlapping nodes
-    double generatingDistance = std::sqrt(std::pow(meshkernel::mergingDistance*0.9, 2) / 2.0);
-    std::uniform_real_distribution<double>  xDistrution(0.0, generatingDistance);
-    std::uniform_real_distribution<double>  yDistrution(0.0, generatingDistance);
-    std::random_device                      rand_dev;
-    std::mt19937                            generator(rand_dev());
-    
-    nodes.resize(mesh.GetNumNodes() *2);
+    double generatingDistance = std::sqrt(std::pow(meshkernel::mergingDistance * 0.9, 2) / 2.0);
+    std::uniform_real_distribution<double> xDistrution(0.0, generatingDistance);
+    std::uniform_real_distribution<double> yDistrution(0.0, generatingDistance);
+    std::random_device rand_dev;
+    std::mt19937 generator(rand_dev());
+
+    nodes.resize(mesh.GetNumNodes() * 2);
     edges.resize(mesh.GetNumEdges() + mesh.GetNumNodes() * 2);
     int originalNodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
         for (int i = 0; i < n; ++i)
         {
-            nodes[nodeIndex] = { i + xDistrution(generator), j + yDistrution(generator)};
-            
+            nodes[nodeIndex] = {i + xDistrution(generator), j + yDistrution(generator)};
+
             // add artificial edges
             auto edge = mesh.m_edges[mesh.m_nodesEdges[originalNodeIndex][0]];
             auto otherNode = edge.first + edge.second - originalNodeIndex;
 
-            edges[edgeIndex] = { nodeIndex, otherNode };
+            edges[edgeIndex] = {nodeIndex, otherNode};
             edgeIndex++;
-            edges[edgeIndex] = { nodeIndex, originalNodeIndex };
+            edges[edgeIndex] = {nodeIndex, originalNodeIndex};
             edgeIndex++;
 
             nodeIndex++;
@@ -458,8 +453,8 @@ TEST(Mesh, NodeMerging)
     mesh.MergeNodesInPolygon(polygon);
 
     // 3. Assert
-    ASSERT_EQ(mesh.GetNumNodes(), n*m);
-    ASSERT_EQ(mesh.GetNumEdges(), (n -1) * m + (m - 1) * n);
+    ASSERT_EQ(mesh.GetNumNodes(), n * m);
+    ASSERT_EQ(mesh.GetNumEdges(), (n - 1) * m + (m - 1) * n);
 }
 
 TEST(Mesh, MillionQuads)
@@ -475,7 +470,7 @@ TEST(Mesh, MillionQuads)
         for (int i = 0; i < n; ++i)
         {
             indexesValues[i][j] = i + j * n;
-            nodes[nodeIndex] = { (double)i, (double)j };
+            nodes[nodeIndex] = {(double)i, (double)j};
             nodeIndex++;
         }
     }
@@ -486,7 +481,7 @@ TEST(Mesh, MillionQuads)
     {
         for (int i = 0; i < n - 1; ++i)
         {
-            edges[edgeIndex] = { indexesValues[i][j], indexesValues[i + 1][j] };
+            edges[edgeIndex] = {indexesValues[i][j], indexesValues[i + 1][j]};
             edgeIndex++;
         }
     }
@@ -495,7 +490,7 @@ TEST(Mesh, MillionQuads)
     {
         for (int i = 0; i < n; ++i)
         {
-            edges[edgeIndex] = { indexesValues[i][j + 1], indexesValues[i][j] };
+            edges[edgeIndex] = {indexesValues[i][j + 1], indexesValues[i][j]};
             edgeIndex++;
         }
     }

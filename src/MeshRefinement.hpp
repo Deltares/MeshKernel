@@ -33,7 +33,7 @@
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
 
-namespace meshkernel 
+namespace meshkernel
 {
     // Forward declarations
     class Mesh;
@@ -49,7 +49,6 @@ namespace meshkernel
         };
 
     public:
-
         /// <summary>
         /// Constructor, pass a mesh reference
         /// </summary>
@@ -81,7 +80,6 @@ namespace meshkernel
                     const meshkernelapi::InterpolationParametersNative& interpolationParametersNative);
 
     private:
-
         /// <summary>
         /// Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh
         /// </summary>
@@ -123,7 +121,7 @@ namespace meshkernel
         bool ComputeEdgesRefinementMask();
 
         /// <summary>
-        /// Finds the hanging nodes in a face (find_hangingnodes) 
+        /// Finds the hanging nodes in a face (find_hangingnodes)
         /// </summary>
         /// <param name="faceIndex"></param>
         /// <param name="numHangingEdges"></param>
@@ -175,39 +173,38 @@ namespace meshkernel
         /// <param name="averagingMethod">The averaging method to used</param>
         /// <param name="centerOfMass">Tha face center of mass</param>
         /// <returns>The refinement value at the face center of mass</returns>
-        double ComputeFaceRefinementFromSamples( int numPolygonNodes, 
-                                                 const std::vector<Sample>& samples, 
-                                                 AveragingMethod averagingMethod, 
-                                                 Point centerOfMass );
+        double ComputeFaceRefinementFromSamples(int numPolygonNodes,
+                                                const std::vector<Sample>& samples,
+                                                AveragingMethod averagingMethod,
+                                                Point centerOfMass);
         /// The sample node RTree
-        SpatialTrees::RTree m_samplesRTree;              
+        SpatialTrees::RTree m_samplesRTree;
 
-        std::vector<int>    m_faceMask;                                  /// Refine face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
-        std::vector<int>    m_edgeMask;                                  /// If 0, edge is not splitted
-        std::vector<int>    m_brotherEdges;                              /// The index of the brother edge for each edge
+        std::vector<int> m_faceMask;     /// Refine face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
+        std::vector<int> m_edgeMask;     /// If 0, edge is not splitted
+        std::vector<int> m_brotherEdges; /// The index of the brother edge for each edge
 
         /// Local caches
-        std::vector<int>    m_refineEdgeCache;                           
-        std::vector<bool>   m_isHangingNodeCache;
-        std::vector<bool>   m_isHangingEdgeCache;
-        std::vector<Point>  m_polygonNodesCache;
-        std::vector<int>    m_localNodeIndicesCache;
-        std::vector<int>    m_edgeIndicesCache;
+        std::vector<int> m_refineEdgeCache;
+        std::vector<bool> m_isHangingNodeCache;
+        std::vector<bool> m_isHangingEdgeCache;
+        std::vector<Point> m_polygonNodesCache;
+        std::vector<int> m_localNodeIndicesCache;
+        std::vector<int> m_edgeIndicesCache;
         std::vector<double> m_polygonEdgesLengthsCache;
 
-        
-        std::vector<bool>   m_subtractedSample;                          /// Is the sample value subtracted (e.g. in refinement by levels)
-       
-        double              m_deltaTimeMaxCourant = 0.0;
-        double              m_minimumFaceSize = 5e4;
-        bool                m_directionalRefinement = false;
-        bool                m_refineOutsideFace = false;
-        bool                m_connectHangingNodes = true;
-        bool                m_refineIntersectedFaces = false;
-        int                 m_maxNumberOfRefinementIterations = 10;
+        std::vector<bool> m_subtractedSample; /// Is the sample value subtracted (e.g. in refinement by levels)
 
-        RefinementType      m_refinementType;                            /// The type of refinement to use
+        double m_deltaTimeMaxCourant = 0.0;
+        double m_minimumFaceSize = 5e4;
+        bool m_directionalRefinement = false;
+        bool m_refineOutsideFace = false;
+        bool m_connectHangingNodes = true;
+        bool m_refineIntersectedFaces = false;
+        int m_maxNumberOfRefinementIterations = 10;
+
+        RefinementType m_refinementType; /// The type of refinement to use
 
         std::shared_ptr<Mesh> m_mesh;
     };
-}
+} // namespace meshkernel

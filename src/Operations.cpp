@@ -37,20 +37,19 @@
 namespace meshkernel
 {
     // coordinate reference independent operations
-    template<typename T>
+    template <typename T>
     T DotProduct(const T& dx1, const T& dx2)
     {
         return dx1 * dx2;
     }
 
-    template<typename T, typename... Args>
+    template <typename T, typename... Args>
     T DotProduct(const T& dx1, const T& dx2, Args&... args)
     {
         return dx1 * dx2 + DotProduct(args...);
     }
 
-
-    template<typename T>
+    template <typename T>
     bool ResizeVectorIfNeeded(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
     {
         const int currentSize = int(vectorToResize.size());
@@ -62,7 +61,7 @@ namespace meshkernel
         return true;
     }
 
-    template<typename T>
+    template <typename T>
     bool ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
     {
         const int currentSize = int(vectorToResize.size());
@@ -89,13 +88,13 @@ namespace meshkernel
         return index;
     }
 
-    static int FindIndexes( const std::vector<Point>& vec, 
-                            const size_t start, 
-                            const size_t end,
-                            const double& separator, 
-                            std::vector<std::vector<size_t>>& indexes )
+    static int FindIndexes(const std::vector<Point>& vec,
+                           const size_t start,
+                           const size_t end,
+                           const double& separator,
+                           std::vector<std::vector<size_t>>& indexes)
     {
-        if (vec.empty()) 
+        if (vec.empty())
         {
             return 0;
         }
@@ -110,7 +109,6 @@ namespace meshkernel
         if (start > vec.size() || end > vec.size() || indexes.size() == 0)
         {
             return -1;
-
         }
 
         int pos = 0;
@@ -146,12 +144,12 @@ namespace meshkernel
     {
         std::vector<int> idx(v.size());
         iota(idx.begin(), idx.end(), 0);
-        std::stable_sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) {return v[i1] < v[i2]; });
+        std::stable_sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) { return v[i1] < v[i2]; });
         return idx;
     }
 
     //chmike's algorithm
-    template< class T >
+    template <class T>
     void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
     {
         std::vector<T> ordered(v.size());
@@ -162,7 +160,7 @@ namespace meshkernel
         v = ordered;
     }
 
-    template<typename T>
+    template <typename T>
     bool MakeMonothonic(std::vector<T>& v)
     {
 
@@ -201,7 +199,6 @@ namespace meshkernel
         }
     }
 
-
     // algorithm performing the zero's search using the golden section algorithm's
     template <typename F>
     double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
@@ -228,7 +225,7 @@ namespace meshkernel
         double f1 = func(x1);
         double f2 = func(x2);
 
-        while (std::abs(x3 - x0) > tolerance* std::max(std::abs(x1) + std::abs(x2), 1e-8))
+        while (std::abs(x3 - x0) > tolerance * std::max(std::abs(x1) + std::abs(x2), 1e-8))
         {
             if (f2 < f1)
             {
@@ -320,14 +317,12 @@ namespace meshkernel
                 {
                     --windingNumber; // have  a valid down intersect
                 }
-
             }
         }
         return windingNumber == 0 ? false : true;
     }
 
-
-    static bool ComputeThreeBaseComponents(const Point& point, double(&exxp)[3], double(&eyyp)[3], double(&ezzp)[3])
+    static bool ComputeThreeBaseComponents(const Point& point, double (&exxp)[3], double (&eyyp)[3], double (&ezzp)[3])
     {
         double phi0 = point.y * degrad_hp;
         double lambda0 = point.x * degrad_hp;
@@ -347,8 +342,7 @@ namespace meshkernel
         return true;
     };
 
-
-    static bool ComputeTwoBaseComponents(const Point& point, double(&elambda)[3], double(&ephi)[3])
+    static bool ComputeTwoBaseComponents(const Point& point, double (&elambda)[3], double (&ephi)[3])
     {
         double phi0 = point.y * degrad_hp;
         double lambda0 = point.x * degrad_hp;
@@ -378,8 +372,8 @@ namespace meshkernel
         }
         if (projection == Projections::spherical || projection == Projections::sphericalAccurate)
         {
-            bool  isFirstPointOnPole = IsPointOnPole(firstPoint);
-            bool  isSecondPointOnPole = IsPointOnPole(secondPoint);
+            bool isFirstPointOnPole = IsPointOnPole(firstPoint);
+            bool isSecondPointOnPole = IsPointOnPole(secondPoint);
             if (isFirstPointOnPole && !isSecondPointOnPole || !isFirstPointOnPole && isSecondPointOnPole)
             {
                 return 0.0;
@@ -409,7 +403,7 @@ namespace meshkernel
     static double GetDy(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
         double delta = secondPoint.y - firstPoint.y;
-        if (std::abs(delta)<= nearlyZero)
+        if (std::abs(delta) <= nearlyZero)
         {
             return 0.0;
         }
@@ -430,7 +424,7 @@ namespace meshkernel
 
     ///dprodout: out product of two segments
     static double OuterProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment,
-        const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
+                                          const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
         if (projection == Projections::sphericalAccurate)
         {
@@ -451,7 +445,6 @@ namespace meshkernel
             auto xx3 = firstPointSecondSegmentCartesian.x;
             auto yy3 = firstPointSecondSegmentCartesian.y;
             auto zz3 = firstPointSecondSegmentCartesian.z;
-
 
             Cartesian3DPoint secondPointSecondSegmentCartesian;
             SphericalToCartesian(secondPointSecondSegment, secondPointSecondSegmentCartesian);
@@ -493,7 +486,7 @@ namespace meshkernel
     {
         result.x = doubleMissingValue;
         result.y = doubleMissingValue;
-        if (!firstPoint.IsValid() || !secondPoint.IsValid()) 
+        if (!firstPoint.IsValid() || !secondPoint.IsValid())
         {
             return;
         }
@@ -501,10 +494,10 @@ namespace meshkernel
         {
             Cartesian3DPoint firstPointCartesianCoordinates{doubleMissingValue, doubleMissingValue};
             SphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
-            Cartesian3DPoint secondPointCartesianCoordinates{ doubleMissingValue, doubleMissingValue };
+            Cartesian3DPoint secondPointCartesianCoordinates{doubleMissingValue, doubleMissingValue};
             SphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
 
-            Cartesian3DPoint middleCartesianPointCoordinate{ doubleMissingValue, doubleMissingValue };
+            Cartesian3DPoint middleCartesianPointCoordinate{doubleMissingValue, doubleMissingValue};
             middleCartesianPointCoordinate.x = 0.5 * (firstPointCartesianCoordinates.x + secondPointCartesianCoordinates.x);
             middleCartesianPointCoordinate.y = 0.5 * (firstPointCartesianCoordinates.y + secondPointCartesianCoordinates.y);
             double referenceLongitude = std::max(firstPoint.x, secondPoint.x);
@@ -516,9 +509,8 @@ namespace meshkernel
         if (projection == Projections::cartesian || projection == Projections::spherical)
         {
             result = (firstPoint + secondPoint) * 0.5;
-        }  
+        }
     }
-
 
     static bool ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projections& projection, Point& centre)
     {
@@ -561,7 +553,7 @@ namespace meshkernel
 
     ///normalin, Normalized vector in direction 1 -> 2, in the orientation of (xu,yu)
     static void NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, const Projections& projection)
-    {  
+    {
         if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointCartesianCoordinates;
@@ -574,12 +566,12 @@ namespace meshkernel
             ComputeTwoBaseComponents(insidePoint, elambda, ephi);
 
             double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
-                (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
-                (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
+                        (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
+                        (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
 
             double dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
-                (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
-                (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
+                        (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
+                        (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
 
             double squaredDistance = dx * dx + dy * dy;
             if (squaredDistance > 0.0)
@@ -605,7 +597,7 @@ namespace meshkernel
         }
     }
 
-    //spher2locvec, transforms vector with componentis in global spherical coordinate directions(xglob, yglob) 
+    //spher2locvec, transforms vector with componentis in global spherical coordinate directions(xglob, yglob)
     ///to local coordinate directions(xloc, yloc) around reference point(xref, yref)
     static bool TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, Projections projection, Point& localComponents)
     {
@@ -625,7 +617,7 @@ namespace meshkernel
             globalCoordinatesCartesianRotated.x = exxp[0] * globalCoordinatesCartesian.x + exxp[1] * globalCoordinatesCartesian.y + exxp[2] * globalCoordinatesCartesian.z;
             globalCoordinatesCartesianRotated.y = eyyp[0] * globalCoordinatesCartesian.x + eyyp[1] * globalCoordinatesCartesian.y + eyyp[2] * globalCoordinatesCartesian.z;
             globalCoordinatesCartesianRotated.z = ezzp[0] * globalCoordinatesCartesian.x + ezzp[1] * globalCoordinatesCartesian.y + ezzp[2] * globalCoordinatesCartesian.z;
-           
+
             // Compute global base vectors at other point in 3D(xx, yy, zz) frame
             double elambda[3];
             double ephi[3];
@@ -650,7 +642,7 @@ namespace meshkernel
             elambdaloc[1] = exxp[1] * elambdap[0] + eyyp[1] * elambdap[1] + ezzp[1] * elambda[2];
             elambdaloc[2] = exxp[2] * elambdap[0] + eyyp[2] * elambdap[1] + ezzp[2] * elambda[2];
 
-            double  ephiloc[3];
+            double ephiloc[3];
             ephiloc[0] = exxp[0] * ephip[0] + eyyp[0] * ephip[1] + ezzp[0] * ephip[2];
             ephiloc[1] = exxp[1] * ephip[0] + eyyp[1] * ephip[1] + ezzp[1] * ephip[2];
             ephiloc[2] = exxp[2] * ephip[0] + eyyp[2] * ephip[1] + ezzp[2] * ephip[2];
@@ -667,10 +659,9 @@ namespace meshkernel
         {
             localComponents = globalComponents;
         }
-        
+
         return true;
     }
-
 
     ///normalout
     static void NormalVectorOutside(const Point& firstPoint, const Point& secondPoint, Point& result, const Projections& projection)
@@ -694,12 +685,12 @@ namespace meshkernel
 
             // project vector in local base
             double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
-                (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
-                (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
+                        (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
+                        (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
 
             double dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
-                (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
-                (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
+                        (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
+                        (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
 
             const double squaredDistance = dx * dx + dy * dy;
             if (squaredDistance > 0.0)
@@ -754,7 +745,7 @@ namespace meshkernel
             Point middle;
             MiddlePoint(firstPoint, secondPoint, middle, projection);
             Point localComponents;
-            TransformGlobalVectorToLocal(firstPoint, middle, normal, projection,localComponents);
+            TransformGlobalVectorToLocal(firstPoint, middle, normal, projection, localComponents);
             double elambda[3];
             double ephi[3];
             ComputeTwoBaseComponents(firstPoint, elambda, ephi);
@@ -765,7 +756,7 @@ namespace meshkernel
 
             Cartesian3DPoint firstPointCartesian;
             SphericalToCartesian(firstPoint, firstPointCartesian);
-            
+
             Cartesian3DPoint rotatedPoint;
             double alpha = 0.0;
             rotatedPoint.x = firstPointCartesian.x + alpha * vxx;
@@ -841,20 +832,20 @@ namespace meshkernel
     static double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
 
-        if (!firstPoint.IsValid() || !secondPoint.IsValid()) 
+        if (!firstPoint.IsValid() || !secondPoint.IsValid())
         {
             return 0.0;
         }
 
         if (projection == Projections::sphericalAccurate)
         {
-            Cartesian3DPoint firstPointCartesian{ doubleMissingValue, doubleMissingValue };
+            Cartesian3DPoint firstPointCartesian{doubleMissingValue, doubleMissingValue};
             SphericalToCartesian(firstPoint, firstPointCartesian);
             auto xx1 = firstPointCartesian.x;
             auto yy1 = firstPointCartesian.y;
             auto zz1 = firstPointCartesian.z;
 
-            Cartesian3DPoint secondPointCartesian{ doubleMissingValue, doubleMissingValue };
+            Cartesian3DPoint secondPointCartesian{doubleMissingValue, doubleMissingValue};
             SphericalToCartesian(secondPoint, secondPointCartesian);
             auto xx2 = secondPointCartesian.x;
             auto yy2 = secondPointCartesian.y;
@@ -897,7 +888,8 @@ namespace meshkernel
             if (squaredDistance != 0.0)
             {
                 ratio = (GetDx(firstNode, point, projection) * GetDx(firstNode, secondNode, projection) +
-                         GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) / squaredDistance;
+                         GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) /
+                        squaredDistance;
                 double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
                 normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
                 normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
@@ -952,10 +944,10 @@ namespace meshkernel
                 cartesianNormal3DPoint.z = cartesianNormal3DPoint.z - zz3;
 
                 double dis = std::sqrt(cartesianNormal3DPoint.x * cartesianNormal3DPoint.x +
-                    cartesianNormal3DPoint.y * cartesianNormal3DPoint.y +
-                    cartesianNormal3DPoint.z * cartesianNormal3DPoint.z);
+                                       cartesianNormal3DPoint.y * cartesianNormal3DPoint.y +
+                                       cartesianNormal3DPoint.z * cartesianNormal3DPoint.z);
 
-                double referenceLongitude = std::max({ firstNode.x, secondNode.x,point.x });
+                double referenceLongitude = std::max({firstNode.x, secondNode.x, point.x});
                 CartesianToSpherical(cartesianNormal3DPoint, referenceLongitude, normalPoint);
 
                 return dis;
@@ -1016,19 +1008,19 @@ namespace meshkernel
             auto xx1 = firstPointFirstSegmentCartesian.x;
             auto yy1 = firstPointFirstSegmentCartesian.y;
             auto zz1 = firstPointFirstSegmentCartesian.z;
-            
+
             Cartesian3DPoint secondPointFirstSegmentCartesian;
             SphericalToCartesian(secondPointFirstSegment, secondPointFirstSegmentCartesian);
             auto xx2 = secondPointFirstSegmentCartesian.x;
             auto yy2 = secondPointFirstSegmentCartesian.y;
             auto zz2 = secondPointFirstSegmentCartesian.z;
-            
+
             Cartesian3DPoint firstPointSecondSegmentCartesian;
             SphericalToCartesian(firstPointSecondSegment, firstPointSecondSegmentCartesian);
             auto xx3 = firstPointSecondSegmentCartesian.x;
             auto yy3 = firstPointSecondSegmentCartesian.y;
             auto zz3 = firstPointSecondSegmentCartesian.z;
-            
+
             Cartesian3DPoint secondPointSecondSegmentCartesian;
             SphericalToCartesian(secondPointSecondSegment, secondPointSecondSegmentCartesian);
             auto xx4 = secondPointSecondSegmentCartesian.x;
@@ -1056,7 +1048,7 @@ namespace meshkernel
             }
             return cosphi;
         }
-        
+
         // cartesian and spherical
         if (projection == Projections::cartesian || projection == Projections::spherical)
         {
@@ -1072,7 +1064,7 @@ namespace meshkernel
             double cosphi;
             if (r1 <= 0.0 || r2 <= 0.0)
             {
-                 return doubleMissingValue;
+                return doubleMissingValue;
             }
 
             cosphi = (dx1 * dx2 + dy1 * dy2) / std::sqrt(r1 * r2);
@@ -1146,7 +1138,7 @@ namespace meshkernel
 
         auto const det = x43 * y21 - y43 * x21;
 
-        std::vector<double> values{ x21, y21, x43, y43 };
+        std::vector<double> values{x21, y21, x43, y43};
         double eps = std::max(0.00001 * (*std::max_element(values.begin(), values.end())), std::numeric_limits<double>::denorm_min());
 
         if (std::abs(det) < eps)
@@ -1183,7 +1175,7 @@ namespace meshkernel
         double minY;
         ReferencePoint(polygon, numberOfPolygonPoints, minX, minY, projection);
 
-        Point reference{ minX, minY };
+        Point reference{minX, minY};
         area = 0.0;
         double xCenterOfMass = 0.0;
         double yCenterOfMass = 0.0;
@@ -1228,14 +1220,14 @@ namespace meshkernel
         return true;
     }
 
-    static bool Averaging( const std::vector<Sample>& samples,
-                           int numPolygonNodes,
-                           const std::vector<Point>& polygon,
-                           const Point centerOfMass,
-                           const Projections& projection,
-                           SpatialTrees::RTree& rtree,
-                           int averagingMethod,
-                           double& result )
+    static bool Averaging(const std::vector<Sample>& samples,
+                          int numPolygonNodes,
+                          const std::vector<Point>& polygon,
+                          const Point centerOfMass,
+                          const Projections& projection,
+                          SpatialTrees::RTree& rtree,
+                          int averagingMethod,
+                          double& result)
     {
         std::vector<Point> searchPolygon(numPolygonNodes);
 
@@ -1245,7 +1237,7 @@ namespace meshkernel
         double maxx = std::numeric_limits<double>::min();
         double miny = std::numeric_limits<double>::max();
         double maxy = std::numeric_limits<double>::min();
-    
+
         for (int i = 0; i < numPolygonNodes; i++)
         {
             searchPolygon[i] = polygon[i] * relativeFaceSearchSize + centerOfMass * (1 - relativeFaceSearchSize);
@@ -1283,7 +1275,7 @@ namespace meshkernel
         {
             return true;
         }
- 
+
         rtree.NearestNeighboursOnSquaredDistance(centerOfMass, searchRadiusSquared);
         if (rtree.GetQueryResultSize() == 0)
         {
@@ -1293,7 +1285,7 @@ namespace meshkernel
         int numValidSamplesInPolygon = 0;
         double wall = 0;
         bool firstValidSampleFound = false;
-        
+
         for (int i = 0; i < rtree.GetQueryResultSize(); i++)
         {
             //do stuff based on the averaging method
@@ -1304,7 +1296,7 @@ namespace meshkernel
                 continue;
             }
 
-            Point samplePoint{ samples[sampleIndex].x, samples[sampleIndex].y };
+            Point samplePoint{samples[sampleIndex].x, samples[sampleIndex].y};
             // assume here polygon has a size equal to numPolygonNodes + 1
             bool isInPolygon = IsPointInPolygonNodes(samplePoint, polygon, 0, numPolygonNodes);
             if (isInPolygon)
@@ -1350,7 +1342,7 @@ namespace meshkernel
 
         if (averagingMethod == SimpleAveraging && numValidSamplesInPolygon > 0)
         {
-            if (result > doubleMissingValue) 
+            if (result > doubleMissingValue)
             {
                 result /= numValidSamplesInPolygon;
             }
@@ -1362,7 +1354,6 @@ namespace meshkernel
             result /= wall;
             return true;
         }
-
 
         return true;
     }
@@ -1387,11 +1378,11 @@ namespace meshkernel
         return index;
     }
 
-    template<typename T> 
-    bool InterpolateSplinePoint( const std::vector<T>& coordinates,
-                            const std::vector<T>& coordinatesDerivatives,
-                            double pointAdimensionalCoordinate,
-                            T& pointCoordinate)
+    template <typename T>
+    bool InterpolateSplinePoint(const std::vector<T>& coordinates,
+                                const std::vector<T>& coordinatesDerivatives,
+                                double pointAdimensionalCoordinate,
+                                T& pointCoordinate)
     {
         if (pointAdimensionalCoordinate < 0)
         {
@@ -1413,12 +1404,12 @@ namespace meshkernel
         double b = pointAdimensionalCoordinate - low;
 
         pointCoordinate = coordinates[low] * a + coordinates[high] * b +
-            (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;
+                          (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;
 
         return true;
     }
 
-    template<class T>
+    template <class T>
     static void SwapVectorElements(std::vector<T>& v, int numElements)
     {
         if (numElements > v.size())
@@ -1434,7 +1425,7 @@ namespace meshkernel
         }
     }
 
-    static bool ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, Projections projection, std::vector<double>& result, double& totalDistance) 
+    static bool ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, Projections projection, std::vector<double>& result, double& totalDistance)
     {
         result[0] = 0;
         for (int i = 1; i < v.size(); i++)
@@ -1453,16 +1444,16 @@ namespace meshkernel
     }
 
     // get the sign
-    template <typename T> 
-    static int sgn(T val) 
+    template <typename T>
+    static int sgn(T val)
     {
-        return (T(0) < val ? 1 : 0) - (val < T(0) ? 1: 0);
+        return (T(0) < val ? 1 : 0) - (val < T(0) ? 1 : 0);
     }
 
     //(DUITPL)
     static int TwoSegmentsSign(const Point& p1, const Point& p2, const Point& p3, const Point& p4, Projections projection)
     {
-        
+
         auto dx1 = GetDx(p1, p2, projection);
         auto dy1 = GetDy(p1, p2, projection);
         auto dx2 = GetDx(p3, p4, projection);
@@ -1554,10 +1545,10 @@ namespace meshkernel
             {
 
                 result[i][j].x = (sideOne[j].x * (1.0 - iWeightFactor[i][j]) + sideTwo[j].x * iWeightFactor[i][j]) * weightOne[i][j] +
-                    (sideThree[i].x * (1.0 - jWeightFactor[i][j]) + sideFour[i].x * jWeightFactor[i][j]) * weightTwo[i][j];
+                                 (sideThree[i].x * (1.0 - jWeightFactor[i][j]) + sideFour[i].x * jWeightFactor[i][j]) * weightTwo[i][j];
 
                 result[i][j].y = (sideOne[j].y * (1.0 - iWeightFactor[i][j]) + sideTwo[j].y * iWeightFactor[i][j]) * weightOne[i][j] +
-                    (sideThree[i].y * (1.0 - jWeightFactor[i][j]) + sideFour[i].y * jWeightFactor[i][j]) * weightTwo[i][j];
+                                 (sideThree[i].y * (1.0 - jWeightFactor[i][j]) + sideFour[i].y * jWeightFactor[i][j]) * weightTwo[i][j];
             }
         }
 
@@ -1567,9 +1558,9 @@ namespace meshkernel
             for (int j = 0; j < numNPoints; j++)
             {
                 weightOne[i][j] = (1.0 - jWeightFactor[i][j]) * sideThreeAdimensional[i] * totalLengthThree +
-                    jWeightFactor[i][j] * sideFourAdimensional[i] * totalLengthFour;
+                                  jWeightFactor[i][j] * sideFourAdimensional[i] * totalLengthFour;
                 weightTwo[i][j] = (1.0 - iWeightFactor[i][j]) * sideOneAdimensional[j] * totalLengthOne +
-                    iWeightFactor[i][j] * sideTwoAdimensional[j] * totalLengthTwo;
+                                  iWeightFactor[i][j] * sideTwoAdimensional[j] * totalLengthTwo;
             }
         }
 
@@ -1597,7 +1588,6 @@ namespace meshkernel
             }
         }
 
-
         for (int i = 1; i < numMPoints - 1; i++)
         {
             for (int j = 1; j < numNPoints; j++)
@@ -1620,7 +1610,6 @@ namespace meshkernel
                 }
             }
 
-
             for (int i = 1; i < numM; i++)
             {
                 for (int j = 1; j < numN; j++)
@@ -1629,10 +1618,10 @@ namespace meshkernel
                     const double wa = 1.0 / (weightOne[i][j] + weightOne[i + 1][j] + weightTwo[i][j] + weightTwo[i][j + 1]);
 
                     result[i][j].x = wa * (weightThree[i - 1][j] * weightOne[i][j] + weightThree[i + 1][j] * weightOne[i + 1][j] +
-                        weightThree[i][j - 1] * weightTwo[i][j] + weightThree[i][j + 1] * weightTwo[i][j + 1]);
+                                           weightThree[i][j - 1] * weightTwo[i][j] + weightThree[i][j + 1] * weightTwo[i][j + 1]);
 
                     result[i][j].y = wa * (weightFour[i - 1][j] * weightOne[i][j] + weightFour[i + 1][j] * weightOne[i + 1][j] +
-                        weightFour[i][j - 1] * weightTwo[i][j] + weightFour[i][j + 1] * weightTwo[i][j + 1]);
+                                           weightFour[i][j - 1] * weightTwo[i][j] + weightFour[i][j + 1] * weightTwo[i][j + 1]);
                 }
             }
         }
@@ -1640,4 +1629,4 @@ namespace meshkernel
         return true;
     }
 
-}
+} // namespace meshkernel

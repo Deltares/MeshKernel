@@ -49,7 +49,6 @@ namespace meshkernel
     {
 
     public:
-
         /// <summary>
         /// Set the parameters
         /// </summary>
@@ -63,19 +62,18 @@ namespace meshkernel
         /// <param name="polygon">The polygon where orthogonalization should occour</param>
         /// <param name="landBoundaries">The land boundaries</param>
         /// <returns>If the method succeeded</returns>
-        OrthogonalizationAndSmoothing( std::shared_ptr<Mesh> mesh,
-                                       std::shared_ptr<Smoother> smoother,
-                                       std::shared_ptr<Orthogonalizer> orthogonalizer,
-                                       std::shared_ptr<Polygons> polygon,
-                                       std::shared_ptr<LandBoundaries> landBoundaries,
-                                       int isTriangulationRequired,
-                                       int isAccountingForLandBoundariesRequired,
-                                       int projectToLandBoundaryOption,
-                                       const meshkernelapi::OrthogonalizationParametersNative& orthogonalizationParametersNative );
+        OrthogonalizationAndSmoothing(std::shared_ptr<Mesh> mesh,
+                                      std::shared_ptr<Smoother> smoother,
+                                      std::shared_ptr<Orthogonalizer> orthogonalizer,
+                                      std::shared_ptr<Polygons> polygon,
+                                      std::shared_ptr<LandBoundaries> landBoundaries,
+                                      int isTriangulationRequired,
+                                      int isAccountingForLandBoundariesRequired,
+                                      int projectToLandBoundaryOption,
+                                      const meshkernelapi::OrthogonalizationParametersNative& orthogonalizationParametersNative);
 
-        
         bool Initialize();
-        
+
         /// <summary>
         /// Executes the entire algorithm
         /// </summary>
@@ -102,7 +100,6 @@ namespace meshkernel
         bool FinalizeOuterIteration();
 
     private:
-
         /// <summary>
         /// Project mesh nodes back to the original mesh boundary (orthonet_project_on_boundary)
         /// </summary>
@@ -125,8 +122,8 @@ namespace meshkernel
         /// <param name="increments">The sum of the weights in x and y</param>
         /// <returns></returns>
         bool ComputeLocalIncrements(int nodeIndex,
-                                    double& dx0, 
-                                    double& dy0, 
+                                    double& dx0,
+                                    double& dy0,
                                     double* weightsSum);
 
         /// <summary>
@@ -157,38 +154,37 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool ComputeCoordinates() const;
 
-        std::shared_ptr<LandBoundaries>                    m_landBoundaries;            // The land boundaries
-        std::shared_ptr<Polygons>                          m_polygons;                  // The polygon where to perform the orthogonalization
-        std::shared_ptr<Smoother>                          m_smoother;                  // A pointer to the smoother
-        std::shared_ptr<Orthogonalizer>                    m_orthogonalizer;            // A pointer to the orthogonalizer
-        std::shared_ptr<Mesh>                              m_mesh;                      // A pointer to mesh
-        
-        std::vector<int>                                   m_localCoordinatesIndexes;   // Used in sphericalAccurate projection (iloc)
-        std::vector<Point>                                 m_localCoordinates;          // Used in sphericalAccurate projection (xloc,yloc) 
-        std::vector<Point>                                 m_orthogonalCoordinates;     // A copy of the mesh node, orthogonalized
-        std::vector<Point>                                 m_originalNodes;             // The original mesh
+        std::shared_ptr<LandBoundaries> m_landBoundaries; // The land boundaries
+        std::shared_ptr<Polygons> m_polygons;             // The polygon where to perform the orthogonalization
+        std::shared_ptr<Smoother> m_smoother;             // A pointer to the smoother
+        std::shared_ptr<Orthogonalizer> m_orthogonalizer; // A pointer to the orthogonalizer
+        std::shared_ptr<Mesh> m_mesh;                     // A pointer to mesh
+
+        std::vector<int> m_localCoordinatesIndexes; // Used in sphericalAccurate projection (iloc)
+        std::vector<Point> m_localCoordinates;      // Used in sphericalAccurate projection (xloc,yloc)
+        std::vector<Point> m_orthogonalCoordinates; // A copy of the mesh node, orthogonalized
+        std::vector<Point> m_originalNodes;         // The original mesh
 
         // Linear system terms
         int m_nodeCacheSize = 0;
-        std::vector<int>                                   m_compressedEndNodeIndex;    // Start index in m_compressedWeightX
-        std::vector<int>                                   m_compressedStartNodeIndex;  // End index in m_compressedWeightY
-        std::vector<double>                                m_compressedWeightX;         // The computed weights X
-        std::vector<double>                                m_compressedWeightY;         // The computed weights Y
-        std::vector<double>                                m_compressedRhs;             // The right hand side
-        std::vector<int>                                   m_compressedNodesNodes;      // The indices of the neighbouring nodes 
-        std::vector<int>                                   m_nodeErrorCode;             // nodes with errors
+        std::vector<int> m_compressedEndNodeIndex;   // Start index in m_compressedWeightX
+        std::vector<int> m_compressedStartNodeIndex; // End index in m_compressedWeightY
+        std::vector<double> m_compressedWeightX;     // The computed weights X
+        std::vector<double> m_compressedWeightY;     // The computed weights Y
+        std::vector<double> m_compressedRhs;         // The right hand side
+        std::vector<int> m_compressedNodesNodes;     // The indices of the neighbouring nodes
+        std::vector<int> m_nodeErrorCode;            // nodes with errors
 
-        // run-time parameters 
+        // run-time parameters
         double m_mumax;
         double m_mu;
-        bool m_keepCircumcentersAndMassCenters = false;                          
-        double m_orthogonalizationToSmoothingFactor = 0.975;                            // Factor between grid smoothing (0) and orthogonality (1)
-        double m_orthogonalizationToSmoothingFactorBoundary = 1.0;                      // ATPF_B minimum ATPF on the boundary
-        double m_smoothorarea = 1.0;                                                    // Factor between smoother(1.0) and area - homogenizer(0.0)
+        bool m_keepCircumcentersAndMassCenters = false;
+        double m_orthogonalizationToSmoothingFactor = 0.975;       // Factor between grid smoothing (0) and orthogonality (1)
+        double m_orthogonalizationToSmoothingFactorBoundary = 1.0; // ATPF_B minimum ATPF on the boundary
+        double m_smoothorarea = 1.0;                               // Factor between smoother(1.0) and area - homogenizer(0.0)
         int m_orthogonalizationOuterIterations = 2;
         int m_orthogonalizationBoundaryIterations = 25;
         int m_orthogonalizationInnerIterations = 25;
         int m_projectToLandBoundaryOption;
-
     };
-}
+} // namespace meshkernel

@@ -39,14 +39,13 @@ namespace meshkernel
     {
 
     public:
-
         /// <summary>
         /// Mesh ctor
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
         explicit Smoother(std::shared_ptr<Mesh> mesh);
-        
+
         /// <summary>
         /// Computes the smoother weights
         /// </summary>
@@ -96,14 +95,14 @@ namespace meshkernel
         bool Initialize();
 
         /// <summary>
-        /// Computes all topologies of the elliptic smoother 
+        /// Computes all topologies of the elliptic smoother
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
         bool ComputeTopologies();
 
         /// <summary>
-        /// Computes all operators of the elliptic smoother 
+        /// Computes all operators of the elliptic smoother
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -139,9 +138,9 @@ namespace meshkernel
         /// <param name="numSharedFaces"></param>
         /// <param name="numConnectedNodes"></param>
         /// <returns></returns>
-        bool NodeAdministration( const int currentNode,
-                                 int& numSharedFaces,
-                                 int& numConnectedNodes);
+        bool NodeAdministration(const int currentNode,
+                                int& numSharedFaces,
+                                int& numConnectedNodes);
 
         /// <summary>
         /// Compute compute current node xi and eta (orthonet_assign_xieta)
@@ -151,8 +150,8 @@ namespace meshkernel
         /// <param name="numSharedFaces"></param>
         /// <param name="numConnectedNodes"></param>
         /// <returns></returns>
-        bool ComputeNodeXiEta(int currentNode, 
-                              const int& numSharedFaces, 
+        bool ComputeNodeXiEta(int currentNode,
+                              const int& numSharedFaces,
                               const int& numConnectedNodes);
 
         /// <summary>
@@ -163,9 +162,9 @@ namespace meshkernel
         /// <param name="theta2"></param>
         /// <param name="isBoundaryEdge"></param>
         /// <returns></returns>
-        double OptimalEdgeAngle(int numFaceNodes, 
-                                double theta1 = -1.0, 
-                                double theta2 = -1.0, 
+        double OptimalEdgeAngle(int numFaceNodes,
+                                double theta1 = -1.0,
+                                double theta2 = -1.0,
                                 bool isBoundaryEdge = false) const;
 
         /// <summary>
@@ -182,10 +181,9 @@ namespace meshkernel
         /// <param name="numSharedFaces"></param>
         /// <param name="numConnectedNodes"></param>
         /// <returns></returns>
-        bool SaveNodeTopologyIfNeeded(int currentNode, 
-                                      int numSharedFaces, 
+        bool SaveNodeTopologyIfNeeded(int currentNode,
+                                      int numSharedFaces,
                                       int numConnectedNodes);
-
 
         /// <summary>
         /// Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
@@ -206,61 +204,60 @@ namespace meshkernel
                           const std::vector<double>& y,
                           const std::vector<double>& matCoefficents) const;
 
-
         // The mesh to smooth
         std::shared_ptr<Mesh> m_mesh;
-        
+
         // Smoother weights
-        std::vector<std::vector<double>>                   m_weights;
+        std::vector<std::vector<double>> m_weights;
 
         // Smoother operators
-        std::vector<std::vector<std::vector<double>>>      m_Gxi;                    // Node to edge xi derivative
-        std::vector<std::vector<std::vector<double>>>      m_Geta;                   // Node to edge etha derivative
-        std::vector<std::vector<double>>                   m_Divxi;                  // Edge to node xi derivative
-        std::vector<std::vector<double>>                   m_Diveta;                 // Edge to node etha derivative
-        std::vector<std::vector<std::vector<double>>>      m_Az;                     // Coefficents to estimate values at cell circumcenters                                                                         
-        std::vector<std::vector<double>>                   m_Jxi;                    // Node to node xi derivative (Jacobian)
-        std::vector<std::vector<double>>                   m_Jeta;                   // Node to node eta derivative (Jacobian)
-        std::vector<std::vector<double>>                   m_ww2;                    // weights
-           
+        std::vector<std::vector<std::vector<double>>> m_Gxi;  // Node to edge xi derivative
+        std::vector<std::vector<std::vector<double>>> m_Geta; // Node to edge etha derivative
+        std::vector<std::vector<double>> m_Divxi;             // Edge to node xi derivative
+        std::vector<std::vector<double>> m_Diveta;            // Edge to node etha derivative
+        std::vector<std::vector<std::vector<double>>> m_Az;   // Coefficents to estimate values at cell circumcenters
+        std::vector<std::vector<double>> m_Jxi;               // Node to node xi derivative (Jacobian)
+        std::vector<std::vector<double>> m_Jeta;              // Node to node eta derivative (Jacobian)
+        std::vector<std::vector<double>> m_ww2;               // weights
+
         // Smoother local caches
-        std::vector<int>                                   m_sharedFacesCache;
-        std::vector<std::size_t>                           m_connectedNodesCache;
-        std::vector<std::vector<std::size_t>>              m_faceNodeMappingCache;
-        std::vector<double>                                m_xiCache;
-        std::vector<double>                                m_etaCache;
-        std::vector<int>                                   m_boundaryEdgesCache;
-        std::vector<double>                                m_leftXFaceCenterCache;
-        std::vector<double>                                m_leftYFaceCenterCache;
-        std::vector<double>                                m_rightXFaceCenterCache;
-        std::vector<double>                                m_rightYFaceCenterCache;
-        std::vector<double>                                m_xisCache;
-        std::vector<double>                                m_etasCache;
+        std::vector<int> m_sharedFacesCache;
+        std::vector<std::size_t> m_connectedNodesCache;
+        std::vector<std::vector<std::size_t>> m_faceNodeMappingCache;
+        std::vector<double> m_xiCache;
+        std::vector<double> m_etaCache;
+        std::vector<int> m_boundaryEdgesCache;
+        std::vector<double> m_leftXFaceCenterCache;
+        std::vector<double> m_leftYFaceCenterCache;
+        std::vector<double> m_rightXFaceCenterCache;
+        std::vector<double> m_rightYFaceCenterCache;
+        std::vector<double> m_xisCache;
+        std::vector<double> m_etasCache;
 
         // Smoother topologies
-        int m_numTopologies = 0;                           
-        std::vector<int>                                   m_nodeTopologyMapping;
-        std::vector<int>                                   m_numTopologyNodes;
-        std::vector<int>                                   m_numTopologyFaces;
-        std::vector<std::vector<double>>                   m_topologyXi;
-        std::vector<std::vector<double>>                   m_topologyEta;
-        std::vector<std::vector<int>>                      m_topologySharedFaces;
+        int m_numTopologies = 0;
+        std::vector<int> m_nodeTopologyMapping;
+        std::vector<int> m_numTopologyNodes;
+        std::vector<int> m_numTopologyFaces;
+        std::vector<std::vector<double>> m_topologyXi;
+        std::vector<std::vector<double>> m_topologyEta;
+        std::vector<std::vector<int>> m_topologySharedFaces;
         std::vector<std::vector<std::vector<std::size_t>>> m_topologyFaceNodeMapping;
-        std::vector < std::vector<std::size_t>>            m_topologyConnectedNodes;
+        std::vector<std::vector<std::size_t>> m_topologyConnectedNodes;
 
-        std::vector<int>                                   m_numConnectedNodes;        // (nmk2)
-        std::vector<std::vector<std::size_t>>              m_connectedNodes;           // (kk2)
+        std::vector<int> m_numConnectedNodes;                   // (nmk2)
+        std::vector<std::vector<std::size_t>> m_connectedNodes; // (kk2)
 
         // Class variables
         int m_maximumNumConnectedNodes = 0;
         int m_maximumNumSharedFaces = 0;
 
         // nodes with errors
-        std::vector<double>                                m_nodeXErrors;
-        std::vector<double>                                m_nodeYErrors;
-        std::vector<int>                                   m_nodeErrorCode;
+        std::vector<double> m_nodeXErrors;
+        std::vector<double> m_nodeYErrors;
+        std::vector<int> m_nodeErrorCode;
 
         static constexpr int m_topologyInitialSize = 10;
         static constexpr double m_thetaTolerance = 1e-4;
     };
-}
+} // namespace meshkernel

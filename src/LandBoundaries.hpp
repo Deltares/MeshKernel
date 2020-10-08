@@ -39,7 +39,6 @@ namespace meshkernel
     {
 
     public:
-
         /// <summary>
         /// Default Ctor
         /// </summary>
@@ -67,7 +66,7 @@ namespace meshkernel
         /// <param name="polygon"></param>
         /// <param name="snapping"></param>
         /// <returns></returns>
-        bool FindNearestMeshBoundary( int snapping);
+        bool FindNearestMeshBoundary(int snapping);
 
         /// <summary>
         /// Snap mesh nodes to land boundaies (snap_to_landboundary)
@@ -79,9 +78,8 @@ namespace meshkernel
         std::vector<int> m_meshNodesLandBoundarySegments; // lanseg_map, mesh nodes to land boundary mapping
 
     private:
-
         /// <summary>
-        /// Build an additional boundary for not assigned nodes (connect_boundary_paths) 
+        /// Build an additional boundary for not assigned nodes (connect_boundary_paths)
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="edgeIndex"></param>
@@ -89,9 +87,9 @@ namespace meshkernel
         /// <param name="nodes"></param>
         /// <param name="numNodes"></param>
         /// <returns></returns>
-        bool AssignSegmentsToMeshNodes(int edgeIndex, 
-                                       bool initialize, 
-                                       std::vector<int>& nodes, 
+        bool AssignSegmentsToMeshNodes(int edgeIndex,
+                                       bool initialize,
+                                       std::vector<int>& nodes,
                                        int numNodes);
 
         /// <summary>
@@ -102,12 +100,12 @@ namespace meshkernel
         /// <param name="numNodesLoc"></param>
         /// <param name="nodeIndex"></param>
         /// <returns></returns>
-        bool AddLandBoundary(const std::vector<int>& nodesLoc, 
-                             int numNodesLoc, 
+        bool AddLandBoundary(const std::vector<int>& nodesLoc,
+                             int numNodesLoc,
                              int nodeIndex);
 
         /// <summary>
-        /// Assigns to each mesh node a land boundary a segment index (m_nodeLandBoundarySegments) 
+        /// Assigns to each mesh node a land boundary a segment index (m_nodeLandBoundarySegments)
         /// </summary>
         /// <param name="mesh"></param>
         /// <param name="polygons"></param>
@@ -158,14 +156,14 @@ namespace meshkernel
         /// <param name="leftEdgeRatio"></param>
         /// <param name="rightEdgeRatio"></param>
         /// <returns></returns>
-        bool MaskFaces( const bool& meshBoundOnly,
-                        std::vector<int>& landBoundaryFaces,
-                        int startNodeLandBoundaryIndex,
-                        int endNodeLandBoundaryindex,
-                        int& leftIndex,
-                        int& rightIndex,
-                        double& leftEdgeRatio,
-                        double& rightEdgeRatio );
+        bool MaskFaces(const bool& meshBoundOnly,
+                       std::vector<int>& landBoundaryFaces,
+                       int startNodeLandBoundaryIndex,
+                       int endNodeLandBoundaryindex,
+                       int& leftIndex,
+                       int& rightIndex,
+                       double& leftEdgeRatio,
+                       double& rightEdgeRatio);
 
         /// <summary>
         /// Check if a mesh edge is close to a land boundary segment (linkcrossedbyland)
@@ -213,7 +211,7 @@ namespace meshkernel
                                    int& endMeshNode);
 
         /// <summary>
-        /// Connect mesh nodes starting from startMeshNode, using Dijkstra's shortest path algorithm. 
+        /// Connect mesh nodes starting from startMeshNode, using Dijkstra's shortest path algorithm.
         /// The distance of each edge is the edge length multiplied by the distance from the land boundary
         /// </summary>
         /// <param name="mesh"></param>
@@ -261,19 +259,19 @@ namespace meshkernel
         /// <param name="startLandBoundaryIndex"></param>
         /// <param name="endLandBoundaryIndex"></param>
         /// <returns></returns>
-        bool IsFaceCrossedByLandBoundaries(int face, 
-                                           int startLandBoundaryIndex, 
+        bool IsFaceCrossedByLandBoundaries(int face,
+                                           int startLandBoundaryIndex,
                                            int endLandBoundaryIndex);
 
-        std::shared_ptr<Mesh>     m_mesh;                    // A pointer to mesh 
-        std::shared_ptr<Polygons> m_polygons;                // A pointer to polygons
-        std::vector<Point>        m_nodes;                   // XLAN, YLAN, ZLAN
-        std::vector<std::vector<size_t>> m_segmentIndices;   // lanseg_startend
-        std::vector<std::vector<double>> m_nodesLand;        // !node to land boundary segment mapping
+        std::shared_ptr<Mesh> m_mesh;                      // A pointer to mesh
+        std::shared_ptr<Polygons> m_polygons;              // A pointer to polygons
+        std::vector<Point> m_nodes;                        // XLAN, YLAN, ZLAN
+        std::vector<std::vector<size_t>> m_segmentIndices; // lanseg_startend
+        std::vector<std::vector<double>> m_nodesLand;      // !node to land boundary segment mapping
 
-        std::vector<int> m_nodeMask;                         // nodemask, masking the net nodes
-        std::vector<int> m_faceMask;                         // masking faces
-        std::vector<int> m_edgeMask;                         // masking edges
+        std::vector<int> m_nodeMask; // nodemask, masking the net nodes
+        std::vector<int> m_faceMask; // masking faces
+        std::vector<int> m_edgeMask; // masking edges
 
         bool m_landMask = true;
         bool m_addLandboundaries = true;
@@ -281,15 +279,15 @@ namespace meshkernel
         int m_maskDepth = 0;
 
         // caches
-        std::vector<Point> m_polygonNodesCache;          // array of points (e.g. points of a face)
+        std::vector<Point> m_polygonNodesCache; // array of points (e.g. points of a face)
         std::vector<double> m_nodesMinDistances;
-        const size_t m_allocationSize = 10000;               // allocation size for allocateVector
+        const size_t m_allocationSize = 10000; // allocation size for allocateVector
 
         // Parameters
-        const double m_closeToLandBoundaryFactor = 5.0;   // close - to - landboundary tolerance, measured in number of meshwidths
-        const double m_closeWholeMeshFactor = 1.0;        // close - to - landboundary tolerance, measured in number of meshwidths
+        const double m_closeToLandBoundaryFactor = 5.0; // close - to - landboundary tolerance, measured in number of meshwidths
+        const double m_closeWholeMeshFactor = 1.0;      // close - to - landboundary tolerance, measured in number of meshwidths
         const double m_minDistanceFromLandFactor = 2.0;
         double m_closeFactor = 5.0;
     };
 
-}
+} // namespace meshkernel

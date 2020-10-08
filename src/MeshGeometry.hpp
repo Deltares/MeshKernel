@@ -60,8 +60,6 @@ namespace meshkernelapi
 
         double* layer_zs = nullptr;
         double* interface_zs = nullptr;
-        int     startIndex = 0;
+        int startIndex = 0;
     };
-}
-
-
+} // namespace meshkernelapi
