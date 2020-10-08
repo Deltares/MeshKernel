@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 2.8.2)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if(WIN32)
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc /MP")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc /MP")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc /MP /std:c++17" )
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc /MP /std:c++17")
 else()
     set(CMAKE_CXX_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C++ compiler flags for a Release build")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11 -g") 
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++17 -g") 
 endif(WIN32)
 
 # Add third party directory
@@ -59,10 +59,11 @@ add_custom_command( TARGET MeshKernel
                     
 set(build_config $<CONFIG>) 
 set_target_properties( MeshKernel PROPERTIES 
-                                            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib"
-                                            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib"
-                                            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib")
-                    
+                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib"
+                       ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib"
+                       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib")
+					  
+					   
 # Add Google tests
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
@@ -78,7 +79,7 @@ if(result)
   message(FATAL_ERROR "Build step for googletest failed: ${result}")
 endif()
 if (MSVC)
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 endif()
 
 # Add googletest directly to our build.
@@ -92,3 +93,11 @@ source_group(source FILES ${all_test_srcs})
 add_executable( MeshKernelTests ${all_test_srcs})
 target_link_libraries(MeshKernelTests LINK_PUBLIC ${Boost_LIBRARIES} gtest_main triangle )
 add_test( NAME MeshKernelTests COMMAND MeshKernelTests )
+
+file(GLOB CurrentNetcdfLibFiles "${CMAKE_CURRENT_SOURCE_DIR}/thirdParty/third_party_open/netcdf/netCDF 4.6.1/bin/*.dll")
+foreach(CurrentNetcdfLibFile IN LISTS CurrentNetcdfLibFiles)
+add_custom_command( TARGET MeshKernelTests 
+                    POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile} "${CMAKE_BINARY_DIR}/${build_config}"
+                    COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
+endforeach()

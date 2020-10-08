@@ -859,6 +859,11 @@ bool meshkernel::Mesh::ClassifyNodes()
             continue;
         }
 
+        if (m_nodesTypes[firstNode] == -1 || m_nodesTypes[secondNode] == -1)
+        {
+            continue;
+        }
+
         if (m_edgesNumFaces[e] == 0)
         {
             m_nodesTypes[firstNode] = -1;
