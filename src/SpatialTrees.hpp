@@ -44,7 +44,7 @@
 
 namespace meshkernel
 {
-    namespace SpatialTrees 
+    namespace SpatialTrees
     {
         namespace bg = boost::geometry;
         namespace bgi = boost::geometry::index;
@@ -63,16 +63,15 @@ namespace meshkernel
             typedef bgi::rtree<value3D, bgi::quadratic<16>> RTree3D;
 
         public:
-
             bool BuildTree(std::vector<Point>& nodes)
             {
                 m_points.resize(nodes.size());
                 for (int n = 0; n < nodes.size(); ++n)
                 {
-                    m_points[n] = std::make_pair(Point2D{ nodes[n].x, nodes[n].y }, n);
+                    m_points[n] = std::make_pair(Point2D{nodes[n].x, nodes[n].y}, n);
                 }
                 m_rtree2D = RTree2D(m_points.begin(), m_points.end());
-                
+
                 m_queryCache.reserve(queryCapacity);
                 m_queryIndices.reserve(queryCapacity);
 
@@ -83,13 +82,13 @@ namespace meshkernel
             {
                 m_queryCache.resize(0);
                 double searchRadius = std::sqrt(searchRadiusSquared);
-                
+
                 Box2D box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
                 Point2D nodeSought = Point2D(node.x, node.y);
 
                 m_rtree2D.query(
                     bgi::within(box) &&
-                    bgi::satisfies([&](value2D const& v) {return bg::comparable_distance(v.first, nodeSought) < searchRadiusSquared; }),
+                        bgi::satisfies([&](value2D const& v) { return bg::comparable_distance(v.first, nodeSought) < searchRadiusSquared; }),
                     std::back_inserter(m_queryCache));
 
                 m_queryIndices.resize(m_queryCache.size());
@@ -106,9 +105,9 @@ namespace meshkernel
                 m_queryCache.resize(0);
 
                 Point2D nodeSought = Point2D(node.x, node.y);
-                m_rtree2D.query(bgi::nearest(nodeSought,1),std::back_inserter(m_queryCache));
+                m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
 
-                if(!m_queryCache.empty())
+                if (!m_queryCache.empty())
                 {
                     m_queryIndices.resize(1);
                     m_queryIndices[0] = m_queryCache[0].second;
@@ -124,17 +123,16 @@ namespace meshkernel
                 {
                     return false;
                 }
-                m_points[position] = {Point2D{ doubleMissingValue,doubleMissingValue }, std::numeric_limits<size_t>::max()};
+                m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
                 return true;
             }
 
             bool InsertNode(const Point& node)
             {
-                m_points.push_back({ Point2D{ node.x, node.y }, m_points.size() });
+                m_points.push_back({Point2D{node.x, node.y}, m_points.size()});
                 m_rtree2D.insert(m_points.end() - 1, m_points.end());
                 return true;
             }
-
 
             auto Size() const
             {
@@ -144,7 +142,6 @@ namespace meshkernel
             auto Empty() const
             {
                 return m_rtree2D.empty();
-
             }
 
             auto Clear()
@@ -164,15 +161,14 @@ namespace meshkernel
             }
 
         private:
-
             RTree2D m_rtree2D;
             std::vector<std::pair<Point2D, size_t>> m_points;
             std::vector<value2D> m_queryCache;
             std::vector<int> m_queryIndices;
 
-            // Rtree preallocated capacity of the query array 
+            // Rtree preallocated capacity of the query array
             int queryCapacity = 100;
-        };   
+        };
 
-    }
-}
+    } // namespace SpatialTrees
+} // namespace meshkernel

@@ -1,0 +1,16 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Run test",
+            "command": "${workspaceFolder}/build/Debug/MeshKernelTests.exe",
+            "options": {
+                "cwd": "${workspaceFolder}/tests/MeshRefinementTests"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+        }
+    ],
+    "version": "2.0.0"
+}

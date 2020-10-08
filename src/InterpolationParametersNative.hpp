@@ -34,10 +34,10 @@ namespace meshkernelapi
         /// Actual interpolation type (1)
         int InterpolationType;
 
-        /// Variable related to interactor behaviour (0) 
+        /// Variable related to interactor behaviour (0)
         int DisplayInterpolationProcess;
 
-        /// Maximum number of refinement iterations, set to 1 if only one refinement is wanted (10) 
+        /// Maximum number of refinement iterations, set to 1 if only one refinement is wanted (10)
         int MaxNumberOfRefinementIterations;
 
         /// Averaging method : 1 = simple averaging, 2 = closest point, 3 = max, 4 = min, 5 = inverse weighted distance, 6 = minabs, 7 = kdtree (1)
@@ -55,6 +55,4 @@ namespace meshkernelapi
         /// Refine faces intersected by polygon
         bool RefineIntersected;
     };
-}
-
-
+} // namespace meshkernelapi

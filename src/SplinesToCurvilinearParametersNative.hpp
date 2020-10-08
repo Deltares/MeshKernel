@@ -86,6 +86,4 @@ namespace meshkernelapi
         /// </summary>
         int RemoveSkinnyTriangles;
     };
-}
-
-
+} // namespace meshkernelapi

@@ -36,7 +36,6 @@ TEST(Polygons, MeshBoundaryToPolygon)
     ASSERT_NEAR(458.63024902343801, meshBoundaryPolygon[5].y, tolerance);
     ASSERT_NEAR(454.88018798828102, meshBoundaryPolygon[6].y, tolerance);
     ASSERT_NEAR(360.37924194335898, meshBoundaryPolygon[7].y, tolerance);
-
 }
 
 TEST(Polygons, CreatePointsInPolygons)
@@ -45,14 +44,14 @@ TEST(Polygons, CreatePointsInPolygons)
 
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({ 302.002502,472.130371 });
-    nodes.push_back({ 144.501526, 253.128174 });
-    nodes.push_back({ 368.752930, 112.876755 });
-    nodes.push_back({ 707.755005, 358.879242 });
-    nodes.push_back({ 301.252502, 471.380371 });
-    nodes.push_back({ 302.002502, 472.130371 });
+    nodes.push_back({302.002502, 472.130371});
+    nodes.push_back({144.501526, 253.128174});
+    nodes.push_back({368.752930, 112.876755});
+    nodes.push_back({707.755005, 358.879242});
+    nodes.push_back({301.252502, 471.380371});
+    nodes.push_back({302.002502, 472.130371});
 
-    meshkernel::Polygons  polygons(nodes, meshkernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
     // Execute
     std::vector<std::vector<meshkernel::Point>> generatedPoints;
@@ -83,11 +82,11 @@ TEST(Polygons, RefinePolygon)
     // Prepare
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({ 0,0 });
-    nodes.push_back({ 3, 0 });
-    nodes.push_back({ 3, 3 });
-    nodes.push_back({ 0, 3 });
-    nodes.push_back({ 0, 0 });
+    nodes.push_back({0, 0});
+    nodes.push_back({3, 0});
+    nodes.push_back({3, 3});
+    nodes.push_back({0, 3});
+    nodes.push_back({0, 0});
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
@@ -134,11 +133,11 @@ TEST(Polygons, RefinePolygonOneSide)
     // Prepare
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({ 0,0 });
-    nodes.push_back({ 3, 0 });
-    nodes.push_back({ 3, 3 });
-    nodes.push_back({ 0, 3 });
-    nodes.push_back({ 0, 0 });
+    nodes.push_back({0, 0});
+    nodes.push_back({3, 0});
+    nodes.push_back({3, 3});
+    nodes.push_back({0, 3});
+    nodes.push_back({0, 0});
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
@@ -173,11 +172,11 @@ TEST(Polygons, RefinePolygonLongerSquare)
     // Prepare
     std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({ 0, 0 });
-    nodes.push_back({ 3, 0 });
-    nodes.push_back({ 3, 3 });
-    nodes.push_back({ 3.5, 0 });
-    nodes.push_back({ 0, 0 });
+    nodes.push_back({0, 0});
+    nodes.push_back({3, 0});
+    nodes.push_back({3, 3});
+    nodes.push_back({3.5, 0});
+    nodes.push_back({0, 0});
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
@@ -226,15 +225,14 @@ TEST(Polygons, RefinePolygonLongerSquare)
 TEST(Polygon, OffsetCopy)
 {
     std::vector<meshkernel::Point> nodes;
-    nodes.push_back({ 296.752472, 397.879639 });
-    nodes.push_back({ 294.502472, 256.128204 });
-    nodes.push_back({ 578.754211, 244.128082 });
-    nodes.push_back({ 587.754272, 400.129639 });
-    nodes.push_back({ 308.002533, 397.879639 });
-    nodes.push_back({ 296.752472, 397.879639 });
+    nodes.push_back({296.752472, 397.879639});
+    nodes.push_back({294.502472, 256.128204});
+    nodes.push_back({578.754211, 244.128082});
+    nodes.push_back({587.754272, 400.129639});
+    nodes.push_back({308.002533, 397.879639});
+    nodes.push_back({296.752472, 397.879639});
 
     meshkernel::Polygons polygon(nodes, meshkernel::Projections::cartesian);
-
 
     meshkernel::Polygons newPolygon;
     double distance = 10.0;
@@ -256,5 +254,4 @@ TEST(Polygon, OffsetCopy)
     ASSERT_NEAR(newPolygon.m_nodes[3].y, 410.21520441451258, tolerance);
     ASSERT_NEAR(newPolygon.m_nodes[4].y, 407.87963900000000, tolerance);
     ASSERT_NEAR(newPolygon.m_nodes[5].y, 407.87963900000000, tolerance);
-    
 }

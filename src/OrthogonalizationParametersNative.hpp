@@ -44,6 +44,4 @@ namespace meshkernelapi
         int AdaptNiterG;
         double OrthoPure;
     };
-}
-
-
+} // namespace meshkernelapi

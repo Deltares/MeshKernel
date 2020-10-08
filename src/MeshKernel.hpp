@@ -36,11 +36,11 @@
 #include "InterpolationParametersNative.hpp"
 #include "SampleRefineParametersNative.hpp"
 
-#if defined(_WIN32) 
+#if defined(_WIN32)
 #if !defined(MKERNEL_API)
 #define MKERNEL_API __declspec(dllexport)
 #endif
-#else  
+#else
 #define MKERNEL_API __attribute__((visibility("default")))
 #endif
 
@@ -114,14 +114,14 @@ namespace meshkernelapi
         /// <param name="geometryListNativePolygon">The polygon where to perform the orthogonalization</param>
         /// <param name="geometryListNativeLandBoundaries">The land boundaries to account for in the orthogonalization process</param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_orthogonalize( int meshKernelId, 
-                                               int isTriangulationRequired, 
-                                               int isAccountingForLandBoundariesRequired, 
-                                               int projectToLandBoundaryOption,
-                                               const OrthogonalizationParametersNative& orthogonalizationParametersNative, 
-                                               const GeometryListNative& geometryListNativePolygon,
-                                               const GeometryListNative& geometryListNativeLandBoundaries );
-       
+        MKERNEL_API int mkernel_orthogonalize(int meshKernelId,
+                                              int isTriangulationRequired,
+                                              int isAccountingForLandBoundariesRequired,
+                                              int projectToLandBoundaryOption,
+                                              const OrthogonalizationParametersNative& orthogonalizationParametersNative,
+                                              const GeometryListNative& geometryListNativePolygon,
+                                              const GeometryListNative& geometryListNativeLandBoundaries);
+
         /// <summary>
         /// Orthogonalization initialization (first function to use in interactive mode)
         /// </summary>
@@ -134,12 +134,12 @@ namespace meshkernelapi
         /// <param name="geometryListNativeLandBoundaries">The land boundaries to account for in the orthogonalization process</param>
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_orthogonalize_initialize(int meshKernelId,
-                                                       int isTriangulationRequired, 
-                                                       int isAccountingForLandBoundariesRequired, 
-                                                       int projectToLandBoundaryOption,
-                                                       OrthogonalizationParametersNative& orthogonalizationParametersNative, 
-                                                       GeometryListNative& geometryListNativePolygon, 
-                                                       GeometryListNative& geometryListNativeLandBoundaries);
+                                                         int isTriangulationRequired,
+                                                         int isAccountingForLandBoundariesRequired,
+                                                         int projectToLandBoundaryOption,
+                                                         OrthogonalizationParametersNative& orthogonalizationParametersNative,
+                                                         GeometryListNative& geometryListNativePolygon,
+                                                         GeometryListNative& geometryListNativeLandBoundaries);
 
         /// <summary>
         /// Prepare outer orthogonalization iteration (interactive mode)
@@ -161,7 +161,7 @@ namespace meshkernelapi
         /// <param name="meshKernelId"></param>
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_orthogonalize_finalize_outer_iteration(int meshKernelId);
-         
+
         /// <summary>
         /// Clean up back-end orthogonalization algorithm (interactive mode)
         /// </summary>
@@ -178,7 +178,7 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_get_orthogonality(int meshKernelId, GeometryListNative& geometryList);
 
         /// <summary>
-        /// Gets the smoothness 
+        /// Gets the smoothness
         /// </summary>
         /// <param name="meshKernelId">Id of the mesh state</param>
         /// <param name="geometryListIn">The smoothness values of each edge</param>
@@ -186,7 +186,7 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_get_smoothness(int meshKernelId, GeometryListNative& geometryList);
 
         /// <summary>
-        /// Get spline intermediate points 
+        /// Get spline intermediate points
         /// </summary>
         /// <param name="disposableGeometryListIn">The input corner vertices of the splines</param>
         /// <param name="disposableGeometryListOut">The output spline </param>
@@ -209,7 +209,7 @@ namespace meshkernelapi
         /// </summary>
         /// <param name="meshKernelId">Id of the mesh state</param>
         /// <param name="geometryListNative">The input splines corners</param>
-        /// <param name="curvilinearParametersNative">The input parameters to generate the curvilinear grid</param> 
+        /// <param name="curvilinearParametersNative">The input parameters to generate the curvilinear grid</param>
         /// <param name="splinesToCurvilinearParametersNative">The parameters of the advancing front algorithm</param>
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId, const GeometryListNative& geometryListNative, const CurvilinearParametersNative& curvilinearParameters, const SplinesToCurvilinearParametersNative& splineToCurvilinearParameters);
@@ -312,7 +312,7 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, int firstIndex, int secondIndex, double distance, int& numberOfPolygonVertices);
 
         /// <summary>
-        /// Merges vertices within a distance of 0.001 m, effectively removing small edges 
+        /// Merges vertices within a distance of 0.001 m, effectively removing small edges
         /// </summary>
         /// <param name="meshKernelId">Id of the mesh state</param>
         /// <param name="geometryListIn">The polygon where to perform the operation</param>
@@ -482,7 +482,6 @@ namespace meshkernelapi
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_curvilinear_mesh_from_splines(int meshKernelId, GeometryListNative& geometryListNativeIn, CurvilinearParametersNative& curvilinearParametersNative);
 
-
         /// <summary>
         /// Computes a curvilinear mesh in a polygon. 3 separate polygon nodes need to be selected.
         /// </summary>
@@ -494,7 +493,6 @@ namespace meshkernelapi
         /// <param name="useFourthSide">Use (true/false) the fourth polygon side to compute the curvilinear grid</param>
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_curvilinear_from_polygon(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode, bool useFourthSide);
-
 
         /// <summary>
         /// Computes a curvilinear mesh in a triangle. 3 separate polygon nodes need to be selected.
@@ -510,4 +508,4 @@ namespace meshkernelapi
 #ifdef __cplusplus
     }
 #endif
-}
+} // namespace meshkernelapi

@@ -10,13 +10,13 @@
 TEST(FlipEdges, FlipEdgesWithLandBoundary)
 {
     //1 Setup
-    auto mesh = MakeRectangularMeshForTesting(3, 3, 10, meshkernel::Projections::cartesian, { 0.0,0.0 });
-    
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 10, meshkernel::Projections::cartesian, {0.0, 0.0});
+
     //set landboundaries
-    auto polygon =std::make_shared<meshkernel::Polygons>();
-    std::vector<meshkernel::Point> landBoundary{  {-1.369282, 21.249086},
-                                                  { 20.885406, 21.539995},
-                                                  {meshkernel::doubleMissingValue,meshkernel::doubleMissingValue} };
+    auto polygon = std::make_shared<meshkernel::Polygons>();
+    std::vector<meshkernel::Point> landBoundary{{-1.369282, 21.249086},
+                                                {20.885406, 21.539995},
+                                                {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
 
     auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
 
@@ -36,7 +36,7 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     auto mesh = MakeMediumSizeTriangularMeshForTesting();
 
     //set landboundaries
-    auto polygon =std::make_shared<meshkernel::Polygons>();
+    auto polygon = std::make_shared<meshkernel::Polygons>();
 
     std::vector<meshkernel::Point> landBoundary;
     auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
@@ -47,7 +47,7 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     auto successful = flipEdges.Compute();
     ASSERT_TRUE(successful);
 
-     // get the number of edges
+    // get the number of edges
     ASSERT_EQ(697, mesh->GetNumEdges());
 
     // check the values of flipped edges
@@ -65,5 +65,4 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
 
     ASSERT_EQ(242, mesh->m_edges[68].first);
     ASSERT_EQ(148, mesh->m_edges[68].second);
-
 }

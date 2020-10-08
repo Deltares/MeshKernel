@@ -7,32 +7,31 @@
 #include <gtest/gtest.h>
 #include <fstream>
 
-TEST(MeshRefinement, FourByFourWithFourSamples) 
+TEST(MeshRefinement, FourByFourWithFourSamples)
 {
     auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projections::cartesian);
 
     //sample points
     std::vector<meshkernel::Sample> samples;
-    samples.push_back({ 14.7153645, 14.5698833, 1.0 });
-    samples.push_back({ 24.7033062, 14.4729137, 1.0 });
-    samples.push_back({ 15.5396099, 24.2669525, 1.0 });
-    samples.push_back({ 23.8305721, 23.9275551, 1.0 });
+    samples.push_back({14.7153645, 14.5698833, 1.0});
+    samples.push_back({24.7033062, 14.4729137, 1.0});
+    samples.push_back({15.5396099, 24.2669525, 1.0});
+    samples.push_back({23.8305721, 23.9275551, 1.0});
 
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
     sampleRefineParametersNative.MinimumCellSize = 1.0;
     sampleRefineParametersNative.AccountForSamplesOutside = false;
     sampleRefineParametersNative.ConnectHangingNodes = 1;
-    
 
     meshkernelapi::InterpolationParametersNative interpolationParametersNative;
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
-    
+
     meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
-       
+
     // 3 Validation edges connecting hanging nodes
 
     //bottom side
@@ -88,7 +87,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     ASSERT_EQ(31, mesh->m_edges[68].second);
 
     // total number of edges
-    ASSERT_EQ(84, mesh->GetNumEdges()); 
+    ASSERT_EQ(84, mesh->GetNumEdges());
 }
 
 TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
@@ -97,12 +96,12 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 
     //sample points
     std::vector<meshkernel::Sample> samples;
-    samples.push_back({ 14.7153645, 14.5698833, 1.0 });
-    samples.push_back({ 24.7033062, 14.4729137, 1.0 });
-    samples.push_back({ 15.5396099, 24.2669525, 1.0 });
-    samples.push_back({ 23.8305721, 23.9275551, 1.0 });
+    samples.push_back({14.7153645, 14.5698833, 1.0});
+    samples.push_back({24.7033062, 14.4729137, 1.0});
+    samples.push_back({15.5396099, 24.2669525, 1.0});
+    samples.push_back({23.8305721, 23.9275551, 1.0});
 
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.64;
@@ -185,7 +184,6 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     ASSERT_EQ(25, mesh->m_edges[20].second);
 }
 
-
 TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 {
     // Prepare
@@ -193,11 +191,10 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 
     //sample points
     std::vector<meshkernel::Sample> samples;
-    samples.push_back({ 359.8657532,350.3144836, 1.0 });
-    samples.push_back({ 387.5152588 ,299.2614746, 1.0 });
+    samples.push_back({359.8657532, 350.3144836, 1.0});
+    samples.push_back({387.5152588, 299.2614746, 1.0});
 
-
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 15.97;
@@ -224,7 +221,6 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     ASSERT_EQ(11, mesh->m_edges[31].first);
     ASSERT_EQ(1, mesh->m_edges[31].second);
 
-
     // total number of edges
     ASSERT_EQ(35, mesh->GetNumEdges());
 }
@@ -236,16 +232,16 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 
     // Polygon sample
     std::vector<meshkernel::Point> point;
-    point.push_back({ 399.638169557229, 504.294564030922 });
-    point.push_back({ 361.827403800769, 129.967983041964 });
-    point.push_back({ 651.709941266965, 113.583317880831 });
-    point.push_back({ 666.834247569549, 411.028008498319 });
-    point.push_back({ 410.981399284167, 505.55492288947 });
-    point.push_back({ 399.638169557229, 504.294564030922 });
+    point.push_back({399.638169557229, 504.294564030922});
+    point.push_back({361.827403800769, 129.967983041964});
+    point.push_back({651.709941266965, 113.583317880831});
+    point.push_back({666.834247569549, 411.028008498319});
+    point.push_back({410.981399284167, 505.55492288947});
+    point.push_back({399.638169557229, 504.294564030922});
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
 
     meshkernelapi::InterpolationParametersNative interpolationParametersNative;
@@ -282,7 +278,6 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     ASSERT_EQ(4, mesh->m_edges[26].second);
 }
 
-
 TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 {
     // Prepare
@@ -292,35 +287,35 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     //sample points
     std::vector<meshkernel::Sample> samples;
 
-    samples.push_back({ 2.7091951,       5.4000854,       0.0000000 });
-    samples.push_back({ 6.4910383,       2.4182367,       0.0000000 });
-    samples.push_back({ 8.0910482,      6.7091894,       0.0000000 });
-    samples.push_back({ 13.2910795,       5.2182646,       0.0000000 });
-    samples.push_back({ 16.1274605,      2.0909605,       0.0000000 });
-    samples.push_back({ 18.7820244,       7.5091972,       0.0000000 });
-    samples.push_back({ 23.5456886,       8.1637497,       0.0000000 });
-    samples.push_back({ 24.6366081,       1.5818644,       0.0000000 });
-    samples.push_back({ 27.8729897,       6.5273695,       0.0000000 });
-    samples.push_back({ 28.0184441,      14.7092705,       0.0000000 });
-    samples.push_back({ 23.8366013,      12.4910660,       0.0000000 });
-    samples.push_back({ 22.6002312,      17.2183857,       0.0000000 });
-    samples.push_back({ 24.0184212,      23.7639065,       0.0000000 });
-    samples.push_back({ 27.9457169,      25.9093838,       0.0000000 });
-    samples.push_back({ 24.6366081,      27.3275795,       0.0000000 });
-    samples.push_back({ 17.4365616,      27.5821285,       0.0000000 });
-    samples.push_back({ 16.6001930,      22.8184433,       0.0000000 });
-    samples.push_back({ 12.7092581,      27.2548523,       0.0000000 });
-    samples.push_back({ 4.7455721,      27.6912193,       0.0000000 });
-    samples.push_back({ 2.6728315,      24.7457352,       0.0000000 });
-    samples.push_back({ 7.5819540,      22.9638996,       0.0000000 });
-    samples.push_back({ 3.5455656,      15.1820030,       0.0000000 });
-    samples.push_back({ 4.8546629,      11.8365135,       0.0000000 });
-    samples.push_back({ 8.7455969,      17.2183857,       0.0000000 });
-    samples.push_back({ 11.8404741,      17.6817989,       3.0000000 });
-    samples.push_back({ 13.5837603,     12.1783361,       3.0000000 });
-    samples.push_back({ 17.2156067,      16.9106121,       3.0000000 });
+    samples.push_back({2.7091951, 5.4000854, 0.0000000});
+    samples.push_back({6.4910383, 2.4182367, 0.0000000});
+    samples.push_back({8.0910482, 6.7091894, 0.0000000});
+    samples.push_back({13.2910795, 5.2182646, 0.0000000});
+    samples.push_back({16.1274605, 2.0909605, 0.0000000});
+    samples.push_back({18.7820244, 7.5091972, 0.0000000});
+    samples.push_back({23.5456886, 8.1637497, 0.0000000});
+    samples.push_back({24.6366081, 1.5818644, 0.0000000});
+    samples.push_back({27.8729897, 6.5273695, 0.0000000});
+    samples.push_back({28.0184441, 14.7092705, 0.0000000});
+    samples.push_back({23.8366013, 12.4910660, 0.0000000});
+    samples.push_back({22.6002312, 17.2183857, 0.0000000});
+    samples.push_back({24.0184212, 23.7639065, 0.0000000});
+    samples.push_back({27.9457169, 25.9093838, 0.0000000});
+    samples.push_back({24.6366081, 27.3275795, 0.0000000});
+    samples.push_back({17.4365616, 27.5821285, 0.0000000});
+    samples.push_back({16.6001930, 22.8184433, 0.0000000});
+    samples.push_back({12.7092581, 27.2548523, 0.0000000});
+    samples.push_back({4.7455721, 27.6912193, 0.0000000});
+    samples.push_back({2.6728315, 24.7457352, 0.0000000});
+    samples.push_back({7.5819540, 22.9638996, 0.0000000});
+    samples.push_back({3.5455656, 15.1820030, 0.0000000});
+    samples.push_back({4.8546629, 11.8365135, 0.0000000});
+    samples.push_back({8.7455969, 17.2183857, 0.0000000});
+    samples.push_back({11.8404741, 17.6817989, 3.0000000});
+    samples.push_back({13.5837603, 12.1783361, 3.0000000});
+    samples.push_back({17.2156067, 16.9106121, 3.0000000});
 
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
@@ -371,13 +366,12 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 
     ASSERT_EQ(14, mesh->m_edges[292].first);
     ASSERT_EQ(97, mesh->m_edges[292].second);
-
 }
 
 TEST(MeshRefinement, WindowOfRefinementFile)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, { 197253.0,442281.0 });
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, {197253.0, 442281.0});
 
     //sample points
     std::vector<meshkernel::Sample> samples;
@@ -385,7 +379,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     // read sample file
     std::string line;
     std::ifstream infile("..\\..\\tests\\MeshRefinementTests\\WindowOfRefinementFile.xyz");
-    while (std::getline(infile, line))  
+    while (std::getline(infile, line))
     {
         std::istringstream iss(line);
         double sampleX;
@@ -396,11 +390,10 @@ TEST(MeshRefinement, WindowOfRefinementFile)
         iss >> sampleY;
         iss >> sampleValue;
 
-        samples.push_back({ sampleX , sampleY , sampleValue });
+        samples.push_back({sampleX, sampleY, sampleValue});
     }
 
-
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
@@ -452,7 +445,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, { 197253.0,442281.0 });
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, {197253.0, 442281.0});
 
     //sample points
     std::vector<meshkernel::Sample> samples;
@@ -471,11 +464,10 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
         iss >> sampleY;
         iss >> sampleValue;
 
-        samples.push_back({ sampleX , sampleY , sampleValue });
+        samples.push_back({sampleX, sampleY, sampleValue});
     }
 
-
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
@@ -536,16 +528,16 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
     //sample points
     std::vector<meshkernel::Sample> samples;
 
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
 
     std::vector<meshkernel::Point> point;
-    point.push_back({ 25.0 ,-10.0 });
-    point.push_back({ 25.0  ,15.0 });
-    point.push_back({ 45.0  ,15.0 });
-    point.push_back({ 45.0 ,-10.0 });
-    point.push_back({ 25.0 ,-10.0 });
+    point.push_back({25.0, -10.0});
+    point.push_back({25.0, 15.0});
+    point.push_back({45.0, 15.0});
+    point.push_back({45.0, -10.0});
+    point.push_back({25.0, -10.0});
 
-    meshkernel::Polygons polygon(point,mesh->m_projection);
+    meshkernel::Polygons polygon(point, mesh->m_projection);
 
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
@@ -599,17 +591,17 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     //sample points
     std::vector<meshkernel::Sample> samples;
 
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
 
     std::vector<meshkernel::Point> point;
-    point.push_back({ 9.09836065573771, 34.016393442623 });
-    point.push_back({ 7.18032786885247, 7.75409836065574 });
-    point.push_back({ 34.6229508196721, 6.5 });
-    point.push_back({ 34.4194409808304, 26.6983515050386 });
-    point.push_back({ 34.327868852459, 35.7868852459016 });
-    point.push_back({ 29.0521194370216, 35.4840476661635 });
-    point.push_back({ 9.90983606557378, 34.3852459016394 });
-    point.push_back({ 9.09836065573771, 34.016393442623 });
+    point.push_back({9.09836065573771, 34.016393442623});
+    point.push_back({7.18032786885247, 7.75409836065574});
+    point.push_back({34.6229508196721, 6.5});
+    point.push_back({34.4194409808304, 26.6983515050386});
+    point.push_back({34.327868852459, 35.7868852459016});
+    point.push_back({29.0521194370216, 35.4840476661635});
+    point.push_back({9.90983606557378, 34.3852459016394});
+    point.push_back({9.09836065573771, 34.016393442623});
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
@@ -632,20 +624,19 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     ASSERT_EQ(49, mesh->GetNumFaces());
 }
 
-
 TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 {
 
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, meshkernel::Projections::spherical,{41.1,41.1});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, meshkernel::Projections::spherical, {41.1, 41.1});
 
     //sample points
     std::vector<meshkernel::Sample> samples;
-    samples.push_back({ 41.1050110, 41.1049728, 1.0 });
-    samples.push_back({ 41.1084785, 41.1048775, 1.0 });
-    samples.push_back({ 41.1085625, 41.1083946, 1.0 });
-    samples.push_back({ 41.1052971, 41.1083336, 1.0 });
+    samples.push_back({41.1050110, 41.1049728, 1.0});
+    samples.push_back({41.1084785, 41.1048775, 1.0});
+    samples.push_back({41.1085625, 41.1083946, 1.0});
+    samples.push_back({41.1052971, 41.1083336, 1.0});
 
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.000527;
@@ -692,9 +683,9 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 {
 
     auto mesh = MakeCurvilinearGridForTesting();
-	
+
     std::vector<meshkernel::Sample> samples;
-    meshkernel::MeshRefinement  meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.000527;
@@ -710,10 +701,9 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 
     mesh->ComputeEdgeLengths();
 
-	// if the circumcenters are wrongly computed, some edges will be smaller than half cell size
+    // if the circumcenters are wrongly computed, some edges will be smaller than half cell size
     for (int i = 0; i < mesh->GetNumEdges(); ++i)
     {
         ASSERT_GT(mesh->m_edgeLengths[i], 0.4);
     }
-	
 }

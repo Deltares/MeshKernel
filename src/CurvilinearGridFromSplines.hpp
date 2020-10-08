@@ -41,16 +41,15 @@ namespace meshkernel
     class CurvilinearGridFromSplines
     {
     public:
-
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="curvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
         /// <param name="splinesToCurvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
         /// <returns></returns>
-        CurvilinearGridFromSplines( std::shared_ptr<Splines> splines,
-                                    const meshkernelapi::CurvilinearParametersNative& curvilinearParametersNative,
-                                    const meshkernelapi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
+        CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
+                                   const meshkernelapi::CurvilinearParametersNative& curvilinearParametersNative,
+                                   const meshkernelapi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
 
         /// <summary>
         /// Computes the spline properties, such as cross splines (get_splineprops)
@@ -98,15 +97,14 @@ namespace meshkernel
         /// <returns></returns>
         bool MakeAllGridLines();
 
-        std::vector<Point> m_gridLine;                           // coordinates of the first gridline (xg1, yg1)
-        std::vector<double> m_gridLineDimensionalCoordinates;    // center spline coordinates of the first gridline (sg1)
-        std::vector<double> m_maximumGridHeights;                // maximum transversal grid height ()
-        size_t m_numM = 0;                                       // Number of columns in the curvilinear grid
-        
-        std::shared_ptr<Splines> m_splines;                      // A pointer to spline
+        std::vector<Point> m_gridLine;                        // coordinates of the first gridline (xg1, yg1)
+        std::vector<double> m_gridLineDimensionalCoordinates; // center spline coordinates of the first gridline (sg1)
+        std::vector<double> m_maximumGridHeights;             // maximum transversal grid height ()
+        size_t m_numM = 0;                                    // Number of columns in the curvilinear grid
+
+        std::shared_ptr<Splines> m_splines; // A pointer to spline
 
     private:
-
         /// <summary>
         /// From the layer index gets the previous grid layer where start growing and the transversal sublayer index (get_isub)
         /// </summary>
@@ -114,8 +112,8 @@ namespace meshkernel
         /// <param name="gridLayer">The next grid layer</param>
         /// <param name="subLayerIndex">The transversal sub-layer index</param>
         /// <returns></returns>
-        bool GetSubIntervalAndGridLayer(int layer, 
-                                        int& gridLayer, 
+        bool GetSubIntervalAndGridLayer(int layer,
+                                        int& gridLayer,
                                         int& subLayerIndex);
 
         /// <summary>
@@ -146,12 +144,12 @@ namespace meshkernel
         /// <param name="frontGridPoints"></param>
         /// <param name="velocities"></param>
         /// <returns></returns>
-        bool CopyVelocitiesToFront( const int layerIndex,
-                                    const std::vector<Point>& previousVelocities,
-                                    int& numFrontPoints,
-                                    std::vector<std::vector<int>>& gridPointsIndices,
-                                    std::vector<Point>& frontGridPoints,
-                                    std::vector<Point>& velocities );
+        bool CopyVelocitiesToFront(const int layerIndex,
+                                   const std::vector<Point>& previousVelocities,
+                                   int& numFrontPoints,
+                                   std::vector<std::vector<int>>& gridPointsIndices,
+                                   std::vector<Point>& frontGridPoints,
+                                   std::vector<Point>& velocities);
 
         /// <summary>
         /// Computes the points at front, which have to be moved.
@@ -180,9 +178,9 @@ namespace meshkernel
         /// <param name="currentLeftIndex"></param>
         /// <param name="currentRightIndex"></param>
         /// <returns></returns>
-        bool GetNeighbours(const std::vector<Point>& gridPoints, 
-                           int index, 
-                           int& currentLeftIndex, 
+        bool GetNeighbours(const std::vector<Point>& gridPoints,
+                           int index,
+                           int& currentLeftIndex,
                            int& currentRightIndex) const;
 
         /// <summary>
@@ -193,8 +191,8 @@ namespace meshkernel
         /// <param name="growFactorOnSubintervalAndEdge"></param>
         /// <param name="numPerpendicularFacesOnSubintervalAndEdge"></param>
         /// <returns></returns>
-        bool ComputeEdgeVelocities(std::vector<double>& edgeVelocities, 
-                                   std::vector<std::vector<double>>& growFactorOnSubintervalAndEdge, 
+        bool ComputeEdgeVelocities(std::vector<double>& edgeVelocities,
+                                   std::vector<std::vector<double>>& growFactorOnSubintervalAndEdge,
                                    std::vector<std::vector<int>>& numPerpendicularFacesOnSubintervalAndEdge);
 
         /// <summary>
@@ -217,8 +215,8 @@ namespace meshkernel
         /// <param name="firstGridLayerHeights"></param>
         /// <param name="numberOfGridLayers"></param>
         /// <returns></returns>
-        double ComputeTotalExponentialHeight(double aspectRatioGrowFactor, 
-                                             double firstGridLayerHeights, 
+        double ComputeTotalExponentialHeight(double aspectRatioGrowFactor,
+                                             double firstGridLayerHeights,
                                              int numberOfGridLayers) const;
 
         /// <summary>
@@ -243,17 +241,17 @@ namespace meshkernel
         /// <param name="edgeVelocities"></param>
         /// <param name="hh0MaxRatio"></param>
         /// <returns></returns>
-        bool ComputeVelocitiesSubIntervals( int s,
-                                            int startGridLineIndex,
-                                            int endGridLineIndex,
-                                            int numHeights,
-                                            int numOtherSideHeights,
-                                            double firstHeight,
-                                            const std::vector<int>& gridLineIndex,
-                                            const std::vector<int>& otherGridLineIndex,
-                                            std::vector<std::vector<int>>& numPerpendicularFacesOnSubintervalAndEdge,
-                                            std::vector<double>& edgeVelocities,
-                                            double& hh0MaxRatio);
+        bool ComputeVelocitiesSubIntervals(int s,
+                                           int startGridLineIndex,
+                                           int endGridLineIndex,
+                                           int numHeights,
+                                           int numOtherSideHeights,
+                                           double firstHeight,
+                                           const std::vector<int>& gridLineIndex,
+                                           const std::vector<int>& otherGridLineIndex,
+                                           std::vector<std::vector<int>>& numPerpendicularFacesOnSubintervalAndEdge,
+                                           std::vector<double>& edgeVelocities,
+                                           double& hh0MaxRatio);
 
         /// <summary>
         /// Compute the grid heights at grid edges on the center spline (comp_gridheights)
@@ -292,10 +290,10 @@ namespace meshkernel
         /// <param name="validIndices"></param>
         /// <param name="numValid"></param>
         /// <returns></returns>
-        bool GetValidSplineIndices(int numValues, 
-                                    const std::vector<int>& v, 
-                                    std::vector<int>& validIndices, 
-                                    int& numValid) const;
+        bool GetValidSplineIndices(int numValues,
+                                   const std::vector<int>& v,
+                                   std::vector<int>& validIndices,
+                                   int& numValid) const;
 
         /// <summary>
         /// Computes the intersection of two splines, one must have only two nodes (get_crosssplines)
@@ -319,8 +317,6 @@ namespace meshkernel
                           std::vector<double>& adimensionalCoordinates,
                           int& numM);
 
-
-
         /// <summary>
         /// Compute the grid heights using ComputeSubHeights and calculates the maximum sub height (get_heights)
         /// </summary>
@@ -328,14 +324,14 @@ namespace meshkernel
         bool ComputeHeights();
 
         /// <summary>
-        /// Compute the heights at left and right of the center spline index. 
+        /// Compute the heights at left and right of the center spline index.
         /// Heights are determined by the lenghts of the left and right parts of the crossing splines (comp_subheights)
         /// </summary>
         /// <param name="centerSplineIndex"></param>
         /// <param name="crossingSplineLocalIndex"></param>
         /// <returns></returns>
         bool ComputeSubHeights(int centerSplineIndex, int crossingSplineLocalIndex);
-        
+
         /// <summary>
         /// Computes curvature in a point on a spline (comp_curv)
         /// </summary>
@@ -365,7 +361,7 @@ namespace meshkernel
         bool DeleteSpline(int splineIndex);
 
         /// <summary>
-        /// Allocate spline properties arrays 
+        /// Allocate spline properties arrays
         /// </summary>
         /// <returns></returns>
         bool AllocateSplinesProperties();
@@ -381,37 +377,36 @@ namespace meshkernel
             lateral
         };
 
-
         // algorithm parameters
-        meshkernelapi::CurvilinearParametersNative          m_curvilinearParametersNative;
+        meshkernelapi::CurvilinearParametersNative m_curvilinearParametersNative;
         meshkernelapi::SplinesToCurvilinearParametersNative m_splinesToCurvilinearParametersNative;
 
-        const int m_maxNumCenterSplineHeights = 10;                                     // Nsubmax, naz number of different heights a cross spline can have (is determined by how many crossing spline the user can input)
-        const int m_maxNUniformPart = 5;                                                // maximum number of layers in the uniform part
-        bool m_growGridOutside = true;                                                  // grow the grid outside the prescribed grid height
-        double m_onTopOfEachOtherSquaredTolerance;                                      // On top of each other squared tolerance
-        size_t m_numOriginalSplines = 0;                                                // The original number of splines
-        int m_allocationSize = 5;                                                       // allocation cache size
+        const int m_maxNumCenterSplineHeights = 10; // Nsubmax, naz number of different heights a cross spline can have (is determined by how many crossing spline the user can input)
+        const int m_maxNUniformPart = 5;            // maximum number of layers in the uniform part
+        bool m_growGridOutside = true;              // grow the grid outside the prescribed grid height
+        double m_onTopOfEachOtherSquaredTolerance;  // On top of each other squared tolerance
+        size_t m_numOriginalSplines = 0;            // The original number of splines
+        int m_allocationSize = 5;                   // allocation cache size
 
-        // Spline properties (first index is the spline number) 
+        // Spline properties (first index is the spline number)
         std::vector<SplineTypes> m_type;
-        std::vector<int> m_centralSplineIndex;                                          // for each spline the index to its central
-        std::vector<int> m_numCrossingSplines;                                          // ncs num of cross splines
-        std::vector<std::vector<int>> m_crossingSplinesIndices;                        // ics for each cross spline, the indices of the center splines
-  
-        std::vector<std::vector<bool>> m_isLeftOriented;                                // isLeftOriented cross spline is left to right(.true.) or not (.false.) w.r.t.center spline
-        std::vector<std::vector<double>>  m_crossSplineCoordinates;                     // t center spline coordinates of cross splines
-        std::vector<std::vector<double>> m_cosCrossingAngle;                            // cosPhi cosine of crossing angle
-        std::vector<std::vector<std::vector<double>>> m_crossSplineLeftHeights;         // hL left - hand side grid heights at cross spline locations for each grid layer subinterval, hL(1, :) being the height of the first subinterval, etc.
-        std::vector<std::vector<std::vector<double>>> m_crossSplineRightHeights;        // hR right - hand side grid heights at cross spline locations for each grid layer subinterval, hR(1, :) being the height of the first subinterval, etc.
-        std::vector<std::vector<int>>   m_numCrossSplineLeftHeights;                    // NsubL number of subintervals of grid layers at cross spline locations at the left - hand side of the spline, each having their own exponential grow factor
-        std::vector<std::vector<int>>  m_numCrossSplineRightHeights;                    // NsubR number of subintervals of grid layers at cross spline locations at the right - hand side of the spline, each having their own exponential grow factor
-        std::vector<int> m_numMSplines;                                                  // mfac number of grid intervals on the spline
-        std::vector<std::vector<int>> m_nfacL;                                          // nfacL number of grid layers in each subinterval at the left - hand side of the spline * not used yet*
-        std::vector<std::vector<int>> m_nfacR;                                          // nfacR number of grid layers in each subinterval at the right - hand side of the spline * not used yet*
-        std::vector<int> m_leftGridLineIndex;                                           // iL index in the whole gridline array of the first grid point on the left - hand side of the spline
-        std::vector<int> m_rightGridLineIndex;                                          // iR index in the whole gridline array of the first grid point on the right - hand side of the spline
-        std::vector<std::vector<double>> m_gridHeights;                                 // heights of all grid elements        
+        std::vector<int> m_centralSplineIndex;                  // for each spline the index to its central
+        std::vector<int> m_numCrossingSplines;                  // ncs num of cross splines
+        std::vector<std::vector<int>> m_crossingSplinesIndices; // ics for each cross spline, the indices of the center splines
+
+        std::vector<std::vector<bool>> m_isLeftOriented;                         // isLeftOriented cross spline is left to right(.true.) or not (.false.) w.r.t.center spline
+        std::vector<std::vector<double>> m_crossSplineCoordinates;               // t center spline coordinates of cross splines
+        std::vector<std::vector<double>> m_cosCrossingAngle;                     // cosPhi cosine of crossing angle
+        std::vector<std::vector<std::vector<double>>> m_crossSplineLeftHeights;  // hL left - hand side grid heights at cross spline locations for each grid layer subinterval, hL(1, :) being the height of the first subinterval, etc.
+        std::vector<std::vector<std::vector<double>>> m_crossSplineRightHeights; // hR right - hand side grid heights at cross spline locations for each grid layer subinterval, hR(1, :) being the height of the first subinterval, etc.
+        std::vector<std::vector<int>> m_numCrossSplineLeftHeights;               // NsubL number of subintervals of grid layers at cross spline locations at the left - hand side of the spline, each having their own exponential grow factor
+        std::vector<std::vector<int>> m_numCrossSplineRightHeights;              // NsubR number of subintervals of grid layers at cross spline locations at the right - hand side of the spline, each having their own exponential grow factor
+        std::vector<int> m_numMSplines;                                          // mfac number of grid intervals on the spline
+        std::vector<std::vector<int>> m_nfacL;                                   // nfacL number of grid layers in each subinterval at the left - hand side of the spline * not used yet*
+        std::vector<std::vector<int>> m_nfacR;                                   // nfacR number of grid layers in each subinterval at the right - hand side of the spline * not used yet*
+        std::vector<int> m_leftGridLineIndex;                                    // iL index in the whole gridline array of the first grid point on the left - hand side of the spline
+        std::vector<int> m_rightGridLineIndex;                                   // iR index in the whole gridline array of the first grid point on the right - hand side of the spline
+        std::vector<std::vector<double>> m_gridHeights;                          // heights of all grid elements
 
         std::vector<int> m_leftGridLineIndexOriginal;
         std::vector<int> m_rightGridLineIndexOriginal;
@@ -427,6 +422,5 @@ namespace meshkernel
         std::vector<int> m_subLayerGridPoints;
         std::vector<std::vector<int>> m_numPerpendicularFacesOnSubintervalAndEdge;
         std::vector<std::vector<double>> m_growFactorOnSubintervalAndEdge;
-
     };
-}
+} // namespace meshkernel

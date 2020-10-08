@@ -43,6 +43,3 @@ src/MeshKernel_version.h
 src/MeshKernel_version.h.svn
 src/MeshKernel_version.rc
 src/MeshKernel_version.rc.svn
-
-# Visual Studio Code
-.vscode

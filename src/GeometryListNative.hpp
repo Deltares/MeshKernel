@@ -39,6 +39,4 @@ namespace meshkernelapi
         double* yCoordinates = nullptr;
         double* zCoordinates = nullptr;
     };
-}
-
-
+} // namespace meshkernelapi
