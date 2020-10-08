@@ -32,12 +32,12 @@ namespace meshkernelapi
     struct CurvilinearParametersNative
     {
         /// <summary>
-        /// *M-refinement factor for regular grid generation (mfacmax, 2000) 
+        /// *M-refinement factor for regular grid generation (mfacmax, 2000)
         /// </summary>
         int MRefinement;
 
         /// <summary>
-        /// *N-refinement factor for regular grid generation (nfacmax, 40) 
+        /// *N-refinement factor for regular grid generation (nfacmax, 40)
         /// </summary>
         int NRefinement;
 
@@ -56,6 +56,4 @@ namespace meshkernelapi
         /// </summary>
         double AttractionParameter;
     };
-}
-
-
+} // namespace meshkernelapi

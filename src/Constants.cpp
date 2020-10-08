@@ -30,23 +30,23 @@
 #ifndef M_PI
 #define M_PI (3.14159265358979323846)
 #endif
-#include <math.h> 
+#include <math.h>
 
 namespace meshkernel
 {
     // missing value
     static constexpr double doubleMissingValue = -999.0;
-    static constexpr int    intMissingValue    = -999;
-    static constexpr double squareRootOfThree  = 1.73205080756887729352;
-    static constexpr double oneThird           = 0.33333333333333333333;
+    static constexpr int intMissingValue = -999;
+    static constexpr double squareRootOfThree = 1.73205080756887729352;
+    static constexpr double oneThird = 0.33333333333333333333;
 
     //geometric constants
-    static constexpr double degrad_hp = M_PI / 180.0; // conversion factor from degrees to radians(pi / 180)
-    static constexpr double raddeg_hp = 180.0 / M_PI; // conversion factor from radians to degrees(180 / pi)
-    static constexpr double earth_radius = 6378137.0; // earth radius(m)
+    static constexpr double degrad_hp = M_PI / 180.0;                   // conversion factor from degrees to radians(pi / 180)
+    static constexpr double raddeg_hp = 180.0 / M_PI;                   // conversion factor from radians to degrees(180 / pi)
+    static constexpr double earth_radius = 6378137.0;                   // earth radius(m)
     static constexpr double one_over_earth_radius = 1.0 / earth_radius; //one over earth_radius(m-1);
-    static constexpr double absLatitudeAtPoles = 0.0001;       // pole tolerance in degrees
-    static constexpr double nearlyZero = 1e-16;                // used to determine if a length is zero
+    static constexpr double absLatitudeAtPoles = 0.0001;                // pole tolerance in degrees
+    static constexpr double nearlyZero = 1e-16;                         // used to determine if a length is zero
 
     //mesh constants
     static constexpr double minimumDeltaCoordinate = 1e-14;
@@ -58,9 +58,9 @@ namespace meshkernel
     static constexpr double weightCircumCenter = 1.0;
     static constexpr int numNodesQuads = 4;
 
-    //orthogonalization 
+    //orthogonalization
     static constexpr double minimumEdgeLength = 1e-4;
-    static constexpr double curvilinearToOrthogonalRatio= 0.5; //curvi - linear - like(0.0) or pure(1.0) orthogonalisation
+    static constexpr double curvilinearToOrthogonalRatio = 0.5;         //curvi - linear - like(0.0) or pure(1.0) orthogonalisation
     static constexpr double orthogonalizationToSmoothingFactor = 0.975; //Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)
 
     // merging distance
@@ -71,10 +71,10 @@ namespace meshkernel
     static constexpr double gravity = 9.81;
 
     // Operations averaging methods
-    enum AveragingMethod 
+    enum AveragingMethod
     {
         SimpleAveraging = 1,
-        ClosestPoint= 2,
+        ClosestPoint = 2,
         Max = 3,
         Min = 4,
         InverseWeightDistance = 5,
@@ -82,4 +82,4 @@ namespace meshkernel
         KdTree = 7
     };
 
-}
+} // namespace meshkernel

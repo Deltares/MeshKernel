@@ -31,7 +31,6 @@
 #include <memory>
 #include "Entities.hpp"
 
-
 namespace meshkernel
 {
     // Forward declarations
@@ -42,9 +41,8 @@ namespace meshkernel
     class CurvilinearGridFromPolygon
     {
     public:
-
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="mesh">The input mesh</param>
         /// <param name="polygon">The input polygon</param>
@@ -64,11 +62,7 @@ namespace meshkernel
         bool Compute(int firstNode, int secondNode, int thirdNode, CurvilinearGrid& curvilinearGrid) const;
 
     private:
-
-        std::shared_ptr<Polygons> m_polygon;                  // A pointer to Polygons
-
+        std::shared_ptr<Polygons> m_polygon; // A pointer to Polygons
     };
 
-}
-
-
+} // namespace meshkernel

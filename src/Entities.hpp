@@ -37,9 +37,9 @@ namespace meshkernel
 
     enum class Projections
     {
-        cartesian,         // jsferic  = 0
-        spherical,         // jsferic  = 1  
-        sphericalAccurate  // jasfer3D = 1
+        cartesian,        // jsferic  = 0
+        spherical,        // jsferic  = 1
+        sphericalAccurate // jasfer3D = 1
     };
 
     struct Point
@@ -49,87 +49,71 @@ namespace meshkernel
 
         Point operator+(Point const& rhs) const
         {
-            Point point
-            {
+            Point point{
                 x + rhs.x,
-                y + rhs.y
-            };
+                y + rhs.y};
             return point;
         }
 
         Point operator+(double const& rhs) const
         {
-            Point point
-            {
+            Point point{
                 x + rhs,
-                y + rhs
-            };
+                y + rhs};
             return point;
         }
 
         Point operator-(Point const& rhs) const
         {
-            Point point
-            {
+            Point point{
                 x - rhs.x,
-                y - rhs.y
-            };
+                y - rhs.y};
             return point;
         }
 
         Point operator-(double const& rhs) const
         {
-            Point point
-            {
+            Point point{
                 x - rhs,
-                y - rhs
-            };
+                y - rhs};
             return point;
         }
 
         Point operator*(Point const& rhs) const
         {
-            Point point
-            {
+            Point point{
                 x * rhs.x,
-                y * rhs.y
-            };
+                y * rhs.y};
             return point;
         }
 
         Point operator*(double const& rhs) const
         {
-            Point point
-            {
+            Point point{
                 x * rhs,
-                y * rhs
-            };
+                y * rhs};
             return point;
         }
 
         Point operator/(Point const& rhs) const
         {
-            Point point
-            {
+            Point point{
                 x / rhs.x,
-                y / rhs.y
-            };
+                y / rhs.y};
             return point;
         }
 
         Point operator/(double const& rhs) const
         {
-            Point point
-            {
+            Point point{
                 x / rhs,
-                y / rhs
-            };
+                y / rhs};
             return point;
         }
 
         bool operator==(const Point& rhs) const
         {
-            return x==rhs.x && y == rhs.y;
+            return x == rhs.x && y == rhs.y;
         }
 
         bool operator!=(const Point& rhs) const
@@ -137,10 +121,10 @@ namespace meshkernel
             return x != rhs.x || y != rhs.y;
         }
 
-        void TransformSphericalToCartesian(double referenceLatitude) 
+        void TransformSphericalToCartesian(double referenceLatitude)
         {
-            x = x * degrad_hp *earth_radius * std::cos(degrad_hp* referenceLatitude);
-            y = y * degrad_hp *earth_radius;
+            x = x * degrad_hp * earth_radius * std::cos(degrad_hp * referenceLatitude);
+            y = y * degrad_hp * earth_radius;
         }
 
         bool IsValid(const double missingValue = doubleMissingValue) const
@@ -156,7 +140,7 @@ namespace meshkernel
         double z;
     };
 
-    struct Sample 
+    struct Sample
     {
         double x;
         double y;
@@ -165,4 +149,4 @@ namespace meshkernel
 
     typedef std::pair<int, int> Edge;
 
-}
+} // namespace meshkernel

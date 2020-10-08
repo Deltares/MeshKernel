@@ -17,19 +17,19 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 {
     // Preparation
     std::vector<meshkernel::Point> nodes;
-    nodes.push_back(meshkernel::Point{ 0.0,0.0 });
-    nodes.push_back(meshkernel::Point{ 0.0,10.0 });
-    nodes.push_back(meshkernel::Point{ 10.0,0.0 });
-    nodes.push_back(meshkernel::Point{ 10.0,10.0 });
-    nodes.push_back(meshkernel::Point{ 20.0,0.0 });
+    nodes.push_back(meshkernel::Point{0.0, 0.0});
+    nodes.push_back(meshkernel::Point{0.0, 10.0});
+    nodes.push_back(meshkernel::Point{10.0, 0.0});
+    nodes.push_back(meshkernel::Point{10.0, 10.0});
+    nodes.push_back(meshkernel::Point{20.0, 0.0});
 
     std::vector<meshkernel::Edge> edges;
-    edges.push_back({ 1, 0 });
-    edges.push_back({ 0, 2 });
-    edges.push_back({ 2, 4 });
-    edges.push_back({ 4, 3 });
-    edges.push_back({ 3, 2 });
-    edges.push_back({ 3, 1 });
+    edges.push_back({1, 0});
+    edges.push_back({0, 2});
+    edges.push_back({2, 4});
+    edges.push_back({4, 3});
+    edges.push_back({3, 2});
+    edges.push_back({3, 1});
 
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 0;
@@ -43,7 +43,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
     orthogonalizationParametersNative.Smoothorarea = 1.0;
 
     // Execute
-    auto mesh = std::make_shared < meshkernel::Mesh>();
+    auto mesh = std::make_shared<meshkernel::Mesh>();
     mesh->Set(edges, nodes, meshkernel::Projections::cartesian);
 
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
@@ -52,16 +52,16 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 
     std::vector<meshkernel::Point> landBoundary;
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
-    
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization( mesh, 
-                                                                 smoother,
-                                                                 orthogonalizer,
-                                                                 polygon,
-                                                                 landboundaries,
-                                                                 isTriangulationRequired, 
-                                                                 isAccountingForLandBoundariesRequired, 
-                                                                 projectToLandBoundaryOption,
-                                                                 orthogonalizationParametersNative );
+
+    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                                smoother,
+                                                                orthogonalizer,
+                                                                polygon,
+                                                                landboundaries,
+                                                                isTriangulationRequired,
+                                                                isAccountingForLandBoundariesRequired,
+                                                                projectToLandBoundaryOption,
+                                                                orthogonalizationParametersNative);
 
     bool successful = orthogonalization.Initialize();
     ASSERT_TRUE(successful);
@@ -86,7 +86,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
 {
-   
+
     // now build node-edge mapping
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
     int isTriangulationRequired = 0;
@@ -172,15 +172,15 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     std::vector<meshkernel::Point> landBoundary;
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
 
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization( mesh,
-                                                                 smoother,
-                                                                 orthogonalizer,
-                                                                 polygon,
-                                                                 landboundaries,
-                                                                 isTriangulationRequired,
-                                                                 isAccountingForLandBoundariesRequired,
-                                                                 projectToLandBoundaryOption,
-                                                                 orthogonalizationParametersNative );
+    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                                smoother,
+                                                                orthogonalizer,
+                                                                polygon,
+                                                                landboundaries,
+                                                                isTriangulationRequired,
+                                                                isAccountingForLandBoundariesRequired,
+                                                                projectToLandBoundaryOption,
+                                                                orthogonalizationParametersNative);
 
     bool successful = orthogonalization.Initialize();
     ASSERT_TRUE(successful);
@@ -230,14 +230,14 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     orthogonalizationParametersNative.Smoothorarea = 1.0;
 
     std::vector<meshkernel::Point> nodes;
-    nodes.push_back({ 342.987518, 471.121002 });
-    nodes.push_back({ 327.640900, 380.846436 });
-    nodes.push_back({ 396.851135, 201.200073 });
-    nodes.push_back({ 514.207581, 203.607407 });
-    nodes.push_back({ 569.274841, 294.483765 });
-    nodes.push_back({ 568.673035, 379.943695 });
-    nodes.push_back({ 515.712158, 458.783478 });
-    nodes.push_back({ 343.288422, 471.722809 });
+    nodes.push_back({342.987518, 471.121002});
+    nodes.push_back({327.640900, 380.846436});
+    nodes.push_back({396.851135, 201.200073});
+    nodes.push_back({514.207581, 203.607407});
+    nodes.push_back({569.274841, 294.483765});
+    nodes.push_back({568.673035, 379.943695});
+    nodes.push_back({515.712158, 458.783478});
+    nodes.push_back({343.288422, 471.722809});
 
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
@@ -246,15 +246,15 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshkernel::Projections::cartesian);
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
 
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization( mesh, 
-                                                                 smoother,
-                                                                 orthogonalizer,
-                                                                 polygon,
-                                                                 landboundaries,
-                                                                 isTriangulationRequired,
-                                                                 isAccountingForLandBoundariesRequired,
-                                                                 projectToLandBoundaryOption,
-                                                                 orthogonalizationParametersNative );
+    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                                smoother,
+                                                                orthogonalizer,
+                                                                polygon,
+                                                                landboundaries,
+                                                                isTriangulationRequired,
+                                                                isAccountingForLandBoundariesRequired,
+                                                                projectToLandBoundaryOption,
+                                                                orthogonalizationParametersNative);
 
     bool successful = orthogonalization.Initialize();
     ASSERT_TRUE(successful);
@@ -262,7 +262,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     successful = orthogonalization.Compute();
     ASSERT_TRUE(successful);
 
-    constexpr double tolerance =1.8;
+    constexpr double tolerance = 1.8;
     // check the first 10 points
 
     ASSERT_NEAR(322.252624511719, mesh->m_nodes[0].x, tolerance);
@@ -286,7 +286,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     ASSERT_NEAR(405.390188082498, mesh->m_nodes[7].y, tolerance);
     ASSERT_NEAR(319.410057398020, mesh->m_nodes[8].y, tolerance);
     ASSERT_NEAR(327.001109057344, mesh->m_nodes[9].y, tolerance);
-
 }
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
@@ -311,19 +310,18 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
     std::vector<meshkernel::Point> landBoundary;
     auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
 
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization( mesh, 
-                                                                 smoother, 
-                                                                 orthogonalizer,
-                                                                 polygon,
-                                                                 landBoundaries,
-                                                                 isTriangulationRequired,
-                                                                 isAccountingForLandBoundariesRequired,
-                                                                 projectToLandBoundaryOption,
-                                                                 orthogonalizationParametersNative);
+    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                                smoother,
+                                                                orthogonalizer,
+                                                                polygon,
+                                                                landBoundaries,
+                                                                isTriangulationRequired,
+                                                                isAccountingForLandBoundariesRequired,
+                                                                projectToLandBoundaryOption,
+                                                                orthogonalizationParametersNative);
 
     bool successful = orthogonalization.Initialize();
     ASSERT_TRUE(successful);
-
 
     orthogonalization.Compute();
     ASSERT_TRUE(successful);
@@ -352,7 +350,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
     ASSERT_NEAR(1580.5855923464549, mesh->m_nodes[7].y, tolerance);
     ASSERT_NEAR(1608.7015489976982, mesh->m_nodes[8].y, tolerance);
     ASSERT_NEAR(1631.412199601948, mesh->m_nodes[9].y, tolerance);
-
 }
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
@@ -376,15 +373,15 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization( mesh, 
-                                                                 smoother, 
-                                                                 orthogonalizer,
-                                                                 polygon,
-                                                                 landboundaries,
-                                                                 isTriangulationRequired,
-                                                                 isAccountingForLandBoundariesRequired,
-                                                                 projectToLandBoundaryOption,
-                                                                 orthogonalizationParametersNative);
+    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                                smoother,
+                                                                orthogonalizer,
+                                                                polygon,
+                                                                landboundaries,
+                                                                isTriangulationRequired,
+                                                                isAccountingForLandBoundariesRequired,
+                                                                projectToLandBoundaryOption,
+                                                                orthogonalizationParametersNative);
 
     bool successful = orthogonalization.Initialize();
     ASSERT_TRUE(successful);
@@ -399,21 +396,18 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
     auto mesh = MakeSmallSizeTriangularMeshForTesting();
 
     // the land boundary to use
-    std::vector<meshkernel::Point> landBoundary
-    {
-        { 235.561218, 290.571899 },
-        { 265.953522, 436.515747 },
-        { 429.349854, 450.959656 },
-        { 535.271545, 386.262909 },
-        { meshkernel::doubleMissingValue, meshkernel::doubleMissingValue },
-        { 246.995941, 262.285858 },
-        { 351.112183, 237.309906 },
-        { 443.191895, 262.285858 },
-        { 553.627319, 327.283539 },
-        { meshkernel::doubleMissingValue, meshkernel::doubleMissingValue }
-    };
+    std::vector<meshkernel::Point> landBoundary{
+        {235.561218, 290.571899},
+        {265.953522, 436.515747},
+        {429.349854, 450.959656},
+        {535.271545, 386.262909},
+        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+        {246.995941, 262.285858},
+        {351.112183, 237.309906},
+        {443.191895, 262.285858},
+        {553.627319, 327.283539},
+        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
 
-    
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 1;
 
@@ -426,22 +420,22 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.975;
     orthogonalizationParametersNative.Smoothorarea = 1.0;
-    
+
     // no enclosing polygon
     auto polygon = std::make_shared<meshkernel::Polygons>();
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization( mesh, 
-                                                                 smoother, 
-                                                                 orthogonalizer, 
-                                                                 polygon,
-                                                                 landboundaries,
-                                                                 isTriangulationRequired,
-                                                                 isAccountingForLandBoundariesRequired,
-                                                                 projectToLandBoundaryOption,
-                                                                 orthogonalizationParametersNative);
+    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                                smoother,
+                                                                orthogonalizer,
+                                                                polygon,
+                                                                landboundaries,
+                                                                isTriangulationRequired,
+                                                                isAccountingForLandBoundariesRequired,
+                                                                projectToLandBoundaryOption,
+                                                                orthogonalizationParametersNative);
 
     bool successful = orthogonalization.Initialize();
     ASSERT_TRUE(successful);
@@ -477,10 +471,10 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 {
     //1 Setup
-    auto polygons =std::make_shared<meshkernel::Polygons>();
+    auto polygons = std::make_shared<meshkernel::Polygons>();
     std::vector<meshkernel::Point> nodes;
 
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, meshkernel::Projections::spherical, { 41.1,41.1 });
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, meshkernel::Projections::spherical, {41.1, 41.1});
 
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 0;
@@ -500,15 +494,15 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
     std::vector<meshkernel::Point> landBoundary;
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
 
-    meshkernel::OrthogonalizationAndSmoothing  orthogonalization( mesh,
-                                                                  smoother,
-                                                                  orthogonalizer,
-                                                                  polygon,
-                                                                  landboundaries,
-                                                                  isTriangulationRequired,
-                                                                  isAccountingForLandBoundariesRequired,
-                                                                  projectToLandBoundaryOption,
-                                                                  orthogonalizationParametersNative);
+    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                                smoother,
+                                                                orthogonalizer,
+                                                                polygon,
+                                                                landboundaries,
+                                                                isTriangulationRequired,
+                                                                isAccountingForLandBoundariesRequired,
+                                                                projectToLandBoundaryOption,
+                                                                orthogonalizationParametersNative);
 
     bool successful = orthogonalization.Initialize();
     ASSERT_TRUE(successful);
@@ -562,22 +556,22 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 TEST(MeshRefinement, SmallTriangulargridSpherical)
 {
     std::vector<meshkernel::Point> nodes;
-    nodes.push_back({ 41.1019592, 41.1072273 });
-    nodes.push_back({ 41.1044655, 41.1043587 });
-    nodes.push_back({ 41.1051979, 41.1073151 });
-    nodes.push_back({ 41.1080132,41.1046638 });
-    nodes.push_back({ 41.1014137, 41.1039963 });
+    nodes.push_back({41.1019592, 41.1072273});
+    nodes.push_back({41.1044655, 41.1043587});
+    nodes.push_back({41.1051979, 41.1073151});
+    nodes.push_back({41.1080132, 41.1046638});
+    nodes.push_back({41.1014137, 41.1039963});
 
     std::vector<meshkernel::Edge> edges;
-    edges.push_back({ 4, 0 });
-    edges.push_back({ 4, 1 });
-    edges.push_back({ 1, 0 });
-    edges.push_back({ 1, 3 });
-    edges.push_back({ 3, 2 });
-    edges.push_back({ 2, 1 });
-    edges.push_back({ 0, 2 });
+    edges.push_back({4, 0});
+    edges.push_back({4, 1});
+    edges.push_back({1, 0});
+    edges.push_back({1, 3});
+    edges.push_back({3, 2});
+    edges.push_back({2, 1});
+    edges.push_back({0, 2});
 
-    auto mesh=std::make_shared<meshkernel::Mesh>();
+    auto mesh = std::make_shared<meshkernel::Mesh>();
     mesh->Set(edges, nodes, meshkernel::Projections::spherical);
 
     int isTriangulationRequired = 0;
@@ -599,16 +593,15 @@ TEST(MeshRefinement, SmallTriangulargridSpherical)
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
 
-    
-    meshkernel::OrthogonalizationAndSmoothing orthogonalization( mesh,
-                                                                 smoother,
-                                                                 orthogonalizer,
-                                                                 polygon,
-                                                                 landboundaries,
-                                                                 isTriangulationRequired,
-                                                                 isAccountingForLandBoundariesRequired,
-                                                                 projectToLandBoundaryOption,
-                                                                 orthogonalizationParametersNative);
+    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                                smoother,
+                                                                orthogonalizer,
+                                                                polygon,
+                                                                landboundaries,
+                                                                isTriangulationRequired,
+                                                                isAccountingForLandBoundariesRequired,
+                                                                projectToLandBoundaryOption,
+                                                                orthogonalizationParametersNative);
 
     bool successful = orthogonalization.Initialize();
     ASSERT_TRUE(successful);

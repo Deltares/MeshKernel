@@ -39,13 +39,12 @@ namespace meshkernel
     {
 
     public:
-
         /// <summary>
         /// Ctor
         /// </summary>
         /// <returns></returns>
         explicit Orthogonalizer(std::shared_ptr<Mesh> mesh);
-        
+
         /// <summary>
         /// Computes the smoother weights and the right hans side
         /// </summary>
@@ -64,7 +63,6 @@ namespace meshkernel
             return m_weights[node][connectedNode];
         }
 
-
         /// <summary>
         /// Gets the weight for a certain node and connected node
         /// </summary>
@@ -77,7 +75,6 @@ namespace meshkernel
         }
 
     private:
-
         /// <summary>
         /// Computes the aspect ratio of each edge (orthonet_compute_aspect)
         /// </summary>
@@ -85,12 +82,9 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool AspectRatio(const Mesh& mesh);
 
-
         std::shared_ptr<Mesh> m_mesh;
-        std::vector<double>                                m_aspectRatios;
-        std::vector<std::vector<double>>                   m_weights;
-        std::vector<std::vector<double>>                   m_rhs;
-
-
+        std::vector<double> m_aspectRatios;
+        std::vector<std::vector<double>> m_weights;
+        std::vector<std::vector<double>> m_rhs;
     };
-}
+} // namespace meshkernel
