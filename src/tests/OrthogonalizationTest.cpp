@@ -88,7 +88,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
 {
 
     // now build node-edge mapping
-    auto mesh = MakeSmallSizeTriangularMeshForTesting();
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 0;
     int projectToLandBoundaryOption = 0;
@@ -216,7 +216,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPolygon)
 {
     // now build node-edge mapping
-    auto mesh = MakeSmallSizeTriangularMeshForTesting();
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
 
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 0;
@@ -291,7 +291,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
 {
     // now build node-edge mapping
-    auto mesh = MakeMediumSizeTriangularMeshForTesting();
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\TestOrthogonalizationMediumTriangularGrid_net.nc");
 
     int isTriangulationRequired = 0;
     int isAccountingForLandBoundariesRequired = 0;
@@ -393,7 +393,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 {
     // Prepare
-    auto mesh = MakeSmallSizeTriangularMeshForTesting();
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
 
     // the land boundary to use
     std::vector<meshkernel::Point> landBoundary{
@@ -553,7 +553,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
     ASSERT_NEAR(41.109, mesh->m_nodes[15].y, tolerance);
 }
 
-TEST(MeshRefinement, SmallTriangulargridSpherical)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherical)
 {
     std::vector<meshkernel::Point> nodes;
     nodes.push_back({41.1019592, 41.1072273});
@@ -622,4 +622,45 @@ TEST(MeshRefinement, SmallTriangulargridSpherical)
     ASSERT_NEAR(41.1073150612170, mesh->m_nodes[2].y, tolerance);
     ASSERT_NEAR(41.1046638488770, mesh->m_nodes[3].y, tolerance);
     ASSERT_NEAR(41.1039962768555, mesh->m_nodes[4].y, tolerance);
+}
+
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationMeshWithEdgeWithNoFaces)
+{
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\EdgesWithNoFaces_net.nc");
+    ASSERT_EQ(mesh->GetNumNodes(), 376);
+    ASSERT_EQ(mesh->GetNumEdges(), 698);
+    ASSERT_EQ(mesh->GetNumFaces(), 319);
+
+    int isTriangulationRequired = 0;
+    int isAccountingForLandBoundariesRequired = 0;
+    int projectToLandBoundaryOption = 0;
+    meshkernelapi::OrthogonalizationParametersNative orthogonalizationParametersNative;
+    orthogonalizationParametersNative.InnerIterations = 25;
+    orthogonalizationParametersNative.BoundaryIterations = 25;
+    orthogonalizationParametersNative.OuterIterations = 1;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.975;
+    orthogonalizationParametersNative.Smoothorarea = 1.0;
+
+    auto polygon = std::make_shared<meshkernel::Polygons>();
+    std::vector<meshkernel::Point> landBoundary;
+    auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
+
+    auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
+    auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
+    meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                                smoother,
+                                                                orthogonalizer,
+                                                                polygon,
+                                                                landboundaries,
+                                                                isTriangulationRequired,
+                                                                isAccountingForLandBoundariesRequired,
+                                                                projectToLandBoundaryOption,
+                                                                orthogonalizationParametersNative);
+
+    bool successful = orthogonalization.Initialize();
+    ASSERT_TRUE(successful);
+
+    successful = orthogonalization.Compute();
+    ASSERT_TRUE(successful);
 }
