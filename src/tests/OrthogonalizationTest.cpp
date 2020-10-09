@@ -661,6 +661,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMeshWithEdgeWithNoFaces)
     bool successful = orthogonalization.Initialize();
     ASSERT_TRUE(successful);
 
-    orthogonalization.Compute();
+    successful = orthogonalization.Compute();
     ASSERT_TRUE(successful);
 }
