@@ -66,39 +66,41 @@ bool meshkernel::Mesh::Set(const std::vector<Edge>& edges,
 bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
 {
 
-    // Invalidate not connected nodes
-    int numInvalidEdges = 0;
+    // Mask nodes connected to valid edges
     std::vector<bool> connectedNodes(m_nodes.size(), false);
+    int numInvalidEdges = 0;
     for (int e = 0; e < m_edges.size(); ++e)
     {
-        if (m_edges[e].first < 0 || m_edges[e].second < 0)
+        auto const firstNode = m_edges[e].first;
+        auto const secondNode = m_edges[e].second;
+
+        if (firstNode < 0 || secondNode < 0)
         {
             numInvalidEdges++;
             continue;
         }
-        int firstNode = m_edges[e].first;
+
         connectedNodes[firstNode] = true;
-        int secondNode = m_edges[e].second;
         connectedNodes[secondNode] = true;
     }
 
-    int numNodesNotConnected = 0;
+    // Count all invalid nodes (note: there might be nodes that are not connected to an edge)
     int numInvalidNodes = 0;
     for (int n = 0; n < m_nodes.size(); ++n)
     {
+        // invalidate nodes that are not connected
         if (!connectedNodes[n])
         {
-
             m_nodes[n] = {doubleMissingValue, doubleMissingValue};
-            numNodesNotConnected++;
         }
+
         if (!m_nodes[n].IsValid())
         {
             numInvalidNodes++;
         }
     }
 
-    // nothing to do, return
+    // If nothing to invalidate return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
     {
         m_numNodes = m_nodes.size();
@@ -122,21 +124,18 @@ bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
     // Flag invalid edges
     for (int e = 0; e < m_edges.size(); ++e)
     {
-        if (m_edges[e].first < 0 || m_edges[e].second < 0)
+        auto const firstNode = m_edges[e].first;
+        auto const secondNode = m_edges[e].second;
+
+        if (firstNode >= 0 && secondNode >= 0 && validNodesIndices[firstNode] >= 0 && validNodesIndices[secondNode] >= 0)
         {
+            m_edges[e].first = validNodesIndices[firstNode];
+            m_edges[e].second = validNodesIndices[secondNode];
             continue;
         }
 
-        if (validNodesIndices[m_edges[e].first] >= 0 && validNodesIndices[m_edges[e].second] >= 0)
-        {
-            m_edges[e].first = validNodesIndices[m_edges[e].first];
-            m_edges[e].second = validNodesIndices[m_edges[e].second];
-        }
-        else
-        {
-            m_edges[e].first = -1;
-            m_edges[e].second = -1;
-        }
+        m_edges[e].first = -1;
+        m_edges[e].second = -1;
     }
 
     // Remove invalid nodes
