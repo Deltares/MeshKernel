@@ -127,6 +127,10 @@ bool meshkernel::OrthogonalizationAndSmoothing::Compute()
         if (successful)
         {
             successful = PrapareOuterIteration();
+            if (!successful)
+            {
+                return false;
+            }
         }
         for (auto boundaryIter = 0; boundaryIter < m_orthogonalizationBoundaryIterations; boundaryIter++)
         {

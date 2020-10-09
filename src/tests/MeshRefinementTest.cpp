@@ -187,7 +187,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 {
     // Prepare
-    auto mesh = MakeSmallSizeTriangularMeshForTesting();
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
 
     //sample points
     std::vector<meshkernel::Sample> samples;
@@ -228,7 +228,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 {
     // Prepare
-    auto mesh = MakeSmallSizeTriangularMeshForTesting();
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
 
     // Polygon sample
     std::vector<meshkernel::Point> point;
