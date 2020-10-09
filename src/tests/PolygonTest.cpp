@@ -6,7 +6,8 @@
 
 TEST(Polygons, MeshBoundaryToPolygon)
 {
-    auto mesh = MakeSmallSizeTriangularMeshForTesting();
+    //auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
 
     const std::vector<meshkernel::Point> polygon;
     auto polygons = std::make_shared<meshkernel::Polygons>(polygon, meshkernel::Projections::cartesian);

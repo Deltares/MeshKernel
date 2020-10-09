@@ -134,6 +134,11 @@ bool meshkernel::Smoother::ComputeOperators()
 
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
+        if (m_mesh->m_nodesTypes[n] != 1 && m_mesh->m_nodesTypes[n] != 2 && m_mesh->m_nodesTypes[n] != 3 && m_mesh->m_nodesTypes[n] != 4)
+        {
+            continue;
+        }
+
         // for each node, the associated topology
         int currentTopology = m_nodeTopologyMapping[n];
 
