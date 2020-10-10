@@ -27,9 +27,6 @@
 
 #pragma once
 
-#include <vector>
-#include "Entities.hpp"
-
 namespace meshkernel
 {
     // Forward declarations

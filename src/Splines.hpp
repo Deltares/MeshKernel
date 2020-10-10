@@ -29,9 +29,6 @@
 
 #include <vector>
 #include "Entities.hpp"
-#include "Polygons.hpp"
-#include "CurvilinearParametersNative.hpp"
-#include "SplinesToCurvilinearParametersNative.hpp"
 
 namespace meshkernel
 {

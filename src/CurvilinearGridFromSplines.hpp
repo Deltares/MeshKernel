@@ -28,15 +28,15 @@
 #pragma once
 
 #include <vector>
-#include "Entities.hpp"
-#include "CurvilinearParametersNative.hpp"
+#include <memory>
 #include "SplinesToCurvilinearParametersNative.hpp"
-#include "Splines.hpp"
+#include "CurvilinearParametersNative.hpp"
+#include "Entities.hpp"
 
 namespace meshkernel
 {
     class CurvilinearGrid;
-    struct SplinesToCurvilinearParametersNative;
+    class Splines;
 
     class CurvilinearGridFromSplines
     {

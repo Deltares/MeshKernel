@@ -27,14 +27,13 @@
 
 #pragma once
 
-#include <vector>
-#include <algorithm>
-#include <array>
-#include "Operations.cpp"
-#include "Entities.hpp"
-#include "Polygons.hpp"
 #include "CurvilinearGridFromPolygon.hpp"
+#include <algorithm>
+#include <vector>
 #include "CurvilinearGrid.hpp"
+#include "Entities.hpp"
+#include "Operations.cpp"
+#include "Polygons.hpp"
 
 meshkernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon){};
 

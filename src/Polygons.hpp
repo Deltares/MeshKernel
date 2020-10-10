@@ -28,10 +28,7 @@
 #pragma once
 
 #include <vector>
-#include <algorithm>
-
 #include "Entities.hpp"
-#include "Operations.cpp"
 
 extern "C"
 {
