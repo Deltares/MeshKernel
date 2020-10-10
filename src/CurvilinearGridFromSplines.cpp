@@ -27,16 +27,16 @@
 
 #pragma once
 
-#include <vector>
+#include "CurvilinearGridFromSplines.hpp"
 #include <algorithm>
 #include <cassert>
-#include "Operations.cpp"
-#include "Entities.hpp"
-#include "CurvilinearParametersNative.hpp"
-#include "SplinesToCurvilinearParametersNative.hpp"
-#include "Splines.hpp"
-#include "CurvilinearGridFromSplines.hpp"
+#include <vector>
 #include "CurvilinearGrid.hpp"
+#include "CurvilinearParametersNative.hpp"
+#include "Entities.hpp"
+#include "Operations.cpp"
+#include "Splines.hpp"
+#include "SplinesToCurvilinearParametersNative.hpp"
 
 meshkernel::CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
                                                                    const meshkernelapi::CurvilinearParametersNative& curvilinearParametersNative,
