@@ -2,8 +2,8 @@
 #include "../Entities.hpp"
 #include "../Polygons.hpp"
 #include "../Constants.cpp"
-#include "../CurvilinearGrid.hpp"
 #include "../Splines.hpp"
+#include "../Operations.cpp"
 #include <gtest/gtest.h>
 
 TEST(Splines, SetSpline)

@@ -28,9 +28,7 @@
 #pragma once
 
 #include <vector>
-#include "Entities.hpp"
 #include "CurvilinearParametersNative.hpp"
-#include "SplinesToCurvilinearParametersNative.hpp"
 
 namespace meshkernel
 {

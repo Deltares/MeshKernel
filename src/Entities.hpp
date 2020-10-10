@@ -28,7 +28,6 @@
 #pragma once
 
 #include <utility>
-#include <vector>
 #include "Constants.cpp"
 #include <cmath>
 
