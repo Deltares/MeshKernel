@@ -48,6 +48,7 @@ namespace meshkernel
     {
         namespace bg = boost::geometry;
         namespace bgi = boost::geometry::index;
+        constexpr int QueryVectorCapacity = 100;
 
         class RTree
         {
@@ -55,25 +56,29 @@ namespace meshkernel
             typedef bg::model::point<double, 2, bg::cs::cartesian> Point2D;
             typedef bg::model::box<Point2D> Box2D;
             typedef std::pair<Point2D, int> value2D;
-            typedef bgi::rtree<value2D, bgi::quadratic<16>> RTree2D;
+            typedef bgi::rtree<value2D, bgi::linear<16>> RTree2D;
 
             typedef bg::model::point<double, 3, bg::cs::cartesian> Point3D;
             typedef bg::model::box<Point2D> Box3D;
             typedef std::pair<Point3D, int> value3D;
-            typedef bgi::rtree<value3D, bgi::quadratic<16>> RTree3D;
+            typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;
 
         public:
             bool BuildTree(std::vector<Point>& nodes)
             {
-                m_points.resize(nodes.size());
+                m_points.reserve(std::max(m_points.capacity(), m_points.size()));
+                m_points.clear();
                 for (int n = 0; n < nodes.size(); ++n)
                 {
-                    m_points[n] = std::make_pair(Point2D{nodes[n].x, nodes[n].y}, n);
+                    if (nodes[n].IsValid())
+                    {
+                        m_points.push_back(std::make_pair(Point2D{nodes[n].x, nodes[n].y}, n));
+                    }
                 }
                 m_rtree2D = RTree2D(m_points.begin(), m_points.end());
 
-                m_queryCache.reserve(queryCapacity);
-                m_queryIndices.reserve(queryCapacity);
+                m_queryCache.reserve(QueryVectorCapacity);
+                m_queryIndices.reserve(QueryVectorCapacity);
 
                 return true;
             }
@@ -147,6 +152,7 @@ namespace meshkernel
             auto Clear()
             {
                 m_rtree2D.clear();
+                m_points.clear();
                 return true;
             }
 
@@ -165,9 +171,6 @@ namespace meshkernel
             std::vector<std::pair<Point2D, size_t>> m_points;
             std::vector<value2D> m_queryCache;
             std::vector<int> m_queryIndices;
-
-            // Rtree preallocated capacity of the query array
-            int queryCapacity = 100;
         };
 
     } // namespace SpatialTrees
