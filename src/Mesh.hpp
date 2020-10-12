@@ -203,7 +203,7 @@ namespace meshkernel
         /// <param name="nodeIndex">The index of the node to delete</param>
         /// <param name="updateRTree">Update m_nodesRTree</param>
         /// <returns>If the method succeeded</returns>
-        bool DeleteNode(int nodeIndex, bool updateRTree = false);
+        bool DeleteNode(int nodeIndex);
 
         /// <summary>
         /// Find the edge sharing two nodes
@@ -243,8 +243,9 @@ namespace meshkernel
         /// </summary>
         /// <param name="point">The starting point from where to start the search</param>
         /// <param name="searchRadius">The search radius</param>
-        /// <returns>The edge index (-1 if no edges is found)</returns>
-        int FindEdgeCloseToAPoint(Point point, double searchRadius);
+        /// <param>The edge index (-1 if no edges is found)</param>
+        /// <returns>If the method succeeded</returns>
+        bool FindEdgeCloseToAPoint(Point point, double searchRadius, int& edgeIndex);
 
         /// <summary>
         /// Masks the edges of all faces included in a polygon
@@ -312,9 +313,15 @@ namespace meshkernel
         bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 
         /// <summary>
-        /// Compute the lenghts of all edges in one go
+        /// Compute the lengths of all edges in one go
         /// </summary>
         bool ComputeEdgeLengths();
+
+        /// <summary>
+        /// Computes the edges centers
+        /// </summary>
+        /// <returns>If the method succeeded</returns>
+        bool ComputeEdgesCenters();
 
         /// <summary>
         /// Get the number of valid nodes
@@ -426,6 +433,7 @@ namespace meshkernel
         std::vector<int> m_edgesNumFaces;           // For each edge, the number of shared faces(lnn)
         std::vector<double> m_edgeLengths;          // The edge lenghts
         std::vector<int> m_edgeMask;                // The edge mask (lc)
+        std::vector<Point> m_edgesCenters;          // The edges ceneters
 
         // faces
         std::vector<std::vector<int>> m_facesNodes; // The nodes composing the faces, in ccw order (netcell%Nod)
@@ -449,6 +457,7 @@ namespace meshkernel
         Projections m_projection; // The projection used
 
         SpatialTrees::RTree m_nodesRTree; // Spatial R-Tree used to inquire node vertices
+        SpatialTrees::RTree m_edgesRTree; // Spatial R-Tree used to inquire edges centers
 
         int m_maxNumNeighbours = 0;
 
@@ -491,16 +500,12 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool RemoveInvalidNodesAndEdges();
 
-        /// <summary>
-        /// Refresh nodes RTree if needed
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool RefreshNodesRTreeIfNeeded();
-
-        int m_numFaces = 0; // number of valid faces (nump)
-        int m_numNodes = 0; // Number of valid nodes in m_nodes
-        int m_numEdges = 0; // Number of valid edges in m_edges
-
+        int m_numFaces = 0;               // number of valid faces (nump)
+        int m_numNodes = 0;               // Number of valid nodes in m_nodes
+        int m_numEdges = 0;               // Number of valid edges in m_edges
         std::vector<double> m_edgeAngles; // internal cache for sorting the edges around nodes
+
+        bool m_nodesRTreeRequiresUpdate = false; //m_nodesRTree requires an update
+        bool m_edgesRTreeRequiresUpdate = false; //m_edgesRTree requires an update
     };
 } // namespace meshkernel
