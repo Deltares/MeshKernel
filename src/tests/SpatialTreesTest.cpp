@@ -33,8 +33,8 @@ TEST(SpatialTrees, RTreeRemovePoint)
 
 TEST(SpatialTrees, PerformanceTestBuildAndSearchRTree)
 {
-    const int n = 10; // x
-    const int m = 10; // y
+    const int n = 1000; // x
+    const int m = 1000; // y
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
