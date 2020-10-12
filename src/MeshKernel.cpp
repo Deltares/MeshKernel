@@ -932,7 +932,13 @@ namespace meshkernelapi
             return -1;
         }
 
-        auto edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0], searchRadius);
+        int edgeIndex;
+        successful = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0], searchRadius, edgeIndex);
+        if (!successful)
+        {
+            return -1;
+        }
+
         successful = meshInstances[meshKernelId]->DeleteEdge(edgeIndex);
         if (!successful)
         {
@@ -956,7 +962,11 @@ namespace meshkernelapi
             return -1;
         }
 
-        edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0], searchRadius);
+        successful = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0], searchRadius, edgeIndex);
+        if (!successful)
+        {
+            return -1;
+        }
 
         return 0;
     }

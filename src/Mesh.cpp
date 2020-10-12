@@ -156,6 +156,21 @@ bool meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 
     RemoveInvalidNodesAndEdges();
 
+    if (m_nodesRTreeRequiresUpdate && !m_nodesRTree.Empty())
+    {
+        m_nodesRTree.Clear();
+        m_nodesRTree.BuildTree(m_nodes);
+        m_nodesRTreeRequiresUpdate = false;
+    }
+
+    if (m_edgesRTreeRequiresUpdate && !m_edgesRTree.Empty())
+    {
+        m_edgesRTree.Clear();
+        ComputeEdgesCenters();
+        m_edgesRTree.BuildTree(m_edgesCenters);
+        m_edgesRTreeRequiresUpdate = false;
+    }
+
     // return if there are no nodes or no edges
     if (m_numNodes == 0 || m_numEdges == 0)
     {
@@ -260,6 +275,9 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
         }
     }
     edges.resize(ind);
+
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
 
     Set(edges, nodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
@@ -392,6 +410,9 @@ meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygon
         edges[validEdgesCount].second = edgeNodes[i][1];
         validEdgesCount++;
     }
+
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
 
     Set(edges, inputNodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
@@ -1081,6 +1102,9 @@ bool meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& m
     // Assign mesh
     *this = Mesh(CurvilinearGrid, m_projection);
 
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+
     Administrate(AdministrationOptions::AdministrateMeshEdges);
 
     return true;
@@ -1127,6 +1151,8 @@ bool meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
             }
         }
     }
+
+    m_nodesRTree.Clear();
 
     Administrate(AdministrationOptions::AdministrateMeshEdges);
 
@@ -1211,6 +1237,9 @@ bool meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     m_nodesNumEdges[firstNodeIndex] = 0;
     m_nodes[firstNodeIndex] = {doubleMissingValue, doubleMissingValue};
 
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+
     return true;
 }
 
@@ -1234,6 +1263,8 @@ bool meshkernel::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeInde
     m_edges[newEdgeIndex].second = endNode;
     m_numEdges++;
 
+    m_edgesRTreeRequiresUpdate = true;
+
     return true;
 }
 
@@ -1252,15 +1283,12 @@ bool meshkernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex, bool
     m_nodeMask[newNodeIndex] = newNodeIndex;
     m_nodesNumEdges[newNodeIndex] = 0;
 
-    if (updateRTree)
-    {
-        RefreshNodesRTreeIfNeeded();
-    }
+    m_nodesRTreeRequiresUpdate = true;
 
     return true;
 }
 
-bool meshkernel::Mesh::DeleteNode(int nodeIndex, bool updateRTree)
+bool meshkernel::Mesh::DeleteNode(int nodeIndex)
 {
     if (nodeIndex >= GetNumNodes())
     {
@@ -1275,30 +1303,8 @@ bool meshkernel::Mesh::DeleteNode(int nodeIndex, bool updateRTree)
     m_nodes[nodeIndex] = {doubleMissingValue, doubleMissingValue};
     m_numNodes--;
 
-    if (updateRTree)
-    {
-        RefreshNodesRTreeIfNeeded();
-        m_nodesRTree.RemoveNode(nodeIndex);
-    }
+    m_nodesRTreeRequiresUpdate = true;
 
-    return true;
-}
-
-bool meshkernel::Mesh::RefreshNodesRTreeIfNeeded()
-{
-    if (m_nodesRTree.Empty())
-    {
-        m_nodesRTree.BuildTree(m_nodes);
-    }
-
-    //insert the missing nodes
-    if (m_nodesRTree.Size() < GetNumNodes())
-    {
-        for (int i = m_nodesRTree.Size(); i < GetNumNodes(); ++i)
-        {
-            m_nodesRTree.InsertNode(m_nodes[i]);
-        }
-    }
     return true;
 }
 
@@ -1311,6 +1317,8 @@ bool meshkernel::Mesh::DeleteEdge(int edgeIndex)
 
     m_edges[edgeIndex].first = intMissingValue;
     m_edges[edgeIndex].second = intMissingValue;
+
+    m_edgesRTreeRequiresUpdate = true;
 
     return true;
 }
@@ -1392,13 +1400,34 @@ bool meshkernel::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
 
 bool meshkernel::Mesh::ComputeEdgeLengths()
 {
-    auto numEdges = GetNumEdges();
+    auto const numEdges = GetNumEdges();
     m_edgeLengths.resize(numEdges, doubleMissingValue);
     for (int e = 0; e < numEdges; e++)
     {
-        int first = m_edges[e].first;
-        int second = m_edges[e].second;
+        auto const first = m_edges[e].first;
+        auto const second = m_edges[e].second;
         m_edgeLengths[e] = Distance(m_nodes[first], m_nodes[second], m_projection);
+    }
+    return true;
+}
+
+bool meshkernel::Mesh::ComputeEdgesCenters()
+{
+    auto const numEdges = GetNumEdges();
+    m_edgesCenters.reserve(std::max(int(m_edgesCenters.capacity()), numEdges));
+    m_edgesCenters.clear();
+
+    for (int e = 0; e < numEdges; e++)
+    {
+        auto const first = m_edges[e].first;
+        auto const second = m_edges[e].second;
+
+        if (first < 0 || second < 0)
+        {
+            continue;
+        }
+
+        m_edgesCenters.push_back((m_nodes[first] + m_nodes[second]) * 0.5);
     }
     return true;
 }
@@ -1510,57 +1539,53 @@ bool meshkernel::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
 
 bool meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexIndex)
 {
-    if (GetNumNodes() == 0)
+    if (GetNumNodes() <= 0)
     {
         return true;
     }
 
-    double closestDistance = std::numeric_limits<double>::max();
-    for (int n = 0; n < GetNumNodes(); ++n)
+    // create rtree a first time
+    if (m_nodesRTree.Empty())
     {
-        const auto absDx = std::abs(GetDx(m_nodes[n], point, m_projection));
-        const auto absDy = std::abs(GetDy(m_nodes[n], point, m_projection));
-        if (absDx < searchRadius && absDy < searchRadius)
-        {
-            const double squaredDistance = ComputeSquaredDistance(m_nodes[n], point, m_projection);
-            if (squaredDistance < closestDistance)
-            {
-                closestDistance = squaredDistance;
-                vertexIndex = n;
-            }
-        }
+        m_nodesRTree.BuildTree(m_nodes);
+        m_nodesRTreeRequiresUpdate = false;
+    }
+
+    double const searchRadiusSquared = searchRadius * searchRadius;
+    m_nodesRTree.NearestNeighboursOnSquaredDistance(point, searchRadiusSquared);
+    int resultSize = m_nodesRTree.GetQueryResultSize();
+    if (resultSize >= 1)
+    {
+        vertexIndex = m_nodesRTree.GetQuerySampleIndex(0);
     }
 
     return true;
 }
 
-int meshkernel::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius)
+bool meshkernel::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius, int& edgeIndex)
 {
-    // linear search of the closest edge. The alternative is to mantain an rtree also for edge centers
-    int edgeIndex = -1;
-    double closestSquaredDistance = std::numeric_limits<double>::max();
-    double searchRadiusSquared = searchRadius * searchRadius;
-    for (int e = 0; e < GetNumEdges(); ++e)
+    edgeIndex = -1;
+    if (GetNumEdges() <= 0)
     {
-        const auto firstNode = m_edges[e].first;
-        const auto secondNode = m_edges[e].second;
-
-        if (firstNode < 0 || secondNode < 0)
-        {
-            continue;
-        }
-
-        const auto edgeCenter = (m_nodes[firstNode] + m_nodes[secondNode]) * 0.5;
-        const double squaredDistance = ComputeSquaredDistance(point, edgeCenter, m_projection);
-
-        if (squaredDistance < searchRadiusSquared && squaredDistance < closestSquaredDistance)
-        {
-            closestSquaredDistance = squaredDistance;
-            edgeIndex = e;
-        }
+        return true;
     }
 
-    return edgeIndex;
+    if (m_edgesRTree.Empty())
+    {
+        ComputeEdgesCenters();
+        m_edgesRTree.BuildTree(m_edgesCenters);
+        m_edgesRTreeRequiresUpdate = false;
+    }
+
+    double const searchRadiusSquared = searchRadius * searchRadius;
+    m_edgesRTree.NearestNeighboursOnSquaredDistance(point, searchRadiusSquared);
+    auto const resultSize = m_edgesRTree.GetQueryResultSize();
+    if (resultSize >= 1)
+    {
+        edgeIndex = m_edgesRTree.GetQuerySampleIndex(0);
+    }
+
+    return true;
 }
 
 bool meshkernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)
@@ -1746,6 +1771,9 @@ bool meshkernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, 
         }
     }
 
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+
     Administrate(AdministrationOptions::AdministrateMeshEdges);
 
     return true;
@@ -1770,6 +1798,9 @@ bool meshkernel::Mesh::MoveNode(Point newPoint, int nodeindex)
         m_nodes[n].x += dx * factor;
         m_nodes[n].y += dy * factor;
     }
+
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
 
     return true;
 }
@@ -1805,6 +1836,9 @@ meshkernel::Mesh& meshkernel::Mesh::operator+=(Mesh const& rhs)
         m_edges[e].first = rhs.m_edges[index].first + GetNumNodes();
         m_edges[e].second = rhs.m_edges[index].second + GetNumNodes();
     }
+
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
 
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
@@ -2202,5 +2236,8 @@ bool meshkernel::Mesh::TriangulateFaces()
             ConnectNodes(indexFirstNode, nodeIndex, newEdgeIndex);
         }
     }
+
+    m_edgesRTreeRequiresUpdate = true;
+
     return true;
 }
