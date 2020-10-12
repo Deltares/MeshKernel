@@ -88,7 +88,7 @@ TEST(SpatialTrees, FindNodesInSquare)
     std::vector<meshkernel::Point> pointToSearch(1, {(n - 1.0) / 2.0, (n - 1.0) / 2.0});
     double squaredDistance = 0.708 * 0.708;
     auto successful = rtree.NearestNeighboursOnSquaredDistance(pointToSearch[0], squaredDistance);
-    ASSERT_EQ(true, successful);
+    ASSERT_TRUE(successful);
     ASSERT_EQ(rtree.GetQueryResultSize(), 4);
 
     // smaller search size, node not found
