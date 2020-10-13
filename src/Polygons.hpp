@@ -61,12 +61,12 @@ namespace meshkernel
         /// <returns></returns>
         bool CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints);
 
-        std::vector<Point> m_nodes;              // Polygon nodes
+        std::vector<Point> m_nodes; // Polygon nodes
+        Projections m_projection;
         int m_numNodes = 0;                      // NPL
         int m_numAllocatedNodes = 0;             // MAXPOL
         std::vector<std::vector<int>> m_indices; // start-end of polygon nodes in m_nodes
         int m_allocationSize = 100;
-        Projections m_projection;
 
         /// perimeter closed polygon
         bool PerimeterClosedPolygon(const std::vector<Point>& localPolygon, int numPoints, double& perimeter);

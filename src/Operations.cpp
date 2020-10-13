@@ -106,7 +106,7 @@ namespace meshkernel
             indexes[n][1] = invalidIndex;
         }
 
-        if (start > vec.size() || end > vec.size() || indexes.size() == 0)
+        if (start > vec.size() || end > vec.size() || indexes.empty())
         {
             return -1;
         }
@@ -535,7 +535,7 @@ namespace meshkernel
                 const auto maxx = std::max(firstPoint.x, secondPoint.x);
                 const auto minx = std::min(firstPoint.x, secondPoint.x);
 
-                if (maxx - minx)
+                if (std::abs(maxx - minx) > std::numeric_limits<double>::epsilon())
                 {
                     centre.x = centre.x + 180.0;
                 }
@@ -1391,7 +1391,7 @@ namespace meshkernel
 
         const double eps = 1e-5;
         const double splFac = 1.0;
-        int intCoordinate = int(std::floor(pointAdimensionalCoordinate));
+        const auto intCoordinate = int(std::floor(pointAdimensionalCoordinate));
         if (pointAdimensionalCoordinate - intCoordinate < eps)
         {
             pointCoordinate = coordinates[intCoordinate];

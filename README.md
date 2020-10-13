@@ -78,7 +78,7 @@ meshGeometry.edge_nodes = &edge_nodes[0];
 bool isGeographic = false;
 
 // Set the mesh into the mesh entry created before
-state = mkernel_set_state(meshKernelId, meshGeometryDimensions, meshGeometry, bool isGeographic);
+state = mkernel_set_state(meshKernelId, meshGeometryDimensions, meshGeometry, isGeographic);
 
 // The new position
 std::vector<double> newPositionX{1.0};

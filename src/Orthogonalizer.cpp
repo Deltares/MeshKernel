@@ -30,7 +30,6 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include <string>
 
 #include "Operations.cpp"
 #include "Constants.cpp"
@@ -63,10 +62,10 @@ bool meshkernel::Orthogonalizer::Compute()
         {
 
             const auto edgeIndex = m_mesh->m_nodesEdges[n][nn];
-            double aspectRatio = m_aspectRatios[edgeIndex];
+            const auto aspectRatio = m_aspectRatios[edgeIndex];
             m_weights[n][nn] = 0.0;
 
-            if (aspectRatio != doubleMissingValue)
+            if (aspectRatio > doubleMissingValue)
             {
                 // internal nodes
                 m_weights[n][nn] = aspectRatio;
@@ -78,9 +77,9 @@ bool meshkernel::Orthogonalizer::Compute()
 
                     // compute the edge length
                     Point neighbouringNode = m_mesh->m_nodes[m_mesh->m_nodesNodes[n][nn]];
-                    double neighbouringNodeDistance = Distance(neighbouringNode, m_mesh->m_nodes[n], m_mesh->m_projection);
+                    const auto neighbouringNodeDistance = Distance(neighbouringNode, m_mesh->m_nodes[n], m_mesh->m_projection);
 
-                    auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
+                    const auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
                     bool flippedNormal;
                     Point normal;
                     NormalVectorInside(m_mesh->m_nodes[n], neighbouringNode, m_mesh->m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh->m_projection);
