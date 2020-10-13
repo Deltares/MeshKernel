@@ -332,8 +332,6 @@ namespace meshkernelapi
                                                                    orthogonalizer,
                                                                    polygon,
                                                                    landBoundary,
-                                                                   isTriangulationRequired,
-                                                                   isAccountingForLandBoundariesRequired,
                                                                    projectToLandBoundaryOption,
                                                                    orthogonalizationParametersNative);
         bool successful = ortogonalization.Initialize();
@@ -394,8 +392,6 @@ namespace meshkernelapi
                                                                                                      orthogonalizer,
                                                                                                      polygon,
                                                                                                      landBoundary,
-                                                                                                     isTriangulationRequired,
-                                                                                                     isAccountingForLandBoundariesRequired,
                                                                                                      projectToLandBoundaryOption,
                                                                                                      orthogonalizationParametersNative);
         bool successful = orthogonalizationInstance->Initialize();

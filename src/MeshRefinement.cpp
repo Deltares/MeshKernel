@@ -131,7 +131,7 @@ bool meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
 
         if (level > 0)
         {
-            bool successful = FindBrotherEdges();
+            successful = FindBrotherEdges();
             if (!successful)
             {
                 return false;
@@ -356,7 +356,6 @@ bool meshkernel::MeshRefinement::RemoveIsolatedHangingnodes(int& numRemovedIsola
             }
 
             //delete node
-            //m_mesh->m_nodesNumEdges[commonNode] = 0;
             m_mesh->DeleteNode(commonNode);
 
             m_mesh->DeleteEdge(brotherEdgeIndex);

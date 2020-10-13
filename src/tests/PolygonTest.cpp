@@ -6,7 +6,6 @@
 
 TEST(Polygons, MeshBoundaryToPolygon)
 {
-    //auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
 
     const std::vector<meshkernel::Point> polygon;
@@ -223,7 +222,7 @@ TEST(Polygons, RefinePolygonLongerSquare)
     ASSERT_NEAR(0.0, refinedPolygon[14].y, tolerance);
 }
 
-TEST(Polygon, OffsetCopy)
+TEST(Polygons, OffsetCopy)
 {
     std::vector<meshkernel::Point> nodes;
     nodes.push_back({296.752472, 397.879639});

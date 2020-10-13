@@ -88,7 +88,7 @@ namespace meshkernel
     private:
         /// <summary>
         /// Initialize smoother topologies. A topology is determined by how many nodes are connected to the current node.
-        /// There are at maximum mesh.m_numNodes topologies, most likeley much less
+        /// There are at maximum mesh.m_numNodes topologies, most likely much less
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -222,8 +222,8 @@ namespace meshkernel
 
         // Smoother local caches
         std::vector<int> m_sharedFacesCache;
-        std::vector<std::size_t> m_connectedNodesCache;
-        std::vector<std::vector<std::size_t>> m_faceNodeMappingCache;
+        std::vector<size_t> m_connectedNodesCache;
+        std::vector<std::vector<size_t>> m_faceNodeMappingCache;
         std::vector<double> m_xiCache;
         std::vector<double> m_etaCache;
         std::vector<int> m_boundaryEdgesCache;
@@ -242,11 +242,11 @@ namespace meshkernel
         std::vector<std::vector<double>> m_topologyXi;
         std::vector<std::vector<double>> m_topologyEta;
         std::vector<std::vector<int>> m_topologySharedFaces;
-        std::vector<std::vector<std::vector<std::size_t>>> m_topologyFaceNodeMapping;
-        std::vector<std::vector<std::size_t>> m_topologyConnectedNodes;
+        std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping;
+        std::vector<std::vector<size_t>> m_topologyConnectedNodes;
 
-        std::vector<int> m_numConnectedNodes;                   // (nmk2)
-        std::vector<std::vector<std::size_t>> m_connectedNodes; // (kk2)
+        std::vector<int> m_numConnectedNodes;              // (nmk2)
+        std::vector<std::vector<size_t>> m_connectedNodes; // (kk2)
 
         // Class variables
         int m_maximumNumConnectedNodes = 0;
