@@ -519,7 +519,6 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     ASSERT_TRUE(successful);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
-    int newEdgeIndex;
     successful = mesh->DeleteNode(0);
     ASSERT_TRUE(successful);
 
