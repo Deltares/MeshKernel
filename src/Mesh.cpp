@@ -1990,7 +1990,10 @@ bool meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
             {
                 int nextNode = n + 1;
                 if (nextNode == numNodes)
+                {
                     nextNode = 0;
+                }
+
                 Point intersection;
                 double crossProduct;
                 double firstRatio;
