@@ -88,7 +88,7 @@ namespace meshkernel
     private:
         /// <summary>
         /// Initialize smoother topologies. A topology is determined by how many nodes are connected to the current node.
-        /// There are at maximum mesh.m_numNodes topologies, most likeley much less
+        /// There are at maximum mesh.m_numNodes topologies, most likely much less
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -245,7 +245,7 @@ namespace meshkernel
         std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping;
         std::vector<std::vector<size_t>> m_topologyConnectedNodes;
 
-        std::vector<int> m_numConnectedNodes;                   // (nmk2)
+        std::vector<int> m_numConnectedNodes;              // (nmk2)
         std::vector<std::vector<size_t>> m_connectedNodes; // (kk2)
 
         // Class variables
