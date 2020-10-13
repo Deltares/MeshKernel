@@ -29,13 +29,9 @@
 
 #include <vector>
 #include <algorithm>
-#include <cassert>
 #include "Operations.cpp"
 #include "Entities.hpp"
-#include "CurvilinearParametersNative.hpp"
-#include "SplinesToCurvilinearParametersNative.hpp"
 #include "Splines.hpp"
-#include "CurvilinearGrid.hpp"
 
 meshkernel::Splines::Splines() : m_projection(Projections::cartesian){};
 

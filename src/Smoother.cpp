@@ -29,7 +29,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <numeric>
 #include <string>
 
 #include "Operations.cpp"
@@ -101,10 +100,7 @@ bool meshkernel::Smoother::ComputeTopologies()
         }
     }
 
-    if (!successful)
-    {
-        return false;
-    }
+    return successful;
 }
 
 bool meshkernel::Smoother::ComputeOperators()
@@ -185,7 +181,7 @@ bool meshkernel::Smoother::ComputeWeights()
         Ginv[n][3] = 1.0;
     }
 
-    m_weights.resize(m_mesh->GetNumNodes(), std::vector<double>(m_maximumNumConnectedNodes, 0));
+    m_weights.resize(m_mesh->GetNumNodes(), std::vector<double>(m_maximumNumConnectedNodes, 0.0));
     std::vector<double> a1(2);
     std::vector<double> a2(2);
 
@@ -206,12 +202,12 @@ bool meshkernel::Smoother::ComputeWeights()
         // Internal nodes and boundary nodes
         if (m_mesh->m_nodesTypes[n] == 1 || m_mesh->m_nodesTypes[n] == 2)
         {
-            int currentTopology = m_nodeTopologyMapping[n];
+            const auto currentTopology = m_nodeTopologyMapping[n];
 
             ComputeJacobian(n, J[n]);
 
             //compute the contravariant base vectors
-            double determinant = J[n][0] * J[n][3] - J[n][3] * J[n][1];
+            const double determinant = J[n][0] * J[n][3] - J[n][3] * J[n][1];
             if (determinant == 0.0)
             {
                 continue;
@@ -461,20 +457,20 @@ bool meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
         m_xisCache[f] = 0.5 * (leftXi + rightXi);
         m_etasCache[f] = 0.5 * (leftEta + rightEta);
 
-        double exiLR = rightXi - leftXi;
-        double eetaLR = rightEta - leftEta;
-        double exi01 = xiOne;
-        double eeta01 = etaOne;
+        const double exiLR = rightXi - leftXi;
+        const double eetaLR = rightEta - leftEta;
+        const double exi01 = xiOne;
+        const double eeta01 = etaOne;
 
-        double fac = 1.0 / std::abs(exi01 * eetaLR - eeta01 * exiLR + 1e-16);
+        const double fac = 1.0 / std::abs(exi01 * eetaLR - eeta01 * exiLR + 1e-16);
         double facxi1 = -eetaLR * fac * leftRightSwap;
 
         double facxi0 = -facxi1;
         double faceta1 = exiLR * fac * leftRightSwap;
         double faceta0 = -faceta1;
-        double facxiR = eeta01 * fac * leftRightSwap;
+        const double facxiR = eeta01 * fac * leftRightSwap;
         double facxiL = -facxiR;
-        double facetaR = -exi01 * fac * leftRightSwap;
+        const double facetaR = -exi01 * fac * leftRightSwap;
         double facetaL = -facetaR;
 
         //boundary link
@@ -581,7 +577,7 @@ bool meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
 {
     // the angles for the squared nodes connected to the stencil nodes, first the ones directly connected, then the others
     std::vector<double> thetaSquare(numConnectedNodes, doubleMissingValue);
-    // for each shared face, a bollean indicating if it is squared or not
+    // for each shared face, a boolean indicating if it is squared or not
     std::vector<bool> isSquareFace(numSharedFaces, false);
 
     int numNonStencilQuad = 0;
@@ -675,7 +671,9 @@ bool meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
             for (int n = 0; n < m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]); n++)
             {
                 if (m_faceNodeMappingCache[f][n] <= numSharedFaces)
+                {
                     continue;
+                }
                 thetaSquare[m_faceNodeMappingCache[f][n]] = 0.5 * M_PI;
             }
         }
@@ -693,7 +691,9 @@ bool meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
     {
         // boundary face
         if (m_sharedFacesCache[f] < 0)
+        {
             continue;
+        }
 
         auto numFaceNodes = m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]);
         double phi = OptimalEdgeAngle(numFaceNodes);
@@ -728,9 +728,15 @@ bool meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
 
     double factor = 1.0;
     if (m_mesh->m_nodesTypes[currentNode] == 2)
+    {
         factor = 0.5;
+    }
+
     if (m_mesh->m_nodesTypes[currentNode] == 3)
+    {
         factor = 0.25;
+    }
+
     double mu = 1.0;
     double muSquaredTriangles = 1.0;
     double muTriangles = 1.0;
@@ -799,7 +805,10 @@ bool meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
         {
             int nextNode = f + 2;
             if (nextNode > numSharedFaces)
+            {
                 nextNode = nextNode - numSharedFaces;
+            }
+
             bool isBoundaryEdge = m_mesh->m_edgesNumFaces[m_mesh->m_nodesEdges[currentNode][f]] == 1;
             dPhi0 = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], isBoundaryEdge);
             if (numFaceNodes == 3)
@@ -816,7 +825,7 @@ bool meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
         phi0 = phi0 + 0.5 * dPhi;
 
         // determine the index of the current stencil node
-        int nodeIndex = FindIndex(m_mesh->m_facesNodes[m_sharedFacesCache[f]], currentNode);
+        const auto nodeIndex = FindIndex(m_mesh->m_facesNodes[m_sharedFacesCache[f]], currentNode);
 
         // optimal angle
         dTheta = 2.0 * M_PI / double(numFaceNodes);
@@ -862,7 +871,7 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
     numSharedFaces = 0;
     for (int e = 0; e < m_mesh->m_nodesNumEdges[currentNode]; e++)
     {
-        auto firstEdge = m_mesh->m_nodesEdges[currentNode][e];
+        const auto firstEdge = m_mesh->m_nodesEdges[currentNode][e];
 
         int secondEdgeIndex = e + 1;
         if (secondEdgeIndex >= m_mesh->m_nodesNumEdges[currentNode])
@@ -870,15 +879,15 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
             secondEdgeIndex = 0;
         }
 
-        auto secondEdge = m_mesh->m_nodesEdges[currentNode][secondEdgeIndex];
+        const auto secondEdge = m_mesh->m_nodesEdges[currentNode][secondEdgeIndex];
         if (m_mesh->m_edgesNumFaces[firstEdge] < 1 || m_mesh->m_edgesNumFaces[secondEdge] < 1)
         {
             continue;
         }
 
         // find the face shared by the two edges
-        int firstFaceIndex = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], int(2)), int(1)) - 1;
-        int secondFaceIndex = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], int(2)), int(1)) - 1;
+        const int firstFaceIndex = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], int(2)), int(1)) - 1;
+        const int secondFaceIndex = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], int(2)), int(1)) - 1;
 
         if (m_mesh->m_edgesFaces[firstEdge][0] != newFaceIndex &&
             (m_mesh->m_edgesFaces[firstEdge][0] == m_mesh->m_edgesFaces[secondEdge][0] ||
@@ -922,7 +931,7 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
         const auto node = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - currentNode;
         connectedNodesIndex++;
         m_connectedNodesCache[connectedNodesIndex] = node;
-        if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
+        if (int(m_connectedNodes[currentNode].size()) < connectedNodesIndex + 1)
         {
             m_connectedNodes[currentNode].resize(connectedNodesIndex);
         }
@@ -932,11 +941,11 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
     // for each face store the positions of the its nodes in the connectedNodes (compressed array)
     if (m_faceNodeMappingCache.size() < numSharedFaces)
     {
-        m_faceNodeMappingCache.resize(numSharedFaces, std::vector<std::size_t>(maximumNumberOfNodesPerFace, 0));
+        m_faceNodeMappingCache.resize(numSharedFaces, std::vector<size_t>(maximumNumberOfNodesPerFace, 0));
     }
     for (int f = 0; f < numSharedFaces; f++)
     {
-        int faceIndex = m_sharedFacesCache[f];
+        const auto faceIndex = m_sharedFacesCache[f];
         if (faceIndex < 0)
         {
             continue;
@@ -944,7 +953,7 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
 
         // find the stencil node position  in the current face
         int faceNodeIndex = 0;
-        auto numFaceNodes = m_mesh->GetNumFaceEdges(faceIndex);
+        const auto numFaceNodes = m_mesh->GetNumFaceEdges(faceIndex);
         for (int n = 0; n < numFaceNodes; n++)
         {
             if (m_mesh->m_facesNodes[faceIndex][n] == currentNode)
@@ -962,7 +971,7 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
                 faceNodeIndex -= numFaceNodes;
             }
 
-            int node = m_mesh->m_facesNodes[faceIndex][faceNodeIndex];
+            const auto node = m_mesh->m_facesNodes[faceIndex][faceNodeIndex];
 
             bool isNewNode = true;
             for (int i = 0; i < connectedNodesIndex + 1; i++)
@@ -980,7 +989,7 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
                 connectedNodesIndex++;
                 m_connectedNodesCache[connectedNodesIndex] = node;
                 m_faceNodeMappingCache[f][faceNodeIndex] = connectedNodesIndex;
-                if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
+                if (int(m_connectedNodes[currentNode].size()) < connectedNodesIndex + 1)
                 {
                     m_connectedNodes[currentNode].resize(connectedNodesIndex);
                 }
@@ -1003,12 +1012,14 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
 
 double meshkernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge) const
 {
-    double angle = M_PI * (1 - 2.0 / double(numFaceNodes));
+    double angle = M_PI * (1.0 - 2.0 / double(numFaceNodes));
 
-    if (theta1 != -1 && theta2 != -1 && numFaceNodes == 3)
+    if (std::abs(theta1 + 1.0) > std::numeric_limits<double>::epsilon() &&
+        std::abs(theta2 + 1.0) > std::numeric_limits<double>::epsilon() &&
+        numFaceNodes == 3)
     {
         angle = 0.25 * M_PI;
-        if (theta1 + theta2 == M_PI && !isBoundaryEdge)
+        if (std::abs(theta1 + theta2 - M_PI) <= std::numeric_limits<double>::epsilon() && !isBoundaryEdge)
         {
             angle = 0.5 * M_PI;
         }
@@ -1018,7 +1029,7 @@ double meshkernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, d
 
 double meshkernel::Smoother::MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents) const
 {
-    double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[2] * x[0] + matCoefficents[3] * x[1]) * y[1];
+    const double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[2] * x[0] + matCoefficents[3] * x[1]) * y[1];
     return norm;
 }
 
@@ -1029,7 +1040,7 @@ bool meshkernel::Smoother::Initialize()
     std::fill(m_numConnectedNodes.begin(), m_numConnectedNodes.end(), 0.0);
 
     m_connectedNodes.resize(m_mesh->GetNumNodes());
-    std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<std::size_t>(maximumNumberOfConnectedNodes));
+    std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
 
     m_sharedFacesCache.resize(maximumNumberOfEdgesPerNode, -1);
     std::fill(m_sharedFacesCache.begin(), m_sharedFacesCache.end(), -1);
@@ -1038,7 +1049,7 @@ bool meshkernel::Smoother::Initialize()
     std::fill(m_connectedNodesCache.begin(), m_connectedNodesCache.end(), 0);
 
     m_faceNodeMappingCache.resize(maximumNumberOfConnectedNodes);
-    std::fill(m_faceNodeMappingCache.begin(), m_faceNodeMappingCache.end(), std::vector<std::size_t>(maximumNumberOfNodesPerFace, 0));
+    std::fill(m_faceNodeMappingCache.begin(), m_faceNodeMappingCache.end(), std::vector<size_t>(maximumNumberOfNodesPerFace, 0));
 
     m_xiCache.resize(maximumNumberOfConnectedNodes, 0.0);
     std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);
@@ -1059,27 +1070,27 @@ bool meshkernel::Smoother::Initialize()
     std::fill(m_numTopologyFaces.begin(), m_numTopologyFaces.end(), -1);
 
     m_topologyXi.resize(m_topologyInitialSize);
-    std::fill(m_topologyXi.begin(), m_topologyXi.end(), std::vector<double>(maximumNumberOfConnectedNodes, 0));
+    std::fill(m_topologyXi.begin(), m_topologyXi.end(), std::vector<double>(maximumNumberOfConnectedNodes, 0.0));
 
     m_topologyEta.resize(m_topologyInitialSize);
-    std::fill(m_topologyEta.begin(), m_topologyEta.end(), std::vector<double>(maximumNumberOfConnectedNodes, 0));
+    std::fill(m_topologyEta.begin(), m_topologyEta.end(), std::vector<double>(maximumNumberOfConnectedNodes, 0.0));
 
     m_topologySharedFaces.resize(m_topologyInitialSize);
     std::fill(m_topologySharedFaces.begin(), m_topologySharedFaces.end(), std::vector<int>(maximumNumberOfConnectedNodes, -1));
 
     m_topologyConnectedNodes.resize(m_topologyInitialSize);
-    std::fill(m_topologyConnectedNodes.begin(), m_topologyConnectedNodes.end(), std::vector<std::size_t>(maximumNumberOfConnectedNodes, -1));
+    std::fill(m_topologyConnectedNodes.begin(), m_topologyConnectedNodes.end(), std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
 
     m_topologyFaceNodeMapping.resize(m_topologyInitialSize);
-    std::fill(m_topologyFaceNodeMapping.begin(), m_topologyFaceNodeMapping.end(), std::vector<std::vector<std::size_t>>(maximumNumberOfConnectedNodes, std::vector<std::size_t>(maximumNumberOfConnectedNodes, -1)));
+    std::fill(m_topologyFaceNodeMapping.begin(), m_topologyFaceNodeMapping.end(), std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, 0)));
 
     return true;
 }
 
 bool meshkernel::Smoother::AllocateNodeOperators(int topologyIndex)
 {
-    int numSharedFaces = m_numTopologyFaces[topologyIndex];
-    int numConnectedNodes = m_numTopologyNodes[topologyIndex];
+    const auto numSharedFaces = m_numTopologyFaces[topologyIndex];
+    const auto numConnectedNodes = m_numTopologyNodes[topologyIndex];
 
     //// will reallocate only if necessary
     m_Az[topologyIndex].resize(numSharedFaces);
@@ -1152,8 +1163,8 @@ bool meshkernel::Smoother::SaveNodeTopologyIfNeeded(int currentNode,
             m_topologyEta.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
 
             m_topologySharedFaces.resize(int(m_numTopologies * 1.5), std::vector<int>(maximumNumberOfEdgesPerNode, -1));
-            m_topologyConnectedNodes.resize(int(m_numTopologies * 1.5), std::vector<std::size_t>(maximumNumberOfConnectedNodes, -1));
-            m_topologyFaceNodeMapping.resize(int(m_numTopologies * 1.5), std::vector<std::vector<std::size_t>>(maximumNumberOfConnectedNodes, std::vector<std::size_t>(maximumNumberOfConnectedNodes, -1)));
+            m_topologyConnectedNodes.resize(int(m_numTopologies * 1.5), std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
+            m_topologyFaceNodeMapping.resize(int(m_numTopologies * 1.5), std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, 0)));
         }
 
         int topologyIndex = m_numTopologies - 1;

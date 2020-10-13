@@ -67,8 +67,6 @@ namespace meshkernel
                                       std::shared_ptr<Orthogonalizer> orthogonalizer,
                                       std::shared_ptr<Polygons> polygon,
                                       std::shared_ptr<LandBoundaries> landBoundaries,
-                                      int isTriangulationRequired,
-                                      int isAccountingForLandBoundariesRequired,
                                       int projectToLandBoundaryOption,
                                       const meshkernelapi::OrthogonalizationParametersNative& orthogonalizationParametersNative);
 
@@ -141,24 +139,19 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool AllocateLinearSystem();
 
-        /// <summary>
-        /// Deallocate linear system vectors
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool DeallocateLinearSystem();
-
-        /// <summary>
         /// Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns>If the method succeeded</returns>
         bool ComputeCoordinates() const;
 
-        std::shared_ptr<LandBoundaries> m_landBoundaries; // The land boundaries
-        std::shared_ptr<Polygons> m_polygons;             // The polygon where to perform the orthogonalization
-        std::shared_ptr<Smoother> m_smoother;             // A pointer to the smoother
-        std::shared_ptr<Orthogonalizer> m_orthogonalizer; // A pointer to the orthogonalizer
-        std::shared_ptr<Mesh> m_mesh;                     // A pointer to mesh
+        std::shared_ptr<Mesh> m_mesh;                                                         // A pointer to mesh
+        std::shared_ptr<Smoother> m_smoother;                                                 // A pointer to the smoother
+        std::shared_ptr<Orthogonalizer> m_orthogonalizer;                                     // A pointer to the orthogonalizer
+        std::shared_ptr<Polygons> m_polygons;                                                 // The polygon where to perform the orthogonalization
+        std::shared_ptr<LandBoundaries> m_landBoundaries;                                     // The land boundaries
+        int m_projectToLandBoundaryOption;                                                    // The project to land boundary option
+        meshkernelapi::OrthogonalizationParametersNative m_orthogonalizationParametersNative; // the orthogonalization parameters
 
         std::vector<int> m_localCoordinatesIndexes; // Used in sphericalAccurate projection (iloc)
         std::vector<Point> m_localCoordinates;      // Used in sphericalAccurate projection (xloc,yloc)
@@ -185,6 +178,5 @@ namespace meshkernel
         int m_orthogonalizationOuterIterations = 2;
         int m_orthogonalizationBoundaryIterations = 25;
         int m_orthogonalizationInnerIterations = 25;
-        int m_projectToLandBoundaryOption;
     };
 } // namespace meshkernel

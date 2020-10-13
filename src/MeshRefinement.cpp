@@ -131,7 +131,7 @@ bool meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
 
         if (level > 0)
         {
-            bool successful = FindBrotherEdges();
+            successful = FindBrotherEdges();
             if (!successful)
             {
                 return false;
