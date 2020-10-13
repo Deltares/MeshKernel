@@ -1819,7 +1819,7 @@ meshkernel::Mesh& meshkernel::Mesh::operator+=(Mesh const& rhs)
 
     int rhsNumNodes = rhs.GetNumNodes();
     int rhsNumEdges = rhs.GetNumEdges();
-    ResizeVectorIfNeeded(GetNumEdges() + rhsNumEdges, m_edges, {doubleMissingValue, doubleMissingValue});
+    ResizeVectorIfNeeded(GetNumEdges() + rhsNumEdges, m_edges, {intMissingValue, intMissingValue});
     ResizeVectorIfNeeded(GetNumNodes() + rhsNumNodes, m_nodes, {doubleMissingValue, doubleMissingValue});
 
     //copy mesh nodes

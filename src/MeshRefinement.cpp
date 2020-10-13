@@ -356,7 +356,6 @@ bool meshkernel::MeshRefinement::RemoveIsolatedHangingnodes(int& numRemovedIsola
             }
 
             //delete node
-            //m_mesh->m_nodesNumEdges[commonNode] = 0;
             m_mesh->DeleteNode(commonNode);
 
             m_mesh->DeleteEdge(brotherEdgeIndex);
