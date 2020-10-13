@@ -28,8 +28,6 @@
 #pragma once
 
 #include <vector>
-#include <iostream>
-#include <algorithm>
 #include "Operations.cpp"
 #include "Entities.hpp"
 #include "Mesh.hpp"

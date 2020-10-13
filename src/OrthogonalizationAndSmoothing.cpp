@@ -28,7 +28,6 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include <string>
 
 #include "Operations.cpp"
 #include "Smoother.hpp"
@@ -44,22 +43,15 @@ meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::sh
                                                                          std::shared_ptr<Orthogonalizer> orthogonalizer,
                                                                          std::shared_ptr<Polygons> polygon,
                                                                          std::shared_ptr<LandBoundaries> landBoundaries,
-                                                                         int isTriangulationRequired,
-                                                                         int isAccountingForLandBoundariesRequired,
                                                                          int projectToLandBoundaryOption,
                                                                          const meshkernelapi::OrthogonalizationParametersNative& orthogonalizationParametersNative) : m_mesh(mesh),
                                                                                                                                                                       m_smoother(smoother),
                                                                                                                                                                       m_orthogonalizer(orthogonalizer),
                                                                                                                                                                       m_polygons(polygon),
                                                                                                                                                                       m_landBoundaries(landBoundaries),
-                                                                                                                                                                      m_projectToLandBoundaryOption(projectToLandBoundaryOption)
+                                                                                                                                                                      m_projectToLandBoundaryOption(projectToLandBoundaryOption),
+                                                                                                                                                                      m_orthogonalizationParametersNative(orthogonalizationParametersNative)
 {
-    m_orthogonalizationToSmoothingFactor = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor;
-    m_orthogonalizationToSmoothingFactorBoundary = orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary;
-    m_smoothorarea = orthogonalizationParametersNative.Smoothorarea;
-    m_orthogonalizationOuterIterations = orthogonalizationParametersNative.OuterIterations;
-    m_orthogonalizationBoundaryIterations = orthogonalizationParametersNative.BoundaryIterations;
-    m_orthogonalizationInnerIterations = orthogonalizationParametersNative.InnerIterations;
 }
 
 bool meshkernel::OrthogonalizationAndSmoothing::Initialize()
@@ -78,7 +70,7 @@ bool meshkernel::OrthogonalizationAndSmoothing::Initialize()
     }
 
     // TODO: calculate volume weights for areal smoother
-    m_mumax = (1.0 - m_smoothorarea) * 0.5;
+    m_mumax = (1.0 - m_orthogonalizationParametersNative.Smoothorarea) * 0.5;
     m_mu = std::min(1e-2, m_mumax);
     m_orthogonalCoordinates.resize(m_mesh->GetNumNodes());
 
@@ -96,7 +88,7 @@ bool meshkernel::OrthogonalizationAndSmoothing::Initialize()
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops)
     if (m_mesh->m_projection == Projections::sphericalAccurate)
     {
-        if (m_orthogonalizationToSmoothingFactor < 1.0)
+        if (m_orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor < 1.0)
         {
             bool successful = PrapareOuterIteration();
             if (!successful)
@@ -122,7 +114,7 @@ bool meshkernel::OrthogonalizationAndSmoothing::Compute()
 {
     bool successful = true;
 
-    for (auto outerIter = 0; outerIter < m_orthogonalizationOuterIterations; outerIter++)
+    for (auto outerIter = 0; outerIter < m_orthogonalizationParametersNative.OuterIterations; outerIter++)
     {
         if (successful)
         {
@@ -132,9 +124,9 @@ bool meshkernel::OrthogonalizationAndSmoothing::Compute()
                 return false;
             }
         }
-        for (auto boundaryIter = 0; boundaryIter < m_orthogonalizationBoundaryIterations; boundaryIter++)
+        for (auto boundaryIter = 0; boundaryIter < m_orthogonalizationParametersNative.BoundaryIterations; boundaryIter++)
         {
-            for (auto innerIter = 0; innerIter < m_orthogonalizationInnerIterations; innerIter++)
+            for (auto innerIter = 0; innerIter < m_orthogonalizationParametersNative.InnerIterations; innerIter++)
             {
                 if (successful)
                 {
@@ -149,8 +141,6 @@ bool meshkernel::OrthogonalizationAndSmoothing::Compute()
             successful = FinalizeOuterIteration();
         }
     } // outer iter
-
-    DeallocateLinearSystem();
 
     return true;
 }
@@ -215,19 +205,6 @@ bool meshkernel::OrthogonalizationAndSmoothing::AllocateLinearSystem()
     return successful;
 }
 
-bool meshkernel::OrthogonalizationAndSmoothing::DeallocateLinearSystem()
-{
-    m_compressedRhs.resize(0);
-    m_compressedEndNodeIndex.resize(0);
-    m_compressedStartNodeIndex.resize(0);
-    m_compressedNodesNodes.resize(0);
-    m_compressedWeightX.resize(0);
-    m_compressedWeightY.resize(0);
-    m_nodeCacheSize = 0;
-
-    return true;
-}
-
 bool meshkernel::OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 {
     m_mu = std::min(2.0 * m_mu, m_mumax);
@@ -243,7 +220,7 @@ bool meshkernel::OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 
 bool meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
-    double max_aptf = std::max(m_orthogonalizationToSmoothingFactorBoundary, m_orthogonalizationToSmoothingFactor);
+    const double max_aptf = std::max(m_orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary, m_orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor);
 #pragma omp parallel for
     for (int n = 0; n < m_mesh->GetNumNodes(); n++)
     {
@@ -256,7 +233,7 @@ bool meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             continue;
         }
 
-        const double atpfLoc = m_mesh->m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationToSmoothingFactor;
+        const double atpfLoc = m_mesh->m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor;
         const double atpf1Loc = 1.0 - atpfLoc;
         int maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
         auto cacheIndex = m_compressedEndNodeIndex[n];
@@ -382,10 +359,10 @@ bool meshkernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
 
             //Project the moved boundary point back onto the closest original edge (either between 0 and 2 or 0 and 3)
             double rl2 = 0.0;
-            double dis2 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2, m_mesh->m_projection);
+            const auto dis2 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2, m_mesh->m_projection);
 
             double rl3 = 0.0;
-            double dis3 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3, m_mesh->m_projection);
+            const auto dis3 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3, m_mesh->m_projection);
 
             if (dis2 < dis3)
             {

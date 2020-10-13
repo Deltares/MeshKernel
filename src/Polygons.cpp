@@ -43,7 +43,6 @@ namespace meshkernel
     Polygons::Polygons(const std::vector<Point>& polygon, Projections projection) : m_projection(projection)
     {
         ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize);
-        m_numAllocatedNodes = m_nodes.size();
 
         // find the polygons in the current list of points
         std::vector<std::vector<size_t>> indexes(polygon.size(), std::vector<size_t>(2, 0));

@@ -266,6 +266,7 @@ namespace meshkernel
         std::shared_ptr<Mesh> m_mesh;                      // A pointer to mesh
         std::shared_ptr<Polygons> m_polygons;              // A pointer to polygons
         std::vector<Point> m_nodes;                        // XLAN, YLAN, ZLAN
+        std::vector<Point> m_polygonNodesCache;            // array of points (e.g. points of a face)
         std::vector<std::vector<size_t>> m_segmentIndices; // lanseg_startend
         std::vector<std::vector<double>> m_nodesLand;      // !node to land boundary segment mapping
 
@@ -279,7 +280,7 @@ namespace meshkernel
         int m_maskDepth = 0;
 
         // caches
-        std::vector<Point> m_polygonNodesCache; // array of points (e.g. points of a face)
+
         std::vector<double> m_nodesMinDistances;
         const size_t m_allocationSize = 10000; // allocation size for allocateVector
 
