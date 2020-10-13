@@ -151,7 +151,7 @@ namespace meshkernel
         std::shared_ptr<Polygons> m_polygons;                                                 // The polygon where to perform the orthogonalization
         std::shared_ptr<LandBoundaries> m_landBoundaries;                                     // The land boundaries
         int m_projectToLandBoundaryOption;                                                    // The project to land boundary option
-        meshkernelapi::OrthogonalizationParametersNative m_orthogonalizationParametersNative; // the orthogonalization parameters
+        meshkernelapi::OrthogonalizationParametersNative m_orthogonalizationParametersNative; // The orthogonalization parameters
 
         std::vector<int> m_localCoordinatesIndexes; // Used in sphericalAccurate projection (iloc)
         std::vector<Point> m_localCoordinates;      // Used in sphericalAccurate projection (xloc,yloc)
@@ -172,11 +172,5 @@ namespace meshkernel
         double m_mumax;
         double m_mu;
         bool m_keepCircumcentersAndMassCenters = false;
-        double m_orthogonalizationToSmoothingFactor = 0.975;       // Factor between grid smoothing (0) and orthogonality (1)
-        double m_orthogonalizationToSmoothingFactorBoundary = 1.0; // ATPF_B minimum ATPF on the boundary
-        double m_smoothorarea = 1.0;                               // Factor between smoother(1.0) and area - homogenizer(0.0)
-        int m_orthogonalizationOuterIterations = 2;
-        int m_orthogonalizationBoundaryIterations = 25;
-        int m_orthogonalizationInnerIterations = 25;
     };
 } // namespace meshkernel
