@@ -1421,4 +1421,41 @@ namespace meshkernelapi
         return successful ? 0 : 1;
     }
 
+    // ec_module dll (stateless)
+
+    MKERNEL_API int averaging(MeshGeometryDimensions& meshGeometryDimensions,
+                              MeshGeometry& meshGeometry,
+                              int startIndex,
+                              double** c_sampleX,
+                              double** c_sampleY,
+                              double** c_sampleValues,
+                              int numSamples,
+                              double** c_targetValues,
+                              int locType,
+                              double Wu1Duni,
+                              int averagingMethod,
+                              int minNumSamples,
+                              double relativeSearchSize,
+                              int jsferic,
+                              int jasfer3D)
+    {
+        //Build the mesh
+
+        // construct averaging
+
+        // Averaging.Compute()
+
+        //// set the results
+        //for (int i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
+        //{
+        //    if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
+        //    {
+        //        (*selectedVertices)[index] = i;
+        //        index++;
+        //    }
+        //}
+
+        return 0;
+    }
+
 } // namespace meshkernelapi

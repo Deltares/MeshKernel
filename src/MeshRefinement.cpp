@@ -59,13 +59,7 @@ bool meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
         isRefinementBasedOnSamples = true;
 
         m_subtractedSample.resize(sample.size(), false);
-        // build the R-Tree
-        std::vector<Point> points(sample.size());
-        for (int i = 0; i < sample.size(); i++)
-        {
-            points[i] = {sample[i].x, sample[i].y};
-        }
-        m_samplesRTree.BuildTree(points);
+        m_samplesRTree.BuildTree(sample);
 
         m_deltaTimeMaxCourant = sampleRefineParametersNative.MinimumCellSize / std::sqrt(gravity);
         m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
@@ -988,11 +982,12 @@ bool meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPo
     }
 
     // compute all lengths
-    m_polygonEdgesLengthsCache.resize(numPolygonNodes);
+    m_polygonEdgesLengthsCache.reserve(std::max(m_polygonEdgesLengthsCache.capacity(), size_t(numPolygonNodes)));
+    m_polygonEdgesLengthsCache.clear();
     for (int i = 0; i < numPolygonNodes; i++)
     {
         int edgeIndex = m_edgeIndicesCache[i];
-        m_polygonEdgesLengthsCache[i] = m_mesh->m_edgeLengths[edgeIndex];
+        m_polygonEdgesLengthsCache.push_back(m_mesh->m_edgeLengths[edgeIndex]);
     }
 
     //find center of mass
@@ -1118,7 +1113,7 @@ bool meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPo
 double meshkernel::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod, Point centerOfMass)
 {
     double refinementValue = 0.0;
-    bool successful = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh->m_projection, m_samplesRTree, averagingMethod, refinementValue);
+    bool successful = AveragingOnPolygon(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh->m_projection, m_samplesRTree, averagingMethod, refinementValue);
     if (!successful)
     {
         return doubleMissingValue;

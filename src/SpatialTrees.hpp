@@ -64,13 +64,14 @@ namespace meshkernel
             typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;
 
         public:
-            bool BuildTree(std::vector<Point>& nodes)
+            template <typename T>
+            bool BuildTree(std::vector<T>& nodes)
             {
                 m_points.reserve(std::max(m_points.capacity(), m_points.size()));
                 m_points.clear();
                 for (int n = 0; n < nodes.size(); ++n)
                 {
-                    if (nodes[n].IsValid())
+                    if (nodes[n].x != doubleMissingValue && nodes[n].y != doubleMissingValue)
                     {
                         m_points.push_back(std::make_pair(Point2D{nodes[n].x, nodes[n].y}, n));
                     }

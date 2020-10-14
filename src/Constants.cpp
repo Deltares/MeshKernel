@@ -82,4 +82,11 @@ namespace meshkernel
         KdTree = 7
     };
 
+    enum LocationTypes
+    {
+        CircumCenters = 0,
+        Nodes = 1,
+        Edges = 2
+    };
+
 } // namespace meshkernel

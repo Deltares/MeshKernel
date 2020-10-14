@@ -1220,15 +1220,22 @@ namespace meshkernel
         return true;
     }
 
-    static bool Averaging(const std::vector<Sample>& samples,
-                          int numPolygonNodes,
-                          const std::vector<Point>& polygon,
-                          const Point centerOfMass,
-                          const Projections& projection,
-                          SpatialTrees::RTree& rtree,
-                          int averagingMethod,
-                          double& result)
+    //averaging
+    static bool AveragingOnPolygon(const std::vector<Sample>& samples,
+                                   int numPolygonNodes,
+                                   const std::vector<Point>& polygon,
+                                   const Point interpolationPoint,
+                                   const Projections& projection,
+                                   SpatialTrees::RTree& rtree,
+                                   int averagingMethod,
+                                   double& result)
     {
+
+        if (!interpolationPoint.IsValid())
+        {
+            return false;
+        }
+
         std::vector<Point> searchPolygon(numPolygonNodes);
 
         // averaging settings
@@ -1240,7 +1247,7 @@ namespace meshkernel
 
         for (int i = 0; i < numPolygonNodes; i++)
         {
-            searchPolygon[i] = polygon[i] * relativeFaceSearchSize + centerOfMass * (1 - relativeFaceSearchSize);
+            searchPolygon[i] = polygon[i] * relativeFaceSearchSize + interpolationPoint * (1.0 - relativeFaceSearchSize);
             minx = std::min(minx, searchPolygon[i].x);
             maxx = std::max(maxx, searchPolygon[i].x);
             miny = std::min(miny, searchPolygon[i].y);
@@ -1268,7 +1275,7 @@ namespace meshkernel
         double searchRadiusSquared = std::numeric_limits<double>::min();
         for (int i = 0; i < numPolygonNodes; i++)
         {
-            double squaredDistance = ComputeSquaredDistance(centerOfMass, searchPolygon[i], projection);
+            double squaredDistance = ComputeSquaredDistance(interpolationPoint, searchPolygon[i], projection);
             searchRadiusSquared = std::max(searchRadiusSquared, squaredDistance);
         }
         if (searchRadiusSquared <= 0.0)
@@ -1276,7 +1283,7 @@ namespace meshkernel
             return true;
         }
 
-        rtree.NearestNeighboursOnSquaredDistance(centerOfMass, searchRadiusSquared);
+        rtree.NearestNeighboursOnSquaredDistance(interpolationPoint, searchRadiusSquared);
         if (rtree.GetQueryResultSize() == 0)
         {
             return true;
@@ -1331,7 +1338,7 @@ namespace meshkernel
                 }
                 if (averagingMethod == InverseWeightDistance)
                 {
-                    double distance = std::max(0.01, Distance(centerOfMass, samplePoint, projection));
+                    double distance = std::max(0.01, Distance(interpolationPoint, samplePoint, projection));
                     double weight = 1.0 / distance;
                     wall += weight;
                     numValidSamplesInPolygon++;
