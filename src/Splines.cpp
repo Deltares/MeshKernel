@@ -40,17 +40,17 @@ meshkernel::Splines::Splines(Projections projection) : m_projection(projection){
 /// add a new spline, return the index
 bool meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t start, size_t size)
 {
-    ResizeVectorIfNeededWithMinimumSize(m_numSplines + 1, m_splineNodes, m_allocationSize, std::vector<Point>(10, {doubleMissingValue, doubleMissingValue}));
+    ResizeVectorIfNeededWithMinimumSize(int(m_numSplines) + 1, m_splineNodes, m_allocationSize, std::vector<Point>(10, {doubleMissingValue, doubleMissingValue}));
 
     m_numAllocatedSplines = int(m_splineNodes.size());
     m_numAllocatedSplineNodes.resize(m_numAllocatedSplines, 10);
 
     m_numSplineNodes.resize(m_numAllocatedSplines, 0);
-    m_numSplineNodes[m_numSplines] = size;
+    m_numSplineNodes[m_numSplines] = int(size);
 
     m_splineDerivatives.resize(m_numAllocatedSplines);
     int index = 0;
-    for (int n = start; n < start + size; ++n)
+    for (auto n = start; n < start + size; ++n)
     {
         m_splineNodes[m_numSplines][index] = splines[n];
         index++;
@@ -59,7 +59,7 @@ bool meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t st
 
     // compute basic properties
     SecondOrderDerivative(m_splineNodes[m_numSplines], m_numSplineNodes[m_numSplines], m_splineDerivatives[m_numSplines]);
-    m_splinesLength[m_numSplines] = GetSplineLength(m_numSplines, 0, m_numSplineNodes[m_numSplines] - 1);
+    m_splinesLength[m_numSplines] = GetSplineLength(int(m_numSplines), 0, m_numSplineNodes[m_numSplines] - 1);
     m_numSplines++;
 
     return true;
@@ -299,7 +299,8 @@ double meshkernel::Splines::GetSplineLength(int index,
     if (delta < 0.0)
     {
         delta = 1.0 / numSamples;
-        numPoints = std::max(std::floor(0.9999 + (endIndex - startIndex) / delta), 10.0);
+        // TODO: Refacor or at least document the calulation of "numPoints"
+        numPoints = int(std::max(std::floor(0.9999 + (endIndex - startIndex) / delta), 10.0));
         delta = (endIndex - startIndex) / numPoints;
     }
 

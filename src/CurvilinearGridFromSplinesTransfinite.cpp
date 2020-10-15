@@ -423,7 +423,7 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
 
     // find the first non m spline
     m_numMSplines = FindIndex(m_splineType, -1);
-    m_numNSplines = numSplines - m_numMSplines;
+    m_numNSplines = int(numSplines) - m_numMSplines;
 
     int maxExternalIterations = 10;
     for (int i = 0; i < maxExternalIterations; i++)
@@ -432,7 +432,7 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
         int maxInternalIterations = 100;
         for (int j = 0; j < maxInternalIterations; j++)
         {
-            auto successful = OrderSplines(0, m_numMSplines, m_numMSplines, numSplines);
+            auto successful = OrderSplines(0, m_numMSplines, m_numMSplines, int(numSplines));
             if (successful)
             {
                 break;
@@ -443,7 +443,7 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
         bool nSplineSortingHasNotChanged = true;
         for (int j = 0; j < maxInternalIterations; j++)
         {
-            auto successful = OrderSplines(m_numMSplines, numSplines, 0, m_numMSplines);
+            auto successful = OrderSplines(m_numMSplines, int(numSplines), 0, int(m_numMSplines));
             if (successful)
             {
                 break;

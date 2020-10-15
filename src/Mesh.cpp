@@ -103,8 +103,8 @@ bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
     // If nothing to invalidate return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
     {
-        m_numNodes = m_nodes.size();
-        m_numEdges = m_edges.size();
+        m_numNodes = int(m_nodes.size());
+        m_numEdges = int(m_edges.size());
         return true;
     }
 
@@ -140,12 +140,12 @@ bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
 
     // Remove invalid nodes
     auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) { return !n.IsValid(); });
-    m_numNodes = endNodeVector - m_nodes.begin();
+    m_numNodes = int(endNodeVector - m_nodes.begin());
     std::fill(endNodeVector, m_nodes.end(), Point{doubleMissingValue, doubleMissingValue});
 
     // Remove invalid edges
     auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) { return e.first < 0 || e.second < 0; });
-    m_numEdges = endEdgeVector - m_edges.begin();
+    m_numEdges = int(endEdgeVector - m_edges.begin());
     std::fill(endEdgeVector, m_edges.end(), std::make_pair<int, int>(-1, -1));
 
     return true;
@@ -177,10 +177,10 @@ bool meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
         return true;
     }
 
-    ResizeVectorIfNeeded(m_nodes.size(), m_nodesEdges);
+    ResizeVectorIfNeeded(int(m_nodes.size()), m_nodesEdges);
     std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<int>(maximumNumberOfEdgesPerNode, 0));
 
-    ResizeVectorIfNeeded(m_nodes.size(), m_nodesNumEdges);
+    ResizeVectorIfNeeded(int(m_nodes.size()), m_nodesNumEdges);
     std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(), 0);
 
     NodeAdministration();
@@ -197,10 +197,10 @@ bool meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 
     // face administration
     m_numFaces = 0;
-    ResizeVectorIfNeeded(m_edges.size(), m_edgesNumFaces);
+    ResizeVectorIfNeeded(int(m_edges.size()), m_edgesNumFaces);
     std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
 
-    ResizeVectorIfNeeded(m_edges.size(), m_edgesFaces);
+    ResizeVectorIfNeeded(int(m_edges.size()), m_edgesFaces);
     std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<int>(2, -1));
 
     m_facesNodes.resize(0);
@@ -1020,8 +1020,8 @@ bool meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& m
 
             OriginXCoordinate = referencePoint.x + xShift;
             OriginYCoordinate = referencePoint.y + yShift;
-            numN = std::ceil((etamax - etamin) / XGridBlockSize) + 1;
-            numM = std::ceil((xmax - xmin) / YGridBlockSize) + 1;
+            numN = int(std::ceil((etamax - etamin) / XGridBlockSize)) + 1;
+            numM = int(std::ceil((xmax - xmin) / YGridBlockSize)) + 1;
         }
 
         CurvilinearGrid.Set(numN, numM);
@@ -1137,7 +1137,7 @@ bool meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     {
         m_nodesRTree.NearestNeighboursOnSquaredDistance(filteredNodes[i], mergingDistanceSquared);
 
-        int resultSize = m_nodesRTree.GetQueryResultSize();
+        auto resultSize = m_nodesRTree.GetQueryResultSize();
         if (resultSize > 1)
         {
             for (int j = 0; j < m_nodesRTree.GetQueryResultSize(); j++)
@@ -1553,7 +1553,7 @@ bool meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius, int& verte
 
     double const searchRadiusSquared = searchRadius * searchRadius;
     m_nodesRTree.NearestNeighboursOnSquaredDistance(point, searchRadiusSquared);
-    int resultSize = m_nodesRTree.GetQueryResultSize();
+    auto resultSize = m_nodesRTree.GetQueryResultSize();
     if (resultSize >= 1)
     {
         vertexIndex = m_nodesRTree.GetQuerySampleIndex(0);

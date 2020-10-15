@@ -129,7 +129,7 @@ namespace meshkernel
         while (begin < m_nodes.size())
         {
             size_t found = begin;
-            for (int n = begin; n < m_nodes.size(); n++)
+            for (size_t n = begin; n < m_nodes.size(); n++)
             {
                 if (!m_nodes[n].IsValid())
                 {
@@ -331,7 +331,7 @@ namespace meshkernel
                     Point pointOnLandBoundary;
                     int nearestLandBoundaryNodeIndex = -1;
                     double edgeRatio;
-                    bool successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[meshNode], 0, m_nodes.size(), minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio);
+                    bool successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[meshNode], 0, int(m_nodes.size()), minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio);
 
                     if (!successful)
                     {
@@ -359,12 +359,12 @@ namespace meshkernel
                         if (m_addLandboundaries)
                         {
                             AddLandBoundary(nodesLoc, numNodesLoc, lastVisitedNode);
-                            m_meshNodesLandBoundarySegments[meshNode] = m_segmentIndices.size() - 1; //last added ;and boundary
+                            m_meshNodesLandBoundarySegments[meshNode] = int(m_segmentIndices.size()) - 1; //last added ;and boundary
                         }
                     }
                     else
                     {
-                        m_meshNodesLandBoundarySegments[meshNode] = landboundarySegmentIndex;
+                        m_meshNodesLandBoundarySegments[meshNode] = int(landboundarySegmentIndex);
                     }
                 }
             }
@@ -462,13 +462,13 @@ namespace meshkernel
         // fractional location of the projected outer nodes(min and max) on the land boundary segment
         double leftEdgeRatio = 1.0;
         double rightEdgeRatio = 0.0;
-        int leftIndex = endLandBoundaryIndex - 1;
-        int rightIndex = startLandBoundaryIndex;
+        int leftIndex = int(endLandBoundaryIndex) - 1;
+        int rightIndex = int(startLandBoundaryIndex);
 
         bool successful = ComputeMask(landBoundarySegment,
                                       meshBoundOnly,
-                                      startLandBoundaryIndex,
-                                      endLandBoundaryIndex,
+                                      int(startLandBoundaryIndex),
+                                      int(endLandBoundaryIndex),
                                       leftIndex,
                                       rightIndex,
                                       leftEdgeRatio,
@@ -481,7 +481,7 @@ namespace meshkernel
 
         int startMeshNode = -1;
         int endMeshNode = -1;
-        successful = FindStartEndMeshNodes(endLandBoundaryIndex,
+        successful = FindStartEndMeshNodes(int(endLandBoundaryIndex),
                                            leftIndex,
                                            rightIndex,
                                            leftEdgeRatio,
@@ -496,7 +496,7 @@ namespace meshkernel
             return false;
 
         std::vector<int> connectedNodes;
-        successful = ShortestPath(landBoundarySegment, startLandBoundaryIndex, endLandBoundaryIndex, startMeshNode, meshBoundOnly, connectedNodes);
+        successful = ShortestPath(landBoundarySegment, int(startLandBoundaryIndex), int(endLandBoundaryIndex), startMeshNode, meshBoundOnly, connectedNodes);
         if (!successful)
             return false;
 
@@ -525,12 +525,12 @@ namespace meshkernel
                 auto previousEndMeshNode = m_segmentIndices[previousLandBoundarySegment][1];
                 double previousMinDistance;
 
-                successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], previousStartMeshNode, previousEndMeshNode,
+                successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], int(previousStartMeshNode), int(previousEndMeshNode),
                                                      previousMinDistance, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
                 if (!successful)
                     return false;
 
-                successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], startLandBoundaryIndex, endLandBoundaryIndex,
+                successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], int(startLandBoundaryIndex), int(endLandBoundaryIndex),
                                                      distanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
                 if (!successful)
                     return false;
@@ -547,7 +547,7 @@ namespace meshkernel
             {
                 if (m_nodesMinDistances[currentNode] == doubleMissingValue)
                 {
-                    successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], 0, m_nodes.size(),
+                    successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], 0, int(m_nodes.size()),
                                                          minDinstanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
                     if (!successful)
                         return false;
@@ -558,7 +558,7 @@ namespace meshkernel
                     minDinstanceFromLandBoundary = m_nodesMinDistances[currentNode];
                 }
 
-                successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], startLandBoundaryIndex, endLandBoundaryIndex,
+                successful = NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], int(startLandBoundaryIndex), int(endLandBoundaryIndex),
                                                      distanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
                 if (!successful)
                     return false;
@@ -589,11 +589,6 @@ namespace meshkernel
                 numConnectedNodes += 1;
 
                 m_meshNodesLandBoundarySegments[lastNode] = landBoundarySegment;
-            }
-
-            if (stopPathSearch && numConnectedNodes == 1)
-            {
-                m_meshNodesLandBoundarySegments[lastSegment];
             }
 
             if (currentNode == startMeshNode)
@@ -1381,8 +1376,8 @@ namespace meshkernel
 
                 bool successful = NearestLandBoundaryNode(m_mesh->m_projection,
                                                           m_mesh->m_nodes[n],
-                                                          m_segmentIndices[meshNodeToLandBoundarySegment][0],
-                                                          m_segmentIndices[meshNodeToLandBoundarySegment][1],
+                                                          int(m_segmentIndices[meshNodeToLandBoundarySegment][0]),
+                                                          int(m_segmentIndices[meshNodeToLandBoundarySegment][1]),
                                                           minimumDistance,
                                                           pointOnLandBoundary,
                                                           nearestLandBoundaryNodeIndex,
