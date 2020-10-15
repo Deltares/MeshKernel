@@ -463,7 +463,7 @@ namespace meshkernel
         double leftEdgeRatio = 1.0;
         double rightEdgeRatio = 0.0;
         int leftIndex = int(endLandBoundaryIndex) - 1;
-        int rightIndex = int(startLandBoundaryIndex);
+        auto rightIndex = int(startLandBoundaryIndex);
 
         bool successful = ComputeMask(landBoundarySegment,
                                       meshBoundOnly,

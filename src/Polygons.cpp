@@ -65,7 +65,7 @@ namespace meshkernel
         m_numAllocatedNodes = int(m_nodes.size());
         m_numNodes = int(m_nodes.size());
 
-        int numPolygons = int(m_indices.size());
+        auto numPolygons = int(m_indices.size());
         ResizeVectorIfNeeded(numPolygons + int(indexes.size()), m_indices, std::vector<int>(2, 0));
         for (int p = 0; p < indexes.size(); p++)
         {
@@ -273,7 +273,7 @@ namespace meshkernel
             // average triangle size
             double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
-            int numberOfTriangles = int(safetySize * localPolygonArea / averageTriangleArea);
+            auto numberOfTriangles = int(safetySize * localPolygonArea / averageTriangleArea);
 
             if (numberOfTriangles <= 0)
             {
@@ -373,7 +373,7 @@ namespace meshkernel
             nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
         }
 
-        int numNodesRefinedPart = int(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex));
+        auto numNodesRefinedPart = int(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex));
         int numNodesNotRefinedPart = startIndex - m_indices[polygonIndex][0] + m_indices[polygonIndex][1] - endIndex;
         int totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
         refinedPolygon.resize(totalNumNodes);
