@@ -36,7 +36,7 @@ TEST(Splines, CubicSplineInterpolation)
 
     int pointsBetweenVertices = 20;
     std::vector<meshkernel::Point> coordinatesDerivatives(splineNodes.size());
-    meshkernel::Splines::SecondOrderDerivative(splineNodes, splineNodes.size(), coordinatesDerivatives);
+    meshkernel::Splines::SecondOrderDerivative(splineNodes, int(splineNodes.size()), coordinatesDerivatives);
     std::vector<meshkernel::Point> splineCoordinates;
 
     for (int n = 0; n < splineNodes.size() - 1; n++)

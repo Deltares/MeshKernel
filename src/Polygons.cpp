@@ -54,19 +54,19 @@ namespace meshkernel
         int currentNodePosition = numNodes;
         if (currentNodePosition != 0)
         {
-            ResizeVectorIfNeeded(numNodes + 1 + polygon.size(), m_nodes);
+            ResizeVectorIfNeeded(numNodes + 1 + int(polygon.size()), m_nodes);
             m_nodes[currentNodePosition] = {doubleMissingValue, doubleMissingValue};
         }
         else
         {
-            ResizeVectorIfNeeded(polygon.size(), m_nodes);
+            ResizeVectorIfNeeded(int(polygon.size()), m_nodes);
         }
 
-        m_numAllocatedNodes = m_nodes.size();
-        m_numNodes = m_nodes.size();
+        m_numAllocatedNodes = int(m_nodes.size());
+        m_numNodes = int(m_nodes.size());
 
-        int numPolygons = m_indices.size();
-        ResizeVectorIfNeeded(numPolygons + indexes.size(), m_indices, std::vector<int>(2, 0));
+        auto numPolygons = int(m_indices.size());
+        ResizeVectorIfNeeded(numPolygons + int(indexes.size()), m_indices, std::vector<int>(2, 0));
         for (int p = 0; p < indexes.size(); p++)
         {
             int indexInIndexes = 0;
@@ -76,14 +76,14 @@ namespace meshkernel
                 currentNodePosition++;
             }
 
-            for (int n = indexes[p][0]; n <= indexes[p][1]; n++)
+            for (auto n = indexes[p][0]; n <= indexes[p][1]; n++)
             {
                 m_nodes[currentNodePosition] = polygon[indexes[p][0] + indexInIndexes];
                 indexInIndexes++;
                 currentNodePosition++;
             }
-            m_indices[numPolygons + p][0] = indexes[p][0] + numNodes;
-            m_indices[numPolygons + p][1] = indexes[p][1] + numNodes;
+            m_indices[numPolygons + p][0] = int(indexes[p][0]) + numNodes;
+            m_indices[numPolygons + p][1] = int(indexes[p][1]) + numNodes;
         }
     }
 
@@ -151,7 +151,7 @@ namespace meshkernel
             // There is a nonempty second tail, so reverse the first tail, so that they connect.
             if (numNodesBoundaryPolygons > numNodesFirstTail)
             {
-                const int start = startPolygonEdges + std::ceil((numNodesFirstTail - startPolygonEdges + 1) / 2.0);
+                const int start = startPolygonEdges + int(std::ceil((numNodesFirstTail - startPolygonEdges + 1) / 2.0));
                 Point backupPoint;
                 for (int n = start; n < numNodesFirstTail; n++)
                 {
@@ -273,7 +273,7 @@ namespace meshkernel
             // average triangle size
             double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
-            int numberOfTriangles = safetySize * localPolygonArea / averageTriangleArea;
+            auto numberOfTriangles = int(safetySize * localPolygonArea / averageTriangleArea);
 
             if (numberOfTriangles <= 0)
             {
@@ -373,7 +373,7 @@ namespace meshkernel
             nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
         }
 
-        int numNodesRefinedPart = std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (int(endIndex) - int(startIndex));
+        auto numNodesRefinedPart = int(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex));
         int numNodesNotRefinedPart = startIndex - m_indices[polygonIndex][0] + m_indices[polygonIndex][1] - endIndex;
         int totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
         refinedPolygon.resize(totalNumNodes);
