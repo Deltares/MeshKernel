@@ -258,7 +258,7 @@ bool meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             }
             else
             {
-                m_compressedNodesNodes[cacheIndex] = m_smoother->GetCoonectedNodeIndex(n, nn);
+                m_compressedNodesNodes[cacheIndex] = int(m_smoother->GetCoonectedNodeIndex(n, nn));
             }
 
             m_compressedWeightX[cacheIndex] = wwx;

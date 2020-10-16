@@ -1770,7 +1770,7 @@ bool meshkernel::CurvilinearGridFromSplines::MakeAllGridLines()
         m_leftGridLineIndex[s] = gridLineIndex;
 
         int numM = 0;
-        bool successful = MakeGridLine(s, gridLineIndex, m_gridLine, m_gridLineDimensionalCoordinates, numM);
+        bool successful = MakeGridLine(int(s), gridLineIndex, m_gridLine, m_gridLineDimensionalCoordinates, numM);
         if (!successful)
         {
             return false;
@@ -1874,7 +1874,7 @@ bool meshkernel::CurvilinearGridFromSplines::ComputeSplineProperties(const bool 
 
     for (size_t s = 0; s < m_splines->m_numSplines; ++s)
     {
-        successful = GetSplineIntersections(s);
+        successful = GetSplineIntersections(int(s));
 
         if (!successful)
         {
@@ -1962,7 +1962,7 @@ bool meshkernel::CurvilinearGridFromSplines::ComputeHeights()
         }
         for (int j = 0; j < m_numCrossingSplines[i]; ++j)
         {
-            bool successful = ComputeSubHeights(i, j);
+            bool successful = ComputeSubHeights(int(i), j);
             if (!successful)
             {
                 return false;
