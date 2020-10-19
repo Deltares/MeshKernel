@@ -46,6 +46,7 @@
 #include "Smoother.hpp"
 #include "Splines.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
+#include "Averaging.hpp"
 
 // The vector containing the mesh instances
 static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;
@@ -1046,12 +1047,35 @@ namespace meshkernelapi
             return 0;
         }
 
-        meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId]);
+        meshkernel::AveragingMethod averagingMethod;
+        if (sampleRefineParametersNative.RefinementType == 2)
+        {
+            averagingMethod = meshkernel::MinAbsValue;
+        }
+        if (sampleRefineParametersNative.RefinementType == 3)
+        {
+
+            averagingMethod = meshkernel::Max;
+        }
+
+        const bool refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
+        const bool transformSamples = sampleRefineParametersNative.RefinementType == 3 ? true : false;
+
+        const auto averaging = std::make_shared<meshkernel::Averaging>(meshInstances[meshKernelId],
+                                                                       samples,
+                                                                       averagingMethod,
+                                                                       meshkernel::Faces,
+                                                                       1.0,
+                                                                       1,
+                                                                       refineOutsideFace,
+                                                                       transformSamples);
+
+        meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], averaging);
 
         // polygon could be passed as api parameter
         meshkernel::Polygons polygon;
 
-        successful = meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+        successful = meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
         if (!successful)
         {
             return -1;
@@ -1085,9 +1109,8 @@ namespace meshkernelapi
         meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId]);
 
         // polygon could be passed as api parameter
-        std::vector<meshkernel::Sample> samples;
         SampleRefineParametersNative sampleRefineParametersNative;
-        successful = meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+        successful = meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
         if (!successful)
         {
             return -1;
@@ -1419,6 +1442,84 @@ namespace meshkernelapi
         *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
 
         return successful ? 0 : 1;
+    }
+
+    // ec_module dll (stateless)
+    MKERNEL_API int averaging(MeshGeometryDimensions& meshGeometryDimensions,
+                              MeshGeometry& meshGeometry,
+                              int startIndex,
+                              double** samplesXCoordinate,
+                              double** samplesYCoordinate,
+                              double** samplesValue,
+                              int numSamples,
+                              double** results,
+                              int locationType,
+                              double Wu1Duni,
+                              int averagingMethod,
+                              int minNumberOfSamples,
+                              double relativeSearchSize,
+                              int spherical,
+                              int sphericalAccurate)
+    {
+        // Build the mesh
+        std::vector<meshkernel::Edge> edges(meshGeometryDimensions.numedge);
+        int ei = 0;
+        for (int e = 0; e < edges.size(); e++)
+        {
+            edges[e].first = meshGeometry.edge_nodes[ei];
+            ei++;
+            edges[e].second = meshGeometry.edge_nodes[ei];
+            ei++;
+        }
+
+        std::vector<meshkernel::Point> nodes(meshGeometryDimensions.numnode);
+        for (int n = 0; n < nodes.size(); n++)
+        {
+            nodes[n].x = meshGeometry.nodex[n];
+            nodes[n].y = meshGeometry.nodey[n];
+        }
+
+        auto mesh = std::make_shared<meshkernel::Mesh>();
+
+        auto projection = meshkernel::Projections::cartesian;
+        if (spherical == 1)
+        {
+            projection = meshkernel::Projections::spherical;
+        }
+        if (sphericalAccurate == 1)
+        {
+            projection = meshkernel::Projections::sphericalAccurate;
+        }
+
+        mesh->Set(edges, nodes, projection);
+
+        // Build the samples
+        std::vector<meshkernel::Sample> samples(numSamples);
+        for (size_t i = 0u; i < samples.size(); ++i)
+        {
+            samples[i].x = (*samplesXCoordinate)[i];
+            samples[i].y = (*samplesYCoordinate)[i];
+            samples[i].value = (*samplesValue)[i];
+        }
+
+        // Execute averaging
+        meshkernel::Averaging averaging(mesh,
+                                        samples,
+                                        meshkernel::AveragingMethod(averagingMethod),
+                                        meshkernel::InterpolationLocation(locationType),
+                                        relativeSearchSize,
+                                        minNumberOfSamples,
+                                        false, false);
+        averaging.Compute();
+
+        // Get the results and copy them to the result vector
+        auto interpolationResults = averaging.GetResults();
+        for (size_t i = 0u; i < interpolationResults.size(); ++i)
+        {
+            (*results)[i] = interpolationResults[i];
+        }
+
+        return 0;
     }
 
 } // namespace meshkernelapi

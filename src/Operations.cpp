@@ -291,11 +291,13 @@ namespace meshkernel
         {
             return true;
         }
+
         const int currentPolygonSize = endNode - startNode + 1;
         if (polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }
+
         if (polygonNodes[startNode] != polygonNodes[endNode])
         {
             return false;
@@ -808,7 +810,7 @@ namespace meshkernel
 
         if (projection == Projections::spherical)
         {
-            double maxX = std::numeric_limits<double>::min();
+            double maxX = std::numeric_limits<double>::lowest();
             for (int i = 0; i < numPoints; i++)
             {
                 maxX = std::max(polygon[i].x, maxX);
@@ -1171,6 +1173,11 @@ namespace meshkernel
             return false;
         }
 
+        if (polygon[0] != polygon[numberOfPolygonPoints])
+        {
+            return false;
+        }
+
         double minX;
         double minY;
         ReferencePoint(polygon, numberOfPolygonPoints, minX, minY, projection);
@@ -1216,144 +1223,6 @@ namespace meshkernel
         centerOfMass.y = yCenterOfMass + minY;
 
         area = std::abs(area);
-
-        return true;
-    }
-
-    static bool Averaging(const std::vector<Sample>& samples,
-                          int numPolygonNodes,
-                          const std::vector<Point>& polygon,
-                          const Point centerOfMass,
-                          const Projections& projection,
-                          SpatialTrees::RTree& rtree,
-                          int averagingMethod,
-                          double& result)
-    {
-        std::vector<Point> searchPolygon(numPolygonNodes);
-
-        // averaging settings
-        const double relativeFaceSearchSize = 1.01;
-        double minx = std::numeric_limits<double>::max();
-        double maxx = std::numeric_limits<double>::min();
-        double miny = std::numeric_limits<double>::max();
-        double maxy = std::numeric_limits<double>::min();
-
-        for (int i = 0; i < numPolygonNodes; i++)
-        {
-            searchPolygon[i] = polygon[i] * relativeFaceSearchSize + centerOfMass * (1 - relativeFaceSearchSize);
-            minx = std::min(minx, searchPolygon[i].x);
-            maxx = std::max(maxx, searchPolygon[i].x);
-            miny = std::min(miny, searchPolygon[i].y);
-            maxy = std::max(maxy, searchPolygon[i].y);
-        }
-
-        if (projection == Projections::spherical && maxx - minx > 180.0)
-        {
-
-            double xmean = 0.5 * (maxx + minx);
-            minx = std::numeric_limits<double>::max();
-            maxx = std::numeric_limits<double>::min();
-            for (int i = 0; i < numPolygonNodes; i++)
-            {
-                if (searchPolygon[i].x < xmean)
-                {
-                    searchPolygon[i].x = searchPolygon[i].x + 360.0;
-                    minx = std::min(minx, searchPolygon[i].x);
-                    maxx = std::max(maxx, searchPolygon[i].x);
-                }
-            }
-        }
-
-        result = doubleMissingValue;
-        double searchRadiusSquared = std::numeric_limits<double>::min();
-        for (int i = 0; i < numPolygonNodes; i++)
-        {
-            double squaredDistance = ComputeSquaredDistance(centerOfMass, searchPolygon[i], projection);
-            searchRadiusSquared = std::max(searchRadiusSquared, squaredDistance);
-        }
-        if (searchRadiusSquared <= 0.0)
-        {
-            return true;
-        }
-
-        rtree.NearestNeighboursOnSquaredDistance(centerOfMass, searchRadiusSquared);
-        if (rtree.GetQueryResultSize() == 0)
-        {
-            return true;
-        }
-
-        int numValidSamplesInPolygon = 0;
-        double wall = 0;
-        bool firstValidSampleFound = false;
-
-        for (int i = 0; i < rtree.GetQueryResultSize(); i++)
-        {
-            //do stuff based on the averaging method
-            auto sampleIndex = rtree.GetQuerySampleIndex(i);
-            auto sampleValue = samples[sampleIndex].value;
-            if (sampleValue <= doubleMissingValue)
-            {
-                continue;
-            }
-
-            Point samplePoint{samples[sampleIndex].x, samples[sampleIndex].y};
-            // assume here polygon has a size equal to numPolygonNodes + 1
-            bool isInPolygon = IsPointInPolygonNodes(samplePoint, polygon, 0, numPolygonNodes);
-            if (isInPolygon)
-            {
-                if (averagingMethod == SimpleAveraging)
-                {
-                    if (!firstValidSampleFound)
-                    {
-                        firstValidSampleFound = true;
-                        result = 0.0;
-                    }
-                    result += sampleValue;
-                    numValidSamplesInPolygon++;
-                }
-                if (averagingMethod == KdTree)
-                {
-                    if (!firstValidSampleFound)
-                    {
-                        firstValidSampleFound = true;
-                        result = sampleValue;
-                    }
-                    result = std::min(std::abs(result), std::abs(sampleValue));
-                }
-                if (averagingMethod == Max)
-                {
-                    if (!firstValidSampleFound)
-                    {
-                        firstValidSampleFound = true;
-                        result = -std::numeric_limits<double>::max();
-                    }
-                    result = std::max(result, sampleValue);
-                }
-                if (averagingMethod == InverseWeightDistance)
-                {
-                    double distance = std::max(0.01, Distance(centerOfMass, samplePoint, projection));
-                    double weight = 1.0 / distance;
-                    wall += weight;
-                    numValidSamplesInPolygon++;
-                    result += weight * sampleValue;
-                }
-            }
-        }
-
-        if (averagingMethod == SimpleAveraging && numValidSamplesInPolygon > 0)
-        {
-            if (result > doubleMissingValue)
-            {
-                result /= numValidSamplesInPolygon;
-            }
-            return true;
-        }
-
-        if (averagingMethod == InverseWeightDistance && numValidSamplesInPolygon > 0)
-        {
-            result /= wall;
-            return true;
-        }
 
         return true;
     }

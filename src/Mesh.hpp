@@ -419,6 +419,17 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool TriangulateFaces();
 
+        /// @brief Make a dual face around the node, enlarged by a factor
+        /// @param nodeIndex
+        /// @return
+        bool MakeDualFace(int node, double enlargmentFactor, std::vector<Point>& dualFace);
+
+        /// @brief Computes the faces around a node, sorted in ccw order
+        /// @param nodeIndex
+        /// @param result
+        /// @return
+        bool SortedFacesAroundNode(int node, std::vector<int>& result) const;
+
         // nodes
         std::vector<Point> m_nodes;                 // The mesh nodes (xk, yk)
         std::vector<std::vector<int>> m_nodesEdges; // For each node, the indices of connected edges (nod%lin)

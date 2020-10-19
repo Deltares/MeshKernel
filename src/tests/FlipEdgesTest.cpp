@@ -4,6 +4,7 @@
 #include "../Constants.cpp"
 #include "../Mesh.hpp"
 #include "../FlipEdges.cpp"
+#include "MeshReader.cpp"
 
 #include <gtest/gtest.h>
 

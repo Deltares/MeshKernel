@@ -4,8 +4,9 @@
 #include "../SampleRefineParametersNative.hpp"
 #include "../InterpolationParametersNative.hpp"
 #include "MakeMeshes.cpp"
+#include "MeshReader.cpp"
+#include "SampleFileReader.cpp"
 #include <gtest/gtest.h>
-#include <fstream>
 
 TEST(MeshRefinement, FourByFourWithFourSamples)
 {
@@ -18,7 +19,16 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     samples.push_back({15.5396099, 24.2669525, 1.0});
     samples.push_back({23.8305721, 23.9275551, 1.0});
 
-    meshkernel::MeshRefinement meshRefinement(mesh);
+    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
+                                                                   samples,
+                                                                   meshkernel::MinAbsValue,
+                                                                   meshkernel::Faces,
+                                                                   1.0,
+                                                                   1,
+                                                                   false,
+                                                                   false);
+
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
@@ -30,7 +40,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
 
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     // 3 Validation edges connecting hanging nodes
 
@@ -101,7 +111,16 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     samples.push_back({15.5396099, 24.2669525, 1.0});
     samples.push_back({23.8305721, 23.9275551, 1.0});
 
-    meshkernel::MeshRefinement meshRefinement(mesh);
+    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
+                                                                   samples,
+                                                                   meshkernel::MinAbsValue,
+                                                                   meshkernel::Faces,
+                                                                   1.0,
+                                                                   1,
+                                                                   false,
+                                                                   false);
+
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.64;
@@ -113,7 +132,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
     interpolationParametersNative.RefineIntersected = false;
 
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     //Assert number of edges and nodes
     ASSERT_EQ(131, mesh->GetNumEdges());
@@ -194,7 +213,16 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     samples.push_back({359.8657532, 350.3144836, 1.0});
     samples.push_back({387.5152588, 299.2614746, 1.0});
 
-    meshkernel::MeshRefinement meshRefinement(mesh);
+    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
+                                                                   samples,
+                                                                   meshkernel::MinAbsValue,
+                                                                   meshkernel::Faces,
+                                                                   1.0,
+                                                                   1,
+                                                                   false,
+                                                                   false);
+
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 15.97;
@@ -206,7 +234,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
 
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     // edges connecting hanging nodes
     ASSERT_EQ(10, mesh->m_edges[32].first);
@@ -249,7 +277,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     interpolationParametersNative.RefineIntersected = false;
 
     std::vector<meshkernel::Sample> samples;
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     // total number of edges
     ASSERT_EQ(15, mesh->GetNumNodes());
@@ -315,7 +343,16 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     samples.push_back({13.5837603, 12.1783361, 3.0000000});
     samples.push_back({17.2156067, 16.9106121, 3.0000000});
 
-    meshkernel::MeshRefinement meshRefinement(mesh);
+    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
+                                                                   samples,
+                                                                   meshkernel::MinAbsValue,
+                                                                   meshkernel::Faces,
+                                                                   1.0,
+                                                                   1,
+                                                                   false,
+                                                                   false);
+
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
@@ -327,7 +364,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
     interpolationParametersNative.RefineIntersected = false;
 
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     // assert on number of nodes and edges
     ASSERT_EQ(150, mesh->GetNumNodes());
@@ -373,27 +410,19 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, {197253.0, 442281.0});
 
-    //sample points
-    std::vector<meshkernel::Sample> samples;
+    // Sample points
+    std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\MeshRefinementTests\\WindowOfRefinementFile.xyz");
 
-    // read sample file
-    std::string line;
-    std::ifstream infile("..\\..\\tests\\MeshRefinementTests\\WindowOfRefinementFile.xyz");
-    while (std::getline(infile, line))
-    {
-        std::istringstream iss(line);
-        double sampleX;
-        double sampleY;
-        double sampleValue;
+    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
+                                                                   samples,
+                                                                   meshkernel::MinAbsValue,
+                                                                   meshkernel::Faces,
+                                                                   1.0,
+                                                                   1,
+                                                                   false,
+                                                                   false);
 
-        iss >> sampleX;
-        iss >> sampleY;
-        iss >> sampleValue;
-
-        samples.push_back({sampleX, sampleY, sampleValue});
-    }
-
-    meshkernel::MeshRefinement meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
@@ -405,7 +434,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
     interpolationParametersNative.RefineIntersected = false;
 
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     // total number of edges
     ASSERT_EQ(1614, mesh->GetNumNodes());
@@ -447,27 +476,19 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, {197253.0, 442281.0});
 
-    //sample points
-    std::vector<meshkernel::Sample> samples;
+    // Sample points
+    std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\MeshRefinementTests\\WindowOfRefinementFile.xyz");
 
-    // read sample file
-    std::string line;
-    std::ifstream infile("..\\..\\tests\\MeshRefinementTests\\WindowOfRefinementFile.xyz");
-    while (std::getline(infile, line))
-    {
-        std::istringstream iss(line);
-        double sampleX;
-        double sampleY;
-        double sampleValue;
+    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
+                                                                   samples,
+                                                                   meshkernel::Max,
+                                                                   meshkernel::Faces,
+                                                                   1.0,
+                                                                   1,
+                                                                   false,
+                                                                   true);
 
-        iss >> sampleX;
-        iss >> sampleY;
-        iss >> sampleValue;
-
-        samples.push_back({sampleX, sampleY, sampleValue});
-    }
-
-    meshkernel::MeshRefinement meshRefinement(mesh);
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
@@ -480,7 +501,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     interpolationParametersNative.MaxNumberOfRefinementIterations = 10;
     interpolationParametersNative.RefineIntersected = false;
 
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     // total number of edges
     ASSERT_EQ(413, mesh->GetNumNodes());
@@ -525,9 +546,6 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projections::cartesian);
 
-    //sample points
-    std::vector<meshkernel::Sample> samples;
-
     meshkernel::MeshRefinement meshRefinement(mesh);
 
     std::vector<meshkernel::Point> point;
@@ -549,7 +567,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
 
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     // total number of edges
     ASSERT_EQ(30, mesh->GetNumNodes());
@@ -588,9 +606,6 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projections::cartesian);
 
-    //sample points
-    std::vector<meshkernel::Sample> samples;
-
     meshkernel::MeshRefinement meshRefinement(mesh);
 
     std::vector<meshkernel::Point> point;
@@ -616,7 +631,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
     interpolationParametersNative.RefineIntersected = false;
 
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     // assert on number of nodes and edges
     ASSERT_EQ(48, mesh->GetNumNodes());
@@ -636,7 +651,16 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     samples.push_back({41.1085625, 41.1083946, 1.0});
     samples.push_back({41.1052971, 41.1083336, 1.0});
 
-    meshkernel::MeshRefinement meshRefinement(mesh);
+    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
+                                                                   samples,
+                                                                   meshkernel::MinAbsValue,
+                                                                   meshkernel::Faces,
+                                                                   1.0,
+                                                                   1,
+                                                                   false,
+                                                                   false);
+
+    meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
     sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.000527;
@@ -648,7 +672,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
     sampleRefineParametersNative.RefinementType = 2;
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     ASSERT_EQ(60, mesh->GetNumEdges());
     ASSERT_EQ(32, mesh->GetNumNodes());
@@ -681,10 +705,8 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 
 TEST(MeshRefinement, RefineCurvilinearGrid)
 {
-
     auto mesh = MakeCurvilinearGridForTesting();
 
-    std::vector<meshkernel::Sample> samples;
     meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernel::Polygons polygon;
     meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
@@ -697,7 +719,7 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
     interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
     interpolationParametersNative.RefineIntersected = false;
     sampleRefineParametersNative.RefinementType = 2;
-    meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
 
     mesh->ComputeEdgeLengths();
 

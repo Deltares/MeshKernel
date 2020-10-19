@@ -38,6 +38,7 @@ namespace meshkernel
     // Forward declarations
     class Mesh;
     class Polygons;
+    class Averaging;
 
     class MeshRefinement
     {
@@ -54,6 +55,8 @@ namespace meshkernel
         /// </summary>
         /// <param name="mesh">The mesh to be refined</param>
         /// <returns></returns>
+        explicit MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<Averaging> averaging);
+
         explicit MeshRefinement(std::shared_ptr<Mesh> mesh);
 
         /// <summary>
@@ -74,8 +77,7 @@ namespace meshkernel
         /// <param name="sampleRefineParametersNative">Refinement based on samples parameters</param>
         /// <param name="interpolationParametersNative">Interpolation parameters</param>
         /// <returns>If the method succeeded</returns>
-        bool Refine(std::vector<Sample>& sample,
-                    const Polygons& polygon,
+        bool Refine(const Polygons& polygon,
                     const meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
                     const meshkernelapi::InterpolationParametersNative& interpolationParametersNative);
 
@@ -98,7 +100,7 @@ namespace meshkernel
         /// </summary>
         /// <param name="samples"> The sample to use for computing masking</param>
         /// <returns>If the method succeeded</returns>
-        bool ComputeRefinementMasksFromSamples(std::vector<Sample>& samples);
+        bool ComputeRefinementMasksFromSamples();
 
         /// <summary>
         /// Computes the number of edges that should be refined in a face (compute_jarefine_poly)
@@ -109,8 +111,7 @@ namespace meshkernel
         /// <param name="refineEdgeCache"> 1 if the edge should be refined, 0 otherwise</param>
         /// <param name="numEdgesToBeRefined"> The computed number of edges to refined</param>
         /// <returns>If the method succeeded</returns>
-        bool ComputeEdgesRefinementMaskFromSamples(int numPolygonNodes,
-                                                   std::vector<Sample>& samples,
+        bool ComputeEdgesRefinementMaskFromSamples(int face,
                                                    std::vector<int>& refineEdgeCache,
                                                    int& numEdgesToBeRefined);
 
@@ -123,12 +124,12 @@ namespace meshkernel
         /// <summary>
         /// Finds the hanging nodes in a face (find_hangingnodes)
         /// </summary>
-        /// <param name="faceIndex"></param>
+        /// <param name="face"></param>
         /// <param name="numHangingEdges"></param>
         /// <param name="numHangingNodes"></param>
         /// <param name="numEdgesToRefine"></param>
         /// <returns>If the method succeeded</returns>
-        bool FindHangingNodes(int faceIndex,
+        bool FindHangingNodes(int face,
                               int& numHangingEdges,
                               int& numHangingNodes,
                               int& numEdgesToRefine);
@@ -191,7 +192,6 @@ namespace meshkernel
         std::vector<Point> m_polygonNodesCache;
         std::vector<int> m_localNodeIndicesCache;
         std::vector<int> m_edgeIndicesCache;
-        std::vector<double> m_polygonEdgesLengthsCache;
 
         std::vector<bool> m_subtractedSample; /// Is the sample value subtracted (e.g. in refinement by levels)
 
@@ -206,5 +206,6 @@ namespace meshkernel
         RefinementType m_refinementType; /// The type of refinement to use
 
         std::shared_ptr<Mesh> m_mesh;
+        std::shared_ptr<Averaging> m_averaging;
     };
 } // namespace meshkernel

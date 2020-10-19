@@ -78,8 +78,15 @@ namespace meshkernel
         Max = 3,
         Min = 4,
         InverseWeightDistance = 5,
-        MinAbs = 6,
-        KdTree = 7
+        MinAbsValue = 6
+    };
+
+    // Interpolation locations
+    enum InterpolationLocation
+    {
+        Faces = 0,
+        Nodes = 1,
+        Edges = 2
     };
 
 } // namespace meshkernel

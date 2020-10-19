@@ -158,14 +158,12 @@ bool meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 
     if (m_nodesRTreeRequiresUpdate && !m_nodesRTree.Empty())
     {
-        m_nodesRTree.Clear();
         m_nodesRTree.BuildTree(m_nodes);
         m_nodesRTreeRequiresUpdate = false;
     }
 
     if (m_edgesRTreeRequiresUpdate && !m_edgesRTree.Empty())
     {
-        m_edgesRTree.Clear();
         ComputeEdgesCenters();
         m_edgesRTree.BuildTree(m_edgesCenters);
         m_edgesRTreeRequiresUpdate = false;
@@ -1020,8 +1018,8 @@ bool meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& m
 
             OriginXCoordinate = referencePoint.x + xShift;
             OriginYCoordinate = referencePoint.y + yShift;
-            numN = int(std::ceil((etamax - etamin) / XGridBlockSize)) + 1;
-            numM = int(std::ceil((xmax - xmin) / YGridBlockSize)) + 1;
+            numN = std::ceil((etamax - etamin) / XGridBlockSize) + 1;
+            numM = std::ceil((xmax - xmin) / YGridBlockSize) + 1;
         }
 
         CurvilinearGrid.Set(numN, numM);
@@ -1129,30 +1127,28 @@ bool meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     filteredNodes.resize(index);
 
     // Update the R-Tree of the mesh nodes
-    m_nodesRTree.Clear();
-    m_nodesRTree.BuildTree(filteredNodes);
+    SpatialTrees::RTree nodesRtree;
+    nodesRtree.BuildTree(filteredNodes);
 
     // merge the closest nodes
     for (int i = 0; i < filteredNodes.size(); i++)
     {
-        m_nodesRTree.NearestNeighboursOnSquaredDistance(filteredNodes[i], mergingDistanceSquared);
+        nodesRtree.NearestNeighboursOnSquaredDistance(filteredNodes[i], mergingDistanceSquared);
 
-        auto resultSize = m_nodesRTree.GetQueryResultSize();
+        int resultSize = nodesRtree.GetQueryResultSize();
         if (resultSize > 1)
         {
-            for (int j = 0; j < m_nodesRTree.GetQueryResultSize(); j++)
+            for (int j = 0; j < nodesRtree.GetQueryResultSize(); j++)
             {
-                auto nodeIndexInFilteredNodes = m_nodesRTree.GetQuerySampleIndex(j);
+                auto nodeIndexInFilteredNodes = nodesRtree.GetQuerySampleIndex(j);
                 if (nodeIndexInFilteredNodes != i)
                 {
                     MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]);
-                    m_nodesRTree.RemoveNode(i);
+                    nodesRtree.RemoveNode(i);
                 }
             }
         }
     }
-
-    m_nodesRTree.Clear();
 
     Administrate(AdministrationOptions::AdministrateMeshEdges);
 
@@ -1349,30 +1345,22 @@ bool meshkernel::Mesh::FaceClosedPolygon(int faceIndex,
                                          int& numClosedPolygonNodes) const
 {
     auto numFaceNodes = GetNumFaceEdges(faceIndex);
-    if (polygonNodesCache.size() < numFaceNodes + 1)
-    {
-        polygonNodesCache.resize(numFaceNodes + 1);
-    }
-
-    if (localNodeIndicesCache.size() < numFaceNodes + 1)
-    {
-        localNodeIndicesCache.resize(numFaceNodes + 1);
-    }
-
-    if (edgeIndicesCache.size() < numFaceNodes + 1)
-    {
-        edgeIndicesCache.resize(numFaceNodes + 1);
-    }
+    polygonNodesCache.reserve(numFaceNodes + 1);
+    polygonNodesCache.clear();
+    localNodeIndicesCache.reserve(numFaceNodes + 1);
+    localNodeIndicesCache.clear();
+    edgeIndicesCache.reserve(numFaceNodes + 1);
+    edgeIndicesCache.clear();
 
     for (int n = 0; n < numFaceNodes; n++)
     {
-        polygonNodesCache[n] = m_nodes[m_facesNodes[faceIndex][n]];
-        localNodeIndicesCache[n] = n;
-        edgeIndicesCache[n] = m_facesEdges[faceIndex][n];
+        polygonNodesCache.push_back(m_nodes[m_facesNodes[faceIndex][n]]);
+        localNodeIndicesCache.push_back(n);
+        edgeIndicesCache.push_back(m_facesEdges[faceIndex][n]);
     }
-    polygonNodesCache[numFaceNodes] = polygonNodesCache[0];
-    localNodeIndicesCache[numFaceNodes] = 0;
-    edgeIndicesCache[numFaceNodes] = m_facesEdges[faceIndex][0];
+    polygonNodesCache.push_back(polygonNodesCache[0]);
+    localNodeIndicesCache.push_back(0);
+    edgeIndicesCache.push_back(m_facesEdges[faceIndex][0]);
     numClosedPolygonNodes = numFaceNodes + 1;
 
     return true;
@@ -1414,7 +1402,7 @@ bool meshkernel::Mesh::ComputeEdgeLengths()
 bool meshkernel::Mesh::ComputeEdgesCenters()
 {
     auto const numEdges = GetNumEdges();
-    m_edgesCenters.reserve(std::max(int(m_edgesCenters.capacity()), numEdges));
+    m_edgesCenters.reserve(numEdges);
     m_edgesCenters.clear();
 
     for (int e = 0; e < numEdges; e++)
@@ -1497,9 +1485,9 @@ bool meshkernel::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
 {
 
     double minx = std::numeric_limits<double>::max();
-    double maxx = std::numeric_limits<double>::min();
+    double maxx = std::numeric_limits<double>::lowest();
     double miny = std::numeric_limits<double>::max();
-    double maxy = std::numeric_limits<double>::min();
+    double maxy = std::numeric_limits<double>::lowest();
     for (int n = 0; n < GetNumNodes(); n++)
     {
         if (m_nodes[n].IsValid())
@@ -2241,6 +2229,134 @@ bool meshkernel::Mesh::TriangulateFaces()
     }
 
     m_edgesRTreeRequiresUpdate = true;
+
+    return true;
+}
+
+bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vector<Point>& dualFace)
+{
+
+    std::vector<int> sortedFacesIndices;
+    SortedFacesAroundNode(node, sortedFacesIndices);
+    const auto numEdges = m_nodesNumEdges[node];
+    dualFace.reserve(maximumNumberOfEdgesPerNode);
+    dualFace.clear();
+
+    for (int e = 0; e < numEdges; ++e)
+    {
+        const auto edgeIndex = m_nodesEdges[node][e];
+        auto edgeCenter = m_edgesCenters[edgeIndex];
+
+        if (m_projection == Projections::spherical)
+        {
+            const auto firstNodeIndex = m_edges[edgeIndex].first;
+            const auto secondNodeIndex = m_edges[edgeIndex].second;
+
+            if (firstNodeIndex >= 0 && secondNodeIndex >= 0)
+            {
+                const auto diff = m_nodes[firstNodeIndex].x - m_nodes[secondNodeIndex].x;
+
+                if (diff > 180.0)
+                {
+                    edgeCenter.x = edgeCenter.x - 180.0;
+                }
+                if (diff < -180.0)
+                {
+                    edgeCenter.x = edgeCenter.x + 180.0;
+                }
+            }
+        }
+        dualFace.push_back(edgeCenter);
+
+        const auto faceIndex = sortedFacesIndices[e];
+        if (faceIndex >= 0)
+        {
+            dualFace.push_back(m_facesMassCenters[faceIndex]);
+        }
+        else
+        {
+            dualFace.push_back(m_nodes[node]);
+        }
+    }
+    dualFace.push_back(dualFace[0]);
+
+    // now we can compute the mass center of the dual face
+    double area;
+    Point centerOfMass;
+    bool successful = FaceAreaAndCenterOfMass(dualFace, int(dualFace.size() - 1), m_projection, area, centerOfMass);
+    if (!successful)
+    {
+        return false;
+    }
+
+    if (m_projection == Projections::spherical)
+    {
+        if (centerOfMass.x - m_nodes[node].x > 180.0)
+        {
+            centerOfMass.x -= 360.0;
+        }
+        if (centerOfMass.x - m_nodes[node].x < 180.0)
+        {
+            centerOfMass.x += 360.0;
+        }
+    }
+
+    for (int i = 0; i < dualFace.size(); ++i)
+    {
+        dualFace[i] = centerOfMass + (dualFace[i] - centerOfMass) * enlargmentFactor;
+    }
+
+    return true;
+}
+
+bool meshkernel::Mesh::SortedFacesAroundNode(int node, std::vector<int>& result) const
+{
+
+    const auto numEdges = m_nodesNumEdges[node];
+    result.clear();
+    for (int e = 0; e < numEdges; ++e)
+    {
+        const auto firstEdge = m_nodesEdges[node][e];
+
+        // no faces for this edge
+        if (m_edgesNumFaces[firstEdge] <= 0)
+        {
+            continue;
+        }
+
+        auto const ee = NextCircularForwardIndex(e, numEdges);
+        const auto secondEdge = m_nodesEdges[node][ee];
+        const auto firstFace = m_edgesFaces[firstEdge][0];
+
+        int secondFace = -1;
+        if (m_edgesNumFaces[firstEdge] > 1)
+        {
+            secondFace = m_edgesFaces[firstEdge][1];
+        }
+
+        // check if the first face contains the first edge
+        int firstEdgeIndexInFirstFace = 0;
+        for (int n = 0; n < m_numFacesNodes[firstFace]; ++n)
+        {
+            if (m_facesEdges[firstFace][n] == firstEdge)
+            {
+                firstEdgeIndexInFirstFace = n;
+                break;
+            }
+        }
+
+        // check if previous edge in firstFace is secondEdge (so at least two edges share the same edge)
+        auto const secondEdgeindexInFirstFace = NextCircularBackwardIndex(firstEdgeIndexInFirstFace, m_numFacesNodes[firstFace]);
+
+        if (m_facesEdges[firstFace][secondEdgeindexInFirstFace] == secondEdge)
+        {
+            result.push_back(firstFace);
+        }
+        else
+        {
+            result.push_back(secondFace);
+        }
+    }
 
     return true;
 }

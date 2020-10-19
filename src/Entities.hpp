@@ -30,9 +30,15 @@
 #include <utility>
 #include "Constants.cpp"
 #include <cmath>
+#include <limits>
 
 namespace meshkernel
 {
+    template <typename T>
+    static bool IsDifferenceLessThanEpsilon(T firstValue, T secondValue)
+    {
+        return std::abs(firstValue - secondValue) < std::numeric_limits<T>::epsilon();
+    }
 
     enum class Projections
     {
@@ -112,12 +118,17 @@ namespace meshkernel
 
         bool operator==(const Point& rhs) const
         {
-            return x == rhs.x && y == rhs.y;
+            bool isEqual = IsDifferenceLessThanEpsilon(x, rhs.x) &&
+                           IsDifferenceLessThanEpsilon(y, rhs.y);
+
+            return isEqual;
         }
 
         bool operator!=(const Point& rhs) const
         {
-            return x != rhs.x || y != rhs.y;
+            bool isEqual = IsDifferenceLessThanEpsilon(x, rhs.x) &&
+                           IsDifferenceLessThanEpsilon(y, rhs.y);
+            return !isEqual;
         }
 
         void TransformSphericalToCartesian(double referenceLatitude)
@@ -128,7 +139,10 @@ namespace meshkernel
 
         bool IsValid(const double missingValue = doubleMissingValue) const
         {
-            return x != missingValue && y != missingValue ? true : false;
+            bool isInvalid = IsDifferenceLessThanEpsilon(x, missingValue) ||
+                             IsDifferenceLessThanEpsilon(y, missingValue);
+
+            return !isInvalid;
         }
     };
 
