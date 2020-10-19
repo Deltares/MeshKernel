@@ -28,6 +28,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <sstream>
 
 #include "MeshKernel.hpp"
 #include "Constants.cpp"
@@ -56,7 +57,8 @@ static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;
 static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
 static std::map<int, std::shared_ptr<meshkernel::CurvilinearGridFromSplines>> curvilinearGridFromSplinesInstances;
 
-static enum error {
+enum error
+{
     Success = 0,         // 0b0000
     Exception = 1,       // 0b0001
     InvalidGeometry = 2, // 0b0010
@@ -118,15 +120,17 @@ namespace meshkernelapi
     {
         try
         {
-            std::string typeMessage = ("Type: ", typeid(e).name());
-            std::string contentMessage = ("Caught", e.what());
-            std::string completeMessage = (typeMessage, '\n', contentMessage);
+            std::stringstream messageStream;
+            messageStream << "Type: " << typeid(e).name() << "\n";
+            messageStream << "Caught: " << e.what();
+
+            std::string completeMessage = messageStream.str();
             auto messageLength = completeMessage.length();
 
             completeMessage.copy(message, messageLength);
             message[messageLength] = '\0';
         }
-        catch (const std::exception& e)
+        catch (const std::exception&)
         {
             message = "Error while handling error message.";
         }
@@ -796,7 +800,7 @@ namespace meshkernelapi
 
         return 0;
     }
-    // TO-DO: remove numberOfMeshVertices
+    // TODO: remove numberOfMeshVertices
     MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices)
     {
         if (meshKernelId >= meshInstances.size())
