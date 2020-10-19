@@ -118,10 +118,11 @@ namespace meshkernelapi
 
     void SetExceptionMessage(const std::exception& e, char message[])
     {
+
         std::stringstream messageStream;
         messageStream << "Type: " << typeid(e).name() << "\n";
         messageStream << "Caught: " << e.what();
-        strcpy(message, messageStream.str().c_str());
+        strcpy_s(message, sizeof message, messageStream.str().c_str());
     }
 
     static bool SetSplines(const GeometryListNative& geometryListIn, meshkernel::Splines& spline)
