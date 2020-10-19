@@ -1018,8 +1018,8 @@ bool meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& m
 
             OriginXCoordinate = referencePoint.x + xShift;
             OriginYCoordinate = referencePoint.y + yShift;
-            numN = std::ceil((etamax - etamin) / XGridBlockSize) + 1;
-            numM = std::ceil((xmax - xmin) / YGridBlockSize) + 1;
+            numN = int(std::ceil((etamax - etamin) / XGridBlockSize) + 1);
+            numM = int(std::ceil((xmax - xmin) / YGridBlockSize) + 1);
         }
 
         CurvilinearGrid.Set(numN, numM);
@@ -1135,7 +1135,7 @@ bool meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     {
         nodesRtree.NearestNeighboursOnSquaredDistance(filteredNodes[i], mergingDistanceSquared);
 
-        int resultSize = nodesRtree.GetQueryResultSize();
+        const auto resultSize = nodesRtree.GetQueryResultSize();
         if (resultSize > 1)
         {
             for (int j = 0; j < nodesRtree.GetQueryResultSize(); j++)
@@ -2301,9 +2301,9 @@ bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vect
         }
     }
 
-    for (int i = 0; i < dualFace.size(); ++i)
+    for (auto& v : dualFace)
     {
-        dualFace[i] = centerOfMass + (dualFace[i] - centerOfMass) * enlargmentFactor;
+        v = centerOfMass + (v - centerOfMass) * enlargmentFactor;
     }
 
     return true;

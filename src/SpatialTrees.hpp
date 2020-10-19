@@ -99,9 +99,9 @@ namespace meshkernel
 
                 m_queryIndices.reserve(m_queryCache.size());
                 m_queryIndices.clear();
-                for (size_t i = 0; i < m_queryCache.size(); i++)
+                for (const auto& v : m_queryCache)
                 {
-                    m_queryIndices.push_back(m_queryCache[i].second);
+                    m_queryIndices.push_back(v.second);
                 }
 
                 return true;
