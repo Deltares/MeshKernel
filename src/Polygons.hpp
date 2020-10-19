@@ -87,6 +87,10 @@ namespace meshkernel
         // dbpinpol_optinside_perpol
         bool IsPointInPolygons(const Point& point) const;
 
+        /// @brief Checks if the polygon is empty
+        /// @return Boolean whether the polygon is empty or not
+        bool Polygons::IsEmpty() const;
+
     private:
         /// maximum edge length of a given polygon
         bool MaximumEdgeLength(const std::vector<Point>& localPolygon, int numPoints, double& maximumEdgeLength);

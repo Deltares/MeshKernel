@@ -634,4 +634,9 @@ namespace meshkernel
         return inPolygon;
     }
 
+    bool Polygons::IsEmpty() const
+    {
+        return m_indices.empty();
+    }
+
 }; // namespace meshkernel

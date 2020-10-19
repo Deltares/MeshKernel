@@ -26,6 +26,8 @@
 //------------------------------------------------------------------------------
 
 #include <map>
+#include <stdexcept>
+#include <string>
 
 #include "MeshKernel.hpp"
 #include "Constants.cpp"
@@ -53,6 +55,14 @@ static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;
 // For interactivity
 static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
 static std::map<int, std::shared_ptr<meshkernel::CurvilinearGridFromSplines>> curvilinearGridFromSplinesInstances;
+
+static enum error {
+    Success = 0,         // 0b0000
+    Exception = 1,       // 0b0001
+    InvalidGeometry = 2, // 0b0010
+} Error;
+
+static char exceptionMessage[512] = "";
 
 namespace meshkernelapi
 {
@@ -102,6 +112,24 @@ namespace meshkernelapi
             result.yCoordinates[i] = pointVector[i].y;
         }
         return true;
+    }
+
+    void SetExceptionMessage(const std::exception& e, char message[])
+    {
+        try
+        {
+            std::string typeMessage = ("Type: ", typeid(e).name());
+            std::string contentMessage = ("Caught", e.what());
+            std::string completeMessage = (typeMessage, '\n', contentMessage);
+            auto messageLength = completeMessage.length();
+
+            completeMessage.copy(message, messageLength);
+            message[messageLength] = '\0';
+        }
+        catch (const std::exception& e)
+        {
+            message = "Error while handling error message.";
+        }
     }
 
     static bool SetSplines(const GeometryListNative& geometryListIn, meshkernel::Splines& spline)
@@ -1349,37 +1377,38 @@ namespace meshkernelapi
                                                      int thirdNode,
                                                      bool useFourthSide)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("Invalid nodes.");
+            }
 
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonPoints);
-        if (!successful)
+            std::vector<meshkernel::Point> polygonPoints;
+            bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonPoints);
+            if (!successful)
+            {
+                return -1;
+            }
+
+            auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
+
+            meshkernel::CurvilinearGrid curvilinearGrid;
+            meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
+            curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
+
+            // convert to curvilinear grid and add it to the current mesh
+            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+
+            return successful ? 0 : -1;
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        meshkernel::CurvilinearGrid curvilinearGrid;
-        meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
-        successful = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
-
-        if (!successful)
-        {
-            return -1;
-        }
-
-        // convert to curvilinear grid and add it to the current mesh
-        *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
-
-        return successful ? 0 : 1;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_from_triangle(int meshKernelId,
@@ -1401,19 +1430,10 @@ namespace meshkernelapi
         }
 
         auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
-        if (!successful)
-        {
-            return -1;
-        }
 
         meshkernel::CurvilinearGrid curvilinearGrid;
         meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
-        successful = curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
-
-        if (!successful)
-        {
-            return -1;
-        }
+        curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
 
         // convert to curvilinear grid and add it to the current mesh
         *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
