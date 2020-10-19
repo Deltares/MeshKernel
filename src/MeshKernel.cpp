@@ -1066,7 +1066,6 @@ namespace meshkernelapi
                                                                        averagingMethod,
                                                                        meshkernel::Faces,
                                                                        1.0,
-                                                                       1,
                                                                        refineOutsideFace,
                                                                        transformSamples);
 
@@ -1508,8 +1507,8 @@ namespace meshkernelapi
                                         meshkernel::AveragingMethod(averagingMethod),
                                         meshkernel::InterpolationLocation(locationType),
                                         relativeSearchSize,
-                                        minNumberOfSamples,
-                                        false, false);
+                                        false,
+                                        false);
         averaging.Compute();
 
         // Get the results and copy them to the result vector

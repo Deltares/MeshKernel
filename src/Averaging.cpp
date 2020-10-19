@@ -32,31 +32,28 @@
 #include "SpatialTrees.hpp"
 #include "Averaging.hpp"
 
-#include <iostream>
-
 meshkernel::Averaging::Averaging(std::shared_ptr<Mesh> mesh,
                                  std::vector<Sample>& samples,
                                  AveragingMethod averagingMethod,
                                  InterpolationLocation locationType,
                                  double relativeSearchRadius,
-                                 int minNumSamples,
                                  bool useClosestSampleIfNoneAvailable,
                                  bool transformSamples) : m_mesh(mesh),
                                                           m_samples(samples),
                                                           m_averagingMethod(averagingMethod),
                                                           m_interpolationLocation(locationType),
                                                           m_relativeSearchRadius(relativeSearchRadius),
-                                                          m_minNumSamples(minNumSamples),
                                                           m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
                                                           m_transformSamples(transformSamples)
 {
     m_visitedSamples.resize(samples.size());
+    // build sample rtree for searches
     m_samplesRtree.BuildTree(m_samples);
 }
 
 bool meshkernel::Averaging::Compute()
 {
-    // build sample rtree for searches
+
     std::fill(m_visitedSamples.begin(), m_visitedSamples.end(), false);
 
     if (m_interpolationLocation == Faces)
@@ -87,7 +84,7 @@ bool meshkernel::Averaging::Compute()
 
             if (m_transformSamples && result > 0)
             {
-                // for certain algorithms we want to decrease the sample values (e.g. refinement)
+                // for certain algorithms we want to decrease the values of the samples (e.g. refinement)
                 // it is difficult to do it otherwise without sharing or caching the query result
                 for (int i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
                 {

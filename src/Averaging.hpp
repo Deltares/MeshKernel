@@ -39,43 +39,39 @@ namespace meshkernel
     class Averaging
     {
     public:
-        /// @brief
-        /// @param mesh
-        /// @param samples
-        /// @param averagingMethod
-        /// @param locationType
-        /// @param relativeSearchRadius
+        /// @brief Interpolation based on averaging
+        /// @param mesh The input mesh.
+        /// @param samples The samples with x,y locations and values.
+        /// @param averagingMethod The averaging method to use.
+        /// @param locationType The location type (faces, edges, nodes).
+        /// @param relativeSearchRadius The relative search radius, used to enlarge the search area when looking for samples.
+        /// @param useClosestSampleIfNoneAvailable If no sample are found simply use the closest one.
+        /// @param subtractSampleValues For some algorithms (e.g. refinement based on levels) we need to subtract 1 the sample value.
         explicit Averaging(std::shared_ptr<Mesh> mesh,
                            std::vector<Sample>& samples,
                            AveragingMethod averagingMethod,
                            InterpolationLocation locationType,
                            double relativeSearchRadius,
-                           int minNumSamples,
                            bool useClosestSampleIfNoneAvailable,
-                           bool transformSamples);
+                           bool subtractSampleValues);
+
+        /// @brief Compute interpolation
+        /// @return If the method succeded
         bool Compute();
 
+        /// @brief Get the result values
+        /// @return
         const auto& GetResults() const
         {
             return m_results;
         }
 
-        auto& GetVisitedSamples() const
-        {
-            return m_visitedSamples;
-        }
-
-        double GetSampleValue(int sample) const
-        {
-            return m_samples[sample].value;
-        }
-
-        void SetSampleValue(int sample, double value)
-        {
-            m_samples[sample].value = value;
-        }
-
     private:
+        /// @brief Compute The averaging results in polygon.
+        /// @param polygon The bounding polygon where the samples are included.
+        /// @param interpolationPoint The interpolation point.
+        /// @param result The resulting value
+        /// @return
         bool ComputeOnPolygon(const std::vector<Point>& polygon,
                               Point interpolationPoint,
                               double& result);
@@ -85,11 +81,10 @@ namespace meshkernel
         AveragingMethod m_averagingMethod;
         InterpolationLocation m_interpolationLocation;
         double m_relativeSearchRadius;
-        int m_minNumSamples;
-        SpatialTrees::RTree m_samplesRtree;
         bool m_useClosestSampleIfNoneAvailable = false;
         bool m_transformSamples = false;
 
+        SpatialTrees::RTree m_samplesRtree;
         std::vector<double> m_results;
         std::vector<bool> m_visitedSamples;
     };

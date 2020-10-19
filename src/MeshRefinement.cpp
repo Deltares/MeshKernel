@@ -902,31 +902,6 @@ bool meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
         }
     }
 
-    if (m_refinementType == RefinementType::RefinementLevels)
-    {
-        //for each iteration decrease the refinement level
-        const auto visitedSamples = m_averaging->GetVisitedSamples();
-        //for (int i = 0; i < visitedSamples.size(); ++i)
-        //{
-        //    if (visitedSamples[i])
-        //    {
-        //        auto value = m_averaging->GetSampleValue(i);
-        //        m_averaging->SetSampleValue(i, value - 1);
-        //    }
-        //}
-
-        int numVisited = 0;
-        for (int i = 0; i < visitedSamples.size(); ++i)
-        {
-            if (visitedSamples[i])
-            {
-                numVisited++;
-            }
-        }
-
-        std::cout << "the num of visited is " << numVisited;
-    }
-
     return true;
 };
 

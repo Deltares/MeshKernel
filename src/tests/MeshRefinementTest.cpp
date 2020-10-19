@@ -24,7 +24,6 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
                                                                    meshkernel::MinAbsValue,
                                                                    meshkernel::Faces,
                                                                    1.0,
-                                                                   1,
                                                                    false,
                                                                    false);
 
@@ -116,7 +115,6 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
                                                                    meshkernel::MinAbsValue,
                                                                    meshkernel::Faces,
                                                                    1.0,
-                                                                   1,
                                                                    false,
                                                                    false);
 
@@ -218,7 +216,6 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
                                                                    meshkernel::MinAbsValue,
                                                                    meshkernel::Faces,
                                                                    1.0,
-                                                                   1,
                                                                    false,
                                                                    false);
 
@@ -348,7 +345,6 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
                                                                    meshkernel::MinAbsValue,
                                                                    meshkernel::Faces,
                                                                    1.0,
-                                                                   1,
                                                                    false,
                                                                    false);
 
@@ -418,7 +414,6 @@ TEST(MeshRefinement, WindowOfRefinementFile)
                                                                    meshkernel::MinAbsValue,
                                                                    meshkernel::Faces,
                                                                    1.0,
-                                                                   1,
                                                                    false,
                                                                    false);
 
@@ -484,7 +479,6 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
                                                                    meshkernel::Max,
                                                                    meshkernel::Faces,
                                                                    1.0,
-                                                                   1,
                                                                    false,
                                                                    true);
 
@@ -656,7 +650,6 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
                                                                    meshkernel::MinAbsValue,
                                                                    meshkernel::Faces,
                                                                    1.0,
-                                                                   1,
                                                                    false,
                                                                    false);
 
