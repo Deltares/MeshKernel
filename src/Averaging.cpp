@@ -322,12 +322,9 @@ bool meshkernel::Averaging::ComputeOnPolygon(const std::vector<Point>& polygon,
         }
     }
 
-    if (m_averagingMethod == SimpleAveraging && numValidSamplesInPolygon > 0)
+    if (m_averagingMethod == SimpleAveraging && numValidSamplesInPolygon > 0 && result > doubleMissingValue)
     {
-        if (result > doubleMissingValue)
-        {
-            result /= numValidSamplesInPolygon;
-        }
+        result /= numValidSamplesInPolygon;
     }
 
     if (m_averagingMethod == InverseWeightDistance && numValidSamplesInPolygon > 0)

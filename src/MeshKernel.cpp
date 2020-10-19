@@ -221,22 +221,9 @@ namespace meshkernelapi
             return -1;
         }
 
-        std::vector<meshkernel::Edge> edges(meshGeometryDimensions.numedge);
-        int ei = 0;
-        for (int e = 0; e < edges.size(); e++)
-        {
-            edges[e].first = meshGeometry.edge_nodes[ei];
-            ei++;
-            edges[e].second = meshGeometry.edge_nodes[ei];
-            ei++;
-        }
+        const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
 
-        std::vector<meshkernel::Point> nodes(meshGeometryDimensions.numnode);
-        for (int n = 0; n < nodes.size(); n++)
-        {
-            nodes[n].x = meshGeometry.nodex[n];
-            nodes[n].y = meshGeometry.nodey[n];
-        }
+        const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
 
         // spherical or cartesian
         if (isGeographic)
@@ -1444,8 +1431,8 @@ namespace meshkernelapi
     }
 
     // ec_module dll (stateless)
-    MKERNEL_API int averaging(MeshGeometryDimensions& meshGeometryDimensions,
-                              MeshGeometry& meshGeometry,
+    MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
+                              const MeshGeometry& meshGeometry,
                               int startIndex,
                               double** samplesXCoordinate,
                               double** samplesYCoordinate,
@@ -1461,22 +1448,9 @@ namespace meshkernelapi
                               int sphericalAccurate)
     {
         // Build the mesh
-        std::vector<meshkernel::Edge> edges(meshGeometryDimensions.numedge);
-        int ei = 0;
-        for (int e = 0; e < edges.size(); e++)
-        {
-            edges[e].first = meshGeometry.edge_nodes[ei];
-            ei++;
-            edges[e].second = meshGeometry.edge_nodes[ei];
-            ei++;
-        }
+        const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
 
-        std::vector<meshkernel::Point> nodes(meshGeometryDimensions.numnode);
-        for (int n = 0; n < nodes.size(); n++)
-        {
-            nodes[n].x = meshGeometry.nodex[n];
-            nodes[n].y = meshGeometry.nodey[n];
-        }
+        const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
 
         auto mesh = std::make_shared<meshkernel::Mesh>();
 
@@ -1494,7 +1468,7 @@ namespace meshkernelapi
 
         // Build the samples
         std::vector<meshkernel::Sample> samples(numSamples);
-        for (size_t i = 0u; i < samples.size(); ++i)
+        for (auto i = 0; i < samples.size(); ++i)
         {
             samples[i].x = (*samplesXCoordinate)[i];
             samples[i].y = (*samplesYCoordinate)[i];
@@ -1513,7 +1487,7 @@ namespace meshkernelapi
 
         // Get the results and copy them to the result vector
         auto interpolationResults = averaging.GetResults();
-        for (size_t i = 0u; i < interpolationResults.size(); ++i)
+        for (auto i = 0; i < interpolationResults.size(); ++i)
         {
             (*results)[i] = interpolationResults[i];
         }

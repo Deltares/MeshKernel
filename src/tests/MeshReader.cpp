@@ -93,24 +93,18 @@ static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string file
     std::vector<int> edge_nodes(num_edges * 2, 0);
     err = nc_get_var_int(ncidp, varid, &edge_nodes[0]);
 
-    std::vector<meshkernel::Edge> edges(num_edges);
-    std::vector<meshkernel::Point> nodes(num_nodes);
-
-    for (int i = 0; i < nodeX.size(); i++)
-    {
-        nodes[i].x = nodeX[i];
-        nodes[i].y = nodeY[i];
-    }
-
     int index = 0;
-    for (int i = 0; i < edges.size(); i++)
+    for (int i = 0; i < num_edges; i++)
     {
-        edges[i].first = edge_nodes[index] - 1;
+        edge_nodes[index] -= 1;
         index++;
-
-        edges[i].second = edge_nodes[index] - 1;
+        edge_nodes[index] -= 1;
         index++;
     }
+
+    const auto edges = meshkernel::ConvertToEdgeNodesVector(num_edges, &edge_nodes[0]);
+
+    const auto nodes = meshkernel::ConvertToNodesVector(num_nodes, &nodeX[0], &nodeY[0]);
 
     mesh->Set(edges, nodes, meshkernel::Projections::cartesian);
 

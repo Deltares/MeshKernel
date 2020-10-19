@@ -28,6 +28,7 @@
 #pragma once
 
 #include <utility>
+#include <vector>
 #include "Constants.cpp"
 #include <cmath>
 #include <limits>
@@ -146,6 +147,8 @@ namespace meshkernel
         }
     };
 
+    typedef std::pair<int, int> Edge;
+
     struct Cartesian3DPoint
     {
         double x;
@@ -160,6 +163,30 @@ namespace meshkernel
         double value;
     };
 
-    typedef std::pair<int, int> Edge;
+    static std::vector<Edge> ConvertToEdgeNodesVector(int numEdges, int* edge_nodes)
+    {
+        std::vector<Edge> edges(numEdges);
+
+        int ei = 0;
+        for (int e = 0; e < numEdges; e++)
+        {
+            edges[e].first = edge_nodes[ei];
+            ei++;
+            edges[e].second = edge_nodes[ei];
+            ei++;
+        }
+        return edges;
+    }
+
+    static std::vector<Point> ConvertToNodesVector(int numNodes, double* nodex, double* nodey)
+    {
+        std::vector<Point> nodes(numNodes);
+        for (int n = 0; n < numNodes; n++)
+        {
+            nodes[n].x = nodex[n];
+            nodes[n].y = nodey[n];
+        }
+        return nodes;
+    }
 
 } // namespace meshkernel
