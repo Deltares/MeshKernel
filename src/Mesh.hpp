@@ -239,13 +239,12 @@ namespace meshkernel
         bool DeleteEdge(int edgeIndex);
 
         /// <summary>
-        /// Finds an edge close to a point
+        /// Finds the closest edge close to a point
         /// </summary>
         /// <param name="point">The starting point from where to start the search</param>
-        /// <param name="searchRadius">The search radius</param>
         /// <param>The edge index (-1 if no edges is found)</param>
         /// <returns>If the method succeeded</returns>
-        bool FindEdgeCloseToAPoint(Point point, double searchRadius, int& edgeIndex);
+        bool FindEdgeCloseToAPoint(Point point, int& edgeIndex);
 
         /// <summary>
         /// Masks the edges of all faces included in a polygon

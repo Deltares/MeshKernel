@@ -1562,7 +1562,7 @@ bool meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius, int& verte
     return true;
 }
 
-bool meshkernel::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius, int& edgeIndex)
+bool meshkernel::Mesh::FindEdgeCloseToAPoint(Point point, int& edgeIndex)
 {
     edgeIndex = -1;
     if (GetNumEdges() <= 0)
@@ -1577,8 +1577,7 @@ bool meshkernel::Mesh::FindEdgeCloseToAPoint(Point point, double searchRadius, i
         m_edgesRTreeRequiresUpdate = false;
     }
 
-    double const searchRadiusSquared = searchRadius * searchRadius;
-    m_edgesRTree.NearestNeighboursOnSquaredDistance(point, searchRadiusSquared);
+    m_edgesRTree.NearestNeighbour(point);
     auto const resultSize = m_edgesRTree.GetQueryResultSize();
     if (resultSize >= 1)
     {
