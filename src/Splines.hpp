@@ -174,11 +174,8 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool DeleteSpline(int splineIndex);
 
-        /// <summary>
-        /// Allocate spline properties vectors
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool AllocateSplinesProperties();
+        /// @brief Allocate spline properties vectors
+        void AllocateSplinesProperties();
     };
 
     struct FuncDimensionalToAdimensionalDistance

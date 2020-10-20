@@ -49,7 +49,7 @@ meshkernel::CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_p
 };
 
 /// to be called after all splines have been stored
-bool meshkernel::CurvilinearGridFromSplines::AllocateSplinesProperties()
+void meshkernel::CurvilinearGridFromSplines::AllocateSplinesProperties()
 {
     const auto numSplines = m_splines->m_numSplines;
     m_type.resize(numSplines);
@@ -113,27 +113,17 @@ bool meshkernel::CurvilinearGridFromSplines::AllocateSplinesProperties()
     std::fill(m_leftGridLineIndex.begin(), m_leftGridLineIndex.end(), intMissingValue);
     m_rightGridLineIndex.resize(numSplines);
     std::fill(m_rightGridLineIndex.begin(), m_rightGridLineIndex.end(), intMissingValue);
-
-    return true;
 }
 
-bool meshkernel::CurvilinearGridFromSplines::Compute(CurvilinearGrid& curvilinearGrid)
+void meshkernel::CurvilinearGridFromSplines::Compute(CurvilinearGrid& curvilinearGrid)
 {
 
-    bool successful = Initialize();
-    if (!successful)
-    {
-        return false;
-    }
+    Initialize();
 
     // Grow grid, from the second layer
     for (int layer = 1; layer <= m_curvilinearParametersNative.NRefinement; ++layer)
     {
-        successful = Iterate(layer);
-        if (!successful)
-        {
-            break;
-        }
+        Iterate(layer);
     }
 
     bool removeSkinnyTriangles = m_splinesToCurvilinearParametersNative.RemoveSkinnyTriangles == 1 ? true : false;
@@ -142,11 +132,10 @@ bool meshkernel::CurvilinearGridFromSplines::Compute(CurvilinearGrid& curvilinea
         RemoveSkinnyTriangles();
     }
 
-    successful = ComputeCurvilinearGrid(curvilinearGrid);
-    return successful;
+    ComputeCurvilinearGrid(curvilinearGrid);
 }
 
-bool meshkernel::CurvilinearGridFromSplines::RemoveSkinnyTriangles()
+void meshkernel::CurvilinearGridFromSplines::RemoveSkinnyTriangles()
 {
     int numMaxIterations = 10;
     auto numN = m_gridPoints.size() - 2;
@@ -277,8 +266,6 @@ bool meshkernel::CurvilinearGridFromSplines::RemoveSkinnyTriangles()
             }
         }
     }
-
-    return true;
 }
 
 bool meshkernel::CurvilinearGridFromSplines::Initialize()
@@ -1866,20 +1853,11 @@ bool meshkernel::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
 
 bool meshkernel::CurvilinearGridFromSplines::ComputeSplineProperties(const bool restoreOriginalProperties)
 {
-    bool successful = AllocateSplinesProperties();
-    if (!successful)
-    {
-        return false;
-    }
+    AllocateSplinesProperties();
 
     for (size_t s = 0; s < m_splines->m_numSplines; ++s)
     {
-        successful = GetSplineIntersections(int(s));
-
-        if (!successful)
-        {
-            return false;
-        }
+        GetSplineIntersections(int(s));
     }
     // select all non-cross splines only
     for (size_t s = 0; s < m_splines->m_numSplines; ++s)

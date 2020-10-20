@@ -36,21 +36,18 @@ namespace meshkernel
     {
 
     public:
-        bool Set(int m, int n)
+        void Set(int m, int n)
         {
 
             int mMax = m + 1;
             int nMax = n + 1;
 
             m_grid.resize(mMax, std::vector<Point>(nMax, {doubleMissingValue, doubleMissingValue}));
-
-            return true;
         }
 
-        bool Set(const std::vector<std::vector<Point>>& grid)
+        void Set(const std::vector<std::vector<Point>>& grid)
         {
             m_grid = grid;
-            return true;
         }
 
         std::vector<std::vector<Point>> m_grid;

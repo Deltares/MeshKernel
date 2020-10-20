@@ -165,8 +165,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplines.Compute(curvilinearGrid);
 
     meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
 
@@ -248,8 +247,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
 
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplines.Compute(curvilinearGrid);
 
     meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
 
@@ -333,8 +331,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplines.Compute(curvilinearGrid);
 
     meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
 
@@ -472,8 +469,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplines.Compute(curvilinearGrid);
 
     meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
 
@@ -590,8 +586,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplines.Compute(curvilinearGrid);
 
     meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
 
@@ -676,8 +671,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplines.Compute(curvilinearGrid);
 
     meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::spherical);
 
@@ -762,8 +756,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplines.Compute(curvilinearGrid);
 
     meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
 
@@ -858,8 +851,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplines.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplines.Compute(curvilinearGrid);
 
     meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
 

@@ -40,12 +40,7 @@ namespace meshkernel
     class CurvilinearGridFromPolygon
     {
     public:
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="mesh">The input mesh</param>
-        /// <param name="polygon">The input polygon</param>
-        /// <returns></returns>
+        /// @param polygon The input polygon
         explicit CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon);
 
         /// @brief Compute curvilinear in a polygon (pol2curvi)

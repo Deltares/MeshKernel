@@ -58,18 +58,17 @@ namespace meshkernel
         /// <returns></returns>
         bool ComputeSplineProperties(bool restoreOriginalProperties);
 
-        /// <summary>
-        /// Computes a curvilinear grid using the growing front method (spline2curvi). OrthogonalCurvilinearGrid algorithm.
+        /// @brief Computes a curvilinear grid using the growing front method (spline2curvi).
+        ///
+        /// OrthogonalCurvilinearGrid algorithm.
         /// 1. Compute spline properties (the crossings)
         /// 2. Make all grid lines of the central spline
         /// 3. Adds artificial splines
         /// 4. Compute properties with artificial splines added
         /// 5. Compute the edge velocities
         /// 6. Grow layers
-        /// </summary>
-        /// <param name="curvilinearGrid">The computed curvilinear grid</param>
-        /// <returns></returns>
-        bool Compute(CurvilinearGrid& curvilinearGrid);
+        /// @param curvilinearGrid The computed curvilinear grid
+        void Compute(CurvilinearGrid& curvilinearGrid);
 
         /// <summary>
         /// Initialize the OrthogonalCurvilinearGrid algorithm.
@@ -347,11 +346,8 @@ namespace meshkernel
                                            Point& normalVector,
                                            Point& tangentialVector);
 
-        /// <summary>
-        /// Remove skewed cells and cells whose aspect ratio exceeds a prescibed value (postgrid)
-        /// </summary>
-        /// <returns></returns>
-        bool RemoveSkinnyTriangles();
+        /// @brief Remove skewed cells and cells whose aspect ratio exceeds a prescibed value (postgrid)
+        void RemoveSkinnyTriangles();
 
         /// <summary>
         /// Delete a spline
@@ -360,11 +356,8 @@ namespace meshkernel
         /// <returns></returns>
         bool DeleteSpline(int splineIndex);
 
-        /// <summary>
-        /// Allocate spline properties arrays
-        /// </summary>
-        /// <returns></returns>
-        bool AllocateSplinesProperties();
+        /// @brief Allocate spline properties arrays
+        void AllocateSplinesProperties();
 
         /// <summary>
         /// The spline type
