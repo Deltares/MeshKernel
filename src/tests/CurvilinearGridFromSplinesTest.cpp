@@ -40,10 +40,8 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
 
-    successful = curvilinearGridFromSplines.ComputeSplineProperties(false);
-    ASSERT_TRUE(successful);
-    successful = curvilinearGridFromSplines.MakeAllGridLines();
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplines.ComputeSplineProperties(false);
+    curvilinearGridFromSplines.MakeAllGridLines();
     ASSERT_EQ(7, curvilinearGridFromSplines.m_numM);
 
     const double tolerance = 1e-6;
@@ -121,8 +119,7 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
     curvilinearParametersNative.NRefinement = 40;
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
-    successful = curvilinearGridFromSplines.ComputeSplineProperties(false);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplines.ComputeSplineProperties(false);
 
     const double tolerance = 1e-6;
     ASSERT_NEAR(345.967070088532, curvilinearGridFromSplines.m_maximumGridHeights[0], tolerance);

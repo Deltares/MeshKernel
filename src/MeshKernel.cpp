@@ -1245,7 +1245,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::out_of_range("The selected mesh does not exist.");
             }
 
             curvilinearGridFromSplinesInstances[meshKernelId]->Iterate(layer);
@@ -1388,7 +1388,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::out_of_range("The selected mesh does not exist.");
             }
 
             std::vector<meshkernel::Point> polygonPoints;
