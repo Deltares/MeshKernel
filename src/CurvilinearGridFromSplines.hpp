@@ -95,29 +95,23 @@ namespace meshkernel
         std::shared_ptr<Splines> m_splines; // A pointer to spline
 
     private:
-        /// @brief From the layer index gets the previous grid layer where start growing and the transversal sublayer index (get_isub)
-        /// @param layer The current layer
-        /// @param gridLayer The next grid layer
-        /// @param subLayerIndex The transversal sub-layer index
-        bool GetSubIntervalAndGridLayer(int layer,
+        /// @brief From the layer index gets the next grid layer and the transversal sublayer index (get_isub)
+        /// @param[in] layer The current layer
+        /// @param[out] gridLayer The next grid layer
+        /// @param[out] subLayerIndex The transversal sub-layer index
+        void GetSubIntervalAndGridLayer(int layer,
                                         int& gridLayer,
                                         int& subLayerIndex);
 
-        /// <summary>
-        /// Grow layer at layer index
-        /// </summary>
-        /// <param name="layerIndex">The layer index to grow</param>
-        /// <returns></returns>
-        bool GrowLayer(int layerIndex);
+        /// @brief Grow layer at layer index
+        /// @param layerIndex The layer index to grow
+        void GrowLayer(int layerIndex);
 
-        /// <summary>
-        /// Compute the maximum allowable grid layer growth time self crossings (comp_tmax_self)
-        /// </summary>
-        /// <param name="coordinates">The coordinates to grow</param>
-        /// <param name="velocities">The velocities</param>
-        /// <param name="maximumGridLayerGrowTime">The maximum grow layer time</param>
-        /// <returns></returns>
-        bool ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
+        /// @brief Compute the maximum allowable grid layer growth time self crossings (comp_tmax_self)
+        /// @param coordinates The coordinates to grow
+        /// @param velocities The velocities
+        /// @param maximumGridLayerGrowTime The maximum grow layer time
+        void ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
                                              const std::vector<Point>& velocities,
                                              std::vector<double>& maximumGridLayerGrowTime) const;
 

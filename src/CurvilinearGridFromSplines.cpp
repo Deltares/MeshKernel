@@ -573,37 +573,33 @@ void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
     curvilinearGrid.Set(curvilinearMeshPoints);
 }
 
-bool meshkernel::CurvilinearGridFromSplines::GetSubIntervalAndGridLayer(int layer, int& gridLayer, int& subLayerIndex)
+void meshkernel::CurvilinearGridFromSplines::GetSubIntervalAndGridLayer(int layer, int& gridLayer, int& subLayerIndex)
 {
     gridLayer = layer - 1;
     int sum = std::accumulate(m_subLayerGridPoints.begin(), m_subLayerGridPoints.end(), 0);
+
     if (layer >= sum)
     {
         subLayerIndex = -1;
-        return true;
     }
-
-    subLayerIndex = 0;
-    sum = m_subLayerGridPoints[0] + 1;
-    while (sum <= layer && subLayerIndex < m_maxNumCenterSplineHeights)
+    else
     {
-        subLayerIndex = subLayerIndex + 1;
-        sum += m_subLayerGridPoints[subLayerIndex];
+        subLayerIndex = 0;
+        sum = m_subLayerGridPoints[0] + 1;
+        while (sum <= layer && subLayerIndex < m_maxNumCenterSplineHeights)
+        {
+            subLayerIndex = subLayerIndex + 1;
+            sum += m_subLayerGridPoints[subLayerIndex];
+        }
+        gridLayer = layer - sum + m_subLayerGridPoints[subLayerIndex];
     }
-    gridLayer = layer - sum + m_subLayerGridPoints[subLayerIndex];
-
-    return true;
 }
 
-bool meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
+void meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
 {
     assert(layerIndex - 1 >= 0);
     std::vector<Point> velocityVectorAtGridPoints(m_numM);
-    bool successful = ComputeVelocitiesAtGridPoints(layerIndex - 1, velocityVectorAtGridPoints);
-    if (!successful)
-    {
-        return false;
-    }
+    ComputeVelocitiesAtGridPoints(layerIndex - 1, velocityVectorAtGridPoints);
 
     std::vector<Point> activeLayerPoints(m_gridPoints[layerIndex - 1]);
     for (int m = 0; m < velocityVectorAtGridPoints.size(); ++m)
@@ -619,23 +615,15 @@ bool meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
     std::vector<std::vector<int>> gridPointsIndices(numGridPoints, std::vector<int>(2, -1));
     std::vector<Point> frontGridPoints(numGridPoints);
     int numFrontPoints;
-    successful = FindFront(gridPointsIndices, frontGridPoints, numFrontPoints);
-    if (!successful)
-    {
-        return false;
-    }
+    FindFront(gridPointsIndices, frontGridPoints, numFrontPoints);
 
     std::vector<Point> frontVelocities(numGridPoints);
-    successful = CopyVelocitiesToFront(layerIndex - 1,
-                                       velocityVectorAtGridPoints,
-                                       numFrontPoints,
-                                       gridPointsIndices,
-                                       frontGridPoints,
-                                       frontVelocities);
-    if (!successful)
-    {
-        return false;
-    }
+    CopyVelocitiesToFront(layerIndex - 1,
+                          velocityVectorAtGridPoints,
+                          numFrontPoints,
+                          gridPointsIndices,
+                          frontGridPoints,
+                          frontVelocities);
 
     double totalTimeStep = 0.0;
     std::vector<Point> gridLine(m_gridPoints[layerIndex - 1]);
@@ -657,11 +645,7 @@ bool meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
         }
 
         std::vector<double> maximumGridLayerGrowTime(newValidFrontNodes.size(), std::numeric_limits<double>::max());
-        successful = ComputeMaximumGridLayerGrowTime(activeLayerPoints, velocityVectorAtGridPoints, maximumGridLayerGrowTime);
-        if (!successful)
-        {
-            return false;
-        }
+        ComputeMaximumGridLayerGrowTime(activeLayerPoints, velocityVectorAtGridPoints, maximumGridLayerGrowTime);
         localTimeStep = std::min(m_timeStep - totalTimeStep, *std::min_element(maximumGridLayerGrowTime.begin(), maximumGridLayerGrowTime.end()));
 
         if (m_splinesToCurvilinearParametersNative.CheckFrontCollisions)
@@ -718,11 +702,7 @@ bool meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
 
         if (totalTimeStep < m_timeStep)
         {
-            successful = ComputeVelocitiesAtGridPoints(layerIndex, velocityVectorAtGridPoints);
-            if (!successful)
-            {
-                return false;
-            }
+            ComputeVelocitiesAtGridPoints(layerIndex, velocityVectorAtGridPoints);
 
             for (int i = 0; i < m_numM; ++i)
             {
@@ -734,19 +714,9 @@ bool meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
                 }
             }
 
-            successful = FindFront(gridPointsIndices, frontGridPoints, numFrontPoints);
-            if (!successful)
-            {
-                return false;
-            }
-
-            successful = CopyVelocitiesToFront(layerIndex - 1, velocityVectorAtGridPoints, numFrontPoints,
-                                               gridPointsIndices, frontGridPoints, frontVelocities);
-
-            if (!successful)
-            {
-                return false;
-            }
+            FindFront(gridPointsIndices, frontGridPoints, numFrontPoints);
+            CopyVelocitiesToFront(layerIndex - 1, velocityVectorAtGridPoints, numFrontPoints,
+                                  gridPointsIndices, frontGridPoints, frontVelocities);
         }
     }
 
@@ -779,11 +749,9 @@ bool meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
     }
 
     m_validFrontNodes = newValidFrontNodes;
-
-    return true;
 }
 
-bool meshkernel::CurvilinearGridFromSplines::ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
+void meshkernel::CurvilinearGridFromSplines::ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
                                                                              const std::vector<Point>& velocities,
                                                                              std::vector<double>& maximumGridLayerGrowTime) const
 {
@@ -819,8 +787,6 @@ bool meshkernel::CurvilinearGridFromSplines::ComputeMaximumGridLayerGrowTime(con
             maximumGridLayerGrowTime[i] = -edgeWidth[i] / edgeIncrement[i];
         }
     }
-
-    return true;
 }
 
 bool meshkernel::CurvilinearGridFromSplines::CopyVelocitiesToFront(const int layerIndex,
