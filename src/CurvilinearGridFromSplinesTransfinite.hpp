@@ -44,19 +44,13 @@ namespace meshkernel
         /// <returns></returns>
         CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, meshkernelapi::CurvilinearParametersNative curvilinearParametersNative);
 
-        /// <summary>
-        /// Computes the adimensional intersections between splines.
+        /// @brief Computes the adimensional intersections between splines.
         /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
         bool ComputeIntersections();
 
-        /// <summary>
         /// Computes the curvilinear grid from the splines using transfinite interpolation
-        /// </summary>
-        /// <param name="curvilinearGrid"></param>
-        /// <returns>If the method succeeded</returns>
-        bool Compute(CurvilinearGrid& curvilinearGrid);
+        /// @param curvilinearGrid
+        void Compute(CurvilinearGrid& curvilinearGrid);
 
         std::shared_ptr<Splines> m_splines; // A pointer to spline
 
@@ -109,16 +103,13 @@ namespace meshkernel
                                          double rightDistance,
                                          std::vector<double>& distances) const;
 
-        /// <summary>
-        /// Computes the distances along the spline where to generate the points
-        /// </summary>
-        /// <param name="numIntersections"></param>
-        /// <param name="numPoints"></param>
-        /// <param name="numDiscretizations"></param>
-        /// <param name="intersectionDistances"></param>
-        /// <param name="distances"></param>
-        /// <returns></returns>
-        bool ComputeDiscretizations(int numIntersections,
+        /// @brief Computes the distances along the spline where to generate the points
+        /// @param[in] numIntersections
+        /// @param[in] numPoints
+        /// @param[in] numDiscretizations
+        /// @param[in] intersectionDistances
+        /// @param[out] distances
+        void ComputeDiscretizations(int numIntersections,
                                     int numPoints,
                                     int numDiscretizations,
                                     const std::vector<double>& intersectionDistances,

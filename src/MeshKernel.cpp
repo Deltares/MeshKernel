@@ -1245,7 +1245,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::out_of_range("The selected mesh does not exist.");
+                throw std::invalid_argument("The selected mesh does not exist.");
             }
 
             curvilinearGridFromSplinesInstances[meshKernelId]->Iterate(layer);
@@ -1364,11 +1364,7 @@ namespace meshkernelapi
 
         // Compute the curvilinear grid
         meshkernel::CurvilinearGrid curvilinearGrid;
-        successful = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
-        if (!successful)
-        {
-            return -1;
-        }
+        curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
 
         // Transform and set mesh pointer
         *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
@@ -1388,7 +1384,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::out_of_range("The selected mesh does not exist.");
+                throw std::invalid_argument("The selected mesh does not exist.");
             }
 
             std::vector<meshkernel::Point> polygonPoints;

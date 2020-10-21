@@ -42,8 +42,7 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplines)
     meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParametersNative);
 
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
 
     // check the values
     constexpr double tolerance = 1e-6;
@@ -132,8 +131,7 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesOneNSwapped)
     meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParametersNative);
 
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
 
     // check the values
     constexpr double tolerance = 1e-6;
@@ -228,8 +226,7 @@ TEST(CurvilinearGridFromSplinesTransfinite, FiveSplines)
     meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParametersNative);
 
     meshkernel::CurvilinearGrid curvilinearGrid;
-    successful = curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
-    ASSERT_TRUE(successful);
+    curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
 
     constexpr double tolerance = 1e-6;
     ASSERT_NEAR(244.84733455150598, curvilinearGrid.m_grid[0][0].x, tolerance);
