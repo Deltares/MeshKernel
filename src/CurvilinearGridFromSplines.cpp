@@ -268,28 +268,20 @@ void meshkernel::CurvilinearGridFromSplines::RemoveSkinnyTriangles()
     }
 }
 
-bool meshkernel::CurvilinearGridFromSplines::Initialize()
+void meshkernel::CurvilinearGridFromSplines::Initialize()
 {
     // no splines
     if (m_splines->m_numSplines < 2)
     {
-        return false;
+        throw std::invalid_argument("Not enough splines to create a curvilinear grid.");
     }
 
     // compute properties
-    bool successful = ComputeSplineProperties(false);
-    if (!successful)
-    {
-        return false;
-    }
+    ComputeSplineProperties(false);
 
     // get the properties of the center splines
     m_numM = 0;
-    successful = MakeAllGridLines();
-    if (!successful)
-    {
-        return false;
-    }
+    MakeAllGridLines();
 
     // Store original number of splines
     std::vector<Point> newCrossSpline(2);
@@ -385,11 +377,7 @@ bool meshkernel::CurvilinearGridFromSplines::Initialize()
     m_edgeVelocities.resize(m_numM - 1, doubleMissingValue);
     m_growFactorOnSubintervalAndEdge.resize(m_maxNumCenterSplineHeights, std::vector<double>(m_numM - 1, 1.0));
     m_numPerpendicularFacesOnSubintervalAndEdge.resize(m_maxNumCenterSplineHeights, std::vector<int>(m_numM - 1, 0));
-    successful = ComputeEdgeVelocities(m_edgeVelocities, m_growFactorOnSubintervalAndEdge, m_numPerpendicularFacesOnSubintervalAndEdge);
-    if (!successful)
-    {
-        return false;
-    }
+    ComputeEdgeVelocities(m_edgeVelocities, m_growFactorOnSubintervalAndEdge, m_numPerpendicularFacesOnSubintervalAndEdge);
 
     // Increase curvilinear grid
     const int numGridLayers = m_curvilinearParametersNative.NRefinement + 1;
@@ -433,17 +421,11 @@ bool meshkernel::CurvilinearGridFromSplines::Initialize()
     m_onTopOfEachOtherSquaredTolerance = m_onTopOfEachOtherSquaredTolerance * squaredMaximumGridWidth;
 
     m_subLayerGridPoints.resize(m_numPerpendicularFacesOnSubintervalAndEdge.size());
-
-    return true;
 }
 
-bool meshkernel::CurvilinearGridFromSplines::Iterate(int layer)
+void meshkernel::CurvilinearGridFromSplines::Iterate(int layer)
 {
-    bool successful = GrowLayer(layer);
-    if (!successful)
-    {
-        return false;
-    }
+    GrowLayer(layer);
 
     for (int j = 0; j < m_subLayerGridPoints.size(); ++j)
     {
@@ -453,11 +435,7 @@ bool meshkernel::CurvilinearGridFromSplines::Iterate(int layer)
     int gridLayer;
     int subLayerRightIndex;
 
-    successful = GetSubIntervalAndGridLayer(layer, gridLayer, subLayerRightIndex);
-    if (!successful)
-    {
-        return false;
-    }
+    GetSubIntervalAndGridLayer(layer, gridLayer, subLayerRightIndex);
 
     for (int i = 0; i < m_numM; i++)
     {
@@ -468,11 +446,7 @@ bool meshkernel::CurvilinearGridFromSplines::Iterate(int layer)
             m_subLayerGridPoints[j] = m_numPerpendicularFacesOnSubintervalAndEdge[j][minRight];
         }
 
-        successful = GetSubIntervalAndGridLayer(layer, gridLayer, subLayerRightIndex);
-        if (!successful)
-        {
-            return false;
-        }
+        GetSubIntervalAndGridLayer(layer, gridLayer, subLayerRightIndex);
 
         if (subLayerRightIndex >= 0 && i < m_numM - 1 && gridLayer >= 0)
         {
@@ -485,15 +459,10 @@ bool meshkernel::CurvilinearGridFromSplines::Iterate(int layer)
         }
     }
 
-    if (m_timeStep < 1e-8)
-    {
-        return false;
-    }
-
-    return true;
+    assert(m_timeStep > 1e-8 && "time step is smaller than 1e-8!");
 }
 
-bool meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearGrid& curvilinearGrid)
+void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearGrid& curvilinearGrid)
 {
     std::vector<std::vector<size_t>> mIndicesThisSide(1, std::vector<size_t>(2));
     std::vector<std::vector<size_t>> mIndicesOtherSide(1, std::vector<size_t>(2));
@@ -602,8 +571,6 @@ bool meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
 
     curvilinearGrid.Set(int(curvilinearMeshPoints.size()), int(curvilinearMeshPoints[0].size()));
     curvilinearGrid.Set(curvilinearMeshPoints);
-
-    return true;
 }
 
 bool meshkernel::CurvilinearGridFromSplines::GetSubIntervalAndGridLayer(int layer, int& gridLayer, int& subLayerIndex)

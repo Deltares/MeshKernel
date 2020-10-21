@@ -1234,38 +1234,51 @@ namespace meshkernelapi
 
         curvilinearGridFromSplinesInstances.insert({meshKernelId, curvilinearGridFromSplines});
 
-        successful = curvilinearGridFromSplinesInstances[meshKernelId]->Initialize();
-        if (!successful)
-        {
-            return -1;
-        }
+        curvilinearGridFromSplinesInstances[meshKernelId]->Initialize();
         return 0;
     }
 
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines_iteration(int meshKernelId, int layer)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
 
-        const bool successful = curvilinearGridFromSplinesInstances[meshKernelId]->Iterate(layer);
-        return successful ? 0 : 1;
+            curvilinearGridFromSplinesInstances[meshKernelId]->Iterate(layer);
+        }
+        catch (const std::exception& e)
+        {
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_refresh_mesh(int meshKernelId)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
+            if (meshKernelId >= meshInstances.size())
+            {
+                return 0;
+            }
+
+            meshkernel::CurvilinearGrid curvilinearGrid;
+            curvilinearGridFromSplinesInstances[meshKernelId]->ComputeCurvilinearGrid(curvilinearGrid);
+
+            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
-
-        meshkernel::CurvilinearGrid curvilinearGrid;
-        const bool successful = curvilinearGridFromSplinesInstances[meshKernelId]->ComputeCurvilinearGrid(curvilinearGrid);
-
-        *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
-
-        return successful ? 0 : 1;
+        catch (const std::exception& e)
+        {
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_delete(int meshKernelId)
@@ -1375,7 +1388,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("Invalid nodes.");
+                throw std::invalid_argument("The selected mesh does not exist.");
             }
 
             std::vector<meshkernel::Point> polygonPoints;

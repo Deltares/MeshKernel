@@ -70,25 +70,16 @@ namespace meshkernel
         /// @param curvilinearGrid The computed curvilinear grid
         void Compute(CurvilinearGrid& curvilinearGrid);
 
-        /// <summary>
-        /// Initialize the OrthogonalCurvilinearGrid algorithm.
-        /// </summary>
-        /// <returns></returns>
-        bool Initialize();
+        /// @brief Initialize the OrthogonalCurvilinearGrid algorithm.
+        void Initialize();
 
-        /// <summary>
-        /// Performs one iteration for generating another layer on the advancing fronts
-        /// </summary>
-        /// <param name="layer">The index of the layer to be generated</param>
-        /// <returns></returns>
-        bool Iterate(int layer);
+        /// @brief Performs one iteration for generating another layer on the advancing fronts
+        /// @param layer The index of the layer to be generated
+        void Iterate(int layer);
 
-        /// <summary>
-        /// Get the curvilinear grid
-        /// </summary>
-        /// <param name="curvilinearGrid"></param>
-        /// <returns></returns>
-        bool ComputeCurvilinearGrid(CurvilinearGrid& curvilinearGrid);
+        /// @brief Get the curvilinear grid
+        /// @param curvilinearGrid
+        void ComputeCurvilinearGrid(CurvilinearGrid& curvilinearGrid);
 
         /// <summary>
         /// For the central spline, computes the spline subdivisions along the spline (make_wholegridline)
@@ -104,13 +95,10 @@ namespace meshkernel
         std::shared_ptr<Splines> m_splines; // A pointer to spline
 
     private:
-        /// <summary>
-        /// From the layer index gets the previous grid layer where start growing and the transversal sublayer index (get_isub)
-        /// </summary>
-        /// <param name="layer">The current layer</param>
-        /// <param name="gridLayer">The next grid layer</param>
-        /// <param name="subLayerIndex">The transversal sub-layer index</param>
-        /// <returns></returns>
+        /// @brief From the layer index gets the previous grid layer where start growing and the transversal sublayer index (get_isub)
+        /// @param layer The current layer
+        /// @param gridLayer The next grid layer
+        /// @param subLayerIndex The transversal sub-layer index
         bool GetSubIntervalAndGridLayer(int layer,
                                         int& gridLayer,
                                         int& subLayerIndex);
