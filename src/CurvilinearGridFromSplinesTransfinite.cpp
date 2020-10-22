@@ -296,7 +296,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations(i
     }
 }
 
-bool meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistances(double factor,
+void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistances(double factor,
                                                                                     double leftDistance,
                                                                                     double rightDistance,
                                                                                     std::vector<double>& distances) const
@@ -315,11 +315,9 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistan
     {
         distances[i] = leftDistance + incrementRatio * distances[i];
     }
-
-    return true;
 }
 
-bool meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
+void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
 {
     const auto numSplines = m_splines->m_numSplines;
 
@@ -347,8 +345,7 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
             {
                 if (m_splineType[i] * m_splineType[j] == 1)
                 {
-                    // intersecting twice
-                    return false;
+                    throw std::invalid_argument("At least two splines are intersecting twice.");
                 }
                 else if (m_splineType[i] == 0 && m_splineType[j] == 0)
                 {
@@ -380,13 +377,11 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
         }
     }
 
-    // find if one of the spline could not be classified
-    // put the horizontal types on front first (done from swapping before)
     for (int i = 0; i < numSplines; i++)
     {
         if (m_splineType[i] == 0)
         {
-            return false;
+            throw std::invalid_argument("At least one of the splines could not be classified.");
         }
     }
 
@@ -525,8 +520,6 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
             }
         }
     }
-
-    return true;
 }
 
 bool meshkernel::CurvilinearGridFromSplinesTransfinite::OrderSplines(int startFirst,
@@ -568,7 +561,7 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::OrderSplines(int startFi
 }
 
 template <typename T>
-bool meshkernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow) const
+void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow) const
 {
     auto minSize = std::min(v[firstRow].size(), v[secondRow].size());
     minSize = std::min(minSize, m_splines->m_numSplines);
@@ -577,11 +570,10 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std
     {
         std::swap(v[firstRow][i], v[secondRow][i]);
     }
-    return true;
 }
 
 template <typename T>
-bool meshkernel::CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn) const
+void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn) const
 {
     for (size_t i = 0; i < m_splines->m_numSplines; i++)
     {
@@ -592,5 +584,4 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<
 
         std::swap(v[i][firstColumn], v[i][secondColumn]);
     }
-    return true;
 }

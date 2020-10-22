@@ -46,7 +46,7 @@ namespace meshkernel
 
         /// @brief Computes the adimensional intersections between splines.
         /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)
-        bool ComputeIntersections();
+        void ComputeIntersections();
 
         /// Computes the curvilinear grid from the splines using transfinite interpolation
         /// @param curvilinearGrid
@@ -55,50 +55,38 @@ namespace meshkernel
         std::shared_ptr<Splines> m_splines; // A pointer to spline
 
     private:
-        /// <summary>
-        /// Order the splines such that their index increases in m or n direction
-        /// </summary>
-        /// <param name="startFirst"></param>
-        /// <param name="endFirst"></param>
-        /// <param name="startSecond"></param>
-        /// <param name="endSecond"></param>
-        /// <returns>If the method succeeded</returns>
+        /// @brief Order the splines such that their index increases in m or n direction
+        /// @param startFirst
+        /// @param endFirst
+        /// @param startSecond
+        /// @param endSecond
+        /// @returns Boolean to indicate that procedure has to be repeated
         bool OrderSplines(int startFirst,
                           int endFirst,
                           int startSecond,
                           int endSecond);
 
-        /// <summary>
-        /// Swap the rows of a two dimensional vector
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="v">The input vector</param>
-        /// <param name="firstRow">The first row</param>
-        /// <param name="secondRow">The second row</param>
-        /// <returnsIf the method succeeded></returns>
+        /// @brief Swap the rows of a two dimensional vector
+        /// @param v The input vector
+        /// @param firstRow The first row
+        /// @param secondRow The second row
         template <typename T>
-        bool SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow) const;
+        void SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow) const;
 
-        /// <summary>
-        /// Swap the columns of a two dimensional vector (MAKESR)
-        /// </summary>
-        /// <typeparam name="T">The input vector</typeparam>
-        /// <param name="v"></param>
-        /// <param name="firstColumn">The first column</param>
-        /// <param name="secondColumn">The second column</param>
-        /// <returns>If the method succeeded</returns>
+        /// @brief Swap the columns of a two dimensional vector (MAKESR)
+        /// @tparam T The input vector
+        /// @param v
+        /// @param firstColumn The first column
+        /// @param secondColumn The second column
         template <typename T>
-        bool SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn) const;
+        void SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn) const;
 
-        /// <summary>
         /// Compute the distances following an exponential increase
-        /// </summary>
-        /// <param name="factor"></param>
-        /// <param name="leftDistance"></param>
-        /// <param name="rightDistance"></param>
-        /// <param name="distances"></param>
-        /// <returns></returns>
-        bool ComputeExponentialDistances(double factor,
+        /// @param[in] factor
+        /// @param[in] leftDistance
+        /// @param[in] rightDistance
+        /// @param[out] distances
+        void ComputeExponentialDistances(double factor,
                                          double leftDistance,
                                          double rightDistance,
                                          std::vector<double>& distances) const;
