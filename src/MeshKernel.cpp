@@ -935,7 +935,7 @@ namespace meshkernelapi
         return 0;
     }
 
-    MKERNEL_API int mkernel_delete_edge(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius)
+    MKERNEL_API int mkernel_delete_edge(int meshKernelId, GeometryListNative& geometryListIn)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -950,7 +950,7 @@ namespace meshkernelapi
         }
 
         int edgeIndex;
-        successful = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0], searchRadius, edgeIndex);
+        successful = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0], edgeIndex);
         if (!successful)
         {
             return -1;
@@ -965,7 +965,7 @@ namespace meshkernelapi
         return 0;
     }
 
-    MKERNEL_API int mkernel_find_edge(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, int& edgeIndex)
+    MKERNEL_API int mkernel_find_edge(int meshKernelId, GeometryListNative& geometryListIn, int& edgeIndex)
     {
         if (meshKernelId >= meshInstances.size())
         {
@@ -979,7 +979,7 @@ namespace meshkernelapi
             return -1;
         }
 
-        successful = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0], searchRadius, edgeIndex);
+        successful = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0], edgeIndex);
         if (!successful)
         {
             return -1;

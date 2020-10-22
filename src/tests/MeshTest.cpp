@@ -598,7 +598,7 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
     int edgeIndex;
-    auto successful = mesh->FindEdgeCloseToAPoint({1.5, 1.5}, 0.1, edgeIndex);
+    auto successful = mesh->FindEdgeCloseToAPoint({1.5, 1.5}, edgeIndex);
     ASSERT_TRUE(successful);
 
     // m_nodesRTree is not build when searching for edges
