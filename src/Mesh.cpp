@@ -151,7 +151,7 @@ bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
     return true;
 }
 
-bool meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
+void meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 {
 
     RemoveInvalidNodesAndEdges();
@@ -174,7 +174,7 @@ bool meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
     // return if there are no nodes or no edges
     if (m_numNodes == 0 || m_numEdges == 0)
     {
-        return true;
+        return;
     }
 
     ResizeVectorIfNeeded(int(m_nodes.size()), m_nodesEdges);
@@ -192,7 +192,7 @@ bool meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 
     if (administrationOption == AdministrationOptions::AdministrateMeshEdges)
     {
-        return true;
+        return;
     }
 
     // face administration
@@ -217,8 +217,6 @@ bool meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 
     // classify node types
     ClassifyNodes();
-
-    return true;
 }
 
 meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)

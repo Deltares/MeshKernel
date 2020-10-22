@@ -211,100 +211,117 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_delete_mesh(int meshKernelId, GeometryListNative& geometryListIn, int deletionOption, bool invertDeletion)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                return exitCode;
+            }
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            meshInstances[meshKernelId]->DeleteMesh(polygon, deletionOption, invertDeletion);
+        }
+        catch (const std::exception& e)
         {
-            return 0;
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-        meshInstances[meshKernelId]->DeleteMesh(polygon, deletionOption, invertDeletion);
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_set_state(int meshKernelId, const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, bool isGeographic)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
 
-        std::vector<meshkernel::Edge> edges(meshGeometryDimensions.numedge);
-        int ei = 0;
-        for (int e = 0; e < edges.size(); e++)
-        {
-            edges[e].first = meshGeometry.edge_nodes[ei];
-            ei++;
-            edges[e].second = meshGeometry.edge_nodes[ei];
-            ei++;
-        }
+            std::vector<meshkernel::Edge> edges(meshGeometryDimensions.numedge);
+            int ei = 0;
+            for (int e = 0; e < edges.size(); e++)
+            {
+                edges[e].first = meshGeometry.edge_nodes[ei];
+                ei++;
+                edges[e].second = meshGeometry.edge_nodes[ei];
+                ei++;
+            }
 
-        std::vector<meshkernel::Point> nodes(meshGeometryDimensions.numnode);
-        for (int n = 0; n < nodes.size(); n++)
-        {
-            nodes[n].x = meshGeometry.nodex[n];
-            nodes[n].y = meshGeometry.nodey[n];
-        }
+            std::vector<meshkernel::Point> nodes(meshGeometryDimensions.numnode);
+            for (int n = 0; n < nodes.size(); n++)
+            {
+                nodes[n].x = meshGeometry.nodex[n];
+                nodes[n].y = meshGeometry.nodey[n];
+            }
 
-        // spherical or cartesian
-        if (isGeographic)
-        {
-            meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projections::spherical);
+            // spherical or cartesian
+            if (isGeographic)
+            {
+                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projections::spherical);
+            }
+            else
+            {
+                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projections::cartesian);
+            }
         }
-        else
+        catch (const std::exception& e)
         {
-            meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projections::cartesian);
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_get_mesh(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
+
+            meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdges);
+
+            SetMeshGeometry(meshKernelId, meshGeometryDimensions, meshGeometry);
         }
-
-        meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdges);
-
-        bool successful = SetMeshGeometry(meshKernelId, meshGeometryDimensions, meshGeometry);
-        if (!successful)
+        catch (const std::exception& e)
         {
-            return -1;
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_find_faces(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
+            meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+            SetMeshGeometry(meshKernelId, meshGeometryDimensions, meshGeometry);
         }
-
-        meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-
-        bool successful = SetMeshGeometry(meshKernelId, meshGeometryDimensions, meshGeometry);
-        if (!successful)
+        catch (const std::exception& e)
         {
-            return -1;
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_orthogonalize(int meshKernelId,
@@ -315,58 +332,56 @@ namespace meshkernelapi
                                           const GeometryListNative& geometryListNativePolygon,
                                           const GeometryListNative& geometryListNativeLandBoundaries)
     {
-
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                return exitCode;
+            }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            // build enclosing polygon
+            std::vector<meshkernel::Point> nodes(geometryListNativePolygon.numberOfCoordinates);
+            for (int i = 0; i < geometryListNativePolygon.numberOfCoordinates; i++)
+            {
+                nodes[i].x = geometryListNativePolygon.xCoordinates[i];
+                nodes[i].y = geometryListNativePolygon.yCoordinates[i];
+            }
+
+            auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
+
+            // build land boundary
+            std::vector<meshkernel::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
+            for (int i = 0; i < geometryListNativeLandBoundaries.numberOfCoordinates; i++)
+            {
+                landBoundaries[i].x = geometryListNativeLandBoundaries.xCoordinates[i];
+                landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
+            }
+
+            auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshInstances[meshKernelId]);
+            auto smoother = std::make_shared<meshkernel::Smoother>(meshInstances[meshKernelId]);
+            auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
+
+            meshkernel::OrthogonalizationAndSmoothing ortogonalization(meshInstances[meshKernelId],
+                                                                       smoother,
+                                                                       orthogonalizer,
+                                                                       polygon,
+                                                                       landBoundary,
+                                                                       projectToLandBoundaryOption,
+                                                                       orthogonalizationParametersNative);
+            ortogonalization.Initialize();
+            ortogonalization.Compute();
+        }
+        catch (const std::exception& e)
         {
-            return 0;
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        // build enclosing polygon
-        std::vector<meshkernel::Point> nodes(geometryListNativePolygon.numberOfCoordinates);
-        for (int i = 0; i < geometryListNativePolygon.numberOfCoordinates; i++)
-        {
-            nodes[i].x = geometryListNativePolygon.xCoordinates[i];
-            nodes[i].y = geometryListNativePolygon.yCoordinates[i];
-        }
-
-        auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
-
-        // build land boundary
-        std::vector<meshkernel::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
-        for (int i = 0; i < geometryListNativeLandBoundaries.numberOfCoordinates; i++)
-        {
-            landBoundaries[i].x = geometryListNativeLandBoundaries.xCoordinates[i];
-            landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
-        }
-
-        auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshInstances[meshKernelId]);
-        auto smoother = std::make_shared<meshkernel::Smoother>(meshInstances[meshKernelId]);
-        auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
-
-        meshkernel::OrthogonalizationAndSmoothing ortogonalization(meshInstances[meshKernelId],
-                                                                   smoother,
-                                                                   orthogonalizer,
-                                                                   polygon,
-                                                                   landBoundary,
-                                                                   projectToLandBoundaryOption,
-                                                                   orthogonalizationParametersNative);
-        bool successful = ortogonalization.Initialize();
-        if (!successful)
-        {
-            return -1;
-        }
-
-        successful = ortogonalization.Compute();
-        if (!successful)
-        {
-            return -1;
-        }
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_orthogonalize_initialize(int meshKernelId,
@@ -377,204 +392,273 @@ namespace meshkernelapi
                                                      GeometryListNative& geometryListNativePolygon,
                                                      GeometryListNative& geometryListNativeLandBoundaries)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                return exitCode;
+            }
+
+            // build enclosing polygon
+            std::vector<meshkernel::Point> nodes(geometryListNativePolygon.numberOfCoordinates);
+            for (int i = 0; i < geometryListNativePolygon.numberOfCoordinates; i++)
+            {
+                nodes[i].x = geometryListNativePolygon.xCoordinates[i];
+                nodes[i].y = geometryListNativePolygon.yCoordinates[i];
+            }
+
+            // build land boundary
+            std::vector<meshkernel::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
+            for (int i = 0; i < geometryListNativeLandBoundaries.numberOfCoordinates; i++)
+            {
+                landBoundaries[i].x = geometryListNativeLandBoundaries.xCoordinates[i];
+                landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
+            }
+
+            auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshInstances[meshKernelId]);
+            auto smoother = std::make_shared<meshkernel::Smoother>(meshInstances[meshKernelId]);
+            auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
+            auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
+
+            auto orthogonalizationInstance = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshInstances[meshKernelId],
+                                                                                                         smoother,
+                                                                                                         orthogonalizer,
+                                                                                                         polygon,
+                                                                                                         landBoundary,
+                                                                                                         projectToLandBoundaryOption,
+                                                                                                         orthogonalizationParametersNative);
+            orthogonalizationInstance->Initialize();
+
+            orthogonalizationInstances.insert({meshKernelId, orthogonalizationInstance});
+        }
+        catch (const std::exception& e)
         {
-            return 0;
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        // build enclosing polygon
-        std::vector<meshkernel::Point> nodes(geometryListNativePolygon.numberOfCoordinates);
-        for (int i = 0; i < geometryListNativePolygon.numberOfCoordinates; i++)
-        {
-            nodes[i].x = geometryListNativePolygon.xCoordinates[i];
-            nodes[i].y = geometryListNativePolygon.yCoordinates[i];
-        }
-
-        // build land boundary
-        std::vector<meshkernel::Point> landBoundaries(geometryListNativeLandBoundaries.numberOfCoordinates);
-        for (int i = 0; i < geometryListNativeLandBoundaries.numberOfCoordinates; i++)
-        {
-            landBoundaries[i].x = geometryListNativeLandBoundaries.xCoordinates[i];
-            landBoundaries[i].y = geometryListNativeLandBoundaries.yCoordinates[i];
-        }
-
-        auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshInstances[meshKernelId]);
-        auto smoother = std::make_shared<meshkernel::Smoother>(meshInstances[meshKernelId]);
-        auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
-        auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
-
-        auto orthogonalizationInstance = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshInstances[meshKernelId],
-                                                                                                     smoother,
-                                                                                                     orthogonalizer,
-                                                                                                     polygon,
-                                                                                                     landBoundary,
-                                                                                                     projectToLandBoundaryOption,
-                                                                                                     orthogonalizationParametersNative);
-        bool successful = orthogonalizationInstance->Initialize();
-        if (!successful)
-        {
-            return -1;
-        }
-
-        orthogonalizationInstances.insert({meshKernelId, orthogonalizationInstance});
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_orthogonalize_prepare_outer_iteration(int meshKernelId)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                return exitCode;
+            }
+
+            orthogonalizationInstances[meshKernelId]->PrapareOuterIteration();
+        }
+        catch (const std::exception& e)
         {
-            return 0;
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        bool status = orthogonalizationInstances[meshKernelId]->PrapareOuterIteration();
-        return status == true ? 0 : 1;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_orthogonalize_inner_iteration(int meshKernelId)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
-        {
-            return 0;
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                return exitCode;
+            }
+
+            orthogonalizationInstances[meshKernelId]->InnerIteration();
         }
-        const bool status = orthogonalizationInstances[meshKernelId]->InnerIteration();
-        return status == true ? 0 : 1;
+        catch (const std::exception& e)
+        {
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_orthogonalize_finalize_outer_iteration(int meshKernelId)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
-        {
-            return 0;
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                return exitCode;
+            }
+
+            orthogonalizationInstances[meshKernelId]->FinalizeOuterIteration();
         }
-        const bool status = orthogonalizationInstances[meshKernelId]->FinalizeOuterIteration();
-        return status == true ? 0 : 1;
+        catch (const std::exception& e)
+        {
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_orthogonalize_delete(int meshKernelId)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                return exitCode;
+            }
+
+            orthogonalizationInstances.erase(meshKernelId);
+        }
+        catch (const std::exception& e)
         {
-            return 0;
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        const auto returnValue = orthogonalizationInstances.erase(meshKernelId);
-        return returnValue == 1 ? 0 : 1;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_get_orthogonality(int meshKernelId, GeometryListNative& geometryList)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
-        {
-            return 0;
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                return exitCode;
+            }
+
+            meshInstances[meshKernelId]->GetOrthogonality(geometryList.zCoordinates);
         }
-        const bool status = meshInstances[meshKernelId]->GetOrthogonality(geometryList.zCoordinates);
-        return status == true ? 0 : 1;
+        catch (const std::exception& e)
+        {
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_get_smoothness(int meshKernelId, GeometryListNative& geometryList)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                return exitCode;
+            }
+
+            meshInstances[meshKernelId]->GetSmoothness(geometryList.zCoordinates);
+        }
+        catch (const std::exception& e)
         {
-            return 0;
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        const bool status = meshInstances[meshKernelId]->GetSmoothness(geometryList.zCoordinates);
-        return status == true ? 0 : 1;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_get_splines(const GeometryListNative& geometryListIn,
                                         GeometryListNative& geometry_list_out,
                                         int number_of_points_between_vertices)
     {
-
-        if (geometryListIn.numberOfCoordinates == 0)
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
-
-        std::vector<meshkernel::Point> splines(geometryListIn.numberOfCoordinates);
-        for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
-        {
-            splines[i].x = geometryListIn.xCoordinates[i];
-            splines[i].y = geometryListIn.yCoordinates[i];
-        }
-
-        std::vector<std::vector<size_t>> indexes(geometryListIn.numberOfCoordinates, std::vector<size_t>(2));
-        int numSplines = FindIndexes(splines, 0, splines.size(), meshkernel::doubleMissingValue, indexes);
-        std::vector<meshkernel::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
-
-        int index = 0;
-        for (int s = 0; s < numSplines; s++)
-        {
-            std::vector<meshkernel::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + int(indexes[s][1]) + 1);
-            int numNodes = int(indexes[s][1]) - int(indexes[s][0]) + 1;
-            meshkernel::Splines::SecondOrderDerivative(coordinates, numNodes, coordinatesDerivatives);
-
-            for (int n = 0; n < numNodes - 1; n++)
+            if (geometryListIn.numberOfCoordinates == 0)
             {
-                for (int p = 0; p <= number_of_points_between_vertices; p++)
-                {
-
-                    double pointAdimensionalCoordinate = n + double(p) / double(number_of_points_between_vertices);
-                    meshkernel::Point pointCoordinate{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue};
-                    bool successful = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
-                    if (!successful)
-                    {
-                        break;
-                    }
-
-                    geometry_list_out.xCoordinates[index] = pointCoordinate.x;
-                    geometry_list_out.yCoordinates[index] = pointCoordinate.y;
-                    geometry_list_out.zCoordinates[index] = meshkernel::doubleMissingValue;
-                    index++;
-                }
+                throw std::invalid_argument("The number of coordinates of the given geometry is zero.");
             }
 
-            geometry_list_out.xCoordinates[index] = meshkernel::doubleMissingValue;
-            geometry_list_out.yCoordinates[index] = meshkernel::doubleMissingValue;
-            geometry_list_out.zCoordinates[index] = meshkernel::doubleMissingValue;
-            index++;
-        }
+            std::vector<meshkernel::Point> splines(geometryListIn.numberOfCoordinates);
+            for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
+            {
+                splines[i].x = geometryListIn.xCoordinates[i];
+                splines[i].y = geometryListIn.yCoordinates[i];
+            }
 
-        geometry_list_out.numberOfCoordinates = index - 1;
-        return 0;
+            std::vector<std::vector<size_t>> indexes(geometryListIn.numberOfCoordinates, std::vector<size_t>(2));
+            int numSplines = FindIndexes(splines, 0, splines.size(), meshkernel::doubleMissingValue, indexes);
+            std::vector<meshkernel::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
+
+            int index = 0;
+            for (int s = 0; s < numSplines; s++)
+            {
+                std::vector<meshkernel::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + int(indexes[s][1]) + 1);
+                int numNodes = int(indexes[s][1]) - int(indexes[s][0]) + 1;
+                meshkernel::Splines::SecondOrderDerivative(coordinates, numNodes, coordinatesDerivatives);
+
+                for (int n = 0; n < numNodes - 1; n++)
+                {
+                    for (int p = 0; p <= number_of_points_between_vertices; p++)
+                    {
+
+                        double pointAdimensionalCoordinate = n + double(p) / double(number_of_points_between_vertices);
+                        meshkernel::Point pointCoordinate{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue};
+                        bool successful = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+                        if (!successful)
+                        {
+                            break;
+                        }
+
+                        geometry_list_out.xCoordinates[index] = pointCoordinate.x;
+                        geometry_list_out.yCoordinates[index] = pointCoordinate.y;
+                        geometry_list_out.zCoordinates[index] = meshkernel::doubleMissingValue;
+                        index++;
+                    }
+                }
+
+                geometry_list_out.xCoordinates[index] = meshkernel::doubleMissingValue;
+                geometry_list_out.yCoordinates[index] = meshkernel::doubleMissingValue;
+                geometry_list_out.zCoordinates[index] = meshkernel::doubleMissingValue;
+                index++;
+            }
+
+            geometry_list_out.numberOfCoordinates = index - 1;
+        }
+        catch (const std::exception& e)
+        {
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_make_mesh(int meshKernelId, const MakeGridParametersNative& makeGridParameters, const GeometryListNative& geometryListNative)
@@ -1323,53 +1407,64 @@ namespace meshkernelapi
                                        int isAccountingForLandBoundariesRequired,
                                        int projectToLandBoundaryRequired)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
+
+            //set landboundaries
+            auto polygon = std::make_shared<meshkernel::Polygons>();
+
+            std::vector<meshkernel::Point> landBoundary;
+            auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, meshInstances[meshKernelId], polygon);
+
+            bool triangulateFaces = isTriangulationRequired == 0 ? false : true;
+            bool projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
+            meshkernel::FlipEdges flipEdges(meshInstances[meshKernelId], landBoundaries, triangulateFaces, projectToLandBoundary);
+
+            flipEdges.Compute();
         }
-
-        //set landboundaries
-        auto polygon = std::make_shared<meshkernel::Polygons>();
-
-        std::vector<meshkernel::Point> landBoundary;
-        auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, meshInstances[meshKernelId], polygon);
-
-        bool triangulateFaces = isTriangulationRequired == 0 ? false : true;
-        bool projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
-        meshkernel::FlipEdges flipEdges(meshInstances[meshKernelId], landBoundaries, triangulateFaces, projectToLandBoundary);
-
-        // compute Flip edges
-        auto successful = flipEdges.Compute();
-
-        return successful ? 0 : 1;
+        catch (const std::exception& e)
+        {
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines(int meshKernelId, GeometryListNative& geometryListNativeIn, CurvilinearParametersNative& curvilinearParametersNative)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("The selected mesh does not exist.");
+            }
 
-        // Use the default constructor, no instance present
-        auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
-        bool successful = SetSplines(geometryListNativeIn, *spline);
-        if (!successful)
+            // Use the default constructor, no instance present
+            auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
+            SetSplines(geometryListNativeIn, *spline);
+
+            // Create algorithm and set the splines
+            meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(spline, curvilinearParametersNative);
+
+            // Compute the curvilinear grid
+            meshkernel::CurvilinearGrid curvilinearGrid;
+            curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
+
+            // Transform and set mesh pointer
+            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            SetExceptionMessage(e, exceptionMessage);
+            exitCode |= Exception;
         }
-
-        // Create algorithm and set the splines
-        meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(spline, curvilinearParametersNative);
-
-        // Compute the curvilinear grid
-        meshkernel::CurvilinearGrid curvilinearGrid;
-        curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
-
-        // Transform and set mesh pointer
-        *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_from_polygon(int meshKernelId,

@@ -114,12 +114,9 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool SetFlatCopies(AdministrationOptions administrationOption);
 
-        /// <summary>
-        /// Perform mesh administration
-        /// </summary>
-        /// <param name="administrationOption">Type of administration to perform</param>
-        /// <returns>If the method succeeded</returns>
-        bool Administrate(AdministrationOptions administrationOption);
+        /// @brief Perform mesh administration
+        /// @param administrationOption Type of administration to perform
+        void Administrate(AdministrationOptions administrationOption);
 
         /// <summary>
         /// Compute face circumcenters, centers of mass and face areas

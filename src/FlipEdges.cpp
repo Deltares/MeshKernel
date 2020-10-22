@@ -52,25 +52,21 @@ meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
     }
 };
 
-bool meshkernel::FlipEdges::Compute() const
+void meshkernel::FlipEdges::Compute() const
 {
 
-    bool successful = m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     if (m_triangulateFaces)
     {
-        successful = successful && m_mesh->TriangulateFaces();
-        successful = successful && m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-    }
-
-    if (!successful)
-    {
-        return false;
+        m_mesh->TriangulateFaces();
+        m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 
     const int MaxIter = 10;
     const int numEdges = m_mesh->GetNumEdges();
     int numFlippedEdges;
+    // TODO: let for-loop break early when numFlippedEdges is already 0
     for (int iter = 0; iter < MaxIter; iter++)
     {
         numFlippedEdges = 0;
@@ -94,18 +90,13 @@ bool meshkernel::FlipEdges::Compute() const
             const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(rightFace);
             if (NumEdgesLeftFace != 3 || NumEdgesRightFace != 3)
             {
-                return true;
+                return;
             }
 
             int nodeLeft = -1;
             int nodeRight = -1;
             int topologyFunctional = 1000;
-            successful = ComputeTopologyFunctional(e, nodeLeft, nodeRight, topologyFunctional);
-
-            if (!successful)
-            {
-                return false;
-            }
+            ComputeTopologyFunctional(e, nodeLeft, nodeRight, topologyFunctional);
 
             if (topologyFunctional < 0)
             {
@@ -250,16 +241,14 @@ bool meshkernel::FlipEdges::Compute() const
 
     if (numFlippedEdges > 0)
     {
-        return false;
+        throw std::runtime_error("Could not flip all edges.");
     }
 
     // Perform mesh administration
-    successful = m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-
-    return successful;
+    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 }
 
-bool meshkernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
+void meshkernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
 {
     // Update nod, delete edge from m_mesh->m_nodesEdges[firstNode]
     int kk = 0;
@@ -270,7 +259,7 @@ bool meshkernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
     }
     if (m_mesh->m_nodesEdges[firstNode][kk] != edge)
     {
-        return false;
+        throw std::invalid_argument("The edge does not match the given node.");
     }
 
     int count = 0;
@@ -283,11 +272,9 @@ bool meshkernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
         }
     }
     ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[firstNode], m_mesh->m_nodesEdges[firstNode]);
-
-    return true;
 }
 
-bool meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
+void meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
                                                       int& nodeLeft,
                                                       int& nodeRight,
                                                       int& topologyFunctional) const
@@ -295,7 +282,7 @@ bool meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
 
     if (m_mesh->m_edgesNumFaces[edge] != 2)
     {
-        return true;
+        return;
     }
 
     const auto firstNode = m_mesh->m_edges[edge].first;
@@ -307,7 +294,7 @@ bool meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
 
     if (NumEdgesLeftFace != 3 || NumEdgesRightFace != 3)
     {
-        return true;
+        return;
     }
 
     // find the nodes that are connected to both k1 and k
@@ -324,7 +311,7 @@ bool meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
 
     if (nodeLeft < 0 || nodeRight < 0)
     {
-        return true;
+        return;
     }
 
     // check that kl is part of faceL
@@ -340,7 +327,7 @@ bool meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
 
     if (!nodeFound)
     {
-        return true;
+        return;
     }
 
     // check that kr is part of faceR
@@ -356,7 +343,7 @@ bool meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
 
     if (!nodeFound)
     {
-        return true;
+        return;
     }
 
     //  compute the change in functional
@@ -371,7 +358,7 @@ bool meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
         {
             //edge is associated with a land boundary, keep the edge
             topologyFunctional = 1000;
-            return true;
+            return;
         }
         else
         {
@@ -400,8 +387,6 @@ bool meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
                              (nR + 1) * (nR + 1) -
                              (n1 * n1 + n2 * n2 + nL * nL + nR * nR);
     }
-
-    return true;
 }
 
 //comp_nnow
