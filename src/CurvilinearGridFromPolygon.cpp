@@ -183,14 +183,14 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     assignPolygonPointsToSegment(fourthNode, numMNodes, -direction, sideFour);
 
     std::vector<std::vector<Point>> result;
-    bool successful = InterpolateTransfinite(sideOne,
-                                             sideTwo,
-                                             sideThree,
-                                             sideFour,
-                                             m_polygon->m_projection,
-                                             numMNodes - 1,
-                                             numNNodes - 1,
-                                             result);
+    InterpolateTransfinite(sideOne,
+                           sideTwo,
+                           sideThree,
+                           sideFour,
+                           m_polygon->m_projection,
+                           numMNodes - 1,
+                           numNNodes - 1,
+                           result);
 
     // Assign the points to the curvilinear grid
     curvilinearGrid.Set(numMNodes, numNNodes);

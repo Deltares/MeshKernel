@@ -178,7 +178,7 @@ namespace meshkernel
         void ComputeGrowFactor(double totalGridHeight,
                                double firstGridLayerHeight,
                                int numberOfGridLayers,
-                               double& result);
+                               double& result) const;
 
         /// <summary>
         /// Computes the exponential grid height

@@ -1233,7 +1233,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGrowFactor(
     double totalGridHeight,
     double firstGridLayerHeight,
     int numberOfGridLayers,
-    double& result)
+    double& result) const
 {
     // eheight m_gridHeights
     double aspectRatioGrowFactor = 1.0;
