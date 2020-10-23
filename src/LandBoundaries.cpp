@@ -1007,7 +1007,7 @@ namespace meshkernel
                                                         meshkernel::Point startPoint,
                                                         meshkernel::Point endPoint,
                                                         int& startMeshNode,
-                                                        int& endMeshNode)
+                                                        int& endMeshNode) const
     {
         assert(!m_nodes.empty() && "The land boundaries contain no nodes.");
 

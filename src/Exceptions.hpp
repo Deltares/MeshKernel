@@ -7,7 +7,7 @@ namespace meshkernel
     class AlgorithmError : public std::runtime_error
     {
     public:
-        AlgorithmError(const std::string& msg) : runtime_error(msg) {}
-        AlgorithmError(const char* msg) : runtime_error(msg) {}
+        explicit AlgorithmError(const std::string& msg) : runtime_error(msg) {}
+        explicit AlgorithmError(const char* msg) : runtime_error(msg) {}
     };
 } // namespace meshkernel

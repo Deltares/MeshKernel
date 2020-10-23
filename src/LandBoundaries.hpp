@@ -178,7 +178,7 @@ namespace meshkernel
                                             meshkernel::Point startPoint,
                                             meshkernel::Point endPoint,
                                             int& startMeshNode,
-                                            int& endMeshNode);
+                                            int& endMeshNode) const;
 
         /// <summary>
         /// Connect mesh nodes starting from startMeshNode, using Dijkstra's shortest path algorithm.
