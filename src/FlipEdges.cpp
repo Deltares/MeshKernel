@@ -44,9 +44,13 @@ meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
 {
     if (m_projectToLandBoundary)
     {
-        bool successful = m_landBoundaries->FindNearestMeshBoundary(4);
-        if (!successful)
+        try
         {
+            m_landBoundaries->FindNearestMeshBoundary(4);
+        }
+        catch (const std::exception&)
+        {
+            // TODO: log exception
             m_projectToLandBoundary = false;
         }
     }

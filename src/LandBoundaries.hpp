@@ -50,91 +50,59 @@ namespace meshkernel
                        std::shared_ptr<Mesh> mesh,
                        std::shared_ptr<Polygons> polygons);
 
-        /// <summary>
-        /// The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary (admin_landboundary_segments)
-        /// TODO: ? Why splitting in two segments is required?
-        /// </summary>
-        /// <param name="polygons"></param>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool Administrate();
+        /// @brief The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary (admin_landboundary_segments)
+        void Administrate();
 
-        /// <summary>
-        /// Find the mesh boundary line closest to the land boundary (find_nearest_meshline)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="polygon"></param>
-        /// <param name="snapping"></param>
-        /// <returns></returns>
-        bool FindNearestMeshBoundary(int snapping);
+        /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline)
+        /// @param[in] snapping
+        void FindNearestMeshBoundary(int snapping);
 
-        /// <summary>
-        /// Snap mesh nodes to land boundaies (snap_to_landboundary)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool SnapMeshToLandBoundaries();
+        /// @brief Snap mesh nodes to land boundaies (snap_to_landboundary)
+        /// @param mesh
+        void SnapMeshToLandBoundaries();
 
         std::vector<int> m_meshNodesLandBoundarySegments; // lanseg_map, mesh nodes to land boundary mapping
 
     private:
-        /// <summary>
-        /// Build an additional boundary for not assigned nodes (connect_boundary_paths)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="edgeIndex"></param>
-        /// <param name="initialize"></param>
-        /// <param name="nodes"></param>
-        /// <param name="numNodes"></param>
-        /// <returns></returns>
-        bool AssignSegmentsToMeshNodes(int edgeIndex,
+        /// @brief Build an additional boundary for not assigned nodes (connect_boundary_paths)
+        /// @param[in] edgeIndex
+        /// @param[in] initialize
+        /// @param[in] nodes
+        /// @param[in] numNodes
+        void AssignSegmentsToMeshNodes(int edgeIndex,
                                        bool initialize,
                                        std::vector<int>& nodes,
                                        int numNodes);
 
-        /// <summary>
-        /// add new land boundary segment that connects two others (add_land)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="nodesLoc"></param>
-        /// <param name="numNodesLoc"></param>
-        /// <param name="nodeIndex"></param>
-        /// <returns></returns>
-        bool AddLandBoundary(const std::vector<int>& nodesLoc,
+        /// @brief Add new land boundary segment that connects two others (add_land)
+        /// @param[in] nodesLoc
+        /// @param[in] numNodesLoc
+        /// @param[in] nodeIndex
+        void AddLandBoundary(const std::vector<int>& nodesLoc,
                              int numNodesLoc,
                              int nodeIndex);
 
-        /// <summary>
-        /// Assigns to each mesh node a land boundary a segment index (m_nodeLandBoundarySegments)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="polygons"></param>
-        /// <param name="landBoundarySegment"></param>
-        /// <param name="meshBoundOnly"></param>
-        /// <param name="numNodesInPath"></param>
-        /// <param name="numRejectedNodesInPath"></param>
-        /// <returns></returns>
-        bool MakePath(int landBoundarySegment,
+        /// @brief Assigns to each mesh node a land boundary a segment index (m_nodeLandBoundarySegments)
+        /// @param[in] landBoundarySegment
+        /// @param[in] meshBoundOnly
+        /// @param[out] numNodesInPath
+        /// @param[out] numRejectedNodesInPath
+        void MakePath(int landBoundarySegment,
                       bool meshBoundOnly,
                       int& numNodesInPath,
                       int& numRejectedNodesInPath);
 
-        /// <summary>
-        /// Mask the mesh nodes to be considered in the shortest path algorithm for the current segmentIndex.
+        /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current segmentIndex.
         /// Is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio.
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="polygon"></param>
-        /// <param name="segmentIndex"></param>
-        /// <param name="meshBoundOnly"></param>
-        /// <param name="leftIndex"></param>
-        /// <param name="rightIndex"></param>
-        /// <param name="leftEdgeRatio"></param>
-        /// <param name="rightEdgeRatio"></param>
-        /// <param name="startLandBoundaryIndex"></param>
-        /// <param name="endLandBoundaryIndex"></param>
-        /// <returns></returns>
-        bool ComputeMask(int segmentIndex,
+        /// @param[in] segmentIndex
+        /// @param[in] meshBoundOnly
+        /// @param[in] startLandBoundaryIndex
+        /// @param[in] endLandBoundaryIndex
+        /// @param[out] leftIndex
+        /// @param[out] rightIndex
+        /// @param[out] leftEdgeRatio
+        /// @param[out] rightEdgeRatio
+        void ComputeMask(int segmentIndex,
                          bool meshBoundOnly,
                          int startLandBoundaryIndex,
                          int endLandBoundaryIndex,
@@ -143,20 +111,16 @@ namespace meshkernel
                          double& leftEdgeRatio,
                          double& rightEdgeRatio);
 
-        /// <summary>
-        /// Mask the faces that are intersected by the land boundary (maskcells)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="meshBoundOnly"></param>
-        /// <param name="landBoundaryFaces"></param>
-        /// <param name="startNodeLandBoundaryIndex"></param>
-        /// <param name="endNodeLandBoundaryindex"></param>
-        /// <param name="leftIndex"></param>
-        /// <param name="rightIndex"></param>
-        /// <param name="leftEdgeRatio"></param>
-        /// <param name="rightEdgeRatio"></param>
-        /// <returns></returns>
-        bool MaskFaces(const bool& meshBoundOnly,
+        /// @brief Mask the faces that are intersected by the land boundary (maskcells)
+        /// @param[in] meshBoundOnly
+        /// @param[in] landBoundaryFaces
+        /// @param[in] startNodeLandBoundaryIndex
+        /// @param[in] endNodeLandBoundaryindex
+        /// @param[out] leftIndex
+        /// @param[out] rightIndex
+        /// @param[out] leftEdgeRatio
+        /// @param[out] rightEdgeRatio
+        void MaskFaces(bool meshBoundOnly,
                        std::vector<int>& landBoundaryFaces,
                        int startNodeLandBoundaryIndex,
                        int endNodeLandBoundaryindex,
@@ -165,20 +129,16 @@ namespace meshkernel
                        double& leftEdgeRatio,
                        double& rightEdgeRatio);
 
-        /// <summary>
-        /// Check if a mesh edge is close to a land boundary segment (linkcrossedbyland)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="edgeIndex"></param>
-        /// <param name="startNodeLandBoundaryIndex"></param>
-        /// <param name="endNodeLandBoundaryIndex"></param>
-        /// <param name="meshBoundOnly"></param>
-        /// <param name="leftIndex"></param>
-        /// <param name="rightIndex"></param>
-        /// <param name="leftEdgeRatio"></param>
-        /// <param name="rightEdgeRatio"></param>
-        /// <param name="landBoundaryNode"></param>
-        /// <returns></returns>
+        /// @brief Check if a mesh edge is close to a land boundary segment (linkcrossedbyland)
+        /// @param[in] edgeIndex
+        /// @param[in] startNodeLandBoundaryIndex
+        /// @param[in] endNodeLandBoundaryIndex
+        /// @param[in] meshBoundOnly
+        /// @param[out] leftIndex
+        /// @param[out] rightIndex
+        /// @param[out] leftEdgeRatio
+        /// @param[out] rightEdgeRatio
+        /// @param[out] landBoundaryNode
         bool IsMeshEdgeCloseToLandBoundaries(int edgeIndex,
                                              int startNodeLandBoundaryIndex,
                                              int endNodeLandBoundaryIndex,
@@ -189,26 +149,36 @@ namespace meshkernel
                                              double& rightEdgeRatio,
                                              int& landBoundaryNode);
 
-        /// <summary>
-        /// Finds the start and end mesh node. These are the nodes that are on a edge close to the land boundary segment (get_kstartend2)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="polygons"></param>
-        /// <param name="endLandBoundaryIndex"></param>
-        /// <param name="leftIndex"></param>
-        /// <param name="rightIndex"></param>
-        /// <param name="leftEdgeRatio"></param>
-        /// <param name="rightEdgeRatio"></param>
-        /// <param name="startMeshNode"></param>
-        /// <param name="endMeshNode"></param>
-        /// <returns></returns>
-        bool FindStartEndMeshNodes(int endLandBoundaryIndex,
+        /// @brief Finds the start and end mesh node.
+        /// These are the nodes that are on a edge close to the land boundary segment (get_kstartend2)
+        /// @param[in] endLandBoundaryIndex
+        /// @param[in] leftIndex
+        /// @param[in] rightIndex
+        /// @param[in] leftEdgeRatio
+        /// @param[in] rightEdgeRatio
+        /// @param[out] startMeshNode
+        /// @param[out] endMeshNode
+        void FindStartEndMeshNodes(int endLandBoundaryIndex,
                                    int leftIndex,
                                    int rightIndex,
                                    double leftEdgeRatio,
                                    double rightEdgeRatio,
                                    int& startMeshNode,
                                    int& endMeshNode);
+
+        /// @brief Finds the start and end mesh node from given edges.
+        /// @param[in] startEdge
+        /// @param[in] endEdge
+        /// @param[in] startPoint
+        /// @param[in] endPoint
+        /// @param[out] startMeshNode
+        /// @param[out] endMeshNode
+        void FindStartEndMeshNodesFromEdges(int startEdge,
+                                            int endEdge,
+                                            meshkernel::Point startPoint,
+                                            meshkernel::Point endPoint,
+                                            int& startMeshNode,
+                                            int& endMeshNode);
 
         /// <summary>
         /// Connect mesh nodes starting from startMeshNode, using Dijkstra's shortest path algorithm.
@@ -223,26 +193,23 @@ namespace meshkernel
         /// <param name="meshBoundOnly"></param>
         /// <param name="connectedNodes"></param>
         /// <returns></returns>
-        bool ShortestPath(int landBoundarySegment,
+        void ShortestPath(int landBoundarySegment,
                           int startLandBoundaryIndex,
                           int endLandBoundaryIndex,
                           int startMeshNode,
                           bool meshBoundOnly,
                           std::vector<int>& connectedNodes);
 
-        /// <summary>
-        /// Compute the nearest point on the land boundary (toland)
-        /// </summary>
-        /// <param name="projection"></param>
-        /// <param name="node"></param>
-        /// <param name="startLandBoundaryIndex"></param>
-        /// <param name="endLandBoundaryIndex"></param>
-        /// <param name="minimumDistance"></param>
-        /// <param name="pointOnLandBoundary"></param>
-        /// <param name="nearestLandBoundaryNodeIndex"></param>
-        /// <param name="edgeRatio"></param>
-        /// <returns></returns>
-        bool NearestLandBoundaryNode(const Projections& projection,
+        /// @brief Compute the nearest node on the land boundary (toland)
+        /// @param projection
+        /// @param node
+        /// @param startLandBoundaryIndex
+        /// @param endLandBoundaryIndex
+        /// @param minimumDistance
+        /// @param pointOnLandBoundary
+        /// @param nearestLandBoundaryNodeIndex
+        /// @param edgeRatio
+        void NearestLandBoundaryNode(const Projections& projection,
                                      const Point& node,
                                      int startLandBoundaryIndex,
                                      int endLandBoundaryIndex,
@@ -251,14 +218,10 @@ namespace meshkernel
                                      int& nearestLandBoundaryNodeIndex,
                                      double& edgeRatio);
 
-        /// <summary>
-        /// TODO: It could be moved to generic operations (cellcrossedbyland)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="face"></param>
-        /// <param name="startLandBoundaryIndex"></param>
-        /// <param name="endLandBoundaryIndex"></param>
-        /// <returns></returns>
+        /// @brief (cellcrossedbyland)
+        /// @param face
+        /// @param startLandBoundaryIndex
+        /// @param endLandBoundaryIndex
         bool IsFaceCrossedByLandBoundaries(int face,
                                            int startLandBoundaryIndex,
                                            int endLandBoundaryIndex);
