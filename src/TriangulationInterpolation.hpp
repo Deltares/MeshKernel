@@ -29,6 +29,7 @@
 
 #include <vector>
 #include <memory>
+#include "Constants.cpp"
 
 namespace meshkernel
 {
@@ -41,7 +42,9 @@ namespace meshkernel
     {
 
     public:
-        TriangulationInterpolation(const std::shared_ptr<Mesh>& mesh, const std::vector<Sample>& samples);
+        TriangulationInterpolation(const std::shared_ptr<Mesh>& mesh,
+                                   const std::vector<Sample>& samples,
+                                   InterpolationLocation locationType);
 
         void Compute();
 
@@ -55,6 +58,7 @@ namespace meshkernel
     private:
         std::shared_ptr<Mesh> m_mesh;
         const std::vector<Sample>& m_samples;
+        InterpolationLocation m_interpolationLocation;
 
         std::vector<double> m_results;
     };
