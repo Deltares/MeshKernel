@@ -484,17 +484,14 @@ namespace meshkernel
                                 std::vector<int>& sortedEdges,
                                 std::vector<int>& sortedNodes);
 
-        /// <summary>
-        /// Checks if a triangle has an acute angle (checktriangle)
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
+        /// @brief Checks if a triangle has an acute angle (checktriangle)
+        /// @param[in] faceNodes
+        /// @param[in] nodes
+        /// @returns If triangle is okay
         bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const;
 
-        /// <summary>
-        /// Removes all invalid nodes and edges
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool RemoveInvalidNodesAndEdges();
+        /// @brief Removes all invalid nodes and edges
+        void RemoveInvalidNodesAndEdges();
 
         int m_numFaces = 0;               // number of valid faces (nump)
         int m_numNodes = 0;               // Number of valid nodes in m_nodes

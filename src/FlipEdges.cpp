@@ -33,6 +33,7 @@
 #include "Mesh.hpp"
 #include "FlipEdges.hpp"
 #include "LandBoundaries.hpp"
+#include "Exceptions.hpp"
 
 meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
                                  std::shared_ptr<LandBoundaries> landBoundary,
@@ -245,7 +246,7 @@ void meshkernel::FlipEdges::Compute() const
 
     if (numFlippedEdges > 0)
     {
-        throw std::runtime_error("Could not flip all edges.");
+        throw AlgorithmError("Could not flip all edges.");
     }
 
     // Perform mesh administration

@@ -30,6 +30,7 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
+#include <stdexcept>
 
 #include "Mesh.hpp"
 #include "Constants.cpp"
@@ -39,6 +40,7 @@
 #include "CurvilinearGrid.hpp"
 #include "Entities.hpp"
 #include "MakeGridParametersNative.hpp"
+#include "Exceptions.hpp"
 
 meshkernel::Mesh::Mesh()
 {
@@ -63,7 +65,7 @@ bool meshkernel::Mesh::Set(const std::vector<Edge>& edges,
     return true;
 };
 
-bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
+void meshkernel::Mesh::RemoveInvalidNodesAndEdges()
 {
 
     // Mask nodes connected to valid edges
@@ -105,7 +107,7 @@ bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
     {
         m_numNodes = int(m_nodes.size());
         m_numEdges = int(m_edges.size());
-        return true;
+        return;
     }
 
     // Flag invalid nodes
@@ -122,20 +124,20 @@ bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
     }
 
     // Flag invalid edges
-    for (int e = 0; e < m_edges.size(); ++e)
+    for (auto& edge : m_edges)
     {
-        auto const firstNode = m_edges[e].first;
-        auto const secondNode = m_edges[e].second;
+        auto const firstNode = edge.first;
+        auto const secondNode = edge.second;
 
         if (firstNode >= 0 && secondNode >= 0 && validNodesIndices[firstNode] >= 0 && validNodesIndices[secondNode] >= 0)
         {
-            m_edges[e].first = validNodesIndices[firstNode];
-            m_edges[e].second = validNodesIndices[secondNode];
+            edge.first = validNodesIndices[firstNode];
+            edge.second = validNodesIndices[secondNode];
             continue;
         }
 
-        m_edges[e].first = -1;
-        m_edges[e].second = -1;
+        edge.first = -1;
+        edge.second = -1;
     }
 
     // Remove invalid nodes
@@ -147,13 +149,10 @@ bool meshkernel::Mesh::RemoveInvalidNodesAndEdges()
     auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) { return e.first < 0 || e.second < 0; });
     m_numEdges = int(endEdgeVector - m_edges.begin());
     std::fill(endEdgeVector, m_edges.end(), std::make_pair<int, int>(-1, -1));
-
-    return true;
 }
 
 void meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 {
-
     RemoveInvalidNodesAndEdges();
 
     if (m_nodesRTreeRequiresUpdate && !m_nodesRTree.Empty())
@@ -221,10 +220,9 @@ void meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 
 meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
 {
-
     if (curvilinearGrid.m_grid.size() == 0)
     {
-        return;
+        throw std::invalid_argument("The curvilinear grid is empty.");
     }
 
     std::vector<Point> nodes(curvilinearGrid.m_grid.size() * curvilinearGrid.m_grid[0].size());

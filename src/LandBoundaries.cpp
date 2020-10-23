@@ -29,12 +29,14 @@
 
 #include <vector>
 #include <cassert>
+#include <stdexcept>
 #include "Mesh.hpp"
 #include "Entities.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
 #include "Polygons.hpp"
 #include "LandBoundaries.hpp"
+#include "Exceptions.hpp"
 
 namespace meshkernel
 {
@@ -322,7 +324,7 @@ namespace meshkernel
                     }
 
                     if (landboundarySegmentIndex == std::numeric_limits<size_t>::max())
-                        throw std::runtime_error("No segment index found: cannot assign segment to mesh nodes.");
+                        throw AlgorithmError("No segment index found: cannot assign segment to mesh nodes.");
 
                     if ((nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][0] && edgeRatio < 0.0) ||
                         (nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][1] - 1 && edgeRatio > 1.0))
@@ -442,7 +444,7 @@ namespace meshkernel
                               endMeshNode);
 
         if (startMeshNode < 0 || endMeshNode < 0 || startMeshNode == endMeshNode)
-            throw std::runtime_error("Cannot not find valid mesh nodes.");
+            throw AlgorithmError("Cannot not find valid mesh nodes.");
 
         std::vector<int> connectedNodes;
         ShortestPath(landBoundarySegment, int(startLandBoundaryIndex), int(endLandBoundaryIndex), startMeshNode, meshBoundOnly, connectedNodes);
@@ -1067,7 +1069,7 @@ namespace meshkernel
                                     currentNodeDistance, currentNodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
 
             if (currentNodeLandBoundaryNodeIndex < 0)
-                throw std::runtime_error("Cannot compute the nearest node on the land boundary.");
+                throw AlgorithmError("Cannot compute the nearest node on the land boundary.");
 
             for (const auto& edgeIndex : m_mesh->m_nodesEdges[currentNodeIndex])
             {
