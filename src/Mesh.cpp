@@ -39,6 +39,7 @@
 #include "CurvilinearGrid.hpp"
 #include "Entities.hpp"
 #include "MakeGridParametersNative.hpp"
+#include "TriangulationWrapper.cpp"
 
 meshkernel::Mesh::Mesh()
 {
@@ -285,96 +286,32 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
 meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygons& polygons, Projections projection)
 {
     m_projection = projection;
-    std::vector<double> xLocalPolygon(inputNodes.size());
-    std::vector<double> yLocalPolygon(inputNodes.size());
-    for (int i = 0; i < inputNodes.size(); ++i)
-    {
-        xLocalPolygon[i] = inputNodes[i].x;
-        yLocalPolygon[i] = inputNodes[i].y;
-    }
 
-    int numtri = -1;
-    int jatri = 3;
-    int numPointsIn = int(inputNodes.size());
-    int numPointsOut = 0;
-    int numberOfTriangles = numPointsIn * 6 + 10;
-    double averageTriangleArea = 0.0;
-    int numedge = 0;
-    std::vector<int> faceNodesFlat;
-    std::vector<int> edgeNodesFlat;
-    std::vector<int> faceEdgesFlat;
-    std::vector<double> xNodesFlat;
-    std::vector<double> yNodesFlat;
-    // If the number of estimated triangles is not sufficient, triangulation must be repeated
-    while (numtri < 0)
-    {
-        numtri = numberOfTriangles;
-        faceNodesFlat.resize(int(numberOfTriangles) * 3);
-        edgeNodesFlat.resize(int(numberOfTriangles) * 2);
-        faceEdgesFlat.resize(int(numberOfTriangles) * 3);
-        xNodesFlat.resize(int(numberOfTriangles) * 3, doubleMissingValue);
-        yNodesFlat.resize(int(numberOfTriangles) * 3, doubleMissingValue);
-        Triangulation(&jatri,
-                      &xLocalPolygon[0],
-                      &yLocalPolygon[0],
-                      &numPointsIn,
-                      &faceNodesFlat[0], // INDX
-                      &numtri,
-                      &edgeNodesFlat[0], // EDGEINDX
-                      &numedge,
-                      &faceEdgesFlat[0], // TRIEDGE
-                      &xNodesFlat[0],
-                      &yNodesFlat[0],
-                      &numPointsOut,
-                      &averageTriangleArea);
-        if (numberOfTriangles)
-        {
-            numberOfTriangles = -numtri;
-        }
-    }
-
-    // Create face nodes
-    std::vector<std::vector<int>> faceNodes(numtri, std::vector<int>(3, -1));
-    std::vector<std::vector<int>> faceEdges(numtri, std::vector<int>(3, -1));
-    int index = 0;
-    for (int i = 0; i < numtri; ++i)
-    {
-        faceNodes[i][0] = faceNodesFlat[index] - 1;
-        faceEdges[i][0] = faceEdgesFlat[index] - 1;
-        index++;
-        faceNodes[i][1] = faceNodesFlat[index] - 1;
-        faceEdges[i][1] = faceEdgesFlat[index] - 1;
-        index++;
-        faceNodes[i][2] = faceNodesFlat[index] - 1;
-        faceEdges[i][2] = faceEdgesFlat[index] - 1;
-        index++;
-    }
-
-    // Create the edges
-    std::vector<std::vector<int>> edgeNodes(numedge, std::vector<int>(2, 0));
-    index = 0;
-    for (int i = 0; i < numedge; ++i)
-    {
-        edgeNodes[i][0] = edgeNodesFlat[index] - 1;
-        index++;
-        edgeNodes[i][1] = edgeNodesFlat[index] - 1;
-        index++;
-    }
+    // compute triangulation
+    TriangulationWrapper triangulationWrapper;
+    int numPolygonNodes = int(inputNodes.size()); // open polygon
+    double averageTriangleArea = 0;
+    int numberOfTriangles = inputNodes.size() * 6 + 10;
+    triangulationWrapper.Compute(inputNodes,
+                                 numPolygonNodes,
+                                 3,
+                                 averageTriangleArea,
+                                 numberOfTriangles);
 
     // For each triangle check
     // 1. Validity of its internal angles
     // 2. Is inside the polygon
     // If so we mark the edges and we add them m_edges
-    std::vector<bool> edgeNodesFlag(numedge, false);
-    for (int i = 0; i < numtri; ++i)
+    std::vector<bool> edgeNodesFlag(triangulationWrapper.m_numEdges, false);
+    for (int i = 0; i < triangulationWrapper.m_numFaces; ++i)
     {
-        bool goodTriangle = CheckTriangle(faceNodes[i], inputNodes);
+        bool goodTriangle = CheckTriangle(triangulationWrapper.m_faceNodes[i], inputNodes);
 
         if (!goodTriangle)
         {
             continue;
         }
-        Point approximateCenter = (inputNodes[faceNodes[i][0]] + inputNodes[faceNodes[i][1]] + inputNodes[faceNodes[i][2]]) * oneThird;
+        Point approximateCenter = (inputNodes[triangulationWrapper.m_faceNodes[i][0]] + inputNodes[triangulationWrapper.m_faceNodes[i][1]] + inputNodes[triangulationWrapper.m_faceNodes[i][2]]) * oneThird;
 
         bool isTriangleInPolygon = polygons.IsPointInPolygon(approximateCenter, 0);
         if (!isTriangleInPolygon)
@@ -385,14 +322,14 @@ meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygon
         // mark all edges of this triangle as good ones
         for (int j = 0; j < 3; ++j)
         {
-            edgeNodesFlag[faceEdges[i][j]] = true;
+            edgeNodesFlag[triangulationWrapper.m_faceEdges[i][j]] = true;
         }
     }
 
     // now add all points and all valid edges
     m_nodes = inputNodes;
     int validEdgesCount = 0;
-    for (int i = 0; i < numedge; ++i)
+    for (int i = 0; i < triangulationWrapper.m_numEdges; ++i)
     {
         if (!edgeNodesFlag[i])
             continue;
@@ -401,13 +338,13 @@ meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygon
 
     std::vector<Edge> edges(validEdgesCount);
     validEdgesCount = 0;
-    for (int i = 0; i < numedge; ++i)
+    for (int i = 0; i < triangulationWrapper.m_numEdges; ++i)
     {
         if (!edgeNodesFlag[i])
             continue;
 
-        edges[validEdgesCount].first = std::abs(edgeNodes[i][0]);
-        edges[validEdgesCount].second = edgeNodes[i][1];
+        edges[validEdgesCount].first = std::abs(triangulationWrapper.m_edgeNodes[i][0]);
+        edges[validEdgesCount].second = triangulationWrapper.m_edgeNodes[i][1];
         validEdgesCount++;
     }
 

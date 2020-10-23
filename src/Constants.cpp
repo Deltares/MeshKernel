@@ -82,4 +82,12 @@ namespace meshkernel
         KdTree = 7
     };
 
+    // Interpolation locations
+    enum InterpolationLocation
+    {
+        Faces = 0,
+        Nodes = 1,
+        Edges = 2
+    };
+
 } // namespace meshkernel

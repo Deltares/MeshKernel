@@ -886,20 +886,20 @@ bool meshkernel::Smoother::NodeAdministration(const int currentNode,
         }
 
         // find the face shared by the two edges
-        const int firstFaceIndex = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], int(2)), int(1)) - 1;
-        const int secondFaceIndex = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], int(2)), int(1)) - 1;
+        const int firstFace = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], int(2)), int(1)) - 1;
+        const int secondFace = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], int(2)), int(1)) - 1;
 
         if (m_mesh->m_edgesFaces[firstEdge][0] != newFaceIndex &&
             (m_mesh->m_edgesFaces[firstEdge][0] == m_mesh->m_edgesFaces[secondEdge][0] ||
-             m_mesh->m_edgesFaces[firstEdge][0] == m_mesh->m_edgesFaces[secondEdge][secondFaceIndex]))
+             m_mesh->m_edgesFaces[firstEdge][0] == m_mesh->m_edgesFaces[secondEdge][secondFace]))
         {
             newFaceIndex = m_mesh->m_edgesFaces[firstEdge][0];
         }
-        else if (m_mesh->m_edgesFaces[firstEdge][firstFaceIndex] != newFaceIndex &&
-                 (m_mesh->m_edgesFaces[firstEdge][firstFaceIndex] == m_mesh->m_edgesFaces[secondEdge][0] ||
-                  m_mesh->m_edgesFaces[firstEdge][firstFaceIndex] == m_mesh->m_edgesFaces[secondEdge][secondFaceIndex]))
+        else if (m_mesh->m_edgesFaces[firstEdge][firstFace] != newFaceIndex &&
+                 (m_mesh->m_edgesFaces[firstEdge][firstFace] == m_mesh->m_edgesFaces[secondEdge][0] ||
+                  m_mesh->m_edgesFaces[firstEdge][firstFace] == m_mesh->m_edgesFaces[secondEdge][secondFace]))
         {
-            newFaceIndex = m_mesh->m_edgesFaces[firstEdge][firstFaceIndex];
+            newFaceIndex = m_mesh->m_edgesFaces[firstEdge][firstFace];
         }
         else
         {
