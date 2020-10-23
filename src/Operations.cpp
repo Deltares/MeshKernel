@@ -287,6 +287,7 @@ namespace meshkernel
     /// polygonNodes: a closed polygonNodes consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
     static bool IsPointInPolygonNodes(const Point& point, const std::vector<Point>& polygonNodes, int startNode, int endNode)
     {
+        // TODO: extend for spherical accurate projection
         if (endNode <= startNode)
         {
             return true;
@@ -1627,6 +1628,71 @@ namespace meshkernel
         }
 
         return true;
+    }
+
+    template <typename T>
+    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight)
+    {
+
+        double minx = std::numeric_limits<double>::max();
+        double maxx = std::numeric_limits<double>::lowest();
+        double miny = std::numeric_limits<double>::max();
+        double maxy = std::numeric_limits<double>::lowest();
+        for (int n = 0; n < values.size(); n++)
+        {
+            bool isInvalid = IsDifferenceLessThanEpsilon(values[n].x, doubleMissingValue) ||
+                             IsDifferenceLessThanEpsilon(values[n].y, doubleMissingValue);
+
+            if (isInvalid)
+            {
+                continue;
+            }
+
+            minx = std::min(minx, values[n].x);
+            maxx = std::max(maxx, values[n].x);
+            miny = std::min(miny, values[n].y);
+            maxy = std::max(maxy, values[n].y);
+        }
+
+        lowerLeft = {minx, miny};
+        upperRight = {maxx, maxy};
+
+        return;
+    }
+
+    template <typename T>
+    bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight)
+    {
+
+        return point.x >= lowerLeft.x && point.x <= upperRight.x &&
+               point.y >= lowerLeft.y && point.y <= upperRight.y;
+    }
+
+    static double LinearInterpolationInTriangle(Point interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, Projections projection)
+    {
+        double result = doubleMissingValue;
+
+        const auto a11 = GetDx(polygon[0], polygon[1], projection);
+        const auto a21 = GetDy(polygon[0], polygon[1], projection);
+
+        const auto a12 = GetDx(polygon[0], polygon[2], projection);
+        const auto a22 = GetDy(polygon[0], polygon[2], projection);
+
+        const auto b1 = GetDx(polygon[0], interpolationPoint, projection);
+        const auto b2 = GetDy(polygon[0], interpolationPoint, projection);
+
+        double det = a11 * a22 - a12 * a21;
+        if (std::abs(det) < 1e-12)
+        {
+            return result;
+        }
+
+        const double rlam = (a22 * b1 - a12 * b2) / det;
+        const double rmhu = (-a21 * b1 + a11 * b2) / det;
+
+        result = values[0] + rlam * (values[1] - values[0]) + rmhu * (values[2] - values[0]);
+
+        return result;
     }
 
 } // namespace meshkernel
