@@ -432,7 +432,7 @@ namespace meshkernel
         std::vector<int> m_edgesNumFaces;           // For each edge, the number of shared faces(lnn)
         std::vector<double> m_edgeLengths;          // The edge lenghts
         std::vector<int> m_edgeMask;                // The edge mask (lc)
-        std::vector<Point> m_edgesCenters;          // The edges ceneters
+        std::vector<Point> m_edgesCenters;          // The edges centers
 
         // faces
         std::vector<std::vector<int>> m_facesNodes; // The nodes composing the faces, in ccw order (netcell%Nod)
