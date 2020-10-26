@@ -505,6 +505,31 @@ namespace meshkernelapi
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_curvilinear_from_triangle(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode);
 
+        /// @brief
+        /// @param meshGeometryDimensions
+        /// @param meshGeometry
+        /// @param startIndex
+        /// @param samplesXCoordinate
+        /// @param samplesYCoordinate
+        /// @param samplesValue
+        /// @param numSamples
+        /// @param results
+        /// @param locationType
+        /// @param spherical
+        /// @param sphericalAccurate
+        /// @return
+        MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
+                                      const MeshGeometry& meshGeometry,
+                                      int& startIndex,
+                                      double** samplesXCoordinate,
+                                      double** samplesYCoordinate,
+                                      double** samplesValue,
+                                      int& numSamples,
+                                      double** results,
+                                      int& locationType,
+                                      int& spherical,
+                                      int& sphericalAccurate);
+
 #ifdef __cplusplus
     }
 #endif

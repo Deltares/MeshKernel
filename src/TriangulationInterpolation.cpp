@@ -34,19 +34,21 @@
 #include "Operations.cpp"
 #include "SpatialTrees.hpp"
 
-meshkernel::TriangulationInterpolation::TriangulationInterpolation(const std::shared_ptr<Mesh>& mesh,
+meshkernel::TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>& m_locations,
                                                                    const std::vector<Sample>& samples,
-                                                                   InterpolationLocation locationType) : m_mesh(mesh),
-                                                                                                         m_samples(samples),
-                                                                                                         m_interpolationLocation(locationType){};
+                                                                   Projections projection) : m_locations(m_locations),
+                                                                                             m_samples(samples),
+                                                                                             m_projection(projection){};
 
 void meshkernel::TriangulationInterpolation::Compute()
 {
+    // results
+    m_results.resize(m_locations.size(), doubleMissingValue);
+
     // first triangulate
     double averageTriangleArea = 0;
     int numPolygonNodes = int(m_samples.size()); // open polygon
     int numberOfTriangles = 0;
-
     TriangulationWrapper triangulationWrapper;
 
     triangulationWrapper.Compute(m_samples,
@@ -54,28 +56,6 @@ void meshkernel::TriangulationInterpolation::Compute()
                                  3,
                                  averageTriangleArea,
                                  numberOfTriangles);
-
-    std::vector<Point> locations;
-    int numLocations = 0;
-    if (m_interpolationLocation == Nodes)
-    {
-        locations = m_mesh->m_nodes;
-        numLocations = m_mesh->GetNumNodes();
-    }
-    if (m_interpolationLocation == Edges)
-    {
-        m_mesh->ComputeEdgesCenters();
-        locations = m_mesh->m_edgesCenters;
-        numLocations = m_mesh->GetNumEdges();
-    }
-    if (m_interpolationLocation == Faces)
-    {
-        locations = m_mesh->m_facesMassCenters;
-        numLocations = m_mesh->GetNumFaces();
-    }
-
-    m_results.resize(numLocations, doubleMissingValue);
-
     // no triangles formed
     if (triangulationWrapper.m_numFaces < 1)
     {
@@ -86,7 +66,6 @@ void meshkernel::TriangulationInterpolation::Compute()
     std::vector<Point> trianglesCircumcenters(triangulationWrapper.m_numFaces, {doubleMissingValue, doubleMissingValue});
     std::vector<std::vector<Point>> triangles(triangulationWrapper.m_numFaces, std::vector<Point>(4, {doubleMissingValue, doubleMissingValue}));
     std::vector<std::vector<double>> values(triangulationWrapper.m_numFaces, std::vector<double>(4, doubleMissingValue));
-
     for (int f = 0; f < triangulationWrapper.m_numFaces; ++f)
     {
         double xCircumcenter = 0.0;
@@ -114,15 +93,15 @@ void meshkernel::TriangulationInterpolation::Compute()
     GetBoundingBox(m_samples, lowerLeft, upperRight);
 
     // Loop over nodes
-    for (int n = 0; n < numLocations; ++n)
+    for (int n = 0; n < m_locations.size(); ++n)
     {
-        if (!IsValueInBoundingBox(locations[n], lowerLeft, upperRight) ||
+        if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
             !IsDifferenceLessThanEpsilon(m_results[n], doubleMissingValue))
         {
             continue;
         }
 
-        samplesRtree.NearestNeighbour(locations[n]);
+        samplesRtree.NearestNeighbour(m_locations[n]);
         if (samplesRtree.GetQueryResultSize() <= 0)
         {
             continue;
@@ -133,7 +112,13 @@ void meshkernel::TriangulationInterpolation::Compute()
         int numFacesSearched = 0;
         while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces)
         {
-            isInTriangle = IsPointInPolygonNodes(locations[n], triangles[triangle], 0, 3);
+            if (triangle < 0 || triangle >= triangles.size())
+            {
+                break;
+            }
+
+            isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], 0, 3);
+            // valid triangle found
             if (isInTriangle)
             {
                 break;
@@ -149,6 +134,7 @@ void meshkernel::TriangulationInterpolation::Compute()
                     continue;
                 }
 
+                // there is no valid other triangle
                 const auto otherTriangle = triangulationWrapper.m_edgesFaces[edge][0] + triangulationWrapper.m_edgesFaces[edge][1] - triangle;
                 const auto k1 = triangulationWrapper.m_edgeNodes[edge][0];
                 const auto k2 = triangulationWrapper.m_edgeNodes[edge][1];
@@ -158,7 +144,7 @@ void meshkernel::TriangulationInterpolation::Compute()
                 double firstRatio;
                 double secondRatio;
                 bool areCrossing = AreLinesCrossing(trianglesCircumcenters[triangle],
-                                                    locations[n],
+                                                    m_locations[n],
                                                     {m_samples[k1].x, m_samples[k1].y},
                                                     {m_samples[k2].x, m_samples[k2].y},
                                                     adimensional,
@@ -166,7 +152,7 @@ void meshkernel::TriangulationInterpolation::Compute()
                                                     crossProduct,
                                                     firstRatio,
                                                     secondRatio,
-                                                    m_mesh->m_projection);
+                                                    m_projection);
 
                 if (areCrossing)
                 {
@@ -175,7 +161,11 @@ void meshkernel::TriangulationInterpolation::Compute()
                 }
             }
         }
-        // Perform linear interpolation
-        m_results[n] = LinearInterpolationInTriangle(locations[n], triangles[triangle], values[triangle], m_mesh->m_projection);
+
+        if (triangle >= 0 && triangle < triangles.size())
+        {
+            // Perform linear interpolation
+            m_results[n] = LinearInterpolationInTriangle(m_locations[n], triangles[triangle], values[triangle], m_projection);
+        }
     }
 }

@@ -28,8 +28,10 @@
 #pragma once
 
 #include <utility>
-#include "Constants.cpp"
 #include <cmath>
+#include <vector>
+
+#include "Constants.cpp"
 
 namespace meshkernel
 {
@@ -160,5 +162,42 @@ namespace meshkernel
     };
 
     typedef std::pair<int, int> Edge;
+
+    static std::vector<Edge> ConvertToEdgeNodesVector(int numEdges, int* edge_nodes)
+    {
+        std::vector<Edge> edges(numEdges);
+
+        int ei = 0;
+        for (int e = 0; e < numEdges; e++)
+        {
+            edges[e].first = edge_nodes[ei];
+            ei++;
+            edges[e].second = edge_nodes[ei];
+            ei++;
+        }
+        return edges;
+    };
+
+    static std::vector<Point> ConvertToNodesVector(int numNodes, double* nodex, double* nodey)
+    {
+        std::vector<Point> nodes(numNodes);
+        for (int n = 0; n < numNodes; n++)
+        {
+            nodes[n].x = nodex[n];
+            nodes[n].y = nodey[n];
+        }
+        return nodes;
+    };
+
+    static std::vector<Point> ConvertToFaceCentersVector(int numFaces, double* facex, double* facey)
+    {
+        std::vector<Point> faceCenters(numFaces);
+        for (int n = 0; n < numFaces; n++)
+        {
+            faceCenters[n].x = facex[n];
+            faceCenters[n].y = facey[n];
+        }
+        return faceCenters;
+    };
 
 } // namespace meshkernel

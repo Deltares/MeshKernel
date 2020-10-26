@@ -46,6 +46,7 @@
 #include "Smoother.hpp"
 #include "Splines.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
+#include "TriangulationInterpolation.hpp"
 
 // The vector containing the mesh instances
 static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;
@@ -1419,6 +1420,71 @@ namespace meshkernelapi
         *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
 
         return successful ? 0 : 1;
+    }
+
+    // ec_module dll (stateless)
+    MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
+                                  const MeshGeometry& meshGeometry,
+                                  int& startIndex,
+                                  double** samplesXCoordinate,
+                                  double** samplesYCoordinate,
+                                  double** samplesValue,
+                                  int& numSamples,
+                                  double** results,
+                                  int& locationType,
+                                  int& spherical,
+                                  int& sphericalAccurate)
+    {
+        // Projections
+        auto projection = meshkernel::Projections::cartesian;
+        if (spherical == 1)
+        {
+            projection = meshkernel::Projections::spherical;
+        }
+        if (sphericalAccurate == 1)
+        {
+            projection = meshkernel::Projections::sphericalAccurate;
+        }
+
+        auto location = static_cast<meshkernel::InterpolationLocation>(locationType);
+        std::vector<meshkernel::Point> locations;
+        if (location == meshkernel::InterpolationLocation::Nodes)
+        {
+            locations = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
+        }
+        if (location == meshkernel::InterpolationLocation::Edges)
+        {
+            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
+            const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
+
+            ComputeEdgeCenters(meshGeometryDimensions.numedge, nodes, edges, locations);
+        }
+        if (location == meshkernel::InterpolationLocation::Faces)
+        {
+            locations = meshkernel::ConvertToFaceCentersVector(meshGeometryDimensions.numface, meshGeometry.facex, meshGeometry.facey);
+        }
+
+        // Build the samples
+        std::vector<meshkernel::Sample> samples(numSamples);
+        for (auto i = 0; i < samples.size(); ++i)
+        {
+            samples[i].x = (*samplesXCoordinate)[i];
+            samples[i].y = (*samplesYCoordinate)[i];
+            samples[i].value = (*samplesValue)[i];
+        }
+
+        // Execute averaging
+        meshkernel::TriangulationInterpolation triangulationInterpolation(locations, samples, projection);
+        triangulationInterpolation.Compute();
+
+        // Get the results and copy them back to the results vector
+        auto interpolationResults = triangulationInterpolation.GetResults();
+        for (auto i = 0; i < interpolationResults.size(); ++i)
+        {
+            (*results)[i] = interpolationResults[i];
+        }
+
+        return 0;
     }
 
 } // namespace meshkernelapi

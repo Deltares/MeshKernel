@@ -13,7 +13,7 @@ TEST(TriangleInterpolation, InterpolateOnNodes)
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\TriangleInterpolationTests\\simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
-    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh, samples, meshkernel::InterpolationLocation::Nodes);
+    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_nodes, samples, meshkernel::Projections::cartesian);
     triangulationInterpolation.Compute();
 
     const auto results = triangulationInterpolation.GetResults();
@@ -39,7 +39,9 @@ TEST(TriangleInterpolation, InterpolateOnEdges)
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\TriangleInterpolationTests\\simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
-    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh, samples, meshkernel::InterpolationLocation::Edges);
+    mesh->ComputeEdgesCenters();
+
+    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_edgesCenters, samples, meshkernel::Projections::cartesian);
     triangulationInterpolation.Compute();
 
     const auto results = triangulationInterpolation.GetResults();
@@ -64,7 +66,7 @@ TEST(TriangleInterpolation, InterpolateOnFaces)
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\TriangleInterpolationTests\\simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
-    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh, samples, meshkernel::InterpolationLocation::Faces);
+    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_facesMassCenters, samples, meshkernel::Projections::cartesian);
     triangulationInterpolation.Compute();
 
     const auto results = triangulationInterpolation.GetResults();

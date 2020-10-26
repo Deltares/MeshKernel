@@ -1350,22 +1350,7 @@ bool meshkernel::Mesh::ComputeEdgeLengths()
 
 bool meshkernel::Mesh::ComputeEdgesCenters()
 {
-    auto const numEdges = GetNumEdges();
-    m_edgesCenters.reserve(std::max(int(m_edgesCenters.capacity()), numEdges));
-    m_edgesCenters.clear();
-
-    for (int e = 0; e < numEdges; e++)
-    {
-        auto const first = m_edges[e].first;
-        auto const second = m_edges[e].second;
-
-        if (first < 0 || second < 0)
-        {
-            continue;
-        }
-
-        m_edgesCenters.push_back((m_nodes[first] + m_nodes[second]) * 0.5);
-    }
+    ComputeEdgeCenters(GetNumEdges(), m_nodes, m_edges, m_edgesCenters);
     return true;
 }
 
