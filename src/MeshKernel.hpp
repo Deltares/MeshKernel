@@ -521,7 +521,7 @@ namespace meshkernelapi
         /// @param relativeSearchSize The relative search size around the location (larger increases the number of samples considered)
         /// @param spherical Projection (0 cartesian, 1 spherical)
         /// @param sphericalAccurate Accurate spherical projection (0 default spherical, 1 spherical accurate)
-        /// @return
+        /// @return Error code
         MKERNEL_API int mkernel_averaging(const MeshGeometryDimensions& meshGeometryDimensions,
                                           const MeshGeometry& meshGeometry,
                                           int startIndex,
