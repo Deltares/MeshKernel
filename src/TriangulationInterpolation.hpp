@@ -28,23 +28,17 @@
 #pragma once
 
 #include <vector>
-#include <memory>
-#include "Constants.cpp"
+#include "Entities.hpp"
 
 namespace meshkernel
 {
-    // Forward declarations
-    class Polygons;
-    struct Sample;
-    class Mesh;
-
     class TriangulationInterpolation
     {
 
     public:
-        TriangulationInterpolation(const std::shared_ptr<Mesh>& mesh,
+        TriangulationInterpolation(const std::vector<Point>& locations,
                                    const std::vector<Sample>& samples,
-                                   InterpolationLocation locationType);
+                                   Projections projection);
 
         void Compute();
 
@@ -56,9 +50,9 @@ namespace meshkernel
         }
 
     private:
-        std::shared_ptr<Mesh> m_mesh;
+        const std::vector<Point>& m_locations;
         const std::vector<Sample>& m_samples;
-        InterpolationLocation m_interpolationLocation;
+        Projections m_projection;
 
         std::vector<double> m_results;
     };

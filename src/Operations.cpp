@@ -307,16 +307,39 @@ namespace meshkernel
         {
             if (polygonNodes[n].y <= point.y) // an upward crossing
             {
-                if (polygonNodes[n + 1].y >= point.y && IsLeft(polygonNodes[n], polygonNodes[n + 1], point) >= 0.0)
+                if (polygonNodes[n + 1].y >= point.y)
+
                 {
-                    ++windingNumber; // have  a valid up intersect
+                    const auto isLeft = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
+
+                    if (IsDifferenceLessThanEpsilon(isLeft, 0.0))
+                    {
+                        // point on the line
+                        return true;
+                    }
+
+                    if (isLeft > 0.0)
+                    {
+                        ++windingNumber; // have  a valid up intersect
+                    }
                 }
             }
             else
             {
-                if (polygonNodes[n + 1].y <= point.y && IsLeft(polygonNodes[n], polygonNodes[n + 1], point) <= 0.0) // a downward crossing
+                if (polygonNodes[n + 1].y <= point.y) // a downward crossing
                 {
-                    --windingNumber; // have  a valid down intersect
+                    const auto isLeft = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
+
+                    if (IsDifferenceLessThanEpsilon(isLeft, 0.0))
+                    {
+                        // point on the line
+                        return true;
+                    }
+
+                    if (isLeft < 0.0)
+                    {
+                        --windingNumber; // have  a valid down intersect
+                    }
                 }
             }
         }
@@ -1227,7 +1250,7 @@ namespace meshkernel
                           const Point centerOfMass,
                           const Projections& projection,
                           SpatialTrees::RTree& rtree,
-                          int averagingMethod,
+                          AveragingMethod averagingMethod,
                           double& result)
     {
         std::vector<Point> searchPolygon(numPolygonNodes);
@@ -1302,7 +1325,7 @@ namespace meshkernel
             bool isInPolygon = IsPointInPolygonNodes(samplePoint, polygon, 0, numPolygonNodes);
             if (isInPolygon)
             {
-                if (averagingMethod == SimpleAveraging)
+                if (averagingMethod == AveragingMethod::SimpleAveraging)
                 {
                     if (!firstValidSampleFound)
                     {
@@ -1312,7 +1335,7 @@ namespace meshkernel
                     result += sampleValue;
                     numValidSamplesInPolygon++;
                 }
-                if (averagingMethod == KdTree)
+                if (averagingMethod == AveragingMethod::KdTree)
                 {
                     if (!firstValidSampleFound)
                     {
@@ -1321,7 +1344,7 @@ namespace meshkernel
                     }
                     result = std::min(std::abs(result), std::abs(sampleValue));
                 }
-                if (averagingMethod == Max)
+                if (averagingMethod == AveragingMethod::Max)
                 {
                     if (!firstValidSampleFound)
                     {
@@ -1330,7 +1353,7 @@ namespace meshkernel
                     }
                     result = std::max(result, sampleValue);
                 }
-                if (averagingMethod == InverseWeightDistance)
+                if (averagingMethod == AveragingMethod::InverseWeightDistance)
                 {
                     double distance = std::max(0.01, Distance(centerOfMass, samplePoint, projection));
                     double weight = 1.0 / distance;
@@ -1341,7 +1364,7 @@ namespace meshkernel
             }
         }
 
-        if (averagingMethod == SimpleAveraging && numValidSamplesInPolygon > 0)
+        if (averagingMethod == AveragingMethod::SimpleAveraging && numValidSamplesInPolygon > 0)
         {
             if (result > doubleMissingValue)
             {
@@ -1350,7 +1373,7 @@ namespace meshkernel
             return true;
         }
 
-        if (averagingMethod == InverseWeightDistance && numValidSamplesInPolygon > 0)
+        if (averagingMethod == AveragingMethod::InverseWeightDistance && numValidSamplesInPolygon > 0)
         {
             result /= wall;
             return true;
@@ -1693,6 +1716,25 @@ namespace meshkernel
         result = values[0] + rlam * (values[1] - values[0]) + rmhu * (values[2] - values[0]);
 
         return result;
+    }
+
+    static auto ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)
+    {
+        edgesCenters.reserve(std::max(int(edgesCenters.capacity()), numEdges));
+        edgesCenters.clear();
+
+        for (int e = 0; e < numEdges; e++)
+        {
+            auto const first = edges[e].first;
+            auto const second = edges[e].second;
+
+            if (first < 0 || second < 0)
+            {
+                continue;
+            }
+
+            edgesCenters.push_back((nodes[first] + nodes[second]) * 0.5);
+        }
     }
 
 } // namespace meshkernel

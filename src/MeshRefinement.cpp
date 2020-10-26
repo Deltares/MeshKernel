@@ -1008,7 +1008,7 @@ bool meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPo
     double refinementValue = 0.0;
     if (m_refinementType == RefinementType::RefinementLevels)
     {
-        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, Max, centerOfMass);
+        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, AveragingMethod::Max, centerOfMass);
         // nothing to do
         if (refinementValue <= 0)
         {
@@ -1028,7 +1028,7 @@ bool meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPo
 
     if (m_refinementType == RefinementType::WaveCourant)
     {
-        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, KdTree, centerOfMass);
+        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, AveragingMethod::KdTree, centerOfMass);
     }
 
     if (refinementValue == doubleMissingValue && m_refineOutsideFace)

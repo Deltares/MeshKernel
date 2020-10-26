@@ -71,7 +71,7 @@ namespace meshkernel
     static constexpr double gravity = 9.81;
 
     // Operations averaging methods
-    enum AveragingMethod
+    enum class AveragingMethod
     {
         SimpleAveraging = 1,
         ClosestPoint = 2,
@@ -83,7 +83,7 @@ namespace meshkernel
     };
 
     // Interpolation locations
-    enum InterpolationLocation
+    enum class InterpolationLocation
     {
         Faces = 0,
         Nodes = 1,
