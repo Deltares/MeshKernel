@@ -1,4 +1,4 @@
-#include "../Averaging.cpp"
+#include "../AveragingInterpolation.cpp"
 #include "SampleFileReader.cpp"
 #include "MeshReader.cpp"
 #include <gtest/gtest.h>

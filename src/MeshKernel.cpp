@@ -46,7 +46,7 @@
 #include "Smoother.hpp"
 #include "Splines.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
-#include "Averaging.hpp"
+#include "AveragingInterpolation.hpp"
 
 // The vector containing the mesh instances
 static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;

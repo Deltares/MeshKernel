@@ -30,7 +30,7 @@
 #include "Operations.cpp"
 #include "Mesh.hpp"
 #include "SpatialTrees.hpp"
-#include "Averaging.hpp"
+#include "AveragingInterpolation.hpp"
 
 meshkernel::Averaging::Averaging(std::shared_ptr<Mesh> mesh,
                                  std::vector<Sample>& samples,

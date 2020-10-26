@@ -31,13 +31,11 @@
 #include <algorithm>
 #include "MeshRefinement.hpp"
 
-#include "Averaging.hpp"
+#include "AveragingInterpolation.hpp"
 #include "Mesh.hpp"
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
 #include "Operations.cpp"
-
-#include <iostream>
 
 meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<Averaging> averaging) : m_mesh(mesh), m_averaging(averaging){};
 
