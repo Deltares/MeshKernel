@@ -97,22 +97,16 @@ namespace meshkernel
         /// <returns>The resulting mesh</returns>
         Mesh& operator+=(Mesh const& rhs);
 
-        /// <summary>
-        /// Set the mesh starting from the edges and nodes
-        /// </summary>
-        /// <param name="edges">The input edges</param>
-        /// <param name="nodes">The input nodes</param>
-        /// <param name="projection">Projection to use</param>
-        /// <param name="administration">Type of administration to perform</param>
-        /// <returns>If the method succeeded</returns>
-        bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        /// @brief Set the mesh starting from the edges and nodes
+        /// @param[in] edges">The input edges</param>
+        /// @param[in] nodes The input nodes
+        /// @param[in] projection Projection to use
+        /// @param[in] administration Type of administration to perform
+        void Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
-        /// <summary>
-        /// Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
-        /// </summary>
-        /// <param name="administrationOption">Type of administration to perform</param>
-        /// <returns>If the method succeeded</returns>
-        bool SetFlatCopies(AdministrationOptions administrationOption);
+        /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
+        /// @param administrationOption Type of administration to perform
+        void SetFlatCopies(AdministrationOptions administrationOption);
 
         /// @brief Perform mesh administration
         /// @param administrationOption Type of administration to perform
@@ -458,24 +452,19 @@ namespace meshkernel
         int m_maxNumNeighbours = 0;
 
     private:
-        /// <summary>
-        /// Node administration (setnodadmin)
-        /// </summary>
+        /// @brief Node administration (setnodadmin)
         void NodeAdministration();
 
-        /// <summary>
-        /// Find cells recursive, works with an arbitrary number of edges
-        /// </summary>
-        /// <param name="startingNode">The starting node</param>
-        /// <param name="node">The current node</param>
-        /// <param name="numEdges">The number of edges visited so far</param>
-        /// <param name="previousEdge">The previously visited edge</param>
-        /// <param name="edges">The vector storing the current edges forming a face</param>
-        /// <param name="nodes">The vector storing the current nodes forming a face</param>
-        /// <param name="sortedEdges">The caching array used for sorting the edges, used to inquire if an edge has been already visited</param>
-        /// <param name="sortedNodes">The caching array used for sorting the nodes, used to inquire if a node has been already visited</param>
-        /// <returns>If the method succeeded</returns>
-        bool FindFacesRecursive(int startingNode,
+        /// @brief Find cells recursive, works with an arbitrary number of edges
+        /// @param startingNode The starting node
+        /// @param node The current node
+        /// @param numEdges The number of edges visited so far
+        /// @param previousEdge The previously visited edge
+        /// @param edges The vector storing the current edges forming a face
+        /// @param nodes The vector storing the current nodes forming a face
+        /// @param sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
+        /// @param sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
+        void FindFacesRecursive(int startingNode,
                                 int node,
                                 int numEdges,
                                 int previousEdge,

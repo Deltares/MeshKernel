@@ -46,7 +46,7 @@ meshkernel::Mesh::Mesh()
 {
 }
 
-bool meshkernel::Mesh::Set(const std::vector<Edge>& edges,
+void meshkernel::Mesh::Set(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
                            Projections projection,
                            AdministrationOptions administration)
@@ -61,8 +61,6 @@ bool meshkernel::Mesh::Set(const std::vector<Edge>& edges,
     //no polygon involved, so node mask is 1 everywhere
     m_nodeMask.resize(m_nodes.size());
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
-
-    return true;
 };
 
 void meshkernel::Mesh::RemoveInvalidNodesAndEdges()
@@ -222,7 +220,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
 {
     if (curvilinearGrid.m_grid.size() == 0)
     {
-        throw std::invalid_argument("The curvilinear grid is empty.");
+        throw std::invalid_argument("Mesh: The curvilinear grid is empty.");
     }
 
     std::vector<Point> nodes(curvilinearGrid.m_grid.size() * curvilinearGrid.m_grid[0].size());
@@ -442,7 +440,7 @@ bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const st
     return true;
 }
 
-bool meshkernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
+void meshkernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
 {
     Administrate(administrationOption);
 
@@ -519,8 +517,6 @@ bool meshkernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
     {
         m_facesCircumcentersz.resize(1);
     }
-
-    return true;
 }
 
 void meshkernel::Mesh::NodeAdministration()
@@ -587,7 +583,7 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 {
     if (!m_nodes[node].IsValid())
     {
-        return;
+        throw std::invalid_argument("Mesh: Invalid nodes.");
     }
 
     double phi0 = 0.0;
@@ -652,58 +648,56 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
     }
 }
 
-bool meshkernel::Mesh::FindFacesRecursive(int startingNode,
+void meshkernel::Mesh::FindFacesRecursive(int startingNode,
                                           int node,
                                           int index,
-                                          int previusEdge,
+                                          int previousEdge,
                                           std::vector<int>& edges,
                                           std::vector<int>& nodes,
                                           std::vector<int>& sortedEdgesFaces,
                                           std::vector<int>& sortedNodes)
 {
+    // The selected edge does not exist.
+    // TODO: It would make to throw an exception here, but then the test cases fail
     if (index >= edges.size())
-    {
-        return false;
-    }
+        return;
 
-    if (m_edgesNumFaces[previusEdge] >= 2)
-    {
-        return false;
-    }
+    if (m_edges[previousEdge].first < 0 || m_edges[previousEdge].second < 0)
+        throw std::invalid_argument("Mesh: The selected edge is invalid.");
 
-    if (m_edges[previusEdge].first < 0 || m_edges[previusEdge].second < 0)
-    {
-        return false;
-    }
+    // Check if the faces are already found
+    if (m_edgesNumFaces[previousEdge] >= 2)
+        return;
 
-    edges[index] = previusEdge;
+    edges[index] = previousEdge;
     nodes[index] = node;
-    const int otherNode = m_edges[previusEdge].first + m_edges[previusEdge].second - node;
+    const int otherNode = m_edges[previousEdge].first + m_edges[previousEdge].second - node;
 
     // enclosure found
     if (otherNode == startingNode && index == edges.size() - 1)
     {
-        // all nodes must be unique
         sortedNodes = nodes;
         std::sort(sortedNodes.begin(), sortedNodes.end());
         for (int n = 0; n < sortedNodes.size() - 1; n++)
         {
             if (sortedNodes[n + 1] == sortedNodes[n])
             {
-                return false;
+                return;
             }
         }
+
         // we need to add a face when at least one edge has no faces
         bool oneEdgeHasNoFace = false;
-        for (int ee = 0; ee < edges.size(); ee++)
+        for (const auto& edge : edges)
         {
-            if (m_edgesNumFaces[edges[ee]] == 0)
+            if (m_edgesNumFaces[edge] == 0)
             {
                 oneEdgeHasNoFace = true;
                 break;
             }
         }
 
+        // check if least one edge has no face
         if (!oneEdgeHasNoFace)
         {
             // is an internal face only if all edges have a different face
@@ -715,31 +709,29 @@ bool meshkernel::Mesh::FindFacesRecursive(int startingNode,
             for (int n = 0; n < sortedEdgesFaces.size() - 1; n++)
             {
                 if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
-                {
-                    return false;
-                }
+                    return;
             }
         }
 
         // increase m_edgesNumFaces
         m_numFaces += 1;
-        for (int ee = 0; ee < edges.size(); ee++)
+        for (const auto& edge : edges)
         {
-            m_edgesNumFaces[edges[ee]] += 1;
-            const int numFace = m_edgesNumFaces[edges[ee]];
-            m_edgesFaces[edges[ee]][numFace - 1] = m_numFaces - 1;
+            m_edgesNumFaces[edge] += 1;
+            const int numFace = m_edgesNumFaces[edge];
+            m_edgesFaces[edge][numFace - 1] = m_numFaces - 1;
         }
 
         // store the result
         m_facesNodes.push_back(nodes);
         m_facesEdges.push_back(edges);
-        return true;
+        return;
     }
 
     int edgeIndexOtherNode = 0;
     for (int e = 0; e < m_nodesNumEdges[otherNode]; e++)
     {
-        if (m_nodesEdges[otherNode][e] == previusEdge)
+        if (m_nodesEdges[otherNode][e] == previousEdge)
         {
             edgeIndexOtherNode = e;
             break;
@@ -758,8 +750,7 @@ bool meshkernel::Mesh::FindFacesRecursive(int startingNode,
 
     const int edge = m_nodesEdges[otherNode][edgeIndexOtherNode];
     FindFacesRecursive(startingNode, otherNode, index + 1, edge, edges, nodes, sortedEdgesFaces, sortedNodes);
-
-    return true;
+    return;
 }
 
 void meshkernel::Mesh::FindFaces()
@@ -773,9 +764,7 @@ void meshkernel::Mesh::FindFaces()
         for (int n = 0; n < GetNumNodes(); n++)
         {
             if (!m_nodes[n].IsValid())
-            {
                 continue;
-            }
 
             for (int e = 0; e < m_nodesNumEdges[n]; e++)
             {

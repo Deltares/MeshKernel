@@ -273,7 +273,7 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
     // no splines
     if (m_splines->m_numSplines < 2)
     {
-        throw std::invalid_argument("Not enough splines to create a curvilinear grid.");
+        throw std::invalid_argument("CurvilinearGridFromSplines: Not enough splines to create a curvilinear grid.");
     }
 
     // compute properties
@@ -1624,7 +1624,7 @@ void meshkernel::CurvilinearGridFromSplines::MakeAllGridLines()
 
     if (numCenterSplines == 0)
     {
-        throw std::invalid_argument("There are no center splines.");
+        throw std::invalid_argument("CurvilinearGridFromSplines: There are no center splines.");
     }
 
     int gridLineIndex = 0;

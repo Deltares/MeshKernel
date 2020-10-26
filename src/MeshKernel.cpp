@@ -216,7 +216,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
             {
@@ -243,7 +243,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             std::vector<meshkernel::Edge> edges(meshGeometryDimensions.numedge);
@@ -288,7 +288,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdges);
@@ -310,7 +310,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
@@ -337,7 +337,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
             {
@@ -397,7 +397,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
@@ -452,7 +452,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
@@ -477,7 +477,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
@@ -502,7 +502,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
@@ -527,7 +527,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
@@ -552,7 +552,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
@@ -577,7 +577,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
@@ -604,7 +604,7 @@ namespace meshkernelapi
         {
             if (geometryListIn.numberOfCoordinates == 0)
             {
-                throw std::invalid_argument("The number of coordinates of the given geometry is zero.");
+                throw std::invalid_argument("MeshKernel: The number of coordinates of the given geometry is zero.");
             }
 
             std::vector<meshkernel::Point> splines(geometryListIn.numberOfCoordinates);
@@ -1329,7 +1329,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             curvilinearGridFromSplinesInstances[meshKernelId]->Iterate(layer);
@@ -1412,7 +1412,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             //set landboundaries
@@ -1442,7 +1442,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             // Use the default constructor, no instance present
@@ -1479,7 +1479,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                throw std::invalid_argument("The selected mesh does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             std::vector<meshkernel::Point> polygonPoints;

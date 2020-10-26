@@ -246,7 +246,7 @@ void meshkernel::FlipEdges::Compute() const
 
     if (numFlippedEdges > 0)
     {
-        throw AlgorithmError("Could not flip all edges.");
+        throw AlgorithmError("FlipEdges: Could not flip all edges.");
     }
 
     // Perform mesh administration
@@ -264,7 +264,7 @@ void meshkernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
     }
     if (m_mesh->m_nodesEdges[firstNode][kk] != edge)
     {
-        throw std::invalid_argument("The edge does not match the given node.");
+        throw std::invalid_argument("FlipEdges: The edge does not match the given node.");
     }
 
     int count = 0;

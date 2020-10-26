@@ -46,13 +46,13 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
 {
     if (m_numN == 0 || m_numM == 0)
     {
-        throw std::invalid_argument("There are no rows or no columns.");
+        throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite: CurvilinearGridFromSplinesTransfinite: There are no rows or no columns.");
     }
 
     const auto numSplines = m_splines->m_numSplines;
     if (numSplines < 4)
     {
-        throw std::invalid_argument("The number of splines is less than four.");
+        throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite: The number of splines is less than four.");
     }
 
     ComputeIntersections();
@@ -106,7 +106,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
 
         if (numIntersections < 2)
         {
-            throw std::invalid_argument("The number of intersections are less than two.");
+            throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite: The number of intersections are less than two.");
         }
 
         int numPoints;
@@ -345,7 +345,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
             {
                 if (m_splineType[i] * m_splineType[j] == 1)
                 {
-                    throw std::invalid_argument("At least two splines are intersecting twice.");
+                    throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite: At least two splines are intersecting twice.");
                 }
                 else if (m_splineType[i] == 0 && m_splineType[j] == 0)
                 {
@@ -381,7 +381,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
     {
         if (m_splineType[i] == 0)
         {
-            throw std::invalid_argument("At least one of the splines could not be classified.");
+            throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite: At least one of the splines could not be classified.");
         }
     }
 
