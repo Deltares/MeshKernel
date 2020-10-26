@@ -505,6 +505,39 @@ namespace meshkernelapi
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_curvilinear_from_triangle(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode);
 
+        /// @brief Averaging interpolation (ec_module api)
+        /// @param meshGeometryDimensions Mesh dimensions
+        /// @param meshGeometry Mesh data
+        /// @param startIndex Mesh data start index (not used)
+        /// @param samplesXCoordinate The sample x coordinates
+        /// @param samplesYCoordinate The sample y coordinates
+        /// @param samplesValue The sample values
+        /// @param numSamples The number of samples
+        /// @param results The interpolation results
+        /// @param locationType The location type (see InterpolationLocation enum)
+        /// @param Wu1Duni A setting for 1d meshes (not used)
+        /// @param averagingMethod The averaging method (see AveragingMethod enum)
+        /// @param minNumberOfSamples The minimum amount of samples (not used)
+        /// @param relativeSearchSize The relative search size around the location (larger increases the number of samples considered)
+        /// @param spherical Projection (0 cartesian, 1 spherical)
+        /// @param sphericalAccurate Accurate spherical projection (0 default spherical, 1 spherical accurate)
+        /// @return
+        MKERNEL_API int mkernel_averaging(const MeshGeometryDimensions& meshGeometryDimensions,
+                                          const MeshGeometry& meshGeometry,
+                                          int startIndex,
+                                          double** samplesXCoordinate,
+                                          double** samplesYCoordinate,
+                                          double** samplesValue,
+                                          int numSamples,
+                                          double** results,
+                                          int locationType,
+                                          double Wu1Duni,
+                                          int averagingMethod,
+                                          int minNumberOfSamples,
+                                          double relativeSearchSize,
+                                          int spherical,
+                                          int sphericalAccurate);
+
 #ifdef __cplusplus
     }
 #endif

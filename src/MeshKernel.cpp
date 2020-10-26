@@ -1430,22 +1430,21 @@ namespace meshkernelapi
         return successful ? 0 : 1;
     }
 
-    // ec_module dll (stateless)
-    MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
-                              const MeshGeometry& meshGeometry,
-                              int startIndex,
-                              double** samplesXCoordinate,
-                              double** samplesYCoordinate,
-                              double** samplesValue,
-                              int numSamples,
-                              double** results,
-                              int locationType,
-                              double Wu1Duni,
-                              int averagingMethod,
-                              int minNumberOfSamples,
-                              double relativeSearchSize,
-                              int spherical,
-                              int sphericalAccurate)
+    MKERNEL_API int mkernel_averaging(const MeshGeometryDimensions& meshGeometryDimensions,
+                                      const MeshGeometry& meshGeometry,
+                                      int startIndex,
+                                      double** samplesXCoordinate,
+                                      double** samplesYCoordinate,
+                                      double** samplesValue,
+                                      int numSamples,
+                                      double** results,
+                                      int locationType,
+                                      double Wu1Duni,
+                                      int averagingMethod,
+                                      int minNumberOfSamples,
+                                      double relativeSearchSize,
+                                      int spherical,
+                                      int sphericalAccurate)
     {
         // Build the mesh
         const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
