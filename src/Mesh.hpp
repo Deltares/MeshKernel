@@ -120,21 +120,15 @@ namespace meshkernel
         /// </summary>
         void FindFaces();
 
-        /// <summary>
-        /// Gets the corners of a box bounding the mesh
-        /// </summary>
-        /// <param name="lowerLeft">Lower left corner</param>
-        /// <param name="upperRight">Upper right corner</param>
-        /// <returns>If the method succeeded</returns>
-        bool GetBoundingBox(Point& lowerLeft, Point& upperRight) const;
+        /// @brief Gets the corners of a box bounding the mesh
+        /// @param[out] lowerLeft Lower left corner
+        /// @param[out] upperRight Upper right corner
+        void GetBoundingBox(Point& lowerLeft, Point& upperRight) const;
 
-        /// <summary>
-        /// Offset the x coordinates if m_projection is spherical
-        /// </summary>
-        /// <param name="minx"></param>
-        /// <param name="miny"></param>
-        /// <returns>If the method succeeded</returns>
-        bool OffsetSphericalCoordinates(double minx, double miny);
+        /// @brief Offset the x coordinates if m_projection is spherical
+        /// @param[in] minx
+        /// @param[in] miny
+        void OffsetSphericalCoordinates(double minx, double miny);
 
         /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
         /// @param[in] polygons Polygon where to perform the merging
@@ -176,14 +170,11 @@ namespace meshkernel
         /// @param updateRTree Update m_nodesRTree
         void DeleteNode(int nodeIndex);
 
-        /// <summary>
-        /// Find the edge sharing two nodes
-        /// </summary>
-        /// <param name="firstNodeIndex">The index of the first node</param>
-        /// <param name="secondNodeIndex">The index of the second node</param>
-        /// <param name="edgeIndex">The edge index</param>
-        /// <returns>If the method succeeded</returns>
-        bool FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
+        /// @brief Find the edge sharing two nodes
+        /// @param[in] firstNodeIndex The index of the first node
+        /// @param[in] secondNodeIndex The index of the second node
+        /// @param[out] edgeIndex The edge index
+        void FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
 
         /// <summary>
         /// Move a node to a new location
@@ -193,14 +184,11 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool MoveNode(Point newPoint, int nodeindex);
 
-        /// <summary>
         /// Get the index of a node close to a point
-        /// </summary>
-        /// <param name="point">The starting point from where to start the search </param>
-        /// <param name="searchRadius">The search radius</param>
-        /// <param name="nodeIndex">The node index (-1 if no node is found)</param>
-        /// <returns>If the method succeeded</returns>
-        bool GetNodeIndex(Point point, double searchRadius, int& nodeIndex);
+        /// @param point The starting point from where to start the search
+        /// @param searchRadius The search radius
+        /// @param nodeIndex The node index
+        void GetNodeIndex(Point point, double searchRadius, int& nodeIndex);
 
         /// @brief Deletes an edge
         /// @param[in] edgeIndex The edge index
@@ -259,13 +247,12 @@ namespace meshkernel
         /// @param[in] inside Inside/outside option
         void MaskNodesInPolygons(const Polygons& polygons, bool inside);
 
-        /// <summary>
-        /// Find the common node two edges share
-        /// </summary>
-        /// <param name="firstEdgeIndex">The index of the first edge</param>
-        /// <param name="secondEdgeIndex">The index of the second edge</param>
-        /// <param name="node">The shared node (-1 if no node is found)</param>
-        /// <returns>If the method succeeded</returns>
+        /// @brief Find the common node two edges share
+        /// This method uses return parameters since the success is evaluated in a hot loop
+        /// @param[in] firstEdgeIndex The index of the first edge
+        /// @param[in] secondEdgeIndex The index of the second edge
+        /// @param[out] node The shared node (-1 if no node is found)
+        /// \returns If the node could be found
         bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 
         /// @brief Compute the lengths of all edges in one go
@@ -352,11 +339,8 @@ namespace meshkernel
         /// <returns>If the method succeeded</returns>
         bool GetAspectRatios(std::vector<double>& aspectRatios);
 
-        /// <summary>
-        /// Classifies the nodes (makenetnodescoding)
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool ClassifyNodes();
+        ///  @brief Classifies the nodes (makenetnodescoding)
+        void ClassifyNodes();
 
         /// <summary>
         ///  Sort edges in conterclockwise orther (Sort_links_ccw)

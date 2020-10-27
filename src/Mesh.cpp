@@ -220,7 +220,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
 {
     if (curvilinearGrid.m_grid.size() == 0)
     {
-        throw std::invalid_argument("Mesh::Mesh\n The curvilinear grid is empty.");
+        throw std::invalid_argument("Mesh::Mesh: The curvilinear grid is empty.");
     }
 
     std::vector<Point> nodes(curvilinearGrid.m_grid.size() * curvilinearGrid.m_grid[0].size());
@@ -411,7 +411,7 @@ meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygon
     Set(edges, inputNodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
 
-bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const
+[[nodiscard]] bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const
 {
     // Used for triangular grids
     constexpr double triangleMinimumAngle = 5.0;
@@ -583,7 +583,7 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 {
     if (!m_nodes[node].IsValid())
     {
-        throw std::invalid_argument("Mesh::SortEdgesInCounterClockWiseOrder\n Invalid nodes.");
+        throw std::invalid_argument("Mesh::SortEdgesInCounterClockWiseOrder: Invalid nodes.");
     }
 
     double phi0 = 0.0;
@@ -663,7 +663,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         return;
 
     if (m_edges[previousEdge].first < 0 || m_edges[previousEdge].second < 0)
-        throw std::invalid_argument("Mesh::FindFacesRecursive\n The selected edge is invalid.");
+        throw std::invalid_argument("Mesh::FindFacesRecursive: The selected edge is invalid.");
 
     // Check if the faces are already found
     if (m_edgesNumFaces[previousEdge] >= 2)
@@ -833,7 +833,7 @@ void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
     }
 }
 
-bool meshkernel::Mesh::ClassifyNodes()
+void meshkernel::Mesh::ClassifyNodes()
 {
     m_nodesTypes.resize(GetNumNodes(), 0);
     std::fill(m_nodesTypes.begin(), m_nodesTypes.end(), 0);
@@ -929,7 +929,6 @@ bool meshkernel::Mesh::ClassifyNodes()
             m_nodesTypes[n] = -1;
         }
     }
-    return true;
 }
 
 void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons)
@@ -1131,7 +1130,7 @@ void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
 {
     if (firstNodeIndex >= GetNumNodes() || secondNodeIndex >= GetNumNodes())
     {
-        throw std::invalid_argument("Mesh::MergeTwoNodes\n Either the first or the second node-index is invalid.");
+        throw std::invalid_argument("Mesh::MergeTwoNodes: Either the first or the second node-index is invalid.");
     }
 
     int edgeIndex;
@@ -1250,7 +1249,7 @@ void meshkernel::Mesh::DeleteNode(int nodeIndex)
 {
     if (nodeIndex >= GetNumNodes())
     {
-        throw std::invalid_argument("Mesh::DeleteNode\n The index of the node to be deleted does not exist.");
+        throw std::invalid_argument("Mesh::DeleteNode: The index of the node to be deleted does not exist.");
     }
 
     for (int e = 0; e < m_nodesNumEdges[nodeIndex]; e++)
@@ -1268,7 +1267,7 @@ void meshkernel::Mesh::DeleteEdge(int edgeIndex)
 {
     if (edgeIndex < 0)
     {
-        throw std::invalid_argument("Mesh::DeleteEdge\n The index of the edge to be deleted does not exist.");
+        throw std::invalid_argument("Mesh::DeleteEdge: The index of the edge to be deleted does not exist.");
     }
 
     m_edges[edgeIndex].first = intMissingValue;
@@ -1378,7 +1377,7 @@ void meshkernel::Mesh::ComputeEdgesCenters()
     }
 }
 
-bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
+[[nodiscard]] bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
 {
     for (int n = 0; n < GetNumFaceEdges(faceIndex); n++)
     {
@@ -1390,7 +1389,7 @@ bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
     return false;
 }
 
-bool meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const
+[[nodiscard]] bool meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const
 {
     auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
     auto firstEdgeEdgeSecondNode = m_edges[firstEdgeIndex].second;
@@ -1400,7 +1399,7 @@ bool meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, i
 
     if (firstEdgeFirstNode < 0 || firstEdgeEdgeSecondNode < 0 || secondEdgeFirstNode < 0 || secondEdgeSecondNode < 0)
     {
-        throw std::invalid_argument("Mesh::FindCommonNode\n At least one of the edges is invalid.");
+        throw std::invalid_argument("Mesh::FindCommonNode: At least one of the given edges is invalid.");
     }
 
     if (firstEdgeFirstNode == secondEdgeFirstNode || firstEdgeFirstNode == secondEdgeSecondNode)
@@ -1408,21 +1407,22 @@ bool meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, i
         node = firstEdgeFirstNode;
         return true;
     }
-
-    if (firstEdgeEdgeSecondNode == secondEdgeFirstNode || firstEdgeEdgeSecondNode == secondEdgeSecondNode)
+    else if (firstEdgeEdgeSecondNode == secondEdgeFirstNode || firstEdgeEdgeSecondNode == secondEdgeSecondNode)
     {
         node = firstEdgeEdgeSecondNode;
         return true;
     }
-
-    return true;
+    else
+    {
+        return false;
+    }
 }
 
-bool meshkernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const
+void meshkernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const
 {
     if (firstNodeIndex < 0 || secondNodeIndex < 0)
     {
-        return false;
+        throw std::invalid_argument("Mesh::FindEdge: Invalid node index.");
     }
 
     edgeIndex = -1;
@@ -1436,10 +1436,9 @@ bool meshkernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& ed
             break;
         }
     }
-    return true;
 }
 
-bool meshkernel::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
+void meshkernel::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
 {
 
     double minx = std::numeric_limits<double>::max();
@@ -1458,11 +1457,9 @@ bool meshkernel::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
     }
     lowerLeft = {minx, miny};
     upperRight = {maxx, maxy};
-
-    return true;
 }
 
-bool meshkernel::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
+void meshkernel::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
 {
     if (m_projection == Projections::spherical && maxx - minx > 180.0)
     {
@@ -1479,15 +1476,13 @@ bool meshkernel::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
             }
         }
     }
-
-    return true;
 }
 
-bool meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius, int& vertexIndex)
+void meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius, int& nodeIndex)
 {
     if (GetNumNodes() <= 0)
     {
-        return true;
+        throw std::invalid_argument("Mesh::GetNodeIndex: There are no valid nodes.");
     }
 
     // create rtree a first time
@@ -1502,10 +1497,12 @@ bool meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius, int& verte
     auto resultSize = m_nodesRTree.GetQueryResultSize();
     if (resultSize >= 1)
     {
-        vertexIndex = m_nodesRTree.GetQuerySampleIndex(0);
+        nodeIndex = m_nodesRTree.GetQuerySampleIndex(0);
     }
-
-    return true;
+    else
+    {
+        throw AlgorithmError("Mesh::GetNodeIndex: Could not find the node index close to a point.");
+    }
 }
 
 bool meshkernel::Mesh::FindEdgeCloseToAPoint(Point point, int& edgeIndex)

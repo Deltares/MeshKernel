@@ -1185,11 +1185,7 @@ namespace meshkernelapi
             return -1;
         }
 
-        successful = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, nodeIndex);
-        if (!successful)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, nodeIndex);
 
         return 0;
     }
@@ -1219,11 +1215,7 @@ namespace meshkernelapi
         }
 
         int nodeIndex = -1;
-        successful = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, nodeIndex);
-        if (!successful || nodeIndex < 0)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, nodeIndex);
 
         // Set the node coordinate
         auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];

@@ -574,8 +574,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
 
     // GetNodeIndex builds m_nodesRTree for searching the nodes
     int nodeIndex;
-    auto successful = mesh->GetNodeIndex({1.5, 1.5}, 0.1, nodeIndex);
-    ASSERT_TRUE(successful);
+    mesh->GetNodeIndex({1.5, 1.5}, 10, nodeIndex);
 
     // m_nodesRTree is build
     ASSERT_EQ(4, mesh->m_nodesRTree.Size());

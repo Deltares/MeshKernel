@@ -93,11 +93,7 @@ bool meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
     Point upperRight{doubleMissingValue, doubleMissingValue};
     if (m_mesh->m_projection == Projections::spherical)
     {
-        bool successful = m_mesh->GetBoundingBox(lowerLeft, upperRight);
-        if (!successful)
-        {
-            return false;
-        }
+        m_mesh->GetBoundingBox(lowerLeft, upperRight);
     }
 
     // select the nodes to refine
@@ -239,11 +235,7 @@ bool meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
             return false;
         }
 
-        successful = m_mesh->OffsetSphericalCoordinates(lowerLeft.x, upperRight.x);
-        if (!successful)
-        {
-            return false;
-        }
+        m_mesh->OffsetSphericalCoordinates(lowerLeft.x, upperRight.x);
 
         m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
@@ -286,11 +278,9 @@ bool meshkernel::MeshRefinement::RemoveIsolatedHangingnodes(int& numRemovedIsola
         }
 
         int commonNode;
-        const auto successful = m_mesh->FindCommonNode(e, brotherEdgeIndex, commonNode);
+        auto successful = m_mesh->FindCommonNode(e, brotherEdgeIndex, commonNode);
         if (!successful)
-        {
-            return false;
-        }
+            continue;
 
         if (commonNode > 0 && m_mesh->m_nodesNumEdges[commonNode] == 2)
         {
@@ -401,11 +391,14 @@ bool meshkernel::MeshRefinement::ConnectHangingNodes()
                     return true;
                 }
 
-                m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex, edgeEndNodeCache[numNonHangingNodes]);
-
+                auto successful = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex, edgeEndNodeCache[numNonHangingNodes]);
+                if (!successful)
+                    return false;
                 if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
                 {
-                    m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex, hangingNodeCache[numNonHangingNodes]);
+                    successful = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex, hangingNodeCache[numNonHangingNodes]);
+                    if (!successful)
+                        return false;
                 }
                 numNonHangingNodes++;
             }
@@ -522,7 +515,7 @@ bool meshkernel::MeshRefinement::ConnectHangingNodes()
         }
         else
         {
-            throw std::invalid_argument("MeshRefinement::ConnectHangingNodes\n The number of non-hanging nodes is neither 3 nor 4.");
+            throw std::invalid_argument("MeshRefinement::ConnectHangingNodes: The number of non-hanging nodes is neither 3 nor 4.");
         }
     }
     return successful;
@@ -648,7 +641,9 @@ bool meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
             {
                 numBrotherEdges++;
                 int newNode;
-                m_mesh->FindCommonNode(edgeIndex, m_brotherEdges[edgeIndex], newNode);
+                auto successful = m_mesh->FindCommonNode(edgeIndex, m_brotherEdges[edgeIndex], newNode);
+                if (!successful)
+                    return false;
                 notHangingFaceNodes[numNonHangingNodes] = newNode;
                 parentEdge[numNonHangingNodes] = edgeIndex;
                 numNonHangingNodes++;
@@ -916,11 +911,15 @@ bool meshkernel::MeshRefinement::FindHangingNodes(int faceIndex,
             int commonNode = intMissingValue;
             if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
             {
-                m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex, commonNode);
+                auto successful = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex, commonNode);
+                if (!successful)
+                    return false;
             }
             else if (m_brotherEdges[edgeIndex] == secondEdgeIndex)
             {
-                m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex, commonNode);
+                auto successful = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex, commonNode);
+                if (!successful)
+                    return false;
             }
 
             if (commonNode != intMissingValue)

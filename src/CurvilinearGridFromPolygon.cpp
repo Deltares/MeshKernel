@@ -46,7 +46,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 {
     if (m_polygon->IsEmpty())
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon\n The polygon contains no nodes.");
+        throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon: The polygon contains no nodes.");
     }
 
     const auto areNodesValid = firstNode != secondNode &&
@@ -54,7 +54,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
                                firstNode != thirdNode;
     if (!areNodesValid)
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon\n Invalid nodes.");
+        throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon: Invalid nodes.");
     }
 
     // for the current polygon find the number of nodes
@@ -137,7 +137,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
     if (numRequiredPoints > numPolygonNodes)
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon\n The polygon does not contain enough nodes to compute the curvilinear grid.");
+        throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon: The polygon does not contain enough nodes to compute the curvilinear grid.");
     }
 
     int maximumNumberOfNodes = std::max(numNNodes, numMNodes);
@@ -210,7 +210,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 {
     if (m_polygon->IsEmpty())
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute\n The polygon contains no nodes.");
+        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute: The polygon contains no nodes.");
     }
 
     const auto areNodesValid = firstNode != secondNode &&
@@ -219,7 +219,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
     if (!areNodesValid)
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute\n Invalid nodes.");
+        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute: Invalid nodes.");
     }
 
     // for the current polygon find the number of nodes
@@ -249,7 +249,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
     if (n1 < 1 || n2 < 1 || n3 < 1)
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute\n The block size is less than the number of points.");
+        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute: The block size is less than the number of points.");
     }
 
     // compute the midpoint
