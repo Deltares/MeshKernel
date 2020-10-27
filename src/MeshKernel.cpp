@@ -171,7 +171,7 @@ namespace meshkernelapi
         return true;
     }
 
-    static std::vector<meshkernel::Point>& ComputeLocations(const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, meshkernel::InterpolationLocation interpolationLocation)
+    static std::vector<meshkernel::Point> ComputeLocations(const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, meshkernel::InterpolationLocation interpolationLocation)
     {
         std::vector<meshkernel::Point> locations;
         if (interpolationLocation == meshkernel::InterpolationLocation::Nodes)
