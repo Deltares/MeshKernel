@@ -46,7 +46,7 @@ void meshkernel::TriangulationInterpolation::Compute()
 
     // triangulate samples
     double averageTriangleArea = 0;
-    int numPolygonNodes = int(m_samples.size()); // open polygon
+    const auto numPolygonNodes = static_cast<int>(m_samples.size()); // open polygon
     int numberOfTriangles = 0;
     TriangulationWrapper triangulationWrapper;
 
@@ -113,12 +113,8 @@ void meshkernel::TriangulationInterpolation::Compute()
         // search for the triangle where the location is included
         bool isInTriangle = false;
         int numFacesSearched = 0;
-        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces)
+        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces && triangle >= 0 && triangle < triangulationWrapper.m_numFaces)
         {
-            if (triangle < 0 || triangle >= triangulationWrapper.m_numFaces)
-            {
-                break;
-            }
 
             isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], 0, 3);
 

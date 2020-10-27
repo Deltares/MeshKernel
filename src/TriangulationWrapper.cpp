@@ -63,7 +63,7 @@ void meshkernel::TriangulationWrapper::Compute(const std::vector<T>& inputNodes,
 
     if (estimatedNumberOfTriangles <= 0)
     {
-        estimatedNumberOfTriangles = inputNodes.size() * 6 + 10;
+        estimatedNumberOfTriangles = static_cast<int>(inputNodes.size()) * 6 + 10;
     }
 
     // If the number of estimated triangles is not sufficient, triangulation must be repeated

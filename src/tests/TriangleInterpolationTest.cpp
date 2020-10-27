@@ -1,7 +1,6 @@
 #include "../Mesh.hpp"
 #include "../Entities.hpp"
 #include "../TriangulationInterpolation.cpp"
-#include "../Constants.cpp"
 #include "SampleFileReader.cpp"
 #include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
