@@ -391,7 +391,7 @@ bool meshkernel::MeshRefinement::ConnectHangingNodes()
                     return true;
                 }
 
-                auto successful = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex, edgeEndNodeCache[numNonHangingNodes]);
+                successful = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex, edgeEndNodeCache[numNonHangingNodes]);
                 if (!successful)
                     return false;
                 if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
