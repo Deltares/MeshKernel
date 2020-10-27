@@ -116,15 +116,6 @@ namespace meshkernelapi
         return true;
     }
 
-    void SetExceptionMessage(const std::exception& e, char message[])
-    {
-
-        std::stringstream messageStream;
-        messageStream << "Type: " << typeid(e).name() << "\n";
-        messageStream << "Caught: " << e.what();
-        strcpy_s(message, sizeof message, messageStream.str().c_str());
-    }
-
     static bool SetSplines(const GeometryListNative& geometryListIn, meshkernel::Splines& spline)
     {
         if (geometryListIn.numberOfCoordinates == 0)
@@ -230,7 +221,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -275,7 +266,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -297,7 +288,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -318,7 +309,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -378,7 +369,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -439,7 +430,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -464,7 +455,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -489,7 +480,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -514,7 +505,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -539,7 +530,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -564,7 +555,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -589,7 +580,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -655,7 +646,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -1293,7 +1284,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -1316,7 +1307,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -1386,7 +1377,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -1418,7 +1409,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
@@ -1459,7 +1450,7 @@ namespace meshkernelapi
         }
         catch (const std::exception& e)
         {
-            SetExceptionMessage(e, exceptionMessage);
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
             exitCode |= Exception;
         }
         return exitCode;
