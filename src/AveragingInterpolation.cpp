@@ -177,34 +177,30 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
 
     std::vector<Point> searchPolygon(polygon.size());
 
-    // averaging settings
-    double minx = std::numeric_limits<double>::max();
-    double maxx = std::numeric_limits<double>::lowest();
-    double miny = std::numeric_limits<double>::max();
-    double maxy = std::numeric_limits<double>::lowest();
-
+    // increase polygon size
     for (int i = 0; i < polygon.size(); i++)
     {
         searchPolygon[i] = polygon[i] * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius);
-        minx = std::min(minx, searchPolygon[i].x);
-        maxx = std::max(maxx, searchPolygon[i].x);
-        miny = std::min(miny, searchPolygon[i].y);
-        maxy = std::max(maxy, searchPolygon[i].y);
     }
 
-    if (m_mesh->m_projection == Projections::spherical && maxx - minx > 180.0)
+    // compute the polygon bounding box
+    Point lowerLeft;
+    Point upperRight;
+    GetBoundingBox(searchPolygon, lowerLeft, upperRight);
+
+    if (m_mesh->m_projection == Projections::spherical && upperRight.x - lowerLeft.x > 180.0)
     {
 
-        double xmean = 0.5 * (maxx + minx);
-        minx = std::numeric_limits<double>::max();
-        maxx = std::numeric_limits<double>::lowest();
+        double xmean = 0.5 * (upperRight.x + lowerLeft.x);
+        lowerLeft.x = std::numeric_limits<double>::max();
+        upperRight.x = std::numeric_limits<double>::lowest();
         for (int i = 0; i < polygon.size(); i++)
         {
             if (searchPolygon[i].x < xmean)
             {
                 searchPolygon[i].x = searchPolygon[i].x + 360.0;
-                minx = std::min(minx, searchPolygon[i].x);
-                maxx = std::max(maxx, searchPolygon[i].x);
+                lowerLeft.x = std::min(lowerLeft.x, searchPolygon[i].x);
+                upperRight.x = std::max(upperRight.x, searchPolygon[i].x);
             }
         }
     }
@@ -221,6 +217,7 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
         return true;
     }
 
+    // Get the closest sample
     m_samplesRtree.NearestNeighboursOnSquaredDistance(interpolationPoint, searchRadiusSquared);
     if (m_samplesRtree.GetQueryResultSize() == 0)
     {

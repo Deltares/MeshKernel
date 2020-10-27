@@ -1510,6 +1510,34 @@ namespace meshkernel
         return true;
     }
 
+    template <typename T>
+    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight)
+    {
+
+        double minx = std::numeric_limits<double>::max();
+        double maxx = std::numeric_limits<double>::lowest();
+        double miny = std::numeric_limits<double>::max();
+        double maxy = std::numeric_limits<double>::lowest();
+        for (int n = 0; n < values.size(); n++)
+        {
+            bool isInvalid = IsDifferenceLessThanEpsilon(values[n].x, doubleMissingValue) ||
+                             IsDifferenceLessThanEpsilon(values[n].y, doubleMissingValue);
+
+            if (isInvalid)
+            {
+                continue;
+            }
+
+            minx = std::min(minx, values[n].x);
+            maxx = std::max(maxx, values[n].x);
+            miny = std::min(miny, values[n].y);
+            maxy = std::max(maxy, values[n].y);
+        }
+
+        lowerLeft = {minx, miny};
+        upperRight = {maxx, maxy};
+    }
+
     static auto ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)
     {
         edgesCenters.reserve(std::max(int(edgesCenters.capacity()), numEdges));
