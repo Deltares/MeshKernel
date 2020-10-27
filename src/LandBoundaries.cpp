@@ -58,7 +58,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries: The land boundaries contain no nodes.");
+            throw std::invalid_argument("LandBoundaries::Administrate\n The land boundaries contain no nodes.");
         }
 
         //mask the landboundary that is inside the selecting polygon
@@ -167,7 +167,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries: The land boundaries contain no nodes.");
+            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary\n The land boundaries contain no nodes.");
         }
 
         bool meshBoundOnly = false;
@@ -225,7 +225,7 @@ namespace meshkernel
         if (initialize)
         {
             if (m_mesh->m_edgesNumFaces[edgeIndex] != 1 || m_mesh->m_edges[edgeIndex].first < 0 || m_mesh->m_edges[edgeIndex].second < 0)
-                throw std::invalid_argument("LandBoundaries: Cannot not assign segment to mesh nodes.");
+                throw std::invalid_argument("LandBoundaries::AssignSegmentsToMeshNodes\n Cannot not assign segment to mesh nodes.");
 
             int firstMeshNode = m_mesh->m_edges[edgeIndex].first;
             int secondMeshNode = m_mesh->m_edges[edgeIndex].second;
@@ -324,7 +324,7 @@ namespace meshkernel
                     }
 
                     if (landboundarySegmentIndex == std::numeric_limits<size_t>::max())
-                        throw AlgorithmError("LandBoundaries: No segment index found: cannot assign segment to mesh nodes.");
+                        throw AlgorithmError("LandBoundaries::AssignSegmentsToMeshNodes\n No segment index found: cannot assign segment to mesh nodes.");
 
                     if ((nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][0] && edgeRatio < 0.0) ||
                         (nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][1] - 1 && edgeRatio > 1.0))
@@ -358,7 +358,7 @@ namespace meshkernel
         if (startSegmentIndex < 0 || startSegmentIndex >= m_segmentIndices.size() ||
             endSegmentIndex < 0 || endSegmentIndex >= m_segmentIndices.size())
         {
-            throw std::invalid_argument("LandBoundaries: Cannot not add land boundary.");
+            throw std::invalid_argument("LandBoundaries::AddLandBoundary\n Invalid segment index.");
         }
 
         // find start/end
@@ -416,7 +416,7 @@ namespace meshkernel
         auto endLandBoundaryIndex = m_segmentIndices[landBoundarySegment][1];
 
         if (startLandBoundaryIndex < 0 || startLandBoundaryIndex >= m_nodes.size() || startLandBoundaryIndex >= endLandBoundaryIndex)
-            throw std::invalid_argument("LandBoundaries: Cannot not make path.");
+            throw std::invalid_argument("LandBoundaries::MakePath\n Invalid boundary index.");
 
         // fractional location of the projected outer nodes(min and max) on the land boundary segment
         double leftEdgeRatio = 1.0;
@@ -444,7 +444,9 @@ namespace meshkernel
                               endMeshNode);
 
         if (startMeshNode < 0 || endMeshNode < 0 || startMeshNode == endMeshNode)
-            throw AlgorithmError("LandBoundaries: Cannot not find valid mesh nodes.");
+        {
+            throw AlgorithmError("LandBoundaries::MakePath\n Cannot not find valid mesh nodes.");
+        }
 
         std::vector<int> connectedNodes;
         ShortestPath(landBoundarySegment, int(startLandBoundaryIndex), int(endLandBoundaryIndex), startMeshNode, meshBoundOnly, connectedNodes);
@@ -997,7 +999,7 @@ namespace meshkernel
 
         if (startEdge == -1 || endEdge == -1)
         {
-            throw std::invalid_argument("LandBoundaries: Cannot find startMeshNode or endMeshNode.");
+            throw std::invalid_argument("LandBoundaries::FindStartEndMeshNodes\n Cannot find startMeshNode or endMeshNode.");
         }
         FindStartEndMeshNodesFromEdges(startEdge, endEdge, startPoint, endPoint, startMeshNode, endMeshNode);
     }
@@ -1069,7 +1071,7 @@ namespace meshkernel
                                     currentNodeDistance, currentNodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
 
             if (currentNodeLandBoundaryNodeIndex < 0)
-                throw AlgorithmError("LandBoundaries: Cannot compute the nearest node on the land boundary.");
+                throw AlgorithmError("LandBoundaries::ShortestPath\n Cannot compute the nearest node on the land boundary.");
 
             for (const auto& edgeIndex : m_mesh->m_nodesEdges[currentNodeIndex])
             {

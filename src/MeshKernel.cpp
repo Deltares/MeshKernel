@@ -678,11 +678,7 @@ namespace meshkernelapi
         meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
 
         meshkernel::Mesh mesh;
-        successful = mesh.MakeMesh(makeGridParameters, polygon);
-        if (!successful)
-        {
-            return -1;
-        }
+        mesh.MakeMesh(makeGridParameters, polygon);
 
         *meshInstances[meshKernelId] += mesh;
 
@@ -850,11 +846,8 @@ namespace meshkernelapi
 
         meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
-        successful = meshInstances[meshKernelId]->MergeNodesInPolygon(polygon);
-        if (!successful)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->MergeNodesInPolygon(polygon);
+
         return 0;
     }
 
@@ -865,11 +858,7 @@ namespace meshkernelapi
             return 0;
         }
 
-        bool successful = meshInstances[meshKernelId]->MergeTwoNodes(startNode, endNode);
-        if (!successful)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->MergeTwoNodes(startNode, endNode);
 
         return 0;
     }
@@ -891,11 +880,7 @@ namespace meshkernelapi
         meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         bool selectInside = inside == 1 ? true : false;
-        successful = meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
-        if (!successful)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
 
         int index = 0;
         for (int i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
@@ -927,11 +912,7 @@ namespace meshkernelapi
         meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
         bool selectInside = inside == 1 ? true : false;
-        successful = meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
-        if (!successful)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
 
         numberOfMeshVertices = 0;
         for (auto i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
@@ -952,11 +933,7 @@ namespace meshkernelapi
             return 0;
         }
 
-        bool successful = meshInstances[meshKernelId]->ConnectNodes(startNode, endNode, new_edge_index);
-        if (!successful)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->ConnectNodes(startNode, endNode, new_edge_index);
 
         return 0;
     }
@@ -971,11 +948,7 @@ namespace meshkernelapi
         }
 
         meshkernel::Point newNode{xCoordinate, yCoordinate};
-        bool successful = meshInstances[meshKernelId]->InsertNode(newNode, nodeIndex);
-        if (!successful)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->InsertNode(newNode, nodeIndex);
 
         return 0;
     }
@@ -987,11 +960,7 @@ namespace meshkernelapi
             return 0;
         }
 
-        bool successful = meshInstances[meshKernelId]->DeleteNode(nodeIndex);
-        if (!successful)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->DeleteNode(nodeIndex);
 
         return 0;
     }
@@ -1040,11 +1009,7 @@ namespace meshkernelapi
             return -1;
         }
 
-        successful = meshInstances[meshKernelId]->DeleteEdge(edgeIndex);
-        if (!successful)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->DeleteEdge(edgeIndex);
 
         return 0;
     }

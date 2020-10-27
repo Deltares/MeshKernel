@@ -491,12 +491,10 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
     int newNodeIndex;
-    auto successful = mesh->InsertNode(newPoint, newNodeIndex, true);
-    ASSERT_TRUE(successful);
+    mesh->InsertNode(newPoint, newNodeIndex, true);
 
     int newEdgeIndex;
-    successful = mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
-    ASSERT_TRUE(successful);
+    mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -515,12 +513,10 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     meshkernel::Point newPoint{10.0, 10.0};
     mesh->m_nodesRTree.BuildTree(mesh->m_nodes);
     int newNodeIndex;
-    auto successful = mesh->InsertNode(newPoint, newNodeIndex, true);
-    ASSERT_TRUE(successful);
+    mesh->InsertNode(newPoint, newNodeIndex, true);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
-    successful = mesh->DeleteNode(0);
-    ASSERT_TRUE(successful);
+    mesh->DeleteNode(0);
 
     // when m_nodesRTreeRequiresUpdate = true and m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -537,13 +533,11 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 
     meshkernel::Point newPoint{10.0, 10.0};
     int newNodeIndex;
-    auto successful = mesh->InsertNode(newPoint, newNodeIndex, true);
-    ASSERT_TRUE(successful);
+    mesh->InsertNode(newPoint, newNodeIndex, true);
 
     // connect nodes modifies the number of edges, m_nodesRTreeRequiresUpdate is set to true
     int newEdgeIndex;
-    successful = mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
-    ASSERT_TRUE(successful);
+    mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -562,8 +556,7 @@ TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->m_edgesRTree.BuildTree(mesh->m_edgesCenters);
 
     // DeleteEdge modifies the number of edges, m_edgesRTreeRequiresUpdate is set to true
-    auto successful = mesh->DeleteEdge(0);
-    ASSERT_TRUE(successful);
+    mesh->DeleteEdge(0);
 
     // when m_edgesRTreeRequiresUpdate = true the mesh.m_edgesRTree is re-build with one less edge
     mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
