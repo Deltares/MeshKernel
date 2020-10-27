@@ -38,19 +38,32 @@ namespace meshkernel
 {
     // coordinate reference independent operations
     template <typename T>
-    T DotProduct(const T& dx1, const T& dx2)
+    static T DotProduct(const T& dx1, const T& dx2)
     {
         return dx1 * dx2;
     }
 
     template <typename T, typename... Args>
-    T DotProduct(const T& dx1, const T& dx2, Args&... args)
+    static T DotProduct(const T& dx1, const T& dx2, Args&... args)
     {
         return dx1 * dx2 + DotProduct(args...);
     }
 
+    static auto VectorProduct(Cartesian3DPoint a, Cartesian3DPoint b)
+    {
+        return Cartesian3DPoint{
+            a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z,
+            a.x * b.y - a.y * b.x};
+    }
+
+    static auto InnerProduct(Cartesian3DPoint a, Cartesian3DPoint b)
+    {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
     template <typename T>
-    bool ResizeVectorIfNeeded(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
+    static bool ResizeVectorIfNeeded(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
     {
         const int currentSize = int(vectorToResize.size());
         if (newSize > currentSize)
@@ -62,7 +75,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    bool ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
+    static bool ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
     {
         const int currentSize = int(vectorToResize.size());
         if (newSize > currentSize)
@@ -74,7 +87,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    int FindIndex(const std::vector<T>& vec, T el)
+    static int FindIndex(const std::vector<T>& vec, T el)
     {
         int index = 0;
         for (int n = 0; n < vec.size(); n++)
@@ -140,7 +153,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    std::vector<int> SortedIndexes(const std::vector<T>& v)
+    static std::vector<int> SortedIndexes(const std::vector<T>& v)
     {
         std::vector<int> idx(v.size());
         iota(idx.begin(), idx.end(), 0);
@@ -150,7 +163,7 @@ namespace meshkernel
 
     //chmike's algorithm
     template <class T>
-    void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
+    static void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
     {
         std::vector<T> ordered(v.size());
         for (int i = 0; i < order.size(); ++i)
@@ -161,7 +174,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    bool MakeMonothonic(std::vector<T>& v)
+    static bool MakeMonothonic(std::vector<T>& v)
     {
 
         bool isMonotonic = false;
@@ -191,7 +204,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    void AddValueToVector(std::vector<T>& vec, const T value)
+    static void AddValueToVector(std::vector<T>& vec, const T value)
     {
         for (auto& val : vec)
         {
@@ -201,7 +214,7 @@ namespace meshkernel
 
     // algorithm performing the zero's search using the golden section algorithm's
     template <typename F>
-    double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
+    static double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
     {
         //golden distance factors
         const double c = 0.38196602;
@@ -250,6 +263,26 @@ namespace meshkernel
         return f1 < f2 ? x1 : x2;
     }
 
+    static int NextCircularForwardIndex(int currentIndex, int size)
+    {
+        int index = currentIndex + 1;
+        if (index >= size)
+        {
+            index = index - size;
+        }
+        return index;
+    }
+
+    static int NextCircularBackwardIndex(int currentIndex, int size)
+    {
+        int index = currentIndex - 1;
+        if (index < 0)
+        {
+            index = index + size;
+        }
+        return index;
+    }
+
     static bool IsPointOnPole(const Point& point)
     {
         return std::abs(std::abs(point.y) - 90.0) < absLatitudeAtPoles;
@@ -285,15 +318,19 @@ namespace meshkernel
 
     /// Check if a point is in polygonNodes using the winding number method
     /// polygonNodes: a closed polygonNodes consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
-    static bool IsPointInPolygonNodes(const Point& point, const std::vector<Point>& polygonNodes, int startNode, int endNode)
+    static bool IsPointInPolygonNodes(Point point,
+                                      const std::vector<Point>& polygonNodes,
+                                      int startNode,
+                                      int endNode,
+                                      Projections projection,
+                                      Point polygonCenter = {doubleMissingValue, doubleMissingValue})
     {
-        // TODO: extend for spherical accurate projection
         if (endNode <= startNode)
         {
             return true;
         }
         const int currentPolygonSize = endNode - startNode + 1;
-        if (polygonNodes.size() < currentPolygonSize)
+        if (currentPolygonSize < 3 || polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }
@@ -302,34 +339,104 @@ namespace meshkernel
             return false;
         }
 
-        int windingNumber = 0;
-        for (int n = startNode; n < endNode; n++)
+        if (projection == Projections::cartesian || projection == Projections::spherical)
         {
-            const auto leftDifference = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
-            if (IsDifferenceLessThanEpsilon(leftDifference, 0.0))
+
+            int windingNumber = 0;
+            for (int n = startNode; n < endNode; n++)
             {
-                // point on the line
+                const auto leftDifference = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
+                if (IsDifferenceLessThanEpsilon(leftDifference, 0.0))
+                {
+                    // point on the line
+                    return true;
+                }
+
+                if (polygonNodes[n].y <= point.y) // an upward crossing
+                {
+                    if (polygonNodes[n + 1].y > point.y && leftDifference > 0.0)
+
+                    {
+                        ++windingNumber; // have  a valid up intersect
+                    }
+                }
+                else
+                {
+                    if (polygonNodes[n + 1].y <= point.y && leftDifference < 0.0) // a downward crossing
+                    {
+
+                        --windingNumber; // have  a valid down intersect
+                    }
+                }
+            }
+
+            return windingNumber == 0 ? false : true;
+        }
+
+        if (projection == Projections::sphericalAccurate)
+        {
+            // get 3D polygon coordinates
+            std::vector<Cartesian3DPoint> cartesian3DPoints(currentPolygonSize);
+            for (int i = 0; i < currentPolygonSize; i++)
+            {
+                SphericalToCartesian(polygonNodes[startNode + i], cartesian3DPoints[i]);
+            }
+
+            // enlarge around polygon
+            const double enlargmentFactor = 1.000001;
+            Cartesian3DPoint polygonCenterCartesian3D;
+            SphericalToCartesian(polygonCenter, polygonCenterCartesian3D);
+            for (int i = 0; i < currentPolygonSize; i++)
+            {
+                cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargmentFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
+                cartesian3DPoints[i].y = polygonCenterCartesian3D.x + enlargmentFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
+                cartesian3DPoints[i].z = polygonCenterCartesian3D.x + enlargmentFactor * (cartesian3DPoints[i].z - polygonCenterCartesian3D.z);
+            }
+
+            // convert point
+            Cartesian3DPoint pointCartesian3D;
+            SphericalToCartesian(point, pointCartesian3D);
+
+            //get test direction: e_lambda
+            const double lambda = point.x * degrad_hp;
+            Cartesian3DPoint ee{-std::sin(lambda), std::cos(lambda), 0.0};
+            int inside = 0;
+
+            // loop over the polygon nodes
+            for (int i = 0; i < currentPolygonSize; i++)
+            {
+                const auto nextNode = NextCircularForwardIndex(i, currentPolygonSize);
+                const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
+                const auto xpXe = VectorProduct(pointCartesian3D, ee);
+
+                const auto D = InnerProduct(xiXxip1, ee);
+                double zeta = 0.0;
+                double xi = 0.0;
+                double eta = 0.0;
+                if (std::abs(D) > 0.0)
+                {
+
+                    xi = -InnerProduct(xpXe, cartesian3DPoints[nextNode]) / D;
+                    eta = InnerProduct(xpXe, cartesian3DPoints[i]) / D;
+                    zeta = -InnerProduct(xiXxip1, pointCartesian3D) / D;
+                }
+
+                if (IsDifferenceLessThanEpsilon(zeta, 0.0))
+                {
+                    return true;
+                }
+
+                if (xi >= 0.0 && eta >= 0.0 && zeta >= 0.0)
+                {
+                    inside = 1 - inside;
+                }
+            }
+
+            if (inside == 1)
+            {
                 return true;
             }
-
-            if (polygonNodes[n].y <= point.y) // an upward crossing
-            {
-                if (polygonNodes[n + 1].y > point.y && leftDifference > 0.0)
-
-                {
-                    ++windingNumber; // have  a valid up intersect
-                }
-            }
-            else
-            {
-                if (polygonNodes[n + 1].y <= point.y && leftDifference < 0.0) // a downward crossing
-                {
-
-                    --windingNumber; // have  a valid down intersect
-                }
-            }
         }
-        return windingNumber == 0 ? false : true;
     }
 
     static bool ComputeThreeBaseComponents(const Point& point, double (&exxp)[3], double (&eyyp)[3], double (&ezzp)[3])
@@ -1308,7 +1415,7 @@ namespace meshkernel
 
             Point samplePoint{samples[sampleIndex].x, samples[sampleIndex].y};
             // assume here polygon has a size equal to numPolygonNodes + 1
-            bool isInPolygon = IsPointInPolygonNodes(samplePoint, polygon, 0, numPolygonNodes);
+            bool isInPolygon = IsPointInPolygonNodes(samplePoint, polygon, 0, numPolygonNodes, projection);
             if (isInPolygon)
             {
                 if (averagingMethod == AveragingMethod::SimpleAveraging)
@@ -1366,26 +1473,6 @@ namespace meshkernel
         }
 
         return true;
-    }
-
-    static int NextCircularForwardIndex(int currentIndex, int size)
-    {
-        int index = currentIndex + 1;
-        if (index >= size)
-        {
-            index = index - size;
-        }
-        return index;
-    }
-
-    static int NextCircularBackwardIndex(int currentIndex, int size)
-    {
-        int index = currentIndex - 1;
-        if (index < 0)
-        {
-            index = index + size;
-        }
-        return index;
     }
 
     template <typename T>

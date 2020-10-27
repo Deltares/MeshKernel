@@ -1903,7 +1903,7 @@ bool meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
         }
         polygon[numNodes] = polygon[0];
 
-        const auto isCircumcenterInside = IsPointInPolygonNodes(result, polygon, 0, numNodes - 1);
+        const auto isCircumcenterInside = IsPointInPolygonNodes(result, polygon, 0, numNodes - 1, m_projection);
 
         if (!isCircumcenterInside)
         {
