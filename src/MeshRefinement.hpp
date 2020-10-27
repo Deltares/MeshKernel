@@ -206,6 +206,6 @@ namespace meshkernel
         RefinementType m_refinementType; /// The type of refinement to use
 
         std::shared_ptr<Mesh> m_mesh;
-        std::shared_ptr<AveragingInterpolation> m_averaging;
+        std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;
     };
 } // namespace meshkernel

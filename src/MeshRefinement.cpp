@@ -39,7 +39,7 @@
 
 meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging) : m_mesh(mesh), m_averaging(averaging){};
 
-meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) : m_mesh(mesh), m_averaging(nullptr){};
+meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) : m_mesh(mesh){};
 
 bool meshkernel::MeshRefinement::Refine(const Polygons& polygon,
                                         const meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,

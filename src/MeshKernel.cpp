@@ -171,27 +171,6 @@ namespace meshkernelapi
         return true;
     }
 
-    static std::vector<meshkernel::Point>& ComputeLocations(const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, meshkernel::InterpolationLocation interpolationLocation)
-    {
-        std::vector<meshkernel::Point> locations;
-        if (interpolationLocation == meshkernel::InterpolationLocation::Nodes)
-        {
-            locations = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
-        }
-        if (interpolationLocation == meshkernel::InterpolationLocation::Edges)
-        {
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
-            ComputeEdgeCenters(meshGeometryDimensions.numedge, nodes, edges, locations);
-        }
-        if (interpolationLocation == meshkernel::InterpolationLocation::Faces)
-        {
-            locations = meshkernel::ConvertToFaceCentersVector(meshGeometryDimensions.numface, meshGeometry.facex, meshGeometry.facey);
-        }
-
-        return locations;
-    }
-
     MKERNEL_API int mkernel_new_mesh(int& meshKernelId)
     {
         meshKernelId = int(meshInstances.size());

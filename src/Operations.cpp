@@ -313,23 +313,17 @@ namespace meshkernel
 
             if (polygonNodes[n].y <= point.y) // an upward crossing
             {
-                if (polygonNodes[n + 1].y > point.y)
+                if (polygonNodes[n + 1].y > point.y && leftDifference > 0.0)
 
                 {
-                    if (leftDifference > 0.0)
-                    {
-                        ++windingNumber; // have  a valid up intersect
-                    }
+                    ++windingNumber; // have  a valid up intersect
                 }
             }
             else
             {
-                if (polygonNodes[n + 1].y <= point.y) // a downward crossing
+                if (polygonNodes[n + 1].y <= point.y && leftDifference < 0.0) // a downward crossing
                 {
-                    if (leftDifference < 0.0)
-                    {
-                        --windingNumber; // have  a valid down intersect
-                    }
+                    --windingNumber; // have  a valid down intersect
                 }
             }
         }
