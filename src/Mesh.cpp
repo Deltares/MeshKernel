@@ -411,7 +411,7 @@ meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygon
     Set(edges, inputNodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
 
-[[nodiscard]] bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const
+bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const
 {
     // Used for triangular grids
     constexpr double triangleMinimumAngle = 5.0;
@@ -1377,7 +1377,7 @@ void meshkernel::Mesh::ComputeEdgesCenters()
     }
 }
 
-[[nodiscard]] bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
+bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
 {
     for (int n = 0; n < GetNumFaceEdges(faceIndex); n++)
     {
@@ -1389,7 +1389,7 @@ void meshkernel::Mesh::ComputeEdgesCenters()
     return false;
 }
 
-[[nodiscard]] bool meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const
+bool meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const
 {
     auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
     auto firstEdgeEdgeSecondNode = m_edges[firstEdgeIndex].second;

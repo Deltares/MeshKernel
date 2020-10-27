@@ -61,10 +61,10 @@ namespace meshkernel
         /// @param startSecond
         /// @param endSecond
         /// @returns Boolean to indicate that procedure has to be repeated
-        bool OrderSplines(int startFirst,
-                          int endFirst,
-                          int startSecond,
-                          int endSecond);
+        [[nodiscard]] bool OrderSplines(int startFirst,
+                                        int endFirst,
+                                        int startSecond,
+                                        int endSecond);
 
         /// @brief Swap the rows of a two dimensional vector
         /// @param v The input vector

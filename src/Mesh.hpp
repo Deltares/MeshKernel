@@ -240,7 +240,7 @@ namespace meshkernel
         /// @brief Determine if a face is fully contained in polygon or not, based on m_nodeMask
         /// @param[in] faceIndex The face index
         /// @returns If the face is fully contained in the polygon or not
-        bool IsFullFaceNotInPolygon(int faceIndex) const;
+        [[nodiscard]] bool IsFullFaceNotInPolygon(int faceIndex) const;
 
         /// @brief Mask all nodes in a polygon
         /// @param[in] polygons The input polygon
@@ -253,7 +253,7 @@ namespace meshkernel
         /// @param[in] secondEdgeIndex The index of the second edge
         /// @param[out] node The shared node (-1 if no node is found)
         /// \returns If the node could be found
-        bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
+        [[nodiscard]] bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 
         /// @brief Compute the lengths of all edges in one go
         void ComputeEdgeLengths();
@@ -422,7 +422,7 @@ namespace meshkernel
         /// @param[in] faceNodes
         /// @param[in] nodes
         /// @returns If triangle is okay
-        bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const;
+        [[nodiscard]] bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const;
 
         /// @brief Removes all invalid nodes and edges
         void RemoveInvalidNodesAndEdges();
