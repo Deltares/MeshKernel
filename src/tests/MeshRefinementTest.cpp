@@ -19,13 +19,13 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     samples.push_back({15.5396099, 24.2669525, 1.0});
     samples.push_back({23.8305721, 23.9275551, 1.0});
 
-    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
-                                                                   samples,
-                                                                   meshkernel::MinAbsValue,
-                                                                   meshkernel::Faces,
-                                                                   1.0,
-                                                                   false,
-                                                                   false);
+    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                samples,
+                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::Faces,
+                                                                                1.0,
+                                                                                false,
+                                                                                false);
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
@@ -110,13 +110,13 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     samples.push_back({15.5396099, 24.2669525, 1.0});
     samples.push_back({23.8305721, 23.9275551, 1.0});
 
-    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
-                                                                   samples,
-                                                                   meshkernel::MinAbsValue,
-                                                                   meshkernel::Faces,
-                                                                   1.0,
-                                                                   false,
-                                                                   false);
+    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                samples,
+                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::Faces,
+                                                                                1.0,
+                                                                                false,
+                                                                                false);
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
@@ -211,13 +211,13 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     samples.push_back({359.8657532, 350.3144836, 1.0});
     samples.push_back({387.5152588, 299.2614746, 1.0});
 
-    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
-                                                                   samples,
-                                                                   meshkernel::MinAbsValue,
-                                                                   meshkernel::Faces,
-                                                                   1.0,
-                                                                   false,
-                                                                   false);
+    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                samples,
+                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::Faces,
+                                                                                1.0,
+                                                                                false,
+                                                                                false);
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
@@ -340,13 +340,13 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     samples.push_back({13.5837603, 12.1783361, 3.0000000});
     samples.push_back({17.2156067, 16.9106121, 3.0000000});
 
-    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
-                                                                   samples,
-                                                                   meshkernel::MinAbsValue,
-                                                                   meshkernel::Faces,
-                                                                   1.0,
-                                                                   false,
-                                                                   false);
+    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                samples,
+                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::Faces,
+                                                                                1.0,
+                                                                                false,
+                                                                                false);
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
@@ -409,13 +409,13 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     // Sample points
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\MeshRefinementTests\\WindowOfRefinementFile.xyz");
 
-    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
-                                                                   samples,
-                                                                   meshkernel::MinAbsValue,
-                                                                   meshkernel::Faces,
-                                                                   1.0,
-                                                                   false,
-                                                                   false);
+    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                samples,
+                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::Faces,
+                                                                                1.0,
+                                                                                false,
+                                                                                false);
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
@@ -474,13 +474,13 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     // Sample points
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\MeshRefinementTests\\WindowOfRefinementFile.xyz");
 
-    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
-                                                                   samples,
-                                                                   meshkernel::Max,
-                                                                   meshkernel::Faces,
-                                                                   1.0,
-                                                                   false,
-                                                                   true);
+    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                samples,
+                                                                                meshkernel::Max,
+                                                                                meshkernel::Faces,
+                                                                                1.01,
+                                                                                false,
+                                                                                true);
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
@@ -645,13 +645,13 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     samples.push_back({41.1085625, 41.1083946, 1.0});
     samples.push_back({41.1052971, 41.1083336, 1.0});
 
-    const auto averaging = std::make_shared<meshkernel::Averaging>(mesh,
-                                                                   samples,
-                                                                   meshkernel::MinAbsValue,
-                                                                   meshkernel::Faces,
-                                                                   1.0,
-                                                                   false,
-                                                                   false);
+    const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
+                                                                                samples,
+                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::Faces,
+                                                                                1.0,
+                                                                                false,
+                                                                                false);
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;

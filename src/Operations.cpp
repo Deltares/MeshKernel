@@ -32,7 +32,6 @@
 #include <numeric>
 #include "Entities.hpp"
 #include "Constants.cpp"
-#include "SpatialTrees.hpp"
 
 namespace meshkernel
 {
@@ -287,17 +286,16 @@ namespace meshkernel
     /// polygonNodes: a closed polygonNodes consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
     static bool IsPointInPolygonNodes(const Point& point, const std::vector<Point>& polygonNodes, int startNode, int endNode)
     {
+        // TODO: extend for spherical accurate projection
         if (endNode <= startNode)
         {
             return true;
         }
-
         const int currentPolygonSize = endNode - startNode + 1;
         if (polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }
-
         if (polygonNodes[startNode] != polygonNodes[endNode])
         {
             return false;
@@ -306,18 +304,32 @@ namespace meshkernel
         int windingNumber = 0;
         for (int n = startNode; n < endNode; n++)
         {
+            const auto leftDifference = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
+            if (IsDifferenceLessThanEpsilon(leftDifference, 0.0))
+            {
+                // point on the line
+                return true;
+            }
+
             if (polygonNodes[n].y <= point.y) // an upward crossing
             {
-                if (polygonNodes[n + 1].y >= point.y && IsLeft(polygonNodes[n], polygonNodes[n + 1], point) >= 0.0)
+                if (polygonNodes[n + 1].y > point.y)
+
                 {
-                    ++windingNumber; // have  a valid up intersect
+                    if (leftDifference > 0.0)
+                    {
+                        ++windingNumber; // have  a valid up intersect
+                    }
                 }
             }
             else
             {
-                if (polygonNodes[n + 1].y <= point.y && IsLeft(polygonNodes[n], polygonNodes[n + 1], point) <= 0.0) // a downward crossing
+                if (polygonNodes[n + 1].y <= point.y) // a downward crossing
                 {
-                    --windingNumber; // have  a valid down intersect
+                    if (leftDifference < 0.0)
+                    {
+                        --windingNumber; // have  a valid down intersect
+                    }
                 }
             }
         }
@@ -1496,6 +1508,25 @@ namespace meshkernel
         }
 
         return true;
+    }
+
+    static auto ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)
+    {
+        edgesCenters.reserve(std::max(int(edgesCenters.capacity()), numEdges));
+        edgesCenters.clear();
+
+        for (int e = 0; e < numEdges; e++)
+        {
+            auto const first = edges[e].first;
+            auto const second = edges[e].second;
+
+            if (first < 0 || second < 0)
+            {
+                continue;
+            }
+
+            edgesCenters.push_back((nodes[first] + nodes[second]) * 0.5);
+        }
     }
 
 } // namespace meshkernel

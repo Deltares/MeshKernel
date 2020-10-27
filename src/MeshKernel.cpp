@@ -171,6 +171,27 @@ namespace meshkernelapi
         return true;
     }
 
+    static std::vector<meshkernel::Point>& ComputeLocations(const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, meshkernel::InterpolationLocation interpolationLocation)
+    {
+        std::vector<meshkernel::Point> locations;
+        if (interpolationLocation == meshkernel::InterpolationLocation::Nodes)
+        {
+            locations = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
+        }
+        if (interpolationLocation == meshkernel::InterpolationLocation::Edges)
+        {
+            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
+            const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
+            ComputeEdgeCenters(meshGeometryDimensions.numedge, nodes, edges, locations);
+        }
+        if (interpolationLocation == meshkernel::InterpolationLocation::Faces)
+        {
+            locations = meshkernel::ConvertToFaceCentersVector(meshGeometryDimensions.numface, meshGeometry.facex, meshGeometry.facey);
+        }
+
+        return locations;
+    }
+
     MKERNEL_API int mkernel_new_mesh(int& meshKernelId)
     {
         meshKernelId = int(meshInstances.size());
@@ -1048,13 +1069,13 @@ namespace meshkernelapi
         const bool refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
         const bool transformSamples = sampleRefineParametersNative.RefinementType == 3 ? true : false;
 
-        const auto averaging = std::make_shared<meshkernel::Averaging>(meshInstances[meshKernelId],
-                                                                       samples,
-                                                                       averagingMethod,
-                                                                       meshkernel::Faces,
-                                                                       1.0,
-                                                                       refineOutsideFace,
-                                                                       transformSamples);
+        const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshInstances[meshKernelId],
+                                                                                    samples,
+                                                                                    averagingMethod,
+                                                                                    meshkernel::Faces,
+                                                                                    1.0,
+                                                                                    refineOutsideFace,
+                                                                                    transformSamples);
 
         meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], averaging);
 
@@ -1430,29 +1451,23 @@ namespace meshkernelapi
         return successful ? 0 : 1;
     }
 
-    MKERNEL_API int mkernel_averaging(const MeshGeometryDimensions& meshGeometryDimensions,
-                                      const MeshGeometry& meshGeometry,
-                                      int startIndex,
-                                      double** samplesXCoordinate,
-                                      double** samplesYCoordinate,
-                                      double** samplesValue,
-                                      int numSamples,
-                                      double** results,
-                                      int locationType,
-                                      double Wu1Duni,
-                                      int averagingMethod,
-                                      int minNumberOfSamples,
-                                      double relativeSearchSize,
-                                      int spherical,
-                                      int sphericalAccurate)
+    MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
+                              const MeshGeometry& meshGeometry,
+                              const int& startIndex,
+                              double** samplesXCoordinate,
+                              double** samplesYCoordinate,
+                              double** samplesValue,
+                              const int& numSamples,
+                              double** results,
+                              const int& locationType,
+                              const double& Wu1Duni,
+                              const int& averagingMethod,
+                              const int& minNumberOfSamples,
+                              const double& relativeSearchSize,
+                              const int& spherical,
+                              const int& sphericalAccurate)
     {
-        // Build the mesh
-        const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
-
-        const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
-
-        auto mesh = std::make_shared<meshkernel::Mesh>();
-
+        // Projections
         auto projection = meshkernel::Projections::cartesian;
         if (spherical == 1)
         {
@@ -1463,6 +1478,10 @@ namespace meshkernelapi
             projection = meshkernel::Projections::sphericalAccurate;
         }
 
+        // Set the mesh
+        const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
+        const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
+        const auto mesh = std::make_shared<meshkernel::Mesh>();
         mesh->Set(edges, nodes, projection);
 
         // Build the samples
@@ -1475,13 +1494,14 @@ namespace meshkernelapi
         }
 
         // Execute averaging
-        meshkernel::Averaging averaging(mesh,
-                                        samples,
-                                        meshkernel::AveragingMethod(averagingMethod),
-                                        meshkernel::InterpolationLocation(locationType),
-                                        relativeSearchSize,
-                                        false,
-                                        false);
+        const auto location = static_cast<meshkernel::InterpolationLocation>(locationType);
+        meshkernel::AveragingInterpolation averaging(mesh,
+                                                     samples,
+                                                     meshkernel::AveragingMethod(averagingMethod),
+                                                     location,
+                                                     relativeSearchSize,
+                                                     false,
+                                                     false);
         averaging.Compute();
 
         // Get the results and copy them to the result vector

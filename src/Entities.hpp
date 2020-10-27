@@ -189,4 +189,15 @@ namespace meshkernel
         return nodes;
     }
 
+    static std::vector<Point> ConvertToFaceCentersVector(int numFaces, double* facex, double* facey)
+    {
+        std::vector<Point> faceCenters(numFaces);
+        for (int n = 0; n < numFaces; n++)
+        {
+            faceCenters[n].x = facex[n];
+            faceCenters[n].y = facey[n];
+        }
+        return faceCenters;
+    };
+
 } // namespace meshkernel

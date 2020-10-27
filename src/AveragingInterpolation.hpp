@@ -27,56 +27,56 @@
 
 #pragma once
 
-#include "Operations.cpp"
 #include "SpatialTrees.hpp"
+#include "Constants.cpp"
 
 namespace meshkernel
 {
     // Forward declarations
-    class Polygons;
     class Mesh;
+    struct Sample;
 
-    class Averaging
+    class AveragingInterpolation
     {
     public:
         /// @brief Interpolation based on averaging
-        /// @param mesh The input mesh.
-        /// @param samples The samples with x,y locations and values.
-        /// @param averagingMethod The averaging method to use.
+        /// @param mesh The input mesh
+        /// @param samples The samples with x,y locations and values
+        /// @param averagingMethod The averaging method to use
         /// @param locationType The location type (faces, edges, nodes).
         /// @param relativeSearchRadius The relative search radius, used to enlarge the search area when looking for samples.
         /// @param useClosestSampleIfNoneAvailable If no sample are found simply use the closest one.
         /// @param subtractSampleValues For some algorithms (e.g. refinement based on levels) we need to subtract 1 the sample value.
-        explicit Averaging(std::shared_ptr<Mesh> mesh,
-                           std::vector<Sample>& samples,
-                           AveragingMethod averagingMethod,
-                           InterpolationLocation locationType,
-                           double relativeSearchRadius,
-                           bool useClosestSampleIfNoneAvailable,
-                           bool subtractSampleValues);
+        explicit AveragingInterpolation(std::shared_ptr<Mesh> mesh,
+                                        std::vector<Sample>& samples,
+                                        AveragingMethod averagingMethod,
+                                        InterpolationLocation locationType,
+                                        double relativeSearchRadius,
+                                        bool useClosestSampleIfNoneAvailable,
+                                        bool subtractSampleValues);
 
         /// @brief Compute interpolation
-        /// @return If the method succeded
+        /// @return If the method succeed
         bool Compute();
 
         /// @brief Get the result values
-        /// @return
+        /// @return the results
         const auto& GetResults() const
         {
             return m_results;
         }
 
     private:
-        /// @brief Compute The averaging results in polygon.
-        /// @param polygon The bounding polygon where the samples are included.
-        /// @param interpolationPoint The interpolation point.
+        /// @brief Compute The averaging results in polygon
+        /// @param polygon The bounding polygon where the samples are included
+        /// @param interpolationPoint The interpolation point
         /// @param result The resulting value
-        /// @return
+        /// @return If the method succeed
         bool ComputeOnPolygon(const std::vector<Point>& polygon,
                               Point interpolationPoint,
                               double& result);
 
-        std::shared_ptr<Mesh> m_mesh;
+        const std::shared_ptr<Mesh> m_mesh;
         std::vector<Sample>& m_samples;
         AveragingMethod m_averagingMethod;
         InterpolationLocation m_interpolationLocation;

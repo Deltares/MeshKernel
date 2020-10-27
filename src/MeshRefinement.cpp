@@ -37,7 +37,7 @@
 #include "SpatialTrees.hpp"
 #include "Operations.cpp"
 
-meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<Averaging> averaging) : m_mesh(mesh), m_averaging(averaging){};
+meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging) : m_mesh(mesh), m_averaging(averaging){};
 
 meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) : m_mesh(mesh), m_averaging(nullptr){};
 

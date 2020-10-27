@@ -94,7 +94,7 @@ namespace meshkernel
                 m_queryCache.clear();
                 m_rtree2D.query(
                     bgi::within(box) &&
-                        bgi::satisfies([&](value2D const& v) { return bg::comparable_distance(v.first, nodeSought) < searchRadiusSquared; }),
+                        bgi::satisfies([&](value2D const& v) { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }),
                     std::back_inserter(m_queryCache));
 
                 m_queryIndices.reserve(m_queryCache.size());

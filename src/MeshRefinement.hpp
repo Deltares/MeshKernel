@@ -38,7 +38,7 @@ namespace meshkernel
     // Forward declarations
     class Mesh;
     class Polygons;
-    class Averaging;
+    class AveragingInterpolation;
 
     class MeshRefinement
     {
@@ -55,7 +55,7 @@ namespace meshkernel
         /// </summary>
         /// <param name="mesh">The mesh to be refined</param>
         /// <returns></returns>
-        explicit MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<Averaging> averaging);
+        explicit MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging);
 
         explicit MeshRefinement(std::shared_ptr<Mesh> mesh);
 
@@ -206,6 +206,6 @@ namespace meshkernel
         RefinementType m_refinementType; /// The type of refinement to use
 
         std::shared_ptr<Mesh> m_mesh;
-        std::shared_ptr<Averaging> m_averaging;
+        std::shared_ptr<AveragingInterpolation> m_averaging;
     };
 } // namespace meshkernel

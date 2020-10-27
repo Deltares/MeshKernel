@@ -32,26 +32,26 @@
 #include "SpatialTrees.hpp"
 #include "AveragingInterpolation.hpp"
 
-meshkernel::Averaging::Averaging(std::shared_ptr<Mesh> mesh,
-                                 std::vector<Sample>& samples,
-                                 AveragingMethod averagingMethod,
-                                 InterpolationLocation locationType,
-                                 double relativeSearchRadius,
-                                 bool useClosestSampleIfNoneAvailable,
-                                 bool transformSamples) : m_mesh(mesh),
-                                                          m_samples(samples),
-                                                          m_averagingMethod(averagingMethod),
-                                                          m_interpolationLocation(locationType),
-                                                          m_relativeSearchRadius(relativeSearchRadius),
-                                                          m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
-                                                          m_transformSamples(transformSamples)
+meshkernel::AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh> mesh,
+                                                           std::vector<Sample>& samples,
+                                                           AveragingMethod averagingMethod,
+                                                           InterpolationLocation locationType,
+                                                           double relativeSearchRadius,
+                                                           bool useClosestSampleIfNoneAvailable,
+                                                           bool transformSamples) : m_mesh(mesh),
+                                                                                    m_samples(samples),
+                                                                                    m_averagingMethod(averagingMethod),
+                                                                                    m_interpolationLocation(locationType),
+                                                                                    m_relativeSearchRadius(relativeSearchRadius),
+                                                                                    m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
+                                                                                    m_transformSamples(transformSamples)
 {
     m_visitedSamples.resize(samples.size());
     // build sample rtree for searches
     m_samplesRtree.BuildTree(m_samples);
 }
 
-bool meshkernel::Averaging::Compute()
+bool meshkernel::AveragingInterpolation::Compute()
 {
 
     std::fill(m_visitedSamples.begin(), m_visitedSamples.end(), false);
@@ -165,9 +165,9 @@ bool meshkernel::Averaging::Compute()
     return true;
 }
 
-bool meshkernel::Averaging::ComputeOnPolygon(const std::vector<Point>& polygon,
-                                             Point interpolationPoint,
-                                             double& result)
+bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygon,
+                                                          Point interpolationPoint,
+                                                          double& result)
 {
 
     if (!interpolationPoint.IsValid())
@@ -185,7 +185,7 @@ bool meshkernel::Averaging::ComputeOnPolygon(const std::vector<Point>& polygon,
 
     for (int i = 0; i < polygon.size(); i++)
     {
-        searchPolygon[i] = polygon[i] * 1.01 + interpolationPoint * (1.0 - 1.01);
+        searchPolygon[i] = polygon[i] * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius);
         minx = std::min(minx, searchPolygon[i].x);
         maxx = std::max(maxx, searchPolygon[i].x);
         miny = std::min(miny, searchPolygon[i].y);
