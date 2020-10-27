@@ -30,7 +30,6 @@
 #include "TriangulationWrapper.cpp"
 
 #include "Entities.hpp"
-#include "Mesh.hpp"
 #include "Operations.cpp"
 #include "SpatialTrees.hpp"
 
@@ -42,10 +41,10 @@ meshkernel::TriangulationInterpolation::TriangulationInterpolation(const std::ve
 
 void meshkernel::TriangulationInterpolation::Compute()
 {
-    // results
+    // allocate and initialize result vector
     m_results.resize(m_locations.size(), doubleMissingValue);
 
-    // first triangulate
+    // triangulate samples
     double averageTriangleArea = 0;
     int numPolygonNodes = int(m_samples.size()); // open polygon
     int numberOfTriangles = 0;
@@ -56,13 +55,14 @@ void meshkernel::TriangulationInterpolation::Compute()
                                  3,
                                  averageTriangleArea,
                                  numberOfTriangles);
-    // no triangles formed
+
+    // no triangles formed, return
     if (triangulationWrapper.m_numFaces < 1)
     {
         return;
     }
 
-    // for each triangle compute the bounding circumcenter, bounding closed polygon, and the values
+    // for each triangle compute the bounding circumcenter, bounding closed polygon, and the values at the nodes of each triangle
     std::vector<Point> trianglesCircumcenters(triangulationWrapper.m_numFaces, {doubleMissingValue, doubleMissingValue});
     std::vector<std::vector<Point>> triangles(triangulationWrapper.m_numFaces, std::vector<Point>(4, {doubleMissingValue, doubleMissingValue}));
     std::vector<std::vector<double>> values(triangulationWrapper.m_numFaces, std::vector<double>(4, doubleMissingValue));
@@ -88,11 +88,12 @@ void meshkernel::TriangulationInterpolation::Compute()
     SpatialTrees::RTree samplesRtree;
     samplesRtree.BuildTree(trianglesCircumcenters);
 
+    // compute the sample bounding box
     Point lowerLeft;
     Point upperRight;
     GetBoundingBox(m_samples, lowerLeft, upperRight);
 
-    // Loop over nodes
+    // loop over locations
     for (int n = 0; n < m_locations.size(); ++n)
     {
         if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
@@ -101,6 +102,7 @@ void meshkernel::TriangulationInterpolation::Compute()
             continue;
         }
 
+        // find the nearest triangle
         samplesRtree.NearestNeighbour(m_locations[n]);
         if (samplesRtree.GetQueryResultSize() <= 0)
         {
@@ -108,23 +110,25 @@ void meshkernel::TriangulationInterpolation::Compute()
         }
         auto triangle = samplesRtree.GetQuerySampleIndex(0);
 
+        // search for the triangle where the location is included
         bool isInTriangle = false;
         int numFacesSearched = 0;
         while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces)
         {
-            if (triangle < 0 || triangle >= triangles.size())
+            if (triangle < 0 || triangle >= triangulationWrapper.m_numFaces)
             {
                 break;
             }
 
             isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], 0, 3);
-            // valid triangle found
+
+            // valid triangle found, no need to search further
             if (isInTriangle)
             {
                 break;
             }
 
-            // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the query point
+            // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the point location
             numFacesSearched++;
             for (int i = 0; i < 3; ++i)
             {
@@ -162,7 +166,7 @@ void meshkernel::TriangulationInterpolation::Compute()
             }
         }
 
-        if (triangle >= 0 && triangle < triangles.size())
+        if (triangle >= 0 && triangle < triangulationWrapper.m_numFaces)
         {
             // Perform linear interpolation
             m_results[n] = LinearInterpolationInTriangle(m_locations[n], triangles[triangle], values[triangle], m_projection);

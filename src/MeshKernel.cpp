@@ -1446,6 +1446,7 @@ namespace meshkernelapi
             projection = meshkernel::Projections::sphericalAccurate;
         }
 
+        // Locations
         auto location = static_cast<meshkernel::InterpolationLocation>(locationType);
         std::vector<meshkernel::Point> locations;
         if (location == meshkernel::InterpolationLocation::Nodes)
@@ -1473,7 +1474,7 @@ namespace meshkernelapi
             samples[i].value = (*samplesValue)[i];
         }
 
-        // Execute averaging
+        // Execute triangulation
         meshkernel::TriangulationInterpolation triangulationInterpolation(locations, samples, projection);
         triangulationInterpolation.Compute();
 

@@ -305,20 +305,19 @@ namespace meshkernel
         int windingNumber = 0;
         for (int n = startNode; n < endNode; n++)
         {
+            const auto leftDifference = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
+            if (IsDifferenceLessThanEpsilon(leftDifference, 0.0))
+            {
+                // point on the line
+                return true;
+            }
+
             if (polygonNodes[n].y <= point.y) // an upward crossing
             {
-                if (polygonNodes[n + 1].y >= point.y)
+                if (polygonNodes[n + 1].y > point.y)
 
                 {
-                    const auto isLeft = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
-
-                    if (IsDifferenceLessThanEpsilon(isLeft, 0.0))
-                    {
-                        // point on the line
-                        return true;
-                    }
-
-                    if (isLeft > 0.0)
+                    if (leftDifference > 0.0)
                     {
                         ++windingNumber; // have  a valid up intersect
                     }
@@ -328,15 +327,7 @@ namespace meshkernel
             {
                 if (polygonNodes[n + 1].y <= point.y) // a downward crossing
                 {
-                    const auto isLeft = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
-
-                    if (IsDifferenceLessThanEpsilon(isLeft, 0.0))
-                    {
-                        // point on the line
-                        return true;
-                    }
-
-                    if (isLeft < 0.0)
+                    if (leftDifference < 0.0)
                     {
                         --windingNumber; // have  a valid down intersect
                     }
