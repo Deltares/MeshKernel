@@ -289,9 +289,9 @@ meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygon
 
     // compute triangulation
     TriangulationWrapper triangulationWrapper;
-    int numPolygonNodes = int(inputNodes.size()); // open polygon
-    double averageTriangleArea = 0;
-    int numberOfTriangles = inputNodes.size() * 6 + 10;
+    const auto numPolygonNodes = static_cast<int>(inputNodes.size()); // open polygon
+    double averageTriangleArea = 0.0;
+    const auto numberOfTriangles = static_cast<int>(inputNodes.size()) * 6 + 10;
     triangulationWrapper.Compute(inputNodes,
                                  numPolygonNodes,
                                  3,

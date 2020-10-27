@@ -230,7 +230,7 @@ namespace meshkernel
             {
                 localPolygon.push_back(m_nodes[j]);
             }
-            int numLocalPoints = int(localPolygon.size());
+            const auto numLocalPoints = static_cast<int>(localPolygon.size());
 
             // not a closed polygon
             if (localPolygon[numLocalPoints - 1] != localPolygon[0])
@@ -274,7 +274,7 @@ namespace meshkernel
 
             TriangulationWrapper triangulationWrapper;
 
-            int numPolygonNodes = int(localPolygon.size() - 1); // open polygon
+            const auto numPolygonNodes = static_cast<int>(localPolygon.size() - 1); // open polygon
 
             triangulationWrapper.Compute(localPolygon,
                                          numPolygonNodes,
