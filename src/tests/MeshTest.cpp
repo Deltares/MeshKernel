@@ -573,8 +573,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // GetNodeIndex builds m_nodesRTree for searching the nodes
-    int nodeIndex;
-    mesh->GetNodeIndex({1.5, 1.5}, 10, nodeIndex);
+    int nodeIndex = mesh->GetNodeIndex({1.5, 1.5}, 10);
 
     // m_nodesRTree is build
     ASSERT_EQ(4, mesh->m_nodesRTree.Size());
@@ -589,9 +588,7 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projections::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
-    int edgeIndex;
-    auto successful = mesh->FindEdgeCloseToAPoint({1.5, 1.5}, edgeIndex);
-    ASSERT_TRUE(successful);
+    int edgeIndex = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
 
     // m_nodesRTree is not build when searching for edges
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());

@@ -970,11 +970,7 @@ namespace meshkernelapi
             return -1;
         }
 
-        successful = meshInstances[meshKernelId]->MoveNode(newPoint[0], nodeIndex);
-        if (!successful)
-        {
-            return -1;
-        }
+        meshInstances[meshKernelId]->MoveNode(newPoint[0], nodeIndex);
 
         return 0;
     }
@@ -993,12 +989,7 @@ namespace meshkernelapi
             return -1;
         }
 
-        int edgeIndex;
-        successful = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0], edgeIndex);
-        if (!successful)
-        {
-            return -1;
-        }
+        int edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
 
         meshInstances[meshKernelId]->DeleteEdge(edgeIndex);
 
@@ -1019,11 +1010,7 @@ namespace meshkernelapi
             return -1;
         }
 
-        successful = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0], edgeIndex);
-        if (!successful)
-        {
-            return -1;
-        }
+        edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
 
         return 0;
     }
@@ -1176,7 +1163,7 @@ namespace meshkernelapi
             return -1;
         }
 
-        meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, nodeIndex);
+        nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
 
         return 0;
     }
@@ -1205,8 +1192,7 @@ namespace meshkernelapi
             return -1;
         }
 
-        int nodeIndex = -1;
-        meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius, nodeIndex);
+        int nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
 
         // Set the node coordinate
         auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];

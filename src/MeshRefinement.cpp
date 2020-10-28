@@ -696,13 +696,12 @@ bool meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
         if (numNonHangingEdges == numNodesQuads)
         {
 
-            m_mesh->ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
-                                           middlePointsCache,
-                                           normalsCache,
-                                           numNonHangingEdges,
-                                           localEdgesNumFaces,
-                                           weightCircumCenter,
-                                           splittingNode);
+            splittingNode = m_mesh->ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
+                                                           middlePointsCache,
+                                                           normalsCache,
+                                                           numNonHangingEdges,
+                                                           localEdgesNumFaces,
+                                                           weightCircumCenter);
 
             if (m_mesh->m_projection == Projections::spherical)
             {
