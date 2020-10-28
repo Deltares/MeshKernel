@@ -44,6 +44,12 @@ void meshkernel::TriangulationInterpolation::Compute()
     // allocate and initialize result vector
     m_results.resize(m_locations.size(), doubleMissingValue);
 
+    // no samples available, return
+    if (m_samples.size() <= 0)
+    {
+        return;
+    }
+
     // triangulate samples
     double averageTriangleArea = 0;
     const auto numPolygonNodes = static_cast<int>(m_samples.size()); // open polygon

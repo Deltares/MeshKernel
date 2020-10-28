@@ -392,8 +392,8 @@ namespace meshkernel
             for (int i = 0; i < currentPolygonSize; i++)
             {
                 cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargmentFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
-                cartesian3DPoints[i].y = polygonCenterCartesian3D.x + enlargmentFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
-                cartesian3DPoints[i].z = polygonCenterCartesian3D.x + enlargmentFactor * (cartesian3DPoints[i].z - polygonCenterCartesian3D.z);
+                cartesian3DPoints[i].y = polygonCenterCartesian3D.y + enlargmentFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
+                cartesian3DPoints[i].z = polygonCenterCartesian3D.z + enlargmentFactor * (cartesian3DPoints[i].z - polygonCenterCartesian3D.z);
             }
 
             // convert point
@@ -406,7 +406,7 @@ namespace meshkernel
             int inside = 0;
 
             // loop over the polygon nodes
-            for (int i = 0; i < currentPolygonSize; i++)
+            for (int i = 0; i < currentPolygonSize - 1; i++)
             {
                 const auto nextNode = NextCircularForwardIndex(i, currentPolygonSize);
                 const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
@@ -1292,27 +1292,26 @@ namespace meshkernel
             SphericalToCartesian3D(firstSegmentFistPoint, firstSegmentFistCartesian3DPoint);
 
             Cartesian3DPoint firstSegmentSecondCartesian3DPoint;
-            SphericalToCartesian3D(firstSegmentFistPoint, firstSegmentSecondCartesian3DPoint);
+            SphericalToCartesian3D(firstSegmentSecondPoint, firstSegmentSecondCartesian3DPoint);
 
             Cartesian3DPoint secondSegmentFistCartesian3DPoint;
-            SphericalToCartesian3D(firstSegmentFistPoint, secondSegmentFistCartesian3DPoint);
+            SphericalToCartesian3D(secondSegmentFistPoint, secondSegmentFistCartesian3DPoint);
 
             Cartesian3DPoint secondSegmentSecondCartesian3DPoint;
-            SphericalToCartesian3D(firstSegmentFistPoint, secondSegmentSecondCartesian3DPoint);
+            SphericalToCartesian3D(secondSegmentSecondPoint, secondSegmentSecondCartesian3DPoint);
 
             auto n12 = VectorProduct(firstSegmentFistCartesian3DPoint, firstSegmentSecondCartesian3DPoint);
-            const auto n12InnerProduct = std::sqrt(InnerProduct(firstSegmentFistCartesian3DPoint, firstSegmentSecondCartesian3DPoint));
+            const auto n12InnerProduct = std::sqrt(InnerProduct(n12, n12));
             n12.x = n12.x / n12InnerProduct;
             n12.y = n12.y / n12InnerProduct;
             n12.z = n12.z / n12InnerProduct;
 
             auto n34 = VectorProduct(secondSegmentFistCartesian3DPoint, secondSegmentSecondCartesian3DPoint);
-            const auto n34InnerProduct = std::sqrt(InnerProduct(secondSegmentFistCartesian3DPoint, secondSegmentSecondCartesian3DPoint));
+            const auto n34InnerProduct = std::sqrt(InnerProduct(n34, n34));
             n34.x = n34.x / n34InnerProduct;
             n34.y = n34.y / n34InnerProduct;
             n34.z = n34.z / n34InnerProduct;
 
-            n34.x = n34.x / n34InnerProduct;
             const auto n12n34InnerProduct = std::sqrt(std::abs(InnerProduct(n12, n34)));
 
             const double tolerance = 1e-12;
@@ -1333,13 +1332,13 @@ namespace meshkernel
 
                 if (std::abs(Det12) > tolerance && std::abs(Det34) > tolerance)
                 {
-                    ratioFirstSegment = InnerProduct(firstSegmentFistCartesian3DPoint, n34);
-                    ratioSecondSegment = InnerProduct(secondSegmentFistCartesian3DPoint, n12);
+                    ratioFirstSegment = -InnerProduct(firstSegmentFistCartesian3DPoint, n34) / Det12;
+                    ratioSecondSegment = -InnerProduct(secondSegmentFistCartesian3DPoint, n12) / Det34;
                 }
             }
 
             if (ratioSecondSegment >= 0.0 && ratioSecondSegment <= 1.0 &&
-                ratioFirstSegment >= 0.0 && ratioFirstSegment <= 0.0)
+                ratioFirstSegment >= 0.0 && ratioFirstSegment <= 1.0)
             {
                 // check if segments are crossing
                 isCrossing = true;
