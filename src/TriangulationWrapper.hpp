@@ -35,6 +35,13 @@ namespace meshkernel
     class TriangulationWrapper
     {
     public:
+        /// @brief
+        /// @tparam T A type that contains x and y fields
+        /// @param inputNodes The input points
+        /// @param numPolygonNodes The number of points
+        /// @param triangulationOption Triangulation option: 1 = generate delaunay nodes inside the polygon, 3 = triangulate existing input points and generate m_edgeNodes and m_faceEdges
+        /// @param averageTriangleArea An estimation of the average area of triangles (required for option 1)
+        /// @param estimatedNumberOfTriangles An estimation of the average number of triangles (required for option 3)
         template <typename T>
         void Compute(const std::vector<T>& inputNodes,
                      int numPolygonNodes,

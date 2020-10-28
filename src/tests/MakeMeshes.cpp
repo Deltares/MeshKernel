@@ -10,7 +10,7 @@
 #include "../Mesh.hpp"
 #include "../../thirdParty/third_party_open/netcdf/netCDF 4.6.1/include/netcdf.h"
 
-static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath)
+static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projections projection = meshkernel::Projections::cartesian)
 {
     auto mesh = std::make_shared<meshkernel::Mesh>();
 
@@ -110,7 +110,7 @@ static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string file
         index++;
     }
 
-    mesh->Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh->Set(edges, nodes, projection);
     return mesh;
 }
 
