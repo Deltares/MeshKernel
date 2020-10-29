@@ -286,7 +286,6 @@ namespace meshkernel
     /// polygonNodes: a closed polygonNodes consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
     static bool IsPointInPolygonNodes(const Point& point, const std::vector<Point>& polygonNodes, int startNode, int endNode)
     {
-        // TODO: extend for spherical accurate projection
         if (endNode <= startNode)
         {
             return true;
