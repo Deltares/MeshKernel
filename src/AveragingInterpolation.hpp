@@ -43,10 +43,10 @@ namespace meshkernel
         enum class Method
         {
             SimpleAveraging = 1,
-            ClosestPoint = 2,
+            Closest = 2,
             Max = 3,
             Min = 4,
-            InverseWeightDistance = 5,
+            InverseWeightedDistance = 5,
             MinAbsValue = 6
         };
 

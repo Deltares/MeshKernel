@@ -270,7 +270,7 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
                 result += sampleValue;
                 numValidSamplesInPolygon++;
             }
-            if (m_method == Method::ClosestPoint)
+            if (m_method == Method::Closest)
             {
                 const auto squaredDistance = ComputeSquaredDistance(interpolationPoint, samplePoint, m_mesh->m_projection);
                 if (squaredDistance < closestSquaredDistance)
@@ -297,7 +297,7 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
                 }
                 result = std::min(result, sampleValue);
             }
-            if (m_method == Method::InverseWeightDistance)
+            if (m_method == Method::InverseWeightedDistance)
             {
                 if (!firstValidSampleFound)
                 {
@@ -327,7 +327,7 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
         result /= numValidSamplesInPolygon;
     }
 
-    if (m_method == Method::InverseWeightDistance && numValidSamplesInPolygon > 0)
+    if (m_method == Method::InverseWeightedDistance && numValidSamplesInPolygon > 0)
     {
         result /= wall;
     }
