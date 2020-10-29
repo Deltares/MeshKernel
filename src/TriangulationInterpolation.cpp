@@ -45,7 +45,7 @@ void meshkernel::TriangulationInterpolation::Compute()
     m_results.resize(m_locations.size(), doubleMissingValue);
 
     // no samples available, return
-    if (m_samples.size() <= 0)
+    if (m_samples.empty())
     {
         return;
     }
