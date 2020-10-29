@@ -139,21 +139,20 @@ void meshkernel::TriangulationInterpolation::Compute()
                 const auto otherTriangle = triangulationWrapper.m_edgesFaces[edge][0] + triangulationWrapper.m_edgesFaces[edge][1] - triangle;
                 const auto k1 = triangulationWrapper.m_edgeNodes[edge][0];
                 const auto k2 = triangulationWrapper.m_edgeNodes[edge][1];
-                bool adimensional = false;
                 Point intersection;
                 double crossProduct;
                 double firstRatio;
                 double secondRatio;
-                bool areCrossing = AreLinesCrossing(trianglesCircumcenters[triangle],
-                                                    m_locations[n],
-                                                    {m_samples[k1].x, m_samples[k1].y},
-                                                    {m_samples[k2].x, m_samples[k2].y},
-                                                    adimensional,
-                                                    intersection,
-                                                    crossProduct,
-                                                    firstRatio,
-                                                    secondRatio,
-                                                    m_projection);
+                const auto areCrossing = AreLinesCrossing(trianglesCircumcenters[triangle],
+                                                          m_locations[n],
+                                                          {m_samples[k1].x, m_samples[k1].y},
+                                                          {m_samples[k2].x, m_samples[k2].y},
+                                                          false,
+                                                          intersection,
+                                                          crossProduct,
+                                                          firstRatio,
+                                                          secondRatio,
+                                                          m_projection);
 
                 if (areCrossing)
                 {
