@@ -68,12 +68,12 @@ static char exceptionMessage[512] = "";
 
 namespace meshkernelapi
 {
-    static bool ConvertGeometryListNativeToPointVector(const GeometryListNative& geometryListIn, std::vector<meshkernel::Point>& result)
+    // TODO: Return result instead of relying on second input parameter
+    static void ConvertGeometryListNativeToPointVector(const GeometryListNative& geometryListIn, std::vector<meshkernel::Point>& result)
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
-            // empty polygon
-            return true;
+            throw std::invalid_argument("MeshKernel: The polygon is empty.");
         }
         result.resize(geometryListIn.numberOfCoordinates);
 
@@ -81,15 +81,14 @@ namespace meshkernelapi
         {
             result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i]};
         }
-        return true;
     }
 
-    static bool ConvertGeometryListNativeToSampleVector(const GeometryListNative& geometryListIn, std::vector<meshkernel::Sample>& result)
+    // TODO: Return result instead of relying on second input parameter
+    static void ConvertGeometryListNativeToSampleVector(const GeometryListNative& geometryListIn, std::vector<meshkernel::Sample>& result)
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
-            // empty samples
-            return true;
+            throw std::invalid_argument("MeshKernel: The samples are empty.");
         }
         result.resize(geometryListIn.numberOfCoordinates);
 
@@ -97,15 +96,14 @@ namespace meshkernelapi
         {
             result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i], geometryListIn.zCoordinates[i]};
         }
-        return true;
     }
 
-    static bool ConvertPointVectorToGeometryListNative(std::vector<meshkernel::Point> pointVector, GeometryListNative& result)
+    // TODO: Return result instead of relying on second input parameter
+    static void ConvertPointVectorToGeometryListNative(std::vector<meshkernel::Point> pointVector, GeometryListNative& result)
     {
-        // invalid memory allocation
         if (pointVector.size() < result.numberOfCoordinates)
         {
-            return false;
+            throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates.");
         }
 
         for (int i = 0; i < result.numberOfCoordinates; i++)
@@ -113,7 +111,6 @@ namespace meshkernelapi
             result.xCoordinates[i] = pointVector[i].x;
             result.yCoordinates[i] = pointVector[i].y;
         }
-        return true;
     }
 
     static bool SetSplines(const GeometryListNative& geometryListIn, meshkernel::Splines& spline)
@@ -124,11 +121,7 @@ namespace meshkernelapi
         }
 
         std::vector<meshkernel::Point> splineCornerPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, splineCornerPoints);
-        if (!successful)
-        {
-            return false;
-        }
+        ConvertGeometryListNativeToPointVector(geometryListIn, splineCornerPoints);
 
         std::vector<std::vector<size_t>> indexes(splineCornerPoints.size(), std::vector<size_t>(2, 0));
         int pos = FindIndexes(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue, indexes);
@@ -654,558 +647,616 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_make_mesh(int meshKernelId, const MakeGridParametersNative& makeGridParameters, const GeometryListNative& geometryListNative)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            std::vector<meshkernel::Point> result;
+            ConvertGeometryListNativeToPointVector(geometryListNative, result);
 
-        std::vector<meshkernel::Point> result;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListNative, result);
-        if (!successful)
+            meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
+
+            meshkernel::Mesh mesh;
+            mesh.MakeMesh(makeGridParameters, polygon);
+
+            *meshInstances[meshKernelId] += mesh;
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
-
-        meshkernel::Mesh mesh;
-        mesh.MakeMesh(makeGridParameters, polygon);
-
-        *meshInstances[meshKernelId] += mesh;
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_make_mesh_from_polygon(int meshKernelId, const GeometryListNative& disposableGeometryListIn)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            std::vector<meshkernel::Point> result;
+            ConvertGeometryListNativeToPointVector(disposableGeometryListIn, result);
 
-        std::vector<meshkernel::Point> result;
-        bool successful = ConvertGeometryListNativeToPointVector(disposableGeometryListIn, result);
-        if (!successful)
+            meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
+
+            std::vector<std::vector<meshkernel::Point>> generatedPoints;
+            polygon.CreatePointsInPolygons(generatedPoints);
+
+            meshkernel::Mesh mesh(generatedPoints[0], polygon, meshInstances[meshKernelId]->m_projection);
+            *meshInstances[meshKernelId] += mesh;
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
-
-        std::vector<std::vector<meshkernel::Point>> generatedPoints;
-        successful = polygon.CreatePointsInPolygons(generatedPoints);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        meshkernel::Mesh mesh(generatedPoints[0], polygon, meshInstances[meshKernelId]->m_projection);
-        *meshInstances[meshKernelId] += mesh;
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_make_mesh_from_samples(int meshKernelId, GeometryListNative& geometryListNative)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            std::vector<meshkernel::Point> samplePoints;
+            ConvertGeometryListNativeToPointVector(geometryListNative, samplePoints);
 
-        std::vector<meshkernel::Point> samplePoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListNative, samplePoints);
-        if (!successful)
-        {
-            return -1;
+            meshkernel::Polygons polygon;
+            meshkernel::Mesh mesh(samplePoints, polygon, meshInstances[meshKernelId]->m_projection);
+            *meshInstances[meshKernelId] += mesh;
         }
-        meshkernel::Polygons polygon;
-        meshkernel::Mesh mesh(samplePoints, polygon, meshInstances[meshKernelId]->m_projection);
-        *meshInstances[meshKernelId] += mesh;
-        return 0;
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon(int meshKernelId, GeometryListNative& geometryListNative)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            meshkernel::Polygons polygon;
+            std::vector<meshkernel::Point> meshBoundaryPolygon;
+
+            int numNodesBoundaryPolygons;
+            polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId], meshBoundaryPolygon, numNodesBoundaryPolygons);
+
+            ConvertPointVectorToGeometryListNative(meshBoundaryPolygon, geometryListNative);
         }
-
-        meshkernel::Polygons polygon;
-        std::vector<meshkernel::Point> meshBoundaryPolygon;
-
-        int numNodesBoundaryPolygons;
-        polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId], meshBoundaryPolygon, numNodesBoundaryPolygons);
-
-        bool successful = ConvertPointVectorToGeometryListNative(meshBoundaryPolygon, geometryListNative);
-        if (!successful)
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon_count_vertices(int meshKernelId, int& numberOfPolygonVertices)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            meshkernel::Polygons polygon;
+            std::vector<meshkernel::Point> meshBoundaryPolygon;
+
+            polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId], meshBoundaryPolygon, numberOfPolygonVertices);
         }
-
-        meshkernel::Polygons polygon;
-        std::vector<meshkernel::Point> meshBoundaryPolygon;
-
-        polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId], meshBoundaryPolygon, numberOfPolygonVertices);
-
-        return 0;
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_refine_polygon(int meshKernelId, const GeometryListNative& geometryListIn, int firstIndex, int secondIndex, double distance, GeometryListNative& geometryListOut)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
 
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
+            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+
+            std::vector<meshkernel::Point> refinedPolygon;
+            polygon.RefinePolygonPart(firstIndex, secondIndex, distance, refinedPolygon);
+
+            ConvertPointVectorToGeometryListNative(refinedPolygon, geometryListOut);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-
-        std::vector<meshkernel::Point> refinedPolygon;
-        successful = polygon.RefinePolygonPart(firstIndex, secondIndex, distance, refinedPolygon);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        successful = ConvertPointVectorToGeometryListNative(refinedPolygon, geometryListOut);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, int firstIndex, int secondIndex, double distance, int& numberOfPolygonVertices)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
 
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+
+            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+
+            std::vector<meshkernel::Point> refinedPolygon;
+            polygon.RefinePolygonPart(firstIndex, secondIndex, distance, refinedPolygon);
+
+            numberOfPolygonVertices = int(refinedPolygon.size());
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-
-        std::vector<meshkernel::Point> refinedPolygon;
-        successful = polygon.RefinePolygonPart(firstIndex, secondIndex, distance, refinedPolygon);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        numberOfPolygonVertices = int(refinedPolygon.size());
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_merge_nodes(int meshKernelId, GeometryListNative& geometryListIn)
     {
-
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
 
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+
+            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+
+            meshInstances[meshKernelId]->MergeNodesInPolygon(polygon);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-
-        meshInstances[meshKernelId]->MergeNodesInPolygon(polygon);
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_merge_two_nodes(int meshKernelId, int startNode, int endNode)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            meshInstances[meshKernelId]->MergeTwoNodes(startNode, endNode);
         }
-
-        meshInstances[meshKernelId]->MergeTwoNodes(startNode, endNode);
-
-        return 0;
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
     // TODO: remove numberOfMeshVertices
     MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
-
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-
-        bool selectInside = inside == 1 ? true : false;
-        meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
-
-        int index = 0;
-        for (int i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
-        {
-            if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
+            if (meshKernelId >= meshInstances.size())
             {
-                (*selectedVertices)[index] = i;
-                index++;
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+
+            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+
+            bool selectInside = inside == 1 ? true : false;
+            meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
+
+            int index = 0;
+            for (int i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
+            {
+                if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
+                {
+                    (*selectedVertices)[index] = i;
+                    index++;
+                }
             }
         }
-
-        return 0;
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
-
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-
-        bool selectInside = inside == 1 ? true : false;
-        meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
-
-        numberOfMeshVertices = 0;
-        for (auto i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
-        {
-            if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
+            if (meshKernelId >= meshInstances.size())
             {
-                numberOfMeshVertices++;
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+
+            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+
+            bool selectInside = inside == 1 ? true : false;
+            meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
+
+            numberOfMeshVertices = 0;
+            for (auto i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
+            {
+                if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
+                {
+                    numberOfMeshVertices++;
+                }
             }
         }
-
-        return 0;
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_insert_edge(int meshKernelId, int startNode, int endNode, int& new_edge_index)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            meshInstances[meshKernelId]->ConnectNodes(startNode, endNode, new_edge_index);
         }
-
-        meshInstances[meshKernelId]->ConnectNodes(startNode, endNode, new_edge_index);
-
-        return 0;
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int& nodeIndex)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            //create a valid instance, by default cartesian
-            *meshInstances[meshKernelId] = meshkernel::Mesh();
-            meshInstances[meshKernelId]->m_projection = meshkernel::Projections::cartesian;
+            if (meshKernelId >= meshInstances.size())
+            {
+                //create a valid instance, by default cartesian
+                *meshInstances[meshKernelId] = meshkernel::Mesh();
+                meshInstances[meshKernelId]->m_projection = meshkernel::Projections::cartesian;
+            }
+
+            meshkernel::Point newNode{xCoordinate, yCoordinate};
+            meshInstances[meshKernelId]->InsertNode(newNode, nodeIndex);
         }
-
-        meshkernel::Point newNode{xCoordinate, yCoordinate};
-        meshInstances[meshKernelId]->InsertNode(newNode, nodeIndex);
-
-        return 0;
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_delete_node(int meshKernelId, int nodeIndex)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            meshInstances[meshKernelId]->DeleteNode(nodeIndex);
         }
-
-        meshInstances[meshKernelId]->DeleteNode(nodeIndex);
-
-        return 0;
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_move_node(int meshKernelId, GeometryListNative& geometryListIn, int nodeIndex)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
 
-        std::vector<meshkernel::Point> newPoint;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, newPoint);
-        if (!successful || newPoint.size() != 1)
+            std::vector<meshkernel::Point> newPoint;
+            ConvertGeometryListNativeToPointVector(geometryListIn, newPoint);
+
+            meshInstances[meshKernelId]->MoveNode(newPoint[0], nodeIndex);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        meshInstances[meshKernelId]->MoveNode(newPoint[0], nodeIndex);
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_delete_edge(int meshKernelId, GeometryListNative& geometryListIn)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
 
-        std::vector<meshkernel::Point> newPoint;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, newPoint);
-        if (!successful || newPoint.size() != 1)
+            std::vector<meshkernel::Point> newPoint;
+            ConvertGeometryListNativeToPointVector(geometryListIn, newPoint);
+
+            int edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
+
+            meshInstances[meshKernelId]->DeleteEdge(edgeIndex);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        int edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
-
-        meshInstances[meshKernelId]->DeleteEdge(edgeIndex);
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_find_edge(int meshKernelId, GeometryListNative& geometryListIn, int& edgeIndex)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
 
-        std::vector<meshkernel::Point> newPoint;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, newPoint);
-        if (!successful || newPoint.size() != 1)
+            std::vector<meshkernel::Point> newPoint;
+            ConvertGeometryListNativeToPointVector(geometryListIn, newPoint);
+
+            edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_offsetted_polygon(int meshKernelId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, GeometryListNative& geometryListOut)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
 
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+
+            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+
+            meshkernel::Polygons newPolygon;
+            polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
+
+            ConvertPointVectorToGeometryListNative(newPolygon.m_nodes, geometryListOut);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-
-        meshkernel::Polygons newPolygon;
-        successful = polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        successful = ConvertPointVectorToGeometryListNative(newPolygon.m_nodes, geometryListOut);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonVertices)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
 
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful)
+            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+
+            meshkernel::Polygons newPolygon;
+            polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
+
+            numberOfPolygonVertices = newPolygon.GetNumNodes();
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-
-        meshkernel::Polygons newPolygon;
-        successful = polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        numberOfPolygonVertices = newPolygon.GetNumNodes();
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_refine_mesh_based_on_samples(int meshKernelId, GeometryListNative& geometryListIn, InterpolationParametersNative& interpolationParametersNative, SampleRefineParametersNative& sampleRefineParametersNative)
     {
-        if (meshKernelId >= meshInstances.size() || meshInstances[meshKernelId]->GetNumNodes() <= 0)
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
+            }
+            std::vector<meshkernel::Sample> samples;
+            ConvertGeometryListNativeToSampleVector(geometryListIn, samples);
 
-        std::vector<meshkernel::Sample> samples;
-        bool successful = ConvertGeometryListNativeToSampleVector(geometryListIn, samples);
-        if (!successful)
+            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId]);
+
+            //TODO: polygon could be passed as api parameter
+            meshkernel::Polygons polygon;
+
+            meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        if (samples.empty())
-        {
-            return 0;
-        }
-
-        meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId]);
-
-        // polygon could be passed as api parameter
-        meshkernel::Polygons polygon;
-
-        successful = meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_refine_mesh_based_on_polygon(int meshKernelId, GeometryListNative& geometryListNative, InterpolationParametersNative& interpolationParametersNative)
     {
-
-        if (meshKernelId >= meshInstances.size() || meshInstances[meshKernelId]->GetNumNodes() <= 0)
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
+            }
 
-        std::vector<meshkernel::Point> points;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListNative, points);
-        if (!successful)
+            std::vector<meshkernel::Point> points;
+            ConvertGeometryListNativeToPointVector(geometryListNative, points);
+
+            meshkernel::Polygons polygon(points, meshInstances[meshKernelId]->m_projection);
+
+            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId]);
+
+            //TODO: polygon could be passed as api parameter
+            std::vector<meshkernel::Sample> samples;
+            SampleRefineParametersNative sampleRefineParametersNative;
+            meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        if (points.empty())
-        {
-            return 0;
-        }
-
-        meshkernel::Polygons polygon(points, meshInstances[meshKernelId]->m_projection);
-
-        meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId]);
-
-        // polygon could be passed as api parameter
-        std::vector<meshkernel::Sample> samples;
-        SampleRefineParametersNative sampleRefineParametersNative;
-        successful = meshRefinement.Refine(samples, polygon, sampleRefineParametersNative, interpolationParametersNative);
-        if (!successful)
-        {
-            return -1;
-        }
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_get_node_index(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, int& nodeIndex)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
+            }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+
+            nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful || polygonPoints.empty())
-        {
-            return -1;
-        }
-
-        nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_get_node_coordinate(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, GeometryListNative& geometryListOut)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
+            }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (geometryListOut.numberOfCoordinates <= 0)
+            {
+                throw std::invalid_argument("MeshKernel: The output-geometry has no coordinates.");
+            }
+
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
+
+            int nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
+
+            // Set the node coordinate
+            auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];
+            std::vector<meshkernel::Point> pointVector;
+            pointVector.push_back(node);
+            ConvertPointVectorToGeometryListNative(pointVector, geometryListOut);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        if (geometryListOut.numberOfCoordinates <= 0)
-        {
-            return -1;
-        }
-
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
-        if (!successful || polygonPoints.empty())
-        {
-            return -1;
-        }
-
-        int nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
-
-        // Set the node coordinate
-        auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];
-        std::vector<meshkernel::Point> pointVector;
-        pointVector.push_back(node);
-        ConvertPointVectorToGeometryListNative(pointVector, geometryListOut);
-
-        if (!successful)
-        {
-            return -1;
-        }
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId,
@@ -1213,47 +1264,57 @@ namespace meshkernelapi
                                                                 const CurvilinearParametersNative& curvilinearParameters,
                                                                 const SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
 
-        // use the default constructor, no instance present
-        auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
-        bool successful = SetSplines(geometryListIn, *spline);
-        if (!successful)
+            // use the default constructor, no instance present
+            auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
+            SetSplines(geometryListIn, *spline);
+
+            meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splineToCurvilinearParameters);
+
+            meshkernel::CurvilinearGrid curvilinearGrid;
+            curvilinearGridFromSplines.Compute(curvilinearGrid);
+            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splineToCurvilinearParameters);
-
-        meshkernel::CurvilinearGrid curvilinearGrid;
-        curvilinearGridFromSplines.Compute(curvilinearGrid);
-        *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
-
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_initialize(int meshKernelId, const GeometryListNative& geometryListNative, const CurvilinearParametersNative& curvilinearParametersNative, const SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
 
-        auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
-        bool successful = SetSplines(geometryListNative, *spline);
-        if (!successful)
+            auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
+            SetSplines(geometryListNative, *spline);
+
+            auto curvilinearGridFromSplines = std::make_shared<meshkernel::CurvilinearGridFromSplines>(spline, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+
+            curvilinearGridFromSplinesInstances.insert({meshKernelId, curvilinearGridFromSplines});
+
+            curvilinearGridFromSplinesInstances[meshKernelId]->Initialize();
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-        auto curvilinearGridFromSplines = std::make_shared<meshkernel::CurvilinearGridFromSplines>(spline, curvilinearParametersNative, splinesToCurvilinearParametersNative);
-
-        curvilinearGridFromSplinesInstances.insert({meshKernelId, curvilinearGridFromSplines});
-
-        curvilinearGridFromSplinesInstances[meshKernelId]->Initialize();
-        return 0;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines_iteration(int meshKernelId, int layer)
@@ -1283,7 +1344,7 @@ namespace meshkernelapi
         {
             if (meshKernelId >= meshInstances.size())
             {
-                return 0;
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             meshkernel::CurvilinearGrid curvilinearGrid;
@@ -1301,39 +1362,50 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_delete(int meshKernelId)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return 0;
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            curvilinearGridFromSplinesInstances.erase(meshKernelId);
         }
-        const auto returnValue = curvilinearGridFromSplinesInstances.erase(meshKernelId);
-        return returnValue == 1 ? 0 : 1;
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_points_in_polygon(int meshKernelId, GeometryListNative& polygonNative, GeometryListNative& pointsNative, GeometryListNative& selectedPointsNative)
     {
-
-        std::vector<meshkernel::Point> polygonNodes;
-        bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonNodes);
-        if (!successful)
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            std::vector<meshkernel::Point> polygonNodes;
+            ConvertGeometryListNativeToPointVector(polygonNative, polygonNodes);
 
-        std::vector<meshkernel::Point> points;
-        successful = ConvertGeometryListNativeToPointVector(pointsNative, points);
-        if (!successful || points.empty() || points.size() != selectedPointsNative.numberOfCoordinates)
+            std::vector<meshkernel::Point> points;
+            ConvertGeometryListNativeToPointVector(pointsNative, points);
+            meshkernel::Polygons polygon(polygonNodes, meshInstances[meshKernelId]->m_projection);
+
+            for (int i = 0; i < points.size(); i++)
+            {
+                selectedPointsNative.zCoordinates[i] = polygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
+            }
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        meshkernel::Polygons polygon(polygonNodes, meshInstances[meshKernelId]->m_projection);
-
-        for (int i = 0; i < points.size(); i++)
-        {
-            selectedPointsNative.zCoordinates[i] = polygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
-        }
-
-        return successful ? 0 : 1;
+        return exitCode;
     }
 
     MKERNEL_API int mkernel_flip_edges(int meshKernelId,
@@ -1417,11 +1489,7 @@ namespace meshkernelapi
             }
 
             std::vector<meshkernel::Point> polygonPoints;
-            bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonPoints);
-            if (!successful)
-            {
-                return -1;
-            }
+            ConvertGeometryListNativeToPointVector(polygonNative, polygonPoints);
 
             auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
@@ -1431,8 +1499,6 @@ namespace meshkernelapi
 
             // convert to curvilinear grid and add it to the current mesh
             *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
-
-            return successful ? 0 : -1;
         }
         catch (const std::exception& e)
         {
@@ -1448,28 +1514,35 @@ namespace meshkernelapi
                                                       int secondNode,
                                                       int thirdNode)
     {
-        if (meshKernelId >= meshInstances.size())
+        int exitCode = Success;
+        try
         {
-            return -1;
-        }
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
 
-        std::vector<meshkernel::Point> polygonPoints;
-        bool successful = ConvertGeometryListNativeToPointVector(polygonNative, polygonPoints);
-        if (!successful)
+            std::vector<meshkernel::Point> polygonPoints;
+            ConvertGeometryListNativeToPointVector(polygonNative, polygonPoints);
+
+            auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
+
+            meshkernel::CurvilinearGrid curvilinearGrid;
+            meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
+            curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
+
+            // convert to curvilinear grid and add it to the current mesh
+            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+
+            // convert to curvilinear grid and add it to the current mesh
+            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+        }
+        catch (const std::exception& e)
         {
-            return -1;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
-
-        meshkernel::CurvilinearGrid curvilinearGrid;
-        meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
-        curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
-
-        // convert to curvilinear grid and add it to the current mesh
-        *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
-
-        return successful ? 0 : 1;
+        return exitCode;
     }
 
 } // namespace meshkernelapi
