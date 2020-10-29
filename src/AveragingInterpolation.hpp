@@ -39,7 +39,7 @@ namespace meshkernel
     class AveragingInterpolation
     {
     public:
-        // Operations averaging methods
+        // Averaging methods
         enum class Method
         {
             SimpleAveraging = 1,
@@ -88,7 +88,7 @@ namespace meshkernel
 
         const std::shared_ptr<Mesh> m_mesh;
         std::vector<Sample>& m_samples;
-        Method m_averagingMethod;
+        Method m_method;
         InterpolationLocation m_interpolationLocation;
         double m_relativeSearchRadius;
         bool m_useClosestSampleIfNoneAvailable = false;
