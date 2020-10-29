@@ -39,25 +39,35 @@ namespace meshkernel
     class AveragingInterpolation
     {
     public:
+        // Operations averaging methods
+        enum class Method
+        {
+            SimpleAveraging = 1,
+            ClosestPoint = 2,
+            Max = 3,
+            Min = 4,
+            InverseWeightDistance = 5,
+            MinAbsValue = 6
+        };
+
         /// @brief Interpolation based on averaging
         /// @param mesh The input mesh
         /// @param samples The samples with x,y locations and values
-        /// @param averagingMethod The averaging method to use
+        /// @param method The averaging method to use
         /// @param locationType The location type (faces, edges, nodes).
         /// @param relativeSearchRadius The relative search radius, used to enlarge the search area when looking for samples.
         /// @param useClosestSampleIfNoneAvailable If no sample are found simply use the closest one.
         /// @param subtractSampleValues For some algorithms (e.g. refinement based on levels) we need to subtract 1 the sample value.
         explicit AveragingInterpolation(std::shared_ptr<Mesh> mesh,
                                         std::vector<Sample>& samples,
-                                        AveragingMethod averagingMethod,
+                                        Method method,
                                         InterpolationLocation locationType,
                                         double relativeSearchRadius,
                                         bool useClosestSampleIfNoneAvailable,
                                         bool subtractSampleValues);
 
         /// @brief Compute interpolation
-        /// @return If the method succeed
-        bool Compute();
+        void Compute();
 
         /// @brief Get the result values
         /// @return the results
@@ -78,7 +88,7 @@ namespace meshkernel
 
         const std::shared_ptr<Mesh> m_mesh;
         std::vector<Sample>& m_samples;
-        AveragingMethod m_averagingMethod;
+        Method m_averagingMethod;
         InterpolationLocation m_interpolationLocation;
         double m_relativeSearchRadius;
         bool m_useClosestSampleIfNoneAvailable = false;

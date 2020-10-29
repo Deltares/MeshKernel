@@ -34,25 +34,30 @@
 
 meshkernel::AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh> mesh,
                                                            std::vector<Sample>& samples,
-                                                           AveragingMethod averagingMethod,
+                                                           Method method,
                                                            InterpolationLocation locationType,
                                                            double relativeSearchRadius,
                                                            bool useClosestSampleIfNoneAvailable,
                                                            bool transformSamples) : m_mesh(mesh),
                                                                                     m_samples(samples),
-                                                                                    m_averagingMethod(averagingMethod),
+                                                                                    m_averagingMethod(method),
                                                                                     m_interpolationLocation(locationType),
                                                                                     m_relativeSearchRadius(relativeSearchRadius),
                                                                                     m_useClosestSampleIfNoneAvailable(useClosestSampleIfNoneAvailable),
                                                                                     m_transformSamples(transformSamples)
 {
-    m_visitedSamples.resize(samples.size());
-    // build sample rtree for searches
-    m_samplesRtree.BuildTree(m_samples);
 }
 
-bool meshkernel::AveragingInterpolation::Compute()
+void meshkernel::AveragingInterpolation::Compute()
 {
+    if (m_samples.empty())
+    {
+        return;
+    }
+
+    m_visitedSamples.resize(m_samples.size());
+    // build sample rtree for searches
+    m_samplesRtree.BuildTree(m_samples);
 
     std::fill(m_visitedSamples.begin(), m_visitedSamples.end(), false);
 
@@ -77,7 +82,7 @@ bool meshkernel::AveragingInterpolation::Compute()
 
             if (!successful)
             {
-                return false;
+                return;
             }
 
             m_results[f] = result;
@@ -98,7 +103,7 @@ bool meshkernel::AveragingInterpolation::Compute()
             }
         }
 
-        return true;
+        return;
     }
 
     std::vector<double> interpolatedResults(m_mesh->GetNumNodes(), doubleMissingValue);
@@ -122,7 +127,7 @@ bool meshkernel::AveragingInterpolation::Compute()
 
             if (!successful)
             {
-                return false;
+                return;
             }
 
             interpolatedResults[n] = result;
@@ -161,8 +166,6 @@ bool meshkernel::AveragingInterpolation::Compute()
     {
         m_results = std::move(interpolatedResults);
     }
-
-    return true;
 }
 
 bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygon,
@@ -257,7 +260,7 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
         bool isInPolygon = IsPointInPolygonNodes(samplePoint, searchPolygon, 0, int(searchPolygon.size() - 1));
         if (isInPolygon)
         {
-            if (m_averagingMethod == SimpleAveraging)
+            if (m_averagingMethod == Method::SimpleAveraging)
             {
                 if (!firstValidSampleFound)
                 {
@@ -267,7 +270,7 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
                 result += sampleValue;
                 numValidSamplesInPolygon++;
             }
-            if (m_averagingMethod == ClosestPoint)
+            if (m_averagingMethod == Method::ClosestPoint)
             {
                 const auto squaredDistance = ComputeSquaredDistance(interpolationPoint, samplePoint, m_mesh->m_projection);
                 if (squaredDistance < closestSquaredDistance)
@@ -276,7 +279,7 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
                     result = sampleValue;
                 }
             }
-            if (m_averagingMethod == Max)
+            if (m_averagingMethod == Method::Max)
             {
                 if (!firstValidSampleFound)
                 {
@@ -285,7 +288,7 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
                 }
                 result = std::max(result, sampleValue);
             }
-            if (m_averagingMethod == Min)
+            if (m_averagingMethod == Method::Min)
             {
                 if (!firstValidSampleFound)
                 {
@@ -294,7 +297,7 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
                 }
                 result = std::min(result, sampleValue);
             }
-            if (m_averagingMethod == InverseWeightDistance)
+            if (m_averagingMethod == Method::InverseWeightDistance)
             {
                 if (!firstValidSampleFound)
                 {
@@ -307,7 +310,7 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
                 numValidSamplesInPolygon++;
                 result += weight * sampleValue;
             }
-            if (m_averagingMethod == MinAbsValue)
+            if (m_averagingMethod == Method::MinAbsValue)
             {
                 if (!firstValidSampleFound)
                 {
@@ -319,12 +322,12 @@ bool meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
         }
     }
 
-    if (m_averagingMethod == SimpleAveraging && numValidSamplesInPolygon > 0 && result > doubleMissingValue)
+    if (m_averagingMethod == Method::SimpleAveraging && numValidSamplesInPolygon > 0 && result > doubleMissingValue)
     {
         result /= numValidSamplesInPolygon;
     }
 
-    if (m_averagingMethod == InverseWeightDistance && numValidSamplesInPolygon > 0)
+    if (m_averagingMethod == Method::InverseWeightDistance && numValidSamplesInPolygon > 0)
     {
         result /= wall;
     }

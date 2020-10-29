@@ -21,7 +21,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
-                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                 meshkernel::Faces,
                                                                                 1.0,
                                                                                 false,
@@ -112,7 +112,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
-                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                 meshkernel::Faces,
                                                                                 1.0,
                                                                                 false,
@@ -213,7 +213,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
-                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                 meshkernel::Faces,
                                                                                 1.0,
                                                                                 false,
@@ -342,7 +342,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
-                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                 meshkernel::Faces,
                                                                                 1.0,
                                                                                 false,
@@ -411,7 +411,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
-                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                 meshkernel::Faces,
                                                                                 1.0,
                                                                                 false,
@@ -476,7 +476,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
-                                                                                meshkernel::Max,
+                                                                                meshkernel::AveragingInterpolation::Method::Max,
                                                                                 meshkernel::Faces,
                                                                                 1.01,
                                                                                 false,
@@ -647,7 +647,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
-                                                                                meshkernel::MinAbsValue,
+                                                                                meshkernel::AveragingInterpolation::Method::MinAbsValue,
                                                                                 meshkernel::Faces,
                                                                                 1.0,
                                                                                 false,

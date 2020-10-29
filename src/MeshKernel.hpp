@@ -516,18 +516,18 @@ namespace meshkernelapi
         /// @param results The interpolation results
         /// @param locationType The location type (see InterpolationLocation enum)
         /// @param Wu1Duni A setting for 1d meshes (not used)
-        /// @param averagingMethod The averaging method (see AveragingMethod enum)
+        /// @param averagingMethod The averaging method (see Method enum)
         /// @param minNumberOfSamples The minimum amount of samples (not used)
         /// @param relativeSearchSize The relative search size around the location (larger increases the number of samples considered)
         /// @param spherical Current projection (0 cartesian, 1 spherical)
-        /// @param sphericalAccurate Accurate spherical projection (0 default spherical, 1 spherical accurate)
+        /// @param sphericalAccurate Accurate spherical computations (0 default spherical, 1 spherical accurate)
         /// @return Error code (0 Successful)
         MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
                                   const MeshGeometry& meshGeometry,
                                   const int& startIndex,
-                                  double** samplesXCoordinate,
-                                  double** samplesYCoordinate,
-                                  double** samplesValue,
+                                  const double** samplesXCoordinate,
+                                  const double** samplesYCoordinate,
+                                  const double** samplesValue,
                                   const int& numSamples,
                                   double** results,
                                   const int& locationType,

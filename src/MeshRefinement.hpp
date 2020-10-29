@@ -32,13 +32,13 @@
 #include "InterpolationParametersNative.hpp"
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
+#include "AveragingInterpolation.hpp"
 
 namespace meshkernel
 {
     // Forward declarations
     class Mesh;
     class Polygons;
-    class AveragingInterpolation;
 
     class MeshRefinement
     {
@@ -176,7 +176,7 @@ namespace meshkernel
         /// <returns>The refinement value at the face center of mass</returns>
         double ComputeFaceRefinementFromSamples(int numPolygonNodes,
                                                 const std::vector<Sample>& samples,
-                                                AveragingMethod averagingMethod,
+                                                AveragingInterpolation::Method averagingMethod,
                                                 Point centerOfMass);
         /// The sample node RTree
         SpatialTrees::RTree m_samplesRTree;

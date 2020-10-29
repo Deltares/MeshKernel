@@ -1034,15 +1034,15 @@ namespace meshkernelapi
             return 0;
         }
 
-        meshkernel::AveragingMethod averagingMethod;
+        meshkernel::AveragingInterpolation::Method averagingMethod;
         if (sampleRefineParametersNative.RefinementType == 2)
         {
-            averagingMethod = meshkernel::MinAbsValue;
+            averagingMethod = meshkernel::AveragingInterpolation::Method::MinAbsValue;
         }
         if (sampleRefineParametersNative.RefinementType == 3)
         {
 
-            averagingMethod = meshkernel::Max;
+            averagingMethod = meshkernel::AveragingInterpolation::Method::Max;
         }
 
         const bool refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
@@ -1433,9 +1433,9 @@ namespace meshkernelapi
     MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
                               const MeshGeometry& meshGeometry,
                               const int& startIndex,
-                              double** samplesXCoordinate,
-                              double** samplesYCoordinate,
-                              double** samplesValue,
+                              const double** samplesXCoordinate,
+                              const double** samplesYCoordinate,
+                              const double** samplesValue,
                               const int& numSamples,
                               double** results,
                               const int& locationType,
@@ -1474,9 +1474,11 @@ namespace meshkernelapi
 
         // Execute averaging
         const auto location = static_cast<meshkernel::InterpolationLocation>(locationType);
+        const auto method = static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethod);
+
         meshkernel::AveragingInterpolation averaging(mesh,
                                                      samples,
-                                                     meshkernel::AveragingMethod(averagingMethod),
+                                                     method,
                                                      location,
                                                      relativeSearchSize,
                                                      false,
