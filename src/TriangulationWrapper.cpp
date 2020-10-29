@@ -37,8 +37,8 @@ extern "C"
 
 template <typename T>
 void meshkernel::TriangulationWrapper::Compute(const std::vector<T>& inputNodes,
-                                               int numPolygonNodes,
-                                               int triangulationOption,
+                                               int numPoints,
+                                               TriangulationOptions triangulationOption,
                                                double averageTriangleArea,
                                                int estimatedNumberOfTriangles)
 {
@@ -54,6 +54,7 @@ void meshkernel::TriangulationWrapper::Compute(const std::vector<T>& inputNodes,
     m_numFaces = -1;
     m_numEdges = 0;
     m_numNodes = 0;
+    int intTriangulationOption = static_cast<int>(triangulationOption);
 
     std::vector<int> faceNodesFlat;
     std::vector<int> edgeNodesFlat;
@@ -75,10 +76,10 @@ void meshkernel::TriangulationWrapper::Compute(const std::vector<T>& inputNodes,
         faceEdgesFlat.resize(int(estimatedNumberOfTriangles) * 3);
         xNodesFlat.resize(int(estimatedNumberOfTriangles) * 3, doubleMissingValue);
         yNodesFlat.resize(int(estimatedNumberOfTriangles) * 3, doubleMissingValue);
-        Triangulation(&triangulationOption,
+        Triangulation(&intTriangulationOption,
                       &xLocalPolygon[0],
                       &yLocalPolygon[0],
-                      &numPolygonNodes,
+                      &numPoints,
                       &faceNodesFlat[0], // INDX
                       &m_numFaces,
                       &edgeNodesFlat[0], // EDGEINDX

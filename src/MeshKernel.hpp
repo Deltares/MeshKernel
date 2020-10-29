@@ -516,14 +516,14 @@ namespace meshkernelapi
         /// @param results The interpolation results
         /// @param locationType The location type (see \ref InterpolationLocation)
         /// @param spherical Current projection (0 cartesian, 1 spherical)
-        /// @param sphericalAccurate Accurate spherical projection (0 default spherical, 1 spherical accurate)
+        /// @param sphericalAccurate Accurate spherical projections (0 default spherical, 1 spherical accurate)
         /// @return Error code (0 Successful)
         MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
                                       const MeshGeometry& meshGeometry,
                                       int& startIndex,
-                                      double** samplesXCoordinate,
-                                      double** samplesYCoordinate,
-                                      double** samplesValue,
+                                      const double** samplesXCoordinate,
+                                      const double** samplesYCoordinate,
+                                      const double** samplesValue,
                                       int& numSamples,
                                       double** results,
                                       int& locationType,

@@ -283,19 +283,18 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
     Set(edges, nodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
 
-meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygons& polygons, Projections projection)
+meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const Polygons& polygons, Projections projection)
 {
     m_projection = projection;
 
     // compute triangulation
     TriangulationWrapper triangulationWrapper;
     const auto numPolygonNodes = static_cast<int>(inputNodes.size()); // open polygon
-    double averageTriangleArea = 0.0;
     const auto numberOfTriangles = static_cast<int>(inputNodes.size()) * 6 + 10;
     triangulationWrapper.Compute(inputNodes,
                                  numPolygonNodes,
-                                 3,
-                                 averageTriangleArea,
+                                 TriangulationWrapper::TriangulationOptions::TriangulatePointsAndGenerateFaces,
+                                 0.0,
                                  numberOfTriangles);
 
     // For each triangle check

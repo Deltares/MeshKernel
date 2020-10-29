@@ -89,7 +89,7 @@ TEST(TriangleInterpolation, InterpolateOnFacesUsingSphericalAccurateOption)
 {
     // Set up
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\TriangleInterpolationTests\\SphericalCutted.xyz");
-    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\TriangleInterpolationTests\\SphericalCutted.nc", meshkernel::Projections::cartesian);
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\TriangleInterpolationTests\\SphericaCuttedReduced.nc", meshkernel::Projections::cartesian);
     ASSERT_GT(mesh->GetNumNodes(), 0);
     ASSERT_GT(samples.size(), 0);
 
@@ -100,25 +100,24 @@ TEST(TriangleInterpolation, InterpolateOnFacesUsingSphericalAccurateOption)
 
     // test internal results
     constexpr double tolerance = 1e-9;
-    ASSERT_NEAR(-32.001516910357608, results[0], tolerance);
-    ASSERT_NEAR(-32.177930753637561, results[1], tolerance);
-    ASSERT_NEAR(-32.387289253798443, results[2], tolerance);
-    ASSERT_NEAR(-32.676521526792378, results[3], tolerance);
-    ASSERT_NEAR(-32.679307576069114, results[4], tolerance);
-    ASSERT_NEAR(-32.580405055756422, results[5], tolerance);
-    ASSERT_NEAR(-33.000000000000000, results[6], tolerance);
-    ASSERT_NEAR(-33.000000000000000, results[7], tolerance);
-    ASSERT_NEAR(-33.000000000000000, results[8], tolerance);
-    ASSERT_NEAR(-32.558727666694786, results[9], tolerance);
-    ASSERT_NEAR(-32.912803051993762, results[10], tolerance);
-    ASSERT_NEAR(-33.000000000000000, results[11], tolerance);
-    ASSERT_NEAR(-33.000000000000000, results[12], tolerance);
-    ASSERT_NEAR(-33.000000000000000, results[13], tolerance);
-    ASSERT_NEAR(-33.000000000000000, results[14], tolerance);
-    ASSERT_NEAR(-33.172614414108558, results[15], tolerance);
-    ASSERT_NEAR(-33.436592493966508, results[16], tolerance);
-    ASSERT_NEAR(-33.443677472308543, results[17], tolerance);
-    ASSERT_NEAR(-33.486112239353702, results[18], tolerance);
-    ASSERT_NEAR(-33.527992109133827, results[19], tolerance);
-    ASSERT_NEAR(-33.569329139845948, results[20], tolerance);
+    ASSERT_NEAR(-27.108281995694892, results[0], tolerance);
+    ASSERT_NEAR(-26.010901908590927, results[1], tolerance);
+    ASSERT_NEAR(-26.761085257511070, results[2], tolerance);
+    ASSERT_NEAR(-26.491618738949011, results[3], tolerance);
+    ASSERT_NEAR(-26.993955482433620, results[4], tolerance);
+    ASSERT_NEAR(-26.897163462761789, results[5], tolerance);
+    ASSERT_NEAR(-27.332152155397115, results[6], tolerance);
+    ASSERT_NEAR(-28.377394828176936, results[7], tolerance);
+    ASSERT_NEAR(-22.334281896214499, results[8], tolerance);
+    ASSERT_NEAR(-30.427438741751285, results[9], tolerance);
+    ASSERT_NEAR(-22.408269339466585, results[10], tolerance);
+    ASSERT_NEAR(-13.373695239170697, results[11], tolerance);
+    ASSERT_NEAR(-19.085797819738595, results[12], tolerance);
+    ASSERT_NEAR(-33.579059226025457, results[13], tolerance);
+    ASSERT_NEAR(-35.306462411394321, results[14], tolerance);
+    ASSERT_NEAR(-32.537025752660952, results[15], tolerance);
+    ASSERT_NEAR(-28.309418171810119, results[16], tolerance);
+    ASSERT_NEAR(-26.425156938934055, results[17], tolerance);
+    ASSERT_NEAR(-26.988893382269104, results[18], tolerance);
+    ASSERT_NEAR(-29.549320886988440, results[19], tolerance);
 }

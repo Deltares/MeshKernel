@@ -278,7 +278,7 @@ namespace meshkernel
 
             triangulationWrapper.Compute(localPolygon,
                                          numPolygonNodes,
-                                         2,
+                                         TriangulationWrapper::TriangulationOptions::GeneratePoints,
                                          averageTriangleArea,
                                          numberOfTriangles);
 

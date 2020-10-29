@@ -159,11 +159,24 @@ namespace meshkernel
         double x;
         double y;
         double value;
+
+        static auto ConvertToSamples(int numSamples, const double** samplesXCoordinate, const double** samplesYCoordinate, const double** samplesValue)
+        {
+            // Build the samples
+            std::vector<meshkernel::Sample> samples(numSamples);
+            for (auto i = 0; i < samples.size(); ++i)
+            {
+                samples[i].x = (*samplesXCoordinate)[i];
+                samples[i].y = (*samplesYCoordinate)[i];
+                samples[i].value = (*samplesValue)[i];
+            }
+            return samples;
+        }
     };
 
     typedef std::pair<int, int> Edge;
 
-    static std::vector<Edge> ConvertToEdgeNodesVector(int numEdges, int* edge_nodes)
+    static std::vector<Edge> ConvertToEdgeNodesVector(int numEdges, const int* edge_nodes)
     {
         std::vector<Edge> edges(numEdges);
 
@@ -178,7 +191,7 @@ namespace meshkernel
         return edges;
     };
 
-    static std::vector<Point> ConvertToNodesVector(int numNodes, double* nodex, double* nodey)
+    static std::vector<Point> ConvertToNodesVector(int numNodes, const double* nodex, const double* nodey)
     {
         std::vector<Point> nodes(numNodes);
         for (int n = 0; n < numNodes; n++)
@@ -189,7 +202,7 @@ namespace meshkernel
         return nodes;
     };
 
-    static std::vector<Point> ConvertToFaceCentersVector(int numFaces, double* facex, double* facey)
+    static std::vector<Point> ConvertToFaceCentersVector(int numFaces, const double* facex, const double* facey)
     {
         std::vector<Point> faceCenters(numFaces);
         for (int n = 0; n < numFaces; n++)
