@@ -89,7 +89,7 @@ TEST(TriangleInterpolation, InterpolateOnFacesUsingSphericalAccurateOption)
 {
     // Set up
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\TriangleInterpolationTests\\SphericalCutted.xyz");
-    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\TriangleInterpolationTests\\SphericaCuttedReduced.nc", meshkernel::Projections::cartesian);
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\TriangleInterpolationTests\\SphericalCutted.nc", meshkernel::Projections::cartesian);
     ASSERT_GT(mesh->GetNumNodes(), 0);
     ASSERT_GT(samples.size(), 0);
 
