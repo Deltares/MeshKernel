@@ -1447,9 +1447,9 @@ namespace meshkernelapi
     MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
                                   const MeshGeometry& meshGeometry,
                                   int& startIndex,
-                                  double** samplesXCoordinate,
-                                  double** samplesYCoordinate,
-                                  double** samplesValue,
+                                  const double** samplesXCoordinate,
+                                  const double** samplesYCoordinate,
+                                  const double** samplesValue,
                                   int& numSamples,
                                   double** results,
                                   int& locationType,
@@ -1472,13 +1472,7 @@ namespace meshkernelapi
         const auto locations = ComputeLocations(meshGeometryDimensions, meshGeometry, location);
 
         // Build the samples
-        std::vector<meshkernel::Sample> samples(numSamples);
-        for (auto i = 0; i < samples.size(); ++i)
-        {
-            samples[i].x = (*samplesXCoordinate)[i];
-            samples[i].y = (*samplesYCoordinate)[i];
-            samples[i].value = (*samplesValue)[i];
-        }
+        const auto samples = meshkernel::Sample::ConvertToSamples(numSamples, samplesXCoordinate, samplesYCoordinate, samplesValue);
 
         // Execute triangulation
         meshkernel::TriangulationInterpolation triangulationInterpolation(locations, samples, projection);

@@ -1883,4 +1883,38 @@ namespace meshkernel
         }
     }
 
+    static auto ComputeAverageCoordinate(const std::vector<Point>& points, int numPoints, Projections projection)
+    {
+        if (projection == Projections::sphericalAccurate)
+        {
+
+            Cartesian3DPoint averagePoint3D{0.0, 0.0, 0.0};
+            for (int i = 0; i < numPoints; ++i)
+            {
+                Cartesian3DPoint point3D;
+                SphericalToCartesian3D(points[i], point3D);
+                averagePoint3D.x += point3D.x;
+                averagePoint3D.y += point3D.y;
+                averagePoint3D.z += point3D.z;
+            }
+            averagePoint3D.x = averagePoint3D.x / numPoints;
+            averagePoint3D.y = averagePoint3D.y / numPoints;
+            averagePoint3D.z = averagePoint3D.z / numPoints;
+
+            Point result{doubleMissingValue, doubleMissingValue};
+            Cartesian3DToSpherical(averagePoint3D, points[0].x, result);
+            return result;
+        }
+
+        Point result{0.0, 0.0};
+        for (int i = 0; i < numPoints; ++i)
+        {
+            result.x += points[i].x;
+            result.y += points[i].y;
+        }
+        result.x = result.x / numPoints;
+        result.y = result.y / numPoints;
+        return result;
+    }
+
 } // namespace meshkernel

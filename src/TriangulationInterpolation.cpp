@@ -51,16 +51,14 @@ void meshkernel::TriangulationInterpolation::Compute()
     }
 
     // triangulate samples
-    double averageTriangleArea = 0;
-    const auto numPolygonNodes = static_cast<int>(m_samples.size()); // open polygon
-    int numberOfTriangles = 0;
+    const auto numPolygonNodes = static_cast<int>(m_samples.size());
     TriangulationWrapper triangulationWrapper;
 
     triangulationWrapper.Compute(m_samples,
                                  numPolygonNodes,
-                                 3,
-                                 averageTriangleArea,
-                                 numberOfTriangles);
+                                 TriangulationWrapper::TriangulationOptions::TriangulatePointsAndGenerateFaces,
+                                 0.0,
+                                 0);
 
     // no triangles formed, return
     if (triangulationWrapper.m_numFaces < 1)
@@ -72,23 +70,20 @@ void meshkernel::TriangulationInterpolation::Compute()
     std::vector<Point> trianglesCircumcenters(triangulationWrapper.m_numFaces, {doubleMissingValue, doubleMissingValue});
     std::vector<std::vector<Point>> triangles(triangulationWrapper.m_numFaces, std::vector<Point>(4, {doubleMissingValue, doubleMissingValue}));
     std::vector<std::vector<double>> values(triangulationWrapper.m_numFaces, std::vector<double>(4, doubleMissingValue));
+
     for (int f = 0; f < triangulationWrapper.m_numFaces; ++f)
     {
-        double xCircumcenter = 0.0;
-        double yCircumcenter = 0.0;
+        // compute triangle polygons
         for (int n = 0; n < 3; ++n)
         {
             auto const node = triangulationWrapper.m_faceNodes[f][n];
-            xCircumcenter += m_samples[node].x;
-            yCircumcenter += m_samples[node].y;
             triangles[f][n] = {m_samples[node].x, m_samples[node].y};
             values[f][n] = m_samples[node].value;
         }
         triangles[f][3] = triangles[f][0];
         values[f][3] = values[f][0];
 
-        trianglesCircumcenters[f] = {xCircumcenter * oneThird,
-                                     yCircumcenter * oneThird};
+        trianglesCircumcenters[f] = ComputeAverageCoordinate(triangles[f], 3, m_projection);
     }
 
     SpatialTrees::RTree samplesRtree;
@@ -168,7 +163,7 @@ void meshkernel::TriangulationInterpolation::Compute()
             }
         }
 
-        if (triangle >= 0 && triangle < triangulationWrapper.m_numFaces)
+        if (isInTriangle && triangle >= 0 && triangle < triangulationWrapper.m_numFaces)
         {
             // Perform linear interpolation
             m_results[n] = LinearInterpolationInTriangle(m_locations[n], triangles[triangle], values[triangle], m_projection);

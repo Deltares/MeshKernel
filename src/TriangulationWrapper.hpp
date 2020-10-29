@@ -32,20 +32,26 @@ namespace meshkernel
 {
     struct Point;
     struct Sample;
-    class TriangulationWrapper
+    struct TriangulationWrapper
     {
-    public:
+        enum class TriangulationOptions
+        {
+            TriangulatePoints = 1,                // generate Delaunay triangulation from input nodes
+            GeneratePoints = 2,                   // generate internal nodes in polygon that produce a Delaunay triangulation
+            TriangulatePointsAndGenerateFaces = 3 // generate Delaunay triangulation from input nodes with m_faceEdges and m_edgeNodes
+        };
+
         /// @brief
         /// @tparam T A type that contains x and y fields
         /// @param inputNodes The input points
-        /// @param numPolygonNodes The number of points
-        /// @param triangulationOption Triangulation option: 1 = generate delaunay nodes inside the polygon, 3 = triangulate existing input points and generate m_edgeNodes and m_faceEdges
-        /// @param averageTriangleArea An estimation of the average area of triangles (required for option 1)
-        /// @param estimatedNumberOfTriangles An estimation of the average number of triangles (required for option 3)
+        /// @param numPoints The number of input points
+        /// @param triangulationOption Triangulation option, see \ref TriangulationOptions
+        /// @param averageTriangleArea An estimation of the average area of triangles (required for option 2)
+        /// @param estimatedNumberOfTriangles An estimation of the average number of triangles (required for option 2)
         template <typename T>
         void Compute(const std::vector<T>& inputNodes,
-                     int numPolygonNodes,
-                     int triangulationOption,
+                     int numPoints,
+                     TriangulationOptions triangulationOption,
                      double averageTriangleArea,
                      int estimatedNumberOfTriangles);
 
