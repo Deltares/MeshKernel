@@ -663,7 +663,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         return;
 
     if (m_edges[previousEdge].first < 0 || m_edges[previousEdge].second < 0)
-        throw std::invalid_argument("Mesh::FindFacesRecursive: The selected edge is invalid.");
+        throw std::invalid_argument("Mesh::FindFacesRecursive: The selected edge is invalid. This should not happen since all invalid edges should have been cleaned up.");
 
     // Check if the faces are already found
     if (m_edgesNumFaces[previousEdge] >= 2)

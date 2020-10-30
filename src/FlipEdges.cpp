@@ -70,11 +70,18 @@ void meshkernel::FlipEdges::Compute() const
 
     const int MaxIter = 10;
     const int numEdges = m_mesh->GetNumEdges();
-    int numFlippedEdges;
-    // TODO: let for-loop break early when numFlippedEdges is already 0
+    int numFlippedEdges = intMissingValue;
+
     for (int iter = 0; iter < MaxIter; iter++)
     {
-        numFlippedEdges = 0;
+        if (numFlippedEdges == 0)
+        {
+            break;
+        }
+        else
+        {
+            numFlippedEdges = 0;
+        }
 
         for (int e = 0; e < numEdges; e++)
         {
@@ -244,9 +251,9 @@ void meshkernel::FlipEdges::Compute() const
         }
     }
 
-    if (numFlippedEdges > 0)
+    if (numFlippedEdges != 0)
     {
-        throw AlgorithmError("FlipEdges::Compute: Could not flip all edges.");
+        throw AlgorithmError("FlipEdges::Compute: Could not complete, there are still edges left to be flipped.");
     }
 
     // Perform mesh administration

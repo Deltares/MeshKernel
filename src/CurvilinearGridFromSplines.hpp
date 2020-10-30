@@ -247,7 +247,7 @@ namespace meshkernel
 
         /// @brief Gets the valid spline indices
         /// @param[in] numValues
-        /// @param[int] v
+        /// @param[in] v
         /// @param[out] validIndices
         /// @param[out] numValid
         void GetValidSplineIndices(int numValues,
