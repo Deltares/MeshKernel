@@ -247,25 +247,13 @@ namespace meshkernel
             isOnePolygonClosed = true;
             double localPolygonArea = 0.0;
             Point centerOfMass;
-            bool successful = FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
-            if (!successful)
-            {
-                return false;
-            }
+            FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
 
             double perimeter;
-            successful = PerimeterClosedPolygon(localPolygon, numLocalPoints, perimeter);
-            if (!successful)
-            {
-                return false;
-            }
+            PerimeterClosedPolygon(localPolygon, numLocalPoints, perimeter);
 
             double maximumEdgeLength;
-            successful = MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
-            if (!successful)
-            {
-                return false;
-            }
+            MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
 
             // average edge size
             double averageEdgeLength = perimeter / (numLocalPoints - 1);

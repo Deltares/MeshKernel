@@ -45,7 +45,9 @@ TEST(Splines, CubicSplineInterpolation)
         {
             const double pointAdimensionalCoordinate = n + double(p) / double(pointsBetweenVertices);
             meshkernel::Point pointCoordinate;
-            InterpolateSplinePoint(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+            auto successful = InterpolateSplinePoint(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+            ASSERT_TRUE(successful);
+
             splineCoordinates.push_back({pointCoordinate.x, pointCoordinate.y});
         }
     }

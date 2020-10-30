@@ -32,6 +32,7 @@
 #include "Operations.cpp"
 #include "Entities.hpp"
 #include "Splines.hpp"
+#include "Exceptions.hpp"
 
 meshkernel::Splines::Splines() : m_projection(Projections::cartesian){};
 
@@ -457,7 +458,11 @@ bool meshkernel::Splines::InterpolatePointsOnSpline(int index,
     {
         func.SetDimensionalDistance(distances[i]);
         adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, m_numSplineNodes[index] - 1);
-        InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i], points[i]);
+        auto successful = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i], points[i]);
+        if (!successful)
+        {
+            throw AlgorithmError("Splines::InterpolatePointsOnSpline: Could not interpolate spline points.");
+        }
     }
 
     return true;

@@ -37,6 +37,7 @@
 #include "Operations.cpp"
 #include "Splines.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
+#include "Exceptions.hpp"
 
 meshkernel::CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
                                                                    const meshkernelapi::CurvilinearParametersNative& curvilinearParametersNative,
@@ -1541,7 +1542,11 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
 
         factor = std::max(std::min(double(leftIndex + 1) + factor - 1.0, double(numValid - 1)), 0.0);
 
-        InterpolateSplinePoint(localCornerPoints, localSplineDerivatives, factor, heights[j][i]);
+        auto successful = InterpolateSplinePoint(localCornerPoints, localSplineDerivatives, factor, heights[j][i]);
+        if (!successful)
+        {
+            throw AlgorithmError("CurvilinearGridFromSplines::FindNearestCrossSplines: Could not interpolate spline points.");
+        }
     }
 }
 
