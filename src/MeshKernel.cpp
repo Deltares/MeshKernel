@@ -1533,9 +1533,6 @@ namespace meshkernelapi
 
             // convert to curvilinear grid and add it to the current mesh
             *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
-
-            // convert to curvilinear grid and add it to the current mesh
-            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
         catch (const std::exception& e)
         {
