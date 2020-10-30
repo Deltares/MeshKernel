@@ -126,7 +126,7 @@ namespace meshkernel
             y = y * degrad_hp * earth_radius;
         }
 
-        bool IsValid(const double missingValue = doubleMissingValue) const
+        [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
         {
             return x != missingValue && y != missingValue ? true : false;
         }

@@ -59,7 +59,7 @@ namespace meshkernel
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>
         /// <returns></returns>
-        inline auto GetWeight(int node, int connectedNode)
+        [[nodiscard]] inline auto GetWeight(int node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
@@ -70,7 +70,7 @@ namespace meshkernel
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>
         /// <returns></returns>
-        inline auto GetCoonectedNodeIndex(int node, int connectedNode)
+        [[nodiscard]] inline auto GetCoonectedNodeIndex(int node, int connectedNode)
         {
             return m_connectedNodes[node][connectedNode];
         }
@@ -80,7 +80,7 @@ namespace meshkernel
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        inline auto GetNumConnectedNodes(int node)
+        [[nodiscard]] inline auto GetNumConnectedNodes(int node)
         {
             return m_numConnectedNodes[node];
         }
@@ -162,10 +162,10 @@ namespace meshkernel
         /// <param name="theta2"></param>
         /// <param name="isBoundaryEdge"></param>
         /// <returns></returns>
-        double OptimalEdgeAngle(int numFaceNodes,
-                                double theta1 = -1.0,
-                                double theta2 = -1.0,
-                                bool isBoundaryEdge = false) const;
+        [[nodiscard]] double OptimalEdgeAngle(int numFaceNodes,
+                                              double theta1 = -1.0,
+                                              double theta2 = -1.0,
+                                              bool isBoundaryEdge = false) const;
 
         /// <summary>
         /// Allocate smoother operators
@@ -200,9 +200,9 @@ namespace meshkernel
         /// <param name="y"></param>
         /// <param name="matCoefficents"></param>
         /// <returns></returns>
-        double MatrixNorm(const std::vector<double>& x,
-                          const std::vector<double>& y,
-                          const std::vector<double>& matCoefficents) const;
+        [[nodiscard]] double MatrixNorm(const std::vector<double>& x,
+                                        const std::vector<double>& y,
+                                        const std::vector<double>& matCoefficents) const;
 
         // The mesh to smooth
         std::shared_ptr<Mesh> m_mesh;

@@ -187,16 +187,16 @@ namespace meshkernel
         /// <param name="firstGridLayerHeights"></param>
         /// <param name="numberOfGridLayers"></param>
         /// <returns></returns>
-        double ComputeTotalExponentialHeight(double aspectRatioGrowFactor,
-                                             double firstGridLayerHeights,
-                                             int numberOfGridLayers) const;
+        [[nodiscard]] double ComputeTotalExponentialHeight(double aspectRatioGrowFactor,
+                                                           double firstGridLayerHeights,
+                                                           int numberOfGridLayers) const;
 
         /// <summary>
         /// Compute the number of grid layers for a given grow factor, first grid layer height and total grid height (comp_nfac)
         /// </summary>
         /// <param name="hhMaxRatio"></param>
         /// <returns></returns>
-        int ComputeNumberExponentialIntervals(double hhMaxRatio) const;
+        [[nodiscard]] int ComputeNumberExponentialIntervals(double hhMaxRatio) const;
 
         /// @brief Computes the sub-interval velocities (left and right)
         /// @param[in] s

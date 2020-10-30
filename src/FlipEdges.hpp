@@ -63,19 +63,15 @@ namespace meshkernel
                                        int& nodeRight,
                                        int& topologyFunctional) const;
 
-        /// <summary>
-        /// Determine the optimal number of connected nodes for each node (nmk_opt)
-        /// </summary>
-        /// <param name="nodeIndex"></param>
-        /// <returns>If the method succeeded</returns>
-        int OptimalNumberOfConnectedNodes(int nodeIndex) const;
+        /// @brief Determine the optimal number of connected nodes for each node (nmk_opt)
+        /// @param nodeIndex
+        /// @returns Optimal number of connected nodes
+        [[nodiscard]] int OptimalNumberOfConnectedNodes(int nodeIndex) const;
 
-        /// <summary>
-        /// Compute the difference with the optimal number of edges by counting the numbers of edges that
-        /// connect nodes firstNode and secondNode, and are on the land boundary path (comp_nnow)
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        int DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const;
+        /// @brief Compute the difference with the optimal number of edges by counting the numbers of edges that
+        ///        connect nodes firstNode and secondNode, and are on the land boundary path (comp_nnow)
+        /// @returns Difference form optimum
+        [[nodiscard]] int DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const;
 
         /// @brief Remove a connected edge from a node
         /// @param[in] edgeIndex The index of the edge to remove

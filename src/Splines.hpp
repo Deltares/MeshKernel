@@ -110,13 +110,13 @@ namespace meshkernel
         /// <param name="height">When accounting for curvature, the height to use</param>
         /// <param name="assignedDelta">When larger than zero, the number of intervals the spline is devided when computing the length</param>
         /// <returns>The computed length</returns>
-        double GetSplineLength(int index,
-                               double startIndex,
-                               double endIndex,
-                               int numSamples = 100,
-                               bool accountForCurvature = false,
-                               double height = 1.0,
-                               double assignedDelta = -1);
+        [[nodiscard]] double GetSplineLength(int index,
+                                             double startIndex,
+                                             double endIndex,
+                                             int numSamples = 100,
+                                             bool accountForCurvature = false,
+                                             double height = 1.0,
+                                             double assignedDelta = -1);
 
         /// <summary>
         /// Compute the points on a spline lying at certain distance

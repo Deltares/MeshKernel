@@ -181,7 +181,7 @@ namespace meshkernel
         /// @param[in] point The starting point from where to start the search
         /// @param[in] searchRadius The search radius
         /// @returns The index of the closest node
-        int GetNodeIndex(Point point, double searchRadius);
+        [[nodiscard]] int GetNodeIndex(Point point, double searchRadius);
 
         /// @brief Deletes an edge
         /// @param[in] edgeIndex The edge index
@@ -190,7 +190,7 @@ namespace meshkernel
         /// Finds the closest edge close to a point
         /// @param[in] point The starting point from where to start the search
         /// @returns The index of the closest edge
-        int FindEdgeCloseToAPoint(Point point);
+        [[nodiscard]] int FindEdgeCloseToAPoint(Point point);
 
         /// @brief Masks the edges of all faces included in a polygon
         /// @param polygons The selection polygon
@@ -249,33 +249,33 @@ namespace meshkernel
         /// Get the number of valid nodes
         /// </summary>
         /// <returns>The number of valid node</returns>
-        int GetNumNodes() const { return m_numNodes; }
+        [[nodiscard]] int GetNumNodes() const { return m_numNodes; }
 
         /// <summary>
         /// Get the number of valid edges
         /// </summary>
         /// <returns>The number of valid edges</returns>
-        int GetNumEdges() const { return m_numEdges; }
+        [[nodiscard]] int GetNumEdges() const { return m_numEdges; }
 
         /// <summary>
         /// Get the number of valid faces
         /// </summary>
         /// <returns>The number of valid faces</returns>
-        int GetNumFaces() const { return m_numFaces; }
+        [[nodiscard]] int GetNumFaces() const { return m_numFaces; }
 
         /// <summary>
         /// Get the number of edges for a face
         /// </summary>
         /// <param name="faceIndex">The face index</param>
         /// <returns>The number of edges for a face</returns>
-        int GetNumFaceEdges(const int faceIndex) const { return m_numFacesNodes[faceIndex]; }
+        [[nodiscard]] int GetNumFaceEdges(const int faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
         /// <summary>
         /// Get the number of faces an edges shares
         /// </summary>
         /// <param name="edgeIndex">The edge index</param>
         /// <returns>The number of faces an edges shares</returns>
-        int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+        [[nodiscard]] int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
         /// @brief Circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon Cache storing the face nodes
@@ -285,12 +285,12 @@ namespace meshkernel
         /// @param[in] edgesNumFaces For meshes, the number of faces sharing the edges
         /// @param[in] weightCircumCenter Circumcenter weight
         /// @returns The computed circumcenter
-        Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                     std::vector<Point>& middlePoints,
-                                     std::vector<Point>& normals,
-                                     int numNodes,
-                                     const std::vector<int>& edgesNumFaces,
-                                     double weightCircumCenter) const;
+        [[nodiscard]] Point ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                                   std::vector<Point>& middlePoints,
+                                                   std::vector<Point>& normals,
+                                                   int numNodes,
+                                                   const std::vector<int>& edgesNumFaces,
+                                                   double weightCircumCenter) const;
 
         /// @brief Computes m_nodesNodes, see class members
         void ComputeNodeNeighbours();

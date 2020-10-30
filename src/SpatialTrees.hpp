@@ -139,29 +139,28 @@ namespace meshkernel
                 return true;
             }
 
-            auto Size() const
+            [[nodiscard]] auto Size() const
             {
                 return m_rtree2D.size();
             }
 
-            auto Empty() const
+            [[nodiscard]] auto Empty() const
             {
                 return m_rtree2D.empty();
             }
 
-            auto Clear()
+            void Clear()
             {
                 m_rtree2D.clear();
                 m_points.clear();
-                return true;
             }
 
-            auto GetQueryResultSize() const
+            [[nodiscard]] auto GetQueryResultSize() const
             {
                 return m_queryCache.size();
             }
 
-            auto GetQuerySampleIndex(int index) const
+            [[nodiscard]] auto GetQuerySampleIndex(int index) const
             {
                 return m_queryIndices[index];
             }

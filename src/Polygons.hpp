@@ -80,7 +80,7 @@ namespace meshkernel
         ///copypol, copy and move a polygon orthogonally
         bool OffsetCopy(double distance, bool Inner, Polygons& newPolygon);
 
-        int GetNumNodes() const { return m_numNodes; }
+        [[nodiscard]] int GetNumNodes() const { return m_numNodes; }
 
         bool IsPointInPolygon(const Point& point, int polygonIndex) const;
 

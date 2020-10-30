@@ -139,15 +139,15 @@ namespace meshkernel
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
         /// @param[out] landBoundaryNode
-        bool IsMeshEdgeCloseToLandBoundaries(int edgeIndex,
-                                             int startNodeLandBoundaryIndex,
-                                             int endNodeLandBoundaryIndex,
-                                             bool meshBoundOnly,
-                                             int& leftIndex,
-                                             int& rightIndex,
-                                             double& leftEdgeRatio,
-                                             double& rightEdgeRatio,
-                                             int& landBoundaryNode);
+        [[nodiscard]] bool IsMeshEdgeCloseToLandBoundaries(int edgeIndex,
+                                                           int startNodeLandBoundaryIndex,
+                                                           int endNodeLandBoundaryIndex,
+                                                           bool meshBoundOnly,
+                                                           int& leftIndex,
+                                                           int& rightIndex,
+                                                           double& leftEdgeRatio,
+                                                           double& rightEdgeRatio,
+                                                           int& landBoundaryNode);
 
         /// @brief Finds the start and end mesh node.
         /// These are the nodes that are on a edge close to the land boundary segment (get_kstartend2)
@@ -222,9 +222,9 @@ namespace meshkernel
         /// @param face
         /// @param startLandBoundaryIndex
         /// @param endLandBoundaryIndex
-        bool IsFaceCrossedByLandBoundaries(int face,
-                                           int startLandBoundaryIndex,
-                                           int endLandBoundaryIndex);
+        [[nodiscard]] bool IsFaceCrossedByLandBoundaries(int face,
+                                                         int startLandBoundaryIndex,
+                                                         int endLandBoundaryIndex);
 
         std::shared_ptr<Mesh> m_mesh;                      // A pointer to mesh
         std::shared_ptr<Polygons> m_polygons;              // A pointer to polygons
