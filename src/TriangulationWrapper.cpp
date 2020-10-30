@@ -54,7 +54,7 @@ void meshkernel::TriangulationWrapper::Compute(const std::vector<T>& inputNodes,
     m_numFaces = -1;
     m_numEdges = 0;
     m_numNodes = 0;
-    const auto intTriangulationOption = static_cast<int>(triangulationOption);
+    auto intTriangulationOption = static_cast<int>(triangulationOption);
 
     std::vector<int> faceNodesFlat;
     std::vector<int> edgeNodesFlat;
