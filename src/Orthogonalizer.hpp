@@ -45,12 +45,8 @@ namespace meshkernel
         /// <returns></returns>
         explicit Orthogonalizer(std::shared_ptr<Mesh> mesh);
 
-        /// <summary>
-        /// Computes the smoother weights and the right hans side
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns>If the method succeeded</returns>
-        bool Compute();
+        /// @brief Computes the smoother weights and the right hans side
+        void Compute();
 
         /// <summary>
         /// Gets the weight for a certain node and connected node

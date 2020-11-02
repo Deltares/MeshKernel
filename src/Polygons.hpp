@@ -47,19 +47,16 @@ namespace meshkernel
         Polygons(const std::vector<Point>& polygon,
                  Projections projection);
 
-        /// <summary>
-        /// (copynetboundstopol)
-        /// </summary>
-        bool MeshBoundaryToPolygon(Mesh& mesh,
+        /// @brief (copynetboundstopol)
+        /// @param[out] meshBoundaryPolygon
+        /// @param[out] numNodesBoundaryPolygons
+        void MeshBoundaryToPolygon(Mesh& mesh,
                                    std::vector<Point>& meshBoundaryPolygon,
                                    int& numNodesBoundaryPolygons);
 
-        /// <summary>
-        /// create a set of points in a polygon
-        /// </summary>
-        /// <param name="generatedPoints"></param>
-        /// <returns></returns>
-        bool CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints);
+        /// @brief Create a set of points in a polygon
+        /// @param[out] generatedPoints
+        void CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints);
 
         std::vector<Point> m_nodes; // Polygon nodes
         Projections m_projection;
@@ -68,17 +65,17 @@ namespace meshkernel
         std::vector<std::vector<int>> m_indices; // start-end of polygon nodes in m_nodes
         int m_allocationSize = 100;
 
-        /// perimeter closed polygon
-        bool PerimeterClosedPolygon(const std::vector<Point>& localPolygon, int numPoints, double& perimeter);
+        /// @brief perimeter closed polygon
+        void PerimeterClosedPolygon(const std::vector<Point>& localPolygon, int numPoints, double& perimeter);
 
-        /// refinepolygonpart
-        bool RefinePolygonPart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon);
+        /// @brief refinepolygonpart
+        void RefinePolygonPart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon);
 
-        /// refinepolygonpart
-        bool PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths) const;
+        /// @brief refinepolygonpart
+        void PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths) const;
 
         ///copypol, copy and move a polygon orthogonally
-        bool OffsetCopy(double distance, bool Inner, Polygons& newPolygon);
+        void OffsetCopy(double distance, bool Inner, Polygons& newPolygon);
 
         [[nodiscard]] int GetNumNodes() const { return m_numNodes; }
 
@@ -92,10 +89,11 @@ namespace meshkernel
         bool Polygons::IsEmpty() const;
 
     private:
-        /// maximum edge length of a given polygon
-        bool MaximumEdgeLength(const std::vector<Point>& localPolygon, int numPoints, double& maximumEdgeLength);
+        /// @brief maximum edge length of a given polygon
+        void MaximumEdgeLength(const std::vector<Point>& localPolygon, int numPoints, double& maximumEdgeLength);
 
-        bool WalkBoundaryFromNode(const Mesh& mesh,
+        // TODO: Document
+        void WalkBoundaryFromNode(const Mesh& mesh,
                                   std::vector<bool>& isVisited,
                                   int& nodeIndex,
                                   int& currentNode,
