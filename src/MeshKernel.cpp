@@ -444,7 +444,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            orthogonalizationInstances[meshKernelId]->PrapareOuterIteration();
+            orthogonalizationInstances[meshKernelId]->PrepareOuterIteration();
         }
         catch (const std::exception& e)
         {

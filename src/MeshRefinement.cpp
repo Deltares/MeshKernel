@@ -894,7 +894,7 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPo
     numEdgesToBeRefined = 0;
     if (m_refinementType == RefinementType::RidgeRefinement)
     {
-        throw AlgorithmError("MeshRefinement::ComputeEdgesRefinementMaskFromSamples: RidgeRefinement is not implemented yet.");
+        throw AlgorithmError("MeshRefinement::ComputeEdgesRefinementMaskFromSamples: This functionality is not implemented yet.");
     }
 
     // compute all lengths
