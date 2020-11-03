@@ -505,6 +505,11 @@ namespace meshkernelapi
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_curvilinear_from_triangle(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode);
 
+        /// @brief Get pointer to error message.
+        /// @param[out] error_message
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_error(char* error_message);
+
 #ifdef __cplusplus
     }
 #endif

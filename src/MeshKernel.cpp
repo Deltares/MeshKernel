@@ -1541,5 +1541,11 @@ namespace meshkernelapi
         }
         return exitCode;
     }
+    MKERNEL_API int mkernel_get_error(char* error_message)
+    {
+        int exitCode = Success;
+        error_message = exceptionMessage;
+        return exitCode;
+    }
 
 } // namespace meshkernelapi
