@@ -16,8 +16,7 @@ TEST(Splines, SetSpline)
     splineNodes.push_back(meshkernel::Point{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue});
 
     meshkernel::Splines splines(meshkernel::Projections::cartesian);
-    bool successful = splines.AddSpline(splineNodes, 0, int(splineNodes.size()));
-    ASSERT_TRUE(successful);
+    splines.AddSpline(splineNodes, 0, int(splineNodes.size()));
 
     ASSERT_EQ(1, splines.m_numSplines);
     ASSERT_EQ(10, splines.m_splineNodes[0].size());
@@ -76,13 +75,12 @@ TEST(Splines, SplineIntersection)
 
     meshkernel::Splines splines(meshkernel::Projections::cartesian);
 
-    bool successful = splines.AddSpline(firstSpline, 0, firstSpline.size());
-    ASSERT_TRUE(successful);
+    splines.AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline;
     secondSpline.push_back(meshkernel::Point{72.5010681152344, 391.129577636719});
     secondSpline.push_back(meshkernel::Point{462.503479003906, 90.3765411376953});
-    successful = splines.AddSpline(secondSpline, 0, secondSpline.size());
+    splines.AddSpline(secondSpline, 0, secondSpline.size());
 
     double crossProductIntersection;
     meshkernel::Point dimensionalIntersection;
