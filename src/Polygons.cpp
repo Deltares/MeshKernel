@@ -91,7 +91,7 @@ namespace meshkernel
 
     void Polygons::MeshBoundaryToPolygon(Mesh& mesh,
                                          std::vector<Point>& meshBoundaryPolygon,
-                                         int& numNodesBoundaryPolygons)
+                                         int& numNodesBoundaryPolygons) const
     {
         numNodesBoundaryPolygons = 0;
 
@@ -441,7 +441,7 @@ namespace meshkernel
         refinedPolygon.resize(refinedNodeIndex);
     }
 
-    void Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, const int numPoints, double& perimeter)
+    void Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, const int numPoints, double& perimeter) const
     {
         if (numPoints < 0)
         {
