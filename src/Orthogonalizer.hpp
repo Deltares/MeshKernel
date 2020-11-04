@@ -45,12 +45,8 @@ namespace meshkernel
         /// <returns></returns>
         explicit Orthogonalizer(std::shared_ptr<Mesh> mesh);
 
-        /// <summary>
-        /// Computes the smoother weights and the right hans side
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns>If the method succeeded</returns>
-        bool Compute();
+        /// @brief Computes the smoother weights and the right hans side
+        void Compute();
 
         /// <summary>
         /// Gets the weight for a certain node and connected node
@@ -58,7 +54,7 @@ namespace meshkernel
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>
         /// <returns>The contribution of orthogonalizer to the left hand side, the linear system</returns>
-        inline double GetWeight(int node, int connectedNode)
+        [[nodiscard]] inline double GetWeight(int node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
@@ -69,7 +65,7 @@ namespace meshkernel
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>
         /// <returns>The contribution of orthogonalizer to the right hand size</returns>
-        inline double GetRightHandSide(int node, int connectedNode)
+        [[nodiscard]] inline double GetRightHandSide(int node, int connectedNode)
         {
             return m_rhs[node][connectedNode];
         }

@@ -36,6 +36,7 @@
 
 #include <vector>
 #include <utility>
+#include <stdexcept>
 
 // r-tree
 // https://gist.github.com/logc/10272165
@@ -64,7 +65,7 @@ namespace meshkernel
             typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;
 
         public:
-            bool BuildTree(std::vector<Point>& nodes)
+            void BuildTree(std::vector<Point>& nodes)
             {
                 m_points.reserve(std::max(m_points.capacity(), m_points.size()));
                 m_points.clear();
@@ -79,11 +80,9 @@ namespace meshkernel
 
                 m_queryCache.reserve(QueryVectorCapacity);
                 m_queryIndices.reserve(QueryVectorCapacity);
-
-                return true;
             }
 
-            bool NearestNeighboursOnSquaredDistance(Point node, double searchRadiusSquared)
+            void NearestNeighboursOnSquaredDistance(Point node, double searchRadiusSquared)
             {
                 m_queryCache.resize(0);
                 double searchRadius = std::sqrt(searchRadiusSquared);
@@ -101,11 +100,9 @@ namespace meshkernel
                 {
                     m_queryIndices[i] = m_queryCache[i].second;
                 }
-
-                return true;
             }
 
-            bool NearestNeighbour(Point node)
+            void NearestNeighbour(Point node)
             {
                 m_queryCache.resize(0);
 
@@ -117,51 +114,46 @@ namespace meshkernel
                     m_queryIndices.resize(1);
                     m_queryIndices[0] = m_queryCache[0].second;
                 }
-
-                return true;
             }
 
-            bool RemoveNode(int position)
+            void RemoveNode(int position)
             {
                 const auto numberRemoved = m_rtree2D.remove(m_points[position]);
                 if (numberRemoved != 1)
                 {
-                    return false;
+                    throw std::invalid_argument("SpatialTrees::RemoveNode: Could not remove node at given position.");
                 }
                 m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
-                return true;
             }
 
-            bool InsertNode(const Point& node)
+            void InsertNode(const Point& node)
             {
                 m_points.push_back({Point2D{node.x, node.y}, m_points.size()});
                 m_rtree2D.insert(m_points.end() - 1, m_points.end());
-                return true;
             }
 
-            auto Size() const
+            [[nodiscard]] auto Size() const
             {
                 return m_rtree2D.size();
             }
 
-            auto Empty() const
+            [[nodiscard]] auto Empty() const
             {
                 return m_rtree2D.empty();
             }
 
-            auto Clear()
+            void Clear()
             {
                 m_rtree2D.clear();
                 m_points.clear();
-                return true;
             }
 
-            auto GetQueryResultSize() const
+            [[nodiscard]] auto GetQueryResultSize() const
             {
                 return m_queryCache.size();
             }
 
-            auto GetQuerySampleIndex(int index) const
+            [[nodiscard]] auto GetQuerySampleIndex(int index) const
             {
                 return m_queryIndices[index];
             }
