@@ -52,7 +52,7 @@ namespace meshkernel
         /// @param[out] numNodesBoundaryPolygons
         void MeshBoundaryToPolygon(Mesh& mesh,
                                    std::vector<Point>& meshBoundaryPolygon,
-                                   int& numNodesBoundaryPolygons);
+                                   int& numNodesBoundaryPolygons) const;
 
         /// @brief Create a set of points in a polygon
         /// @param[out] generatedPoints
@@ -66,7 +66,7 @@ namespace meshkernel
         int m_allocationSize = 100;
 
         /// @brief perimeter closed polygon
-        void PerimeterClosedPolygon(const std::vector<Point>& localPolygon, int numPoints, double& perimeter);
+        void PerimeterClosedPolygon(const std::vector<Point>& localPolygon, int numPoints, double& perimeter) const;
 
         /// @brief refinepolygonpart
         void RefinePolygonPart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon);
