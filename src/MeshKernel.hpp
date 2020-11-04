@@ -508,7 +508,7 @@ namespace meshkernelapi
         /// @brief Get pointer to error message.
         /// @param[out] error_message
         /// @returns Error code
-        MKERNEL_API int mkernel_get_error(char* error_message);
+        MKERNEL_API int mkernel_get_error(const char*& error_message);
 
 #ifdef __cplusplus
     }

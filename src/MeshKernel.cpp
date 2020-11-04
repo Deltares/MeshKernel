@@ -50,24 +50,24 @@
 #include "Splines.hpp"
 #include "SplinesToCurvilinearParametersNative.hpp"
 
-// The vector containing the mesh instances
-static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;
-
-// For interactivity
-static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
-static std::map<int, std::shared_ptr<meshkernel::CurvilinearGridFromSplines>> curvilinearGridFromSplinesInstances;
-
-enum error
-{
-    Success = 0,         // 0b0000
-    Exception = 1,       // 0b0001
-    InvalidGeometry = 2, // 0b0010
-};
-
-static char exceptionMessage[512] = "";
-
 namespace meshkernelapi
 {
+    // The vector containing the mesh instances
+    static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;
+
+    // For interactivity
+    static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
+    static std::map<int, std::shared_ptr<meshkernel::CurvilinearGridFromSplines>> curvilinearGridFromSplinesInstances;
+
+    enum error
+    {
+        Success = 0,         // 0b0000
+        Exception = 1,       // 0b0001
+        InvalidGeometry = 2, // 0b0010
+    };
+
+    static char exceptionMessage[512] = "";
+
     // TODO: Return result instead of relying on second input parameter
     static void ConvertGeometryListNativeToPointVector(const GeometryListNative& geometryListIn, std::vector<meshkernel::Point>& result)
     {
@@ -1541,7 +1541,7 @@ namespace meshkernelapi
         }
         return exitCode;
     }
-    MKERNEL_API int mkernel_get_error(char* error_message)
+    MKERNEL_API int mkernel_get_error(const char*& error_message)
     {
         int exitCode = Success;
         error_message = exceptionMessage;
