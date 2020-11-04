@@ -29,10 +29,12 @@
 
 #include <utility>
 #include <vector>
+#include <stdexcept>
 #include "Mesh.hpp"
 #include "Polygons.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
+#include "Exceptions.hpp"
 
 namespace meshkernel
 {
@@ -87,7 +89,7 @@ namespace meshkernel
         }
     }
 
-    bool Polygons::MeshBoundaryToPolygon(Mesh& mesh,
+    void Polygons::MeshBoundaryToPolygon(Mesh& mesh,
                                          std::vector<Point>& meshBoundaryPolygon,
                                          int& numNodesBoundaryPolygons)
     {
@@ -165,11 +167,9 @@ namespace meshkernel
             //Start a new polyline
             numNodesBoundaryPolygons++;
         }
-
-        return true;
     }
 
-    bool Polygons::WalkBoundaryFromNode(const Mesh& mesh,
+    void Polygons::WalkBoundaryFromNode(const Mesh& mesh,
                                         std::vector<bool>& isVisited,
                                         int& nodeIndex,
                                         int& currentNode,
@@ -210,11 +210,9 @@ namespace meshkernel
 
             isVisited[currentEdge] = true;
         }
-        return true;
     }
 
-    /// triangulate..
-    bool Polygons::CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints)
+    void Polygons::CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints)
     {
         generatedPoints.resize(m_indices.size());
         std::vector<Point> localPolygon(GetNumNodes());
@@ -247,25 +245,13 @@ namespace meshkernel
             isOnePolygonClosed = true;
             double localPolygonArea = 0.0;
             Point centerOfMass;
-            bool successful = FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
-            if (!successful)
-            {
-                return false;
-            }
+            FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
 
             double perimeter;
-            successful = PerimeterClosedPolygon(localPolygon, numLocalPoints, perimeter);
-            if (!successful)
-            {
-                return false;
-            }
+            PerimeterClosedPolygon(localPolygon, numLocalPoints, perimeter);
 
             double maximumEdgeLength;
-            successful = MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
-            if (!successful)
-            {
-                return false;
-            }
+            MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
 
             // average edge size
             double averageEdgeLength = perimeter / (numLocalPoints - 1);
@@ -277,7 +263,7 @@ namespace meshkernel
 
             if (numberOfTriangles <= 0)
             {
-                return false;
+                throw AlgorithmError("Polygons::CreatePointsInPolygons: The number of triangles is <= 0.");
             }
 
             int numtri = -1;
@@ -322,18 +308,20 @@ namespace meshkernel
             }
             //TODO: CHECK POINTS ARE INSIDE THE POLYGON?
         }
-
-        return isOnePolygonClosed ? true : false;
+        if (!isOnePolygonClosed)
+        {
+            throw AlgorithmError("Polygons::CreatePointsInPolygons: There is no closed polygon.");
+        }
     }
 
-    bool Polygons::RefinePolygonPart(int startIndex,
+    void Polygons::RefinePolygonPart(int startIndex,
                                      int endIndex,
                                      double refinementDistance,
                                      std::vector<Point>& refinedPolygon)
     {
         if (m_indices.empty())
         {
-            return false;
+            throw std::invalid_argument("Polygons::RefinePolygonPart: No nodes in polygon.");
         }
 
         if (startIndex == 0 && endIndex == 0)
@@ -344,24 +332,24 @@ namespace meshkernel
 
         if (endIndex <= startIndex)
         {
-            return false;
+            throw std::invalid_argument("Polygons::RefinePolygonPart: The end index is smaller than the start index.");
         }
 
-        bool areIndexesValid = false;
+        bool areIndicesValid = false;
         int polygonIndex;
         for (int i = 0; i < m_indices.size(); ++i)
         {
             if (startIndex >= m_indices[i][0] && endIndex <= m_indices[i][1])
             {
-                areIndexesValid = true;
+                areIndicesValid = true;
                 polygonIndex = i;
                 break;
             }
         }
 
-        if (!areIndexesValid)
+        if (!areIndicesValid)
         {
-            return false;
+            throw std::invalid_argument("Polygons::RefinePolygonPart: The indices are not valid.");
         }
 
         std::vector<double> edgeLengths;
@@ -451,26 +439,27 @@ namespace meshkernel
             refinedNodeIndex++;
         }
         refinedPolygon.resize(refinedNodeIndex);
-
-        return true;
     }
 
-    bool Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, const int numPoints, double& perimeter)
+    void Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, const int numPoints, double& perimeter)
     {
-
-        if (numPoints < 0 || localPolygon[0] != localPolygon[numPoints - 1])
+        if (numPoints < 0)
         {
-            return false;
+            throw std::invalid_argument("Polygons::PerimeterClosedPolygon: The number of nodes is <= 0.");
+        }
+
+        if (localPolygon[0] != localPolygon[numPoints - 1])
+        {
+            throw std::invalid_argument("Polygons::PerimeterClosedPolygon: The first and last point of the polygon is not the same.");
         }
 
         perimeter = 0.0;
         std::vector<double> edgeLengths;
         PolygonEdgeLengths(localPolygon, edgeLengths);
         perimeter = std::accumulate(edgeLengths.begin(), edgeLengths.end(), 0.0);
-        return true;
     }
 
-    bool Polygons::PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths) const
+    void Polygons::PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths) const
     {
         edgeLengths.resize(localPolygon.size());
         for (int p = 0; p < localPolygon.size(); ++p)
@@ -484,16 +473,19 @@ namespace meshkernel
             double edgeLength = Distance(localPolygon[firstNode], localPolygon[secondNode], m_projection);
             edgeLengths[p] = edgeLength;
         }
-
-        return true;
     }
 
-    bool Polygons::MaximumEdgeLength(const std::vector<Point>& localPolygon, const int numPoints, double& maximumEdgeLength)
+    void Polygons::MaximumEdgeLength(const std::vector<Point>& localPolygon, const int numPoints, double& maximumEdgeLength)
     {
 
-        if (numPoints < 0 || localPolygon[0].x != localPolygon[numPoints - 1].x)
+        if (numPoints < 0)
         {
-            return false;
+            throw std::invalid_argument("Polygons::MaximumEdgeLength: The number of nodes is <= 0.");
+        }
+
+        if (localPolygon[0].x != localPolygon[numPoints - 1].x)
+        {
+            throw std::invalid_argument("Polygons::MaximumEdgeLength: The first and last point of the polygon is not the same.");
         }
 
         maximumEdgeLength = std::numeric_limits<double>::min();
@@ -502,12 +494,9 @@ namespace meshkernel
             double edgeLength = Distance(m_nodes[p], m_nodes[p + 1], m_projection);
             maximumEdgeLength = std::max(maximumEdgeLength, edgeLength);
         }
-
-        return true;
     }
 
-    //copypol: look how the layer thickness is determined when the input distance is not given, but th coordinate of another point
-    bool Polygons::OffsetCopy(double distance, bool innerAndOuter, Polygons& newPolygon)
+    void Polygons::OffsetCopy(double distance, bool innerAndOuter, Polygons& newPolygon)
     {
         int sizenewPolygon = GetNumNodes();
         if (innerAndOuter)
@@ -578,26 +567,28 @@ namespace meshkernel
 
         // set the new polygon
         newPolygon = {newPolygonPoints, m_projection};
-
-        return true;
     }
 
     bool Polygons::IsPointInPolygon(const Point& point, int polygonIndex) const
     {
-        if (polygonIndex >= m_indices.size())
+        // empty polygon means everything is included
+        if (m_indices.empty())
         {
             return true;
         }
 
-        bool inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indices[polygonIndex][0], m_indices[polygonIndex][1]);
+        if (polygonIndex >= m_indices.size())
+        {
+            throw std::invalid_argument("Polygons::IsPointInPolygon: Invalid polygon index.");
+        }
 
+        bool inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indices[polygonIndex][0], m_indices[polygonIndex][1]);
         return inPolygon;
     }
 
     bool Polygons::IsPointInPolygons(const Point& point) const
     {
-
-        // empty polygon, always included
+        // empty polygon means everything is included
         if (m_indices.empty())
         {
             return true;
@@ -632,6 +623,11 @@ namespace meshkernel
         }
 
         return inPolygon;
+    }
+
+    bool Polygons::IsEmpty() const
+    {
+        return m_indices.empty();
     }
 
 }; // namespace meshkernel
