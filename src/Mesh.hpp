@@ -97,33 +97,22 @@ namespace meshkernel
         /// <returns>The resulting mesh</returns>
         Mesh& operator+=(Mesh const& rhs);
 
-        /// <summary>
-        /// Set the mesh starting from the edges and nodes
-        /// </summary>
-        /// <param name="edges">The input edges</param>
-        /// <param name="nodes">The input nodes</param>
-        /// <param name="projection">Projection to use</param>
-        /// <param name="administration">Type of administration to perform</param>
-        /// <returns>If the method succeeded</returns>
-        bool Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        /// @brief Set the mesh starting from the edges and nodes
+        /// @param[in] edges">The input edges</param>
+        /// @param[in] nodes The input nodes
+        /// @param[in] projection Projection to use
+        /// @param[in] administration Type of administration to perform
+        void Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
-        /// <summary>
-        /// Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
-        /// </summary>
-        /// <param name="administrationOption">Type of administration to perform</param>
-        /// <returns>If the method succeeded</returns>
-        bool SetFlatCopies(AdministrationOptions administrationOption);
+        /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
+        /// @param administrationOption Type of administration to perform
+        void SetFlatCopies(AdministrationOptions administrationOption);
 
-        /// <summary>
-        /// Perform mesh administration
-        /// </summary>
-        /// <param name="administrationOption">Type of administration to perform</param>
-        /// <returns>If the method succeeded</returns>
-        bool Administrate(AdministrationOptions administrationOption);
+        /// @brief Perform mesh administration
+        /// @param administrationOption Type of administration to perform
+        void Administrate(AdministrationOptions administrationOption);
 
-        /// <summary>
-        /// Compute face circumcenters, centers of mass and face areas
-        /// </summary>
+        /// @brief Compute face circumcenters, centers of mass and face areas
         void ComputeFaceCircumcentersMassCentersAndAreas();
 
         /// <summary>
@@ -131,292 +120,202 @@ namespace meshkernel
         /// </summary>
         void FindFaces();
 
-        /// <summary>
-        /// Gets the corners of a box bounding the mesh
-        /// </summary>
-        /// <param name="lowerLeft">Lower left corner</param>
-        /// <param name="upperRight">Upper right corner</param>
-        /// <returns>If the method succeeded</returns>
-        bool GetBoundingBox(Point& lowerLeft, Point& upperRight) const;
+        /// @brief Gets the corners of a box bounding the mesh
+        /// @param[out] lowerLeft Lower left corner
+        /// @param[out] upperRight Upper right corner
+        void GetBoundingBox(Point& lowerLeft, Point& upperRight) const;
 
-        /// <summary>
-        /// Offset the x coordinates if m_projection is spherical
-        /// </summary>
-        /// <param name="minx"></param>
-        /// <param name="miny"></param>
-        /// <returns>If the method succeeded</returns>
-        bool OffsetSphericalCoordinates(double minx, double miny);
+        /// @brief Offset the x coordinates if m_projection is spherical
+        /// @param[in] minx
+        /// @param[in] miny
+        void OffsetSphericalCoordinates(double minx, double miny);
 
-        /// <summary>
-        /// Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
-        /// </summary>
-        /// <param name="polygons">Polygon where to perform the merging</param>
-        /// <returns>If the method succeeded</returns>
-        bool MergeNodesInPolygon(const Polygons& polygons);
+        /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
+        /// @param[in] polygons Polygon where to perform the merging
+        void MergeNodesInPolygon(const Polygons& polygons);
 
-        /// <summary>
-        /// Merges two mesh nodes
-        /// </summary>
-        /// <param name="startNode">The index of the first node to be merged</param>
-        /// <param name="endNode">The second of the second node to be merged</param>
-        /// <returns>If the method succeeded</returns>
-        bool MergeTwoNodes(int startNode, int endNode);
+        /// @brief Merges two mesh nodes
+        /// @param[in] startNode The index of the first node to be merged
+        /// @param[in] endNode The second of the second node to be merged
+        void MergeTwoNodes(int startNode, int endNode);
 
-        /// <summary>
-        /// Make a new rectangular mesh, composed of quads (makenet)
-        /// </summary>
-        /// <param name="makeGridParametersNative">The structure containing the make grid parameters </param>
-        /// <param name="polygons">The polygon to account for</param>
-        /// <returns>If the method succeeded</returns>
-        bool MakeMesh(const meshkernelapi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
+        /// @brief Make a new rectangular mesh, composed of quads (makenet)
+        /// @param[in] makeGridParametersNative The structure containing the make grid parameters
+        /// @param[in] polygons The polygon to account for
+        void MakeMesh(const meshkernelapi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
 
-        /// <summary>
-        /// Deletes a mesh in a polygon, using several options (delnet)
-        /// </summary>
-        /// <param name="polygons">The polygon where to perform the operation</param>
-        /// <param name="deletionOption">The deletion option</param>
-        /// <param name="invertDeletion">Inverts the selected node to delete (instead of outside the polygon, inside the polygon) </param>
-        /// <returns>If the method succeeded</returns>
-        bool DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion);
+        /// @brief Deletes a mesh in a polygon, using several options (delnet)
+        /// @param[in] polygons The polygon where to perform the operation
+        /// @param[in] deletionOption The deletion option
+        /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
+        void DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion);
 
-        /// <summary>
-        /// Connect two existing nodes, forming a new edge (connectdbn)
-        /// </summary>
-        /// <param name="startNode">The start node index</param>
-        /// <param name="endNode">The end node index</param>
-        /// <param name="newEdgeIndex">The index of the new edge</param>
-        /// <returns>If the method succeeded</returns>
-        bool ConnectNodes(int startNode, int endNode, int& newEdgeIndex);
+        /// @brief Connect two existing nodes, forming a new edge (connectdbn)
+        /// @param[in] startNode The start node index
+        /// @param[in] endNode The end node index
+        /// @param[out] newEdgeIndex The index of the new edge
+        void ConnectNodes(int startNode, int endNode, int& newEdgeIndex);
 
-        /// <summary>
-        /// Insert a new node in the mesh (setnewpoint)
-        /// </summary>
-        /// <param name="newPoint">The coordinate of the new point</param>
-        /// <param name="newNodeIndex">The index of the new node</param>
-        /// <param name="updateRTree">Update m_nodesRTree</param>
-        /// <returns>If the method succeeded</returns>
-        bool InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree = false);
+        /// @brief Insert a new node in the mesh (setnewpoint)
+        /// @param[in] newPoint The coordinate of the new point
+        /// @param[out] newNodeIndex The index of the new node
+        /// @param[in] updateRTree Update m_nodesRTree
+        void InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree = false);
 
-        /// <summary>
-        /// Delete a node
-        /// </summary>
-        /// <param name="nodeIndex">The index of the node to delete</param>
-        /// <param name="updateRTree">Update m_nodesRTree</param>
-        /// <returns>If the method succeeded</returns>
-        bool DeleteNode(int nodeIndex);
+        /// @brief Delete a node
+        /// @param[in] nodeIndex The index of the node to delete
+        void DeleteNode(int nodeIndex);
 
-        /// <summary>
-        /// Find the edge sharing two nodes
-        /// </summary>
-        /// <param name="firstNodeIndex">The index of the first node</param>
-        /// <param name="secondNodeIndex">The index of the second node</param>
-        /// <param name="edgeIndex">The edge index</param>
-        /// <returns>If the method succeeded</returns>
-        bool FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
+        /// @brief Find the edge sharing two nodes
+        /// @param[in] firstNodeIndex The index of the first node
+        /// @param[in] secondNodeIndex The index of the second node
+        /// @param[out] edgeIndex The edge index
+        void FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
 
-        /// <summary>
-        /// Move a node to a new location
-        /// </summary>
-        /// <param name="newPoint">The new location</param>
-        /// <param name="nodeindex">The index of the node to move</param>
-        /// <returns>If the method succeeded</returns>
-        bool MoveNode(Point newPoint, int nodeindex);
+        /// @brief Move a node to a new location
+        /// @param[in] newPoint The new location
+        /// @param[in] nodeindex The index of the node to move
+        void MoveNode(Point newPoint, int nodeindex);
 
-        /// <summary>
-        /// Get the index of a node close to a point
-        /// </summary>
-        /// <param name="point">The starting point from where to start the search </param>
-        /// <param name="searchRadius">The search radius</param>
-        /// <param name="nodeIndex">The node index (-1 if no node is found)</param>
-        /// <returns>If the method succeeded</returns>
-        bool GetNodeIndex(Point point, double searchRadius, int& nodeIndex);
+        /// @brief Get the index of a node close to a point
+        /// @param[in] point The starting point from where to start the search
+        /// @param[in] searchRadius The search radius
+        /// @returns The index of the closest node
+        [[nodiscard]] int GetNodeIndex(Point point, double searchRadius);
 
-        /// <summary>
-        /// Deletes an edge
-        /// </summary>
-        /// <param name="edgeIndex">The edge index</param>
-        /// <returns>If the method succeeded</returns>
-        bool DeleteEdge(int edgeIndex);
+        /// @brief Deletes an edge
+        /// @param[in] edgeIndex The edge index
+        void DeleteEdge(int edgeIndex);
 
-        /// <summary>
         /// Finds the closest edge close to a point
-        /// </summary>
-        /// <param name="point">The starting point from where to start the search</param>
-        /// <param>The edge index (-1 if no edges is found)</param>
-        /// <returns>If the method succeeded</returns>
-        bool FindEdgeCloseToAPoint(Point point, int& edgeIndex);
+        /// @param[in] point The starting point from where to start the search
+        /// @returns The index of the closest edge
+        [[nodiscard]] int FindEdgeCloseToAPoint(Point point);
 
-        /// <summary>
-        /// Masks the edges of all faces included in a polygon
-        /// </summary>
-        /// <param name="polygons">The selection polygon</param>
-        /// <param name="invertSelection">Invert selection</param>
-        /// <param name="includeIntersected">Included the edges intersected by the polygon</param>
-        /// <returns>If the method succeeded</returns>
-        bool MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected);
+        /// @brief Masks the edges of all faces included in a polygon
+        /// @param polygons The selection polygon
+        /// @param invertSelection Invert selection
+        /// @param includeIntersected Included the edges intersected by the polygon
+        void MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected);
 
-        /// <summary>
-        /// From the masked edges compute the masked nodes
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool ComputeNodeMaskFromEdgeMask();
+        /// @brief From the masked edges compute the masked nodes
+        void ComputeNodeMaskFromEdgeMask();
 
-        /// <summary>
-        /// For a face, fills the local caches (get_cellpolygon)
-        /// </summary>
-        /// <param name="faceIndex">The face index</param>
-        /// <param name="polygonNodesCache">The node cache array filled with the nodes values</param>
-        /// <param name="localNodeIndicesCache">The consecutive node index in polygonNodesCache (0, 1, 2,...)</param>
-        /// <param name="edgeIndicesCache">The edge cache array filled with edge indices</param>
-        /// <param name="numClosedPolygonNodes">The number of valid values in the array above</param>
-        /// <returns>If the method succeeded</returns>
-        bool FaceClosedPolygon(int faceIndex,
+        /// @brief For a face, fills the local caches (get_cellpolygon)
+        /// @param[in] faceIndex The face index
+        /// @param[out] polygonNodesCache The node cache array filled with the nodes values
+        /// @param[out] localNodeIndicesCache The consecutive node index in polygonNodesCache (0, 1, 2,...)
+        /// @param[out] edgeIndicesCache The edge cache array filled with edge indices
+        /// @param[out] numClosedPolygonNodes The number of valid values in the array above
+        void FaceClosedPolygon(int faceIndex,
                                std::vector<Point>& polygonNodesCache,
                                std::vector<int>& localNodeIndicesCache,
                                std::vector<int>& edgeIndicesCache,
                                int& numClosedPolygonNodes) const;
 
-        /// <summary>
-        /// For a face, fills the polygonNodesCache with the face nodes
-        /// </summary>
-        /// <param name="faceIndex">The face index</param>
-        /// <param name="polygonNodesCache">The cache array to be filled </param>
-        /// <param name="numClosedPolygonNodes">The number of valid face nodes</param>
-        /// <returns>If the method succeeded</returns>
-        bool FaceClosedPolygon(int faceIndex,
+        /// @brief For a face, fills the polygonNodesCache with the face nodes
+        /// @param[in] faceIndex The face index
+        /// @param[out] polygonNodesCache The cache array to be filled
+        /// @param[out] numClosedPolygonNodes The number of valid face nodes
+        void FaceClosedPolygon(int faceIndex,
                                std::vector<Point>& polygonNodesCache,
                                int& numClosedPolygonNodes) const;
 
-        /// <summary>
-        /// Determine if a face is fully contained in polygon or not, based on m_nodeMask
-        /// </summary>
-        /// <param name="faceIndex">The face index</param>
-        /// <returns>If the method succeeded</returns>
-        bool IsFullFaceNotInPolygon(int faceIndex) const;
+        /// @brief Determine if a face is fully contained in polygon or not, based on m_nodeMask
+        /// @param[in] faceIndex The face index
+        /// @returns If the face is fully contained in the polygon or not
+        [[nodiscard]] bool IsFullFaceNotInPolygon(int faceIndex) const;
 
-        /// <summary>
-        /// Mask all nodes in a polygon
-        /// </summary>
-        /// <param name="polygons">The input polygon</param>
-        /// <param name="inside">Inside/outside option</param>
-        /// <returns>If the method succeeded</returns>
-        bool MaskNodesInPolygons(const Polygons& polygons, bool inside);
+        /// @brief Mask all nodes in a polygon
+        /// @param[in] polygons The input polygon
+        /// @param[in] inside Inside/outside option
+        void MaskNodesInPolygons(const Polygons& polygons, bool inside);
 
-        /// <summary>
-        /// Find the common node two edges share
-        /// </summary>
-        /// <param name="firstEdgeIndex">The index of the first edge</param>
-        /// <param name="secondEdgeIndex">The index of the second edge</param>
-        /// <param name="node">The shared node (-1 if no node is found)</param>
-        /// <returns>If the method succeeded</returns>
-        bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
+        /// @brief Find the common node two edges share
+        /// This method uses return parameters since the success is evaluated in a hot loop
+        /// @param[in] firstEdgeIndex The index of the first edge
+        /// @param[in] secondEdgeIndex The index of the second edge
+        /// @param[out] node The shared node (-1 if no node is found)
+        /// \returns If the node could be found
+        [[nodiscard]] bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 
-        /// <summary>
-        /// Compute the lengths of all edges in one go
-        /// </summary>
-        bool ComputeEdgeLengths();
+        /// @brief Compute the lengths of all edges in one go
+        void ComputeEdgeLengths();
 
-        /// <summary>
-        /// Computes the edges centers
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool ComputeEdgesCenters();
+        /// @brief Computes the edges centers
+        void ComputeEdgesCenters();
 
         /// <summary>
         /// Get the number of valid nodes
         /// </summary>
         /// <returns>The number of valid node</returns>
-        int GetNumNodes() const { return m_numNodes; }
+        [[nodiscard]] int GetNumNodes() const { return m_numNodes; }
 
         /// <summary>
         /// Get the number of valid edges
         /// </summary>
         /// <returns>The number of valid edges</returns>
-        int GetNumEdges() const { return m_numEdges; }
+        [[nodiscard]] int GetNumEdges() const { return m_numEdges; }
 
         /// <summary>
         /// Get the number of valid faces
         /// </summary>
         /// <returns>The number of valid faces</returns>
-        int GetNumFaces() const { return m_numFaces; }
+        [[nodiscard]] int GetNumFaces() const { return m_numFaces; }
 
         /// <summary>
         /// Get the number of edges for a face
         /// </summary>
         /// <param name="faceIndex">The face index</param>
         /// <returns>The number of edges for a face</returns>
-        int GetNumFaceEdges(const int faceIndex) const { return m_numFacesNodes[faceIndex]; }
+        [[nodiscard]] int GetNumFaceEdges(const int faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
         /// <summary>
         /// Get the number of faces an edges shares
         /// </summary>
         /// <param name="edgeIndex">The edge index</param>
         /// <returns>The number of faces an edges shares</returns>
-        int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+        [[nodiscard]] int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
-        /// <summary>
-        ///  Circumcenter of a face (getcircumcenter)
-        /// </summary>
-        /// <param name="polygon">Cache storing the face nodes</param>
-        /// <param name="middlePoints">Caching array for the edges middle points</param>
-        /// <param name="normals">Caching array for normals</param>
-        /// <param name="numNodes">Number of valid nodes in the cache</param>
-        /// <param name="edgesNumFaces">For meshes, the number of faces sharing the edges</param>
-        /// <param name="weightCircumCenter">Circumcenter weight</param>
-        /// <param name="result">The computed circumcenter</param>
-        /// <returns>If the method succeeded</returns>
-        bool ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                    std::vector<Point>& middlePoints,
-                                    std::vector<Point>& normals,
-                                    int numNodes,
-                                    const std::vector<int>& edgesNumFaces,
-                                    double weightCircumCenter,
-                                    Point& result) const;
+        /// @brief Circumcenter of a face (getcircumcenter)
+        /// @param[in,out] polygon Cache storing the face nodes
+        /// @param[in,out] middlePoints Caching array for the edges middle points
+        /// @param[in,out] normals Caching array for normals
+        /// @param[in] numNodes Number of valid nodes in the cache
+        /// @param[in] edgesNumFaces For meshes, the number of faces sharing the edges
+        /// @param[in] weightCircumCenter Circumcenter weight
+        /// @returns The computed circumcenter
+        [[nodiscard]] Point ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                                   std::vector<Point>& middlePoints,
+                                                   std::vector<Point>& normals,
+                                                   int numNodes,
+                                                   const std::vector<int>& edgesNumFaces,
+                                                   double weightCircumCenter) const;
 
-        /// <summary>
-        /// Computes m_nodesNodes, see class members
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool ComputeNodeNeighbours();
+        /// @brief Computes m_nodesNodes, see class members
+        void ComputeNodeNeighbours();
 
-        /// <summary>
-        /// Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters
-        /// </summary>
-        /// <param name="orthogonality">The edge orthogonality, passed to the client</param>
-        /// <returns>If the method succeeded</returns>
-        bool GetOrthogonality(double* orthogonality);
+        /// @brief Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters
+        /// @param[out] orthogonality The edge orthogonality, passed to the client
+        void GetOrthogonality(double* orthogonality);
 
-        /// <summary>
-        /// Gets the smoothness values, ratios of the face areas
-        /// </summary>
-        /// <param name="smoothness">The smoothness at the edges</param>
-        /// <returns>If the method succeeded</returns>
-        bool GetSmoothness(double* smoothness);
+        /// @brief Gets the smoothness values, ratios of the face areas
+        /// @param[out] smoothness The smoothness at the edges
+        void GetSmoothness(double* smoothness);
 
-        /// <summary>
-        /// Gets the aspect ratios, the ratio edges to segments connecting the face circumcenters lengths
-        /// </summary>
-        /// <param name="aspectRatio">The aspect ratios</param>
-        /// <returns>If the method succeeded</returns>
-        bool GetAspectRatios(std::vector<double>& aspectRatios);
+        /// @brief Gets the aspect ratios, the ratio edges to segments connecting the face circumcenters lengths
+        /// @param aspectRatio The aspect ratios
+        void GetAspectRatios(std::vector<double>& aspectRatios);
 
-        /// <summary>
-        /// Classifies the nodes (makenetnodescoding)
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool ClassifyNodes();
+        ///  @brief Classifies the nodes (makenetnodescoding)
+        void ClassifyNodes();
 
-        /// <summary>
-        ///  Sort edges in conterclockwise orther (Sort_links_ccw)
-        /// </summary>
-        /// <param name="nodeIndex">The node index for which sorting should take place</param>
+        /// @brief Sort edges in conterclockwise orther (Sort_links_ccw)
+        /// @param[in] nodeIndex The node index for which sorting should take place
         void SortEdgesInCounterClockWiseOrder(int nodeIndex);
 
-        /// <summary>
-        /// Transform non-triangular faces in triangular faces
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool TriangulateFaces();
+        /// @brief Transform non-triangular faces in triangular faces
+        void TriangulateFaces();
 
         // nodes
         std::vector<Point> m_nodes;                 // The mesh nodes (xk, yk)
@@ -461,24 +360,19 @@ namespace meshkernel
         int m_maxNumNeighbours = 0;
 
     private:
-        /// <summary>
-        /// Node administration (setnodadmin)
-        /// </summary>
+        /// @brief Node administration (setnodadmin)
         void NodeAdministration();
 
-        /// <summary>
-        /// Find cells recursive, works with an arbitrary number of edges
-        /// </summary>
-        /// <param name="startingNode">The starting node</param>
-        /// <param name="node">The current node</param>
-        /// <param name="numEdges">The number of edges visited so far</param>
-        /// <param name="previousEdge">The previously visited edge</param>
-        /// <param name="edges">The vector storing the current edges forming a face</param>
-        /// <param name="nodes">The vector storing the current nodes forming a face</param>
-        /// <param name="sortedEdges">The caching array used for sorting the edges, used to inquire if an edge has been already visited</param>
-        /// <param name="sortedNodes">The caching array used for sorting the nodes, used to inquire if a node has been already visited</param>
-        /// <returns>If the method succeeded</returns>
-        bool FindFacesRecursive(int startingNode,
+        /// @brief Find cells recursive, works with an arbitrary number of edges
+        /// @param startingNode The starting node
+        /// @param node The current node
+        /// @param numEdges The number of edges visited so far
+        /// @param previousEdge The previously visited edge
+        /// @param edges The vector storing the current edges forming a face
+        /// @param nodes The vector storing the current nodes forming a face
+        /// @param sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
+        /// @param sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
+        void FindFacesRecursive(int startingNode,
                                 int node,
                                 int numEdges,
                                 int previousEdge,
@@ -487,17 +381,14 @@ namespace meshkernel
                                 std::vector<int>& sortedEdges,
                                 std::vector<int>& sortedNodes);
 
-        /// <summary>
-        /// Checks if a triangle has an acute angle (checktriangle)
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const;
+        /// @brief Checks if a triangle has an acute angle (checktriangle)
+        /// @param[in] faceNodes
+        /// @param[in] nodes
+        /// @returns If triangle is okay
+        [[nodiscard]] bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const;
 
-        /// <summary>
-        /// Removes all invalid nodes and edges
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool RemoveInvalidNodesAndEdges();
+        /// @brief Removes all invalid nodes and edges
+        void RemoveInvalidNodesAndEdges();
 
         int m_numFaces = 0;               // number of valid faces (nump)
         int m_numNodes = 0;               // Number of valid nodes in m_nodes
