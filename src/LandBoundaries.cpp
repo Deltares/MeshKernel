@@ -167,7 +167,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         bool meshBoundOnly = false;
@@ -219,7 +219,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         std::vector<int> nodesLoc;
@@ -357,7 +357,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         int startSegmentIndex = m_meshNodesLandBoundarySegments[nodesLoc[0]];
@@ -420,7 +420,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         auto startLandBoundaryIndex = m_segmentIndices[landBoundarySegment][0];
@@ -580,7 +580,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         std::fill(m_nodeMask.begin(), m_nodeMask.end(), doubleMissingValue);
@@ -696,7 +696,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         int numNextFaces = 0;
@@ -840,7 +840,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return false;
         }
 
         bool isClose = false;
@@ -960,7 +960,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         // compute the start and end point of the land boundary respectively
@@ -1038,7 +1038,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         int firstMeshNodeIndex = m_mesh->m_edges[startEdge].first;
@@ -1079,7 +1079,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         connectedNodes.resize(m_mesh->GetNumNodes(), -1);
@@ -1208,7 +1208,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         minimumDistance = std::numeric_limits<double>::max();
@@ -1239,7 +1239,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return false;
         }
 
         for (const auto& edge : m_mesh->m_facesEdges[face])
@@ -1273,7 +1273,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::FindNearestMeshBoundary: The land boundaries contain no nodes.");
+            return;
         }
 
         const int numNodes = m_mesh->GetNumNodes();

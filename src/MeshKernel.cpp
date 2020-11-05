@@ -73,7 +73,7 @@ namespace meshkernelapi
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
-            throw std::invalid_argument("MeshKernel: The polygon is empty.");
+            return;
         }
         result.resize(geometryListIn.numberOfCoordinates);
 
