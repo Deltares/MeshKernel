@@ -1212,7 +1212,7 @@ namespace meshkernel
         area = std::abs(area);
     }
 
-    static int NextCircularForwardIndex(int currentIndex, int size)
+    [[nodiscard]] static int NextCircularForwardIndex(int currentIndex, int size)
     {
         int index = currentIndex + 1;
         if (index >= size)
