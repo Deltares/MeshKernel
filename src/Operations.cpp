@@ -32,24 +32,25 @@
 #include <numeric>
 #include "Entities.hpp"
 #include "Constants.cpp"
+#include "Exceptions.hpp"
 
 namespace meshkernel
 {
     // coordinate reference independent operations
     template <typename T>
-    T DotProduct(const T& dx1, const T& dx2)
+    [[nodiscard]] T DotProduct(const T& dx1, const T& dx2)
     {
         return dx1 * dx2;
     }
 
     template <typename T, typename... Args>
-    T DotProduct(const T& dx1, const T& dx2, Args&... args)
+    [[nodiscard]] T DotProduct(const T& dx1, const T& dx2, Args&... args)
     {
         return dx1 * dx2 + DotProduct(args...);
     }
 
     template <typename T>
-    bool ResizeVectorIfNeeded(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
+    void ResizeVectorIfNeeded(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
     {
         const int currentSize = int(vectorToResize.size());
         if (newSize > currentSize)
@@ -57,11 +58,10 @@ namespace meshkernel
             newSize = std::max(newSize, int(currentSize * 1.2));
             vectorToResize.resize(newSize, fillValue);
         }
-        return true;
     }
 
     template <typename T>
-    bool ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
+    void ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
     {
         const int currentSize = int(vectorToResize.size());
         if (newSize > currentSize)
@@ -69,11 +69,10 @@ namespace meshkernel
             newSize = std::max(minSize, int(5 * newSize));
             vectorToResize.resize(newSize, fillValue);
         }
-        return true;
     }
 
     template <typename T>
-    int FindIndex(const std::vector<T>& vec, T el)
+    [[nodiscard]] int FindIndex(const std::vector<T>& vec, T el)
     {
         int index = 0;
         for (int n = 0; n < vec.size(); n++)
@@ -139,7 +138,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    std::vector<int> SortedIndexes(const std::vector<T>& v)
+    [[nodiscard]] std::vector<int> SortedIndexes(const std::vector<T>& v)
     {
         std::vector<int> idx(v.size());
         iota(idx.begin(), idx.end(), 0);
@@ -160,7 +159,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    bool MakeMonothonic(std::vector<T>& v)
+    void MakeMonothonic(std::vector<T>& v)
     {
 
         bool isMonotonic = false;
@@ -186,7 +185,6 @@ namespace meshkernel
                 }
             }
         }
-        return true;
     }
 
     template <typename T>
@@ -200,7 +198,7 @@ namespace meshkernel
 
     // algorithm performing the zero's search using the golden section algorithm's
     template <typename F>
-    double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
+    [[nodiscard]] double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
     {
         //golden distance factors
         const double c = 0.38196602;
@@ -249,7 +247,7 @@ namespace meshkernel
         return f1 < f2 ? x1 : x2;
     }
 
-    static bool IsPointOnPole(const Point& point)
+    [[nodiscard]] static bool IsPointOnPole(const Point& point)
     {
         return std::abs(std::abs(point.y) - 90.0) < absLatitudeAtPoles;
     }
@@ -276,7 +274,7 @@ namespace meshkernel
     ///    Return: >0 for point left of the line through leftPoint and rightPoint
     ///            =0 for point  on the line
     ///            <0 for point  right of the line
-    static double IsLeft(const Point& leftPoint, const Point& rightPoint, const Point& point)
+    [[nodiscard]] static double IsLeft(const Point& leftPoint, const Point& rightPoint, const Point& point)
     {
         double left = (rightPoint.x - leftPoint.x) * (point.y - leftPoint.y) - (point.x - leftPoint.x) * (rightPoint.y - leftPoint.y);
         return left;
@@ -284,7 +282,7 @@ namespace meshkernel
 
     /// Check if a point is in polygonNodes using the winding number method
     /// polygonNodes: a closed polygonNodes consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
-    static bool IsPointInPolygonNodes(const Point& point, const std::vector<Point>& polygonNodes, int startNode, int endNode)
+    [[nodiscard]] static bool IsPointInPolygonNodes(const Point& point, const std::vector<Point>& polygonNodes, int startNode, int endNode)
     {
         if (endNode <= startNode)
         {
@@ -329,7 +327,7 @@ namespace meshkernel
         return windingNumber == 0 ? false : true;
     }
 
-    static bool ComputeThreeBaseComponents(const Point& point, double (&exxp)[3], double (&eyyp)[3], double (&ezzp)[3])
+    static void ComputeThreeBaseComponents(const Point& point, double (&exxp)[3], double (&eyyp)[3], double (&ezzp)[3])
     {
         double phi0 = point.y * degrad_hp;
         double lambda0 = point.x * degrad_hp;
@@ -345,11 +343,9 @@ namespace meshkernel
         ezzp[0] = -sin(phi0) * cos(lambda0);
         ezzp[1] = -sin(phi0) * sin(lambda0);
         ezzp[2] = cos(phi0);
-
-        return true;
     };
 
-    static bool ComputeTwoBaseComponents(const Point& point, double (&elambda)[3], double (&ephi)[3])
+    static void ComputeTwoBaseComponents(const Point& point, double (&elambda)[3], double (&ephi)[3])
     {
         double phi0 = point.y * degrad_hp;
         double lambda0 = point.x * degrad_hp;
@@ -361,11 +357,9 @@ namespace meshkernel
         ephi[0] = -sin(phi0) * cos(lambda0);
         ephi[1] = -sin(phi0) * sin(lambda0);
         ephi[2] = cos(phi0);
-
-        return true;
     };
 
-    static double GetDx(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    [[nodiscard]] static double GetDx(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
         double delta = secondPoint.x - firstPoint.x;
         if (std::abs(delta) <= nearlyZero)
@@ -407,7 +401,7 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    static double GetDy(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    [[nodiscard]] static double GetDy(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
         double delta = secondPoint.y - firstPoint.y;
         if (std::abs(delta) <= nearlyZero)
@@ -430,8 +424,8 @@ namespace meshkernel
     }
 
     ///dprodout: out product of two segments
-    static double OuterProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment,
-                                          const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
+    [[nodiscard]] static double OuterProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment,
+                                                        const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
         if (projection == Projections::sphericalAccurate)
         {
@@ -519,7 +513,7 @@ namespace meshkernel
         }
     }
 
-    static bool ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projections& projection, Point& centre)
+    static void ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projections& projection, Point& centre)
     {
         centre.x = doubleMissingValue;
         centre.y = doubleMissingValue;
@@ -554,8 +548,6 @@ namespace meshkernel
         {
             centre = (firstPoint + secondPoint) * 0.5;
         }
-
-        return true;
     }
 
     ///normalin, Normalized vector in direction 1 -> 2, in the orientation of (xu,yu)
@@ -606,7 +598,7 @@ namespace meshkernel
 
     //spher2locvec, transforms vector with componentis in global spherical coordinate directions(xglob, yglob)
     ///to local coordinate directions(xloc, yloc) around reference point(xref, yref)
-    static bool TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, Projections projection, Point& localComponents)
+    static void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, Projections projection, Point& localComponents)
     {
         if (projection == Projections::sphericalAccurate)
         {
@@ -657,17 +649,15 @@ namespace meshkernel
             //compute vectors in other point in local base(elambdaloc, ephiloc)
             localComponents.x = elambdaloc[0] * vxx + elambdaloc[1] * vyy + elambdaloc[2] * vzz;
             localComponents.y = ephiloc[0] * vxx + ephiloc[1] * vyy + ephiloc[2] * vzz;
-
-            return true;
         }
-
-        // cartesian and spherical
-        if (projection == Projections::cartesian || projection == Projections::spherical)
+        else
         {
-            localComponents = globalComponents;
+            // cartesian and spherical
+            if (projection == Projections::cartesian || projection == Projections::spherical)
+            {
+                localComponents = globalComponents;
+            }
         }
-
-        return true;
     }
 
     ///normalout
@@ -836,7 +826,7 @@ namespace meshkernel
         }
     }
 
-    static double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    [[nodiscard]] static double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
 
         if (!firstPoint.IsValid() || !secondPoint.IsValid())
@@ -873,7 +863,7 @@ namespace meshkernel
     }
 
     //dbdistance
-    static double Distance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    [[nodiscard]] static double Distance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
         double distance = ComputeSquaredDistance(firstPoint, secondPoint, projection);
         if (distance >= 0.0)
@@ -886,7 +876,7 @@ namespace meshkernel
     // dLINEDIS3
     // Computes the perpendicular distance from point to a line firstNode - secondNode.
     // normalPoint: coordinates of the projected point from point onto the line
-    static double DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, Point& normalPoint, double& ratio, const Projections& projection)
+    [[nodiscard]] static double DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, Point& normalPoint, double& ratio, const Projections& projection)
     {
         if (projection == Projections::cartesian || projection == Projections::spherical)
         {
@@ -965,7 +955,7 @@ namespace meshkernel
     }
 
     /// dprodin inner product of two segments
-    static double InnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
+    [[nodiscard]] static double InnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
         if (projection == Projections::sphericalAccurate)
         {
@@ -1006,7 +996,7 @@ namespace meshkernel
     }
 
     // dcosphi
-    static double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
+    [[nodiscard]] static double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projections& projection)
     {
         if (projection == Projections::sphericalAccurate)
         {
@@ -1082,7 +1072,7 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    static bool CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, const Projections projection, Point& circumcenter)
+    static void CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, const Projections projection, Point& circumcenter)
     {
 
         double dx2 = GetDx(p1, p2, projection);
@@ -1113,22 +1103,20 @@ namespace meshkernel
         if (projection == Projections::sphericalAccurate)
         {
             //TODO: compute in case of spherical accurate
-            return true;
         }
-        return true;
     }
 
     /// (CROSS)
-    static bool AreLinesCrossing(const Point& firstSegmentFistPoint,
-                                 const Point& firstSegmentSecondPoint,
-                                 const Point& secondSegmentFistPoint,
-                                 const Point& secondSegmentSecondPoint,
-                                 bool adimensional,
-                                 Point& intersection,
-                                 double& crossProduct,
-                                 double& firstRatio,
-                                 double& secondRatio,
-                                 const Projections& projection)
+    [[nodiscard]] static bool AreLinesCrossing(const Point& firstSegmentFistPoint,
+                                               const Point& firstSegmentSecondPoint,
+                                               const Point& secondSegmentFistPoint,
+                                               const Point& secondSegmentSecondPoint,
+                                               bool adimensional,
+                                               Point& intersection,
+                                               double& crossProduct,
+                                               double& firstRatio,
+                                               double& secondRatio,
+                                               const Projections& projection)
     {
         bool isCrossing = false;
 
@@ -1170,17 +1158,11 @@ namespace meshkernel
         return isCrossing;
     }
 
-    //faceAreaAndCenterOfMass: for cartesian, spherical point and spherical3dPoint
-    static bool FaceAreaAndCenterOfMass(std::vector<Point>& polygon, int numberOfPolygonPoints, Projections projection, double& area, Point& centerOfMass)
+    static void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, int numberOfPolygonPoints, Projections projection, double& area, Point& centerOfMass)
     {
         if (numberOfPolygonPoints <= 0)
         {
-            return false;
-        }
-
-        if (polygon[0] != polygon[numberOfPolygonPoints])
-        {
-            return false;
+            throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon contains no nodes.");
         }
 
         double minX;
@@ -1228,8 +1210,6 @@ namespace meshkernel
         centerOfMass.y = yCenterOfMass + minY;
 
         area = std::abs(area);
-
-        return true;
     }
 
     static int NextCircularForwardIndex(int currentIndex, int size)
@@ -1242,7 +1222,7 @@ namespace meshkernel
         return index;
     }
 
-    static int NextCircularBackwardIndex(int currentIndex, int size)
+    [[nodiscard]] static int NextCircularBackwardIndex(int currentIndex, int size)
     {
         int index = currentIndex - 1;
         if (index < 0)
@@ -1253,10 +1233,10 @@ namespace meshkernel
     }
 
     template <typename T>
-    bool InterpolateSplinePoint(const std::vector<T>& coordinates,
-                                const std::vector<T>& coordinatesDerivatives,
-                                double pointAdimensionalCoordinate,
-                                T& pointCoordinate)
+    [[nodiscard]] bool InterpolateSplinePoint(const std::vector<T>& coordinates,
+                                              const std::vector<T>& coordinatesDerivatives,
+                                              double pointAdimensionalCoordinate,
+                                              T& pointCoordinate)
     {
         if (pointAdimensionalCoordinate < 0)
         {
@@ -1299,7 +1279,7 @@ namespace meshkernel
         }
     }
 
-    static bool ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, Projections projection, std::vector<double>& result, double& totalDistance)
+    static void ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, Projections projection, std::vector<double>& result, double& totalDistance)
     {
         result[0] = 0;
         for (int i = 1; i < v.size(); i++)
@@ -1313,19 +1293,17 @@ namespace meshkernel
         {
             result[i] = result[i] * inverseTotalDistance;
         }
-
-        return true;
     }
 
     // get the sign
     template <typename T>
-    static int sgn(T val)
+    [[nodiscard]] static int sgn(T val)
     {
         return (T(0) < val ? 1 : 0) - (val < T(0) ? 1 : 0);
     }
 
     //(DUITPL)
-    static int TwoSegmentsSign(const Point& p1, const Point& p2, const Point& p3, const Point& p4, Projections projection)
+    [[nodiscard]] static int TwoSegmentsSign(const Point& p1, const Point& p2, const Point& p3, const Point& p4, Projections projection)
     {
 
         auto dx1 = GetDx(p1, p2, projection);
@@ -1337,7 +1315,7 @@ namespace meshkernel
     }
 
     //(TRANFN2)
-    static bool InterpolateTransfinite(const std::vector<Point>& sideOne,
+    static void InterpolateTransfinite(const std::vector<Point>& sideOne,
                                        const std::vector<Point>& sideTwo,
                                        const std::vector<Point>& sideThree,
                                        const std::vector<Point>& sideFour,
@@ -1499,8 +1477,6 @@ namespace meshkernel
                 }
             }
         }
-
-        return true;
     }
 
     template <typename T>

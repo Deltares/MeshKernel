@@ -47,12 +47,8 @@ namespace meshkernel
         /// <returns></returns>
         explicit Smoother(std::shared_ptr<Mesh> mesh);
 
-        /// <summary>
-        /// Computes the smoother weights
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool Compute();
+        /// @brief Computes the smoother weights
+        void Compute();
 
         /// <summary>
         /// Gets the weight for a certain node and connected node
@@ -60,7 +56,7 @@ namespace meshkernel
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>
         /// <returns></returns>
-        inline auto GetWeight(int node, int connectedNode)
+        [[nodiscard]] inline auto GetWeight(int node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
@@ -71,7 +67,7 @@ namespace meshkernel
         /// <param name="node"></param>
         /// <param name="connectedNode"></param>
         /// <returns></returns>
-        inline auto GetCoonectedNodeIndex(int node, int connectedNode)
+        [[nodiscard]] inline auto GetCoonectedNodeIndex(int node, int connectedNode)
         {
             return m_connectedNodes[node][connectedNode];
         }
@@ -81,33 +77,21 @@ namespace meshkernel
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        inline auto GetNumConnectedNodes(int node)
+        [[nodiscard]] inline auto GetNumConnectedNodes(int node)
         {
             return m_numConnectedNodes[node];
         }
 
     private:
-        /// <summary>
-        /// Initialize smoother topologies. A topology is determined by how many nodes are connected to the current node.
-        /// There are at maximum mesh.m_numNodes topologies, most likely much less
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool Initialize();
+        /// @brief Initialize smoother topologies. A topology is determined by how many nodes are connected to the current node.
+        ///        There are at maximum mesh.m_numNodes topologies, most likely much less
+        void Initialize();
 
-        /// <summary>
-        /// Computes all topologies of the elliptic smoother
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool ComputeTopologies();
+        /// @brief Computes all topologies of the elliptic smoother
+        void ComputeTopologies();
 
-        /// <summary>
-        /// Computes all operators of the elliptic smoother
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool ComputeOperators();
+        /// @brief Computes all operators of the elliptic smoother
+        void ComputeOperators();
 
         /// <summary>
         /// Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
@@ -116,44 +100,28 @@ namespace meshkernel
         /// <returns></returns>
         bool ComputeCoordinates();
 
-        /// <summary>
-        /// Computes the smoother weights from the operators (orthonet_compweights_smooth)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        bool ComputeWeights();
+        /// @brief Computes the smoother weights from the operators (orthonet_compweights_smooth)
+        void ComputeWeights();
 
-        /// <summary>
         /// Computes operators of the elliptic smoother by node (orthonet_comp_operators)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="currentNode"></param>
-        /// <returns></returns>
-        bool ComputeOperatorsNode(int currentNode);
+        /// @param[in] currentNode
+        void ComputeOperatorsNode(int currentNode);
 
-        /// <summary>
-        /// Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="numSharedFaces"></param>
-        /// <param name="numConnectedNodes"></param>
-        /// <returns></returns>
-        bool NodeAdministration(const int currentNode,
+        /// @brief Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
+        /// @param[in] currentNode
+        /// @param[out] numSharedFaces
+        /// @param[out] numConnectedNodes
+        void NodeAdministration(int currentNode,
                                 int& numSharedFaces,
                                 int& numConnectedNodes);
 
-        /// <summary>
-        /// Compute compute current node xi and eta (orthonet_assign_xieta)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="currentNode"></param>
-        /// <param name="numSharedFaces"></param>
-        /// <param name="numConnectedNodes"></param>
-        /// <returns></returns>
-        bool ComputeNodeXiEta(int currentNode,
-                              const int& numSharedFaces,
-                              const int& numConnectedNodes);
+        /// @brief Compute compute current node xi and eta (orthonet_assign_xieta)
+        /// @param[in] currentNode
+        /// @param[in] numSharedFaces
+        /// @param[in] numConnectedNodes
+        void ComputeNodeXiEta(int currentNode,
+                              int numSharedFaces,
+                              int numConnectedNodes);
 
         /// <summary>
         /// Compute optimal edge angle
@@ -163,36 +131,27 @@ namespace meshkernel
         /// <param name="theta2"></param>
         /// <param name="isBoundaryEdge"></param>
         /// <returns></returns>
-        double OptimalEdgeAngle(int numFaceNodes,
-                                double theta1 = -1.0,
-                                double theta2 = -1.0,
-                                bool isBoundaryEdge = false) const;
+        [[nodiscard]] double OptimalEdgeAngle(int numFaceNodes,
+                                              double theta1 = -1.0,
+                                              double theta2 = -1.0,
+                                              bool isBoundaryEdge = false) const;
 
-        /// <summary>
-        /// Allocate smoother operators
-        /// </summary>
-        /// <param name="topologyIndex"></param>
-        /// <returns></returns>
-        bool AllocateNodeOperators(int topologyIndex);
+        /// @brief Allocate smoother operators
+        /// @param[in] topologyIndex
+        void AllocateNodeOperators(int topologyIndex);
 
-        /// <summary>
-        /// If it is a new topology, save it
-        /// </summary>
-        /// <param name="currentNode"></param>
-        /// <param name="numSharedFaces"></param>
-        /// <param name="numConnectedNodes"></param>
-        /// <returns></returns>
-        bool SaveNodeTopologyIfNeeded(int currentNode,
+        /// @brief If it is a new topology, save it
+        /// @param[in] currentNode
+        /// @param[in] numSharedFaces
+        /// @param[in] numConnectedNodes
+        void SaveNodeTopologyIfNeeded(int currentNode,
                                       int numSharedFaces,
                                       int numConnectedNodes);
 
-        /// <summary>
-        /// Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
-        /// </summary>
-        /// <param name="currentNode"></param>
-        /// <param name="J"></param>
-        /// <returns></returns>
-        bool ComputeJacobian(int currentNode, std::vector<double>& J) const;
+        /// @brief Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
+        /// @param[in] currentNode
+        /// @param[out] J
+        void ComputeJacobian(int currentNode, std::vector<double>& J) const;
 
         /// <summary>
         /// Compute the matrix norm
@@ -201,9 +160,9 @@ namespace meshkernel
         /// <param name="y"></param>
         /// <param name="matCoefficents"></param>
         /// <returns></returns>
-        double MatrixNorm(const std::vector<double>& x,
-                          const std::vector<double>& y,
-                          const std::vector<double>& matCoefficents) const;
+        [[nodiscard]] double MatrixNorm(const std::vector<double>& x,
+                                        const std::vector<double>& y,
+                                        const std::vector<double>& matCoefficents) const;
 
         // The mesh to smooth
         std::shared_ptr<Mesh> m_mesh;

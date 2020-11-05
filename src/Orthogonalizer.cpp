@@ -41,7 +41,7 @@ meshkernel::Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh> mesh) : m_mesh(
 {
 }
 
-bool meshkernel::Orthogonalizer::Compute()
+void meshkernel::Orthogonalizer::Compute()
 {
     m_mesh->ComputeNodeNeighbours();
     m_weights.resize(m_mesh->GetNumNodes(), std::vector<double>(m_mesh->m_maxNumNeighbours, 0.0));
@@ -106,5 +106,4 @@ bool meshkernel::Orthogonalizer::Compute()
             m_rhs[n][1] = factor * m_rhs[n][1];
         }
     }
-    return true;
 }

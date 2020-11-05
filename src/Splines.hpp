@@ -51,47 +51,36 @@ namespace meshkernel
         /// <returns></returns>
         explicit Splines(Projections projection);
 
-        /// <summary>
-        /// Adds a new spline to m_splineCornerPoints
-        /// </summary>
-        /// <param name="splines">The spline corner points</param>
-        /// <param name="start">The starting index in splines</param>
-        /// <param name="size">The end index splines</param>
-        /// <returns>If the method succeeded</returns>
-        bool AddSpline(const std::vector<Point>& splines, size_t start, size_t size);
+        /// @brief Adds a new spline to m_splineCornerPoints
+        /// @param[in] splines The spline corner points
+        /// @param[in] start The starting index in splines
+        /// @param[in] size The end index splines
+        void AddSpline(const std::vector<Point>& splines, size_t start, size_t size);
 
-        /// <summary>
-        /// Second order derivative at spline corner points
-        /// </summary>
-        /// <param name="splines">The spline corner points</param>
-        /// <param name="numNodes">The number of corner points</param>
-        /// <param name="coordinatesDerivatives">The second order derivative at corner points</param>
-        /// <returns>If the method succeeded</returns>
-        static bool SecondOrderDerivative(const std::vector<Point>& splines,
+        /// @brief Second order derivative at spline corner points
+        /// @param[in] splines The spline corner points
+        /// @param[in] numNodes The number of corner points
+        /// @param[out] coordinatesDerivatives The second order derivative at corner points
+        static void SecondOrderDerivative(const std::vector<Point>& splines,
                                           int numNodes,
                                           std::vector<Point>& coordinatesDerivatives);
 
-        /// <summary>
-        /// Second order derivative at spline corner points (result in a flat array)
-        /// </summary>
-        /// <param name="coordinates">The spline corner point coordinate (x or y)</param>
-        /// <param name="numNodes">The number of corner points</param>
-        /// <param name="coordinatesDerivatives">The second order derivative at corner points (x derivative or y derivative)</param>
-        /// <returns>If the method succeeded</returns>
-        static bool SecondOrderDerivative(const std::vector<double>& coordinates,
+        /// @brief Second order derivative at spline corner point coordinates
+        /// @param[in] coordinates The spline corner point coordinate (x or y)
+        /// @param[in] numNodes The number of corner points
+        /// @param[out] coordinatesDerivatives The second order derivative at corner points (x derivative or y derivative)
+        static void SecondOrderDerivative(const std::vector<double>& coordinates,
                                           int numNodes,
                                           std::vector<double>& coordinatesDerivatives);
 
-        /// <summary>
-        /// Computes the intersection of two splines (sect3r)
-        /// </summary>
-        /// <param name="first">The index of the first spline</param>
-        /// <param name="second">The index of the second spline</param>
-        /// <param name="crossProductIntersection">The cross product of the intersection</param>
-        /// <param name="intersectionPoint">The intersection point</param>
-        /// <param name="firstSplineRatio">The ratio of the first spline length where the intersection occours</param>
-        /// <param name="secondSplineRatio">The ratio of the second spline length where the intersection occours</param>
-        /// <returns>If a valid intersection is found</returns>
+        /// @brief Computes the intersection of two splines (sect3r)
+        /// @param[in] first The index of the first spline
+        /// @param[in] second The index of the second spline
+        /// @param[out] crossProductIntersection The cross product of the intersection
+        /// @param[out] intersectionPoint The intersection point
+        /// @param[out] firstSplineRatio The ratio of the first spline length where the intersection occours
+        /// @param[out] secondSplineRatio The ratio of the second spline length where the intersection occours
+        /// @returns If a valid intersection is found
         bool GetSplinesIntersection(int first,
                                     int second,
                                     double& crossProductIntersection,
@@ -110,22 +99,22 @@ namespace meshkernel
         /// <param name="height">When accounting for curvature, the height to use</param>
         /// <param name="assignedDelta">When larger than zero, the number of intervals the spline is devided when computing the length</param>
         /// <returns>The computed length</returns>
-        double GetSplineLength(int index,
-                               double startIndex,
-                               double endIndex,
-                               int numSamples = 100,
-                               bool accountForCurvature = false,
-                               double height = 1.0,
-                               double assignedDelta = -1);
+        [[nodiscard]] double GetSplineLength(int index,
+                                             double startIndex,
+                                             double endIndex,
+                                             int numSamples = 100,
+                                             bool accountForCurvature = false,
+                                             double height = 1.0,
+                                             double assignedDelta = -1);
 
-        /// <summary>
-        /// Compute the points on a spline lying at certain distance
-        /// </summary>
-        /// <param name="index">The spline index</param>
-        /// <param name="distances">The distances</param>
-        /// <param name="points">The resulting point along the spline</param>
-        /// <returns>If the method succeeded</returns>
-        bool InterpolatePointsOnSpline(int index,
+        /// @brief Compute the points on a spline lying at certain distance
+        /// @param[in] index The spline index
+        /// @param[in] maximumGridHeight Maximum grid height
+        /// @param[in] isSpacingCurvatureAdapted Is spacing-curvature adapted
+        /// @param[in] distances The distances
+        /// @param[out] points The resulting point along the spline
+        /// @param[out] adimensionalDistances Adimensional distances
+        void InterpolatePointsOnSpline(int index,
                                        double maximumGridHeight,
                                        bool isSpacingCurvatureAdapted,
                                        const std::vector<double>& distances,
@@ -144,41 +133,29 @@ namespace meshkernel
         int m_allocationSize = 5;      // allocation cache size
 
     private:
-        /// <summary>
-        /// Adds a new corner point in an existing spline
-        /// </summary>
-        /// <param name="splineIndex">The spline index</param>
-        /// <param name="point">The point to add</param>
-        /// <returns>If the method succeeded</returns>
-        bool AddPointInExistingSpline(int splineIndex, const Point& point);
+        /// @brief Adds a new corner point in an existing spline
+        /// @param[in] splineIndex The spline index
+        /// @param[in] point The point to add
+        void AddPointInExistingSpline(int splineIndex, const Point& point);
 
-        /// <summary>
-        /// Computes curvature in a spline point (comp_curv)
-        /// </summary>
-        /// <param name="splineIndex">the spline index</param>
-        /// <param name="adimensionalPointCoordinate">The adimensional coordinate of the point along the spline</param>
-        /// <param name="curvatureFactor">The computed curvature factor</param>
-        /// <param name="normalVector">The computed normal vector</param>
-        /// <param name="tangentialVector">The computed tangential vector</param>
-        /// <returns>If the method succeeded</returns>
-        bool ComputeCurvatureOnSplinePoint(int splineIndex,
+        /// @brief Computes curvature in a spline point (comp_curv)
+        /// @param[in] splineIndex the spline index
+        /// @param[in] adimensionalPointCoordinate The adimensional coordinate of the point along the spline
+        /// @param[out] curvatureFactor The computed curvature factor
+        /// @param[out] normalVector The computed normal vector
+        /// @param[out] tangentialVector The computed tangential vector
+        void ComputeCurvatureOnSplinePoint(int splineIndex,
                                            double adimensionalPointCoordinate,
                                            double& curvatureFactor,
                                            Point& normalVector,
                                            Point& tangentialVector);
 
-        /// <summary>
-        /// Delete a spline
-        /// </summary>
-        /// <param name="splineIndex">The index of the spline to delete</param>
-        /// <returns>If the method succeeded</returns>
-        bool DeleteSpline(int splineIndex);
+        /// @brief Delete a spline
+        /// @param[in] splineIndex The index of the spline to delete
+        void DeleteSpline(int splineIndex);
 
-        /// <summary>
-        /// Allocate spline properties vectors
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool AllocateSplinesProperties();
+        /// @brief Allocate spline properties vectors
+        void AllocateSplinesProperties();
     };
 
     struct FuncDimensionalToAdimensionalDistance

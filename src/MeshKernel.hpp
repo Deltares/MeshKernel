@@ -390,7 +390,7 @@ namespace meshkernelapi
         /// <param name="geometryListIn">The input point coordinates</param>
         /// <param name="searchRadius">The search radius</param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_delete_edge(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius);
+        MKERNEL_API int mkernel_delete_edge(int meshKernelId, GeometryListNative& geometryListIn);
 
         /// <summary>
         /// Deletes the closest mesh edge within the search radius from the input point
@@ -400,7 +400,7 @@ namespace meshkernelapi
         /// <param name="searchRadius">The search radius</param>
         /// <param name="edgeIndex">The edge index</param>
         /// <returns>Error code</returns>
-        MKERNEL_API int mkernel_find_edge(int meshKernelId, GeometryListNative& geometryListIn, double searchRadius, int& edgeIndex);
+        MKERNEL_API int mkernel_find_edge(int meshKernelId, GeometryListNative& geometryListIn, int& edgeIndex);
 
         /// <summary>
         /// Offset a polygon
@@ -537,6 +537,11 @@ namespace meshkernelapi
                                   const double& relativeSearchSize,
                                   const int& spherical,
                                   const int& sphericalAccurate);
+
+        /// @brief Get pointer to error message.
+        /// @param[out] error_message
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_error(const char*& error_message);
 
 #ifdef __cplusplus
     }

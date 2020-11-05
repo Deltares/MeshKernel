@@ -55,8 +55,7 @@ TEST(Polygons, CreatePointsInPolygons)
 
     // Execute
     std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    bool successful = polygons.CreatePointsInPolygons(generatedPoints);
-    ASSERT_TRUE(successful);
+    polygons.CreatePointsInPolygons(generatedPoints);
 
     // Assert
     const double tolerance = 1e-5;
@@ -93,8 +92,7 @@ TEST(Polygons, RefinePolygon)
     // Execute
     std::vector<std::vector<meshkernel::Point>> generatedPoints;
     std::vector<meshkernel::Point> refinedPolygon;
-    bool successful = polygons.RefinePolygonPart(0, 0, 1.0, refinedPolygon);
-    ASSERT_TRUE(successful);
+    polygons.RefinePolygonPart(0, 0, 1.0, refinedPolygon);
 
     ASSERT_EQ(13, refinedPolygon.size());
     const double tolerance = 1e-5;
@@ -144,8 +142,7 @@ TEST(Polygons, RefinePolygonOneSide)
     // Execute
     std::vector<std::vector<meshkernel::Point>> generatedPoints;
     std::vector<meshkernel::Point> refinedPolygon;
-    bool successful = polygons.RefinePolygonPart(0, 1, 1.0, refinedPolygon);
-    ASSERT_TRUE(successful);
+    polygons.RefinePolygonPart(0, 1, 1.0, refinedPolygon);
 
     ASSERT_EQ(7, refinedPolygon.size());
     const double tolerance = 1e-5;
@@ -183,8 +180,7 @@ TEST(Polygons, RefinePolygonLongerSquare)
     // Execute
     std::vector<std::vector<meshkernel::Point>> generatedPoints;
     std::vector<meshkernel::Point> refinedPolygon;
-    bool successful = polygons.RefinePolygonPart(0, 0, 1.0, refinedPolygon);
-    ASSERT_TRUE(successful);
+    polygons.RefinePolygonPart(0, 0, 1.0, refinedPolygon);
 
     ASSERT_EQ(15, refinedPolygon.size());
     const double tolerance = 1e-5;
@@ -237,7 +233,7 @@ TEST(Polygons, OffsetCopy)
     meshkernel::Polygons newPolygon;
     double distance = 10.0;
     bool innerAndOuter = false;
-    bool successful = polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
+    polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
 
     const double tolerance = 1e-5;
 

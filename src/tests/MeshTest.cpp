@@ -211,8 +211,7 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
 
     // Execute
     std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    bool successful = polygons.CreatePointsInPolygons(generatedPoints);
-    ASSERT_TRUE(successful);
+    polygons.CreatePointsInPolygons(generatedPoints);
 
     meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projections::cartesian);
 
@@ -256,8 +255,7 @@ TEST(Mesh, TriangulateSamples)
 
     // Execute
     std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    bool successful = polygons.CreatePointsInPolygons(generatedPoints);
-    ASSERT_TRUE(successful);
+    polygons.CreatePointsInPolygons(generatedPoints);
 
     meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projections::cartesian);
 }
@@ -491,12 +489,10 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
     int newNodeIndex;
-    auto successful = mesh->InsertNode(newPoint, newNodeIndex, true);
-    ASSERT_TRUE(successful);
+    mesh->InsertNode(newPoint, newNodeIndex, true);
 
     int newEdgeIndex;
-    successful = mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
-    ASSERT_TRUE(successful);
+    mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -515,12 +511,10 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     meshkernel::Point newPoint{10.0, 10.0};
     mesh->m_nodesRTree.BuildTree(mesh->m_nodes);
     int newNodeIndex;
-    auto successful = mesh->InsertNode(newPoint, newNodeIndex, true);
-    ASSERT_TRUE(successful);
+    mesh->InsertNode(newPoint, newNodeIndex, true);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
-    successful = mesh->DeleteNode(0);
-    ASSERT_TRUE(successful);
+    mesh->DeleteNode(0);
 
     // when m_nodesRTreeRequiresUpdate = true and m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -537,13 +531,11 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 
     meshkernel::Point newPoint{10.0, 10.0};
     int newNodeIndex;
-    auto successful = mesh->InsertNode(newPoint, newNodeIndex, true);
-    ASSERT_TRUE(successful);
+    mesh->InsertNode(newPoint, newNodeIndex, true);
 
     // connect nodes modifies the number of edges, m_nodesRTreeRequiresUpdate is set to true
     int newEdgeIndex;
-    successful = mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
-    ASSERT_TRUE(successful);
+    mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -562,8 +554,7 @@ TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->m_edgesRTree.BuildTree(mesh->m_edgesCenters);
 
     // DeleteEdge modifies the number of edges, m_edgesRTreeRequiresUpdate is set to true
-    auto successful = mesh->DeleteEdge(0);
-    ASSERT_TRUE(successful);
+    mesh->DeleteEdge(0);
 
     // when m_edgesRTreeRequiresUpdate = true the mesh.m_edgesRTree is re-build with one less edge
     mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -580,9 +571,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // GetNodeIndex builds m_nodesRTree for searching the nodes
-    int nodeIndex;
-    auto successful = mesh->GetNodeIndex({1.5, 1.5}, 0.1, nodeIndex);
-    ASSERT_TRUE(successful);
+    int nodeIndex = mesh->GetNodeIndex({1.5, 1.5}, 10);
 
     // m_nodesRTree is build
     ASSERT_EQ(4, mesh->m_nodesRTree.Size());
@@ -597,9 +586,7 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projections::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
-    int edgeIndex;
-    auto successful = mesh->FindEdgeCloseToAPoint({1.5, 1.5}, 0.1, edgeIndex);
-    ASSERT_TRUE(successful);
+    int edgeIndex = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
 
     // m_nodesRTree is not build when searching for edges
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());

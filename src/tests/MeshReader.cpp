@@ -102,9 +102,9 @@ static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string file
         index++;
     }
 
-    const auto edges = meshkernel::ConvertToEdgeNodesVector(num_edges, &edge_nodes[0]);
+    const auto edges = meshkernel::ConvertToEdgeNodesVector((int)num_edges, &edge_nodes[0]);
 
-    const auto nodes = meshkernel::ConvertToNodesVector(num_nodes, &nodeX[0], &nodeY[0]);
+    const auto nodes = meshkernel::ConvertToNodesVector((int)num_nodes, &nodeX[0], &nodeY[0]);
 
     mesh->Set(edges, nodes, meshkernel::Projections::cartesian);
 
