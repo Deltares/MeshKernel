@@ -49,7 +49,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
         throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite::Compute: There are no rows or no columns.");
     }
 
-    const auto numSplines = m_splines->m_numSplines;
+    const auto numSplines = m_splines->GetNumSplines();
     if (numSplines < 4)
     {
         throw std::invalid_argument("CurvilinearGridFromSplinesTransfinite::Compute: The number of splines is less than four.");
@@ -319,7 +319,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistan
 
 void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
 {
-    const auto numSplines = m_splines->m_numSplines;
+    const auto numSplines = m_splines->GetNumSplines();
 
     // fill the splines with zeros
     m_splineType.resize(numSplines);
@@ -337,6 +337,8 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
             Point intersectionPoint;
             double firstSplineRatio;
             double secondSplineRatio;
+            const auto numNodesISpline = static_cast<int>(m_splines->m_splineNodes[i].size());
+            const auto numNodesJSpline = static_cast<int>(m_splines->m_splineNodes[j].size());
 
             // find intersections
             const auto areCrossing = m_splines->GetSplinesIntersection(i, j, crossProductIntersection, intersectionPoint, firstSplineRatio, secondSplineRatio);
@@ -357,8 +359,8 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                     if (crossProductIntersection * m_splineType[i] < 0.0)
                     {
                         // switch j
-                        SwapVectorElements(m_splines->m_splineNodes[j], m_splines->m_numSplineNodes[j]);
-                        secondSplineRatio = double(m_splines->m_numSplineNodes[j]) - 1.0 - secondSplineRatio;
+                        SwapVectorElements(m_splines->m_splineNodes[j], numNodesJSpline);
+                        secondSplineRatio = static_cast<double>(numNodesJSpline) - 1.0 - secondSplineRatio;
                     }
                 }
                 else if (m_splineType[i] == 0)
@@ -367,8 +369,8 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                     if (crossProductIntersection * m_splineType[j] > 0.0)
                     {
                         // switch i
-                        SwapVectorElements(m_splines->m_splineNodes[i], m_splines->m_numSplineNodes[i]);
-                        firstSplineRatio = double(m_splines->m_numSplineNodes[i]) - 1.0 - firstSplineRatio;
+                        SwapVectorElements(m_splines->m_splineNodes[i], numNodesISpline);
+                        firstSplineRatio = static_cast<double>(numNodesISpline) - 1.0 - firstSplineRatio;
                     }
                 }
                 m_splineIntersectionRatios[i][j] = firstSplineRatio;
@@ -564,7 +566,7 @@ template <typename T>
 void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow) const
 {
     auto minSize = std::min(v[firstRow].size(), v[secondRow].size());
-    minSize = std::min(minSize, m_splines->m_numSplines);
+    minSize = std::min(minSize, static_cast<size_t>(m_splines->GetNumSplines()));
 
     for (size_t i = 0; i < minSize; i++)
     {
@@ -575,7 +577,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std
 template <typename T>
 void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn) const
 {
-    for (size_t i = 0; i < m_splines->m_numSplines; i++)
+    for (size_t i = 0; i < m_splines->GetNumSplines(); i++)
     {
         if (firstColumn >= v[i].size() || secondColumn >= v[i].size())
         {

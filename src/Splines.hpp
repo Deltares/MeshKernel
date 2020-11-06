@@ -121,16 +121,14 @@ namespace meshkernel
                                        std::vector<Point>& points,
                                        std::vector<double>& adimensionalDistances);
 
+        /// @brief Get the number of splines
+        /// @return the number of splines
+        int GetNumSplines() const { return static_cast<int>(m_splineNodes.size()); }
+
         std::vector<std::vector<Point>> m_splineNodes;       // The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives; // The spline derivatives at the corner points
-        std::vector<int> m_numSplineNodes;                   // Number of spline nodes in each spline
-        std::vector<int> m_numAllocatedSplineNodes;          // Number of allocated node in each spline
         std::vector<double> m_splinesLength;                 // The length of each spline
         Projections m_projection;                            // The map projection
-        size_t m_numSplines = 0;                             // Current number of splines
-
-        int m_numAllocatedSplines = 0; // Total number of allocated splines
-        int m_allocationSize = 5;      // allocation cache size
 
     private:
         /// @brief Adds a new corner point in an existing spline

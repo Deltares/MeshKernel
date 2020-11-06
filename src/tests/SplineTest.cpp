@@ -18,10 +18,8 @@ TEST(Splines, SetSpline)
     meshkernel::Splines splines(meshkernel::Projections::cartesian);
     splines.AddSpline(splineNodes, 0, int(splineNodes.size()));
 
-    ASSERT_EQ(1, splines.m_numSplines);
-    ASSERT_EQ(10, splines.m_splineNodes[0].size());
-    ASSERT_EQ(5, splines.m_numAllocatedSplines);
-    ASSERT_EQ(10, splines.m_numAllocatedSplineNodes[0]);
+    ASSERT_EQ(1, splines.GetNumSplines());
+    ASSERT_EQ(4, splines.m_splineNodes[0].size());
 }
 
 TEST(Splines, CubicSplineInterpolation)
