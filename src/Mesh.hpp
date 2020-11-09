@@ -329,7 +329,7 @@ namespace meshkernel
         std::vector<Edge> m_edges;                  // The edges, defined as first and second node(kn)
         std::vector<std::vector<int>> m_edgesFaces; // For each edge, the shared face index (lne)
         std::vector<int> m_edgesNumFaces;           // For each edge, the number of shared faces(lnn)
-        std::vector<double> m_edgeLengths;          // The edge lenghts
+        std::vector<double> m_edgeLengths;          // The edge lengths
         std::vector<int> m_edgeMask;                // The edge mask (lc)
         std::vector<Point> m_edgesCenters;          // The edges ceneters
 

@@ -49,19 +49,16 @@ namespace meshkernel
     {
 
     public:
-        /// <summary>
         /// Set the parameters
-        /// </summary>
-        /// <param name="mesh">The mesh to orthogonalize</param>
-        /// <param name="smoother">The mesh to smoother</param>
-        /// <param name="orthogonalizer">The mesh to orthogonalizer</param>
-        /// <param name="isTriangulationRequired">Not used</param>
-        /// <param name="isAccountingForLandBoundariesRequired">Not used</param>
-        /// <param name="projectToLandBoundaryOption">Snap to land boundaries (1) or not (0)</param>
-        /// <param name="orthogonalizationParametersNative">The orthogonalization parameters</param>
-        /// <param name="polygon">The polygon where orthogonalization should occour</param>
-        /// <param name="landBoundaries">The land boundaries</param>
-        /// <returns>If the method succeeded</returns>
+        /// @param[in] mesh The mesh to orthogonalize
+        /// @param[in] smoother The mesh to smoother
+        /// @param[in] orthogonalizer The mesh to orthogonalizer
+        /// @param[in] isTriangulationRequired Not used
+        /// @param[in] isAccountingForLandBoundariesRequired Not used
+        /// @param[in] projectToLandBoundaryOption Snap to land boundaries (1) or not (0)
+        /// @param[in] orthogonalizationParametersNative The orthogonalization parameters
+        /// @param[in] polygon The polygon where orthogonalization should occur
+        /// @param[in] landBoundaries The land boundaries
         OrthogonalizationAndSmoothing(std::shared_ptr<Mesh> mesh,
                                       std::shared_ptr<Smoother> smoother,
                                       std::shared_ptr<Orthogonalizer> orthogonalizer,
