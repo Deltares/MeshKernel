@@ -75,7 +75,7 @@ namespace meshkernel
         /// @brief Executes the entire algorithm
         void Compute();
 
-        /// @brief Prepares the outer iteration, calculates orthogonalizer and smoother coefficents and assable the linear system
+        /// @brief Prepares the outer iteration, calculates orthogonalizer and smoother coefficients and assable the linear system
         void PrepareOuterIteration();
 
         /// @brief Performs an inner iteration, update the mesh node positions

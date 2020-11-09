@@ -272,7 +272,7 @@ namespace meshkernel
             int numPoints = 0;
             int numLocalPointsOpenPolygon = numLocalPoints - 1;
 
-            // if the number of estimated triangles is not sufficent, tricall must be repeated
+            // if the number of estimated triangles is not sufficient, tricall must be repeated
             while (numtri < 0)
             {
                 numtri = numberOfTriangles;
