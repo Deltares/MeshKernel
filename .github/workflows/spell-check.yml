@@ -13,4 +13,4 @@ jobs:
     - uses: codespell-project/actions-codespell@master
       with:
         check_filenames: true
-        skip: tests,thirdParty,build,.git,*.tif,*.ppt,*.pdf,*.jpg
+        skip: tests,thirdParty,build,.git,*.tif,*.ppt,*.pdf,*.jpg,*.cd
