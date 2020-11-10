@@ -5,7 +5,7 @@
 #include "../OrthogonalizationAndSmoothing.cpp"
 #include "../Smoother.cpp"
 #include "../Orthogonalizer.cpp"
-#include "MeshReader.cpp"
+#include "MakeMeshes.cpp"
 #include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 #include <chrono>
