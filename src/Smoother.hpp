@@ -175,7 +175,7 @@ namespace meshkernel
         std::vector<std::vector<std::vector<double>>> m_Geta; // Node to edge etha derivative
         std::vector<std::vector<double>> m_Divxi;             // Edge to node xi derivative
         std::vector<std::vector<double>> m_Diveta;            // Edge to node etha derivative
-        std::vector<std::vector<std::vector<double>>> m_Az;   // Coefficents to estimate values at cell circumcenters
+        std::vector<std::vector<std::vector<double>>> m_Az;   // Coefficients to estimate values at cell circumcenters
         std::vector<std::vector<double>> m_Jxi;               // Node to node xi derivative (Jacobian)
         std::vector<std::vector<double>> m_Jeta;              // Node to node eta derivative (Jacobian)
         std::vector<std::vector<double>> m_ww2;               // weights

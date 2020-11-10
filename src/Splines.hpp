@@ -78,8 +78,8 @@ namespace meshkernel
         /// @param[in] second The index of the second spline
         /// @param[out] crossProductIntersection The cross product of the intersection
         /// @param[out] intersectionPoint The intersection point
-        /// @param[out] firstSplineRatio The ratio of the first spline length where the intersection occours
-        /// @param[out] secondSplineRatio The ratio of the second spline length where the intersection occours
+        /// @param[out] firstSplineRatio The ratio of the first spline length where the intersection occurs
+        /// @param[out] secondSplineRatio The ratio of the second spline length where the intersection occurs
         /// @returns If a valid intersection is found
         bool GetSplinesIntersection(int first,
                                     int second,
@@ -97,7 +97,7 @@ namespace meshkernel
         /// <param name="numSamples">How many intervals to use between the startIndex and endIndex</param>
         /// <param name="accountForCurvature">Accounting for curvature</param>
         /// <param name="height">When accounting for curvature, the height to use</param>
-        /// <param name="assignedDelta">When larger than zero, the number of intervals the spline is devided when computing the length</param>
+        /// <param name="assignedDelta">When larger than zero, the number of intervals the spline is divided when computing the length</param>
         /// <returns>The computed length</returns>
         [[nodiscard]] double GetSplineLength(int index,
                                              double startIndex,
