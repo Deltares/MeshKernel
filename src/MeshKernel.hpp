@@ -271,12 +271,10 @@ namespace meshkernelapi
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_make_mesh_from_samples(int meshKernelId, GeometryListNative& geometryListNative);
 
-        /// <summary>
-        /// Retrives the mesh boundary polygon
-        /// </summary>
-        /// <param name="meshKernelId">Id of the mesh state</param>
-        /// <param name="geometryListNative">The output network boundary polygon</param>
-        /// <returns>Error code</returns>
+        /// Retrieves the mesh boundary polygon
+        /// @param[in] meshKernelId Id of the mesh state
+        /// @param[out] geometryListNative The output network boundary polygon
+        /// @returns Error code
         MKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon(int meshKernelId, GeometryListNative& geometryListNative);
 
         /// <summary>
@@ -299,16 +297,14 @@ namespace meshkernelapi
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_refine_polygon(int meshKernelId, const GeometryListNative& geometryListIn, int firstIndex, int secondIndex, double distance, GeometryListNative& geometryListOut);
 
-        /// <summary>
-        /// Count the number of vertices after polygon refinment
-        /// </summary>
-        /// <param name="meshKernelId">Id of the mesh state</param>
-        /// <param name="geometryListIn">The input polygon</param>
-        /// <param name="firstIndex">The index of the first vertex</param>
-        /// <param name="secondIndex">The index of the second vertex</param>
-        /// <param name="distance">The refinement distance</param>
-        /// <param name="numberOfPolygonVertices">The number of vertices after refinement </param>
-        /// <returns>Error code</returns>
+        /// Count the number of vertices after polygon refinement
+        /// @param[in] meshKernelId Id of the mesh state
+        /// @param[in] geometryListIn The input polygon
+        /// @param[in] firstIndex The index of the first vertex
+        /// @param[in] secondIndex The index of the second vertex
+        /// @param[in] distance The refinement distance
+        /// @param[out] numberOfPolygonVertices The number of vertices after refinement
+        /// @returns Error code
         MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, int firstIndex, int secondIndex, double distance, int& numberOfPolygonVertices);
 
         /// <summary>
@@ -413,15 +409,13 @@ namespace meshkernelapi
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_offsetted_polygon(int meshKernelId, GeometryListNative& geometryListIn, bool innerPolygon, double distance, GeometryListNative& geometryListOut);
 
-        /// <summary>
-        /// Get the number of vertices of the offsetted polygon  Count the number of vertices after polygon refinment
-        /// </summary>
-        /// <param name="meshKernelId">Id of the mesh state</param>
-        /// <param name="geometryListIn">The coordinate of the offset point</param>
-        /// <param name="innerPolygon">Compute inner/outer polygon</param>
-        /// <param name="distance">The offset distance</param>
-        /// <param name="numberOfPolygonVertices">The number of vertices of the generated polygon</param>
-        /// <returns>Error code</returns>
+        /// Get the number of vertices of the offsetted polygon  Count the number of vertices after polygon refinement
+        /// @param[in] meshKernelId Id of the mesh state
+        /// @param[in] geometryListIn The coordinate of the offset point
+        /// @param[in] innerPolygon Compute inner/outer polygon
+        /// @param[in] distance The offset distance
+        /// @param[out] numberOfPolygonVertices The number of vertices of the generated polygon
+        /// @returns Error code
         MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, GeometryListNative& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonVertices);
 
         /// <summary>
@@ -529,6 +523,44 @@ namespace meshkernelapi
                                       int& locationType,
                                       int& spherical,
                                       int& sphericalAccurate);
+
+        /// @brief AveragingInterpolation interpolation (ec_module)
+        /// @param meshGeometryDimensions Mesh dimensions
+        /// @param meshGeometry Mesh data
+        /// @param startIndex Mesh data start index (not used)
+        /// @param samplesXCoordinate The sample x coordinates
+        /// @param samplesYCoordinate The sample y coordinates
+        /// @param samplesValue The sample values
+        /// @param numSamples The number of samples
+        /// @param results The interpolation results
+        /// @param locationType The location type (see InterpolationLocation enum)
+        /// @param Wu1Duni A setting for 1d meshes (not used)
+        /// @param averagingMethod The averaging method (see Method enum)
+        /// @param minNumberOfSamples The minimum amount of samples (not used)
+        /// @param relativeSearchSize The relative search size around the location (larger increases the number of samples considered)
+        /// @param spherical Current projection (0 cartesian, 1 spherical)
+        /// @param sphericalAccurate Accurate spherical computations (0 default spherical, 1 spherical accurate)
+        /// @return Error code (0 Successful)
+        MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
+                                  const MeshGeometry& meshGeometry,
+                                  const int& startIndex,
+                                  const double** samplesXCoordinate,
+                                  const double** samplesYCoordinate,
+                                  const double** samplesValue,
+                                  const int& numSamples,
+                                  double** results,
+                                  const int& locationType,
+                                  const double& Wu1Duni,
+                                  const int& averagingMethod,
+                                  const int& minNumberOfSamples,
+                                  const double& relativeSearchSize,
+                                  const int& spherical,
+                                  const int& sphericalAccurate);
+
+        /// @brief Get pointer to error message.
+        /// @param[out] error_message
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_error(const char*& error_message);
 
 #ifdef __cplusplus
     }
