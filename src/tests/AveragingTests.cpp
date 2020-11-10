@@ -1,6 +1,6 @@
 #include "../AveragingInterpolation.cpp"
 #include "SampleFileReader.cpp"
-#include "MeshReader.cpp"
+#include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 
 //Simple averaging

@@ -4,7 +4,7 @@
 #include "../SampleRefineParametersNative.hpp"
 #include "../InterpolationParametersNative.hpp"
 #include "MakeMeshes.cpp"
-#include "MeshReader.cpp"
+#include "MakeMeshes.cpp"
 #include "SampleFileReader.cpp"
 #include <gtest/gtest.h>
 
@@ -22,7 +22,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
                                                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::Faces,
+                                                                                meshkernel::InterpolationLocation::Faces,
                                                                                 1.0,
                                                                                 false,
                                                                                 false);
@@ -113,7 +113,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
                                                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::Faces,
+                                                                                meshkernel::InterpolationLocation::Faces,
                                                                                 1.0,
                                                                                 false,
                                                                                 false);
@@ -214,7 +214,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
                                                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::Faces,
+                                                                                meshkernel::InterpolationLocation::Faces,
                                                                                 1.0,
                                                                                 false,
                                                                                 false);
@@ -343,7 +343,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
                                                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::Faces,
+                                                                                meshkernel::InterpolationLocation::Faces,
                                                                                 1.0,
                                                                                 false,
                                                                                 false);
@@ -412,7 +412,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
                                                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::Faces,
+                                                                                meshkernel::InterpolationLocation::Faces,
                                                                                 1.0,
                                                                                 false,
                                                                                 false);
@@ -477,7 +477,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
                                                                                 meshkernel::AveragingInterpolation::Method::Max,
-                                                                                meshkernel::Faces,
+                                                                                meshkernel::InterpolationLocation::Faces,
                                                                                 1.01,
                                                                                 false,
                                                                                 true);
@@ -648,7 +648,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
                                                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                                meshkernel::Faces,
+                                                                                meshkernel::InterpolationLocation::Faces,
                                                                                 1.0,
                                                                                 false,
                                                                                 false);
