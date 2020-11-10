@@ -30,14 +30,23 @@
 #include <numeric>
 #include <algorithm>
 #include "MeshRefinement.hpp"
+
+#include "AveragingInterpolation.hpp"
 #include "Mesh.hpp"
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
 #include "Operations.cpp"
 #include "Exceptions.hpp"
 
-meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) : m_mesh(mesh)
+meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging) : m_mesh(mesh), m_averaging(averaging){};
+
+meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) : m_mesh(mesh){};
+
+void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
+                                        const meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
+                                        const meshkernelapi::InterpolationParametersNative& interpolationParametersNative)
 {
+    // administrate mesh once more
     m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     // all faces and edges refined
@@ -46,28 +55,16 @@ meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) : m_mesh(
 
     // default refinement
     m_refinementType = RefinementType::WaveCourant;
-};
 
-void meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
-                                        const Polygons& polygon,
-                                        const meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
-                                        const meshkernelapi::InterpolationParametersNative& interpolationParametersNative)
-{
-
-    bool isRefinementBasedOnSamples = false;
-    if (!sample.empty())
+    // check if refinement is based on samples
+    bool isRefinementBasedOnSamples = true;
+    if (m_averaging == nullptr)
     {
-        isRefinementBasedOnSamples = true;
+        isRefinementBasedOnSamples = false;
+    }
 
-        m_subtractedSample.resize(sample.size(), false);
-        // build the R-Tree
-        std::vector<Point> points(sample.size());
-        for (int i = 0; i < sample.size(); i++)
-        {
-            points[i] = {sample[i].x, sample[i].y};
-        }
-        m_samplesRTree.BuildTree(points);
-
+    if (isRefinementBasedOnSamples)
+    {
         m_deltaTimeMaxCourant = sampleRefineParametersNative.MinimumCellSize / std::sqrt(gravity);
         m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
         m_minimumFaceSize = sampleRefineParametersNative.MinimumCellSize;
@@ -130,7 +127,7 @@ void meshkernel::MeshRefinement::Refine(std::vector<Sample>& sample,
         // computes the edge and face refinement mask from samples
         if (isRefinementBasedOnSamples)
         {
-            ComputeRefinementMasksFromSamples(sample);
+            ComputeRefinementMasksFromSamples();
 
             for (auto& edge : m_edgeMask)
             {
@@ -660,7 +657,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
             if (m_mesh->m_projection == Projections::spherical)
             {
                 double miny = std::numeric_limits<double>::max();
-                double maxy = std::numeric_limits<double>::min();
+                double maxy = std::numeric_limits<double>::lowest();
                 for (int i = 0; i < numNonHangingEdges; ++i)
                 {
                     miny = std::min(facePolygonWithoutHangingNodes[i].y, miny);
@@ -760,7 +757,7 @@ void meshkernel::MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
     }
 }
 
-void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<Sample>& samples)
+void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
 {
     std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
     std::fill(m_faceMask.begin(), m_faceMask.end(), 0);
@@ -768,7 +765,9 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<S
     m_localNodeIndicesCache.resize(maximumNumberOfNodesPerFace + 1, intMissingValue);
     m_edgeIndicesCache.resize(maximumNumberOfEdgesPerFace + 1, intMissingValue);
     std::vector<int> refineEdgeCache(maximumNumberOfEdgesPerFace);
-    std::fill(m_subtractedSample.begin(), m_subtractedSample.end(), false);
+
+    // Compute all interpolated values
+    m_averaging->Compute();
 
     for (int f = 0; f < m_mesh->GetNumFaces(); f++)
     {
@@ -782,7 +781,7 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<S
 
         std::fill(refineEdgeCache.begin(), refineEdgeCache.end(), 0);
         int numEdgesToBeRefined = 0;
-        ComputeEdgesRefinementMaskFromSamples(m_mesh->GetNumFaceEdges(f), samples, refineEdgeCache, numEdgesToBeRefined);
+        ComputeEdgesRefinementMaskFromSamples(f, refineEdgeCache, numEdgesToBeRefined);
 
         m_faceMask[f] = 0;
         if (numEdgesToBeRefined > 1)
@@ -809,7 +808,7 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples(std::vector<S
     }
 };
 
-void meshkernel::MeshRefinement::FindHangingNodes(int faceIndex,
+void meshkernel::MeshRefinement::FindHangingNodes(int face,
                                                   int& numHangingEdges,
                                                   int& numHangingNodes,
                                                   int& numEdgesToRefine)
@@ -818,7 +817,7 @@ void meshkernel::MeshRefinement::FindHangingNodes(int faceIndex,
     numEdgesToRefine = 0;
     numHangingEdges = 0;
     numHangingNodes = 0;
-    auto numFaceNodes = m_mesh->GetNumFaceEdges(faceIndex);
+    auto numFaceNodes = m_mesh->GetNumFaceEdges(face);
 
     if (numFaceNodes > maximumNumberOfEdgesPerNode)
     {
@@ -834,7 +833,7 @@ void meshkernel::MeshRefinement::FindHangingNodes(int faceIndex,
 
     for (int n = 0; n < numFaceNodes; n++)
     {
-        auto edgeIndex = m_mesh->m_facesEdges[faceIndex][n];
+        auto edgeIndex = m_mesh->m_facesEdges[face][n];
         if (m_edgeMask[edgeIndex] != 0)
         {
             numEdgesToRefine += 1;
@@ -845,8 +844,8 @@ void meshkernel::MeshRefinement::FindHangingNodes(int faceIndex,
         {
             const auto e = NextCircularBackwardIndex(n, numFaceNodes);
             const auto ee = NextCircularForwardIndex(n, numFaceNodes);
-            const auto firstEdgeIndex = m_mesh->m_facesEdges[faceIndex][e];
-            const auto secondEdgeIndex = m_mesh->m_facesEdges[faceIndex][ee];
+            const auto firstEdgeIndex = m_mesh->m_facesEdges[face][e];
+            const auto secondEdgeIndex = m_mesh->m_facesEdges[face][ee];
 
             int commonNode = intMissingValue;
             if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
@@ -874,7 +873,7 @@ void meshkernel::MeshRefinement::FindHangingNodes(int faceIndex,
                 {
                     kknod = NextCircularForwardIndex(kknod, numFaceNodes);
 
-                    if (m_mesh->m_facesNodes[faceIndex][kknod] == commonNode && !m_isHangingNodeCache[kknod])
+                    if (m_mesh->m_facesNodes[face][kknod] == commonNode && !m_isHangingNodeCache[kknod])
                     {
                         numHangingNodes++;
                         m_isHangingNodeCache[kknod] = true;
@@ -886,8 +885,7 @@ void meshkernel::MeshRefinement::FindHangingNodes(int faceIndex,
     }
 }
 
-void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPolygonNodes,
-                                                                       std::vector<Sample>& samples,
+void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int face,
                                                                        std::vector<int>& refineEdgeCache,
                                                                        int& numEdgesToBeRefined)
 {
@@ -897,68 +895,24 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPo
         throw AlgorithmError("MeshRefinement::ComputeEdgesRefinementMaskFromSamples: This functionality is not implemented yet.");
     }
 
-    // compute all lengths
-    m_polygonEdgesLengthsCache.resize(numPolygonNodes);
-    for (int i = 0; i < numPolygonNodes; i++)
-    {
-        int edgeIndex = m_edgeIndicesCache[i];
-        m_polygonEdgesLengthsCache[i] = m_mesh->m_edgeLengths[edgeIndex];
-    }
+    const auto refinementValue = m_averaging->GetResults()[face];
 
-    //find center of mass
-    Point centerOfMass;
-    double area;
-    FaceAreaAndCenterOfMass(m_polygonNodesCache, numPolygonNodes, m_mesh->m_projection, area, centerOfMass);
-
-    // a default value
-    double refinementValue = 0.0;
-    if (m_refinementType == RefinementType::RefinementLevels)
-    {
-        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, Max, centerOfMass);
-        // nothing to do
-        if (refinementValue <= 0)
-        {
-            return;
-        }
-        for (int i = 0; i < m_samplesRTree.GetQueryResultSize(); i++)
-        {
-            // decrease the sample values in the current cells by one
-            const auto sampleIndex = m_samplesRTree.GetQuerySampleIndex(i);
-            if (!m_subtractedSample[sampleIndex])
-            {
-                samples[sampleIndex].value -= 1.0;
-                m_subtractedSample[sampleIndex] = true;
-            }
-        }
-    }
-
-    if (m_refinementType == RefinementType::WaveCourant)
-    {
-        refinementValue = ComputeFaceRefinementFromSamples(numPolygonNodes, samples, KdTree, centerOfMass);
-    }
-
-    if (refinementValue == doubleMissingValue && m_refineOutsideFace)
-    {
-        // find nearest face
-        m_samplesRTree.NearestNeighbour(centerOfMass);
-        if (m_samplesRTree.GetQueryResultSize() > 0)
-        {
-            auto sampleIndex = m_samplesRTree.GetQuerySampleIndex(0);
-            if (sampleIndex >= 0)
-            {
-                refinementValue = samples[sampleIndex].value;
-            }
-        }
-    }
-
-    if (refinementValue == doubleMissingValue)
+    if (m_refinementType == RefinementType::RefinementLevels && refinementValue <= 0)
     {
         return;
     }
 
-    for (int i = 0; i < numPolygonNodes; i++)
+    if (IsDifferenceLessThanEpsilon(refinementValue, doubleMissingValue))
     {
-        if (m_polygonEdgesLengthsCache[i] < mergingDistance)
+        return;
+    }
+
+    // compute all lengths
+    const auto numEdges = m_mesh->GetNumFaceEdges(face);
+    for (int i = 0; i < numEdges; i++)
+    {
+        const int edgeIndex = m_edgeIndicesCache[i];
+        if (m_mesh->m_edgeLengths[edgeIndex] < mergingDistance)
         {
             numEdgesToBeRefined++;
             continue;
@@ -969,10 +923,10 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPo
         // based on wave courant
         if (m_refinementType == RefinementType::WaveCourant)
         {
-            double newEdgeLength = 0.5 * m_polygonEdgesLengthsCache[i];
+            double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edgeIndex];
             double c = std::sqrt(gravity * std::abs(refinementValue));
-            double waveCourant = c * m_deltaTimeMaxCourant / m_polygonEdgesLengthsCache[i];
-            doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_minimumFaceSize) < std::abs(m_polygonEdgesLengthsCache[i] - m_minimumFaceSize);
+            double waveCourant = c * m_deltaTimeMaxCourant / m_mesh->m_edgeLengths[edgeIndex];
+            doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_minimumFaceSize) < std::abs(m_mesh->m_edgeLengths[edgeIndex] - m_minimumFaceSize);
         }
 
         // based on refinement levels
@@ -991,7 +945,7 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPo
     if (numEdgesToBeRefined > 0)
     {
         numEdgesToBeRefined = 0;
-        for (int i = 0; i < numPolygonNodes; i++)
+        for (int i = 0; i < numEdges; i++)
         {
             if (refineEdgeCache[i] == 1 || m_isHangingNodeCache[i])
             {
@@ -1002,9 +956,9 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPo
 
     if (!m_directionalRefinement)
     {
-        if (numEdgesToBeRefined == numPolygonNodes)
+        if (numEdgesToBeRefined == numEdges)
         {
-            for (int i = 0; i < numPolygonNodes; i++)
+            for (int i = 0; i < numEdges; i++)
             {
                 if (!m_isHangingNodeCache[i])
                 {
@@ -1017,12 +971,6 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int numPo
             numEdgesToBeRefined = 0;
         }
     }
-}
-
-double meshkernel::MeshRefinement::ComputeFaceRefinementFromSamples(int numPolygonNodes, const std::vector<Sample>& samples, AveragingMethod averagingMethod, Point centerOfMass)
-{
-    double refinementValue = Averaging(samples, numPolygonNodes, m_polygonNodesCache, centerOfMass, m_mesh->m_projection, m_samplesRTree, averagingMethod);
-    return refinementValue;
 }
 
 void meshkernel::MeshRefinement::ComputeEdgesRefinementMask()

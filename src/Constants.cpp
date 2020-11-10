@@ -70,16 +70,12 @@ namespace meshkernel
     // physical constants
     static constexpr double gravity = 9.81;
 
-    // Operations averaging methods
-    enum AveragingMethod
+    // Interpolation locations
+    enum InterpolationLocation
     {
-        SimpleAveraging = 1,
-        ClosestPoint = 2,
-        Max = 3,
-        Min = 4,
-        InverseWeightDistance = 5,
-        MinAbs = 6,
-        KdTree = 7
+        Faces = 0,
+        Nodes = 1,
+        Edges = 2
     };
 
 } // namespace meshkernel

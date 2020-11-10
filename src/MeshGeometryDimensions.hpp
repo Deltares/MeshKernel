@@ -44,4 +44,5 @@ namespace meshkernelapi
         int ngeometry;
         int epgs;
     };
+
 } // namespace meshkernelapi
