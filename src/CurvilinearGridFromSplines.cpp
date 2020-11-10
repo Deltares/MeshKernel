@@ -1123,7 +1123,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeEdgeVelocities(std::vector<d
 
     for (auto s = 0; s < m_splines->GetNumSplines(); s++)
     {
-        double maxHeight = std::numeric_limits<double>::min();
+        double maxHeight = std::numeric_limits<double>::lowest();
         for (int i = 0; i < m_gridHeights[0].size(); ++i)
         {
             if (m_gridHeights[0][i] != doubleMissingValue && m_gridHeights[0][i] > maxHeight)

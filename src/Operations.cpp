@@ -32,7 +32,6 @@
 #include <numeric>
 #include "Entities.hpp"
 #include "Constants.cpp"
-#include "SpatialTrees.hpp"
 #include "Exceptions.hpp"
 
 namespace meshkernel
@@ -302,16 +301,24 @@ namespace meshkernel
         int windingNumber = 0;
         for (int n = startNode; n < endNode; n++)
         {
+            const auto leftDifference = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
+            if (IsDifferenceLessThanEpsilon(leftDifference, 0.0))
+            {
+                // point on the line
+                return true;
+            }
+
             if (polygonNodes[n].y <= point.y) // an upward crossing
             {
-                if (polygonNodes[n + 1].y >= point.y && IsLeft(polygonNodes[n], polygonNodes[n + 1], point) >= 0.0)
+                if (polygonNodes[n + 1].y > point.y && leftDifference > 0.0)
+
                 {
                     ++windingNumber; // have  a valid up intersect
                 }
             }
             else
             {
-                if (polygonNodes[n + 1].y <= point.y && IsLeft(polygonNodes[n], polygonNodes[n + 1], point) <= 0.0) // a downward crossing
+                if (polygonNodes[n + 1].y <= point.y && leftDifference < 0.0) // a downward crossing
                 {
                     --windingNumber; // have  a valid down intersect
                 }
@@ -798,7 +805,7 @@ namespace meshkernel
 
         if (projection == Projections::spherical)
         {
-            double maxX = std::numeric_limits<double>::min();
+            double maxX = std::numeric_limits<double>::lowest();
             for (int i = 0; i < numPoints; i++)
             {
                 maxX = std::max(polygon[i].x, maxX);
@@ -1151,7 +1158,6 @@ namespace meshkernel
         return isCrossing;
     }
 
-    //faceAreaAndCenterOfMass: for cartesian, spherical point and spherical3dPoint
     static void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, int numberOfPolygonPoints, Projections projection, double& area, Point& centerOfMass)
     {
         if (numberOfPolygonPoints <= 0)
@@ -1204,142 +1210,6 @@ namespace meshkernel
         centerOfMass.y = yCenterOfMass + minY;
 
         area = std::abs(area);
-    }
-
-    [[nodiscard]] static double Averaging(const std::vector<Sample>& samples,
-                                          int numPolygonNodes,
-                                          const std::vector<Point>& polygon,
-                                          const Point centerOfMass,
-                                          const Projections& projection,
-                                          SpatialTrees::RTree& rtree,
-                                          int averagingMethod)
-    {
-
-        std::vector<Point> searchPolygon(numPolygonNodes);
-
-        // averaging settings
-        const double relativeFaceSearchSize = 1.01;
-        double minx = std::numeric_limits<double>::max();
-        double maxx = std::numeric_limits<double>::min();
-        double miny = std::numeric_limits<double>::max();
-        double maxy = std::numeric_limits<double>::min();
-
-        for (int i = 0; i < numPolygonNodes; i++)
-        {
-            searchPolygon[i] = polygon[i] * relativeFaceSearchSize + centerOfMass * (1 - relativeFaceSearchSize);
-            minx = std::min(minx, searchPolygon[i].x);
-            maxx = std::max(maxx, searchPolygon[i].x);
-            miny = std::min(miny, searchPolygon[i].y);
-            maxy = std::max(maxy, searchPolygon[i].y);
-        }
-
-        if (projection == Projections::spherical && maxx - minx > 180.0)
-        {
-
-            double xmean = 0.5 * (maxx + minx);
-            minx = std::numeric_limits<double>::max();
-            maxx = std::numeric_limits<double>::min();
-            for (int i = 0; i < numPolygonNodes; i++)
-            {
-                if (searchPolygon[i].x < xmean)
-                {
-                    searchPolygon[i].x = searchPolygon[i].x + 360.0;
-                    minx = std::min(minx, searchPolygon[i].x);
-                    maxx = std::max(maxx, searchPolygon[i].x);
-                }
-            }
-        }
-
-        double result = doubleMissingValue;
-        double searchRadiusSquared = std::numeric_limits<double>::min();
-        for (int i = 0; i < numPolygonNodes; i++)
-        {
-            double squaredDistance = ComputeSquaredDistance(centerOfMass, searchPolygon[i], projection);
-            searchRadiusSquared = std::max(searchRadiusSquared, squaredDistance);
-        }
-        if (searchRadiusSquared <= 0.0)
-        {
-            throw std::invalid_argument("Averaging: The search radius is <= 0.");
-        }
-
-        rtree.NearestNeighboursOnSquaredDistance(centerOfMass, searchRadiusSquared);
-        if (rtree.GetQueryResultSize() == 0)
-        {
-            return result;
-        }
-
-        int numValidSamplesInPolygon = 0;
-        double wall = 0;
-        bool firstValidSampleFound = false;
-
-        for (int i = 0; i < rtree.GetQueryResultSize(); i++)
-        {
-            //do stuff based on the averaging method
-            auto sampleIndex = rtree.GetQuerySampleIndex(i);
-            auto sampleValue = samples[sampleIndex].value;
-            if (sampleValue <= doubleMissingValue)
-            {
-                continue;
-            }
-
-            Point samplePoint{samples[sampleIndex].x, samples[sampleIndex].y};
-            // assume here polygon has a size equal to numPolygonNodes + 1
-            bool isInPolygon = IsPointInPolygonNodes(samplePoint, polygon, 0, numPolygonNodes);
-            if (isInPolygon)
-            {
-                if (averagingMethod == SimpleAveraging)
-                {
-                    if (!firstValidSampleFound)
-                    {
-                        firstValidSampleFound = true;
-                        result = 0.0;
-                    }
-                    result += sampleValue;
-                    numValidSamplesInPolygon++;
-                }
-                if (averagingMethod == KdTree)
-                {
-                    if (!firstValidSampleFound)
-                    {
-                        firstValidSampleFound = true;
-                        result = sampleValue;
-                    }
-                    result = std::min(std::abs(result), std::abs(sampleValue));
-                }
-                if (averagingMethod == Max)
-                {
-                    if (!firstValidSampleFound)
-                    {
-                        firstValidSampleFound = true;
-                        result = -std::numeric_limits<double>::max();
-                    }
-                    result = std::max(result, sampleValue);
-                }
-                if (averagingMethod == InverseWeightDistance)
-                {
-                    double distance = std::max(0.01, Distance(centerOfMass, samplePoint, projection));
-                    double weight = 1.0 / distance;
-                    wall += weight;
-                    numValidSamplesInPolygon++;
-                    result += weight * sampleValue;
-                }
-            }
-        }
-
-        if (averagingMethod == SimpleAveraging && numValidSamplesInPolygon > 0)
-        {
-            if (result > doubleMissingValue)
-            {
-                result /= numValidSamplesInPolygon;
-            }
-        }
-
-        if (averagingMethod == InverseWeightDistance && numValidSamplesInPolygon > 0)
-        {
-            result /= wall;
-        }
-
-        return result;
     }
 
     [[nodiscard]] static int NextCircularForwardIndex(int currentIndex, int size)
@@ -1606,6 +1476,53 @@ namespace meshkernel
                                            weightFour[i][j - 1] * weightTwo[i][j] + weightFour[i][j + 1] * weightTwo[i][j + 1]);
                 }
             }
+        }
+    }
+
+    template <typename T>
+    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight)
+    {
+
+        double minx = std::numeric_limits<double>::max();
+        double maxx = std::numeric_limits<double>::lowest();
+        double miny = std::numeric_limits<double>::max();
+        double maxy = std::numeric_limits<double>::lowest();
+        for (int n = 0; n < values.size(); n++)
+        {
+            bool isInvalid = IsDifferenceLessThanEpsilon(values[n].x, doubleMissingValue) ||
+                             IsDifferenceLessThanEpsilon(values[n].y, doubleMissingValue);
+
+            if (isInvalid)
+            {
+                continue;
+            }
+
+            minx = std::min(minx, values[n].x);
+            maxx = std::max(maxx, values[n].x);
+            miny = std::min(miny, values[n].y);
+            maxy = std::max(maxy, values[n].y);
+        }
+
+        lowerLeft = {minx, miny};
+        upperRight = {maxx, maxy};
+    }
+
+    static auto ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)
+    {
+        edgesCenters.reserve(std::max(int(edgesCenters.capacity()), numEdges));
+        edgesCenters.clear();
+
+        for (int e = 0; e < numEdges; e++)
+        {
+            auto const first = edges[e].first;
+            auto const second = edges[e].second;
+
+            if (first < 0 || second < 0)
+            {
+                continue;
+            }
+
+            edgesCenters.push_back((nodes[first] + nodes[second]) * 0.5);
         }
     }
 
