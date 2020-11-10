@@ -28,10 +28,10 @@
 #pragma once
 
 #include <utility>
-#include <cmath>
 #include <vector>
-
 #include "Constants.cpp"
+#include <cmath>
+#include <limits>
 
 namespace meshkernel
 {
@@ -138,7 +138,7 @@ namespace meshkernel
             y = y * degrad_hp * earth_radius;
         }
 
-        bool IsValid(const double missingValue = doubleMissingValue) const
+        [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
         {
             bool isInvalid = IsDifferenceLessThanEpsilon(x, missingValue) ||
                              IsDifferenceLessThanEpsilon(y, missingValue);
@@ -146,6 +146,8 @@ namespace meshkernel
             return !isInvalid;
         }
     };
+
+    typedef std::pair<int, int> Edge;
 
     struct Cartesian3DPoint
     {
@@ -174,8 +176,6 @@ namespace meshkernel
         }
     };
 
-    typedef std::pair<int, int> Edge;
-
     static std::vector<Edge> ConvertToEdgeNodesVector(int numEdges, const int* edge_nodes)
     {
         std::vector<Edge> edges(numEdges);
@@ -189,7 +189,7 @@ namespace meshkernel
             ei++;
         }
         return edges;
-    };
+    }
 
     static std::vector<Point> ConvertToNodesVector(int numNodes, const double* nodex, const double* nodey)
     {
@@ -200,7 +200,7 @@ namespace meshkernel
             nodes[n].y = nodey[n];
         }
         return nodes;
-    };
+    }
 
     static std::vector<Point> ConvertToFaceCentersVector(int numFaces, const double* facex, const double* facey)
     {

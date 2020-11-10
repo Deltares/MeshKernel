@@ -49,19 +49,16 @@ namespace meshkernel
     {
 
     public:
-        /// <summary>
         /// Set the parameters
-        /// </summary>
-        /// <param name="mesh">The mesh to orthogonalize</param>
-        /// <param name="smoother">The mesh to smoother</param>
-        /// <param name="orthogonalizer">The mesh to orthogonalizer</param>
-        /// <param name="isTriangulationRequired">Not used</param>
-        /// <param name="isAccountingForLandBoundariesRequired">Not used</param>
-        /// <param name="projectToLandBoundaryOption">Snap to land boundaries (1) or not (0)</param>
-        /// <param name="orthogonalizationParametersNative">The orthogonalization parameters</param>
-        /// <param name="polygon">The polygon where orthogonalization should occour</param>
-        /// <param name="landBoundaries">The land boundaries</param>
-        /// <returns>If the method succeeded</returns>
+        /// @param[in] mesh The mesh to orthogonalize
+        /// @param[in] smoother The mesh to smoother
+        /// @param[in] orthogonalizer The mesh to orthogonalizer
+        /// @param[in] isTriangulationRequired Not used
+        /// @param[in] isAccountingForLandBoundariesRequired Not used
+        /// @param[in] projectToLandBoundaryOption Snap to land boundaries (1) or not (0)
+        /// @param[in] orthogonalizationParametersNative The orthogonalization parameters
+        /// @param[in] polygon The polygon where orthogonalization should occur
+        /// @param[in] landBoundaries The land boundaries
         OrthogonalizationAndSmoothing(std::shared_ptr<Mesh> mesh,
                                       std::shared_ptr<Smoother> smoother,
                                       std::shared_ptr<Orthogonalizer> orthogonalizer,
@@ -70,80 +67,46 @@ namespace meshkernel
                                       int projectToLandBoundaryOption,
                                       const meshkernelapi::OrthogonalizationParametersNative& orthogonalizationParametersNative);
 
-        bool Initialize();
+        void Initialize();
 
-        /// <summary>
-        /// Executes the entire algorithm
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns>If the method succeeded</returns>
-        bool Compute();
+        /// @brief Executes the entire algorithm
+        void Compute();
 
-        /// <summary>
-        /// Prepares the outer iteration, calculates orthogonalizer and smoother coefficents and assable the linear system
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool PrapareOuterIteration();
+        /// @brief Prepares the outer iteration, calculates orthogonalizer and smoother coefficients and assable the linear system
+        void PrepareOuterIteration();
 
-        /// <summary>
-        /// Performs an inner iteration, update the mesh node positions
-        /// </summary>
-        /// <param name="mesh"></param>
-        bool InnerIteration();
+        /// @brief Performs an inner iteration, update the mesh node positions
+        void InnerIteration();
 
-        /// <summary>
-        /// Finalize the outer iteration, computes new mu and face areas, masscenters, circumcenters
-        /// </summary>
-        /// <param name="mesh"></param>
-        bool FinalizeOuterIteration();
+        /// @brief Finalize the outer iteration, computes new mu and face areas, masscenters, circumcenters
+        void FinalizeOuterIteration();
 
     private:
-        /// <summary>
-        /// Project mesh nodes back to the original mesh boundary (orthonet_project_on_boundary)
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool ProjectOnOriginalMeshBoundary();
+        /// @brief Project mesh nodes back to the original mesh boundary (orthonet_project_on_boundary)
+        void ProjectOnOriginalMeshBoundary();
 
-        /// <summary>
-        /// Assembles the contributions of smoother and orthogonalizer
-        /// </summary>
-        /// <returns>If the method succeeded</returns>
-        bool ComputeLinearSystemTerms();
+        /// @brief Assembles the contributions of smoother and orthogonalizer
+        void ComputeLinearSystemTerms();
 
-        /// <summary>
         /// Computes how much the coordinates of a node need to be incremented at each inner iteration.
-        /// </summary>
-        /// <param name="cacheIndex">The node index</param>
-        /// <param name="connectedNode">The connected node</param>
-        /// <param name="dx0">The computed x increment</param>
-        /// <param name="dy0">The computed y increment</param>
-        /// <param name="increments">The sum of the weights in x and y</param>
-        /// <returns></returns>
-        bool ComputeLocalIncrements(int nodeIndex,
+        /// @param[in] nodeIndex The node index
+        /// @param[out] dx0 The computed x increment
+        /// @param[out] dy0 The computed y increment
+        /// @param[out] weightsSum The sum of the weights in x and y
+        void ComputeLocalIncrements(int nodeIndex,
                                     double& dx0,
                                     double& dy0,
                                     double* weightsSum);
 
-        /// <summary>
-        /// Update the nodal coordinates based on the increments
-        /// </summary>
-        /// <param name="nodeIndex"></param>
-        /// <param name="mesh"></param>
-        /// <returns>If the method succeeded</returns>
-        bool UpdateNodeCoordinates(int nodeIndex);
+        /// @brief Update the nodal coordinates based on the increments
+        /// @param[in] nodeIndex
+        void UpdateNodeCoordinates(int nodeIndex);
 
-        /// <summary>
-        /// Allocate linear system vectors
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns>If the method succeeded</returns>
-        bool AllocateLinearSystem();
+        /// @brief Allocate linear system vectors
+        void AllocateLinearSystem();
 
-        /// Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns>If the method succeeded</returns>
-        bool ComputeCoordinates() const;
+        /// @brief Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
+        void ComputeCoordinates() const;
 
         std::shared_ptr<Mesh> m_mesh;                                                         // A pointer to mesh
         std::shared_ptr<Smoother> m_smoother;                                                 // A pointer to the smoother

@@ -1,0 +1,16 @@
+name: Codespell
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: codespell-project/actions-codespell@master
+      with:
+        check_filenames: true
+        skip: tests,thirdParty,build,.git,*.tif,*.ppt,*.pdf,*.jpg,*.cd

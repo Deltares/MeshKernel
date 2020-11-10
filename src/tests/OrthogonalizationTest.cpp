@@ -5,6 +5,7 @@
 #include "../OrthogonalizationAndSmoothing.cpp"
 #include "../Smoother.cpp"
 #include "../Orthogonalizer.cpp"
+#include "MeshReader.cpp"
 #include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 #include <chrono>
@@ -59,11 +60,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
                                                                 projectToLandBoundaryOption,
                                                                 orthogonalizationParametersNative);
 
-    bool successful = orthogonalization.Initialize();
-    ASSERT_TRUE(successful);
+    orthogonalization.Initialize();
 
-    successful = orthogonalization.Compute();
-    ASSERT_TRUE(successful);
+    orthogonalization.Compute();
 
     // Assert
     constexpr double tolerance = 1e-8;
@@ -109,11 +108,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
                                                                 projectToLandBoundaryOption,
                                                                 orthogonalizationParametersNative);
 
-    bool successful = orthogonalization.Initialize();
-    ASSERT_TRUE(successful);
+    orthogonalization.Initialize();
 
-    successful = orthogonalization.Compute();
-    ASSERT_TRUE(successful);
+    orthogonalization.Compute();
 
     constexpr double tolerance = 1e-2;
 
@@ -170,11 +167,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
                                                                 projectToLandBoundaryOption,
                                                                 orthogonalizationParametersNative);
 
-    bool successful = orthogonalization.Initialize();
-    ASSERT_TRUE(successful);
-
-    successful = orthogonalization.Compute();
-    ASSERT_TRUE(successful);
+    orthogonalization.Initialize();
+    orthogonalization.Compute();
 
     constexpr double tolerance = 1e-2;
 
@@ -240,11 +234,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
                                                                 projectToLandBoundaryOption,
                                                                 orthogonalizationParametersNative);
 
-    bool successful = orthogonalization.Initialize();
-    ASSERT_TRUE(successful);
+    orthogonalization.Initialize();
 
-    successful = orthogonalization.Compute();
-    ASSERT_TRUE(successful);
+    orthogonalization.Compute();
 
     constexpr double tolerance = 1.8;
     // check the first 10 points
@@ -300,11 +292,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
                                                                 projectToLandBoundaryOption,
                                                                 orthogonalizationParametersNative);
 
-    bool successful = orthogonalization.Initialize();
-    ASSERT_TRUE(successful);
-
+    orthogonalization.Initialize();
     orthogonalization.Compute();
-    ASSERT_TRUE(successful);
 
     constexpr double tolerance = 1.2;
 
@@ -359,11 +348,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
                                                                 projectToLandBoundaryOption,
                                                                 orthogonalizationParametersNative);
 
-    bool successful = orthogonalization.Initialize();
-    ASSERT_TRUE(successful);
+    orthogonalization.Initialize();
 
     orthogonalization.Compute();
-    ASSERT_TRUE(successful);
 }
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
@@ -408,11 +395,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
                                                                 projectToLandBoundaryOption,
                                                                 orthogonalizationParametersNative);
 
-    bool successful = orthogonalization.Initialize();
-    ASSERT_TRUE(successful);
+    orthogonalization.Initialize();
 
     orthogonalization.Compute();
-    ASSERT_TRUE(successful);
 
     // check the values
     constexpr double tolerance = 0.15;
@@ -468,11 +453,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
                                                                 projectToLandBoundaryOption,
                                                                 orthogonalizationParametersNative);
 
-    bool successful = orthogonalization.Initialize();
-    ASSERT_TRUE(successful);
-
+    orthogonalization.Initialize();
     orthogonalization.Compute();
-    ASSERT_TRUE(successful);
 
     // check the values
     constexpr double tolerance = 1e-6;
@@ -563,11 +545,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
                                                                 projectToLandBoundaryOption,
                                                                 orthogonalizationParametersNative);
 
-    bool successful = orthogonalization.Initialize();
-    ASSERT_TRUE(successful);
-
+    orthogonalization.Initialize();
     orthogonalization.Compute();
-    ASSERT_TRUE(successful);
 
     constexpr double tolerance = 1e-3;
 
@@ -614,9 +593,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMeshWithEdgeWithNoFaces)
                                                                 projectToLandBoundaryOption,
                                                                 orthogonalizationParametersNative);
 
-    bool successful = orthogonalization.Initialize();
-    ASSERT_TRUE(successful);
-
-    successful = orthogonalization.Compute();
-    ASSERT_TRUE(successful);
+    orthogonalization.Initialize();
+    orthogonalization.Compute();
 }
