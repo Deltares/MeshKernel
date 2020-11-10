@@ -1572,53 +1572,61 @@ namespace meshkernelapi
                               const int& spherical,
                               const int& sphericalAccurate)
     {
-        // Projections
-        auto projection = meshkernel::Projections::cartesian;
-        if (spherical == 1)
+        int exitCode = Success;
+        try
         {
-            projection = meshkernel::Projections::spherical;
+            // Projections
+            auto projection = meshkernel::Projections::cartesian;
+            if (spherical == 1)
+            {
+                projection = meshkernel::Projections::spherical;
+            }
+            if (sphericalAccurate == 1)
+            {
+                projection = meshkernel::Projections::sphericalAccurate;
+            }
+
+            // Set the mesh
+            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
+            const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
+            const auto mesh = std::make_shared<meshkernel::Mesh>();
+            mesh->Set(edges, nodes, projection);
+
+            // Build the samples
+            std::vector<meshkernel::Sample> samples(numSamples);
+            for (auto i = 0; i < samples.size(); ++i)
+            {
+                samples[i].x = (*samplesXCoordinate)[i];
+                samples[i].y = (*samplesYCoordinate)[i];
+                samples[i].value = (*samplesValue)[i];
+            }
+
+            // Execute averaging
+            const auto location = static_cast<meshkernel::InterpolationLocation>(locationType);
+            const auto method = static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethod);
+
+            meshkernel::AveragingInterpolation averaging(mesh,
+                                                         samples,
+                                                         method,
+                                                         location,
+                                                         relativeSearchSize,
+                                                         false,
+                                                         false);
+            averaging.Compute();
+
+            // Get the results and copy them to the result vector
+            auto interpolationResults = averaging.GetResults();
+            for (auto i = 0; i < interpolationResults.size(); ++i)
+            {
+                (*results)[i] = interpolationResults[i];
+            }
         }
-        if (sphericalAccurate == 1)
+        catch (const std::exception& e)
         {
-            projection = meshkernel::Projections::sphericalAccurate;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
         }
-
-        // Set the mesh
-        const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
-        const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
-        const auto mesh = std::make_shared<meshkernel::Mesh>();
-        mesh->Set(edges, nodes, projection);
-
-        // Build the samples
-        std::vector<meshkernel::Sample> samples(numSamples);
-        for (auto i = 0; i < samples.size(); ++i)
-        {
-            samples[i].x = (*samplesXCoordinate)[i];
-            samples[i].y = (*samplesYCoordinate)[i];
-            samples[i].value = (*samplesValue)[i];
-        }
-
-        // Execute averaging
-        const auto location = static_cast<meshkernel::InterpolationLocation>(locationType);
-        const auto method = static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethod);
-
-        meshkernel::AveragingInterpolation averaging(mesh,
-                                                     samples,
-                                                     method,
-                                                     location,
-                                                     relativeSearchSize,
-                                                     false,
-                                                     false);
-        averaging.Compute();
-
-        // Get the results and copy them to the result vector
-        auto interpolationResults = averaging.GetResults();
-        for (auto i = 0; i < interpolationResults.size(); ++i)
-        {
-            (*results)[i] = interpolationResults[i];
-        }
-
-        return 0;
+        return exitCode;
     }
 
 } // namespace meshkernelapi
