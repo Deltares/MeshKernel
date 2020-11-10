@@ -62,4 +62,5 @@ namespace meshkernelapi
         double* interface_zs = nullptr;
         int startIndex = 0;
     };
+
 } // namespace meshkernelapi

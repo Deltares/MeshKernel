@@ -65,54 +65,57 @@ namespace meshkernel
             typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;
 
         public:
-            void BuildTree(std::vector<Point>& nodes)
+            template <typename T>
+            void BuildTree(std::vector<T>& nodes)
             {
-                m_points.reserve(std::max(m_points.capacity(), m_points.size()));
+                m_points.reserve(m_points.size());
                 m_points.clear();
+                m_rtree2D.clear();
+
                 for (int n = 0; n < nodes.size(); ++n)
                 {
-                    if (nodes[n].IsValid())
+                    if (nodes[n].x != doubleMissingValue && nodes[n].y != doubleMissingValue)
                     {
                         m_points.push_back(std::make_pair(Point2D{nodes[n].x, nodes[n].y}, n));
                     }
                 }
                 m_rtree2D = RTree2D(m_points.begin(), m_points.end());
-
-                m_queryCache.reserve(QueryVectorCapacity);
-                m_queryIndices.reserve(QueryVectorCapacity);
             }
 
             void NearestNeighboursOnSquaredDistance(Point node, double searchRadiusSquared)
             {
-                m_queryCache.resize(0);
                 double searchRadius = std::sqrt(searchRadiusSquared);
 
                 Box2D box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
                 Point2D nodeSought = Point2D(node.x, node.y);
 
+                m_queryCache.reserve(QueryVectorCapacity);
+                m_queryCache.clear();
                 m_rtree2D.query(
                     bgi::within(box) &&
-                        bgi::satisfies([&](value2D const& v) { return bg::comparable_distance(v.first, nodeSought) < searchRadiusSquared; }),
+                        bgi::satisfies([&nodeSought, &searchRadiusSquared](value2D const& v) { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }),
                     std::back_inserter(m_queryCache));
 
-                m_queryIndices.resize(m_queryCache.size());
-                for (size_t i = 0; i < m_queryCache.size(); i++)
+                m_queryIndices.reserve(m_queryCache.size());
+                m_queryIndices.clear();
+                for (const auto& v : m_queryCache)
                 {
-                    m_queryIndices[i] = m_queryCache[i].second;
+                    m_queryIndices.push_back(v.second);
                 }
             }
 
             void NearestNeighbour(Point node)
             {
-                m_queryCache.resize(0);
 
+                m_queryCache.reserve(QueryVectorCapacity);
+                m_queryCache.clear();
                 Point2D nodeSought = Point2D(node.x, node.y);
                 m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
 
                 if (!m_queryCache.empty())
                 {
-                    m_queryIndices.resize(1);
-                    m_queryIndices[0] = m_queryCache[0].second;
+                    m_queryIndices.clear();
+                    m_queryIndices.push_back(m_queryCache[0].second);
                 }
             }
 
@@ -140,12 +143,6 @@ namespace meshkernel
             [[nodiscard]] auto Empty() const
             {
                 return m_rtree2D.empty();
-            }
-
-            void Clear()
-            {
-                m_rtree2D.clear();
-                m_points.clear();
             }
 
             [[nodiscard]] auto GetQueryResultSize() const

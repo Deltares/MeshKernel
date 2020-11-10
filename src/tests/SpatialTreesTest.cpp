@@ -5,8 +5,6 @@
 #include <chrono>
 #include <random>
 
-#include "../Mesh.hpp"
-
 TEST(SpatialTrees, RTreeRemovePoint)
 {
     const int n = 4; // x

@@ -488,7 +488,7 @@ namespace meshkernel
             throw std::invalid_argument("Polygons::MaximumEdgeLength: The first and last point of the polygon is not the same.");
         }
 
-        maximumEdgeLength = std::numeric_limits<double>::min();
+        maximumEdgeLength = std::numeric_limits<double>::lowest();
         for (int p = 0; p < numPoints - 1; ++p)
         {
             double edgeLength = Distance(m_nodes[p], m_nodes[p + 1], m_projection);
@@ -599,9 +599,9 @@ namespace meshkernel
         {
             // Calculate the bounding box
             double XMin = std::numeric_limits<double>::max();
-            double XMax = std::numeric_limits<double>::min();
+            double XMax = std::numeric_limits<double>::lowest();
             double YMin = std::numeric_limits<double>::max();
-            double YMax = std::numeric_limits<double>::min();
+            double YMax = std::numeric_limits<double>::lowest();
 
             for (int n = m_indices[p][0]; n <= m_indices[p][1]; n++)
             {

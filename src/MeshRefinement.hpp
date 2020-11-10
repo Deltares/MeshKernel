@@ -32,6 +32,7 @@
 #include "InterpolationParametersNative.hpp"
 #include "Entities.hpp"
 #include "SpatialTrees.hpp"
+#include "AveragingInterpolation.hpp"
 
 namespace meshkernel
 {
@@ -54,6 +55,8 @@ namespace meshkernel
         /// </summary>
         /// <param name="mesh">The mesh to be refined</param>
         /// <returns></returns>
+        explicit MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging);
+
         explicit MeshRefinement(std::shared_ptr<Mesh> mesh);
 
         /// @brief Refine a mesh (refinecellsandfaces2).
@@ -69,14 +72,13 @@ namespace meshkernel
         ///    4.3 Compute if a face should be splitted, ComputeIfFaceShouldBeSplitted
         ///    4.4 Refine face by splitting edges, RefineFacesBySplittingEdges
         /// 5. Connect hanging nodes if requested, RemoveIsolatedHangingnodes, ConnectHangingNodes
-        /// @param sample The samples with refinement levels (option 1, refine based on sample)
         /// @param polygon The polygon where to perform refinement (option 2, refine in polygon)
         /// @param sampleRefineParametersNative Refinement based on samples parameters
         /// @param interpolationParametersNative Interpolation parameters
-        void Refine(std::vector<Sample>& sample,
-                    const Polygons& polygon,
-                    const meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
-                    const meshkernelapi::InterpolationParametersNative& interpolationParametersNative);
+        void Refine(
+            const Polygons& polygon,
+            const meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
+            const meshkernelapi::InterpolationParametersNative& interpolationParametersNative);
 
     private:
         /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh
@@ -88,7 +90,7 @@ namespace meshkernel
 
         /// @brief Computes the edge and face refinement mask from sample values (compute_jarefine_poly)
         /// @param samples The sample to use for computing masking
-        void ComputeRefinementMasksFromSamples(std::vector<Sample>& samples);
+        void ComputeRefinementMasksFromSamples();
 
         /// @brief Computes the number of edges that should be refined in a face (compute_jarefine_poly)
         ///        Face nodes, edge and edge lenghts are stored in local caches. See Mesh.FaceClosedPolygon method
@@ -96,8 +98,7 @@ namespace meshkernel
         /// @param samples The samples to use for refinement
         /// @param refineEdgeCache 1 if the edge should be refined, 0 otherwise
         /// @param numEdgesToBeRefined The computed number of edges to refined
-        void ComputeEdgesRefinementMaskFromSamples(int numPolygonNodes,
-                                                   std::vector<Sample>& samples,
+        void ComputeEdgesRefinementMaskFromSamples(int face,
                                                    std::vector<int>& refineEdgeCache,
                                                    int& numEdgesToBeRefined);
 
@@ -110,7 +111,7 @@ namespace meshkernel
         /// @param numHangingEdges
         /// @param numHangingNodes
         /// @param numEdgesToRefine
-        void FindHangingNodes(int faceIndex,
+        void FindHangingNodes(int face,
                               int& numHangingEdges,
                               int& numHangingNodes,
                               int& numEdgesToRefine);
@@ -142,7 +143,7 @@ namespace meshkernel
         /// <returns>The refinement value at the face center of mass</returns>
         [[nodiscard]] double ComputeFaceRefinementFromSamples(int numPolygonNodes,
                                                               const std::vector<Sample>& samples,
-                                                              AveragingMethod averagingMethod,
+                                                              AveragingInterpolation::Method averagingMethod,
                                                               Point centerOfMass);
         /// The sample node RTree
         SpatialTrees::RTree m_samplesRTree;
@@ -158,7 +159,6 @@ namespace meshkernel
         std::vector<Point> m_polygonNodesCache;
         std::vector<int> m_localNodeIndicesCache;
         std::vector<int> m_edgeIndicesCache;
-        std::vector<double> m_polygonEdgesLengthsCache;
 
         std::vector<bool> m_subtractedSample; /// Is the sample value subtracted (e.g. in refinement by levels)
 
@@ -173,5 +173,6 @@ namespace meshkernel
         RefinementType m_refinementType; /// The type of refinement to use
 
         std::shared_ptr<Mesh> m_mesh;
+        std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;
     };
 } // namespace meshkernel

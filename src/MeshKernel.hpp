@@ -505,6 +505,39 @@ namespace meshkernelapi
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_curvilinear_from_triangle(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode);
 
+        /// @brief AveragingInterpolation interpolation (ec_module)
+        /// @param meshGeometryDimensions Mesh dimensions
+        /// @param meshGeometry Mesh data
+        /// @param startIndex Mesh data start index (not used)
+        /// @param samplesXCoordinate The sample x coordinates
+        /// @param samplesYCoordinate The sample y coordinates
+        /// @param samplesValue The sample values
+        /// @param numSamples The number of samples
+        /// @param results The interpolation results
+        /// @param locationType The location type (see InterpolationLocation enum)
+        /// @param Wu1Duni A setting for 1d meshes (not used)
+        /// @param averagingMethod The averaging method (see Method enum)
+        /// @param minNumberOfSamples The minimum amount of samples (not used)
+        /// @param relativeSearchSize The relative search size around the location (larger increases the number of samples considered)
+        /// @param spherical Current projection (0 cartesian, 1 spherical)
+        /// @param sphericalAccurate Accurate spherical computations (0 default spherical, 1 spherical accurate)
+        /// @return Error code (0 Successful)
+        MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
+                                  const MeshGeometry& meshGeometry,
+                                  const int& startIndex,
+                                  const double** samplesXCoordinate,
+                                  const double** samplesYCoordinate,
+                                  const double** samplesValue,
+                                  const int& numSamples,
+                                  double** results,
+                                  const int& locationType,
+                                  const double& Wu1Duni,
+                                  const int& averagingMethod,
+                                  const int& minNumberOfSamples,
+                                  const double& relativeSearchSize,
+                                  const int& spherical,
+                                  const int& sphericalAccurate);
+
         /// @brief Get pointer to error message.
         /// @param[out] error_message
         /// @returns Error code
