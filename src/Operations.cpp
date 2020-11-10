@@ -626,7 +626,7 @@ namespace meshkernel
             double vyy = globalComponents.x * elambda[1] + globalComponents.y * ephi[1];
             double vzz = globalComponents.x * elambda[2] + globalComponents.y * ephi[2];
 
-            //tranform to local spherical coordinates
+            //transform to local spherical coordinates
             Point globalCoordinatesToLocal;
             CartesianToSpherical(globalCoordinatesCartesianRotated, reference.x, globalCoordinatesToLocal);
 

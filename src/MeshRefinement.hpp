@@ -69,7 +69,7 @@ namespace meshkernel
         ///    4.1 Find the brother edges, FindBrotherEdges
         ///    4.2 Compute the edge refinement mask based on samples, ComputeRefinementMasksFromSamples
         ///    4.3 Compute the edge refinement mask based on polygon, ComputeEdgesRefinementMask
-        ///    4.3 Compute if a face should be splitted, ComputeIfFaceShouldBeSplitted
+        ///    4.3 Compute if a face should be split, ComputeIfFaceShouldBeSplit
         ///    4.4 Refine face by splitting edges, RefineFacesBySplittingEdges
         /// 5. Connect hanging nodes if requested, RemoveIsolatedHangingnodes, ConnectHangingNodes
         /// @param polygon The polygon where to perform refinement (option 2, refine in polygon)
@@ -93,7 +93,7 @@ namespace meshkernel
         void ComputeRefinementMasksFromSamples();
 
         /// @brief Computes the number of edges that should be refined in a face (compute_jarefine_poly)
-        ///        Face nodes, edge and edge lenghts are stored in local caches. See Mesh.FaceClosedPolygon method
+        ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh.FaceClosedPolygon method
         /// @param numPolygonNodes The number of face nodes
         /// @param samples The samples to use for refinement
         /// @param refineEdgeCache 1 if the edge should be refined, 0 otherwise
@@ -126,21 +126,19 @@ namespace meshkernel
         /// @brief Smooth the face refinement mask (smooth_jarefine)
         void SmoothEdgeRefinementMask() const;
 
-        /// @brief Computes m_faceMask, if a face must be splitted later on (split_cells)
-        void ComputeIfFaceShouldBeSplitted();
+        /// @brief Computes m_faceMask, if a face must be split later on (split_cells)
+        void ComputeIfFaceShouldBeSplit();
 
         /// @brief The refinement operation by splitting the face (refine_cells)
         /// @param[in] numEdgesBeforeRefinemet Number of edges before the refinement
         void RefineFacesBySplittingEdges(int numEdgesBeforeRefinement);
 
-        /// <summary>
         /// Compute the refinement value at the face center of mass
-        /// </summary>
-        /// <param name="numPolygonNodes">The number of polygon nodes</param>
-        /// <param name="samples">The number of samples</param>
-        /// <param name="averagingMethod">The averaging method to used</param>
-        /// <param name="centerOfMass">Tha face center of mass</param>
-        /// <returns>The refinement value at the face center of mass</returns>
+        /// @param[in] numPolygonNodes The number of polygon nodes
+        /// @param[in] samples The number of samples
+        /// @param[in] averagingMethod The averaging method to used
+        /// @param[in] centerOfMass The face center of mass
+        /// @returns The refinement value at the face center of mass
         [[nodiscard]] double ComputeFaceRefinementFromSamples(int numPolygonNodes,
                                                               const std::vector<Sample>& samples,
                                                               AveragingInterpolation::Method averagingMethod,
@@ -149,7 +147,7 @@ namespace meshkernel
         SpatialTrees::RTree m_samplesRTree;
 
         std::vector<int> m_faceMask;     /// Refine face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
-        std::vector<int> m_edgeMask;     /// If 0, edge is not splitted
+        std::vector<int> m_edgeMask;     /// If 0, edge is not split
         std::vector<int> m_brotherEdges; /// The index of the brother edge for each edge
 
         /// Local caches

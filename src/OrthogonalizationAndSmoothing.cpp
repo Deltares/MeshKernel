@@ -395,7 +395,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
         transformedCartesianLocalPoint.y = exxp[1] * cartesianLocalPoint.x + eyyp[1] * cartesianLocalPoint.y + ezzp[1] * cartesianLocalPoint.z;
         transformedCartesianLocalPoint.z = exxp[2] * cartesianLocalPoint.x + eyyp[2] * cartesianLocalPoint.y + ezzp[2] * cartesianLocalPoint.z;
 
-        //tranform to spherical coordinates
+        //transform to spherical coordinates
         CartesianToSpherical(transformedCartesianLocalPoint, m_mesh->m_nodes[nodeIndex].x, m_orthogonalCoordinates[nodeIndex]);
     }
 }

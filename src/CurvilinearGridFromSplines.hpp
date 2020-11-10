@@ -41,12 +41,9 @@ namespace meshkernel
     class CurvilinearGridFromSplines
     {
     public:
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="curvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
-        /// <param name="splinesToCurvilinearParametersNative">The parameters for OrthogonalCurvilinearGridFromSplines algoritm</param>
-        /// <returns></returns>
+        /// @brief Ctor
+        /// @param curvilinearParametersNative The parameters for OrthogonalCurvilinearGridFromSplines algorithm
+        /// @param splinesToCurvilinearParametersNative The parameters for OrthogonalCurvilinearGridFromSplines algorithm
         CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
                                    const meshkernelapi::CurvilinearParametersNative& curvilinearParametersNative,
                                    const meshkernelapi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
@@ -160,7 +157,7 @@ namespace meshkernel
 
         /// <summary>
         /// Compute the edge grow velocities (comp_edgevel)
-        /// TODO: can this be splitted in compute heights and computeGrowFactors
+        /// TODO: can this be split in compute heights and computeGrowFactors
         /// </summary>
         /// <param name="edgeVelocities"></param>
         /// <param name="growFactorOnSubintervalAndEdge"></param>
@@ -279,7 +276,7 @@ namespace meshkernel
 
         /// @brief Compute the heights at left and right of the center spline index.
         ///
-        /// Heights are determined by the lenghts of the left and right parts of the crossing splines (comp_subheights)
+        /// Heights are determined by the lengths of the left and right parts of the crossing splines (comp_subheights)
         ///
         /// @param centerSplineIndex
         /// @param crossingSplineLocalIndex

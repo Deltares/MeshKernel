@@ -282,7 +282,7 @@ double meshkernel::Splines::GetSplineLength(int index,
     if (delta < 0.0)
     {
         delta = 1.0 / numSamples;
-        // TODO: Refactor or at least document the calulation of "numPoints"
+        // TODO: Refactor or at least document the calculation of "numPoints"
         numPoints = int(std::max(std::floor(0.9999 + (endIndex - startIndex) / delta), 10.0));
         delta = (endIndex - startIndex) / numPoints;
     }

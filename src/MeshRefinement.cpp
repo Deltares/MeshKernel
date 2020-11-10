@@ -183,7 +183,7 @@ void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
 
         ComputeEdgesRefinementMask();
 
-        ComputeIfFaceShouldBeSplitted();
+        ComputeIfFaceShouldBeSplit();
 
         int numFacesToRefine = 0;
         for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
@@ -689,7 +689,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
                 m_mesh->m_nodeMask[newNodeIndex] = 1;
                 if (isParentCrossed)
                 {
-                    //deactive nodes in cells crossed by polygon
+                    //inactive nodes in cells crossed by polygon
                     m_mesh->m_nodeMask[newNodeIndex] = -1;
                 }
             }
@@ -1122,7 +1122,7 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMask()
     }
 }
 
-void meshkernel::MeshRefinement::ComputeIfFaceShouldBeSplitted()
+void meshkernel::MeshRefinement::ComputeIfFaceShouldBeSplit()
 {
     const int maxiter = 1000;
     int num = 1;
