@@ -1340,7 +1340,7 @@ void meshkernel::Mesh::ComputeEdgeLengths()
     {
         auto const first = m_edges[e].first;
         auto const second = m_edges[e].second;
-        m_edgeLengths[e] = Distance(m_nodes[first], m_nodes[second], m_projection);
+        m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
     }
 }
 
@@ -1929,6 +1929,29 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
     return result;
 }
 
+std::vector<meshkernel::Point> meshkernel::Mesh::GetSmallFlowEdgeCenters(double smallFlowEdgesThreshold)
+{
+    std::vector<Point> result;
+    result.reserve(GetNumEdges());
+    for (int e = 0; e < GetNumEdges(); ++e)
+    {
+        const auto firstFace = m_edgesFaces[e][0];
+        const auto secondFace = m_edgesFaces[e][1];
+
+        if (firstFace >= 0 && secondFace >= 0)
+        {
+            const auto flowEdgeLength = ComputeDistance(m_facesCircumcenters[firstFace], m_facesCircumcenters[secondFace], m_projection);
+            const double tooCloseDistance = 0.9 * smallFlowEdgesThreshold * 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
+
+            if (flowEdgeLength < tooCloseDistance)
+            {
+                result.push_back((m_facesCircumcenters[firstFace] + m_facesCircumcenters[firstFace]) * 0.5);
+            }
+        }
+    }
+    return result;
+}
+
 void meshkernel::Mesh::ComputeNodeNeighbours()
 {
     m_maxNumNeighbours = *(std::max_element(m_nodesNumEdges.begin(), m_nodesNumEdges.end()));
@@ -2011,7 +2034,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
 
         if (first == second)
             continue;
-        double edgeLength = Distance(m_nodes[first], m_nodes[second], m_projection);
+        double edgeLength = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
         edgesLength[e] = edgeLength;
 
         Point leftCenter;
@@ -2042,7 +2065,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
             rightCenter.y = 2.0 * y0_bc - leftCenter.y;
         }
 
-        averageFlowEdgesLength[e] = Distance(leftCenter, rightCenter, m_projection);
+        averageFlowEdgesLength[e] = ComputeDistance(leftCenter, rightCenter, m_projection);
     }
 
     // Compute normal length
@@ -2156,9 +2179,7 @@ void meshkernel::Mesh::TriangulateFaces()
 
 bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vector<Point>& dualFace)
 {
-
-    std::vector<int> sortedFacesIndices;
-    SortedFacesAroundNode(node, sortedFacesIndices);
+    const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
     dualFace.reserve(maximumNumberOfEdgesPerNode);
     dualFace.clear();
@@ -2226,11 +2247,11 @@ bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vect
     return true;
 }
 
-bool meshkernel::Mesh::SortedFacesAroundNode(int node, std::vector<int>& result) const
+std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(int node) const
 {
 
     const auto numEdges = m_nodesNumEdges[node];
-    result.clear();
+    std::vector<int> result;
     for (int e = 0; e < numEdges; ++e)
     {
         const auto firstEdge = m_nodesEdges[node][e];
@@ -2275,5 +2296,5 @@ bool meshkernel::Mesh::SortedFacesAroundNode(int node, std::vector<int>& result)
         }
     }
 
-    return true;
+    return result;
 }

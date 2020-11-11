@@ -470,7 +470,7 @@ namespace meshkernel
             {
                 secondNode = 0;
             }
-            double edgeLength = Distance(localPolygon[firstNode], localPolygon[secondNode], m_projection);
+            double edgeLength = ComputeDistance(localPolygon[firstNode], localPolygon[secondNode], m_projection);
             edgeLengths[p] = edgeLength;
         }
     }
@@ -491,7 +491,7 @@ namespace meshkernel
         maximumEdgeLength = std::numeric_limits<double>::lowest();
         for (int p = 0; p < numPoints - 1; ++p)
         {
-            double edgeLength = Distance(m_nodes[p], m_nodes[p + 1], m_projection);
+            double edgeLength = ComputeDistance(m_nodes[p], m_nodes[p + 1], m_projection);
             maximumEdgeLength = std::max(maximumEdgeLength, edgeLength);
         }
     }

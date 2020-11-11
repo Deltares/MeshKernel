@@ -863,7 +863,7 @@ namespace meshkernel
     }
 
     //dbdistance
-    [[nodiscard]] static double Distance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
+    [[nodiscard]] static double ComputeDistance(const Point& firstPoint, const Point& secondPoint, const Projections& projection)
     {
         double distance = ComputeSquaredDistance(firstPoint, secondPoint, projection);
         if (distance >= 0.0)
@@ -890,7 +890,7 @@ namespace meshkernel
                 double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
                 normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
                 normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
-                dis = Distance(point, normalPoint, projection);
+                dis = ComputeDistance(point, normalPoint, projection);
             }
             return dis;
         }
@@ -1284,7 +1284,7 @@ namespace meshkernel
         result[0] = 0;
         for (int i = 1; i < v.size(); i++)
         {
-            result[i] = result[i - 1] + Distance(v[i - 1], v[i], projection);
+            result[i] = result[i - 1] + ComputeDistance(v[i - 1], v[i], projection);
         }
         totalDistance = result.back();
         const double inverseTotalDistance = 1.0 / totalDistance;

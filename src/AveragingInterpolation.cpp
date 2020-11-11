@@ -303,7 +303,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
                     firstValidSampleFound = true;
                     result = 0.0;
                 }
-                const double distance = std::max(0.01, Distance(interpolationPoint, samplePoint, m_mesh->m_projection));
+                const double distance = std::max(0.01, ComputeDistance(interpolationPoint, samplePoint, m_mesh->m_projection));
                 const double weight = 1.0 / distance;
                 wall += weight;
                 numValidSamplesInPolygon++;
