@@ -1931,6 +1931,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
 
 std::vector<meshkernel::Point> meshkernel::Mesh::GetSmallFlowEdgeCenters(double smallFlowEdgesThreshold)
 {
+    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
     std::vector<Point> result;
     result.reserve(GetNumEdges());
     for (int e = 0; e < GetNumEdges(); ++e)

@@ -586,11 +586,38 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projections::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
-    int edgeIndex = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
+    const auto edgeIndex = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
 
     // m_nodesRTree is not build when searching for edges
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // m_edgesRTree is build
     ASSERT_EQ(4, mesh->m_edgesRTree.Size());
+}
+
+TEST(Mesh, GetSmallFlowEdgeCenters)
+{
+    // Setup a mesh with two triangles
+    std::vector<meshkernel::Point> nodes{
+        {0.0, 0.0},
+        {1.0, 0.0},
+        {1.0, 0.3},
+        {1.0, -0.3}};
+
+    std::vector<meshkernel::Edge> edges{
+        {0, 3},
+        {3, 1},
+        {1, 0},
+        {1, 2},
+        {2, 0},
+    };
+
+    meshkernel::Mesh mesh;
+    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+
+    // execute, by setting the smallFlowEdgesThreshold high, a small flow edge will be found
+    const auto smallFlowEdgeCenters = mesh.GetSmallFlowEdgeCenters(100);
+
+    // assert a small flow edge is found
+    ASSERT_EQ(1, smallFlowEdgeCenters.size());
 }
