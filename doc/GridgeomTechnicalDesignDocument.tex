@@ -212,7 +212,50 @@ to support interactivity with the client, the original Fortran algorithm was div
 \item ggeo\_curvilinear\_mesh\_from\_splines\_ortho\_refresh\_mesh, corresponding to the post-processing above, plus the conversion of the CurvilinearGrid to an unstructured mesh.
 \item ggeo\_curvilinear\_mesh\_from\_splines\_ortho\_delete, necessary to delete the CurvilinearGridFromSplines instance used in the previous API calls.
 \end{itemize}
+%------------------------------------------------------------------------------
+\chapter{The AveragingInterpolation class}
 
+The averaging interpolation operates on three specific locations: Faces (m\ face mass centers), Nodes, and Edges(m\ edge centers). The idea is to collect all samples close to the locations and perform a mathematical operation on their values. The available operations are:
+\begin{itemize}
+	\item Simple averaging: computes a simple mean.
+	\item Closest: takes the value of the closest sample to the interpolation location.
+	\item Max: takes the maximum sample value.
+	\item Min: takes the minimum sample value.
+	\item InverseWeightedDistance: computes the inverse weighted sample mean.
+	\item MinAbsValue: computes the minimum absolute value.
+\end{itemize}
+The algorithm operates as follow:
+\begin{itemize}
+	\item The samples are ordered in an RTree for a fast search
+	\item The search area around the location is constructed as follow:
+\begin{enumerate}
+		\item For face locations, the sample areas correspond to the faces, increased/decreased by the relativeSearchRadius parameter (relativeSearchRadius  > 1 increased, relativeSearchRadius < 1 decreased).
+		\item For Nodes and Edge locations, the dual face around the node is constructed by connecting the mid-points of all edges connected to the node. As above, the resulting polygon can be increased/decreased by the relativeSearchRadius parameter.
+\end{enumerate}
+\item The search radius is computed from the constructed polygon vertices and the locations, the maximum value is taken.
+\item The sample RTree is inquired to retrieve the indices of the samples within the search radius.
+\item The operations described above are executed on the found samples.
+\item For the Edges location, the interpolated values at the node are averaged.
+
+\end{itemize}
+%------------------------------------------------------------------------------
+\chapter{The TriangulationInterpolation class}
+
+As for averaging, the triangle interpolation operates at three specific locations: Faces, Nodes, and Edges. The idea is to triangulate the samples and identify for each location the triangle that fully contains it. Only the values at the vertices of the identified triangle are used in the computation of each location.
+The algorithm operates as follow:
+\begin{itemize}
+	\item The triangulation of the samples is computed
+	\item For each triangle, the circumcentre is computed
+	\item The triangle circumcentres are ordered in an RTree for a fast search
+	\item For each location, the closest circumcentre is found
+	\item If the corresponding triangle contains the location then the linear interpolation is performed, otherwise, the next neighbouring triangle is searched. The next neighbouring triangle is the first triangle that satisfies these two conditions:
+	\begin{enumerate}
+		\item shares one of the current triangle edges.
+		\item the crossing of the edge and the line connecting the location the current triangle circumcentre exists.
+	\end{enumerate}
+	\item If the next triangle does not contain the location, repeat the step above for a maximum number of times equal to two times the number of triangles.
+\end{itemize}
+When a triangle enclosing a specific location is not found, the interpolated value at that location is invalid. The handling of spherical accurate projection occurs at low-level geometrical functions ( IsPointInPolygonNodes, AreLineCrossing). Therefore, the algorithm is independent of the implementation details that occur at the level of the geometrical functions. 
 
 %------------------------------------------------------------------------------
 \appendix
