@@ -292,6 +292,10 @@ namespace meshkernel
                                                    const std::vector<int>& edgesNumFaces,
                                                    double weightCircumCenter) const;
 
+        /// @brief Gets the mass centers of obtuse triangles
+        /// @returns The center of the flow edge
+        [[nodiscard]] std::vector<Point> GetObtuseTriangles();
+
         /// @brief Computes m_nodesNodes, see class members
         void ComputeNodeNeighbours();
 

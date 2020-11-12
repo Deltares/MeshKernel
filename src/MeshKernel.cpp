@@ -1556,6 +1556,50 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_get_obtuse_triangles_count(int meshKernelId, int& numObtuseTriangles)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            const auto obtuseTriangles = meshInstances[meshKernelId]->GetObtuseTriangles();
+
+            numObtuseTriangles = static_cast<int>(obtuseTriangles.size());
+        }
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_get_obtuse_triangles(int meshKernelId, GeometryListNative& result)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            const auto obtuseTriangles = meshInstances[meshKernelId]->GetObtuseTriangles();
+
+            ConvertPointVectorToGeometryListNative(obtuseTriangles, result);
+        }
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
+    }
+
     MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
                               const MeshGeometry& meshGeometry,
                               const int& startIndex,

@@ -594,3 +594,29 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     // m_edgesRTree is build
     ASSERT_EQ(4, mesh->m_edgesRTree.Size());
 }
+
+TEST(Mesh, GetObtuseTriangles)
+{
+    // Setup a mesh with two triangles, one obtuse
+    std::vector<meshkernel::Point> nodes{
+        {0.0, 0.0},
+        {3.0, 0.0},
+        {-1.0, 2.0},
+        {1.5, -2.0}};
+
+    std::vector<meshkernel::Edge> edges{
+        {0, 1},
+        {1, 2},
+        {2, 0},
+        {0, 3},
+        {3, 1}};
+
+    meshkernel::Mesh mesh;
+    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+
+    // execute, only one obtuse triangle should be found
+    const auto obtuseTrianglesCount = mesh.GetObtuseTriangles().size();
+
+    // assert a small flow edge is found
+    ASSERT_EQ(1, obtuseTrianglesCount);
+}

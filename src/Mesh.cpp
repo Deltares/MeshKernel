@@ -1929,6 +1929,36 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
     return result;
 }
 
+std::vector<meshkernel::Point> meshkernel::Mesh::GetObtuseTriangles()
+{
+    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    std::vector<meshkernel::Point> result;
+    result.reserve(GetNumFaces());
+    for (auto f = 0; f < GetNumFaces(); ++f)
+    {
+        // a triangle
+        if (m_numFacesNodes[f] == 3)
+        {
+            const auto firstNode = m_facesNodes[f][0];
+            const auto secondNode = m_facesNodes[f][1];
+            const auto thirdNode = m_facesNodes[f][2];
+            //compute squared edge lengths
+            const auto firstEdgeSquaredLength = ComputeSquaredDistance(m_nodes[secondNode], m_nodes[firstNode], m_projection);
+            const auto secondEdgeSquaredLength = ComputeSquaredDistance(m_nodes[thirdNode], m_nodes[firstNode], m_projection);
+            const auto thirdEdgeSquaredLength = ComputeSquaredDistance(m_nodes[thirdNode], m_nodes[secondNode], m_projection);
+
+            if (firstEdgeSquaredLength > secondEdgeSquaredLength + thirdEdgeSquaredLength ||
+                secondEdgeSquaredLength > firstEdgeSquaredLength + thirdEdgeSquaredLength ||
+                thirdEdgeSquaredLength > secondEdgeSquaredLength + firstEdgeSquaredLength)
+            {
+                result.push_back(m_facesMassCenters[f]);
+            }
+        }
+    }
+
+    return result;
+}
+
 void meshkernel::Mesh::ComputeNodeNeighbours()
 {
     m_maxNumNeighbours = *(std::max_element(m_nodesNumEdges.begin(), m_nodesNumEdges.end()));
