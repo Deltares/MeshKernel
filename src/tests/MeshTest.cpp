@@ -616,8 +616,12 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
     mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
     // execute, by setting the smallFlowEdgesThreshold high, a small flow edge will be found
-    const auto smallFlowEdgeCenters = mesh.GetSmallFlowEdgeCenters(100);
+    const auto numSmallFlowEdgeFirstQuery = mesh.GetSmallFlowEdgeCenters(100).size();
+
+    // execute, by setting the smallFlowEdgesThreshold low, no small flow edge will be found
+    const auto numSmallFlowEdgeSecondQuery = mesh.GetSmallFlowEdgeCenters(0.0).size();
 
     // assert a small flow edge is found
-    ASSERT_EQ(1, smallFlowEdgeCenters.size());
+    ASSERT_EQ(1, numSmallFlowEdgeFirstQuery);
+    ASSERT_EQ(0, numSmallFlowEdgeSecondQuery);
 }
