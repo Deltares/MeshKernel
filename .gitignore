@@ -44,4 +44,6 @@ src/MeshKernel_version.h.svn
 src/MeshKernel_version.rc
 src/MeshKernel_version.rc.svn
 
+# Building
+*build*
 post_build.bat
