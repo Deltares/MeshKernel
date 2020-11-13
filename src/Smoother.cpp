@@ -32,12 +32,12 @@
 #include <string>
 #include <stdexcept>
 
-#include "Exceptions.hpp"
-#include "Operations.cpp"
-#include "Constants.cpp"
-#include "Mesh.hpp"
-#include "Entities.hpp"
-#include "Smoother.hpp"
+#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Smoother.hpp>
 
 meshkernel::Smoother::Smoother(std::shared_ptr<Mesh> mesh) : m_mesh(mesh)
 {

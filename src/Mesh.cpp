@@ -32,16 +32,16 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "Mesh.hpp"
-#include "Constants.cpp"
-#include "Operations.cpp"
-#include "Polygons.hpp"
-#include "SpatialTrees.hpp"
-#include "CurvilinearGrid.hpp"
-#include "Entities.hpp"
-#include "MakeGridParametersNative.hpp"
-#include "TriangulationWrapper.cpp"
-#include "Exceptions.hpp"
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/MakeGridParametersNative.hpp>
+#include <MeshKernel/TriangulationWrapper.cpp>
+#include <MeshKernel/Exceptions.hpp>
 
 meshkernel::Mesh::Mesh()
 {

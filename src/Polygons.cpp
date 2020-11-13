@@ -30,12 +30,12 @@
 #include <utility>
 #include <vector>
 #include <stdexcept>
-#include "Mesh.hpp"
-#include "Polygons.hpp"
-#include "Constants.cpp"
-#include "Operations.cpp"
-#include "TriangulationWrapper.cpp"
-#include "Exceptions.hpp"
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/TriangulationWrapper.cpp>
+#include <MeshKernel/Exceptions.hpp>
 
 namespace meshkernel
 {

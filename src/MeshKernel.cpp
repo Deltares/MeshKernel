@@ -30,27 +30,27 @@
 #include <string>
 #include <sstream>
 
-#include "MeshKernel.hpp"
-#include "Constants.cpp"
-#include "CurvilinearGrid.hpp"
-#include "CurvilinearGridFromPolygon.hpp"
-#include "CurvilinearGridFromSplines.hpp"
-#include "CurvilinearGridFromSplinesTransfinite.hpp"
-#include "CurvilinearParametersNative.hpp"
-#include "Entities.hpp"
-#include "FlipEdges.hpp"
-#include "LandBoundaries.hpp"
-#include "Mesh.hpp"
-#include "MeshRefinement.hpp"
-#include "Operations.cpp"
-#include "OrthogonalizationAndSmoothing.hpp"
-#include "Orthogonalizer.hpp"
-#include "Polygons.hpp"
-#include "Smoother.hpp"
-#include "Splines.hpp"
-#include "SplinesToCurvilinearParametersNative.hpp"
-#include "TriangulationInterpolation.hpp"
-#include "AveragingInterpolation.hpp"
+#include <MeshKernel/MeshKernel.hpp>
+#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridFromPolygon.hpp>
+#include <MeshKernel/CurvilinearGridFromSplines.hpp>
+#include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
+#include <MeshKernel/CurvilinearParametersNative.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/FlipEdges.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/MeshRefinement.hpp>
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
+#include <MeshKernel/Orthogonalizer.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Smoother.hpp>
+#include <MeshKernel/Splines.hpp>
+#include <MeshKernel/SplinesToCurvilinearParametersNative.hpp>
+#include <MeshKernel/TriangulationInterpolation.hpp>
+#include <MeshKernel/AveragingInterpolation.hpp>
 
 // The vector containing the mesh instances
 static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;

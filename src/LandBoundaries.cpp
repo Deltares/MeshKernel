@@ -30,13 +30,13 @@
 #include <vector>
 #include <cassert>
 #include <stdexcept>
-#include "Mesh.hpp"
-#include "Entities.hpp"
-#include "Constants.cpp"
-#include "Operations.cpp"
-#include "Polygons.hpp"
-#include "LandBoundaries.hpp"
-#include "Exceptions.hpp"
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Exceptions.hpp>
 
 namespace meshkernel
 {

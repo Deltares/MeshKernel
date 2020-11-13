@@ -28,37 +28,30 @@
 #pragma once
 
 #include <vector>
-#include "Entities.hpp"
+#include <MeshKernel/Entities.hpp>
 
 namespace meshkernel
 {
-    class TriangulationInterpolation
+    class CurvilinearGrid
     {
 
     public:
-        /// @brief Constructor
-        /// @param[in] locations interpolation points (where the values should be computed)
-        /// @param[in] samples  Values to use for the interpolation
-        /// @param[in] projection Projection to use (\ref Projections)
-        TriangulationInterpolation(const std::vector<Point>& locations,
-                                   const std::vector<Sample>& samples,
-                                   Projections projection);
-
-        /// @brief Compute results on the interpolation points
-        void Compute();
-
-        /// @brief Get the results
-        /// @return
-        [[nodiscard]] const auto& GetResults() const
+        void Set(int m, int n)
         {
-            return m_results;
+
+            int mMax = m + 1;
+            int nMax = n + 1;
+
+            m_grid.resize(mMax, std::vector<Point>(nMax, {doubleMissingValue, doubleMissingValue}));
         }
 
-    private:
-        const std::vector<Point>& m_locations;
-        const std::vector<Sample>& m_samples;
-        Projections m_projection;
-        std::vector<double> m_results;
-    };
+        void Set(const std::vector<std::vector<Point>>& grid)
+        {
+            m_grid = grid;
+        }
 
-}; // namespace meshkernel
+        std::vector<std::vector<Point>> m_grid;
+        int m_n;
+        int m_m;
+    };
+} // namespace meshkernel

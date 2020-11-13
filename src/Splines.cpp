@@ -31,10 +31,10 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "Exceptions.hpp"
-#include "Operations.cpp"
-#include "Entities.hpp"
-#include "Splines.hpp"
+#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Splines.hpp>
 
 meshkernel::Splines::Splines() : m_projection(Projections::cartesian){};
 

@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "TriangulationWrapper.hpp"
+#include <MeshKernel/TriangulationWrapper.hpp>
 #include <vector>
 
 extern "C"

@@ -27,10 +27,10 @@
 
 #pragma once
 
-#include "Operations.cpp"
-#include "Mesh.hpp"
-#include "SpatialTrees.hpp"
-#include "AveragingInterpolation.hpp"
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/AveragingInterpolation.hpp>
 #include <stdexcept>
 
 meshkernel::AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh> mesh,

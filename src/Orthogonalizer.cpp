@@ -31,11 +31,11 @@
 #include <algorithm>
 #include <numeric>
 
-#include "Operations.cpp"
-#include "Constants.cpp"
-#include "Mesh.hpp"
-#include "Entities.hpp"
-#include "Orthogonalizer.hpp"
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Orthogonalizer.hpp>
 
 meshkernel::Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh> mesh) : m_mesh(mesh)
 {
