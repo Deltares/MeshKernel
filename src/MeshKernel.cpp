@@ -1578,6 +1578,51 @@ namespace meshkernelapi
         }
         return exitCode;
     }
+
+    MKERNEL_API int mkernel_get_small_flow_edge_centers_count(int meshKernelId, double smallFlowEdgesThreshold, int& numSmallFlowEdges)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            const auto smallFlowEdgeCenters = meshInstances[meshKernelId]->GetSmallFlowEdgeCenters(smallFlowEdgesThreshold);
+
+            numSmallFlowEdges = static_cast<int>(smallFlowEdgeCenters.size());
+        }
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_get_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesThreshold, GeometryListNative& result)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            const auto smallFlowEdgeCenters = meshInstances[meshKernelId]->GetSmallFlowEdgeCenters(smallFlowEdgesThreshold);
+
+            ConvertPointVectorToGeometryListNative(smallFlowEdgeCenters, result);
+        }
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
+    }
+
     MKERNEL_API int mkernel_get_error(const char*& error_message)
     {
         int exitCode = Success;

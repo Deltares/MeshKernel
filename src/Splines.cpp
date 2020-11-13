@@ -320,7 +320,7 @@ double meshkernel::Splines::GetSplineLength(int index,
             Point tangentialVector;
             ComputeCurvatureOnSplinePoint(index, 0.5 * (rightPointCoordinateOnSpline + leftPointCoordinateOnSpline), curvatureFactor, normalVector, tangentialVector);
         }
-        splineLength = splineLength + Distance(leftPoint, rightPoint, m_projection) * (1.0 + curvatureFactor * height);
+        splineLength = splineLength + ComputeDistance(leftPoint, rightPoint, m_projection) * (1.0 + curvatureFactor * height);
         leftPoint = rightPoint;
     }
 
@@ -367,7 +367,7 @@ void meshkernel::Splines::ComputeCurvatureOnSplinePoint(int splineIndex,
     Point incremenetedPointCoordinate = pointCoordinate + p * 1e-4;
     NormalVectorOutside(pointCoordinate, incremenetedPointCoordinate, normalVector, m_projection);
 
-    double distance = Distance(pointCoordinate, incremenetedPointCoordinate, m_projection);
+    double distance = ComputeDistance(pointCoordinate, incremenetedPointCoordinate, m_projection);
     double dx = GetDx(pointCoordinate, incremenetedPointCoordinate, m_projection);
     double dy = GetDy(pointCoordinate, incremenetedPointCoordinate, m_projection);
 

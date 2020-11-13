@@ -766,7 +766,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeMaximumGridLayerGrowTime(con
             continue;
         }
 
-        edgeWidth[i] = Distance(coordinates[i], coordinates[i + 1], m_splines->m_projection);
+        edgeWidth[i] = ComputeDistance(coordinates[i], coordinates[i + 1], m_splines->m_projection);
 
         if (edgeWidth[i] < minEdgeWidth)
         {
@@ -1725,7 +1725,7 @@ void meshkernel::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
             int index = startingIndex + n + 1;
             adimensionalCoordinates[index] = adimensionalDistances[n];
             gridLine[index] = points[n];
-            currentMaxWidth = std::max(currentMaxWidth, Distance(gridLine[index - 1], gridLine[index], m_splines->m_projection));
+            currentMaxWidth = std::max(currentMaxWidth, ComputeDistance(gridLine[index - 1], gridLine[index], m_splines->m_projection));
         }
 
         // a gridline is computed

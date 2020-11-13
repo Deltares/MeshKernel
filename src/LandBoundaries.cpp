@@ -102,7 +102,7 @@ namespace meshkernel
                         continue;
                     }
 
-                    const double edgeLength = Distance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh->m_projection);
+                    const double edgeLength = ComputeDistance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh->m_projection);
                     const double minDistance = m_closeFactor * edgeLength;
 
                     Point normalPoint;
@@ -853,7 +853,7 @@ namespace meshkernel
         const auto firstMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edgeIndex].first];
         const auto secondMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edgeIndex].second];
 
-        const double meshEdgeLength = Distance(firstMeshNode, secondMeshNode, m_mesh->m_projection);
+        const double meshEdgeLength = ComputeDistance(firstMeshNode, secondMeshNode, m_mesh->m_projection);
 
         const double distanceFactor = meshBoundOnly ? m_closeToLandBoundaryFactor : m_closeWholeMeshFactor;
         const double closeDistance = meshEdgeLength * distanceFactor;
@@ -1165,7 +1165,7 @@ namespace meshkernel
                 if (meshBoundOnly && m_mesh->m_edgesNumFaces[edgeIndex] != 1)
                     maximumDistance = 1e6 * maximumDistance;
 
-                double edgeLength = Distance(currentNode, neighbouringNode, m_mesh->m_projection);
+                double edgeLength = ComputeDistance(currentNode, neighbouringNode, m_mesh->m_projection);
                 double correctedDistance = nodeDistances[currentNodeIndex] + edgeLength * maximumDistance;
 
                 if (correctedDistance < nodeDistances[neighbouringNodeIndex])
