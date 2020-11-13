@@ -40,6 +40,7 @@
 #include "CurvilinearGrid.hpp"
 #include "Entities.hpp"
 #include "MakeGridParametersNative.hpp"
+#include "TriangulationWrapper.cpp"
 #include "Exceptions.hpp"
 
 meshkernel::Mesh::Mesh()
@@ -274,99 +275,34 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
     Set(edges, nodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
 
-meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygons& polygons, Projections projection)
+meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const Polygons& polygons, Projections projection)
 {
     m_projection = projection;
-    std::vector<double> xLocalPolygon(inputNodes.size());
-    std::vector<double> yLocalPolygon(inputNodes.size());
-    for (int i = 0; i < inputNodes.size(); ++i)
-    {
-        xLocalPolygon[i] = inputNodes[i].x;
-        yLocalPolygon[i] = inputNodes[i].y;
-    }
 
-    int numtri = -1;
-    int jatri = 3;
-    int numPointsIn = int(inputNodes.size());
-    int numPointsOut = 0;
-    int numberOfTriangles = numPointsIn * 6 + 10;
-    double averageTriangleArea = 0.0;
-    int numedge = 0;
-    std::vector<int> faceNodesFlat;
-    std::vector<int> edgeNodesFlat;
-    std::vector<int> faceEdgesFlat;
-    std::vector<double> xNodesFlat;
-    std::vector<double> yNodesFlat;
-    // If the number of estimated triangles is not sufficient, triangulation must be repeated
-    while (numtri < 0)
-    {
-        numtri = numberOfTriangles;
-        faceNodesFlat.resize(int(numberOfTriangles) * 3);
-        edgeNodesFlat.resize(int(numberOfTriangles) * 2);
-        faceEdgesFlat.resize(int(numberOfTriangles) * 3);
-        xNodesFlat.resize(int(numberOfTriangles) * 3, doubleMissingValue);
-        yNodesFlat.resize(int(numberOfTriangles) * 3, doubleMissingValue);
-        Triangulation(&jatri,
-                      &xLocalPolygon[0],
-                      &yLocalPolygon[0],
-                      &numPointsIn,
-                      &faceNodesFlat[0], // INDX
-                      &numtri,
-                      &edgeNodesFlat[0], // EDGEINDX
-                      &numedge,
-                      &faceEdgesFlat[0], // TRIEDGE
-                      &xNodesFlat[0],
-                      &yNodesFlat[0],
-                      &numPointsOut,
-                      &averageTriangleArea);
-        if (numberOfTriangles)
-        {
-            numberOfTriangles = -numtri;
-        }
-    }
-
-    // Create face nodes
-    std::vector<std::vector<int>> faceNodes(numtri, std::vector<int>(3, -1));
-    std::vector<std::vector<int>> faceEdges(numtri, std::vector<int>(3, -1));
-    int index = 0;
-    for (int i = 0; i < numtri; ++i)
-    {
-        faceNodes[i][0] = faceNodesFlat[index] - 1;
-        faceEdges[i][0] = faceEdgesFlat[index] - 1;
-        index++;
-        faceNodes[i][1] = faceNodesFlat[index] - 1;
-        faceEdges[i][1] = faceEdgesFlat[index] - 1;
-        index++;
-        faceNodes[i][2] = faceNodesFlat[index] - 1;
-        faceEdges[i][2] = faceEdgesFlat[index] - 1;
-        index++;
-    }
-
-    // Create the edges
-    std::vector<std::vector<int>> edgeNodes(numedge, std::vector<int>(2, 0));
-    index = 0;
-    for (int i = 0; i < numedge; ++i)
-    {
-        edgeNodes[i][0] = edgeNodesFlat[index] - 1;
-        index++;
-        edgeNodes[i][1] = edgeNodesFlat[index] - 1;
-        index++;
-    }
+    // compute triangulation
+    TriangulationWrapper triangulationWrapper;
+    const auto numPolygonNodes = static_cast<int>(inputNodes.size()); // open polygon
+    const auto numberOfTriangles = static_cast<int>(inputNodes.size()) * 6 + 10;
+    triangulationWrapper.Compute(inputNodes,
+                                 numPolygonNodes,
+                                 TriangulationWrapper::TriangulationOptions::TriangulatePointsAndGenerateFaces,
+                                 0.0,
+                                 numberOfTriangles);
 
     // For each triangle check
     // 1. Validity of its internal angles
     // 2. Is inside the polygon
     // If so we mark the edges and we add them m_edges
-    std::vector<bool> edgeNodesFlag(numedge, false);
-    for (int i = 0; i < numtri; ++i)
+    std::vector<bool> edgeNodesFlag(triangulationWrapper.m_numEdges, false);
+    for (int i = 0; i < triangulationWrapper.m_numFaces; ++i)
     {
-        bool goodTriangle = CheckTriangle(faceNodes[i], inputNodes);
+        bool goodTriangle = CheckTriangle(triangulationWrapper.m_faceNodes[i], inputNodes);
 
         if (!goodTriangle)
         {
             continue;
         }
-        Point approximateCenter = (inputNodes[faceNodes[i][0]] + inputNodes[faceNodes[i][1]] + inputNodes[faceNodes[i][2]]) * oneThird;
+        Point approximateCenter = (inputNodes[triangulationWrapper.m_faceNodes[i][0]] + inputNodes[triangulationWrapper.m_faceNodes[i][1]] + inputNodes[triangulationWrapper.m_faceNodes[i][2]]) * oneThird;
 
         bool isTriangleInPolygon = polygons.IsPointInPolygon(approximateCenter, 0);
         if (!isTriangleInPolygon)
@@ -377,14 +313,14 @@ meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygon
         // mark all edges of this triangle as good ones
         for (int j = 0; j < 3; ++j)
         {
-            edgeNodesFlag[faceEdges[i][j]] = true;
+            edgeNodesFlag[triangulationWrapper.m_faceEdges[i][j]] = true;
         }
     }
 
     // now add all points and all valid edges
     m_nodes = inputNodes;
     int validEdgesCount = 0;
-    for (int i = 0; i < numedge; ++i)
+    for (int i = 0; i < triangulationWrapper.m_numEdges; ++i)
     {
         if (!edgeNodesFlag[i])
             continue;
@@ -393,13 +329,13 @@ meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const meshkernel::Polygon
 
     std::vector<Edge> edges(validEdgesCount);
     validEdgesCount = 0;
-    for (int i = 0; i < numedge; ++i)
+    for (int i = 0; i < triangulationWrapper.m_numEdges; ++i)
     {
         if (!edgeNodesFlag[i])
             continue;
 
-        edges[validEdgesCount].first = std::abs(edgeNodes[i][0]);
-        edges[validEdgesCount].second = edgeNodes[i][1];
+        edges[validEdgesCount].first = std::abs(triangulationWrapper.m_edgeNodes[i][0]);
+        edges[validEdgesCount].second = triangulationWrapper.m_edgeNodes[i][1];
         validEdgesCount++;
     }
 
@@ -1340,28 +1276,13 @@ void meshkernel::Mesh::ComputeEdgeLengths()
     {
         auto const first = m_edges[e].first;
         auto const second = m_edges[e].second;
-        m_edgeLengths[e] = Distance(m_nodes[first], m_nodes[second], m_projection);
+        m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
     }
 }
 
 void meshkernel::Mesh::ComputeEdgesCenters()
 {
-    auto const numEdges = GetNumEdges();
-    m_edgesCenters.reserve(numEdges);
-    m_edgesCenters.clear();
-
-    for (int e = 0; e < numEdges; e++)
-    {
-        auto const first = m_edges[e].first;
-        auto const second = m_edges[e].second;
-
-        if (first < 0 || second < 0)
-        {
-            continue;
-        }
-
-        m_edgesCenters.push_back((m_nodes[first] + m_nodes[second]) * 0.5);
-    }
+    ComputeEdgeCenters(GetNumEdges(), m_nodes, m_edges, m_edgesCenters);
 }
 
 bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
@@ -1515,10 +1436,8 @@ int meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
         int edgeIndex = m_edgesRTree.GetQuerySampleIndex(0);
         return edgeIndex;
     }
-    else
-    {
-        throw AlgorithmError("Mesh::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
-    }
+
+    throw AlgorithmError("Mesh::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
 }
 
 void meshkernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)
@@ -1901,7 +1820,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
         }
         polygon[numNodes] = polygon[0];
 
-        const auto isCircumcenterInside = IsPointInPolygonNodes(result, polygon, 0, numNodes - 1);
+        const auto isCircumcenterInside = IsPointInPolygonNodes(result, polygon, 0, numNodes - 1, m_projection);
 
         if (!isCircumcenterInside)
         {
@@ -1955,7 +1874,30 @@ std::vector<meshkernel::Point> meshkernel::Mesh::GetObtuseTriangles()
             }
         }
     }
+    return result;
+}
 
+std::vector<meshkernel::Point> meshkernel::Mesh::GetSmallFlowEdgeCenters(double smallFlowEdgesThreshold)
+{
+    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    std::vector<Point> result;
+    result.reserve(GetNumEdges());
+    for (int e = 0; e < GetNumEdges(); ++e)
+    {
+        const auto firstFace = m_edgesFaces[e][0];
+        const auto secondFace = m_edgesFaces[e][1];
+
+        if (firstFace >= 0 && secondFace >= 0)
+        {
+            const auto flowEdgeLength = ComputeDistance(m_facesCircumcenters[firstFace], m_facesCircumcenters[secondFace], m_projection);
+            const double tooCloseDistance = 0.9 * smallFlowEdgesThreshold * 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
+
+            if (flowEdgeLength < tooCloseDistance)
+            {
+                result.push_back((m_facesCircumcenters[firstFace] + m_facesCircumcenters[firstFace]) * 0.5);
+            }
+        }
+    }
     return result;
 }
 
@@ -2041,7 +1983,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
 
         if (first == second)
             continue;
-        double edgeLength = Distance(m_nodes[first], m_nodes[second], m_projection);
+        double edgeLength = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
         edgesLength[e] = edgeLength;
 
         Point leftCenter;
@@ -2072,7 +2014,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
             rightCenter.y = 2.0 * y0_bc - leftCenter.y;
         }
 
-        averageFlowEdgesLength[e] = Distance(leftCenter, rightCenter, m_projection);
+        averageFlowEdgesLength[e] = ComputeDistance(leftCenter, rightCenter, m_projection);
     }
 
     // Compute normal length
@@ -2186,9 +2128,7 @@ void meshkernel::Mesh::TriangulateFaces()
 
 bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vector<Point>& dualFace)
 {
-
-    std::vector<int> sortedFacesIndices;
-    SortedFacesAroundNode(node, sortedFacesIndices);
+    const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
     dualFace.reserve(maximumNumberOfEdgesPerNode);
     dualFace.clear();
@@ -2256,11 +2196,11 @@ bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vect
     return true;
 }
 
-bool meshkernel::Mesh::SortedFacesAroundNode(int node, std::vector<int>& result) const
+std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(int node) const
 {
 
     const auto numEdges = m_nodesNumEdges[node];
-    result.clear();
+    std::vector<int> result;
     for (int e = 0; e < numEdges; ++e)
     {
         const auto firstEdge = m_nodesEdges[node][e];
@@ -2305,5 +2245,5 @@ bool meshkernel::Mesh::SortedFacesAroundNode(int node, std::vector<int>& result)
         }
     }
 
-    return true;
+    return result;
 }

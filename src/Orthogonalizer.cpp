@@ -77,7 +77,7 @@ void meshkernel::Orthogonalizer::Compute()
 
                     // compute the edge length
                     Point neighbouringNode = m_mesh->m_nodes[m_mesh->m_nodesNodes[n][nn]];
-                    const auto neighbouringNodeDistance = Distance(neighbouringNode, m_mesh->m_nodes[n], m_mesh->m_projection);
+                    const auto neighbouringNodeDistance = ComputeDistance(neighbouringNode, m_mesh->m_nodes[n], m_mesh->m_projection);
 
                     const auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
                     bool flippedNormal;

@@ -1,10 +1,10 @@
 #include "../AveragingInterpolation.cpp"
 #include "SampleFileReader.cpp"
-#include "MeshReader.cpp"
+#include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 
 //Simple averaging
-TEST(Avereging, InterpolateOnEdgesSimpleAveraging)
+TEST(Averaging, InterpolateOnEdgesSimpleAveraging)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\simple_grid_net.nc");
@@ -38,7 +38,7 @@ TEST(Avereging, InterpolateOnEdgesSimpleAveraging)
     ASSERT_NEAR(-5.36414565000000, interpolationResults[19], tolerance);
 }
 
-TEST(Avereging, InterpolateOnNodesSimpleAveraging)
+TEST(Averaging, InterpolateOnNodesSimpleAveraging)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\simple_grid_net.nc");
@@ -72,7 +72,7 @@ TEST(Avereging, InterpolateOnNodesSimpleAveraging)
     ASSERT_NEAR(-5.16806720000000, interpolationResults[19], tolerance);
 }
 
-TEST(Avereging, InterpolateOnFacesSimpleAveraging)
+TEST(Averaging, InterpolateOnFacesSimpleAveraging)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\simple_grid_net.nc");
@@ -108,7 +108,7 @@ TEST(Avereging, InterpolateOnFacesSimpleAveraging)
 }
 
 //Closest Point
-TEST(Avereging, InterpolateOnEdgesClosestPoint)
+TEST(Averaging, InterpolateOnEdgesClosestPoint)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -142,7 +142,7 @@ TEST(Avereging, InterpolateOnEdgesClosestPoint)
     ASSERT_NEAR(-4.13165265000000, interpolationResults[19], tolerance);
 }
 
-TEST(Avereging, InterpolateOnNodesClosestPoint)
+TEST(Averaging, InterpolateOnNodesClosestPoint)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -174,7 +174,7 @@ TEST(Avereging, InterpolateOnNodesClosestPoint)
     ASSERT_NEAR(-7.9131653000000002, interpolationResults[17], tolerance);
 }
 
-TEST(Avereging, InterpolateOnFacesClosestPoint)
+TEST(Averaging, InterpolateOnFacesClosestPoint)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -199,7 +199,7 @@ TEST(Avereging, InterpolateOnFacesClosestPoint)
 }
 
 // Max
-TEST(Avereging, InterpolateOnEdgesMax)
+TEST(Averaging, InterpolateOnEdgesMax)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -233,7 +233,7 @@ TEST(Avereging, InterpolateOnEdgesMax)
     ASSERT_NEAR(-3.50140055000000, interpolationResults[19], tolerance);
 }
 
-TEST(Avereging, InterpolateOnNodesMax)
+TEST(Averaging, InterpolateOnNodesMax)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -265,7 +265,7 @@ TEST(Avereging, InterpolateOnNodesMax)
     ASSERT_NEAR(-7.0448179000000000, interpolationResults[17], tolerance);
 }
 
-TEST(Avereging, InterpolateOnFacesMax)
+TEST(Averaging, InterpolateOnFacesMax)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -290,7 +290,7 @@ TEST(Avereging, InterpolateOnFacesMax)
 }
 
 // Min
-TEST(Avereging, InterpolateOnEdgesMin)
+TEST(Averaging, InterpolateOnEdgesMin)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -324,7 +324,7 @@ TEST(Avereging, InterpolateOnEdgesMin)
     ASSERT_NEAR(-5.00000000000000, interpolationResults[19], tolerance);
 }
 
-TEST(Avereging, InterpolateOnNodesMin)
+TEST(Averaging, InterpolateOnNodesMin)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -356,7 +356,7 @@ TEST(Avereging, InterpolateOnNodesMin)
     ASSERT_NEAR(-7.9131653000000002, interpolationResults[17], tolerance);
 }
 
-TEST(Avereging, InterpolateOnFacesMin)
+TEST(Averaging, InterpolateOnFacesMin)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -381,7 +381,7 @@ TEST(Avereging, InterpolateOnFacesMin)
 }
 
 // InverseWeightedDistance
-TEST(Avereging, InterpolateOnEdgesInverseWeightedDistance)
+TEST(Averaging, InterpolateOnEdgesInverseWeightedDistance)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -415,7 +415,7 @@ TEST(Avereging, InterpolateOnEdgesInverseWeightedDistance)
     ASSERT_NEAR(-4.13222493667105, interpolationResults[19], tolerance);
 }
 
-TEST(Avereging, InterpolateOnNodesInverseWeightedDistance)
+TEST(Averaging, InterpolateOnNodesInverseWeightedDistance)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -447,7 +447,7 @@ TEST(Avereging, InterpolateOnNodesInverseWeightedDistance)
     ASSERT_NEAR(-7.9116869403424879, interpolationResults[17], tolerance);
 }
 
-TEST(Avereging, InterpolateOnFacesInverseWeightedDistance)
+TEST(Averaging, InterpolateOnFacesInverseWeightedDistance)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -472,7 +472,7 @@ TEST(Avereging, InterpolateOnFacesInverseWeightedDistance)
 }
 
 // MinAbsValue
-TEST(Avereging, InterpolateOnEdgesMinAbsValue)
+TEST(Averaging, InterpolateOnEdgesMinAbsValue)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -506,7 +506,7 @@ TEST(Avereging, InterpolateOnEdgesMinAbsValue)
     ASSERT_NEAR(3.50140055000000, interpolationResults[19], tolerance);
 }
 
-TEST(Avereging, InterpolateOnNodesMinAbsValue)
+TEST(Averaging, InterpolateOnNodesMinAbsValue)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");
@@ -538,7 +538,7 @@ TEST(Avereging, InterpolateOnNodesMinAbsValue)
     ASSERT_NEAR(7.0448179000000000, interpolationResults[17], tolerance);
 }
 
-TEST(Avereging, InterpolateOnFacesMinAbsValue)
+TEST(Averaging, InterpolateOnFacesMinAbsValue)
 {
     std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\..\\tests\\AveragingInterpolationTests\\inTestAveragingInterpolation.xyz");
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\AveragingInterpolationTests\\sample_grid_coarse_net.nc");

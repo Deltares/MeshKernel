@@ -236,7 +236,7 @@ namespace meshkernel
         /// @param[in] firstEdgeIndex The index of the first edge
         /// @param[in] secondEdgeIndex The index of the second edge
         /// @param[out] node The shared node (-1 if no node is found)
-        /// \returns If the node could be found
+        /// @return If the node could be found
         [[nodiscard]] bool FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const;
 
         /// @brief Compute the lengths of all edges in one go
@@ -245,36 +245,26 @@ namespace meshkernel
         /// @brief Computes the edges centers
         void ComputeEdgesCenters();
 
-        /// <summary>
-        /// Get the number of valid nodes
-        /// </summary>
-        /// <returns>The number of valid node</returns>
+        /// @brief Get the number of valid nodes
+        /// @return The number of valid node
         [[nodiscard]] int GetNumNodes() const { return m_numNodes; }
 
-        /// <summary>
-        /// Get the number of valid edges
-        /// </summary>
-        /// <returns>The number of valid edges</returns>
+        /// @brief Get the number of valid edges
+        /// @return The number of valid edges
         [[nodiscard]] int GetNumEdges() const { return m_numEdges; }
 
-        /// <summary>
-        /// Get the number of valid faces
-        /// </summary>
-        /// <returns>The number of valid faces</returns>
+        /// @brief Get the number of valid faces
+        /// @return The number of valid faces
         [[nodiscard]] int GetNumFaces() const { return m_numFaces; }
 
-        /// <summary>
-        /// Get the number of edges for a face
-        /// </summary>
-        /// <param name="faceIndex">The face index</param>
-        /// <returns>The number of edges for a face</returns>
+        /// @brief Get the number of edges for a face
+        /// @param[in] faceIndex The face index
+        /// @return The number of valid faces
         [[nodiscard]] int GetNumFaceEdges(const int faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
-        /// <summary>
-        /// Get the number of faces an edges shares
-        /// </summary>
-        /// <param name="edgeIndex">The edge index</param>
-        /// <returns>The number of faces an edges shares</returns>
+        /// @brief Get the number of faces an edges shares
+        /// @param[in] edgeIndex The edge index
+        /// @return The number of faces an edges shares
         [[nodiscard]] int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
         /// @brief Circumcenter of a face (getcircumcenter)
@@ -295,6 +285,10 @@ namespace meshkernel
         /// @brief Gets the mass centers of obtuse triangles
         /// @returns The center of the flow edge
         [[nodiscard]] std::vector<Point> GetObtuseTriangles();
+        /// @brief Gets the small flow edges (flow edges are the edges connecting the face circumcenters)
+        /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
+        /// @returns The center of the flow edge
+        [[nodiscard]] std::vector<Point> GetSmallFlowEdgeCenters(double smallFlowEdgesThreshold);
 
         /// @brief Computes m_nodesNodes, see class members
         void ComputeNodeNeighbours();
@@ -326,11 +320,10 @@ namespace meshkernel
         /// @return
         bool MakeDualFace(int node, double enlargmentFactor, std::vector<Point>& dualFace);
 
-        /// @brief Computes the faces around a node, sorted in ccw order
-        /// @param nodeIndex
-        /// @param result
-        /// @return
-        bool SortedFacesAroundNode(int node, std::vector<int>& result) const;
+        /// @brief Sorts the faces around a node, sorted in counter clock wise order
+        /// @param[in] nodeIndex The node index
+        /// @return The face indexses
+        [[nodiscard]] std::vector<int> SortedFacesAroundNode(int node) const;
 
         // nodes
         std::vector<Point> m_nodes;                 // The mesh nodes (xk, yk)
@@ -346,7 +339,7 @@ namespace meshkernel
         std::vector<int> m_edgesNumFaces;           // For each edge, the number of shared faces(lnn)
         std::vector<double> m_edgeLengths;          // The edge lengths
         std::vector<int> m_edgeMask;                // The edge mask (lc)
-        std::vector<Point> m_edgesCenters;          // The edges ceneters
+        std::vector<Point> m_edgesCenters;          // The edges centers
 
         // faces
         std::vector<std::vector<int>> m_facesNodes; // The nodes composing the faces, in ccw order (netcell%Nod)

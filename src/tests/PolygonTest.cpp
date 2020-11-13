@@ -1,7 +1,7 @@
 #include "../Mesh.hpp"
 #include "../Entities.hpp"
 #include "../Polygons.hpp"
-#include "MeshReader.cpp"
+#include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 
 TEST(Polygons, MeshBoundaryToPolygon)
