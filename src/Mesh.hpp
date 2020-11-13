@@ -282,6 +282,9 @@ namespace meshkernel
                                                    const std::vector<int>& edgesNumFaces,
                                                    double weightCircumCenter) const;
 
+        /// @brief Gets the mass centers of obtuse triangles
+        /// @returns The center of the flow edge
+        [[nodiscard]] std::vector<Point> GetObtuseTriangles();
         /// @brief Gets the small flow edges (flow edges are the edges connecting the face circumcenters)
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
         /// @returns The center of the flow edge

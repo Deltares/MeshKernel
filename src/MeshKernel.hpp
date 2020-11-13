@@ -410,6 +410,17 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_from_triangle(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode);
 
+        /// @brief Gets the number of obtuse triangles (those having one edge longer than the sum of the other two)
+        /// @param[in] meshKernelId Id of the mesh state
+        /// @param[in,out] numObtuseTriangles The number of obtuse triangles
+        /// @return
+        MKERNEL_API int mkernel_get_obtuse_triangles_count(int meshKernelId, int& numObtuseTriangles);
+
+        /// @brief Gets the obtuse triangle mass centers (those having one edge longer than the sum of the other two)
+        /// @param[in] meshKernelId  Id of the mesh state
+        /// @param[in,out] result The obtuse triangles mass centers
+        /// @return Error code (0 Successful)
+        MKERNEL_API int mkernel_get_obtuse_triangles(int meshKernelId, GeometryListNative& result);
         /// @brief Count the small flow edges (flow edges are the edges connecting the face circumcenters)
         /// @param[in] meshKernelId  Id of the mesh state
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
