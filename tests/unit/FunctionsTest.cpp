@@ -1,5 +1,5 @@
-#include "../Operations.cpp"
-#include "../Entities.hpp"
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Entities.hpp>
 #include <gtest/gtest.h>
 #include <chrono>
 #include <random>

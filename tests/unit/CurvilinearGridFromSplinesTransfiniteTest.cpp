@@ -1,9 +1,9 @@
-#include "../Mesh.hpp"
-#include "../Entities.hpp"
-#include "../Polygons.hpp"
-#include "../Constants.cpp"
-#include "../CurvilinearGrid.hpp"
-#include "../CurvilinearGridFromSplinesTransfinite.cpp"
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/CurvilinearGrid.hpp>
+#include "../../src/CurvilinearGridFromSplinesTransfinite.cpp"
 #include <gtest/gtest.h>
 
 TEST(CurvilinearGridFromSplinesTransfinite, FourSplines)

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../Mesh.hpp"
-#include "../Entities.hpp"
-#include "../Operations.cpp"
-#include "../Polygons.hpp"
-#include "../LandBoundaries.cpp"
-#include "../Constants.cpp"
-#include "../Orthogonalization.cpp"
-#include "../GeometryListNative.hpp"
-#include "../Splines.hpp"
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Polygons.hpp>
+#include "../../src/LandBoundaries.cpp"
+#include <MeshKernel/Constants.cpp>
+#include "../../src/Orthogonalization.cpp"
+#include <MeshKernel/GeometryListNative.hpp>
+#include <MeshKernel/Splines.hpp>
 
 #include <gtest/gtest.h>

@@ -1,12 +1,12 @@
-#include "../Mesh.hpp"
-#include "../Entities.hpp"
-#include "../Polygons.hpp"
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Polygons.hpp>
 #include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 
 TEST(Polygons, MeshBoundaryToPolygon)
 {
-    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile("..\\data\\SmallTriangularGrid_net.nc");
 
     const std::vector<meshkernel::Point> polygon;
     auto polygons = std::make_shared<meshkernel::Polygons>(polygon, meshkernel::Projections::cartesian);

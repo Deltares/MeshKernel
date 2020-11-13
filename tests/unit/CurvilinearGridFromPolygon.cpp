@@ -1,8 +1,8 @@
-#include "../Mesh.hpp"
-#include "../Entities.hpp"
-#include "../Polygons.hpp"
-#include "../CurvilinearGrid.hpp"
-#include "../CurvilinearGridFromPolygon.cpp"
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/CurvilinearGrid.hpp>
+#include "../../src/CurvilinearGridFromPolygon.cpp"
 #include <gtest/gtest.h>
 TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
 {

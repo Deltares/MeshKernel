@@ -3,9 +3,9 @@
         {
             "type": "shell",
             "label": "Run test",
-            "command": "${workspaceFolder}/build/Debug/MeshKernelTests.exe",
+            "command": "${workspaceFolder}/build/tests/unit/Debug/meshkernel_tests.exe",
             "options": {
-                "cwd": "${workspaceFolder}/tests/MeshRefinementTests"
+                "cwd": "${workspaceFolder}/tests/data"
             },
             "problemMatcher": [
                 "$gcc"

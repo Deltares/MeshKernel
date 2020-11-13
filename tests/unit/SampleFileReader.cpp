@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "../Entities.hpp"
+#include <MeshKernel/Entities.hpp>
 
 static std::vector<meshkernel::Sample> ReadSampleFile(std::string filePath)
 {

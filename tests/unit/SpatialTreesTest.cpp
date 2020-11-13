@@ -1,6 +1,6 @@
 #pragma once
-#include "../Entities.hpp"
-#include "../SpatialTrees.hpp"
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
 #include <gtest/gtest.h>
 #include <chrono>
 #include <random>

@@ -19,10 +19,10 @@ target_link_libraries(meshkernel_tests PRIVATE meshkernel ${Boost_LIBRARIES} gte
 # You can also run examples and check the output, as well.
 add_test(NAME meshkernel_tests COMMAND meshkernel_tests) # Command can be a target
 
-file(GLOB CurrentNetcdfLibFiles "${PROJECT_SOURCE_DIR}/thirdParty/third_party_open/netcdf/netCDF 4.6.1/bin/*.dll")
-foreach(CurrentNetcdfLibFile IN LISTS CurrentNetcdfLibFiles)
+file(GLOB CONFIGURE_DEPENDS NETCDF_FILES_LIST "${PROJECT_SOURCE_DIR}/thirdParty/third_party_open/netcdf/netCDF 4.6.1/bin/*.dll")
+foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
 add_custom_command( TARGET meshkernel_tests 
                     POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile} "${CMAKE_BINARY_DIR}/${build_config}"
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile} "$<TARGET_FILE_DIR:meshkernel_tests>"
                     COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
 endforeach()

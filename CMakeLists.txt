@@ -30,16 +30,9 @@ if(OpenMP_CXX_FOUND)
     target_link_libraries(meshkernel PUBLIC OpenMP::OpenMP_CXX )
 endif()
 
-# Is this necessary?
-set(build_config $<CONFIG>) 
-set_target_properties( meshkernel PROPERTIES 
-                       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib"
-                       ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib"
-                       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${build_config}/lib")
-
 # Testing only available if this is the main app
 # Emergency override MODERN_CMAKE_BUILD_TESTING provided as well
-# if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING)
+#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING)
 # AND BUILD_TESTING)
 add_subdirectory(tests)
 #endif()
