@@ -499,6 +499,31 @@ namespace meshkernelapi
         /// <returns>Error code</returns>
         MKERNEL_API int mkernel_curvilinear_from_triangle(int meshKernelId, GeometryListNative& polygonNative, int firstNode, int secondNode, int thirdNode);
 
+        /// @brief Triangle interpolation (ec_module)
+        /// @param[in] meshGeometryDimensions Mesh dimensions
+        /// @param[in] meshGeometry Mesh data
+        /// @param[in] startIndex start index (not used)
+        /// @param[in] samplesXCoordinate The sample x coordinates
+        /// @param[in] samplesYCoordinate The sample y coordinates
+        /// @param[in] samplesValue The sample values
+        /// @param[in] numSamples The number of samples
+        /// @param[in,out] results The interpolation results
+        /// @param[in] locationType The location type (see \ref InterpolationLocation)
+        /// @param[in] spherical Current projection (0 cartesian, 1 spherical)
+        /// @param[in] sphericalAccurate Accurate spherical projections (0 default spherical, 1 spherical accurate)
+        /// @return Error code (0 Successful)
+        MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
+                                      const MeshGeometry& meshGeometry,
+                                      int& startIndex,
+                                      const double** samplesXCoordinate,
+                                      const double** samplesYCoordinate,
+                                      const double** samplesValue,
+                                      int& numSamples,
+                                      double** results,
+                                      int& locationType,
+                                      int& spherical,
+                                      int& sphericalAccurate);
+
         /// @brief AveragingInterpolation interpolation (ec_module)
         /// @param meshGeometryDimensions Mesh dimensions
         /// @param meshGeometry Mesh data

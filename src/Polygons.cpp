@@ -34,6 +34,7 @@
 #include "Polygons.hpp"
 #include "Constants.cpp"
 #include "Operations.cpp"
+#include "TriangulationWrapper.cpp"
 #include "Exceptions.hpp"
 
 namespace meshkernel
@@ -112,8 +113,8 @@ namespace meshkernel
             const auto firstNode = mesh.m_nodes[firstNodeIndex];
             const auto secondNode = mesh.m_nodes[secondNodeIndex];
 
-            bool firstNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[firstNodeIndex], m_nodes, 0, GetNumNodes() - 1);
-            bool secondNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[secondNodeIndex], m_nodes, 0, GetNumNodes() - 1);
+            bool firstNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[firstNodeIndex], m_nodes, 0, GetNumNodes() - 1, mesh.m_projection);
+            bool secondNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[secondNodeIndex], m_nodes, 0, GetNumNodes() - 1, mesh.m_projection);
 
             if (!firstNodeInPolygon && !secondNodeInPolygon)
             {
@@ -181,7 +182,7 @@ namespace meshkernel
         {
             if (!currentNodeInPolygon)
             {
-                currentNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[currentNode], m_nodes, 0, GetNumNodes() - 1);
+                currentNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[currentNode], m_nodes, 0, GetNumNodes() - 1, m_projection);
             }
 
             if (!currentNodeInPolygon)
@@ -214,27 +215,20 @@ namespace meshkernel
 
     void Polygons::CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints)
     {
-        generatedPoints.resize(m_indices.size());
+
         std::vector<Point> localPolygon(GetNumNodes());
-        std::vector<double> xLocalPolygon(GetNumNodes());
-        std::vector<double> yLocalPolygon(GetNumNodes());
-        std::vector<int> faceNodes;
-        std::vector<int> edgeNodes;
-        std::vector<int> faceEdges;
-        std::vector<double> xPoint;
-        std::vector<double> yPoint;
-        const int safetySize = 11;
+
+        const int SafetySize = 11;
         bool isOnePolygonClosed = false;
+        generatedPoints.resize(m_indices.size());
         for (int i = 0; i < m_indices.size(); ++i)
         {
-            int numLocalPoints = 0;
+            localPolygon.clear();
             for (int j = m_indices[i][0]; j <= m_indices[i][1]; ++j)
             {
-                localPolygon[numLocalPoints] = m_nodes[j];
-                xLocalPolygon[numLocalPoints] = m_nodes[j].x;
-                yLocalPolygon[numLocalPoints] = m_nodes[j].y;
-                numLocalPoints++;
+                localPolygon.push_back(m_nodes[j]);
             }
+            const auto numLocalPoints = static_cast<int>(localPolygon.size());
 
             // not a closed polygon
             if (localPolygon[numLocalPoints - 1] != localPolygon[0])
@@ -253,60 +247,28 @@ namespace meshkernel
             double maximumEdgeLength;
             MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
 
-            // average edge size
-            double averageEdgeLength = perimeter / (numLocalPoints - 1);
-
             // average triangle size
+            double averageEdgeLength = perimeter / (numLocalPoints - 1);
             double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
-            auto numberOfTriangles = int(safetySize * localPolygonArea / averageTriangleArea);
-
+            // estimated number of triangles
+            auto numberOfTriangles = int(SafetySize * localPolygonArea / averageTriangleArea);
             if (numberOfTriangles <= 0)
             {
                 throw AlgorithmError("Polygons::CreatePointsInPolygons: The number of triangles is <= 0.");
             }
 
-            int numtri = -1;
-            int jatri = 2;
-            int numedge = 0;
-            int numPoints = 0;
-            int numLocalPointsOpenPolygon = numLocalPoints - 1;
+            TriangulationWrapper triangulationWrapper;
 
-            // if the number of estimated triangles is not sufficient, tricall must be repeated
-            while (numtri < 0)
-            {
-                numtri = numberOfTriangles;
-                faceNodes.resize(int(numberOfTriangles) * 3);
-                edgeNodes.resize(int(numberOfTriangles) * 2);
-                faceEdges.resize(int(numberOfTriangles) * 3);
-                xPoint.resize(int(numberOfTriangles) * 3);
-                yPoint.resize(int(numberOfTriangles) * 3);
+            const auto numPolygonNodes = static_cast<int>(localPolygon.size() - 1); // open polygon
 
-                Triangulation(&jatri,
-                              &xLocalPolygon[0],
-                              &yLocalPolygon[0],
-                              &numLocalPointsOpenPolygon,
-                              &faceNodes[0],
-                              &numtri,
-                              &edgeNodes[0],
-                              &numedge,
-                              &faceEdges[0],
-                              &xPoint[0],
-                              &yPoint[0],
-                              &numPoints,
-                              &averageTriangleArea);
+            triangulationWrapper.Compute(localPolygon,
+                                         numPolygonNodes,
+                                         TriangulationWrapper::TriangulationOptions::GeneratePoints,
+                                         averageTriangleArea,
+                                         numberOfTriangles);
 
-                if (numberOfTriangles)
-                {
-                    numberOfTriangles = -numtri;
-                }
-            }
-            generatedPoints[i].resize(numPoints);
-            for (int j = 0; j < numPoints; ++j)
-            {
-                generatedPoints[i][j] = {xPoint[j], yPoint[j]};
-            }
-            //TODO: CHECK POINTS ARE INSIDE THE POLYGON?
+            generatedPoints[i] = std::move(triangulationWrapper.m_nodes);
         }
         if (!isOnePolygonClosed)
         {
@@ -582,7 +544,7 @@ namespace meshkernel
             throw std::invalid_argument("Polygons::IsPointInPolygon: Invalid polygon index.");
         }
 
-        bool inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indices[polygonIndex][0], m_indices[polygonIndex][1]);
+        bool inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indices[polygonIndex][0], m_indices[polygonIndex][1], m_projection);
         return inPolygon;
     }
 
@@ -613,7 +575,7 @@ namespace meshkernel
 
             if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
             {
-                inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indices[p][0], m_indices[p][1]);
+                inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indices[p][0], m_indices[p][1], m_projection);
             }
 
             if (inPolygon)
