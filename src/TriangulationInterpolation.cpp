@@ -47,7 +47,7 @@ void meshkernel::TriangulationInterpolation::Compute()
     // no samples available, return
     if (m_samples.empty())
     {
-        return;
+        throw AlgorithmError("TriangulationInterpolation::Compute: No samples available.");
     }
 
     // triangulate samples
@@ -63,7 +63,7 @@ void meshkernel::TriangulationInterpolation::Compute()
     // no triangles formed, return
     if (triangulationWrapper.m_numFaces < 1)
     {
-        return;
+        throw AlgorithmError("TriangulationInterpolation::Compute: Triangulation of samples produced no triangles.");
     }
 
     // for each triangle compute the bounding circumcenter, bounding closed polygon, and the values at the nodes of each triangle

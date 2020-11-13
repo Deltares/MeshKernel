@@ -50,7 +50,7 @@ namespace meshkernel
         return dx1 * dx2 + DotProduct(args...);
     }
 
-    static auto VectorProduct(Cartesian3DPoint a, Cartesian3DPoint b)
+    [[nodiscard]] static auto VectorProduct(Cartesian3DPoint a, Cartesian3DPoint b)
     {
         return Cartesian3DPoint{
             a.y * b.z - a.z * b.y,
@@ -58,7 +58,7 @@ namespace meshkernel
             a.x * b.y - a.y * b.x};
     }
 
-    static auto InnerProduct(Cartesian3DPoint a, Cartesian3DPoint b)
+    [[nodiscard]] static auto InnerProduct(Cartesian3DPoint a, Cartesian3DPoint b)
     {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
@@ -261,7 +261,7 @@ namespace meshkernel
         return f1 < f2 ? x1 : x2;
     }
 
-    static int NextCircularForwardIndex(int currentIndex, int size)
+    [[nodiscard]] static int NextCircularForwardIndex(int currentIndex, int size)
     {
         int index = currentIndex + 1;
         if (index >= size)
@@ -271,7 +271,7 @@ namespace meshkernel
         return index;
     }
 
-    static int NextCircularBackwardIndex(int currentIndex, int size)
+    [[nodiscard]] static int NextCircularBackwardIndex(int currentIndex, int size)
     {
         int index = currentIndex - 1;
         if (index < 0)
@@ -1397,144 +1397,6 @@ namespace meshkernel
         area = std::abs(area);
     }
 
-    static bool Averaging(const std::vector<Sample>& samples,
-                          int numPolygonNodes,
-                          const std::vector<Point>& polygon,
-                          const Point centerOfMass,
-                          const Projections& projection,
-                          SpatialTrees::RTree& rtree,
-                          AveragingMethod averagingMethod,
-                          double& result)
-    {
-        std::vector<Point> searchPolygon(numPolygonNodes);
-
-        // averaging settings
-        const double relativeFaceSearchSize = 1.01;
-        double minx = std::numeric_limits<double>::max();
-        double maxx = std::numeric_limits<double>::min();
-        double miny = std::numeric_limits<double>::max();
-        double maxy = std::numeric_limits<double>::min();
-
-        for (int i = 0; i < numPolygonNodes; i++)
-        {
-            searchPolygon[i] = polygon[i] * relativeFaceSearchSize + centerOfMass * (1 - relativeFaceSearchSize);
-            minx = std::min(minx, searchPolygon[i].x);
-            maxx = std::max(maxx, searchPolygon[i].x);
-            miny = std::min(miny, searchPolygon[i].y);
-            maxy = std::max(maxy, searchPolygon[i].y);
-        }
-
-        if (projection == Projections::spherical && maxx - minx > 180.0)
-        {
-
-            double xmean = 0.5 * (maxx + minx);
-            minx = std::numeric_limits<double>::max();
-            maxx = std::numeric_limits<double>::min();
-            for (int i = 0; i < numPolygonNodes; i++)
-            {
-                if (searchPolygon[i].x < xmean)
-                {
-                    searchPolygon[i].x = searchPolygon[i].x + 360.0;
-                    minx = std::min(minx, searchPolygon[i].x);
-                    maxx = std::max(maxx, searchPolygon[i].x);
-                }
-            }
-        }
-
-        result = doubleMissingValue;
-        double searchRadiusSquared = std::numeric_limits<double>::min();
-        for (int i = 0; i < numPolygonNodes; i++)
-        {
-            double squaredDistance = ComputeSquaredDistance(centerOfMass, searchPolygon[i], projection);
-            searchRadiusSquared = std::max(searchRadiusSquared, squaredDistance);
-        }
-        if (searchRadiusSquared <= 0.0)
-        {
-            return true;
-        }
-
-        rtree.NearestNeighboursOnSquaredDistance(centerOfMass, searchRadiusSquared);
-        if (rtree.GetQueryResultSize() == 0)
-        {
-            return true;
-        }
-
-        int numValidSamplesInPolygon = 0;
-        double wall = 0;
-        bool firstValidSampleFound = false;
-
-        for (int i = 0; i < rtree.GetQueryResultSize(); i++)
-        {
-            //do stuff based on the averaging method
-            auto sampleIndex = rtree.GetQuerySampleIndex(i);
-            auto sampleValue = samples[sampleIndex].value;
-            if (sampleValue <= doubleMissingValue)
-            {
-                continue;
-            }
-
-            Point samplePoint{samples[sampleIndex].x, samples[sampleIndex].y};
-            // assume here polygon has a size equal to numPolygonNodes + 1
-            bool isInPolygon = IsPointInPolygonNodes(samplePoint, polygon, 0, numPolygonNodes, projection);
-            if (isInPolygon)
-            {
-                if (averagingMethod == AveragingMethod::SimpleAveraging)
-                {
-                    if (!firstValidSampleFound)
-                    {
-                        firstValidSampleFound = true;
-                        result = 0.0;
-                    }
-                    result += sampleValue;
-                    numValidSamplesInPolygon++;
-                }
-                if (averagingMethod == AveragingMethod::KdTree)
-                {
-                    if (!firstValidSampleFound)
-                    {
-                        firstValidSampleFound = true;
-                        result = sampleValue;
-                    }
-                    result = std::min(std::abs(result), std::abs(sampleValue));
-                }
-                if (averagingMethod == AveragingMethod::Max)
-                {
-                    if (!firstValidSampleFound)
-                    {
-                        firstValidSampleFound = true;
-                        result = -std::numeric_limits<double>::max();
-                    }
-                    result = std::max(result, sampleValue);
-                }
-                if (averagingMethod == AveragingMethod::InverseWeightDistance)
-                {
-                    double distance = std::max(0.01, Distance(centerOfMass, samplePoint, projection));
-                    double weight = 1.0 / distance;
-                    wall += weight;
-                    numValidSamplesInPolygon++;
-                    result += weight * sampleValue;
-                }
-            }
-        }
-
-        if (averagingMethod == AveragingMethod::SimpleAveraging && numValidSamplesInPolygon > 0)
-        {
-            if (result > doubleMissingValue)
-            {
-                result /= numValidSamplesInPolygon;
-            }
-            return true;
-        }
-
-        if (averagingMethod == AveragingMethod::InverseWeightDistance && numValidSamplesInPolygon > 0)
-        {
-            result /= wall;
-            return true;
-        }
-
-        return true;
-    }
-
     template <typename T>
     [[nodiscard]] bool InterpolateSplinePoint(const std::vector<T>& coordinates,
                                               const std::vector<T>& coordinatesDerivatives,
@@ -1782,7 +1644,7 @@ namespace meshkernel
         }
     }
 
-    static auto ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)
+    [[nodiscard]] static auto ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)
     {
         edgesCenters.reserve(std::max(int(edgesCenters.capacity()), numEdges));
         edgesCenters.clear();
@@ -1864,7 +1726,7 @@ namespace meshkernel
         return result;
     }
 
-    static auto ComputeAverageCoordinate(const std::vector<Point>& points, int numPoints, Projections projection)
+    [[nodiscard]] static auto ComputeAverageCoordinate(const std::vector<Point>& points, int numPoints, Projections projection)
     {
         if (projection == Projections::sphericalAccurate)
         {

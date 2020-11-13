@@ -1436,10 +1436,8 @@ int meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
         int edgeIndex = m_edgesRTree.GetQuerySampleIndex(0);
         return edgeIndex;
     }
-    else
-    {
-        throw AlgorithmError("Mesh::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
-    }
+
+    throw AlgorithmError("Mesh::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
 }
 
 void meshkernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)

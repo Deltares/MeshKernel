@@ -53,7 +53,7 @@ void meshkernel::AveragingInterpolation::Compute()
 {
     if (m_samples.empty())
     {
-        return;
+        throw AlgorithmError("TriangulationInterpolation::Compute: No samples available.");
     }
 
     m_visitedSamples.resize(m_samples.size());
