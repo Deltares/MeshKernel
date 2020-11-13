@@ -204,7 +204,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile("..\\data\\SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
 
     //sample points
     std::vector<meshkernel::Sample> samples;
@@ -253,7 +253,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile("..\\data\\SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
 
     // Polygon sample
     std::vector<meshkernel::Point> point;
@@ -407,7 +407,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, {197253.0, 442281.0});
 
     // Sample points
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\data\\MeshRefinementTests\\WindowOfRefinementFile.xyz");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
@@ -472,7 +472,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, {197253.0, 442281.0});
 
     // Sample points
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("..\\data\\MeshRefinementTests\\WindowOfRefinementFile.xyz");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,

@@ -10,6 +10,13 @@ else()
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11 -g") 
 endif(WIN32)
 
+
+# Note this needs to be done in the main CMakeLists
+# since it calls enable_testing, which must be in the
+# main CMakeLists.
+include(CTest)
+
+
 # Add third party directory
 add_subdirectory(thirdParty)
 
@@ -27,7 +34,7 @@ add_subdirectory(src)
 # Add target link dependency on OpenMP
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(meshkernel PUBLIC OpenMP::OpenMP_CXX )
+    target_link_libraries(MeshKernel PUBLIC OpenMP::OpenMP_CXX )
 endif()
 
 # Testing only available if this is the main app

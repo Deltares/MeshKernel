@@ -5,24 +5,28 @@ FetchContent_Declare(
   GIT_TAG release-1.10.0)
 FetchContent_MakeAvailable(googletest)
 
+if (MSVC)
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+endif()
+
 # Tests need to be added as executables first
 file(GLOB TEST_LIST CONFIGURE_DEPENDS "*.cpp")
-add_executable(meshkernel_tests ${TEST_LIST})
+add_executable(MeshKernelTests ${TEST_LIST})
 
 # I'm using C++11 in the test
-target_compile_features(meshkernel_tests PRIVATE cxx_std_11)
+target_compile_features(MeshKernelTests PRIVATE cxx_std_11)
 
 # Should be linked to the main library, as well as the Catch2 testing library
-target_link_libraries(meshkernel_tests PRIVATE meshkernel ${Boost_LIBRARIES} gtest_main triangle)
+target_link_libraries(MeshKernelTests PRIVATE MeshKernel ${Boost_LIBRARIES} gtest_main triangle)
 
 # If you register a test, then ctest and make test will run it.
 # You can also run examples and check the output, as well.
-add_test(NAME meshkernel_tests COMMAND meshkernel_tests) # Command can be a target
+add_test(NAME MeshKernelTests COMMAND MeshKernelTests) # Command can be a target
 
-file(GLOB CONFIGURE_DEPENDS NETCDF_FILES_LIST "${PROJECT_SOURCE_DIR}/thirdParty/third_party_open/netcdf/netCDF 4.6.1/bin/*.dll")
+file(GLOB NETCDF_FILES_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/thirdParty/third_party_open/netcdf/netCDF 4.6.1/bin/*.dll")
 foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
-add_custom_command( TARGET meshkernel_tests 
+add_custom_command( TARGET MeshKernelTests 
                     POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile} "$<TARGET_FILE_DIR:meshkernel_tests>"
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile} "$<TARGET_FILE_DIR:MeshKernelTests>"
                     COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
 endforeach()
