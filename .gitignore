@@ -47,3 +47,6 @@ src/MeshKernel_version.rc.svn
 # Building
 *build*
 post_build.bat
+
+# Visual Studio
+.vs

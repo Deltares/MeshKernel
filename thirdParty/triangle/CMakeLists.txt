@@ -1,8 +1,9 @@
-set( TRIANGLE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.c 
-                      ${CMAKE_CURRENT_SOURCE_DIR}/src/TriangleFacade.c 
-                      ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.h)
+set(TRIANGLE_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TriangleFacade.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/triangle.h)
 
-add_definitions(-DTRILIBRARY )
+add_definitions(-DTRILIBRARY)
 add_definitions(-DNO_TIMER)
 add_definitions(-w)
 
