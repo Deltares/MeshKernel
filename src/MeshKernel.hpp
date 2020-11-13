@@ -53,7 +53,7 @@ namespace meshkernelapi
 #endif
         /// @brief Create a new mesh state and return the generated <param name="meshKernelId"/>
 
-        /// @param[in,out] meshKernelId Identifier for the created grid state
+        /// @param[out] meshKernelId Identifier for the created grid state
         /// @returns Error code
         MKERNEL_API int mkernel_new_mesh(int& meshKernelId);
 
@@ -413,7 +413,7 @@ namespace meshkernelapi
         /// @brief Count the small flow edges (flow edges are the edges connecting the face circumcenters)
         /// @param[in] meshKernelId  Id of the mesh state
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
-        /// @param[in,out] numSmallFlowEdges The number of the small flow edges
+        /// @param[out] numSmallFlowEdges The number of the small flow edges
         /// @return
         MKERNEL_API int mkernel_get_small_flow_edge_centers_count(int meshKernelId, double smallFlowEdgesThreshold, int& numSmallFlowEdges);
 
@@ -423,6 +423,31 @@ namespace meshkernelapi
         /// @param[in,out] result The center points of the small flow edges
         /// @return Error code (0 Successful)
         MKERNEL_API int mkernel_get_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesThreshold, GeometryListNative& result);
+
+        /// @brief Triangle interpolation (ec_module)
+        /// @param[in] meshGeometryDimensions Mesh dimensions
+        /// @param[in] meshGeometry Mesh data
+        /// @param[in] startIndex start index (not used)
+        /// @param[in] samplesXCoordinate The sample x coordinates
+        /// @param[in] samplesYCoordinate The sample y coordinates
+        /// @param[in] samplesValue The sample values
+        /// @param[in] numSamples The number of samples
+        /// @param[in,out] results The interpolation results
+        /// @param[in] locationType The location type (see \ref InterpolationLocation)
+        /// @param[in] spherical Current projection (0 cartesian, 1 spherical)
+        /// @param[in] sphericalAccurate Accurate spherical projections (0 default spherical, 1 spherical accurate)
+        /// @return Error code (0 Successful)
+        MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
+                                      const MeshGeometry& meshGeometry,
+                                      int& startIndex,
+                                      const double** samplesXCoordinate,
+                                      const double** samplesYCoordinate,
+                                      const double** samplesValue,
+                                      int& numSamples,
+                                      double** results,
+                                      int& locationType,
+                                      int& spherical,
+                                      int& sphericalAccurate);
 
         /// @brief AveragingInterpolation interpolation (ec_module)
         /// @param[in] meshGeometryDimensions Mesh dimensions

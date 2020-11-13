@@ -53,7 +53,7 @@ void meshkernel::AveragingInterpolation::Compute()
 {
     if (m_samples.empty())
     {
-        return;
+        throw AlgorithmError("TriangulationInterpolation::Compute: No samples available.");
     }
 
     m_visitedSamples.resize(m_samples.size());
@@ -63,7 +63,7 @@ void meshkernel::AveragingInterpolation::Compute()
     auto interpolatedResults = ComputeOnLocations();
 
     //for edges, an average of the nodal interpolated value is made
-    if (m_interpolationLocation == Edges)
+    if (m_interpolationLocation == InterpolationLocation::Edges)
     {
         m_results.resize(m_mesh->GetNumEdges(), doubleMissingValue);
         for (int e = 0; e < m_mesh->GetNumEdges(); ++e)
@@ -101,7 +101,7 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
 {
     switch (m_interpolationLocation)
     {
-    case Faces:
+    case InterpolationLocation::Faces:
     {
         std::vector<double> interpolatedResults(m_mesh->GetNumFaces(), doubleMissingValue);
         std::vector<Point> polygonNodesCache(maximumNumberOfNodesPerFace + 1);
@@ -139,8 +139,8 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
         }
         return interpolatedResults;
     }
-    case Nodes:
-    case Edges:
+    case InterpolationLocation::Nodes:
+    case InterpolationLocation::Edges:
     {
         std::vector<Point> dualFacePolygon;
         std::vector<double> interpolatedResults(m_mesh->GetNumNodes(), doubleMissingValue);
@@ -256,7 +256,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
 
         Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
         // assume here polygon has a size equal to numPolygonNodes + 1
-        bool isInPolygon = IsPointInPolygonNodes(samplePoint, searchPolygon, 0, int(searchPolygon.size() - 1));
+        bool isInPolygon = IsPointInPolygonNodes(samplePoint, searchPolygon, 0, int(searchPolygon.size() - 1), m_mesh->m_projection);
         if (isInPolygon)
         {
             if (m_method == Method::SimpleAveraging)

@@ -33,20 +33,34 @@
 #include "Entities.hpp"
 #include "Constants.cpp"
 #include "Exceptions.hpp"
+#include "SpatialTrees.hpp"
 
 namespace meshkernel
 {
     // coordinate reference independent operations
     template <typename T>
-    [[nodiscard]] T DotProduct(const T& dx1, const T& dx2)
+    [[nodiscard]] static T DotProduct(const T& dx1, const T& dx2)
     {
         return dx1 * dx2;
     }
 
     template <typename T, typename... Args>
-    [[nodiscard]] T DotProduct(const T& dx1, const T& dx2, Args&... args)
+    [[nodiscard]] static T DotProduct(const T& dx1, const T& dx2, Args&... args)
     {
         return dx1 * dx2 + DotProduct(args...);
+    }
+
+    [[nodiscard]] static auto VectorProduct(Cartesian3DPoint a, Cartesian3DPoint b)
+    {
+        return Cartesian3DPoint{
+            a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z,
+            a.x * b.y - a.y * b.x};
+    }
+
+    [[nodiscard]] static auto InnerProduct(Cartesian3DPoint a, Cartesian3DPoint b)
+    {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
     template <typename T>
@@ -72,7 +86,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    [[nodiscard]] int FindIndex(const std::vector<T>& vec, T el)
+    [[nodiscard]] static int FindIndex(const std::vector<T>& vec, T el)
     {
         int index = 0;
         for (int n = 0; n < vec.size(); n++)
@@ -138,7 +152,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    [[nodiscard]] std::vector<int> SortedIndexes(const std::vector<T>& v)
+    [[nodiscard]] static std::vector<int> SortedIndexes(const std::vector<T>& v)
     {
         std::vector<int> idx(v.size());
         iota(idx.begin(), idx.end(), 0);
@@ -148,7 +162,7 @@ namespace meshkernel
 
     //chmike's algorithm
     template <class T>
-    void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
+    static void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
     {
         std::vector<T> ordered(v.size());
         for (int i = 0; i < order.size(); ++i)
@@ -159,7 +173,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    void MakeMonothonic(std::vector<T>& v)
+    static void MakeMonothonic(std::vector<T>& v)
     {
 
         bool isMonotonic = false;
@@ -188,7 +202,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    void AddValueToVector(std::vector<T>& vec, const T value)
+    static void AddValueToVector(std::vector<T>& vec, const T value)
     {
         for (auto& val : vec)
         {
@@ -198,7 +212,7 @@ namespace meshkernel
 
     // algorithm performing the zero's search using the golden section algorithm's
     template <typename F>
-    [[nodiscard]] double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
+    [[nodiscard]] static double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
     {
         //golden distance factors
         const double c = 0.38196602;
@@ -247,13 +261,33 @@ namespace meshkernel
         return f1 < f2 ? x1 : x2;
     }
 
+    [[nodiscard]] static int NextCircularForwardIndex(int currentIndex, int size)
+    {
+        int index = currentIndex + 1;
+        if (index >= size)
+        {
+            index = index - size;
+        }
+        return index;
+    }
+
+    [[nodiscard]] static int NextCircularBackwardIndex(int currentIndex, int size)
+    {
+        int index = currentIndex - 1;
+        if (index < 0)
+        {
+            index = index + size;
+        }
+        return index;
+    }
+
     [[nodiscard]] static bool IsPointOnPole(const Point& point)
     {
         return std::abs(std::abs(point.y) - 90.0) < absLatitudeAtPoles;
     }
 
     ///sphertocart3D transform 2d spherical to 3d cartesian
-    static void SphericalToCartesian(const Point& sphericalPoint, Cartesian3DPoint& cartesianPoint)
+    static void SphericalToCartesian3D(const Point& sphericalPoint, Cartesian3DPoint& cartesianPoint)
     {
         cartesianPoint.z = earth_radius * sin(sphericalPoint.y * degrad_hp);
         double rr = earth_radius * cos(sphericalPoint.y * degrad_hp);
@@ -262,7 +296,7 @@ namespace meshkernel
     }
 
     ///Cart3Dtospher Transform 3d cartesian coordinates to 2d spherical
-    static void CartesianToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude, Point& sphericalPoint)
+    static void Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude, Point& sphericalPoint)
     {
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
         sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * raddeg_hp;
@@ -282,14 +316,20 @@ namespace meshkernel
 
     /// Check if a point is in polygonNodes using the winding number method
     /// polygonNodes: a closed polygonNodes consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
-    [[nodiscard]] static bool IsPointInPolygonNodes(const Point& point, const std::vector<Point>& polygonNodes, int startNode, int endNode)
+    [[nodiscard]] static bool IsPointInPolygonNodes(Point point,
+                                                    const std::vector<Point>& polygonNodes,
+                                                    int startNode,
+                                                    int endNode,
+                                                    Projections projection,
+                                                    Point polygonCenter = {doubleMissingValue, doubleMissingValue})
     {
+
         if (endNode <= startNode)
         {
             return true;
         }
         const int currentPolygonSize = endNode - startNode + 1;
-        if (polygonNodes.size() < currentPolygonSize)
+        if (currentPolygonSize < 3 || polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }
@@ -298,33 +338,107 @@ namespace meshkernel
             return false;
         }
 
-        int windingNumber = 0;
-        for (int n = startNode; n < endNode; n++)
+        bool isInPolygon = false;
+
+        if (projection == Projections::cartesian || projection == Projections::spherical)
         {
-            const auto leftDifference = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
-            if (IsDifferenceLessThanEpsilon(leftDifference, 0.0))
-            {
-                // point on the line
-                return true;
-            }
 
-            if (polygonNodes[n].y <= point.y) // an upward crossing
+            int windingNumber = 0;
+            for (int n = startNode; n < endNode; n++)
             {
-                if (polygonNodes[n + 1].y > point.y && leftDifference > 0.0)
-
+                const auto leftDifference = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
+                if (IsDifferenceLessThanEpsilon(leftDifference, 0.0))
                 {
-                    ++windingNumber; // have  a valid up intersect
+                    // point on the line
+                    return true;
+                }
+
+                if (polygonNodes[n].y <= point.y) // an upward crossing
+                {
+                    if (polygonNodes[n + 1].y > point.y && leftDifference > 0.0)
+
+                    {
+                        ++windingNumber; // have  a valid up intersect
+                    }
+                }
+                else
+                {
+                    if (polygonNodes[n + 1].y <= point.y && leftDifference < 0.0) // a downward crossing
+                    {
+
+                        --windingNumber; // have  a valid down intersect
+                    }
                 }
             }
-            else
+
+            isInPolygon = windingNumber == 0 ? false : true;
+        }
+
+        if (projection == Projections::sphericalAccurate)
+        {
+            // get 3D polygon coordinates
+            std::vector<Cartesian3DPoint> cartesian3DPoints(currentPolygonSize);
+            for (int i = 0; i < currentPolygonSize; i++)
             {
-                if (polygonNodes[n + 1].y <= point.y && leftDifference < 0.0) // a downward crossing
+                SphericalToCartesian3D(polygonNodes[startNode + i], cartesian3DPoints[i]);
+            }
+
+            // enlarge around polygon
+            const double enlargmentFactor = 1.000001;
+            Cartesian3DPoint polygonCenterCartesian3D;
+            SphericalToCartesian3D(polygonCenter, polygonCenterCartesian3D);
+            for (int i = 0; i < currentPolygonSize; i++)
+            {
+                cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargmentFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
+                cartesian3DPoints[i].y = polygonCenterCartesian3D.y + enlargmentFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
+                cartesian3DPoints[i].z = polygonCenterCartesian3D.z + enlargmentFactor * (cartesian3DPoints[i].z - polygonCenterCartesian3D.z);
+            }
+
+            // convert point
+            Cartesian3DPoint pointCartesian3D;
+            SphericalToCartesian3D(point, pointCartesian3D);
+
+            //get test direction: e_lambda
+            const double lambda = point.x * degrad_hp;
+            Cartesian3DPoint ee{-std::sin(lambda), std::cos(lambda), 0.0};
+            int inside = 0;
+
+            // loop over the polygon nodes
+            for (int i = 0; i < currentPolygonSize - 1; i++)
+            {
+                const auto nextNode = NextCircularForwardIndex(i, currentPolygonSize);
+                const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
+                const auto xpXe = VectorProduct(pointCartesian3D, ee);
+
+                const auto D = InnerProduct(xiXxip1, ee);
+                double zeta = 0.0;
+                double xi = 0.0;
+                double eta = 0.0;
+                if (std::abs(D) > 0.0)
                 {
-                    --windingNumber; // have  a valid down intersect
+
+                    xi = -InnerProduct(xpXe, cartesian3DPoints[nextNode]) / D;
+                    eta = InnerProduct(xpXe, cartesian3DPoints[i]) / D;
+                    zeta = -InnerProduct(xiXxip1, pointCartesian3D) / D;
                 }
+
+                if (IsDifferenceLessThanEpsilon(zeta, 0.0))
+                {
+                    return true;
+                }
+
+                if (xi >= 0.0 && eta >= 0.0 && zeta >= 0.0)
+                {
+                    inside = 1 - inside;
+                }
+            }
+
+            if (inside == 1)
+            {
+                isInPolygon = true;
             }
         }
-        return windingNumber == 0 ? false : true;
+        return isInPolygon;
     }
 
     static void ComputeThreeBaseComponents(const Point& point, double (&exxp)[3], double (&eyyp)[3], double (&ezzp)[3])
@@ -430,25 +544,25 @@ namespace meshkernel
         if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointFirstSegmentCartesian;
-            SphericalToCartesian(firstPointFirstSegment, firstPointFirstSegmentCartesian);
+            SphericalToCartesian3D(firstPointFirstSegment, firstPointFirstSegmentCartesian);
             auto xx1 = firstPointFirstSegmentCartesian.x;
             auto yy1 = firstPointFirstSegmentCartesian.y;
             auto zz1 = firstPointFirstSegmentCartesian.z;
 
             Cartesian3DPoint secondPointFirstSegmentCartesian;
-            SphericalToCartesian(secondPointFirstSegment, secondPointFirstSegmentCartesian);
+            SphericalToCartesian3D(secondPointFirstSegment, secondPointFirstSegmentCartesian);
             auto xx2 = secondPointFirstSegmentCartesian.x;
             auto yy2 = secondPointFirstSegmentCartesian.y;
             auto zz2 = secondPointFirstSegmentCartesian.z;
 
             Cartesian3DPoint firstPointSecondSegmentCartesian;
-            SphericalToCartesian(firstPointSecondSegment, firstPointSecondSegmentCartesian);
+            SphericalToCartesian3D(firstPointSecondSegment, firstPointSecondSegmentCartesian);
             auto xx3 = firstPointSecondSegmentCartesian.x;
             auto yy3 = firstPointSecondSegmentCartesian.y;
             auto zz3 = firstPointSecondSegmentCartesian.z;
 
             Cartesian3DPoint secondPointSecondSegmentCartesian;
-            SphericalToCartesian(secondPointSecondSegment, secondPointSecondSegmentCartesian);
+            SphericalToCartesian3D(secondPointSecondSegment, secondPointSecondSegmentCartesian);
             auto xx4 = secondPointSecondSegmentCartesian.x;
             auto yy4 = secondPointSecondSegmentCartesian.y;
             auto zz4 = secondPointSecondSegmentCartesian.z;
@@ -494,16 +608,16 @@ namespace meshkernel
         if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointCartesianCoordinates{doubleMissingValue, doubleMissingValue};
-            SphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
+            SphericalToCartesian3D(firstPoint, firstPointCartesianCoordinates);
             Cartesian3DPoint secondPointCartesianCoordinates{doubleMissingValue, doubleMissingValue};
-            SphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
+            SphericalToCartesian3D(secondPoint, secondPointCartesianCoordinates);
 
             Cartesian3DPoint middleCartesianPointCoordinate{doubleMissingValue, doubleMissingValue};
             middleCartesianPointCoordinate.x = 0.5 * (firstPointCartesianCoordinates.x + secondPointCartesianCoordinates.x);
             middleCartesianPointCoordinate.y = 0.5 * (firstPointCartesianCoordinates.y + secondPointCartesianCoordinates.y);
             double referenceLongitude = std::max(firstPoint.x, secondPoint.x);
 
-            CartesianToSpherical(middleCartesianPointCoordinate, referenceLongitude, result);
+            Cartesian3DToSpherical(middleCartesianPointCoordinate, referenceLongitude, result);
         }
 
         // cartesian and spherical
@@ -557,8 +671,8 @@ namespace meshkernel
         {
             Cartesian3DPoint firstPointCartesianCoordinates;
             Cartesian3DPoint secondPointCartesianCoordinates;
-            SphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
-            SphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
+            SphericalToCartesian3D(firstPoint, firstPointCartesianCoordinates);
+            SphericalToCartesian3D(secondPoint, secondPointCartesianCoordinates);
 
             double elambda[3];
             double ephi[3];
@@ -609,7 +723,7 @@ namespace meshkernel
 
             // get the 3D coordinate
             Cartesian3DPoint globalCoordinatesCartesian;
-            SphericalToCartesian(globalCoordinates, globalCoordinatesCartesian);
+            SphericalToCartesian3D(globalCoordinates, globalCoordinatesCartesian);
 
             //project to rotated frame
             Cartesian3DPoint globalCoordinatesCartesianRotated;
@@ -628,7 +742,7 @@ namespace meshkernel
 
             //transform to local spherical coordinates
             Point globalCoordinatesToLocal;
-            CartesianToSpherical(globalCoordinatesCartesianRotated, reference.x, globalCoordinatesToLocal);
+            Cartesian3DToSpherical(globalCoordinatesCartesianRotated, reference.x, globalCoordinatesToLocal);
 
             //compute base vectors at other point in rotated 3D(xxp, yyp, zzp) frame
             double elambdap[3];
@@ -671,9 +785,9 @@ namespace meshkernel
             MiddlePoint(firstPoint, secondPoint, middlePoint, projection);
 
             Cartesian3DPoint firstPointCartesianCoordinates;
-            SphericalToCartesian(firstPoint, firstPointCartesianCoordinates);
+            SphericalToCartesian3D(firstPoint, firstPointCartesianCoordinates);
             Cartesian3DPoint secondPointCartesianCoordinates;
-            SphericalToCartesian(secondPoint, secondPointCartesianCoordinates);
+            SphericalToCartesian3D(secondPoint, secondPointCartesianCoordinates);
 
             //compute the base vectors at middle point
             double elambda[3];
@@ -752,7 +866,7 @@ namespace meshkernel
             double vzz = localComponents.x * elambda[2] + localComponents.y * ephi[2];
 
             Cartesian3DPoint firstPointCartesian;
-            SphericalToCartesian(firstPoint, firstPointCartesian);
+            SphericalToCartesian3D(firstPoint, firstPointCartesian);
 
             Cartesian3DPoint rotatedPoint;
             double alpha = 0.0;
@@ -760,7 +874,7 @@ namespace meshkernel
             rotatedPoint.y = firstPointCartesian.y + alpha * vyy;
             rotatedPoint.z = firstPointCartesian.z + alpha * vzz;
 
-            CartesianToSpherical(rotatedPoint, firstPoint.x, thirdPoint);
+            Cartesian3DToSpherical(rotatedPoint, firstPoint.x, thirdPoint);
         }
 
         if (OuterProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint, projection) * OuterProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint, projection) > 0.0)
@@ -837,13 +951,13 @@ namespace meshkernel
         if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointCartesian{doubleMissingValue, doubleMissingValue};
-            SphericalToCartesian(firstPoint, firstPointCartesian);
+            SphericalToCartesian3D(firstPoint, firstPointCartesian);
             auto xx1 = firstPointCartesian.x;
             auto yy1 = firstPointCartesian.y;
             auto zz1 = firstPointCartesian.z;
 
             Cartesian3DPoint secondPointCartesian{doubleMissingValue, doubleMissingValue};
-            SphericalToCartesian(secondPoint, secondPointCartesian);
+            SphericalToCartesian3D(secondPoint, secondPointCartesian);
             auto xx2 = secondPointCartesian.x;
             auto yy2 = secondPointCartesian.y;
             auto zz2 = secondPointCartesian.z;
@@ -898,19 +1012,19 @@ namespace meshkernel
         if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstNodeCartesian;
-            SphericalToCartesian(firstNode, firstNodeCartesian);
+            SphericalToCartesian3D(firstNode, firstNodeCartesian);
             auto xx1 = firstNodeCartesian.x;
             auto yy1 = firstNodeCartesian.y;
             auto zz1 = firstNodeCartesian.z;
 
             Cartesian3DPoint secondNodeCartesian;
-            SphericalToCartesian(secondNode, secondNodeCartesian);
+            SphericalToCartesian3D(secondNode, secondNodeCartesian);
             auto xx2 = secondNodeCartesian.x;
             auto yy2 = secondNodeCartesian.y;
             auto zz2 = secondNodeCartesian.z;
 
             Cartesian3DPoint pointCartesian;
-            SphericalToCartesian(point, pointCartesian);
+            SphericalToCartesian3D(point, pointCartesian);
             auto xx3 = pointCartesian.x;
             auto yy3 = pointCartesian.y;
             auto zz3 = pointCartesian.z;
@@ -945,7 +1059,7 @@ namespace meshkernel
                                        cartesianNormal3DPoint.z * cartesianNormal3DPoint.z);
 
                 double referenceLongitude = std::max({firstNode.x, secondNode.x, point.x});
-                CartesianToSpherical(cartesianNormal3DPoint, referenceLongitude, normalPoint);
+                Cartesian3DToSpherical(cartesianNormal3DPoint, referenceLongitude, normalPoint);
 
                 return dis;
             }
@@ -964,10 +1078,10 @@ namespace meshkernel
             Cartesian3DPoint firstPointSecondSegment3D;
             Cartesian3DPoint secondPointSecondSegment3D;
 
-            SphericalToCartesian(firstPointFirstSegment, firstPointFirstSegment3D);
-            SphericalToCartesian(secondPointFirstSegment, secondPointFirstSegment3D);
-            SphericalToCartesian(firstPointSecondSegment, firstPointSecondSegment3D);
-            SphericalToCartesian(secondPointSecondSegment, secondPointSecondSegment3D);
+            SphericalToCartesian3D(firstPointFirstSegment, firstPointFirstSegment3D);
+            SphericalToCartesian3D(secondPointFirstSegment, secondPointFirstSegment3D);
+            SphericalToCartesian3D(firstPointSecondSegment, firstPointSecondSegment3D);
+            SphericalToCartesian3D(secondPointSecondSegment, secondPointSecondSegment3D);
 
             double dx1 = secondPointFirstSegment3D.x - firstPointFirstSegment3D.x;
             double dy1 = secondPointFirstSegment3D.y - firstPointFirstSegment3D.y;
@@ -1001,25 +1115,25 @@ namespace meshkernel
         if (projection == Projections::sphericalAccurate)
         {
             Cartesian3DPoint firstPointFirstSegmentCartesian;
-            SphericalToCartesian(firstPointFirstSegment, firstPointFirstSegmentCartesian);
+            SphericalToCartesian3D(firstPointFirstSegment, firstPointFirstSegmentCartesian);
             auto xx1 = firstPointFirstSegmentCartesian.x;
             auto yy1 = firstPointFirstSegmentCartesian.y;
             auto zz1 = firstPointFirstSegmentCartesian.z;
 
             Cartesian3DPoint secondPointFirstSegmentCartesian;
-            SphericalToCartesian(secondPointFirstSegment, secondPointFirstSegmentCartesian);
+            SphericalToCartesian3D(secondPointFirstSegment, secondPointFirstSegmentCartesian);
             auto xx2 = secondPointFirstSegmentCartesian.x;
             auto yy2 = secondPointFirstSegmentCartesian.y;
             auto zz2 = secondPointFirstSegmentCartesian.z;
 
             Cartesian3DPoint firstPointSecondSegmentCartesian;
-            SphericalToCartesian(firstPointSecondSegment, firstPointSecondSegmentCartesian);
+            SphericalToCartesian3D(firstPointSecondSegment, firstPointSecondSegmentCartesian);
             auto xx3 = firstPointSecondSegmentCartesian.x;
             auto yy3 = firstPointSecondSegmentCartesian.y;
             auto zz3 = firstPointSecondSegmentCartesian.z;
 
             Cartesian3DPoint secondPointSecondSegmentCartesian;
-            SphericalToCartesian(secondPointSecondSegment, secondPointSecondSegmentCartesian);
+            SphericalToCartesian3D(secondPointSecondSegment, secondPointSecondSegmentCartesian);
             auto xx4 = secondPointSecondSegmentCartesian.x;
             auto yy4 = secondPointSecondSegmentCartesian.y;
             auto zz4 = secondPointSecondSegmentCartesian.z;
@@ -1106,53 +1220,124 @@ namespace meshkernel
         }
     }
 
-    /// (CROSS)
+    /// (cross, cross3D)
     [[nodiscard]] static bool AreLinesCrossing(const Point& firstSegmentFistPoint,
                                                const Point& firstSegmentSecondPoint,
                                                const Point& secondSegmentFistPoint,
                                                const Point& secondSegmentSecondPoint,
-                                               bool adimensional,
-                                               Point& intersection,
+                                               bool adimensionalCrossProduct,
+                                               Point& intersectionPoint,
                                                double& crossProduct,
-                                               double& firstRatio,
-                                               double& secondRatio,
+                                               double& ratioFirstSegment,
+                                               double& ratioSecondSegment,
                                                const Projections& projection)
     {
         bool isCrossing = false;
+        ratioFirstSegment = doubleMissingValue;
+        ratioSecondSegment = doubleMissingValue;
+        crossProduct = doubleMissingValue;
 
-        firstRatio = doubleMissingValue;
-        secondRatio = doubleMissingValue;
-        auto const x21 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-        auto const y21 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-
-        auto const x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-        auto const y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
-
-        auto const x31 = GetDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
-        auto const y31 = GetDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
-
-        auto const det = x43 * y21 - y43 * x21;
-
-        std::vector<double> values{x21, y21, x43, y43};
-        double eps = std::max(0.00001 * (*std::max_element(values.begin(), values.end())), std::numeric_limits<double>::denorm_min());
-
-        if (std::abs(det) < eps)
+        if (projection == Projections::cartesian || projection == Projections::spherical)
         {
-            return isCrossing;
+
+            auto const x21 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+            auto const y21 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+
+            auto const x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+            auto const y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+
+            auto const x31 = GetDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+            auto const y31 = GetDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+
+            auto const det = x43 * y21 - y43 * x21;
+
+            std::vector<double> values{x21, y21, x43, y43};
+            double eps = std::max(0.00001 * (*std::max_element(values.begin(), values.end())), std::numeric_limits<double>::denorm_min());
+
+            if (std::abs(det) < eps)
+            {
+                return isCrossing;
+            }
+
+            ratioSecondSegment = (y31 * x21 - x31 * y21) / det;
+            ratioFirstSegment = (y31 * x43 - x31 * y43) / det;
+            if (ratioFirstSegment >= 0.0 && ratioFirstSegment <= 1.0 && ratioSecondSegment >= 0.0 && ratioSecondSegment <= 1.0)
+            {
+                isCrossing = true;
+            }
+            intersectionPoint.x = firstSegmentFistPoint.x + ratioFirstSegment * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
+            intersectionPoint.y = firstSegmentFistPoint.y + ratioFirstSegment * (firstSegmentSecondPoint.y - firstSegmentFistPoint.y);
+            crossProduct = -det;
+            if (adimensionalCrossProduct)
+            {
+                crossProduct = -det / (std::sqrt(x21 * x21 + y21 * y21) * std::sqrt(x43 * x43 + y43 * y43) + 1e-8);
+            }
         }
 
-        secondRatio = (y31 * x21 - x31 * y21) / det;
-        firstRatio = (y31 * x43 - x31 * y43) / det;
-        if (firstRatio >= 0.0 && firstRatio <= 1.0 && secondRatio >= 0.0 && secondRatio <= 1.0)
+        if (projection == Projections::sphericalAccurate)
         {
-            isCrossing = true;
-        }
-        intersection.x = firstSegmentFistPoint.x + firstRatio * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
-        intersection.y = firstSegmentFistPoint.y + firstRatio * (firstSegmentSecondPoint.y - firstSegmentFistPoint.y);
-        crossProduct = -det;
-        if (adimensional)
-        {
-            crossProduct = -det / (std::sqrt(x21 * x21 + y21 * y21) * std::sqrt(x43 * x43 + y43 * y43) + 1e-8);
+            Cartesian3DPoint firstSegmentFistCartesian3DPoint;
+            SphericalToCartesian3D(firstSegmentFistPoint, firstSegmentFistCartesian3DPoint);
+
+            Cartesian3DPoint firstSegmentSecondCartesian3DPoint;
+            SphericalToCartesian3D(firstSegmentSecondPoint, firstSegmentSecondCartesian3DPoint);
+
+            Cartesian3DPoint secondSegmentFistCartesian3DPoint;
+            SphericalToCartesian3D(secondSegmentFistPoint, secondSegmentFistCartesian3DPoint);
+
+            Cartesian3DPoint secondSegmentSecondCartesian3DPoint;
+            SphericalToCartesian3D(secondSegmentSecondPoint, secondSegmentSecondCartesian3DPoint);
+
+            auto n12 = VectorProduct(firstSegmentFistCartesian3DPoint, firstSegmentSecondCartesian3DPoint);
+            const auto n12InnerProduct = std::sqrt(InnerProduct(n12, n12));
+            n12.x = n12.x / n12InnerProduct;
+            n12.y = n12.y / n12InnerProduct;
+            n12.z = n12.z / n12InnerProduct;
+
+            auto n34 = VectorProduct(secondSegmentFistCartesian3DPoint, secondSegmentSecondCartesian3DPoint);
+            const auto n34InnerProduct = std::sqrt(InnerProduct(n34, n34));
+            n34.x = n34.x / n34InnerProduct;
+            n34.y = n34.y / n34InnerProduct;
+            n34.z = n34.z / n34InnerProduct;
+
+            const auto n12n34InnerProduct = std::sqrt(std::abs(InnerProduct(n12, n34)));
+
+            const double tolerance = 1e-12;
+            if (n12n34InnerProduct > tolerance)
+            {
+                Cartesian3DPoint firstSegmentDifference;
+                firstSegmentDifference.x = firstSegmentSecondCartesian3DPoint.x - firstSegmentFistCartesian3DPoint.x;
+                firstSegmentDifference.y = firstSegmentSecondCartesian3DPoint.y - firstSegmentFistCartesian3DPoint.y;
+                firstSegmentDifference.z = firstSegmentSecondCartesian3DPoint.z - firstSegmentFistCartesian3DPoint.z;
+
+                Cartesian3DPoint secondSegmentDifference;
+                secondSegmentDifference.x = secondSegmentSecondCartesian3DPoint.x - secondSegmentFistCartesian3DPoint.x;
+                secondSegmentDifference.y = secondSegmentSecondCartesian3DPoint.y - secondSegmentFistCartesian3DPoint.y;
+                secondSegmentDifference.z = secondSegmentSecondCartesian3DPoint.z - secondSegmentFistCartesian3DPoint.z;
+
+                const auto Det12 = InnerProduct(firstSegmentDifference, n34);
+                const auto Det34 = InnerProduct(secondSegmentDifference, n12);
+
+                if (std::abs(Det12) > tolerance && std::abs(Det34) > tolerance)
+                {
+                    ratioFirstSegment = -InnerProduct(firstSegmentFistCartesian3DPoint, n34) / Det12;
+                    ratioSecondSegment = -InnerProduct(secondSegmentFistCartesian3DPoint, n12) / Det34;
+                }
+            }
+
+            if (ratioSecondSegment >= 0.0 && ratioSecondSegment <= 1.0 &&
+                ratioFirstSegment >= 0.0 && ratioFirstSegment <= 1.0)
+            {
+                // check if segments are crossing
+                isCrossing = true;
+
+                // compute intersection
+                Cartesian3DPoint intersectionCartesian3DPoint;
+                intersectionCartesian3DPoint.x = firstSegmentFistCartesian3DPoint.x + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.x - firstSegmentFistCartesian3DPoint.x);
+                intersectionCartesian3DPoint.y = firstSegmentFistCartesian3DPoint.y + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.y - firstSegmentFistCartesian3DPoint.y);
+                intersectionCartesian3DPoint.z = firstSegmentFistCartesian3DPoint.z + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.z - firstSegmentFistCartesian3DPoint.z);
+                Cartesian3DToSpherical(intersectionCartesian3DPoint, std::max(firstSegmentFistPoint.x, firstSegmentSecondPoint.x), intersectionPoint);
+            }
         }
 
         return isCrossing;
@@ -1210,26 +1395,6 @@ namespace meshkernel
         centerOfMass.y = yCenterOfMass + minY;
 
         area = std::abs(area);
-    }
-
-    [[nodiscard]] static int NextCircularForwardIndex(int currentIndex, int size)
-    {
-        int index = currentIndex + 1;
-        if (index >= size)
-        {
-            index = index - size;
-        }
-        return index;
-    }
-
-    [[nodiscard]] static int NextCircularBackwardIndex(int currentIndex, int size)
-    {
-        int index = currentIndex - 1;
-        if (index < 0)
-        {
-            index = index + size;
-        }
-        return index;
     }
 
     template <typename T>
@@ -1479,6 +1644,25 @@ namespace meshkernel
         }
     }
 
+    [[nodiscard]] static auto ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)
+    {
+        edgesCenters.reserve(std::max(int(edgesCenters.capacity()), numEdges));
+        edgesCenters.clear();
+
+        for (int e = 0; e < numEdges; e++)
+        {
+            auto const first = edges[e].first;
+            auto const second = edges[e].second;
+
+            if (first < 0 || second < 0)
+            {
+                continue;
+            }
+
+            edgesCenters.push_back((nodes[first] + nodes[second]) * 0.5);
+        }
+    }
+
     template <typename T>
     void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight)
     {
@@ -1507,23 +1691,73 @@ namespace meshkernel
         upperRight = {maxx, maxy};
     }
 
-    static auto ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)
+    template <typename T>
+    bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight)
     {
-        edgesCenters.reserve(std::max(int(edgesCenters.capacity()), numEdges));
-        edgesCenters.clear();
 
-        for (int e = 0; e < numEdges; e++)
+        return point.x >= lowerLeft.x && point.x <= upperRight.x &&
+               point.y >= lowerLeft.y && point.y <= upperRight.y;
+    }
+
+    static double LinearInterpolationInTriangle(Point interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, Projections projection)
+    {
+        double result = doubleMissingValue;
+
+        const auto a11 = GetDx(polygon[0], polygon[1], projection);
+        const auto a21 = GetDy(polygon[0], polygon[1], projection);
+
+        const auto a12 = GetDx(polygon[0], polygon[2], projection);
+        const auto a22 = GetDy(polygon[0], polygon[2], projection);
+
+        const auto b1 = GetDx(polygon[0], interpolationPoint, projection);
+        const auto b2 = GetDy(polygon[0], interpolationPoint, projection);
+
+        double det = a11 * a22 - a12 * a21;
+        if (std::abs(det) < 1e-12)
         {
-            auto const first = edges[e].first;
-            auto const second = edges[e].second;
-
-            if (first < 0 || second < 0)
-            {
-                continue;
-            }
-
-            edgesCenters.push_back((nodes[first] + nodes[second]) * 0.5);
+            return result;
         }
+
+        const double rlam = (a22 * b1 - a12 * b2) / det;
+        const double rmhu = (-a21 * b1 + a11 * b2) / det;
+
+        result = values[0] + rlam * (values[1] - values[0]) + rmhu * (values[2] - values[0]);
+
+        return result;
+    }
+
+    [[nodiscard]] static auto ComputeAverageCoordinate(const std::vector<Point>& points, int numPoints, Projections projection)
+    {
+        if (projection == Projections::sphericalAccurate)
+        {
+
+            Cartesian3DPoint averagePoint3D{0.0, 0.0, 0.0};
+            for (int i = 0; i < numPoints; ++i)
+            {
+                Cartesian3DPoint point3D;
+                SphericalToCartesian3D(points[i], point3D);
+                averagePoint3D.x += point3D.x;
+                averagePoint3D.y += point3D.y;
+                averagePoint3D.z += point3D.z;
+            }
+            averagePoint3D.x = averagePoint3D.x / numPoints;
+            averagePoint3D.y = averagePoint3D.y / numPoints;
+            averagePoint3D.z = averagePoint3D.z / numPoints;
+
+            Point result{doubleMissingValue, doubleMissingValue};
+            Cartesian3DToSpherical(averagePoint3D, points[0].x, result);
+            return result;
+        }
+
+        Point result{0.0, 0.0};
+        for (int i = 0; i < numPoints; ++i)
+        {
+            result.x += points[i].x;
+            result.y += points[i].y;
+        }
+        result.x = result.x / numPoints;
+        result.y = result.y / numPoints;
+        return result;
     }
 
 } // namespace meshkernel
