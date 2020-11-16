@@ -29,7 +29,7 @@
 
 #include <utility>
 #include <vector>
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 #include <cmath>
 #include <limits>
 

@@ -1,10 +1,12 @@
-# Note that headers are optional, and do not affect add_library, but they will not
-# show up in IDEs unless they are listed in add_library.
-file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.hpp")
+# Note that headers are optional, and do not affect add_library, but they will
+# not show up in IDEs unless they are listed in add_library.
+file(GLOB HEADER_LIST CONFIGURE_DEPENDS
+     "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.hpp")
 file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
 # TODO: Get rid of this "bonus" list
-file(GLOB BONUS_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.cpp")
+file(GLOB BONUS_LIST CONFIGURE_DEPENDS
+     "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.cpp")
 
 # Make an automatic library
 add_library(MeshKernel SHARED ${SOURCE_LIST} ${HEADER_LIST} ${BONUS_LIST})

@@ -28,7 +28,7 @@
 #pragma once
 
 #include <MeshKernel/SpatialTrees.hpp>
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 
 namespace meshkernel
 {

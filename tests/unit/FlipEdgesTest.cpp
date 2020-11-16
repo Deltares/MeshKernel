@@ -1,7 +1,7 @@
 #include "MakeMeshes.cpp"
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include "../../src/FlipEdges.cpp"
 #include "MakeMeshes.cpp"

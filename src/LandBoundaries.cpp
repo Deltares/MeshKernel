@@ -32,7 +32,7 @@
 #include <stdexcept>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Operations.cpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/LandBoundaries.hpp>

@@ -31,7 +31,7 @@
 #include <algorithm>
 #include <numeric>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 

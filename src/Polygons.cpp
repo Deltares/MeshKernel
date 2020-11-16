@@ -32,7 +32,7 @@
 #include <stdexcept>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Operations.cpp>
 #include <MeshKernel/TriangulationWrapper.cpp>
 #include <MeshKernel/Exceptions.hpp>

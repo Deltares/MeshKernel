@@ -1,7 +1,7 @@
 #include "../../src/Mesh.cpp"
 #include <MeshKernel/Entities.hpp>
 #include "../../src/Polygons.cpp"
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 #include "MakeMeshes.cpp"
 #include <gtest/gtest.h>
 #include <chrono>

@@ -34,7 +34,7 @@
 
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.cpp>
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Smoother.hpp>

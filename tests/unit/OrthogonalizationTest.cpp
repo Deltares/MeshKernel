@@ -1,7 +1,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 #include "../../src/OrthogonalizationAndSmoothing.cpp"
 #include "../../src/Smoother.cpp"
 #include "../../src/Orthogonalizer.cpp"

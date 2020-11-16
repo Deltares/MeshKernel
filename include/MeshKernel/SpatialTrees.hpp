@@ -27,7 +27,7 @@
 
 #pragma once
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 
 // include boost
 #include <boost/geometry.hpp>

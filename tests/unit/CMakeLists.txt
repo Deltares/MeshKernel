@@ -9,7 +9,7 @@ FetchContent_MakeAvailable(googletest)
 file(GLOB TEST_LIST CONFIGURE_DEPENDS "*.cpp")
 add_executable(MeshKernelTests ${TEST_LIST})
 
-# I'm using C++11 in the test
+# Using C++11 in the test
 target_compile_features(MeshKernelTests PRIVATE cxx_std_11)
 
 # Should be linked to the main library, as well as the Catch2 testing library

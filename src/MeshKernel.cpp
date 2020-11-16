@@ -31,7 +31,7 @@
 #include <sstream>
 
 #include <MeshKernel/MeshKernel.hpp>
-#include <MeshKernel/Constants.cpp>
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGridFromSplines.hpp>
