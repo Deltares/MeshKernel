@@ -226,7 +226,7 @@ namespace meshkernel
             localPolygon.clear();
             for (int j = m_indices[i][0]; j <= m_indices[i][1]; ++j)
             {
-                localPolygon.push_back(m_nodes[j]);
+                localPolygon.emplace_back(m_nodes[j]);
             }
             const auto numLocalPoints = static_cast<int>(localPolygon.size());
 

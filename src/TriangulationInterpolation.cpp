@@ -30,6 +30,7 @@
 #include "TriangulationWrapper.cpp"
 
 #include "Entities.hpp"
+#include "Exceptions.hpp"
 #include "Operations.cpp"
 #include "SpatialTrees.hpp"
 

@@ -27,11 +27,10 @@
 
 #pragma once
 #include <vector>
+#include "Entities.hpp"
 
 namespace meshkernel
 {
-    struct Point;
-    struct Sample;
     struct TriangulationWrapper
     {
         enum class TriangulationOptions
@@ -53,7 +52,7 @@ namespace meshkernel
                      int numPoints,
                      TriangulationOptions triangulationOption,
                      double averageTriangleArea,
-                     int estimatedNumberOfTriangles);
+                     int estimatedNumberOfTriangles); //requires IsCoordinate<T>;
 
         std::vector<Point> m_nodes;
         std::vector<std::vector<int>> m_faceNodes;

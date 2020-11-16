@@ -31,6 +31,7 @@
 #include <numeric>
 #include <algorithm>
 #include <stdexcept>
+#include <initializer_list>
 
 #include "Mesh.hpp"
 #include "Constants.cpp"
@@ -40,8 +41,8 @@
 #include "CurvilinearGrid.hpp"
 #include "Entities.hpp"
 #include "MakeGridParametersNative.hpp"
-#include "TriangulationWrapper.cpp"
 #include "Exceptions.hpp"
+#include "TriangulationWrapper.hpp"
 
 meshkernel::Mesh::Mesh()
 {
@@ -582,6 +583,222 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
     }
 }
 
+void meshkernel::Mesh::RemoveDegeneratedTriangles()
+{
+
+    // assume the max amount of degenerated triangles is 6
+    std::vector<int> degenerartedTriangles;
+    degenerartedTriangles.reserve(GetNumFaces() * 0.1);
+    for (int f = 0; f < GetNumFaces(); ++f)
+    {
+        const auto numFaceNodes = m_numFacesNodes[f];
+        if (numFaceNodes != numNodesInTriangle)
+        {
+            continue;
+        }
+        auto firstNode = m_facesNodes[f][0];
+        auto secondNode = m_facesNodes[f][1];
+        auto thirdNode = m_facesNodes[f][2];
+
+        // account for periodic spherical coordinate
+        if ((m_projection == Projections::spherical || m_projection == Projections::sphericalAccurate) && IsPointOnPole(m_nodes[firstNode]))
+        {
+            const auto saveFirstNode = firstNode;
+            firstNode = secondNode;
+            secondNode = thirdNode;
+            thirdNode = saveFirstNode;
+        }
+
+        // compute coordinate differences, to check for collinearity
+        const auto dx2 = GetDx(m_nodes[firstNode], m_nodes[secondNode], m_projection);
+        const auto dy2 = GetDy(m_nodes[firstNode], m_nodes[secondNode], m_projection);
+        const auto dx3 = GetDx(m_nodes[firstNode], m_nodes[thirdNode], m_projection);
+        const auto dy3 = GetDy(m_nodes[firstNode], m_nodes[thirdNode], m_projection);
+
+        const auto den = dy2 * dx3 - dy3 * dx2;
+
+        if (IsDifferenceLessThanEpsilon(den, 0.0))
+        {
+            // Flag edges to remove
+            for (int e = 0; e < numNodesInTriangle; ++e)
+            {
+                const auto edge = m_facesEdges[f][e];
+                m_edges[edge] = {-1, -1};
+            }
+            // save degenared face index
+            degenerartedTriangles.emplace_back(f);
+        }
+    }
+
+    // collapse secondNode and thirdNode into firstNode, change coordinate of the firstNode to triangle center of mass
+    for (int f = 0; f < degenerartedTriangles.size(); ++f)
+    {
+        const auto face = degenerartedTriangles[f];
+        auto firstNode = m_facesNodes[face][0];
+        auto secondNode = m_facesNodes[face][1];
+        auto thirdNode = m_facesNodes[face][2];
+
+        m_nodes[thirdNode] = m_facesMassCenters[face];
+        MergeTwoNodes(secondNode, firstNode);
+        MergeTwoNodes(thirdNode, firstNode);
+    }
+}
+
+void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
+{
+    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    RemoveDegeneratedTriangles();
+    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+    std::vector<Point> result;
+    result.reserve(GetNumEdges());
+    bool edgesNeedsRemoval = false;
+    for (int e = 0; e < GetNumEdges(); ++e)
+    {
+        const auto firstFace = m_edgesFaces[e][0];
+        const auto secondFace = m_edgesFaces[e][1];
+
+        if (firstFace >= 0 && secondFace >= 0)
+        {
+            const auto flowEdgeLength = ComputeDistance(m_facesCircumcenters[firstFace], m_facesCircumcenters[secondFace], m_projection);
+            const double tooCloseDistance = 0.9 * smallFlowEdgesThreshold * 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
+
+            if (flowEdgeLength < tooCloseDistance)
+            {
+                m_edges[e] = {-1, -1};
+                edgesNeedsRemoval = true;
+            }
+        }
+    }
+
+    if (edgesNeedsRemoval)
+    {
+        Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    }
+
+    const double arealRatio = 0.2;
+    const double minCosPhi = 0.2;
+    edgesNeedsRemoval = false;
+    std::vector<Point> referenceNodes;
+    std::vector<std::vector<int>> smallTrianglesNodes;
+    for (int e = 0; e < GetNumEdges(); ++e)
+    {
+        const auto face = m_edgesFaces[e][0];
+        const auto numFaceNodes = m_numFacesNodes[face];
+        const auto faceArea = m_faceArea[face];
+
+        // a triangle on the boundary
+        if (IsEdgeOnBoundary(e) && numFaceNodes == numNodesInTriangle && faceArea > 0)
+        {
+            // compute the average area of neighbouring faces
+            double averageOtherArea = 0.0;
+            int numNonBoundaryFaces = 0;
+            for (int ee = 0; ee < numNodesInTriangle; ++ee)
+            {
+                const auto edge = m_facesEdges[face][ee];
+                if (IsEdgeOnBoundary(edge))
+                {
+                    continue;
+                }
+                const auto otherFace = m_edgesFaces[e][0] + m_edgesFaces[e][1] - face;
+                if (m_numFacesNodes[otherFace] > 3)
+                {
+                    averageOtherArea += m_faceArea[otherFace];
+                    numNonBoundaryFaces++;
+                }
+            }
+
+            if (averageOtherArea <= 0.0 || (faceArea / (averageOtherArea / numNonBoundaryFaces)))
+            {
+                continue;
+            }
+
+            double minCosPhiSmallTriangle = 1.0;
+            int firstNodeToMerge;
+            int nodeToPreserve;
+            int secondNodeToMerge;
+            int thirdEdgeSmallTriangle;
+            for (int currentEdge = 0; currentEdge < numNodesInTriangle; ++currentEdge)
+            {
+                const auto previousEdge = NextCircularBackwardIndex(currentEdge, numNodesInTriangle);
+                const auto nextEdge = NextCircularForwardIndex(currentEdge, numNodesInTriangle);
+
+                const auto k0 = m_facesNodes[face][previousEdge];
+                const auto k1 = m_facesNodes[face][currentEdge];
+                const auto k2 = m_facesNodes[face][nextEdge];
+
+                // compte the angles between the edges
+                const auto cosphi = NormalizedInnerProductTwoSegments(m_nodes[k0], m_nodes[k1], m_nodes[k0], m_nodes[k2], m_projection);
+
+                if (cosphi < minCosPhiSmallTriangle)
+                {
+                    minCosPhiSmallTriangle = cosphi;
+                    firstNodeToMerge = k0;
+                    nodeToPreserve = k1;
+                    secondNodeToMerge = k2;
+                    thirdEdgeSmallTriangle = m_facesEdges[face][nextEdge];
+                }
+            }
+
+            if (minCosPhiSmallTriangle < minCosPhi && m_edgesNumFaces[thirdEdgeSmallTriangle] == 1)
+            {
+                Point normalPoint;
+                double ratio;
+                DistanceFromLine(m_nodes[nodeToPreserve],
+                                 m_nodes[firstNodeToMerge],
+                                 m_nodes[secondNodeToMerge],
+                                 normalPoint,
+                                 ratio,
+                                 m_projection);
+
+                referenceNodes.emplace_back(normalPoint);
+                smallTrianglesNodes.emplace_back(std::initializer_list<int>{nodeToPreserve, firstNodeToMerge, secondNodeToMerge});
+
+                edgesNeedsRemoval = true;
+            }
+        }
+    }
+
+    if (edgesNeedsRemoval)
+    {
+        for (auto i = 0; i < smallTrianglesNodes.size(); ++i)
+        {
+            const auto nodeToPreserve = smallTrianglesNodes[i][0];
+            const auto firstNodeToMerge = smallTrianglesNodes[i][1];
+            const auto secondNodeToMerge = smallTrianglesNodes[i][2];
+
+            int internalEdges = 0;
+            for (int e = 0; e < m_nodesNumEdges[firstNodeToMerge]; ++e)
+            {
+                if (!IsEdgeOnBoundary(m_nodesEdges[firstNodeToMerge][e]))
+                {
+                    internalEdges++;
+                }
+            }
+
+            if (internalEdges == 1)
+            {
+
+                MergeTwoNodes(firstNodeToMerge, nodeToPreserve);
+            }
+
+            internalEdges = 0;
+            for (int e = 0; e < m_nodesNumEdges[secondNodeToMerge]; ++e)
+            {
+                if (!IsEdgeOnBoundary(m_nodesEdges[secondNodeToMerge][e]))
+                {
+                    internalEdges++;
+                }
+            }
+
+            if (internalEdges == 1)
+            {
+                MergeTwoNodes(secondNodeToMerge, nodeToPreserve);
+            }
+        }
+    }
+}
+
 void meshkernel::Mesh::FindFacesRecursive(int startingNode,
                                           int node,
                                           int index,
@@ -657,8 +874,8 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         }
 
         // store the result
-        m_facesNodes.push_back(nodes);
-        m_facesEdges.push_back(edges);
+        m_facesNodes.emplace_back(nodes);
+        m_facesEdges.emplace_back(edges);
         return;
     }
 
@@ -1240,13 +1457,13 @@ void meshkernel::Mesh::FaceClosedPolygon(int faceIndex,
 
     for (int n = 0; n < numFaceNodes; n++)
     {
-        polygonNodesCache.push_back(m_nodes[m_facesNodes[faceIndex][n]]);
-        localNodeIndicesCache.push_back(n);
-        edgeIndicesCache.push_back(m_facesEdges[faceIndex][n]);
+        polygonNodesCache.emplace_back(m_nodes[m_facesNodes[faceIndex][n]]);
+        localNodeIndicesCache.emplace_back(n);
+        edgeIndicesCache.emplace_back(m_facesEdges[faceIndex][n]);
     }
-    polygonNodesCache.push_back(polygonNodesCache[0]);
-    localNodeIndicesCache.push_back(0);
-    edgeIndicesCache.push_back(m_facesEdges[faceIndex][0]);
+    polygonNodesCache.emplace_back(polygonNodesCache[0]);
+    localNodeIndicesCache.emplace_back(0);
+    edgeIndicesCache.emplace_back(m_facesEdges[faceIndex][0]);
     numClosedPolygonNodes = numFaceNodes + 1;
 }
 
@@ -1870,7 +2087,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh::GetObtuseTriangles()
                 secondEdgeSquaredLength > firstEdgeSquaredLength + thirdEdgeSquaredLength ||
                 thirdEdgeSquaredLength > secondEdgeSquaredLength + firstEdgeSquaredLength)
             {
-                result.push_back(m_facesMassCenters[f]);
+                result.emplace_back(m_facesMassCenters[f]);
             }
         }
     }
@@ -1894,7 +2111,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh::GetSmallFlowEdgeCenters(double 
 
             if (flowEdgeLength < tooCloseDistance)
             {
-                result.push_back((m_facesCircumcenters[firstFace] + m_facesCircumcenters[firstFace]) * 0.5);
+                result.emplace_back((m_facesCircumcenters[firstFace] + m_facesCircumcenters[firstFace]) * 0.5);
             }
         }
     }
@@ -2057,7 +2274,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
                 edgeLength = 0.5 * (edgesLength[edgeIndex] + edgesLength[klinkp2]);
             }
 
-            if (averageEdgesLength[edgeIndex][0] == doubleMissingValue)
+            if (IsDifferenceLessThanEpsilon(averageEdgesLength[edgeIndex][0], doubleMissingValue))
             {
                 averageEdgesLength[edgeIndex][0] = edgeLength;
             }
@@ -2086,15 +2303,18 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
 
         if (m_edgesNumFaces[e] == 1)
         {
-            if (averageEdgesLength[e][0] != 0.0 && averageEdgesLength[e][0] != doubleMissingValue)
+            if (averageEdgesLength[e][0] > 0.0 &&
+                IsDifferenceLessThanEpsilon(averageEdgesLength[e][0], doubleMissingValue))
             {
                 aspectRatios[e] = averageFlowEdgesLength[e] / averageEdgesLength[e][0];
             }
         }
         else
         {
-            if (averageEdgesLength[e][0] != 0.0 && averageEdgesLength[e][1] != 0.0 &&
-                averageEdgesLength[e][0] != doubleMissingValue && averageEdgesLength[e][1] != doubleMissingValue)
+            if (averageEdgesLength[e][0] > 0.0 &&
+                averageEdgesLength[e][1] > 0.0 &&
+                IsDifferenceLessThanEpsilon(averageEdgesLength[e][0], doubleMissingValue) &&
+                IsDifferenceLessThanEpsilon(averageEdgesLength[e][1], doubleMissingValue))
             {
                 aspectRatios[e] = curvilinearToOrthogonalRatio * aspectRatios[e] +
                                   (1.0 - curvilinearToOrthogonalRatio) * averageFlowEdgesLength[e] / (0.5 * (averageEdgesLength[e][0] + averageEdgesLength[e][1]));
@@ -2157,19 +2377,19 @@ bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vect
                 }
             }
         }
-        dualFace.push_back(edgeCenter);
+        dualFace.emplace_back(edgeCenter);
 
         const auto faceIndex = sortedFacesIndices[e];
         if (faceIndex >= 0)
         {
-            dualFace.push_back(m_facesMassCenters[faceIndex]);
+            dualFace.emplace_back(m_facesMassCenters[faceIndex]);
         }
         else
         {
-            dualFace.push_back(m_nodes[node]);
+            dualFace.emplace_back(m_nodes[node]);
         }
     }
-    dualFace.push_back(dualFace[0]);
+    dualFace.emplace_back(dualFace[0]);
 
     // now we can compute the mass center of the dual face
     double area;
@@ -2237,11 +2457,11 @@ std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(int node) const
 
         if (m_facesEdges[firstFace][secondEdgeindexInFirstFace] == secondEdge)
         {
-            result.push_back(firstFace);
+            result.emplace_back(firstFace);
         }
         else
         {
-            result.push_back(secondFace);
+            result.emplace_back(secondFace);
         }
     }
 

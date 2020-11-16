@@ -208,7 +208,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_new_mesh(int& meshKernelId)
     {
         meshKernelId = int(meshInstances.size());
-        meshInstances.push_back(std::make_shared<meshkernel::Mesh>());
+        meshInstances.emplace_back(std::make_shared<meshkernel::Mesh>());
         return 0;
     };
 
@@ -1285,7 +1285,7 @@ namespace meshkernelapi
             // Set the node coordinate
             auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];
             std::vector<meshkernel::Point> pointVector;
-            pointVector.push_back(node);
+            pointVector.emplace_back(node);
             ConvertPointVectorToGeometryListNative(pointVector, geometryListOut);
         }
         catch (const std::exception& e)

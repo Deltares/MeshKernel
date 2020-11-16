@@ -66,7 +66,7 @@ namespace meshkernel
 
         public:
             template <typename T>
-            void BuildTree(std::vector<T>& nodes)
+            void BuildTree(std::vector<T>& nodes) //requires IsCoordinate<T>
             {
                 m_points.reserve(m_points.size());
                 m_points.clear();
@@ -76,7 +76,7 @@ namespace meshkernel
                 {
                     if (nodes[n].x != doubleMissingValue && nodes[n].y != doubleMissingValue)
                     {
-                        m_points.push_back(std::make_pair(Point2D{nodes[n].x, nodes[n].y}, n));
+                        m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
                     }
                 }
                 m_rtree2D = RTree2D(m_points.begin(), m_points.end());
@@ -100,7 +100,7 @@ namespace meshkernel
                 m_queryIndices.clear();
                 for (const auto& v : m_queryCache)
                 {
-                    m_queryIndices.push_back(v.second);
+                    m_queryIndices.emplace_back(v.second);
                 }
             }
 
@@ -115,7 +115,7 @@ namespace meshkernel
                 if (!m_queryCache.empty())
                 {
                     m_queryIndices.clear();
-                    m_queryIndices.push_back(m_queryCache[0].second);
+                    m_queryIndices.emplace_back(m_queryCache[0].second);
                 }
             }
 
@@ -131,7 +131,7 @@ namespace meshkernel
 
             void InsertNode(const Point& node)
             {
-                m_points.push_back({Point2D{node.x, node.y}, m_points.size()});
+                m_points.emplace_back(Point2D{node.x, node.y}, m_points.size());
                 m_rtree2D.insert(m_points.end() - 1, m_points.end());
             }
 

@@ -267,6 +267,11 @@ namespace meshkernel
         /// @return The number of faces an edges shares
         [[nodiscard]] int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
+        /// @brief Inquire if an edge is on boundary
+        /// @param the edge index
+        /// @return if the edge os on boundary
+        [[nodiscard]] bool IsEdgeOnBoundary(const int edge) const { return m_edgesNumFaces[edge] == 1; }
+
         /// @brief Circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon Cache storing the face nodes
         /// @param[in,out] middlePoints Caching array for the edges middle points
@@ -311,6 +316,12 @@ namespace meshkernel
         /// @brief Sort edges in conterclockwise orther (Sort_links_ccw)
         /// @param[in] nodeIndex The node index for which sorting should take place
         void SortEdgesInCounterClockWiseOrder(int nodeIndex);
+
+        /// @brief remove coinciding triangles
+        void RemoveDegeneratedTriangles();
+
+        /// @brief remove small flow edges
+        void RemoveSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Transform non-triangular faces in triangular faces
         void TriangulateFaces();

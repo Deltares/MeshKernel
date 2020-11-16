@@ -142,7 +142,7 @@ namespace meshkernel
             size_t endInd = found - 1;
             if (endInd > startInd && landBoundaryMask[startInd] != 0)
             {
-                m_segmentIndices.push_back({startInd, endInd});
+                m_segmentIndices.emplace_back(std::initializer_list<size_t>{startInd, endInd});
             }
 
             begin = found + 1;
@@ -158,7 +158,7 @@ namespace meshkernel
             {
                 auto split = size_t(startSegmentIndex + (endSegmentIndex - startSegmentIndex) / 2);
                 m_segmentIndices[i][1] = split;
-                m_segmentIndices.push_back({split, endSegmentIndex});
+                m_segmentIndices.push_back(std::initializer_list<size_t>{split, endSegmentIndex});
             }
         }
     };
@@ -404,13 +404,13 @@ namespace meshkernel
         }
 
         // Update  nodes
-        m_nodes.push_back({doubleMissingValue, doubleMissingValue});
-        m_nodes.push_back(newNodeLeft);
-        m_nodes.push_back(newNodeRight);
-        m_nodes.push_back({doubleMissingValue, doubleMissingValue});
+        m_nodes.emplace_back(Point{doubleMissingValue, doubleMissingValue});
+        m_nodes.emplace_back(newNodeLeft);
+        m_nodes.emplace_back(newNodeRight);
+        m_nodes.emplace_back(Point{doubleMissingValue, doubleMissingValue});
 
         // Update segment indices
-        m_segmentIndices.push_back({m_nodes.size() - 3, m_nodes.size() - 2});
+        m_segmentIndices.push_back(std::initializer_list<size_t>{m_nodes.size() - 3, m_nodes.size() - 2});
     }
 
     void LandBoundaries::MakePath(int landBoundarySegment,
@@ -503,7 +503,7 @@ namespace meshkernel
             }
             else
             {
-                if (m_nodesMinDistances[currentNode] == doubleMissingValue)
+                if (IsDifferenceLessThanEpsilon(m_nodesMinDistances[currentNode], doubleMissingValue))
                 {
                     NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], 0, int(m_nodes.size()),
                                             minDinstanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
@@ -1217,8 +1217,10 @@ namespace meshkernel
         pointOnLandBoundary = node;
         for (int n = startLandBoundaryIndex; n < endLandBoundaryIndex; n++)
         {
-            if (m_nodes[n].x == doubleMissingValue || m_nodes[n + 1].x == doubleMissingValue)
+            if (!m_nodes[n].IsValid() || !m_nodes[n + 1].IsValid())
+            {
                 continue;
+            }
 
             Point normalPoint{doubleMissingValue, doubleMissingValue};
             double ratio = 0.0;

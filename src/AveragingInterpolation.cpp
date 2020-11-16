@@ -26,12 +26,13 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <stdexcept>
 
 #include "Operations.cpp"
 #include "Mesh.hpp"
 #include "SpatialTrees.hpp"
 #include "AveragingInterpolation.hpp"
-#include <stdexcept>
+#include "Exceptions.hpp"
 
 meshkernel::AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh> mesh,
                                                            std::vector<Sample>& samples,
@@ -113,9 +114,9 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
 
             for (int n = 0; n < numFaceNodes; ++n)
             {
-                polygonNodesCache.push_back(m_mesh->m_facesMassCenters[f] + (m_mesh->m_nodes[m_mesh->m_facesNodes[f][n]] - m_mesh->m_facesMassCenters[f]) * m_relativeSearchRadius);
+                polygonNodesCache.emplace_back(m_mesh->m_facesMassCenters[f] + (m_mesh->m_nodes[m_mesh->m_facesNodes[f][n]] - m_mesh->m_facesMassCenters[f]) * m_relativeSearchRadius);
             }
-            polygonNodesCache.push_back(polygonNodesCache[0]);
+            polygonNodesCache.emplace_back(polygonNodesCache[0]);
 
             double result = 0.0;
             ComputeOnPolygon(polygonNodesCache, m_mesh->m_facesMassCenters[f], result);

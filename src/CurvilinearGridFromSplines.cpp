@@ -329,7 +329,7 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
             newCrossSpline[1] = {xs2, ys2};
             m_splines->AddSpline(newCrossSpline, 0, newCrossSpline.size());
             // flag the cross spline as artificially added
-            m_type.push_back(SplineTypes::arficial);
+            m_type.emplace_back(SplineTypes::arficial);
         }
     }
 
@@ -389,7 +389,7 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
     for (int n = 0; n < m_numM; ++n)
     {
         m_gridPoints[0][n] = m_gridLine[n];
-        if (m_gridLine[n].x == doubleMissingValue)
+        if (!m_gridLine[n].IsValid())
         {
             m_validFrontNodes[n] = 0;
         }
@@ -680,7 +680,8 @@ void meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
         {
             if (m_validFrontNodes[i] == 1 && velocityVectorAtGridPoints[i].IsValid())
             {
-                if (velocityVectorAtGridPoints[i].x == 0.0 && velocityVectorAtGridPoints[i].y == 0.0)
+                if (IsDifferenceLessThanEpsilon(velocityVectorAtGridPoints[i].x, 0.0) &&
+                    IsDifferenceLessThanEpsilon(velocityVectorAtGridPoints[i].y, 0.0))
                 {
                     continue;
                 }
@@ -1216,7 +1217,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeEdgeVelocities(std::vector<d
 
         for (int i = m_leftGridLineIndex[s]; i < m_rightGridLineIndex[s] + m_numMSplines[s]; ++i)
         {
-            if (m_gridLine[i].x == doubleMissingValue || m_gridLine[i + 1].x == doubleMissingValue || numPerpendicularFacesOnSubintervalAndEdge[1][i] < 1)
+            if (!m_gridLine[i].IsValid() || !m_gridLine[i + 1].IsValid() || numPerpendicularFacesOnSubintervalAndEdge[1][i] < 1)
             {
                 continue;
             }

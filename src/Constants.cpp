@@ -47,6 +47,7 @@ namespace meshkernel
     static constexpr double one_over_earth_radius = 1.0 / earth_radius; //one over earth_radius(m-1);
     static constexpr double absLatitudeAtPoles = 0.0001;                // pole tolerance in degrees
     static constexpr double nearlyZero = 1e-16;                         // used to determine if a length is zero
+    static constexpr int numNodesInTriangle = 3;                        // used to determine if a length is zero
 
     //mesh constants
     static constexpr double minimumDeltaCoordinate = 1e-14;

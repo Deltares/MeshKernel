@@ -40,7 +40,7 @@ void meshkernel::TriangulationWrapper::Compute(const std::vector<T>& inputNodes,
                                                int numPoints,
                                                TriangulationOptions triangulationOption,
                                                double averageTriangleArea,
-                                               int estimatedNumberOfTriangles)
+                                               int estimatedNumberOfTriangles) //requires IsCoordinate<T>
 {
 
     std::vector<double> xLocalPolygon(inputNodes.size());

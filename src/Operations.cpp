@@ -32,7 +32,6 @@
 #include <numeric>
 #include "Entities.hpp"
 #include "Constants.cpp"
-#include "Exceptions.hpp"
 #include "SpatialTrees.hpp"
 
 namespace meshkernel
@@ -506,10 +505,10 @@ namespace meshkernel
 
             firstPointX = firstPointX * degrad_hp;
             secondPointX = secondPointX * degrad_hp;
-            double firstPointY = firstPoint.y * degrad_hp;
-            double secondPointY = secondPoint.y * degrad_hp;
-            double cosPhi = cos(0.5 * (firstPointY + secondPointY));
-            double dx = earth_radius * cosPhi * (secondPointX - firstPointX);
+            const double firstPointY = firstPoint.y * degrad_hp;
+            const double secondPointY = secondPoint.y * degrad_hp;
+            const double cosPhi = cos(0.5 * (firstPointY + secondPointY));
+            const double dx = earth_radius * cosPhi * (secondPointX - firstPointX);
             return dx;
         }
         return doubleMissingValue;
@@ -1659,12 +1658,12 @@ namespace meshkernel
                 continue;
             }
 
-            edgesCenters.push_back((nodes[first] + nodes[second]) * 0.5);
+            edgesCenters.emplace_back((nodes[first] + nodes[second]) * 0.5);
         }
     }
 
     template <typename T>
-    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight)
+    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight) //requires IsCoordinate<T>
     {
 
         double minx = std::numeric_limits<double>::max();
@@ -1692,7 +1691,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight)
+    bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight) //requires IsCoordinate<T>
     {
 
         return point.x >= lowerLeft.x && point.x <= upperRight.x &&
