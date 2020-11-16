@@ -16,6 +16,14 @@ endif(WIN32)
 # enable_testing, which must be in the main CMakeLists.
 include(CTest)
 
+# Docs only available if this is the main app
+find_package(Doxygen)
+if(Doxygen_FOUND)
+  add_subdirectory(docs)
+else()
+  message(STATUS "Doxygen not found, not building docs")
+endif()
+
 # Add third party directory
 add_subdirectory(thirdParty)
 

@@ -1,0 +1,4 @@
+set(DOXYGEN_EXTRACT_ALL YES)
+set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
+doxygen_add_docs(docs "${HEADER_LIST}"
+                 WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/include")
