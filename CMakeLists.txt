@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.14...3.18)
 # Project name and a few useful settings. Other commands can pick up the results
 project(
   MeshKernel
+  VERSION 0.9.0
   DESCRIPTION "Library for creating and editing meshes."
   LANGUAGES CXX)
 
@@ -36,6 +37,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   else()
     message(STATUS "Doxygen not found, not building docs")
   endif()
+
+  # Run packaging scripts
+  add_subdirectory(package)
 endif()
 
 # Add third party directory

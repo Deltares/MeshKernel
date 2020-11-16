@@ -9,7 +9,8 @@ file(GLOB BONUS_LIST CONFIGURE_DEPENDS
      "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.cpp")
 
 # Make an automatic library
-add_library(MeshKernel SHARED ${SOURCE_LIST} ${HEADER_LIST} ${BONUS_LIST})
+add_library(MeshKernel SHARED ${SOURCE_LIST} ${HEADER_LIST} ${BONUS_LIST}
+                              ${CMAKE_BINARY_DIR}/version.rc)
 
 # We need this directory, and users of our library will need it too
 target_include_directories(MeshKernel PUBLIC ../include)
