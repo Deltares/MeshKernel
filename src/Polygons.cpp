@@ -34,7 +34,7 @@
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Operations.cpp>
-#include <MeshKernel/TriangulationWrapper.cpp>
+#include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernel/Exceptions.hpp>
 
 namespace meshkernel

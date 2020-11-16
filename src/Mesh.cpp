@@ -40,7 +40,7 @@
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/MakeGridParametersNative.hpp>
-#include <MeshKernel/TriangulationWrapper.cpp>
+#include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernel/Exceptions.hpp>
 
 meshkernel::Mesh::Mesh()
