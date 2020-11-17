@@ -6,7 +6,7 @@
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
-#include "../utils/MakeMeshes.cpp"
+#include <TestUtils/MakeMeshes.hpp>
 #include <gtest/gtest.h>
 #include <chrono>
 

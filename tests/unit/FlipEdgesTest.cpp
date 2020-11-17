@@ -1,4 +1,4 @@
-#include "../utils/MakeMeshes.cpp"
+#include <TestUtils/MakeMeshes.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>

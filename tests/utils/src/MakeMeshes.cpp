@@ -9,9 +9,10 @@
 
 #include <stdexcept>
 #include <MeshKernel/Mesh.hpp>
-#include "../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
+#include <TestUtils/MakeMeshes.hpp>
+#include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
 
-static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projections projection = meshkernel::Projections::cartesian)
+std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projections projection)
 {
     auto mesh = std::make_shared<meshkernel::Mesh>();
 
@@ -115,7 +116,7 @@ static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string file
     return mesh;
 }
 
-static std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile()
+std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile()
 {
     // Prepare
     std::vector<meshkernel::Point> nodes;
@@ -159,7 +160,7 @@ static std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAs
     return mesh;
 }
 
-static std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projections projection, meshkernel::Point origin = {0.0, 0.0})
+std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projections projection, meshkernel::Point origin)
 {
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
@@ -201,7 +202,7 @@ static std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, in
     return mesh;
 }
 
-static std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
+std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
 {
 
     std::vector<double> xCoordinates{777.2400642395231,

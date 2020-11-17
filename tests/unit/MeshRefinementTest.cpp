@@ -3,8 +3,8 @@
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/SampleRefineParametersNative.hpp>
 #include <MeshKernel/InterpolationParametersNative.hpp>
-#include "../utils/MakeMeshes.cpp"
-#include "../utils/SampleFileReader.cpp"
+#include <TestUtils/MakeMeshes.hpp>
+#include <TestUtils/SampleFileReader.hpp>
 #include <gtest/gtest.h>
 
 TEST(MeshRefinement, FourByFourWithFourSamples)

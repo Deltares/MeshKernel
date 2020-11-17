@@ -1,8 +1,8 @@
 #include <MeshKernel/Mesh.hpp>
 #include "Meshkernel/Entities.hpp"
 #include <MeshKernel/TriangulationInterpolation.hpp>
-#include "../utils/SampleFileReader.cpp"
-#include "../utils/MakeMeshes.cpp"
+#include <TestUtils/SampleFileReader.hpp>
+#include <TestUtils/MakeMeshes.hpp>
 #include <gtest/gtest.h>
 
 TEST(TriangleInterpolation, InterpolateOnNodes)

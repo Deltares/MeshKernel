@@ -1,6 +1,6 @@
 #include <MeshKernel/AveragingInterpolation.hpp>
-#include "../utils/SampleFileReader.cpp"
-#include "../utils/MakeMeshes.cpp"
+#include <TestUtils/SampleFileReader.hpp>
+#include <TestUtils/MakeMeshes.hpp>
 #include <gtest/gtest.h>
 
 //Simple averaging

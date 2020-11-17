@@ -35,9 +35,6 @@ add_library(MeshKernel SHARED ${API_HEADER} ${API_SOURCE}
 # Link shared lib to static lib, but don't expose it
 target_link_libraries(MeshKernel PRIVATE MeshKernelStatic)
 
-# All users of this library will need at least C++11
-target_compile_features(MeshKernel PUBLIC cxx_std_11)
-
 # IDEs should put the headers in a nice place
 source_group(
   TREE "${PROJECT_SOURCE_DIR}/include"

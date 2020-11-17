@@ -7,8 +7,9 @@
 #include <sstream>
 
 #include <MeshKernel/Entities.hpp>
+#include <TestUtils/SampleFileReader.hpp>
 
-static std::vector<meshkernel::Sample> ReadSampleFile(std::string filePath)
+std::vector<meshkernel::Sample> ReadSampleFile(std::string filePath)
 {
     std::vector<meshkernel::Sample> samples;
 
