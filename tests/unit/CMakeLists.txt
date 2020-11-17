@@ -13,8 +13,9 @@ add_executable(MeshKernelTests ${UNIT_TEST_LIST} ${UTILS_TEST_LIST})
 target_compile_features(MeshKernelTests PRIVATE cxx_std_11)
 
 # Should be linked to the main library, as well as the Catch2 testing library
-target_link_libraries(MeshKernelTests PRIVATE MeshKernel ${Boost_LIBRARIES}
-                                              gtest_main triangle)
+target_link_libraries(
+  MeshKernelTests PRIVATE MeshKernelStatic ${Boost_LIBRARIES} gtest_main
+                          triangle)
 
 # If you register a test, then ctest and make test will run it. You can also run
 # examples and check the output, as well.
