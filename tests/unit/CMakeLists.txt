@@ -6,8 +6,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 # Tests need to be added as executables first
-file(GLOB TEST_LIST CONFIGURE_DEPENDS "*.cpp")
-add_executable(MeshKernelTests ${TEST_LIST})
+file(GLOB UNIT_TEST_LIST CONFIGURE_DEPENDS "*.cpp")
+add_executable(MeshKernelTests ${UNIT_TEST_LIST} ${UTILS_TEST_LIST})
 
 # Using C++11 in the test
 target_compile_features(MeshKernelTests PRIVATE cxx_std_11)
