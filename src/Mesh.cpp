@@ -200,11 +200,17 @@ void meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
     ResizeVectorIfNeeded(int(m_edges.size()), m_edgesFaces);
     std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<int>(2, -1));
 
-    m_facesNodes.resize(0);
-    m_facesEdges.resize(0);
-    m_facesCircumcenters.resize(0);
-    m_facesMassCenters.resize(0);
-    m_faceArea.resize(0);
+    m_facesMassCenters.clear();
+    m_faceArea.clear();
+    m_facesNodes.clear();
+    m_facesEdges.clear();
+    m_facesCircumcenters.clear();
+
+    m_facesMassCenters.reserve(m_numNodes);
+    m_faceArea.reserve(m_numNodes);
+    m_facesNodes.reserve(m_numNodes);
+    m_facesEdges.reserve(m_numNodes);
+    m_facesCircumcenters.reserve(m_numNodes);
 
     // find faces
     FindFaces();
@@ -617,7 +623,7 @@ void meshkernel::Mesh::RemoveDegeneratedTriangles()
 
         const auto den = dy2 * dx3 - dy3 * dx2;
 
-        if (IsDifferenceLessThanEpsilon(den, 0.0))
+        if (IsEqual(den, 0.0))
         {
             // Flag edges to remove
             for (int e = 0; e < numNodesInTriangle; ++e)
@@ -658,10 +664,10 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
         const auto firstFace = m_edgesFaces[e][0];
         const auto secondFace = m_edgesFaces[e][1];
 
-        if (firstFace >= 0 && secondFace >= 0)
+        if (firstFace >= 0 && secondFace >= 0 && m_numFacesNodes[firstFace] == numNodesInTriangle && m_numFacesNodes[secondFace] == numNodesInTriangle)
         {
             const auto flowEdgeLength = ComputeDistance(m_facesCircumcenters[firstFace], m_facesCircumcenters[secondFace], m_projection);
-            const double tooCloseDistance = 0.9 * smallFlowEdgesThreshold * 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
+            const double tooCloseDistance = 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
 
             if (flowEdgeLength < tooCloseDistance)
             {
@@ -676,19 +682,17 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
         Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 
-    const double arealRatio = 0.2;
     const double minCosPhi = 0.2;
+    const double minFractionalArea = 0.2;
     edgesNeedsRemoval = false;
     std::vector<Point> referenceNodes;
     std::vector<std::vector<int>> smallTrianglesNodes;
     for (int e = 0; e < GetNumEdges(); ++e)
     {
         const auto face = m_edgesFaces[e][0];
-        const auto numFaceNodes = m_numFacesNodes[face];
-        const auto faceArea = m_faceArea[face];
 
         // a triangle on the boundary
-        if (IsEdgeOnBoundary(e) && numFaceNodes == numNodesInTriangle && faceArea > 0)
+        if (IsEdgeOnBoundary(e) && face >= 0 && m_numFacesNodes[face] == numNodesInTriangle && m_faceArea[face] > 0)
         {
             // compute the average area of neighbouring faces
             double averageOtherArea = 0.0;
@@ -700,7 +704,7 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
                 {
                     continue;
                 }
-                const auto otherFace = m_edgesFaces[e][0] + m_edgesFaces[e][1] - face;
+                const auto otherFace = m_edgesFaces[edge][0] + m_edgesFaces[edge][1] - face;
                 if (m_numFacesNodes[otherFace] > 3)
                 {
                     averageOtherArea += m_faceArea[otherFace];
@@ -708,8 +712,10 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
                 }
             }
 
-            if (averageOtherArea <= 0.0 || (faceArea / (averageOtherArea / numNonBoundaryFaces)))
+            if (averageOtherArea <= 0.0 || m_faceArea[face] / (averageOtherArea / numNonBoundaryFaces) > minFractionalArea)
             {
+                // the average area of other triangles is large enough
+                // the area of the current triangle is also large enough
                 continue;
             }
 
@@ -806,7 +812,8 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
                                           std::vector<int>& edges,
                                           std::vector<int>& nodes,
                                           std::vector<int>& sortedEdgesFaces,
-                                          std::vector<int>& sortedNodes)
+                                          std::vector<int>& sortedNodes,
+                                          std::vector<Point>& nodalValues)
 {
     // The selected edge does not exist.
     // TODO: It would make to throw an exception here, but then the test cases fail
@@ -827,6 +834,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
     // enclosure found
     if (otherNode == startingNode && index == edges.size() - 1)
     {
+        // no duplicated nodes allowed
         sortedNodes = nodes;
         std::sort(sortedNodes.begin(), sortedNodes.end());
         for (int n = 0; n < sortedNodes.size() - 1; n++)
@@ -864,6 +872,21 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
             }
         }
 
+        // the order of the edges in a new face must be counterclockwise
+        // in order to evaluate the clockwise order, the signed face area is computed
+        for (int n = 0; n < nodes.size(); n++)
+        {
+            nodalValues[n] = m_nodes[nodes[n]];
+        }
+        double area;
+        Point centerOfMass;
+        bool isCounterClockWise;
+        FaceAreaAndCenterOfMass(nodalValues, nodes.size(), m_projection, area, centerOfMass, isCounterClockWise);
+        if (!isCounterClockWise)
+        {
+            return;
+        }
+
         // increase m_edgesNumFaces
         m_numFaces += 1;
         for (const auto& edge : edges)
@@ -876,6 +899,9 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         // store the result
         m_facesNodes.emplace_back(nodes);
         m_facesEdges.emplace_back(edges);
+        m_faceArea.emplace_back(area);
+        m_facesMassCenters.emplace_back(std::move(centerOfMass));
+
         return;
     }
 
@@ -900,8 +926,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
     }
 
     const int edge = m_nodesEdges[otherNode][edgeIndexOtherNode];
-    FindFacesRecursive(startingNode, otherNode, index + 1, edge, edges, nodes, sortedEdgesFaces, sortedNodes);
-    return;
+    FindFacesRecursive(startingNode, otherNode, index + 1, edge, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
 }
 
 void meshkernel::Mesh::FindFaces()
@@ -912,6 +937,7 @@ void meshkernel::Mesh::FindFaces()
         std::vector<int> nodes(numEdgesPerFace);
         std::vector<int> sortedEdgesFaces(numEdgesPerFace);
         std::vector<int> sortedNodes(numEdgesPerFace);
+        std::vector<Point> nodalValues(numEdgesPerFace);
         for (int n = 0; n < GetNumNodes(); n++)
         {
             if (!m_nodes[n].IsValid())
@@ -919,7 +945,7 @@ void meshkernel::Mesh::FindFaces()
 
             for (int e = 0; e < m_nodesNumEdges[n]; e++)
             {
-                FindFacesRecursive(n, n, 0, m_nodesEdges[n][e], edges, nodes, sortedEdgesFaces, sortedNodes);
+                FindFacesRecursive(n, n, 0, m_nodesEdges[n][e], edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
             }
         }
     }
@@ -931,7 +957,7 @@ void meshkernel::Mesh::FindFaces()
     }
 }
 
-void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
+void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters)
 {
     m_facesCircumcenters.resize(GetNumFaces());
     m_faceArea.resize(GetNumFaces());
@@ -948,12 +974,16 @@ void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
         FaceClosedPolygon(f, m_polygonNodesCache, numPolygonPoints);
 
         auto numberOfFaceNodes = GetNumFaceEdges(f);
-        double area;
-        Point centerOfMass;
-        FaceAreaAndCenterOfMass(m_polygonNodesCache, numberOfFaceNodes, m_projection, area, centerOfMass);
 
-        m_faceArea[f] = area;
-        m_facesMassCenters[f] = centerOfMass;
+        if (computeMassCenters)
+        {
+            double area;
+            Point centerOfMass;
+            bool isCounterClockWise;
+            FaceAreaAndCenterOfMass(m_polygonNodesCache, numberOfFaceNodes, m_projection, area, centerOfMass, isCounterClockWise);
+            m_faceArea[f] = area;
+            m_facesMassCenters[f] = centerOfMass;
+        }
 
         int numberOfInteriorEdges = 0;
         for (int n = 0; n < numberOfFaceNodes; n++)
@@ -965,7 +995,7 @@ void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas()
         }
         if (numberOfInteriorEdges == 0)
         {
-            m_facesCircumcenters[f] = centerOfMass;
+            m_facesCircumcenters[f] = m_facesMassCenters[f];
             continue;
         }
 
@@ -1950,7 +1980,8 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
 
     Point centerOfMass;
     double area;
-    FaceAreaAndCenterOfMass(polygon, numNodes, m_projection, area, centerOfMass);
+    bool isCounterClockWise;
+    FaceAreaAndCenterOfMass(polygon, numNodes, m_projection, area, centerOfMass, isCounterClockWise);
 
     double xCenter = 0;
     double yCenter = 0;
@@ -2274,7 +2305,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
                 edgeLength = 0.5 * (edgesLength[edgeIndex] + edgesLength[klinkp2]);
             }
 
-            if (IsDifferenceLessThanEpsilon(averageEdgesLength[edgeIndex][0], doubleMissingValue))
+            if (IsEqual(averageEdgesLength[edgeIndex][0], doubleMissingValue))
             {
                 averageEdgesLength[edgeIndex][0] = edgeLength;
             }
@@ -2304,7 +2335,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
         if (m_edgesNumFaces[e] == 1)
         {
             if (averageEdgesLength[e][0] > 0.0 &&
-                IsDifferenceLessThanEpsilon(averageEdgesLength[e][0], doubleMissingValue))
+                IsEqual(averageEdgesLength[e][0], doubleMissingValue))
             {
                 aspectRatios[e] = averageFlowEdgesLength[e] / averageEdgesLength[e][0];
             }
@@ -2313,8 +2344,8 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
         {
             if (averageEdgesLength[e][0] > 0.0 &&
                 averageEdgesLength[e][1] > 0.0 &&
-                IsDifferenceLessThanEpsilon(averageEdgesLength[e][0], doubleMissingValue) &&
-                IsDifferenceLessThanEpsilon(averageEdgesLength[e][1], doubleMissingValue))
+                IsEqual(averageEdgesLength[e][0], doubleMissingValue) &&
+                IsEqual(averageEdgesLength[e][1], doubleMissingValue))
             {
                 aspectRatios[e] = curvilinearToOrthogonalRatio * aspectRatios[e] +
                                   (1.0 - curvilinearToOrthogonalRatio) * averageFlowEdgesLength[e] / (0.5 * (averageEdgesLength[e][0] + averageEdgesLength[e][1]));
@@ -2394,7 +2425,8 @@ bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vect
     // now we can compute the mass center of the dual face
     double area;
     Point centerOfMass;
-    FaceAreaAndCenterOfMass(dualFace, int(dualFace.size() - 1), m_projection, area, centerOfMass);
+    bool isCounterClockWise;
+    FaceAreaAndCenterOfMass(dualFace, int(dualFace.size() - 1), m_projection, area, centerOfMass, isCounterClockWise);
 
     if (m_projection == Projections::spherical)
     {

@@ -902,7 +902,7 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int face,
         return;
     }
 
-    if (IsDifferenceLessThanEpsilon(refinementValue, doubleMissingValue))
+    if (IsEqual(refinementValue, doubleMissingValue))
     {
         return;
     }

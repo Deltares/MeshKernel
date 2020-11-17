@@ -132,9 +132,7 @@ namespace meshkernelapi
         std::vector<meshkernel::Point> splineCornerPoints;
         ConvertGeometryListNativeToPointVector(geometryListIn, splineCornerPoints);
 
-        std::vector<std::vector<size_t>> indexes(splineCornerPoints.size(), std::vector<size_t>(2, 0));
-        int pos = FindIndexes(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue, indexes);
-        indexes.resize(pos);
+        const auto indexes = FindIndexes(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue);
 
         for (auto i = 0; i < indexes.size(); i++)
         {
@@ -614,8 +612,8 @@ namespace meshkernelapi
                 splines[i].y = geometryListIn.yCoordinates[i];
             }
 
-            std::vector<std::vector<size_t>> indexes(geometryListIn.numberOfCoordinates, std::vector<size_t>(2));
-            int numSplines = FindIndexes(splines, 0, splines.size(), meshkernel::doubleMissingValue, indexes);
+            const auto indexes = FindIndexes(splines, 0, splines.size(), meshkernel::doubleMissingValue);
+            const auto numSplines = indexes.size();
             std::vector<meshkernel::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
 
             int index = 0;

@@ -112,11 +112,11 @@ namespace meshkernel
         /// @param administrationOption Type of administration to perform
         void Administrate(AdministrationOptions administrationOption);
 
-        /// @brief Compute face circumcenters, centers of mass and face areas
-        void ComputeFaceCircumcentersMassCentersAndAreas();
+        /// @brief Compute face circumcenters
+        void ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters = false);
 
         /// <summary>
-        /// Find faces: constructs the m_facesNodes mapping. (findcells)
+        /// Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
         /// </summary>
         void FindFaces();
 
@@ -398,7 +398,8 @@ namespace meshkernel
                                 std::vector<int>& edges,
                                 std::vector<int>& nodes,
                                 std::vector<int>& sortedEdges,
-                                std::vector<int>& sortedNodes);
+                                std::vector<int>& sortedNodes,
+                                std::vector<Point>& nodalValues);
 
         /// @brief Checks if a triangle has an acute angle (checktriangle)
         /// @param[in] faceNodes

@@ -99,7 +99,7 @@ void meshkernel::TriangulationInterpolation::Compute()
     for (int n = 0; n < m_locations.size(); ++n)
     {
         if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
-            !IsDifferenceLessThanEpsilon(m_results[n], doubleMissingValue))
+            !IsEqual(m_results[n], doubleMissingValue))
         {
             continue;
         }

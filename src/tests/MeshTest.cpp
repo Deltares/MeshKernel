@@ -651,3 +651,15 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
     ASSERT_EQ(1, numSmallFlowEdgeFirstQuery);
     ASSERT_EQ(0, numSmallFlowEdgeSecondQuery);
 }
+
+TEST(Mesh, RemoveSmallFlowEdgeCenters)
+{
+    // Setup a mesh with two triangles
+    auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\RemoveSmallFlowEdges\\remove_small_flow_edges_net.nc");
+
+    mesh->RemoveSmallFlowEdges(1.0);
+
+    // assert a small flow edge is found
+    //    ASSERT_EQ(1, numSmallFlowEdgeFirstQuery);
+    //    ASSERT_EQ(0, numSmallFlowEdgeSecondQuery);
+}

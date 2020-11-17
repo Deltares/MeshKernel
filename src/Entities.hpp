@@ -44,9 +44,9 @@ namespace meshkernel
     //};
 
     template <typename T>
-    static bool IsDifferenceLessThanEpsilon(T firstValue, T secondValue)
+    static bool IsEqual(T value, T referenceValue)
     {
-        return std::abs(firstValue - secondValue) < std::numeric_limits<T>::epsilon();
+        return std::abs(value - referenceValue) < std::numeric_limits<T>::epsilon();
     }
 
     enum class Projections
@@ -127,16 +127,16 @@ namespace meshkernel
 
         bool operator==(const Point& rhs) const
         {
-            bool isEqual = IsDifferenceLessThanEpsilon(x, rhs.x) &&
-                           IsDifferenceLessThanEpsilon(y, rhs.y);
+            bool isEqual = IsEqual(x, rhs.x) &&
+                           IsEqual(y, rhs.y);
 
             return isEqual;
         }
 
         bool operator!=(const Point& rhs) const
         {
-            bool isEqual = IsDifferenceLessThanEpsilon(x, rhs.x) &&
-                           IsDifferenceLessThanEpsilon(y, rhs.y);
+            bool isEqual = IsEqual(x, rhs.x) &&
+                           IsEqual(y, rhs.y);
             return !isEqual;
         }
 
@@ -148,8 +148,8 @@ namespace meshkernel
 
         [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
         {
-            bool isInvalid = IsDifferenceLessThanEpsilon(x, missingValue) ||
-                             IsDifferenceLessThanEpsilon(y, missingValue);
+            bool isInvalid = IsEqual(x, missingValue) ||
+                             IsEqual(y, missingValue);
 
             return !isInvalid;
         }

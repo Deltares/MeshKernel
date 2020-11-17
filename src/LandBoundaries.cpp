@@ -82,8 +82,8 @@ namespace meshkernel
         int numNodesBoundaryPolygons;
         m_polygons->MeshBoundaryToPolygon(*m_mesh, meshBoundaryPolygon, numNodesBoundaryPolygons);
 
-        // Mask nodes close enough to land boundary segments
-        for (size_t n = 0; n < m_nodes.size() - 1; n++)
+        // mask all landboundary nodes close to the mesh boundary (distanceFromMeshNode < minDistance)
+        for (auto n = 0; n < m_nodes.size() - 1; n++)
         {
             if (landBoundaryMask[n] != 0)
             {
@@ -107,9 +107,9 @@ namespace meshkernel
 
                     Point normalPoint;
                     double rlout;
-                    const double distanceFirstMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
+                    const double distanceFromMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
 
-                    if (distanceFirstMeshNode <= minDistance)
+                    if (distanceFromMeshNode <= minDistance)
                     {
                         landBoundaryIsClose = true;
                         break;
@@ -123,29 +123,16 @@ namespace meshkernel
             }
         }
 
-        // start and ending indices of segments inside polygon
-        m_segmentIndices.reserve(m_nodes.size());
-        size_t begin = 0;
-        while (begin < m_nodes.size())
+        // find the start/end node of the landboundaries. Emplace them in m_segmentIndices if the land-boundary segment is close to a mesh node
+        const auto indices = FindIndexes(m_nodes, 0, m_nodes.size(), doubleMissingValue);
+        m_segmentIndices.reserve(indices.size());
+        for (auto n = 0; n < indices.size(); n++)
         {
-            size_t found = begin;
-            for (size_t n = begin; n < m_nodes.size(); n++)
+            const auto startIndex = indices[n][0];
+            if (landBoundaryMask[startIndex] != 0)
             {
-                if (!m_nodes[n].IsValid())
-                {
-                    found = n;
-                    break;
-                }
+                m_segmentIndices.emplace_back(indices[n]);
             }
-
-            size_t startInd = begin;
-            size_t endInd = found - 1;
-            if (endInd > startInd && landBoundaryMask[startInd] != 0)
-            {
-                m_segmentIndices.emplace_back(std::initializer_list<size_t>{startInd, endInd});
-            }
-
-            begin = found + 1;
         }
 
         // Generate two segments for closed land boundaries
@@ -158,7 +145,7 @@ namespace meshkernel
             {
                 auto split = size_t(startSegmentIndex + (endSegmentIndex - startSegmentIndex) / 2);
                 m_segmentIndices[i][1] = split;
-                m_segmentIndices.push_back(std::initializer_list<size_t>{split, endSegmentIndex});
+                m_segmentIndices.emplace_back(std::initializer_list<size_t>{split, endSegmentIndex});
             }
         }
     };
@@ -432,8 +419,8 @@ namespace meshkernel
         // fractional location of the projected outer nodes(min and max) on the land boundary segment
         double leftEdgeRatio = 1.0;
         double rightEdgeRatio = 0.0;
-        int leftIndex = int(endLandBoundaryIndex) - 1;
-        auto rightIndex = int(startLandBoundaryIndex);
+        int leftIndex = static_cast<int>(endLandBoundaryIndex) - 1;
+        auto rightIndex = static_cast<int>(startLandBoundaryIndex);
 
         ComputeMask(landBoundarySegment,
                     meshBoundOnly,
@@ -503,7 +490,7 @@ namespace meshkernel
             }
             else
             {
-                if (IsDifferenceLessThanEpsilon(m_nodesMinDistances[currentNode], doubleMissingValue))
+                if (IsEqual(m_nodesMinDistances[currentNode], doubleMissingValue))
                 {
                     NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], 0, int(m_nodes.size()),
                                             minDinstanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
@@ -583,7 +570,7 @@ namespace meshkernel
             return;
         }
 
-        std::fill(m_nodeMask.begin(), m_nodeMask.end(), doubleMissingValue);
+        std::fill(m_nodeMask.begin(), m_nodeMask.end(), intMissingValue);
 
         // check if any of the land boundary node is inside a m_mesh face
         bool nodeInFace = false;
@@ -676,11 +663,13 @@ namespace meshkernel
 
         for (int n = 0; n < m_mesh->GetNumNodes(); n++)
         {
-            if (m_nodeMask[n] > 0)
+            if (m_nodeMask[n] >= 0)
             {
                 bool inPolygon = m_polygons->IsPointInPolygon(m_mesh->m_nodes[n], 0);
                 if (!inPolygon)
-                    m_nodeMask[n] = 0;
+                {
+                    m_nodeMask[n] = intMissingValue;
+                }
             }
         }
     }
@@ -1083,6 +1072,7 @@ namespace meshkernel
         }
 
         connectedNodes.resize(m_mesh->GetNumNodes(), -1);
+        std::fill(connectedNodes.begin(), connectedNodes.end(), -1);
 
         // infinite distance for all nodes
         std::vector<double> nodeDistances(m_mesh->GetNumNodes(), std::numeric_limits<double>::max());
