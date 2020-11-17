@@ -1,15 +1,15 @@
 #include <chrono>
 
-#include "../MakeMeshes.cpp"
-#include "../../Entities.hpp"
-#include "../../FlipEdges.hpp"
-#include "../../LandBoundaries.hpp"
-#include "../../Mesh.hpp"
-#include "../../OrthogonalizationAndSmoothing.hpp"
-#include "../../OrthogonalizationParametersNative.hpp"
-#include "../../Orthogonalizer.hpp"
-#include "../../Polygons.hpp"
-#include "../../Smoother.hpp"
+#include "../unit/MakeMeshes.cpp"
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/FlipEdges.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
+#include <MeshKernel/OrthogonalizationParametersNative.hpp>
+#include <MeshKernel/Orthogonalizer.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Smoother.hpp>
 
 #include <gtest/gtest.h>
 

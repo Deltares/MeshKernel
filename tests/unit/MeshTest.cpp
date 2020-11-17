@@ -2,7 +2,7 @@
 #include <MeshKernel/Entities.hpp>
 #include "../../src/Polygons.cpp"
 #include <MeshKernel/Constants.hpp>
-#include "MakeMeshes.cpp"
+#include "../utils/MakeMeshes.cpp"
 #include <gtest/gtest.h>
 #include <chrono>
 #include <random>

@@ -3,7 +3,7 @@
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
 #include "../../src/LandBoundaries.cpp"
-#include "MakeMeshes.cpp"
+#include "../utils/MakeMeshes.cpp"
 #include <gtest/gtest.h>
 
 TEST(LandBoundaries, OneLandBoundary)

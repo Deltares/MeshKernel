@@ -5,8 +5,8 @@
 #include "../../src/OrthogonalizationAndSmoothing.cpp"
 #include "../../src/Smoother.cpp"
 #include "../../src/Orthogonalizer.cpp"
-#include "MakeMeshes.cpp"
-#include "MakeMeshes.cpp"
+#include "../utils/MakeMeshes.cpp"
+#include "../utils/MakeMeshes.cpp"
 #include <gtest/gtest.h>
 #include <chrono>
 
