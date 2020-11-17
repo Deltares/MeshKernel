@@ -10,7 +10,6 @@
     </metadata>
     <files>
         <file src="..\build\src\Release\*" target="native\Lib" />
-        <file src="..\extern\intel\*" target="native\Lib" />
         <file src="Deltares.MeshKernel.targets" target="build\net461\Deltares.MeshKernel.targets" />
     </files>
 </package>
