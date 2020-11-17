@@ -3,8 +3,8 @@
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
-#include "../../src/Splines.cpp"
-#include "../../src/CurvilinearGridFromSplines.cpp"
+#include <MeshKernel/Splines.hpp>
+#include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <gtest/gtest.h>
 
 TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)

@@ -2,10 +2,10 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
-#include "../../src/OrthogonalizationAndSmoothing.cpp"
-#include "../../src/Smoother.cpp"
-#include "../../src/Orthogonalizer.cpp"
-#include "../utils/MakeMeshes.cpp"
+#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
+#include <MeshKernel/Smoother.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Orthogonalizer.hpp>
 #include "../utils/MakeMeshes.cpp"
 #include <gtest/gtest.h>
 #include <chrono>

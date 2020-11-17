@@ -2,7 +2,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
-#include "../../src/CurvilinearGridFromPolygon.cpp"
+#include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <gtest/gtest.h>
 TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
 {

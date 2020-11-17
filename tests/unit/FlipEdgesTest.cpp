@@ -3,8 +3,8 @@
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Mesh.hpp>
-#include "../../src/FlipEdges.cpp"
-#include "../utils/MakeMeshes.cpp"
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/FlipEdges.hpp>
 
 #include <gtest/gtest.h>
 

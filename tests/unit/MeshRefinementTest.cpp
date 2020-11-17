@@ -1,9 +1,8 @@
-#include "../../src/MeshRefinement.cpp"
+#include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/SampleRefineParametersNative.hpp>
 #include <MeshKernel/InterpolationParametersNative.hpp>
-#include "../utils/MakeMeshes.cpp"
 #include "../utils/MakeMeshes.cpp"
 #include "../utils/SampleFileReader.cpp"
 #include <gtest/gtest.h>

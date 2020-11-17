@@ -1,6 +1,6 @@
 #include <MeshKernel/Mesh.hpp>
 #include "Meshkernel/Entities.hpp"
-#include "../../src/TriangulationInterpolation.cpp"
+#include <MeshKernel/TriangulationInterpolation.hpp>
 #include "../utils/SampleFileReader.cpp"
 #include "../utils/MakeMeshes.cpp"
 #include <gtest/gtest.h>

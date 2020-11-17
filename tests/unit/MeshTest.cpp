@@ -1,6 +1,6 @@
-#include "../../src/Mesh.cpp"
+#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Entities.hpp>
-#include "../../src/Polygons.cpp"
+#include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
 #include "../utils/MakeMeshes.cpp"
 #include <gtest/gtest.h>

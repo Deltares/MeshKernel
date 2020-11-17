@@ -16,10 +16,10 @@ list(REMOVE_ITEM SOURCE_LIST API_SOURCE)
 file(GLOB BONUS_LIST CONFIGURE_DEPENDS
      "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.cpp")
 
-# Make an automatic library
+# Create the static lib
 add_library(MeshKernelStatic STATIC ${SOURCE_LIST} ${HEADER_LIST} ${BONUS_LIST})
 
-# We need this directory, and users of our library will need it too
+# Expose the interface of the static lib
 target_include_directories(MeshKernelStatic PUBLIC ../include)
 
 # Add target link dependency on boost and triangle
@@ -32,8 +32,11 @@ target_compile_features(MeshKernelStatic PUBLIC cxx_std_11)
 add_library(MeshKernel SHARED ${API_HEADER} ${API_SOURCE}
                               ${CMAKE_BINARY_DIR}/version.rc)
 
-# Add target link dependency on boost and triangle
+# Link shared lib to static lib, but don't expose it
 target_link_libraries(MeshKernel PRIVATE MeshKernelStatic)
+
+# All users of this library will need at least C++11
+target_compile_features(MeshKernel PUBLIC cxx_std_11)
 
 # IDEs should put the headers in a nice place
 source_group(

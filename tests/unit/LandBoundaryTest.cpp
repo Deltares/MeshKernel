@@ -2,7 +2,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
-#include "../../src/LandBoundaries.cpp"
+#include <MeshKernel/LandBoundaries.hpp>
 #include "../utils/MakeMeshes.cpp"
 #include <gtest/gtest.h>
 
