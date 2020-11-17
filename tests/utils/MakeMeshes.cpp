@@ -7,6 +7,7 @@
 #include <Windows.h>
 #endif
 
+#include <stdexcept>
 #include <MeshKernel/Mesh.hpp>
 #include "../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
 
@@ -18,7 +19,7 @@ static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string file
 
     if (!netcdf)
     {
-        return mesh;
+        throw std::invalid_argument("ReadLegacyMeshFromFile: Could not load 'netcdf.dll'.");
     }
 
     typedef int(__stdcall * nc_open_dll)(const char* path, int mode, int* ncidp);
@@ -43,7 +44,7 @@ static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string file
     int err = nc_open(filePath.c_str(), NC_NOWRITE, &ncidp);
     if (err != 0)
     {
-        return mesh;
+        throw std::invalid_argument("ReadLegacyMeshFromFile: Could not load netcdf file.");
     }
 
     std::string mesh2dNodes{"nNetNode"};
@@ -51,7 +52,7 @@ static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string file
     err = nc_inq_dimid(ncidp, mesh2dNodes.c_str(), &dimid);
     if (err != 0)
     {
-        return mesh;
+        throw std::invalid_argument("ReadLegacyMeshFromFile: Could not find the ID of a dimension of 'nNetNode'.");
     }
 
     std::size_t num_nodes;
@@ -59,14 +60,14 @@ static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string file
     err = nc_inq_dim(ncidp, dimid, read_name, &num_nodes);
     if (err != 0)
     {
-        return mesh;
+        throw std::invalid_argument("ReadLegacyMeshFromFile: Could not gind the length of dimension of 'nNetNode'.");
     }
 
     std::string mesh2dEdges{"nNetLink"};
     err = nc_inq_dimid(ncidp, mesh2dEdges.c_str(), &dimid);
     if (err != 0)
     {
-        return mesh;
+        throw std::invalid_argument("ReadLegacyMeshFromFile: Could not find the ID of a dimension of 'nNetLink'.");
     }
 
     std::size_t num_edges;
