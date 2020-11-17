@@ -9,8 +9,8 @@
         <copyright>Copyright 2020</copyright>
     </metadata>
     <files>
-        <file src="..\build\Release\lib\**\*" target="native\Lib" />
-        <file src="..\thirdParty\third_party_open\intel\**\*" target="native\Lib" />
+        <file src="..\build\src\Release\*" target="native\Lib" />
+        <file src="..\extern\intel\*" target="native\Lib" />
         <file src="Deltares.MeshKernel.targets" target="build\net461\Deltares.MeshKernel.targets" />
     </files>
 </package>

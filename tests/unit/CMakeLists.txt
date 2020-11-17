@@ -20,12 +20,8 @@ target_link_libraries(MeshKernelTests PRIVATE MeshKernel ${Boost_LIBRARIES}
 # examples and check the output, as well.
 add_test(NAME MeshKernelTests COMMAND MeshKernelTests) # Command can be a target
 
-file(
-  GLOB
-  NETCDF_FILES_LIST
-  CONFIGURE_DEPENDS
-  "${PROJECT_SOURCE_DIR}/thirdParty/third_party_open/netcdf/netCDF 4.6.1/bin/*.dll"
-)
+file(GLOB NETCDF_FILES_LIST CONFIGURE_DEPENDS
+     "${PROJECT_SOURCE_DIR}/extern/netcdf/netCDF 4.6.1/bin/*.dll")
 foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
   add_custom_command(
     TARGET MeshKernelTests

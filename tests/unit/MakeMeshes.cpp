@@ -8,7 +8,7 @@
 #endif
 
 #include <MeshKernel/Mesh.hpp>
-#include "../../thirdParty/third_party_open/netcdf/netCDF 4.6.1/include/netcdf.h"
+#include "../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
 
 static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projections projection = meshkernel::Projections::cartesian)
 {
