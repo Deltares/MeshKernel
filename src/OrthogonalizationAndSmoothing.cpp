@@ -29,15 +29,15 @@
 #include <algorithm>
 #include <numeric>
 
-#include "Operations.cpp"
-#include "Smoother.hpp"
-#include "Orthogonalizer.hpp"
-#include "OrthogonalizationAndSmoothing.hpp"
-#include "Entities.hpp"
-#include "Mesh.hpp"
-#include "LandBoundaries.hpp"
-#include "Polygons.hpp"
-#include "Exceptions.hpp"
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Smoother.hpp>
+#include <MeshKernel/Orthogonalizer.hpp>
+#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Exceptions.hpp>
 
 meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mesh> mesh,
                                                                          std::shared_ptr<Smoother> smoother,

@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="Gridgeom.cpp (collection of functions composing the Gridgeom API)">
+    <Position X="1.222" Y="2.01" Height="0.549" Width="2.77" />
+  </Comment>
+  <Comment CommentText="Operations.cpp (collections of static functions for geometrical operations)">
+    <Position X="5.25" Y="2" Height="0.498" Width="2.694" />
+  </Comment>
+  <Class Name="GridGeom::CurvilinearGrid" Collapsed="true">
+    <Position X="5.25" Y="8.25" Width="5.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAAAAgAAQAAAAAAAAACAAAAAAAA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\CurvilinearGrid.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GridGeom::Polygons" Collapsed="true">
+    <Position X="5.25" Y="9.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAQQAAAAAAAABBAAISAKCAAACQAAQAAFBQAAAACAEAA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\Polygons.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GridGeom::Mesh" Collapsed="true">
+    <Position X="5.25" Y="4" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <AssociationLine Name="m_nodesRTree" Type="GridGeom::SpatialTrees::RTree" FixedFromPoint="true">
+      <Path>
+        <Point X="8" Y="4.312" />
+        <Point X="10.25" Y="4.312" />
+        <Point X="10.25" Y="4.062" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="1.024" Y="-0.042" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>giR+AAAAFMQA5N0QDGEJAbA0RBEAADMEARARBCJEAWA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\Mesh.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_nodesRTree" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="GridGeom::LandBoundaries" Collapsed="true">
+    <Position X="5.25" Y="9" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>EIRAAkwDAgAAJAAFgAAIABAESCAAEgIAKgIoAAhABAA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\LandBoundaries.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GridGeom::MeshRefinement" Collapsed="true">
+    <Position X="5.25" Y="2.75" Width="2.75" />
+    <AssociationLine Name="m_samplesRTree" Type="GridGeom::SpatialTrees::RTree">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.588" Y="0.168" Height="0.182" Width="1.274" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="m_mesh" Type="GridGeom::Mesh">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.098" Y="0.389" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>EAACIggBAEIQAQgAAAQIAUQEABiAgwIQCACkoiAABQA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\MeshRefinement.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_samplesRTree" />
+      <Field Name="m_mesh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="GridGeom::OrthogonalizationAndSmoothing" Collapsed="true">
+    <Position X="5.25" Y="6" Width="2.75" />
+    <AssociationLine Name="m_smoother" Type="GridGeom::Smoother">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="3.463" Y="0.961" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="m_orthogonalizer" Type="GridGeom::Orthogonalizer">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.949" Y="0.326" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="m_mesh" Type="GridGeom::Mesh">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.123" Y="1.152" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QEACEQASFw0UJQGQBAAAAkALRAACgAIoIBABAEgQAgA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\OrthogonalizationAndSmoothing.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_smoother" />
+      <Field Name="m_orthogonalizer" />
+      <Field Name="m_mesh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="GridGeom::Orthogonalizer" Collapsed="true">
+    <Position X="9.5" Y="5" Width="1.5" />
+    <AssociationLine Name="m_mesh" Type="GridGeom::Mesh">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-1.959" Y="0.403" Height="0.182" Width="0.826" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AEAKAAAACAAAAAABAgAAAEAACAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\Orthogonalizer.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_mesh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="GridGeom::Smoother" Collapsed="true">
+    <Position X="11.75" Y="5" Width="1.5" />
+    <AssociationLine Name="m_mesh" Type="GridGeom::Mesh">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="4.662" Y="-0.443" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AEQBAgAgDWAQIwARDJAIAkAdREAgUgAGGEAMEkFBAAI=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\Smoother.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_mesh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="GridGeom::Splines" Collapsed="true">
+    <Position X="9.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABARAAAACAICAAAAACAIEIAAAAQIAAACBQAQQAAAAAA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\Splines.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GridGeom::SpatialTrees::RTree" Collapsed="true">
+    <Position X="9.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABgAAAIAAAAgAEAACIACAAADAAAAAgAAAAFgABAACQ=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\SpatialTrees.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GridGeom::CurvilinearGridFromSplines" Collapsed="true">
+    <Position X="5.25" Y="7.5" Width="5.75" />
+    <TypeIdentifier>
+      <HashCode>F0PjIAoYNDAAIyAgGAgYAjAMkgAoIRkMRiIFCAMTHwY=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\CurvilinearGridFromSplines.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_splines" />
+    </ShowAsAssociation>
+  </Class>
+  <Struct Name="GridGeomApi::CurvilinearParametersNative" Collapsed="true">
+    <Position X="1.25" Y="3.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAABgACAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\CurvilinearParametersNative.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GridGeomApi::GeometryListNative" Collapsed="true">
+    <Position X="1.25" Y="7.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAABAAAAAAAAAAACAAABAAAAAAAAEAABAAE=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\GeometryListNative.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GridGeomApi::InterpolationParametersNative" Collapsed="true">
+    <Position X="1.25" Y="8" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAEAAAAAAAACAEAAAAAAAgAAAAACAAIAABAAAA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\InterpolationParametersNative.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GridGeomApi::MakeGridParametersNative" Collapsed="true">
+    <Position X="1.25" Y="4.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAACAAABIAQACAgBAAAGEAAAIAAAAA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\MakeGridParametersNative.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GridGeomApi::MeshGeometry" Collapsed="true">
+    <Position X="1.25" Y="5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AwCgAAAAEACAAQgAGAABCAQAAAAgAgATACiAIACIBEA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\MeshGeometry.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GridGeomApi::MeshGeometryDimensions" Collapsed="true">
+    <Position X="1.25" Y="5.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAgQCAAAKAAAAAgAAAAAAAAAgAEIAAQAAAAAAABAAA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\MeshGeometryDimensions.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GridGeomApi::OrthogonalizationParametersNative" Collapsed="true">
+    <Position X="1.25" Y="2.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAgAAAAAAASIAAAAgAAgkAAAAAACAAAggAA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\OrthogonalizationParametersNative.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GridGeomApi::SampleRefineParametersNative" Collapsed="true">
+    <Position X="1.25" Y="8.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAACAAAIAAAEAAAAICCAAAAAAAAEA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\SampleRefineParametersNative.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GridGeomApi::SplinesToCurvilinearParametersNative" Collapsed="true">
+    <Position X="1.25" Y="6.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAIAAQEAAAAAAABgAQQAAAABAAAAAAAAAUAAAAAAA=</HashCode>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\SplinesToCurvilinearParametersNative.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

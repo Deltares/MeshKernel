@@ -26,12 +26,12 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include "TriangulationInterpolation.hpp"
-#include "TriangulationWrapper.cpp"
+#include <MeshKernel/TriangulationInterpolation.hpp>
+#include <MeshKernel/TriangulationWrapper.hpp>
 
-#include "Entities.hpp"
-#include "Operations.cpp"
-#include "SpatialTrees.hpp"
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/SpatialTrees.hpp>
 
 meshkernel::TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>& m_locations,
                                                                    const std::vector<Sample>& samples,
