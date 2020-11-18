@@ -208,13 +208,13 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     orthogonalizationParametersNative.Smoothorarea = 1.0;
 
     std::vector<meshkernel::Point> nodes{{342.987518, 471.121002},
-        {327.640900, 380.846436},
-        {396.851135, 201.200073},
-        {514.207581, 203.607407},
-        {569.274841, 294.483765},
-        {568.673035, 379.943695},
-        {515.712158, 458.783478},
-        {343.288422, 471.722809}};
+                                         {327.640900, 380.846436},
+                                         {396.851135, 201.200073},
+                                         {514.207581, 203.607407},
+                                         {569.274841, 294.483765},
+                                         {568.673035, 379.943695},
+                                         {515.712158, 458.783478},
+                                         {343.288422, 471.722809}};
 
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
@@ -356,17 +356,16 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
     auto mesh = ReadLegacyMeshFromFile("..\\..\\tests\\SmallTriangularGrid_net.nc");
 
     // the land boundary to use
-    std::vector<meshkernel::Point> landBoundary{
-        {235.561218, 290.571899},
-        {265.953522, 436.515747},
-        {429.349854, 450.959656},
-        {535.271545, 386.262909},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
-        {246.995941, 262.285858},
-        {351.112183, 237.309906},
-        {443.191895, 262.285858},
-        {553.627319, 327.283539},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
+    std::vector<meshkernel::Point> landBoundary{{235.561218, 290.571899},
+                                                {265.953522, 436.515747},
+                                                {429.349854, 450.959656},
+                                                {535.271545, 386.262909},
+                                                {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+                                                {246.995941, 262.285858},
+                                                {351.112183, 237.309906},
+                                                {443.191895, 262.285858},
+                                                {553.627319, 327.283539},
+                                                {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
 
     // snap to land boundaries
     int projectToLandBoundaryOption = 2;
