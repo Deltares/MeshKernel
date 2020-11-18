@@ -1671,7 +1671,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold)
+    MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
     {
         int exitCode = Success;
         try
@@ -1681,7 +1681,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            meshInstances[meshKernelId]->RemoveSmallFlowEdges(smallFlowEdgesThreshold);
+            meshInstances[meshKernelId]->RemoveSmallFlowEdges(smallFlowEdgesThreshold, minFractionalAreaTriangles);
         }
         catch (const std::exception& e)
         {

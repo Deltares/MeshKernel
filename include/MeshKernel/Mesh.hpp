@@ -290,10 +290,17 @@ namespace meshkernel
         /// @brief Gets the mass centers of obtuse triangles
         /// @returns The center of the flow edge
         [[nodiscard]] std::vector<Point> GetObtuseTriangles();
+
         /// @brief Gets the small flow edges (flow edges are the edges connecting the face circumcenters)
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
         /// @returns The center of the flow edge
         [[nodiscard]] std::vector<Point> GetSmallFlowEdgeCenters(double smallFlowEdgesThreshold);
+
+        /// @brief remove small face circumcenter connections (removesmallflowlinks)
+        /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
+        /// @param[in] minFractionalAreaTriangles Small triangles at the boundaries will be eliminated.
+        /// This threshold is the ration of the face area to the area of neighboring faces.
+        void RemoveSmallFlowEdges(double smallFlowEdgesThreshold, double minFractionalAreaTriangles);
 
         /// @brief Computes m_nodesNodes, see class members
         void ComputeNodeNeighbours();
@@ -319,9 +326,6 @@ namespace meshkernel
 
         /// @brief remove coinciding triangles
         void RemoveDegeneratedTriangles();
-
-        /// @brief remove small face circumcenter connections (flow edges)
-        void RemoveSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Transform non-triangular faces in triangular faces
         void TriangulateFaces();

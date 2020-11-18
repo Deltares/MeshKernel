@@ -439,7 +439,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId  Id of the mesh state
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
         /// @return Error code (0 Successful)
-        MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold);
+        MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles);
 
         /// @brief Triangle interpolation (ec_module)
         /// @param[in] meshGeometryDimensions Mesh dimensions

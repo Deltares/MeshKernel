@@ -650,7 +650,7 @@ void meshkernel::Mesh::RemoveDegeneratedTriangles()
     }
 }
 
-void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
+void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
 {
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
     RemoveDegeneratedTriangles();
@@ -669,7 +669,7 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
             const auto flowEdgeLength = ComputeDistance(m_facesCircumcenters[firstFace], m_facesCircumcenters[secondFace], m_projection);
             const double tooCloseDistance = 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
 
-            if (flowEdgeLength < tooCloseDistance)
+            if (flowEdgeLength < tooCloseDistance * smallFlowEdgesThreshold)
             {
                 m_edges[e] = {-1, -1};
                 edgesNeedsRemoval = true;
@@ -682,8 +682,8 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
         Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 
+    // On the second part, the small triangles at the boundaries are checked
     const double minCosPhi = 0.2;
-    const double minFractionalArea = 0.2;
     edgesNeedsRemoval = false;
     std::vector<Point> referenceNodes;
     std::vector<std::vector<int>> smallTrianglesNodes;
@@ -695,10 +695,11 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
         if (IsEdgeOnBoundary(e) && face >= 0 && m_numFacesNodes[face] == numNodesInTriangle && m_faceArea[face] > 0)
         {
             // compute the average area of neighboring faces
-            double averageOtherArea = 0.0;
+            double averageOtherFacesArea = 0.0;
             int numNonBoundaryFaces = 0;
             for (int ee = 0; ee < numNodesInTriangle; ++ee)
             {
+                // the edge must not be at the boundary, otherwise there is no "other" face
                 const auto edge = m_facesEdges[face][ee];
                 if (IsEdgeOnBoundary(edge))
                 {
@@ -707,23 +708,22 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
                 const auto otherFace = m_edgesFaces[edge][0] + m_edgesFaces[edge][1] - face;
                 if (m_numFacesNodes[otherFace] > 3)
                 {
-                    averageOtherArea += m_faceArea[otherFace];
+                    averageOtherFacesArea += m_faceArea[otherFace];
                     numNonBoundaryFaces++;
                 }
             }
 
-            if (averageOtherArea <= 0.0 || m_faceArea[face] / (averageOtherArea / numNonBoundaryFaces) > minFractionalArea)
+            if (numNonBoundaryFaces == 0 || m_faceArea[face] / (averageOtherFacesArea / numNonBoundaryFaces) > minFractionalAreaTriangles)
             {
-                // the average area of other triangles is large enough
-                // the area of the current triangle is also large enough
+                // no valid boundary faces, the area of the current triangle is larger enough compared to the neighbors
                 continue;
             }
 
             double minCosPhiSmallTriangle = 1.0;
-            int firstNodeToMerge;
-            int nodeToPreserve;
-            int secondNodeToMerge;
-            int thirdEdgeSmallTriangle;
+            int nodeToPreserve = intMissingValue;
+            int firstNodeToMerge = intMissingValue;
+            int secondNodeToMerge = intMissingValue;
+            int thirdEdgeSmallTriangle = intMissingValue;
             for (int currentEdge = 0; currentEdge < numNodesInTriangle; ++currentEdge)
             {
                 const auto previousEdge = NextCircularBackwardIndex(currentEdge, numNodesInTriangle);
@@ -733,8 +733,8 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
                 const auto k1 = m_facesNodes[face][currentEdge];
                 const auto k2 = m_facesNodes[face][nextEdge];
 
-                // compte the angles between the edges
-                const auto cosphi = NormalizedInnerProductTwoSegments(m_nodes[k0], m_nodes[k1], m_nodes[k0], m_nodes[k2], m_projection);
+                // compute the angles between the edges
+                const auto cosphi = std::abs(NormalizedInnerProductTwoSegments(m_nodes[k0], m_nodes[k1], m_nodes[k1], m_nodes[k2], m_projection));
 
                 if (cosphi < minCosPhiSmallTriangle)
                 {
@@ -746,9 +746,9 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
                 }
             }
 
-            if (minCosPhiSmallTriangle < minCosPhi && m_edgesNumFaces[thirdEdgeSmallTriangle] == 1)
+            if (minCosPhiSmallTriangle < minCosPhi && thirdEdgeSmallTriangle >= 0 && IsEdgeOnBoundary(thirdEdgeSmallTriangle))
             {
-                Point normalPoint;
+                Point normalPoint{doubleMissingValue, doubleMissingValue};
                 double ratio;
                 DistanceFromLine(m_nodes[nodeToPreserve],
                                  m_nodes[firstNodeToMerge],
@@ -773,6 +773,7 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
             const auto firstNodeToMerge = smallTrianglesNodes[i][1];
             const auto secondNodeToMerge = smallTrianglesNodes[i][2];
 
+            // corner point of a triangle
             int internalEdges = 0;
             for (int e = 0; e < m_nodesNumEdges[firstNodeToMerge]; ++e)
             {
@@ -788,6 +789,7 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
                 MergeTwoNodes(firstNodeToMerge, nodeToPreserve);
             }
 
+            // corner point of a triangle
             internalEdges = 0;
             for (int e = 0; e < m_nodesNumEdges[secondNodeToMerge]; ++e)
             {
@@ -802,6 +804,8 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
                 MergeTwoNodes(secondNodeToMerge, nodeToPreserve);
             }
         }
+
+        Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 }
 
