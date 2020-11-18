@@ -27,8 +27,6 @@
 
 #include <map>
 #include <stdexcept>
-#include <string>
-#include <sstream>
 
 #include "MeshKernel.hpp"
 #include "Constants.cpp"
@@ -1663,6 +1661,26 @@ namespace meshkernelapi
             const auto obtuseTriangles = meshInstances[meshKernelId]->GetObtuseTriangles();
 
             ConvertPointVectorToGeometryListNative(obtuseTriangles, result);
+        }
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            meshInstances[meshKernelId]->RemoveSmallFlowEdges(smallFlowEdgesThreshold);
         }
         catch (const std::exception& e)
         {

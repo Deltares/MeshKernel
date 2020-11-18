@@ -14,7 +14,7 @@ static std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string file
 {
     auto mesh = std::make_shared<meshkernel::Mesh>();
 
-    auto netcdf = LoadLibrary("netcdf.dll");
+    const auto netcdf = LoadLibrary("netcdf.dll");
 
     if (!netcdf)
     {

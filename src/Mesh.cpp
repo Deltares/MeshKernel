@@ -694,7 +694,7 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
         // a triangle on the boundary
         if (IsEdgeOnBoundary(e) && face >= 0 && m_numFacesNodes[face] == numNodesInTriangle && m_faceArea[face] > 0)
         {
-            // compute the average area of neighbouring faces
+            // compute the average area of neighboring faces
             double averageOtherArea = 0.0;
             int numNonBoundaryFaces = 0;
             for (int ee = 0; ee < numNodesInTriangle; ++ee)

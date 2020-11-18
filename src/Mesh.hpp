@@ -320,7 +320,7 @@ namespace meshkernel
         /// @brief remove coinciding triangles
         void RemoveDegeneratedTriangles();
 
-        /// @brief remove small flow edges
+        /// @brief remove small face circumcenter connections (flow edges)
         void RemoveSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Transform non-triangular faces in triangular faces
