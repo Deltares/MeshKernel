@@ -112,11 +112,11 @@ namespace meshkernel
         /// @param administrationOption Type of administration to perform
         void Administrate(AdministrationOptions administrationOption);
 
-        /// @brief Compute face circumcenters, centers of mass and face areas
-        void ComputeFaceCircumcentersMassCentersAndAreas();
+        /// @brief Compute face circumcenters
+        void ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters = false);
 
         /// <summary>
-        /// Find faces: constructs the m_facesNodes mapping. (findcells)
+        /// Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
         /// </summary>
         void FindFaces();
 
@@ -267,6 +267,11 @@ namespace meshkernel
         /// @return The number of faces an edges shares
         [[nodiscard]] int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
+        /// @brief Inquire if an edge is on boundary
+        /// @param the edge index
+        /// @return if the edge os on boundary
+        [[nodiscard]] bool IsEdgeOnBoundary(const int edge) const { return m_edgesNumFaces[edge] == 1; }
+
         /// @brief Circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon Cache storing the face nodes
         /// @param[in,out] middlePoints Caching array for the edges middle points
@@ -311,6 +316,12 @@ namespace meshkernel
         /// @brief Sort edges in conterclockwise orther (Sort_links_ccw)
         /// @param[in] nodeIndex The node index for which sorting should take place
         void SortEdgesInCounterClockWiseOrder(int nodeIndex);
+
+        /// @brief remove coinciding triangles
+        void RemoveDegeneratedTriangles();
+
+        /// @brief remove small face circumcenter connections (flow edges)
+        void RemoveSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Transform non-triangular faces in triangular faces
         void TriangulateFaces();
@@ -387,7 +398,8 @@ namespace meshkernel
                                 std::vector<int>& edges,
                                 std::vector<int>& nodes,
                                 std::vector<int>& sortedEdges,
-                                std::vector<int>& sortedNodes);
+                                std::vector<int>& sortedNodes,
+                                std::vector<Point>& nodalValues);
 
         /// @brief Checks if a triangle has an acute angle (checktriangle)
         /// @param[in] faceNodes

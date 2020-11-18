@@ -435,6 +435,12 @@ namespace meshkernelapi
         /// @return Error code (0 Successful)
         MKERNEL_API int mkernel_get_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesThreshold, GeometryListNative& result);
 
+        /// @brief Removes the small flow edges (flow edges are the edges connecting the face circumcenters)
+        /// @param[in] meshKernelId  Id of the mesh state
+        /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
+        /// @return Error code (0 Successful)
+        MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold);
+
         /// @brief Triangle interpolation (ec_module)
         /// @param[in] meshGeometryDimensions Mesh dimensions
         /// @param[in] meshGeometry Mesh data

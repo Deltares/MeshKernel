@@ -48,9 +48,7 @@ namespace meshkernel
         ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize);
 
         // find the polygons in the current list of points
-        std::vector<std::vector<size_t>> indexes(polygon.size(), std::vector<size_t>(2, 0));
-        int pos = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue, indexes);
-        indexes.resize(pos);
+        const auto indexes = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue);
 
         // resize if necessary
         int numNodes = GetNumNodes();
@@ -226,7 +224,7 @@ namespace meshkernel
             localPolygon.clear();
             for (int j = m_indices[i][0]; j <= m_indices[i][1]; ++j)
             {
-                localPolygon.push_back(m_nodes[j]);
+                localPolygon.emplace_back(m_nodes[j]);
             }
             const auto numLocalPoints = static_cast<int>(localPolygon.size());
 
@@ -239,7 +237,8 @@ namespace meshkernel
             isOnePolygonClosed = true;
             double localPolygonArea = 0.0;
             Point centerOfMass;
-            FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
+            bool isCounterClockWise;
+            FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass, isCounterClockWise);
 
             double perimeter;
             PerimeterClosedPolygon(localPolygon, numLocalPoints, perimeter);

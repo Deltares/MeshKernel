@@ -651,3 +651,15 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
     ASSERT_EQ(1, numSmallFlowEdgeFirstQuery);
     ASSERT_EQ(0, numSmallFlowEdgeSecondQuery);
 }
+
+TEST(Mesh, RemoveSmallFlowEdgeCenters)
+{
+    // Setup a mesh with two triangles
+    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_net.nc");
+
+    ASSERT_EQ(8, mesh->GetNumFaces());
+
+    // After merging the number of faces is reduced
+    mesh->RemoveSmallFlowEdges(1.0);
+    ASSERT_EQ(3, mesh->GetNumFaces());
+}

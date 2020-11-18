@@ -6,16 +6,15 @@
 #include <gtest/gtest.h>
 TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
 {
-    std::vector<meshkernel::Point> polygonPoints;
-    polygonPoints.push_back(meshkernel::Point{273.502319, 478.880432});
-    polygonPoints.push_back(meshkernel::Point{274.252319, 325.128906});
-    polygonPoints.push_back(meshkernel::Point{275.002350, 172.127350});
-    polygonPoints.push_back(meshkernel::Point{458.003479, 157.127213});
-    polygonPoints.push_back(meshkernel::Point{719.005127, 157.127213});
-    polygonPoints.push_back(meshkernel::Point{741.505249, 328.128937});
-    polygonPoints.push_back(meshkernel::Point{710.755066, 490.880554});
-    polygonPoints.push_back(meshkernel::Point{507.503784, 494.630615});
-    polygonPoints.push_back(meshkernel::Point{305.002533, 493.130615});
+    std::vector<meshkernel::Point> polygonPoints{{273.502319, 478.880432},
+                                                 {274.252319, 325.128906},
+                                                 {275.002350, 172.127350},
+                                                 {458.003479, 157.127213},
+                                                 {719.005127, 157.127213},
+                                                 {741.505249, 328.128937},
+                                                 {710.755066, 490.880554},
+                                                 {507.503784, 494.630615},
+                                                 {305.002533, 493.130615}};
 
     auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshkernel::Projections::cartesian);
 
@@ -50,16 +49,15 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
 
 TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithoutFourthSide)
 {
-    std::vector<meshkernel::Point> polygonPoints;
-    polygonPoints.push_back(meshkernel::Point{273.502319, 478.880432});
-    polygonPoints.push_back(meshkernel::Point{274.252319, 325.128906});
-    polygonPoints.push_back(meshkernel::Point{275.002350, 172.127350});
-    polygonPoints.push_back(meshkernel::Point{458.003479, 157.127213});
-    polygonPoints.push_back(meshkernel::Point{719.005127, 157.127213});
-    polygonPoints.push_back(meshkernel::Point{741.505249, 328.128937});
-    polygonPoints.push_back(meshkernel::Point{710.755066, 490.880554});
-    polygonPoints.push_back(meshkernel::Point{507.503784, 494.630615});
-    polygonPoints.push_back(meshkernel::Point{305.002533, 493.130615});
+    std::vector<meshkernel::Point> polygonPoints{{273.502319, 478.880432},
+                                                 {274.252319, 325.128906},
+                                                 {275.002350, 172.127350},
+                                                 {458.003479, 157.127213},
+                                                 {719.005127, 157.127213},
+                                                 {741.505249, 328.128937},
+                                                 {710.755066, 490.880554},
+                                                 {507.503784, 494.630615},
+                                                 {305.002533, 493.130615}};
 
     auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshkernel::Projections::cartesian);
 
@@ -94,18 +92,16 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithoutFourthSide)
 
 TEST(CurvilinearGridFromPolygon, ComputeGridTriangle)
 {
-    std::vector<meshkernel::Point> polygonPoints;
-
-    polygonPoints.push_back(meshkernel::Point{444.504791, 437.155945});
-    polygonPoints.push_back(meshkernel::Point{427.731781, 382.745758});
-    polygonPoints.push_back(meshkernel::Point{405.640503, 317.699005});
-    polygonPoints.push_back(meshkernel::Point{381.094666, 262.470612});
-    polygonPoints.push_back(meshkernel::Point{451.050354, 262.879700});
-    polygonPoints.push_back(meshkernel::Point{528.778931, 263.288788});
-    polygonPoints.push_back(meshkernel::Point{593.416260, 266.561584});
-    polygonPoints.push_back(meshkernel::Point{558.643005, 324.653687});
-    polygonPoints.push_back(meshkernel::Point{526.733398, 377.836578});
-    polygonPoints.push_back(meshkernel::Point{444.095703, 436.746857});
+    std::vector<meshkernel::Point> polygonPoints{{444.504791, 437.155945},
+                                                 {427.731781, 382.745758},
+                                                 {405.640503, 317.699005},
+                                                 {381.094666, 262.470612},
+                                                 {451.050354, 262.879700},
+                                                 {528.778931, 263.288788},
+                                                 {593.416260, 266.561584},
+                                                 {558.643005, 324.653687},
+                                                 {526.733398, 377.836578},
+                                                 {444.095703, 436.746857}};
 
     auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshkernel::Projections::cartesian);
 

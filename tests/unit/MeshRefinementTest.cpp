@@ -12,11 +12,11 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
     auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projections::cartesian);
 
     //sample points
-    std::vector<meshkernel::Sample> samples;
-    samples.push_back({14.7153645, 14.5698833, 1.0});
-    samples.push_back({24.7033062, 14.4729137, 1.0});
-    samples.push_back({15.5396099, 24.2669525, 1.0});
-    samples.push_back({23.8305721, 23.9275551, 1.0});
+    std::vector<meshkernel::Sample> samples{
+        {14.7153645, 14.5698833, 1.0},
+        {24.7033062, 14.4729137, 1.0},
+        {15.5396099, 24.2669525, 1.0},
+        {23.8305721, 23.9275551, 1.0}};
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
@@ -103,11 +103,11 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
     auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projections::cartesian);
 
     //sample points
-    std::vector<meshkernel::Sample> samples;
-    samples.push_back({14.7153645, 14.5698833, 1.0});
-    samples.push_back({24.7033062, 14.4729137, 1.0});
-    samples.push_back({15.5396099, 24.2669525, 1.0});
-    samples.push_back({23.8305721, 23.9275551, 1.0});
+    std::vector<meshkernel::Sample> samples{
+        {14.7153645, 14.5698833, 1.0},
+        {24.7033062, 14.4729137, 1.0},
+        {15.5396099, 24.2669525, 1.0},
+        {23.8305721, 23.9275551, 1.0}};
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
@@ -206,9 +206,9 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
     auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
 
     //sample points
-    std::vector<meshkernel::Sample> samples;
-    samples.push_back({359.8657532, 350.3144836, 1.0});
-    samples.push_back({387.5152588, 299.2614746, 1.0});
+    std::vector<meshkernel::Sample> samples{
+        {359.8657532, 350.3144836, 1.0},
+        {387.5152588, 299.2614746, 1.0}};
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
@@ -255,13 +255,13 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
 
     // Polygon sample
-    std::vector<meshkernel::Point> point;
-    point.push_back({399.638169557229, 504.294564030922});
-    point.push_back({361.827403800769, 129.967983041964});
-    point.push_back({651.709941266965, 113.583317880831});
-    point.push_back({666.834247569549, 411.028008498319});
-    point.push_back({410.981399284167, 505.55492288947});
-    point.push_back({399.638169557229, 504.294564030922});
+    std::vector<meshkernel::Point> point{
+        {399.638169557229, 504.294564030922},
+        {361.827403800769, 129.967983041964},
+        {651.709941266965, 113.583317880831},
+        {666.834247569549, 411.028008498319},
+        {410.981399284167, 505.55492288947},
+        {399.638169557229, 504.294564030922}};
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
@@ -309,35 +309,34 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
     auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projections::cartesian);
 
     //sample points
-    std::vector<meshkernel::Sample> samples;
-
-    samples.push_back({2.7091951, 5.4000854, 0.0000000});
-    samples.push_back({6.4910383, 2.4182367, 0.0000000});
-    samples.push_back({8.0910482, 6.7091894, 0.0000000});
-    samples.push_back({13.2910795, 5.2182646, 0.0000000});
-    samples.push_back({16.1274605, 2.0909605, 0.0000000});
-    samples.push_back({18.7820244, 7.5091972, 0.0000000});
-    samples.push_back({23.5456886, 8.1637497, 0.0000000});
-    samples.push_back({24.6366081, 1.5818644, 0.0000000});
-    samples.push_back({27.8729897, 6.5273695, 0.0000000});
-    samples.push_back({28.0184441, 14.7092705, 0.0000000});
-    samples.push_back({23.8366013, 12.4910660, 0.0000000});
-    samples.push_back({22.6002312, 17.2183857, 0.0000000});
-    samples.push_back({24.0184212, 23.7639065, 0.0000000});
-    samples.push_back({27.9457169, 25.9093838, 0.0000000});
-    samples.push_back({24.6366081, 27.3275795, 0.0000000});
-    samples.push_back({17.4365616, 27.5821285, 0.0000000});
-    samples.push_back({16.6001930, 22.8184433, 0.0000000});
-    samples.push_back({12.7092581, 27.2548523, 0.0000000});
-    samples.push_back({4.7455721, 27.6912193, 0.0000000});
-    samples.push_back({2.6728315, 24.7457352, 0.0000000});
-    samples.push_back({7.5819540, 22.9638996, 0.0000000});
-    samples.push_back({3.5455656, 15.1820030, 0.0000000});
-    samples.push_back({4.8546629, 11.8365135, 0.0000000});
-    samples.push_back({8.7455969, 17.2183857, 0.0000000});
-    samples.push_back({11.8404741, 17.6817989, 3.0000000});
-    samples.push_back({13.5837603, 12.1783361, 3.0000000});
-    samples.push_back({17.2156067, 16.9106121, 3.0000000});
+    std::vector<meshkernel::Sample> samples{
+        {2.7091951, 5.4000854, 0.0000000},
+        {6.4910383, 2.4182367, 0.0000000},
+        {8.0910482, 6.7091894, 0.0000000},
+        {13.2910795, 5.2182646, 0.0000000},
+        {16.1274605, 2.0909605, 0.0000000},
+        {18.7820244, 7.5091972, 0.0000000},
+        {23.5456886, 8.1637497, 0.0000000},
+        {24.6366081, 1.5818644, 0.0000000},
+        {27.8729897, 6.5273695, 0.0000000},
+        {28.0184441, 14.7092705, 0.0000000},
+        {23.8366013, 12.4910660, 0.0000000},
+        {22.6002312, 17.2183857, 0.0000000},
+        {24.0184212, 23.7639065, 0.0000000},
+        {27.9457169, 25.9093838, 0.0000000},
+        {24.6366081, 27.3275795, 0.0000000},
+        {17.4365616, 27.5821285, 0.0000000},
+        {16.6001930, 22.8184433, 0.0000000},
+        {12.7092581, 27.2548523, 0.0000000},
+        {4.7455721, 27.6912193, 0.0000000},
+        {2.6728315, 24.7457352, 0.0000000},
+        {7.5819540, 22.9638996, 0.0000000},
+        {3.5455656, 15.1820030, 0.0000000},
+        {4.8546629, 11.8365135, 0.0000000},
+        {8.7455969, 17.2183857, 0.0000000},
+        {11.8404741, 17.6817989, 3.0000000},
+        {13.5837603, 12.1783361, 3.0000000},
+        {17.2156067, 16.9106121, 3.0000000}};
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
@@ -541,12 +540,12 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     meshkernel::MeshRefinement meshRefinement(mesh);
 
-    std::vector<meshkernel::Point> point;
-    point.push_back({25.0, -10.0});
-    point.push_back({25.0, 15.0});
-    point.push_back({45.0, 15.0});
-    point.push_back({45.0, -10.0});
-    point.push_back({25.0, -10.0});
+    std::vector<meshkernel::Point> point{
+        {25.0, -10.0},
+        {25.0, 15.0},
+        {45.0, 15.0},
+        {45.0, -10.0},
+        {25.0, -10.0}};
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
@@ -601,15 +600,15 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 
     meshkernel::MeshRefinement meshRefinement(mesh);
 
-    std::vector<meshkernel::Point> point;
-    point.push_back({9.09836065573771, 34.016393442623});
-    point.push_back({7.18032786885247, 7.75409836065574});
-    point.push_back({34.6229508196721, 6.5});
-    point.push_back({34.4194409808304, 26.6983515050386});
-    point.push_back({34.327868852459, 35.7868852459016});
-    point.push_back({29.0521194370216, 35.4840476661635});
-    point.push_back({9.90983606557378, 34.3852459016394});
-    point.push_back({9.09836065573771, 34.016393442623});
+    std::vector<meshkernel::Point> point{
+        {9.09836065573771, 34.016393442623},
+        {7.18032786885247, 7.75409836065574},
+        {34.6229508196721, 6.5},
+        {34.4194409808304, 26.6983515050386},
+        {34.327868852459, 35.7868852459016},
+        {29.0521194370216, 35.4840476661635},
+        {9.90983606557378, 34.3852459016394},
+        {9.09836065573771, 34.016393442623}};
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
@@ -638,11 +637,11 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, meshkernel::Projections::spherical, {41.1, 41.1});
 
     //sample points
-    std::vector<meshkernel::Sample> samples;
-    samples.push_back({41.1050110, 41.1049728, 1.0});
-    samples.push_back({41.1084785, 41.1048775, 1.0});
-    samples.push_back({41.1085625, 41.1083946, 1.0});
-    samples.push_back({41.1052971, 41.1083336, 1.0});
+    std::vector<meshkernel::Sample> samples{
+        {41.1050110, 41.1049728, 1.0},
+        {41.1084785, 41.1048775, 1.0},
+        {41.1085625, 41.1083946, 1.0},
+        {41.1052971, 41.1083336, 1.0}};
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
