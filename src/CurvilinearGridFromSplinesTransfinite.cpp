@@ -30,11 +30,11 @@
 #include <algorithm>
 #include <memory>
 #include <vector>
-#include "CurvilinearGrid.hpp"
-#include "Entities.hpp"
-#include "Operations.cpp"
-#include "Splines.hpp"
-#include "CurvilinearGridFromSplinesTransfinite.hpp"
+#include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Splines.hpp>
+#include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
 
 meshkernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines,
                                                                                          meshkernelapi::CurvilinearParametersNative curvilinearParametersNative) : m_splines(splines),

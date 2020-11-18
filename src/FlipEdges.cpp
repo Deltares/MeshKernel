@@ -28,12 +28,12 @@
 #pragma once
 
 #include <vector>
-#include "Operations.cpp"
-#include "Entities.hpp"
-#include "Mesh.hpp"
-#include "FlipEdges.hpp"
-#include "LandBoundaries.hpp"
-#include "Exceptions.hpp"
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/FlipEdges.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Exceptions.hpp>
 
 meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
                                  std::shared_ptr<LandBoundaries> landBoundary,

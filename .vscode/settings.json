@@ -108,5 +108,8 @@
     },
     "[cpp]": {
         "editor.formatOnSave": true,
+    },
+    "[cmake]": {
+        "editor.formatOnSave": true,
     }
 }

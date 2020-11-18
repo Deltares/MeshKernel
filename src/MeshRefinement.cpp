@@ -29,14 +29,14 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
-#include "MeshRefinement.hpp"
+#include <MeshKernel/MeshRefinement.hpp>
 
-#include "AveragingInterpolation.hpp"
-#include "Mesh.hpp"
-#include "Entities.hpp"
-#include "SpatialTrees.hpp"
-#include "Operations.cpp"
-#include "Exceptions.hpp"
+#include <MeshKernel/AveragingInterpolation.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Exceptions.hpp>
 
 meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging) : m_mesh(mesh), m_averaging(averaging){};
 

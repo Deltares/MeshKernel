@@ -1,8 +1,3 @@
-
-# Created by https://www.toptal.com/developers/gitignore/api/c++
-# Edit at https://www.toptal.com/developers/gitignore?templates=c++
-
-### C++ ###
 # Prerequisites
 *.d
 
@@ -16,32 +11,12 @@
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# Building
+build
+xbuild
 
-# Fortran module files
-*.mod
-*.smod
+# Visual Studio
+.vs
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# End of https://www.toptal.com/developers/gitignore/api/c++
-
-# Version files
-src/MeshKernel_version.h
-src/MeshKernel_version.h.svn
-src/MeshKernel_version.rc
-src/MeshKernel_version.rc.svn
-
+# User specific
 post_build.bat

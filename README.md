@@ -9,19 +9,48 @@ These structures must be mirrored in the client application and filled with appr
 
 ## Build
 
-### Windows
+The requirements are:
+- CMake 3.14 or higher
+- A C++11 compatible compiler
+- The Boost libraries
+- Git
+- Doxygen (optional)
 
-MeshKernel depends on boost. On windows precompiled boost binaries (with MSVC compiler) can be downloaded here:
+
+On windows precompiled boost binaries (with MSVC compiler) can be downloaded here:
 
 https://sourceforge.net/projects/boost/files/boost-binaries/ 
 
 Once installed, modify boost environmental variables accordingly. For example:
-
+```powershell
 BOOST_INCLUDEDIR=C:\Apps\boost_1_70_0
-
 BOOST_LIBRARYDIR=C:\Apps\boost_1_70_0\lib64-msvc-14.1
+```
+### IDE
+To use an IDE, such as Visual Studio:
 
-Install CMAKE (https://cmake.org/download/) and execute bootstrap.bat. The visual studio solution is produced inside the build folder.
+```powershell
+cmake -S . -B xbuild -G"Visual Studio 16 2019"
+cmake --open xbuild
+```
+### Command line
+To configure:
+```powershell
+cmake -S . -B build
+```
+
+To build:
+```powershell
+cmake --build build
+```
+
+To build docs (requires Doxygen, output in `build/docs/html`):
+```powershell
+cmake --build build --target docs
+```
+
+
+
 
 
 ## Examples
