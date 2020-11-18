@@ -1,6 +1,6 @@
 # Tests need to be added as executables first
 file(GLOB UNIT_TEST_LIST CONFIGURE_DEPENDS "*.cpp")
-add_executable(MeshKernelUnitTests ${UNIT_TEST_LIST} ${UTILS_TEST_LIST})
+add_executable(MeshKernelUnitTests ${UNIT_TEST_LIST})
 
 # Should be linked to the main library, as well as the google test library
 target_link_libraries(
