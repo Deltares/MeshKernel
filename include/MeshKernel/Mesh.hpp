@@ -260,17 +260,22 @@ namespace meshkernel
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
         /// @return The number of valid faces
-        [[nodiscard]] int GetNumFaceEdges(const int faceIndex) const { return m_numFacesNodes[faceIndex]; }
+        [[nodiscard]] int GetNumFaceEdges(int faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
         /// @brief Get the number of faces an edges shares
         /// @param[in] edgeIndex The edge index
         /// @return The number of faces an edges shares
-        [[nodiscard]] int GetNumEdgesFaces(const int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+        [[nodiscard]] int GetNumEdgesFaces(int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
         /// @brief Inquire if an edge is on boundary
         /// @param the edge index
         /// @return if the edge os on boundary
-        [[nodiscard]] bool IsEdgeOnBoundary(const int edge) const { return m_edgesNumFaces[edge] == 1; }
+        [[nodiscard]] bool IsEdgeOnBoundary(int edge) const { return m_edgesNumFaces[edge] == 1; }
+
+        /// @brief Inquire if a face is on boundary
+        /// @param the edge index
+        /// @return if the edge os on boundary
+        [[nodiscard]] bool IsFaceOnBoundary(int face) const;
 
         /// @brief Circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon Cache storing the face nodes
@@ -288,19 +293,27 @@ namespace meshkernel
                                                    double weightCircumCenter) const;
 
         /// @brief Gets the mass centers of obtuse triangles
-        /// @returns The center of the flow edge
-        [[nodiscard]] std::vector<Point> GetObtuseTriangles();
+        /// @returns The center of obtuse triangles
+        [[nodiscard]] std::vector<Point> GetObtuseTrianglesCenters();
 
-        /// @brief Gets the small flow edges (flow edges are the edges connecting the face circumcenters)
+        /// @brief Gets the edges crossing the small flow edges
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
-        /// @returns The center of the flow edge
-        [[nodiscard]] std::vector<Point> GetSmallFlowEdgeCenters(double smallFlowEdgesThreshold);
+        /// @returns The indexes of the edges crossing small flow edges
+        [[nodiscard]] std::vector<int> GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold);
 
-        /// @brief remove small face circumcenter connections (removesmallflowlinks)
+        /// @brief Gets the flow edges centers from the crossing edges
+        /// @param[in] edges The crossing edges indexes
+        /// @returns The centers of the flow edges
+        [[nodiscard]] std::vector<Point> GetFlowEdgesCenters(const std::vector<int>& edges) const;
+
+        /// @brief Remove small flow edges (removesmallflowlinks, part 1)
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
+        void RemoveSmallFlowEdges(double smallFlowEdgesThreshold);
+
+        /// @brief Remove small triangles at the boundaries (removesmallflowlinks, part 2)
         /// @param[in] minFractionalAreaTriangles Small triangles at the boundaries will be eliminated.
-        /// This threshold is the ration of the face area to the area of neighboring faces.
-        void RemoveSmallFlowEdges(double smallFlowEdgesThreshold, double minFractionalAreaTriangles);
+        /// This threshold is the ration of the face area to the average area of neighboring faces.
+        void RemoveSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);
 
         /// @brief Computes m_nodesNodes, see class members
         void ComputeNodeNeighbours();
