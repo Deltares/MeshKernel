@@ -163,17 +163,12 @@ The cutoff distance is computed using the face areas as follow:
 \subparagraph*{RemoveSmallTrianglesAtBoundaries}
 This algorithm removes triangles having the following properties:
 \begin{itemize}
-\item The are at mesh boundary	
-\item One or more neighboring faces are non triangles
-\item The ratio of the face area to the average area of neighboring non triangles is less than a minimum ratio (default to 0.2)
-\item The absolute cosine of one internal angle is less than 0.2
-
-
-
+\item The are at mesh boundary.	
+\item One or more neighboring faces are non-triangles.
+\item The ratio of the face area to the average area of neighboring non triangles is less than a minimum ratio (defaults to 0.2).
+\item The absolute cosine of one internal angle is less than 0.2.
 \end{itemize}
-
-
-
+These triangles having the above properties are merged by collapsing the face nodes to the node having the minimum absolute cosine (e.g. the node where the internal angle is closer to 90 degrees). 
 
 %------------------------------------------------------------------------------
 \chapter{The mesh OrthogonalizationAndSmoothing class}

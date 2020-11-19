@@ -2046,7 +2046,6 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
 {
     // On the second part, the small triangles at the boundaries are checked
     const double minCosPhi = 0.2;
-    std::vector<Point> referenceNodes;
     std::vector<std::vector<int>> smallTrianglesNodes;
     for (int face = 0; face < GetNumFaces(); ++face)
     {
@@ -2117,8 +2116,6 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
                                                                             normalPoint,
                                                                             ratio,
                                                                             m_projection);
-
-            referenceNodes.emplace_back(normalPoint);
             smallTrianglesNodes.emplace_back(std::initializer_list<int>{nodeToPreserve, firstNodeToMerge, secondNodeToMerge});
         }
     }
