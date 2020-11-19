@@ -4,8 +4,8 @@
 \newcommand{\cpp}{\mbox{C\texttt{++}}\xspace}
 \newcommand{\csharp}{C\#\xspace}
 
-\begin{document}
-\title{GridEditor}
+\begin{document}\underline{}
+\title{MeshKernel}
 \subtitle{Design document}
 \manualtype{Technical Reference Manual}
 \version{001}
@@ -15,7 +15,7 @@
 %------------------------------------------------------------------------------
 \chapter{Introduction}
 
-The Gridgeom library is a \cpp dynamic library that performs generation and manipulations of 2D grids. The library originates from the \dflowfm Fortran code base (interactor). The code was re-written in \cpp for the following reasons:
+The MeshKernel library is a \cpp dynamic library that performs generation and manipulations of 2D grids. The library originates from the \dflowfm Fortran code base (interactor). The code was re-written in \cpp for the following reasons:
 \begin{itemize}
 \item Introduce some design in the existing algorithms by separating concerns.
 \item Introduce unit testing.
@@ -23,11 +23,11 @@ The Gridgeom library is a \cpp dynamic library that performs generation and mani
 \item Simplify the connection with C like languages, such \csharp.
 \cpp and \csharp have the same array memory layout and pointers can be passed seamlessly, without the need for pointer conversion.
 \end{itemize}
-This document describes the development strategies (section 2), the Gridgeom design (section 2), and the responsibilities of the main classes (section 4 and ahead).
+This document describes the development strategies (section 2), the MeshKernel design (section 2), and the responsibilities of the main classes (section 4 and ahead).
 %------------------------------------------------------------------------------
-\chapter{Gridgeom development strategies}
+\chapter{MeshKernel development strategies}
 
-The following strategies were adopted when developing the Gridgeom in \cpp.
+The following strategies were adopted when developing the MeshKernel in \cpp.
 Note that the following strategies are not immutable and can be revised.
 Performance:
 \begin{itemize}
@@ -46,8 +46,8 @@ Coding:
 \end{itemize}
 Re-usability:
 \begin{itemize}
-\item Promote reusability by separating code logic in separate functions or classes.
-\item Promote reusability by using templates (the same logic can be used for different types).
+\item Promote re-usability by separating code logic in separate functions or classes.
+\item Promote re-usability by using templates (the same logic can be used for different types).
 \end{itemize}
 Resource management:
 \begin{itemize}
@@ -60,18 +60,18 @@ Usage of external libraries:
 \end{itemize}
 
 %------------------------------------------------------------------------------
-\chapter{Gridgeom design}
+\chapter{MeshKernel design}
 
-The design of a geometrical library is influenced by the choices made for the representation of the mesh entities. In Gridgeom an unstructured mesh is uniquely defined by two entities:
+The design of a geometrical library is influenced by the choices made for the representation of the mesh entities. In MeshKernel an unstructured mesh is uniquely defined by two entities:
 \begin{itemize}
 \item The nodes vector: represented using an std::vector<Point>, where Points is a structure containing the point coordinates (cartesian or spherical).
 \item The edges vector: represented using an std::vector<std:: pair<int,int>>, containing the start and the end index of the edges in the Nodes vector.
 \end{itemize}
 All other mesh properties are computed from these two entities, such as the face nodes, the face edges, the faces mass centers, and the faces circumcenters. See section 5 for some more details.
 
-The library is separated in an API namespace (GridGeomApi) used for communication with the client and a backend namespace (GridGeom), where the classes implementing the algorithms are included (Figure 1). The API namespace contains the library API methods (Gridgeom.cpp) and several structures used for communicating with the clients. These structures are mirrored in the client application and filled with appropriate values.
+The library is separated in an API namespace (MeshKernelApi) used for communication with the client and a backend namespace (MeshKernel), where the classes implementing the algorithms are included (\ref{fig:classDiagram}). The API namespace contains the library API methods (MeshKernel.cpp) and several structures used for communicating with the clients. These structures are mirrored in the client application and filled with appropriate values.
 
-An example of the mesh refinement algorithm execution is shown in Figure 2. When the client application creates a new mesh two API calls are required: in the first call (ggeo\_new\_mesh) a new entry in the meshInstances vector is pushed, in the second call (ggeo\_set\_state) the Mesh class is created and assigned to the entry of the meshInstance vector pushed before. Now the mesh is stored in the library and ready to be used by the algorithms.
+An example of the mesh refinement algorithm execution is shown in \ref{fig:sequenceDiagram}. When the client application creates a new mesh two API calls are required: in the first call (ggeo\_new\_mesh) a new entry in the meshInstances vector is pushed, in the second call (ggeo\_set\_state) the Mesh class is created and assigned to the entry of the meshInstance vector pushed before. Now the mesh is stored in the library and ready to be used by the algorithms.
 
 The client now calls the ggeo\_refine\_mesh\_based\_on\_samples function. In the local scope of the function an instance of the MeshRefinement class is created, the Refine method executed and the resulting mesh saved in the meshInstances vector. Finally, the last state of the mesh is retrieved using the ggeo\_get\_mesh function, whereby all information required for rendering the new mesh (nodes, edges, and faces) are retrieved from the meshInstances vector and returned to the client.
 
@@ -79,13 +79,15 @@ By using this design only the mesh instances are saved throughout the executions
 
 \begin{figure}[H]
 	\centering
-	\includegraphics*[width=1.0\textwidth]{figures/GridEditorClassDiagram_1.jpg}
-	\caption{Gridgeom library simplified class diagram. Rectangles with right corners represent structures, rectangles with round corners represent classes and yellow rectangles represent collections of methods (e.g. the API interface or collections of static functions).}
+	\includegraphics*[width=1.0\textwidth]{pictures/MeshKernelClassDiagram_1.jpg}
+	\caption{MeshKernel library simplified class diagram. Rectangles with right corners represent structures, rectangles with round corners represent classes and yellow rectangles represent collections of methods (e.g. the API interface or collections of static functions).}
+	\label{fig:classDiagram}
 \end{figure}
 \begin{figure}[H]
 	\centering
-	\includegraphics*[width=1.0\textwidth]{figures/sequence_diagram_refinement.jpg}
+	\includegraphics*[width=1.0\textwidth]{pictures/sequence_diagram_refinement.jpg}
 	\caption{Sequence diagram for creating a new grid and performing mesh refinement.}
+	\label{fig:sequenceDiagram}
 \end{figure}
 
 %------------------------------------------------------------------------------
@@ -132,6 +134,46 @@ These algorithms can be separated into different classes.
 \end{itemize}
 This algorithm introduces a dependency on the Richard Shewchuk Triangle.c library.
 The mesh class stores a reference to an RTree instance. RTree is a class wrapping the boost::geometry::index::rtree code, implemented in SpatialTree.hpp. This is required for inquiring adjacent nodes in the merging algorithm.
+The public interface of the mesh class contains several algorithms modifying the mesh class members. Most of them are trivial, and we refer to the doxygen api documentation. Others are documented below:
+
+\subparagraph*{RemoveSmallFlowEdges}
+An unstructured mesh can be used to calculate water flow. This involves a pressure gradient between the circumcenters of neighbouring faces. That procedure is numerically unreliable when the distance between face circumcenters (flow edges) becomes too small. Let's consider figure \ref{fig:coincide_circumcenters}:
+\begin{figure}[H]
+	\begin{center}
+		\def\svgwidth{0.45\textwidth}
+		\resizebox{0.45\textwidth}{!}{
+			\input{pictures/coincide_circumcentre.pdf_tex}
+		}
+	\end{center}
+	\caption{The circumcentres of face $I$ and $II$ coincide at $M$ and the two faces should be merged.}
+	\label{fig:coincide_circumcenters}
+\end{figure}
+
+The algorithm works as follow:
+\begin{itemize}
+\item Any degenerated triangle (e.g. those having a coinciding node) is removed by collapsing the second and third node into the first one. 
+\item The edges crossing small flow edges are found. The flow edge lenght is computed from the face circumcenters and compared to an estimated cut off distance.
+The cutoff distance is computed using the face areas as follow:
+\begin{equation}
+	cutOffDistance = threshold * 0.5* (sqrt(Area $I$)+sqrt(Area $II$))
+\end{equation}
+\item All small flow edges are flagged with invalid indices and removed from the mesh. Removal occours in Administrate function.
+\end{itemize}
+
+\subparagraph*{RemoveSmallTrianglesAtBoundaries}
+This algorithm removes triangles having the following properties:
+\begin{itemize}
+\item The are at mesh boundary	
+\item One or more neighboring faces are non triangles
+\item The ratio of the face area to the average area of neighboring non triangles is less than a minimum ratio (default to 0.2)
+\item The absolute cosine of one internal angle is less than 0.2
+
+
+
+\end{itemize}
+
+
+
 
 %------------------------------------------------------------------------------
 \chapter{The mesh OrthogonalizationAndSmoothing class}
@@ -148,7 +190,7 @@ The two contributions are weighted based on the desired smoothing to orthogonali
 \end{enumerate}
 \item An inner iteration: the resulting linear system is solved explicitly. The nodal coordinates are updated and the nodes moving on the mesh boundary are projected to the original mesh boundary. If the project to land boundary flag is activated, the boundary nodes are projected to the land boundaries. Also in this case OpenMP parallelization is used in OrthogonalizationAndSmoothing::InnerIteration() because the update of the nodal coordinates has been made iteration-independent.
 \end{itemize}
-Gridgeom API has five functions to enable the client to display the mesh during the computations (interactivity). These functions are:
+MeshKernel API has five functions to enable the client to display the mesh during the computations (interactivity). These functions are:
 \begin{itemize}
 \item ggeo\_orthogonalize\_initialize
 \item ggeo\_orthogonalize\_prepare\_outer\_iteration
@@ -264,7 +306,7 @@ When a triangle enclosing a specific location is not found, the interpolated val
 
 \begin{figure}[H]
 	\centering
-	\includegraphics*[width=1.0\textwidth]{figures/sequence_diagram_orthogonalization.jpg}
+	\includegraphics*[width=1.0\textwidth]{pictures/sequence_diagram_orthogonalization.jpg}
 	\caption{Sequence diagram for orthogonalization and smoothing.}
 \end{figure}
 

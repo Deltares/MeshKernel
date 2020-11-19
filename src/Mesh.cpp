@@ -2001,9 +2001,9 @@ std::vector<int> meshkernel::Mesh::GetEdgesCrossingSmallFlowEdges(double smallFl
         if (firstFace >= 0 && secondFace >= 0)
         {
             const auto flowEdgeLength = ComputeDistance(m_facesCircumcenters[firstFace], m_facesCircumcenters[secondFace], m_projection);
-            const double tooCloseDistance = smallFlowEdgesThreshold * 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
+            const double cutOffDistance = smallFlowEdgesThreshold * 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
 
-            if (flowEdgeLength < tooCloseDistance)
+            if (flowEdgeLength < cutOffDistance)
             {
                 result.emplace_back(e);
             }
@@ -2046,7 +2046,6 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
 {
     // On the second part, the small triangles at the boundaries are checked
     const double minCosPhi = 0.2;
-    bool edgesNeedsRemoval = false;
     std::vector<Point> referenceNodes;
     std::vector<std::vector<int>> smallTrianglesNodes;
     for (int face = 0; face < GetNumFaces(); ++face)
@@ -2086,13 +2085,13 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
         int firstNodeToMerge = intMissingValue;
         int secondNodeToMerge = intMissingValue;
         int thirdEdgeSmallTriangle = intMissingValue;
-        for (int currentEdge = 0; currentEdge < numNodesInTriangle; ++currentEdge)
+        for (int e = 0; e < numNodesInTriangle; ++e)
         {
-            const auto previousEdge = NextCircularBackwardIndex(currentEdge, numNodesInTriangle);
-            const auto nextEdge = NextCircularForwardIndex(currentEdge, numNodesInTriangle);
+            const auto previousEdge = NextCircularBackwardIndex(e, numNodesInTriangle);
+            const auto nextEdge = NextCircularForwardIndex(e, numNodesInTriangle);
 
             const auto k0 = m_facesNodes[face][previousEdge];
-            const auto k1 = m_facesNodes[face][currentEdge];
+            const auto k1 = m_facesNodes[face][e];
             const auto k2 = m_facesNodes[face][nextEdge];
 
             // compute the angles between the edges
@@ -2121,57 +2120,52 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
 
             referenceNodes.emplace_back(normalPoint);
             smallTrianglesNodes.emplace_back(std::initializer_list<int>{nodeToPreserve, firstNodeToMerge, secondNodeToMerge});
-
-            edgesNeedsRemoval = true;
         }
     }
 
-    if (edgesNeedsRemoval)
+    bool nodesMerged = false;
+    for (const auto& triangleNodes : smallTrianglesNodes)
     {
-        bool nodesMerged = false;
-        for (const auto& triangleNodes : smallTrianglesNodes)
+        const auto nodeToPreserve = triangleNodes[0];
+        const auto firstNodeToMerge = triangleNodes[1];
+        const auto secondNodeToMerge = triangleNodes[2];
+
+        // only
+        int numInternalEdges = 0;
+        for (int e = 0; e < m_nodesNumEdges[firstNodeToMerge]; ++e)
         {
-            const auto nodeToPreserve = triangleNodes[0];
-            const auto firstNodeToMerge = triangleNodes[1];
-            const auto secondNodeToMerge = triangleNodes[2];
-
-            // only
-            int numInternalEdges = 0;
-            for (int e = 0; e < m_nodesNumEdges[firstNodeToMerge]; ++e)
+            if (!IsEdgeOnBoundary(m_nodesEdges[firstNodeToMerge][e]))
             {
-                if (!IsEdgeOnBoundary(m_nodesEdges[firstNodeToMerge][e]))
-                {
-                    numInternalEdges++;
-                }
-            }
-
-            if (numInternalEdges == 1)
-            {
-                MergeTwoNodes(firstNodeToMerge, nodeToPreserve);
-                nodesMerged = true;
-            }
-
-            // corner point of a triangle
-            numInternalEdges = 0;
-            for (int e = 0; e < m_nodesNumEdges[secondNodeToMerge]; ++e)
-            {
-                if (!IsEdgeOnBoundary(m_nodesEdges[secondNodeToMerge][e]))
-                {
-                    numInternalEdges++;
-                }
-            }
-
-            if (numInternalEdges == 1)
-            {
-                MergeTwoNodes(secondNodeToMerge, nodeToPreserve);
-                nodesMerged = true;
+                numInternalEdges++;
             }
         }
 
-        if (nodesMerged)
+        if (numInternalEdges == 1)
         {
-            Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+            MergeTwoNodes(firstNodeToMerge, nodeToPreserve);
+            nodesMerged = true;
         }
+
+        // corner point of a triangle
+        numInternalEdges = 0;
+        for (int e = 0; e < m_nodesNumEdges[secondNodeToMerge]; ++e)
+        {
+            if (!IsEdgeOnBoundary(m_nodesEdges[secondNodeToMerge][e]))
+            {
+                numInternalEdges++;
+            }
+        }
+
+        if (numInternalEdges == 1)
+        {
+            MergeTwoNodes(secondNodeToMerge, nodeToPreserve);
+            nodesMerged = true;
+        }
+    }
+
+    if (nodesMerged)
+    {
+        Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 }
 
