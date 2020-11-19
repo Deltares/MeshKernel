@@ -1,5 +1,5 @@
 if(DEFINED ENV{BUILD_NUMBER})
-  set(BUILD_NUMBER "0.dev-$ENV{BUILD_NUMBER}")
+  set(BUILD_NUMBER "dev-$ENV{BUILD_NUMBER}")
 else()
   set(BUILD_NUMBER 0)
 endif()
