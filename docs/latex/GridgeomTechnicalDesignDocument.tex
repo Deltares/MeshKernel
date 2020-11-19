@@ -152,12 +152,12 @@ An unstructured mesh can be used to calculate water flow. This involves a pressu
 The algorithm works as follow:
 \begin{itemize}
 \item Any degenerated triangle (e.g. those having a coinciding node) is removed by collapsing the second and third node into the first one. 
-\item The edges crossing small flow edges are found. The flow edge lenght is computed from the face circumcenters and compared to an estimated cut off distance.
+\item The edges crossing small flow edges are found. The flow edge length is computed from the face circumcenters and compared to an estimated cut off distance.
 The cutoff distance is computed using the face areas as follow:
 \begin{equation}
 	cutOffDistance = threshold * 0.5* (sqrt(Area $I$)+sqrt(Area $II$))
 \end{equation}
-\item All small flow edges are flagged with invalid indices and removed from the mesh. Removal occours in Administrate function.
+\item All small flow edges are flagged with invalid indices and removed from the mesh. Removal occors in Administrate function.
 \end{itemize}
 
 \subparagraph*{RemoveSmallTrianglesAtBoundaries}
