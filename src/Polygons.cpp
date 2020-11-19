@@ -226,9 +226,9 @@ namespace meshkernel
             {
                 localPolygon.emplace_back(m_nodes[j]);
             }
-            const auto numLocalPoints = static_cast<int>(localPolygon.size());
 
             // not a closed polygon
+            const auto numLocalPoints = localPolygon.size();
             if (localPolygon[numLocalPoints - 1] != localPolygon[0])
             {
                 continue;

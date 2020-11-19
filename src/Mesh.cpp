@@ -594,8 +594,8 @@ void meshkernel::Mesh::RemoveDegeneratedTriangles()
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     // assume the max amount of degenerated triangles is 10% of the actual faces
-    std::vector<int> degenerartedTriangles;
-    degenerartedTriangles.reserve(GetNumFaces() * 0.1);
+    std::vector<int> degeneratedTriangles;
+    degeneratedTriangles.reserve(static_cast<size_t>(static_cast<double>(GetNumFaces()) * 0.1));
     for (int f = 0; f < GetNumFaces(); ++f)
     {
         const auto numFaceNodes = m_numFacesNodes[f];
@@ -632,15 +632,14 @@ void meshkernel::Mesh::RemoveDegeneratedTriangles()
                 const auto edge = m_facesEdges[f][e];
                 m_edges[edge] = {-1, -1};
             }
-            // save degenared face index
-            degenerartedTriangles.emplace_back(f);
+            // save degenerated face index
+            degeneratedTriangles.emplace_back(f);
         }
     }
 
     // collapse secondNode and thirdNode into firstNode, change coordinate of the firstNode to triangle center of mass
-    for (int f = 0; f < degenerartedTriangles.size(); ++f)
+    for (auto const& face : degeneratedTriangles)
     {
-        const auto face = degenerartedTriangles[f];
         auto firstNode = m_facesNodes[face][0];
         auto secondNode = m_facesNodes[face][1];
         auto thirdNode = m_facesNodes[face][2];
@@ -748,7 +747,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         m_facesNodes.emplace_back(nodes);
         m_facesEdges.emplace_back(edges);
         m_faceArea.emplace_back(area);
-        m_facesMassCenters.emplace_back(std::move(centerOfMass));
+        m_facesMassCenters.emplace_back(centerOfMass);
 
         return;
     }
@@ -2017,9 +2016,8 @@ std::vector<meshkernel::Point> meshkernel::Mesh::GetFlowEdgesCenters(const std::
 {
     std::vector<Point> result;
     result.reserve(GetNumEdges());
-    for (int e = 0; e < edges.size(); ++e)
+    for (const auto& edge : edges)
     {
-        const auto edge = edges[e];
         const auto firstFace = m_edgesFaces[edge][0];
         const auto secondFace = m_edgesFaces[edge][1];
         result.emplace_back((m_facesCircumcenters[firstFace] + m_facesCircumcenters[secondFace]) * 0.5);
@@ -2061,10 +2059,10 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
         // compute the average area of neighboring faces
         double averageOtherFacesArea = 0.0;
         int numNonBoundaryFaces = 0;
-        for (int ee = 0; ee < numNodesInTriangle; ++ee)
+        for (int e = 0; e < numNodesInTriangle; ++e)
         {
             // the edge must not be at the boundary, otherwise there is no "other" face
-            const auto edge = m_facesEdges[face][ee];
+            const auto edge = m_facesEdges[face][e];
             if (IsEdgeOnBoundary(edge))
             {
                 continue;
@@ -2114,12 +2112,12 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
         {
             Point normalPoint{doubleMissingValue, doubleMissingValue};
             double ratio;
-            DistanceFromLine(m_nodes[nodeToPreserve],
-                             m_nodes[firstNodeToMerge],
-                             m_nodes[secondNodeToMerge],
-                             normalPoint,
-                             ratio,
-                             m_projection);
+            [[maybe_unused]] const auto distanceFromLine = DistanceFromLine(m_nodes[nodeToPreserve],
+                                                                            m_nodes[firstNodeToMerge],
+                                                                            m_nodes[secondNodeToMerge],
+                                                                            normalPoint,
+                                                                            ratio,
+                                                                            m_projection);
 
             referenceNodes.emplace_back(normalPoint);
             smallTrianglesNodes.emplace_back(std::initializer_list<int>{nodeToPreserve, firstNodeToMerge, secondNodeToMerge});
@@ -2131,39 +2129,39 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
     if (edgesNeedsRemoval)
     {
         bool nodesMerged = false;
-        for (auto i = 0; i < smallTrianglesNodes.size(); ++i)
+        for (const auto& triangleNodes : smallTrianglesNodes)
         {
-            const auto nodeToPreserve = smallTrianglesNodes[i][0];
-            const auto firstNodeToMerge = smallTrianglesNodes[i][1];
-            const auto secondNodeToMerge = smallTrianglesNodes[i][2];
+            const auto nodeToPreserve = triangleNodes[0];
+            const auto firstNodeToMerge = triangleNodes[1];
+            const auto secondNodeToMerge = triangleNodes[2];
 
             // only
-            int internalEdges = 0;
+            int numInternalEdges = 0;
             for (int e = 0; e < m_nodesNumEdges[firstNodeToMerge]; ++e)
             {
                 if (!IsEdgeOnBoundary(m_nodesEdges[firstNodeToMerge][e]))
                 {
-                    internalEdges++;
+                    numInternalEdges++;
                 }
             }
 
-            if (internalEdges == 1)
+            if (numInternalEdges == 1)
             {
                 MergeTwoNodes(firstNodeToMerge, nodeToPreserve);
                 nodesMerged = true;
             }
 
             // corner point of a triangle
-            internalEdges = 0;
+            numInternalEdges = 0;
             for (int e = 0; e < m_nodesNumEdges[secondNodeToMerge]; ++e)
             {
                 if (!IsEdgeOnBoundary(m_nodesEdges[secondNodeToMerge][e]))
                 {
-                    internalEdges++;
+                    numInternalEdges++;
                 }
             }
 
-            if (internalEdges == 1)
+            if (numInternalEdges == 1)
             {
                 MergeTwoNodes(secondNodeToMerge, nodeToPreserve);
                 nodesMerged = true;
@@ -2454,7 +2452,7 @@ bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vect
     double area;
     Point centerOfMass;
     bool isCounterClockWise;
-    FaceAreaAndCenterOfMass(dualFace, int(dualFace.size() - 1), m_projection, area, centerOfMass, isCounterClockWise);
+    FaceAreaAndCenterOfMass(dualFace, dualFace.size() - 1, m_projection, area, centerOfMass, isCounterClockWise);
 
     if (m_projection == Projections::spherical)
     {

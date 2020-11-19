@@ -1370,7 +1370,7 @@ namespace meshkernel
         return area > 0.0;
     }
 
-    static void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, int numberOfPolygonPoints, Projections projection, double& area, Point& centerOfMass, bool& isCounterClockWise)
+    static void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, Projections projection, double& area, Point& centerOfMass, bool& isCounterClockWise)
     {
         if (numberOfPolygonPoints <= 0)
         {
