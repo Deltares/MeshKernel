@@ -247,7 +247,7 @@ namespace meshkernel
             MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
 
             // average triangle size
-            const double averageEdgeLength = perimeter / (numLocalPoints - 1);
+            const double averageEdgeLength = perimeter / static_cast<double>(numLocalPoints - 1);
             const double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
             // estimated number of triangles
