@@ -678,11 +678,6 @@ void meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
         {
             if (m_validFrontNodes[i] == 1 && velocityVectorAtGridPoints[i].IsValid())
             {
-                if (IsEqual(velocityVectorAtGridPoints[i].x, 0.0) &&
-                    IsEqual(velocityVectorAtGridPoints[i].y, 0.0))
-                {
-                    continue;
-                }
                 activeLayerPoints[i].x = activeLayerPoints[i].x + localTimeStep * velocityVectorAtGridPoints[i].x;
                 activeLayerPoints[i].y = activeLayerPoints[i].y + localTimeStep * velocityVectorAtGridPoints[i].y;
             }
@@ -728,11 +723,11 @@ void meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
             {
                 continue;
             }
-            double cosphi = NormalizedInnerProductTwoSegments(m_gridPoints[layerIndex - 2][i],
-                                                              m_gridPoints[layerIndex - 1][i],
-                                                              m_gridPoints[layerIndex - 1][i],
-                                                              activeLayerPoints[i],
-                                                              m_splines->m_projection);
+            const double cosphi = NormalizedInnerProductTwoSegments(m_gridPoints[layerIndex - 2][i],
+                                                                    m_gridPoints[layerIndex - 1][i],
+                                                                    m_gridPoints[layerIndex - 1][i],
+                                                                    activeLayerPoints[i],
+                                                                    m_splines->m_projection);
             if (cosphi < -0.5)
             {
                 int currentLeftIndex;

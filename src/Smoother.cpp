@@ -29,7 +29,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <string>
 #include <stdexcept>
 
 #include <MeshKernel/Exceptions.hpp>

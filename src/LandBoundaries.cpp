@@ -28,7 +28,6 @@
 #pragma once
 
 #include <vector>
-#include <cassert>
 #include <stdexcept>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -126,12 +125,11 @@ namespace meshkernel
         // find the start/end node of the landboundaries. Emplace them in m_segmentIndices if the land-boundary segment is close to a mesh node
         const auto indices = FindIndexes(m_nodes, 0, m_nodes.size(), doubleMissingValue);
         m_segmentIndices.reserve(indices.size());
-        for (auto n = 0; n < indices.size(); n++)
+        for (const auto& index : indices)
         {
-            const auto startIndex = indices[n][0];
-            if (landBoundaryMask[startIndex] != 0)
+            if (landBoundaryMask[index[0]] != 0)
             {
-                m_segmentIndices.emplace_back(indices[n]);
+                m_segmentIndices.emplace_back(index);
             }
         }
 

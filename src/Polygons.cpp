@@ -247,11 +247,11 @@ namespace meshkernel
             MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
 
             // average triangle size
-            double averageEdgeLength = perimeter / (numLocalPoints - 1);
-            double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
+            const double averageEdgeLength = perimeter / (numLocalPoints - 1);
+            const double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
             // estimated number of triangles
-            auto numberOfTriangles = int(SafetySize * localPolygonArea / averageTriangleArea);
+            const auto numberOfTriangles = int(SafetySize * localPolygonArea / averageTriangleArea);
             if (numberOfTriangles <= 0)
             {
                 throw AlgorithmError("Polygons::CreatePointsInPolygons: The number of triangles is <= 0.");
@@ -402,13 +402,8 @@ namespace meshkernel
         refinedPolygon.resize(refinedNodeIndex);
     }
 
-    void Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, const int numPoints, double& perimeter) const
+    void Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, size_t numPoints, double& perimeter) const
     {
-        if (numPoints < 0)
-        {
-            throw std::invalid_argument("Polygons::PerimeterClosedPolygon: The number of nodes is <= 0.");
-        }
-
         if (localPolygon[0] != localPolygon[numPoints - 1])
         {
             throw std::invalid_argument("Polygons::PerimeterClosedPolygon: The first and last point of the polygon is not the same.");
@@ -436,13 +431,8 @@ namespace meshkernel
         }
     }
 
-    void Polygons::MaximumEdgeLength(const std::vector<Point>& localPolygon, const int numPoints, double& maximumEdgeLength)
+    void Polygons::MaximumEdgeLength(const std::vector<Point>& localPolygon, size_t numPoints, double& maximumEdgeLength) const
     {
-
-        if (numPoints < 0)
-        {
-            throw std::invalid_argument("Polygons::MaximumEdgeLength: The number of nodes is <= 0.");
-        }
 
         if (localPolygon[0].x != localPolygon[numPoints - 1].x)
         {

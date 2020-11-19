@@ -61,7 +61,7 @@ namespace meshkernel
         int m_allocationSize = 100;
 
         /// @brief perimeter closed polygon
-        void PerimeterClosedPolygon(const std::vector<Point>& localPolygon, int numPoints, double& perimeter) const;
+        void PerimeterClosedPolygon(const std::vector<Point>& localPolygon, size_t numPoints, double& perimeter) const;
 
         /// @brief refinepolygonpart
         void RefinePolygonPart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon);
@@ -85,7 +85,7 @@ namespace meshkernel
 
     private:
         /// @brief maximum edge length of a given polygon
-        void MaximumEdgeLength(const std::vector<Point>& localPolygon, int numPoints, double& maximumEdgeLength);
+        void MaximumEdgeLength(const std::vector<Point>& localPolygon, size_t numPoints, double& maximumEdgeLength) const;
 
         // TODO: Document
         void WalkBoundaryFromNode(const Mesh& mesh,
