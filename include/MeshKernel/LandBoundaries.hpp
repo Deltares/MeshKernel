@@ -97,7 +97,7 @@ namespace meshkernel
                       int& numRejectedNodesInPath);
 
         /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current segmentIndex.
-        /// Is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio.
+        /// Is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
         /// @param[in] segmentIndex
         /// @param[in] meshBoundOnly
         /// @param[in] startLandBoundaryIndex

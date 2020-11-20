@@ -32,6 +32,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Operations.cpp>
 #include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/Exceptions.hpp>
 
 meshkernel::TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>& m_locations,
                                                                    const std::vector<Sample>& samples,
@@ -98,7 +99,7 @@ void meshkernel::TriangulationInterpolation::Compute()
     for (int n = 0; n < m_locations.size(); ++n)
     {
         if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
-            !IsDifferenceLessThanEpsilon(m_results[n], doubleMissingValue))
+            !IsEqual(m_results[n], doubleMissingValue))
         {
             continue;
         }

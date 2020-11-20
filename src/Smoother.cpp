@@ -29,7 +29,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <string>
 #include <stdexcept>
 
 #include <MeshKernel/Exceptions.hpp>
@@ -175,7 +174,9 @@ void meshkernel::Smoother::ComputeWeights()
             //compute the contravariant base vectors
             const double determinant = J[n][0] * J[n][3] - J[n][3] * J[n][1];
             if (determinant == 0.0)
+            {
                 continue;
+            }
 
             a1[0] = J[n][3] / determinant;
             a1[1] = -J[n][2] / determinant;
@@ -718,8 +719,8 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
     else if (numSharedFaces > 0)
     {
         //TODO: add cirr(xk(k0), yk(k0), ncolhl)
-        m_nodeXErrors.push_back(m_mesh->m_nodes[currentNode].x);
-        m_nodeXErrors.push_back(m_mesh->m_nodes[currentNode].y);
+        m_nodeXErrors.emplace_back(m_mesh->m_nodes[currentNode].x);
+        m_nodeXErrors.emplace_back(m_mesh->m_nodes[currentNode].y);
         throw AlgorithmError("Smoother::ComputeNodeXiEta: Fatal error (phiTot=0).");
     }
 
@@ -743,8 +744,8 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
             else
             {
                 //TODO: add cirr(xk(k0), yk(k0), ncolhl)
-                m_nodeXErrors.push_back(m_mesh->m_nodes[currentNode].x);
-                m_nodeXErrors.push_back(m_mesh->m_nodes[currentNode].y);
+                m_nodeXErrors.emplace_back(m_mesh->m_nodes[currentNode].x);
+                m_nodeXErrors.emplace_back(m_mesh->m_nodes[currentNode].y);
                 throw AlgorithmError("Smoother::ComputeNodeXiEta: Inappropriate fictitious boundary cell.");
             }
             phi0 = phi0 + 0.5 * dPhi;

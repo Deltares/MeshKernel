@@ -27,8 +27,7 @@
 
 #include <map>
 #include <stdexcept>
-#include <string>
-#include <sstream>
+#include <vector>
 
 #include <MeshKernel/MeshKernel.hpp>
 #include <MeshKernel/Constants.hpp>
@@ -132,9 +131,7 @@ namespace meshkernelapi
         std::vector<meshkernel::Point> splineCornerPoints;
         ConvertGeometryListNativeToPointVector(geometryListIn, splineCornerPoints);
 
-        std::vector<std::vector<size_t>> indexes(splineCornerPoints.size(), std::vector<size_t>(2, 0));
-        int pos = FindIndexes(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue, indexes);
-        indexes.resize(pos);
+        const auto indexes = FindIndexes(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue);
 
         for (auto i = 0; i < indexes.size(); i++)
         {
@@ -208,7 +205,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_new_mesh(int& meshKernelId)
     {
         meshKernelId = int(meshInstances.size());
-        meshInstances.push_back(std::make_shared<meshkernel::Mesh>());
+        meshInstances.emplace_back(std::make_shared<meshkernel::Mesh>());
         return 0;
     };
 
@@ -614,8 +611,8 @@ namespace meshkernelapi
                 splines[i].y = geometryListIn.yCoordinates[i];
             }
 
-            std::vector<std::vector<size_t>> indexes(geometryListIn.numberOfCoordinates, std::vector<size_t>(2));
-            int numSplines = FindIndexes(splines, 0, splines.size(), meshkernel::doubleMissingValue, indexes);
+            const auto indexes = FindIndexes(splines, 0, splines.size(), meshkernel::doubleMissingValue);
+            const auto numSplines = indexes.size();
             std::vector<meshkernel::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
 
             int index = 0;
@@ -1285,7 +1282,7 @@ namespace meshkernelapi
             // Set the node coordinate
             auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];
             std::vector<meshkernel::Point> pointVector;
-            pointVector.push_back(node);
+            pointVector.emplace_back(node);
             ConvertPointVectorToGeometryListNative(pointVector, geometryListOut);
         }
         catch (const std::exception& e)
@@ -1588,8 +1585,8 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-
-            const auto smallFlowEdgeCenters = meshInstances[meshKernelId]->GetSmallFlowEdgeCenters(smallFlowEdgesThreshold);
+            const auto edgesCrossingSmallFlowEdges = meshInstances[meshKernelId]->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
+            const auto smallFlowEdgeCenters = meshInstances[meshKernelId]->GetFlowEdgesCenters(edgesCrossingSmallFlowEdges);
 
             numSmallFlowEdges = static_cast<int>(smallFlowEdgeCenters.size());
         }
@@ -1611,7 +1608,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            const auto smallFlowEdgeCenters = meshInstances[meshKernelId]->GetSmallFlowEdgeCenters(smallFlowEdgesThreshold);
+            const auto edgesCrossingSmallFlowEdges = meshInstances[meshKernelId]->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
+            const auto smallFlowEdgeCenters = meshInstances[meshKernelId]->GetFlowEdgesCenters(edgesCrossingSmallFlowEdges);
 
             ConvertPointVectorToGeometryListNative(smallFlowEdgeCenters, result);
         }
@@ -1640,7 +1638,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            const auto obtuseTriangles = meshInstances[meshKernelId]->GetObtuseTriangles();
+            const auto obtuseTriangles = meshInstances[meshKernelId]->GetObtuseTrianglesCenters();
 
             numObtuseTriangles = static_cast<int>(obtuseTriangles.size());
         }
@@ -1662,9 +1660,30 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            const auto obtuseTriangles = meshInstances[meshKernelId]->GetObtuseTriangles();
+            const auto obtuseTriangles = meshInstances[meshKernelId]->GetObtuseTrianglesCenters();
 
             ConvertPointVectorToGeometryListNative(obtuseTriangles, result);
+        }
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            meshInstances[meshKernelId]->RemoveSmallFlowEdges(smallFlowEdgesThreshold);
+            meshInstances[meshKernelId]->RemoveSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
         }
         catch (const std::exception& e)
         {

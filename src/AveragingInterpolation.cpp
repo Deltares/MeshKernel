@@ -31,6 +31,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 #include <MeshKernel/AveragingInterpolation.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <stdexcept>
 
 meshkernel::AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh> mesh,
@@ -113,9 +114,9 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
 
             for (int n = 0; n < numFaceNodes; ++n)
             {
-                polygonNodesCache.push_back(m_mesh->m_facesMassCenters[f] + (m_mesh->m_nodes[m_mesh->m_facesNodes[f][n]] - m_mesh->m_facesMassCenters[f]) * m_relativeSearchRadius);
+                polygonNodesCache.emplace_back(m_mesh->m_facesMassCenters[f] + (m_mesh->m_nodes[m_mesh->m_facesNodes[f][n]] - m_mesh->m_facesMassCenters[f]) * m_relativeSearchRadius);
             }
-            polygonNodesCache.push_back(polygonNodesCache[0]);
+            polygonNodesCache.emplace_back(polygonNodesCache[0]);
 
             double result = 0.0;
             ComputeOnPolygon(polygonNodesCache, m_mesh->m_facesMassCenters[f], result);
@@ -192,8 +193,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
 
     if (m_mesh->m_projection == Projections::spherical && upperRight.x - lowerLeft.x > 180.0)
     {
-
-        double xmean = 0.5 * (upperRight.x + lowerLeft.x);
+        const auto xmean = 0.5 * (upperRight.x + lowerLeft.x);
         lowerLeft.x = std::numeric_limits<double>::max();
         upperRight.x = std::numeric_limits<double>::lowest();
         for (int i = 0, polygonSize = polygon.size(); i < polygonSize; i++)

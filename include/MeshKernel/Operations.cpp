@@ -32,7 +32,6 @@
 #include <numeric>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 
 namespace meshkernel
@@ -100,55 +99,48 @@ namespace meshkernel
         return index;
     }
 
-    static int FindIndexes(const std::vector<Point>& vec,
-                           const size_t start,
-                           const size_t end,
-                           const double& separator,
-                           std::vector<std::vector<size_t>>& indexes)
+    static auto FindIndexes(const std::vector<Point>& vec,
+                            const size_t start,
+                            const size_t end,
+                            const double& separator)
     {
+        std::vector<std::vector<size_t>> result;
+
         if (vec.empty())
         {
-            return 0;
+            return result;
         }
+
         // set an invalid index
-        auto invalidIndex = std::numeric_limits<size_t>::max();
-        for (int n = 0; n < indexes.size(); n++)
+        if (start > vec.size() || end > vec.size())
         {
-            indexes[n][0] = invalidIndex;
-            indexes[n][1] = invalidIndex;
+            return result;
         }
 
-        if (start > vec.size() || end > vec.size() || indexes.empty())
-        {
-            return -1;
-        }
-
-        int pos = 0;
+        bool inRange = false;
+        size_t startRange;
         for (auto n = start; n < end; n++)
         {
 
-            if (vec[n].x != separator && indexes[pos][0] == invalidIndex)
+            if (!IsEqual(vec[n].x, separator) && !inRange)
             {
-                indexes[pos][0] = n;
+                startRange = n;
+                inRange = true;
             }
-            else if (vec[n].x == separator && indexes[pos][1] == invalidIndex)
+            if (IsEqual(vec[n].x, separator) && inRange)
             {
-                indexes[pos][1] = n - 1;
-                pos++;
-            }
-            if (pos >= indexes.size())
-            {
-                return -1;
+                result.emplace_back(std::initializer_list<size_t>{startRange, n - 1});
+                inRange = false;
             }
         }
 
-        if (pos < indexes.size() && indexes[pos][1] == invalidIndex)
+        //in case no separator have been found
+        if (inRange)
         {
-            indexes[pos][1] = int(vec.size()) - 1;
-            pos++;
+            result.emplace_back(std::initializer_list<size_t>{startRange, vec.size() - 1});
         }
 
-        return pos;
+        return result;
     }
 
     template <typename T>
@@ -347,7 +339,7 @@ namespace meshkernel
             for (int n = startNode; n < endNode; n++)
             {
                 const auto leftDifference = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
-                if (IsDifferenceLessThanEpsilon(leftDifference, 0.0))
+                if (IsEqual(leftDifference, 0.0))
                 {
                     // point on the line
                     return true;
@@ -422,7 +414,7 @@ namespace meshkernel
                     zeta = -InnerProduct(xiXxip1, pointCartesian3D) / D;
                 }
 
-                if (IsDifferenceLessThanEpsilon(zeta, 0.0))
+                if (IsEqual(zeta, 0.0))
                 {
                     return true;
                 }
@@ -506,10 +498,10 @@ namespace meshkernel
 
             firstPointX = firstPointX * degrad_hp;
             secondPointX = secondPointX * degrad_hp;
-            double firstPointY = firstPoint.y * degrad_hp;
-            double secondPointY = secondPoint.y * degrad_hp;
-            double cosPhi = cos(0.5 * (firstPointY + secondPointY));
-            double dx = earth_radius * cosPhi * (secondPointX - firstPointX);
+            const double firstPointY = firstPoint.y * degrad_hp;
+            const double secondPointY = secondPoint.y * degrad_hp;
+            const double cosPhi = cos(0.5 * (firstPointY + secondPointY));
+            const double dx = earth_radius * cosPhi * (secondPointX - firstPointX);
             return dx;
         }
         return doubleMissingValue;
@@ -1343,7 +1335,42 @@ namespace meshkernel
         return isCrossing;
     }
 
-    static void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, int numberOfPolygonPoints, Projections projection, double& area, Point& centerOfMass)
+    static bool IsCounterClockWisePolygon(std::vector<Point>& polygon, int numPoints, Projections projection)
+    {
+        if (numPoints <= 0)
+        {
+            throw std::invalid_argument("IsCounterClockWisePolygon: The polygon contains no nodes.");
+        }
+
+        double minX;
+        double minY;
+        ReferencePoint(polygon, numPoints, minX, minY, projection);
+
+        Point reference{minX, minY};
+        double area = 0.0;
+        for (int n = 0; n < numPoints; n++)
+        {
+            const auto nextNode = NextCircularForwardIndex(n, numPoints);
+            double dx0 = GetDx(reference, polygon[n], projection);
+            double dy0 = GetDy(reference, polygon[n], projection);
+            double dx1 = GetDx(reference, polygon[nextNode], projection);
+            double dy1 = GetDy(reference, polygon[nextNode], projection);
+
+            double xc = 0.5 * (dx0 + dx1);
+            double yc = 0.5 * (dy0 + dy1);
+
+            dx0 = GetDx(polygon[n], polygon[nextNode], projection);
+            dy0 = GetDy(polygon[n], polygon[nextNode], projection);
+            double dsx = dy0;
+            double dsy = -dx0;
+            double xds = xc * dsx + yc * dsy;
+            area = area + 0.5 * xds;
+        }
+
+        return area > 0.0;
+    }
+
+    static void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, Projections projection, double& area, Point& centerOfMass, bool& isCounterClockWise)
     {
         if (numberOfPolygonPoints <= 0)
         {
@@ -1359,18 +1386,19 @@ namespace meshkernel
         double xCenterOfMass = 0.0;
         double yCenterOfMass = 0.0;
         const double minArea = 1e-8;
-        for (int p = 0; p < numberOfPolygonPoints; p++)
+        for (int n = 0; n < numberOfPolygonPoints; n++)
         {
-            double dx0 = GetDx(reference, polygon[p], projection);
-            double dy0 = GetDy(reference, polygon[p], projection);
-            double dx1 = GetDx(reference, polygon[p + 1], projection);
-            double dy1 = GetDy(reference, polygon[p + 1], projection);
+            const auto nextNode = NextCircularForwardIndex(n, numberOfPolygonPoints);
+            double dx0 = GetDx(reference, polygon[n], projection);
+            double dy0 = GetDy(reference, polygon[n], projection);
+            double dx1 = GetDx(reference, polygon[nextNode], projection);
+            double dy1 = GetDy(reference, polygon[nextNode], projection);
 
             double xc = 0.5 * (dx0 + dx1);
             double yc = 0.5 * (dy0 + dy1);
 
-            dx0 = GetDx(polygon[p], polygon[p + 1], projection);
-            dy0 = GetDy(polygon[p], polygon[p + 1], projection);
+            dx0 = GetDx(polygon[n], polygon[nextNode], projection);
+            dy0 = GetDy(polygon[n], polygon[nextNode], projection);
             double dsx = dy0;
             double dsy = -dx0;
             double xds = xc * dsx + yc * dsy;
@@ -1379,6 +1407,9 @@ namespace meshkernel
             xCenterOfMass = xCenterOfMass + xds * xc;
             yCenterOfMass = yCenterOfMass + xds * yc;
         }
+
+        isCounterClockWise = area > 0.0;
+
         area = std::abs(area) < minArea ? minArea : area;
 
         const double fac = 1.0 / (3.0 * area);
@@ -1659,12 +1690,12 @@ namespace meshkernel
                 continue;
             }
 
-            edgesCenters.push_back((nodes[first] + nodes[second]) * 0.5);
+            edgesCenters.emplace_back((nodes[first] + nodes[second]) * 0.5);
         }
     }
 
     template <typename T>
-    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight)
+    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight) //requires IsCoordinate<T>
     {
 
         double minx = std::numeric_limits<double>::max();
@@ -1673,8 +1704,8 @@ namespace meshkernel
         double maxy = std::numeric_limits<double>::lowest();
         for (int n = 0; n < values.size(); n++)
         {
-            bool isInvalid = IsDifferenceLessThanEpsilon(values[n].x, doubleMissingValue) ||
-                             IsDifferenceLessThanEpsilon(values[n].y, doubleMissingValue);
+            bool isInvalid = IsEqual(values[n].x, doubleMissingValue) ||
+                             IsEqual(values[n].y, doubleMissingValue);
 
             if (isInvalid)
             {
@@ -1692,7 +1723,7 @@ namespace meshkernel
     }
 
     template <typename T>
-    bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight)
+    bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight) //requires IsCoordinate<T>
     {
 
         return point.x >= lowerLeft.x && point.x <= upperRight.x &&
