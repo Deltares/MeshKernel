@@ -730,10 +730,10 @@ namespace meshkernel
                     continue;
 
                 int isFaceFound = 0;
-                for (int e = 0; e < m_mesh->m_facesEdges[face].size(); e++)
+
+                for (const auto& currentEdge : m_mesh->m_facesEdges[face])
                 {
                     // is a boundary edge, continue
-                    int currentEdge = m_mesh->m_facesEdges[face][e];
                     if (m_mesh->IsEdgeOnBoundary(currentEdge))
                         continue;
 
@@ -743,10 +743,8 @@ namespace meshkernel
                     if (m_faceMask[otherFace] != intMissingValue)
                         continue;
 
-                    for (int ee = 0; ee < m_mesh->m_facesEdges[otherFace].size(); ee++)
+                    for (const auto& edgeOtherFace : m_mesh->m_facesEdges[otherFace])
                     {
-                        int edgeOtherFace = m_mesh->m_facesEdges[otherFace][ee];
-
                         if (m_edgeMask[edgeOtherFace] == 1)
                         {
                             // previously visited crossed edge
