@@ -381,9 +381,9 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
     {
         Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};
 
-        std::array<double, 3> exxp;
-        std::array<double, 3> eyyp;
-        std::array<double, 3> ezzp;
+        std::array<double, 3> exxp{0.0, 0.0, 0.0};
+        std::array<double, 3> eyyp{0.0, 0.0, 0.0};
+        std::array<double, 3> ezzp{0.0, 0.0, 0.0};
         ComputeThreeBaseComponents(m_mesh->m_nodes[nodeIndex], exxp, eyyp, ezzp);
 
         //get 3D-coordinates in rotated frame
