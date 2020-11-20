@@ -301,9 +301,9 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
         else
         {
             // for non-triangular faces
-            for (int i = 0; i < m_topologyFaceNodeMapping[currentTopology][f].size(); i++)
+            for (const auto& element : m_topologyFaceNodeMapping[currentTopology][f])
             {
-                m_Az[currentTopology][f][m_topologyFaceNodeMapping[currentTopology][f][i]] = 1.0 / double(numFaceNodes);
+                m_Az[currentTopology][f][element] = 1.0 / static_cast<double>(numFaceNodes);
             }
         }
     }

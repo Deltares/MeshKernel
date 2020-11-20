@@ -702,9 +702,8 @@ namespace meshkernel
                     bool isClose = false;
                     int landBoundaryNode = 0;
                     int otherFace = m_mesh->m_edgesFaces[e][0];
-                    for (int ee = 0; ee < m_mesh->m_facesEdges[otherFace].size(); ee++)
+                    for (const auto& edge : m_mesh->m_facesEdges[otherFace])
                     {
-                        int edge = m_mesh->m_facesEdges[otherFace][ee];
                         isClose = IsMeshEdgeCloseToLandBoundaries(edge,
                                                                   startNodeLandBoundaryIndex,
                                                                   endNodeLandBoundaryindex,

@@ -134,12 +134,9 @@ namespace meshkernel
                        std::vector<Point>& frontGridPoints,
                        int& numFrontPoints);
 
-        /// <summary>
-        /// Compute growth velocity vectors at grid points (comp_vel)
-        /// </summary>
-        /// <param name="layerIndex"></param>
-        /// <param name="velocityVector"></param>
-        /// <returns></returns>
+        /// @brief Compute growth velocity vectors at grid points (comp_vel)
+        /// @param layerIndex
+        /// @param velocityVector
         void ComputeVelocitiesAtGridPoints(int layerIndex, std::vector<Point>& velocityVector);
 
         /// <summary>
