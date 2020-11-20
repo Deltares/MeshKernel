@@ -1112,19 +1112,17 @@ void meshkernel::CurvilinearGridFromSplines::ComputeEdgeVelocities(std::vector<d
 
     ComputeGridHeights();
 
-    for (int i = 0; i < numPerpendicularFacesOnSubintervalAndEdge[0].size(); ++i)
-    {
-        numPerpendicularFacesOnSubintervalAndEdge[0][i] = 1;
-    }
+    std::fill(numPerpendicularFacesOnSubintervalAndEdge[0].begin(), numPerpendicularFacesOnSubintervalAndEdge[0].end(), 1);
 
     for (auto s = 0; s < m_splines->GetNumSplines(); s++)
     {
         double maxHeight = std::numeric_limits<double>::lowest();
-        for (int i = 0; i < m_gridHeights[0].size(); ++i)
+
+        for (const auto& e : m_gridHeights[0])
         {
-            if (m_gridHeights[0][i] != doubleMissingValue && m_gridHeights[0][i] > maxHeight)
+            if (!IsEqual(e, doubleMissingValue) && e > maxHeight)
             {
-                maxHeight = m_gridHeights[0][i];
+                maxHeight = e;
             }
         }
 
