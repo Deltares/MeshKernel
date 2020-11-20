@@ -470,7 +470,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
     std::vector<std::vector<size_t>> nIndicesThisSide(1, std::vector<size_t>(2));
     std::vector<std::vector<Point>> gridPointsNDirection(m_gridPoints[0].size(), std::vector<Point>(m_gridPoints.size()));
     std::vector<std::vector<Point>> curvilinearMeshPoints;
-    double squaredDistanceTolerance = 1e-12;
+    const double squaredDistanceTolerance = 1e-12;
 
     // get the grid sizes in j-direction
     for (int i = 0; i < m_gridPoints[0].size(); i++)
@@ -539,10 +539,9 @@ void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
         // increment points
         curvilinearMeshPoints.resize(endGridlineIndex + 1);
         const auto NSize = std::max(curvilinearMeshPoints[0].size(), maxN + maxNOther + 1);
-
-        for (int i = 0; i < curvilinearMeshPoints.size(); i++)
+        for (auto& element : curvilinearMeshPoints)
         {
-            curvilinearMeshPoints[i].resize(NSize);
+            element.resize(NSize);
         }
 
         // fill first part
