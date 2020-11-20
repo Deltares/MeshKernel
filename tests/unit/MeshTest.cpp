@@ -615,7 +615,7 @@ TEST(Mesh, GetObtuseTriangles)
     mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
     // execute, only one obtuse triangle should be found
-    const auto obtuseTrianglesCount = mesh.GetObtuseTriangles().size();
+    const auto obtuseTrianglesCount = mesh.GetObtuseTrianglesCenters().size();
 
     // assert a small flow edge is found
     ASSERT_EQ(1, obtuseTrianglesCount);
@@ -642,12 +642,49 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
     mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
 
     // execute, by setting the smallFlowEdgesThreshold high, a small flow edge will be found
-    const auto numSmallFlowEdgeFirstQuery = mesh.GetSmallFlowEdgeCenters(100).size();
+    const auto numSmallFlowEdgeFirstQuery = mesh.GetEdgesCrossingSmallFlowEdges(100).size();
 
     // execute, by setting the smallFlowEdgesThreshold low, no small flow edge will be found
-    const auto numSmallFlowEdgeSecondQuery = mesh.GetSmallFlowEdgeCenters(0.0).size();
+    const auto numSmallFlowEdgeSecondQuery = mesh.GetEdgesCrossingSmallFlowEdges(0.0).size();
 
     // assert a small flow edge is found
     ASSERT_EQ(1, numSmallFlowEdgeFirstQuery);
     ASSERT_EQ(0, numSmallFlowEdgeSecondQuery);
+}
+
+TEST(Mesh, RemoveSmallFlowEdge)
+{
+    // Setup a mesh with eight triangles
+    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_net.nc");
+
+    ASSERT_EQ(8, mesh->GetNumFaces());
+
+    // After merging the number of faces is reduced
+    mesh->RemoveSmallFlowEdges(1.0);
+
+    ASSERT_EQ(3, mesh->GetNumFaces());
+}
+
+TEST(Mesh, RemoveSmallTrianglesAtBoundaries)
+{
+    // Setup a mesh with two triangles
+    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_quad_net.nc");
+
+    ASSERT_EQ(2, mesh->GetNumFaces());
+
+    // After merging
+    mesh->RemoveSmallTrianglesAtBoundaries(0.6);
+
+    ASSERT_EQ(1, mesh->GetNumFaces());
+
+    const double tolerance = 1e-8;
+    ASSERT_NEAR(364.17013549804688, mesh->m_nodes[0].x, tolerance);
+    ASSERT_NEAR(295.21142578125000, mesh->m_nodes[1].x, tolerance);
+    ASSERT_NEAR(421.46209716796875, mesh->m_nodes[2].x, tolerance);
+    ASSERT_NEAR(359.79510498046875, mesh->m_nodes[3].x, tolerance);
+
+    ASSERT_NEAR(374.00662231445313, mesh->m_nodes[0].y, tolerance);
+    ASSERT_NEAR(300.48181152343750, mesh->m_nodes[1].y, tolerance);
+    ASSERT_NEAR(295.33038330078125, mesh->m_nodes[2].y, tolerance);
+    ASSERT_NEAR(398.59295654296875, mesh->m_nodes[3].y, tolerance);
 }

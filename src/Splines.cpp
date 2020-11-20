@@ -46,13 +46,13 @@ void meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t st
     m_splineNodes.emplace_back();
     for (auto n = start; n < start + size; ++n)
     {
-        m_splineNodes.back().push_back(splines[n]);
+        m_splineNodes.back().emplace_back(splines[n]);
     }
 
     // compute basic properties
     m_splineDerivatives.emplace_back();
     SecondOrderDerivative(m_splineNodes.back(), size, m_splineDerivatives.back());
-    m_splinesLength.push_back(GetSplineLength(static_cast<int>(GetNumSplines() - 1), 0, size - 1));
+    m_splinesLength.emplace_back(GetSplineLength(static_cast<int>(GetNumSplines() - 1), 0, size - 1));
 }
 
 void meshkernel::Splines::DeleteSpline(int splineIndex)
@@ -68,7 +68,7 @@ void meshkernel::Splines::AddPointInExistingSpline(int splineIndex, const Point&
     {
         throw std::invalid_argument("Splines::AddPointInExistingSpline: Invalid spline index.");
     }
-    m_splineNodes[splineIndex].push_back(point);
+    m_splineNodes[splineIndex].emplace_back(point);
 }
 
 bool meshkernel::Splines::GetSplinesIntersection(int first,

@@ -48,9 +48,7 @@ namespace meshkernel
         ResizeVectorIfNeededWithMinimumSize(m_numAllocatedNodes, m_nodes, m_allocationSize);
 
         // find the polygons in the current list of points
-        std::vector<std::vector<size_t>> indexes(polygon.size(), std::vector<size_t>(2, 0));
-        int pos = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue, indexes);
-        indexes.resize(pos);
+        const auto indexes = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue);
 
         // resize if necessary
         int numNodes = GetNumNodes();
@@ -226,11 +224,11 @@ namespace meshkernel
             localPolygon.clear();
             for (int j = m_indices[i][0]; j <= m_indices[i][1]; ++j)
             {
-                localPolygon.push_back(m_nodes[j]);
+                localPolygon.emplace_back(m_nodes[j]);
             }
-            const auto numLocalPoints = static_cast<int>(localPolygon.size());
 
             // not a closed polygon
+            const auto numLocalPoints = localPolygon.size();
             if (localPolygon[numLocalPoints - 1] != localPolygon[0])
             {
                 continue;
@@ -239,7 +237,8 @@ namespace meshkernel
             isOnePolygonClosed = true;
             double localPolygonArea = 0.0;
             Point centerOfMass;
-            FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass);
+            bool isCounterClockWise;
+            FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass, isCounterClockWise);
 
             double perimeter;
             PerimeterClosedPolygon(localPolygon, numLocalPoints, perimeter);
@@ -248,11 +247,11 @@ namespace meshkernel
             MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
 
             // average triangle size
-            double averageEdgeLength = perimeter / (numLocalPoints - 1);
-            double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
+            const double averageEdgeLength = perimeter / static_cast<double>(numLocalPoints - 1);
+            const double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
             // estimated number of triangles
-            auto numberOfTriangles = int(SafetySize * localPolygonArea / averageTriangleArea);
+            const auto numberOfTriangles = int(SafetySize * localPolygonArea / averageTriangleArea);
             if (numberOfTriangles <= 0)
             {
                 throw AlgorithmError("Polygons::CreatePointsInPolygons: The number of triangles is <= 0.");
@@ -403,13 +402,8 @@ namespace meshkernel
         refinedPolygon.resize(refinedNodeIndex);
     }
 
-    void Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, const int numPoints, double& perimeter) const
+    void Polygons::PerimeterClosedPolygon(const std::vector<Point>& localPolygon, size_t numPoints, double& perimeter) const
     {
-        if (numPoints < 0)
-        {
-            throw std::invalid_argument("Polygons::PerimeterClosedPolygon: The number of nodes is <= 0.");
-        }
-
         if (localPolygon[0] != localPolygon[numPoints - 1])
         {
             throw std::invalid_argument("Polygons::PerimeterClosedPolygon: The first and last point of the polygon is not the same.");
@@ -437,13 +431,8 @@ namespace meshkernel
         }
     }
 
-    void Polygons::MaximumEdgeLength(const std::vector<Point>& localPolygon, const int numPoints, double& maximumEdgeLength)
+    void Polygons::MaximumEdgeLength(const std::vector<Point>& localPolygon, size_t numPoints, double& maximumEdgeLength) const
     {
-
-        if (numPoints < 0)
-        {
-            throw std::invalid_argument("Polygons::MaximumEdgeLength: The number of nodes is <= 0.");
-        }
 
         if (localPolygon[0].x != localPolygon[numPoints - 1].x)
         {

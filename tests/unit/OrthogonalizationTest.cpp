@@ -17,20 +17,18 @@
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 {
     // Preparation
-    std::vector<meshkernel::Point> nodes;
-    nodes.push_back(meshkernel::Point{0.0, 0.0});
-    nodes.push_back(meshkernel::Point{0.0, 10.0});
-    nodes.push_back(meshkernel::Point{10.0, 0.0});
-    nodes.push_back(meshkernel::Point{10.0, 10.0});
-    nodes.push_back(meshkernel::Point{20.0, 0.0});
+    std::vector<meshkernel::Point> nodes{{0.0, 0.0},
+                                         {0.0, 10.0},
+                                         {10.0, 0.0},
+                                         {10.0, 10.0},
+                                         {20.0, 0.0}};
 
-    std::vector<meshkernel::Edge> edges;
-    edges.push_back({1, 0});
-    edges.push_back({0, 2});
-    edges.push_back({2, 4});
-    edges.push_back({4, 3});
-    edges.push_back({3, 2});
-    edges.push_back({3, 1});
+    std::vector<meshkernel::Edge> edges{{1, 0},
+                                        {0, 2},
+                                        {2, 4},
+                                        {4, 3},
+                                        {3, 2},
+                                        {3, 1}};
 
     int projectToLandBoundaryOption = 0;
     meshkernelapi::OrthogonalizationParametersNative orthogonalizationParametersNative;
@@ -209,15 +207,14 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 1.0;
     orthogonalizationParametersNative.Smoothorarea = 1.0;
 
-    std::vector<meshkernel::Point> nodes;
-    nodes.push_back({342.987518, 471.121002});
-    nodes.push_back({327.640900, 380.846436});
-    nodes.push_back({396.851135, 201.200073});
-    nodes.push_back({514.207581, 203.607407});
-    nodes.push_back({569.274841, 294.483765});
-    nodes.push_back({568.673035, 379.943695});
-    nodes.push_back({515.712158, 458.783478});
-    nodes.push_back({343.288422, 471.722809});
+    std::vector<meshkernel::Point> nodes{{342.987518, 471.121002},
+                                         {327.640900, 380.846436},
+                                         {396.851135, 201.200073},
+                                         {514.207581, 203.607407},
+                                         {569.274841, 294.483765},
+                                         {568.673035, 379.943695},
+                                         {515.712158, 458.783478},
+                                         {343.288422, 471.722809}};
 
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
@@ -359,17 +356,16 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
     auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
 
     // the land boundary to use
-    std::vector<meshkernel::Point> landBoundary{
-        {235.561218, 290.571899},
-        {265.953522, 436.515747},
-        {429.349854, 450.959656},
-        {535.271545, 386.262909},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
-        {246.995941, 262.285858},
-        {351.112183, 237.309906},
-        {443.191895, 262.285858},
-        {553.627319, 327.283539},
-        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
+    std::vector<meshkernel::Point> landBoundary{{235.561218, 290.571899},
+                                                {265.953522, 436.515747},
+                                                {429.349854, 450.959656},
+                                                {535.271545, 386.262909},
+                                                {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
+                                                {246.995941, 262.285858},
+                                                {351.112183, 237.309906},
+                                                {443.191895, 262.285858},
+                                                {553.627319, 327.283539},
+                                                {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue}};
 
     // snap to land boundaries
     int projectToLandBoundaryOption = 2;
@@ -501,21 +497,19 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherical)
 {
-    std::vector<meshkernel::Point> nodes;
-    nodes.push_back({41.1019592, 41.1072273});
-    nodes.push_back({41.1044655, 41.1043587});
-    nodes.push_back({41.1051979, 41.1073151});
-    nodes.push_back({41.1080132, 41.1046638});
-    nodes.push_back({41.1014137, 41.1039963});
+    std::vector<meshkernel::Point> nodes{{41.1019592, 41.1072273},
+                                         {41.1044655, 41.1043587},
+                                         {41.1051979, 41.1073151},
+                                         {41.1080132, 41.1046638},
+                                         {41.1014137, 41.1039963}};
 
-    std::vector<meshkernel::Edge> edges;
-    edges.push_back({4, 0});
-    edges.push_back({4, 1});
-    edges.push_back({1, 0});
-    edges.push_back({1, 3});
-    edges.push_back({3, 2});
-    edges.push_back({2, 1});
-    edges.push_back({0, 2});
+    std::vector<meshkernel::Edge> edges{{4, 0},
+                                        {4, 1},
+                                        {1, 0},
+                                        {1, 3},
+                                        {3, 2},
+                                        {2, 1},
+                                        {0, 2}};
 
     auto mesh = std::make_shared<meshkernel::Mesh>();
     mesh->Set(edges, nodes, meshkernel::Projections::spherical);
