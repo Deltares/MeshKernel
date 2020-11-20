@@ -337,7 +337,7 @@ namespace meshkernel
         /// @param[in] nodeIndex The node index for which sorting should take place
         void SortEdgesInCounterClockWiseOrder(int nodeIndex);
 
-        /// @brief remove coinciding triangles
+        /// @brief Remove coinciding triangles
         void RemoveDegeneratedTriangles();
 
         /// @brief Transform non-triangular faces in triangular faces

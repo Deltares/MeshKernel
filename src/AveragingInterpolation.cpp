@@ -193,8 +193,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
 
     if (m_mesh->m_projection == Projections::spherical && upperRight.x - lowerLeft.x > 180.0)
     {
-
-        double xmean = 0.5 * (upperRight.x + lowerLeft.x);
+        const auto xmean = 0.5 * (upperRight.x + lowerLeft.x);
         lowerLeft.x = std::numeric_limits<double>::max();
         upperRight.x = std::numeric_limits<double>::lowest();
         for (int i = 0, polygonSize = polygon.size(); i < polygonSize; i++)

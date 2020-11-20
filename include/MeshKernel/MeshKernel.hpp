@@ -421,6 +421,7 @@ namespace meshkernelapi
         /// @param[in,out] result The obtuse triangles mass centers
         /// @return Error code (0 Successful)
         MKERNEL_API int mkernel_get_obtuse_triangles(int meshKernelId, GeometryListNative& result);
+
         /// @brief Count the small flow edges (flow edges are the edges connecting the face circumcenters)
         /// @param[in] meshKernelId  Id of the mesh state
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
@@ -438,6 +439,7 @@ namespace meshkernelapi
         /// @brief Removes the small flow edges (flow edges are the edges connecting the face circumcenters)
         /// @param[in] meshKernelId  Id of the mesh state
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
+        /// @param[in] minFractionalAreaTriangles The ratio of the face area to the average area of neighboring non triangular faces
         /// @return Error code (0 Successful)
         MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles);
 
