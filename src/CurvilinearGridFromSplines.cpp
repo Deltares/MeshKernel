@@ -397,11 +397,13 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
         int sumRight = 0;
         auto leftColumn = std::max(n - 1, 0);
         auto rightColumn = std::min(n, int(m_numM) - 2);
-        for (int j = 0; j < m_numPerpendicularFacesOnSubintervalAndEdge.size(); ++j)
+
+        for (const auto& numFaces : m_numPerpendicularFacesOnSubintervalAndEdge)
         {
-            sumLeft += m_numPerpendicularFacesOnSubintervalAndEdge[j][leftColumn];
-            sumRight += m_numPerpendicularFacesOnSubintervalAndEdge[j][rightColumn];
+            sumLeft += numFaces[leftColumn];
+            sumRight += numFaces[rightColumn];
         }
+
         if (sumLeft == 0 && sumRight == 0)
         {
             m_validFrontNodes[n] = 0;
@@ -1318,7 +1320,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesSubIntervals(const
     {
         double maxHeight = *std::max_element(m_gridHeights[0].begin() + startGridLineIndex, m_gridHeights[0].begin() + endGridLineIndex);
 
-        int numNUniformPart = int(std::floor(maxHeight / firstHeight + 0.99999));
+        auto numNUniformPart = int(std::floor(maxHeight / firstHeight + 0.99999));
         numNUniformPart = std::min(numNUniformPart, m_maxNUniformPart);
 
         for (int i = startGridLineIndex; i < endGridLineIndex; ++i)

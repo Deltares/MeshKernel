@@ -1252,7 +1252,7 @@ void meshkernel::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeInde
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree)
+void meshkernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
 {
     int newSize = GetNumNodes() + 1;
     newNodeIndex = GetNumNodes();
@@ -2288,15 +2288,9 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
             auto edgeIndex = m_facesEdges[f][n];
 
             if (m_edgesNumFaces[edgeIndex] < 1)
+            {
                 continue;
-
-            //get the other links in the right numbering
-            //TODO: ask why only 3 are requested, why an average length stored in averageEdgesLength is needed?
-            //int kkm1 = n - 1; if (kkm1 < 0) kkm1 = kkm1 + numberOfFaceNodes;
-            //int kkp1 = n + 1; if (kkp1 >= numberOfFaceNodes) kkp1 = kkp1 - numberOfFaceNodes;
-            //
-            //std::size_t klinkm1 = m_facesEdges[f][kkm1];
-            //std::size_t klinkp1 = m_facesEdges[f][kkp1];
+            }
 
             double edgeLength = edgesLength[edgeIndex];
             if (edgeLength != 0.0)

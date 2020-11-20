@@ -51,13 +51,6 @@
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/AveragingInterpolation.hpp>
 
-// The vector containing the mesh instances
-static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;
-
-// For interactivity
-static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
-static std::map<int, std::shared_ptr<meshkernel::CurvilinearGridFromSplines>> curvilinearGridFromSplinesInstances;
-
 namespace meshkernelapi
 {
     // The vector containing the mesh instances
