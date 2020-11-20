@@ -489,7 +489,7 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
     int newNodeIndex;
-    mesh->InsertNode(newPoint, newNodeIndex, true);
+    mesh->InsertNode(newPoint, newNodeIndex);
 
     int newEdgeIndex;
     mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
@@ -511,7 +511,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     meshkernel::Point newPoint{10.0, 10.0};
     mesh->m_nodesRTree.BuildTree(mesh->m_nodes);
     int newNodeIndex;
-    mesh->InsertNode(newPoint, newNodeIndex, true);
+    mesh->InsertNode(newPoint, newNodeIndex);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     mesh->DeleteNode(0);
@@ -531,7 +531,7 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 
     meshkernel::Point newPoint{10.0, 10.0};
     int newNodeIndex;
-    mesh->InsertNode(newPoint, newNodeIndex, true);
+    mesh->InsertNode(newPoint, newNodeIndex);
 
     // connect nodes modifies the number of edges, m_nodesRTreeRequiresUpdate is set to true
     int newEdgeIndex;

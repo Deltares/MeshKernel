@@ -159,8 +159,7 @@ namespace meshkernel
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
         /// @param[out] newNodeIndex The index of the new node
-        /// @param[in] updateRTree Update m_nodesRTree
-        void InsertNode(const Point& newPoint, int& newNodeIndex, bool updateRTree = false);
+        void InsertNode(const Point& newPoint, int& newNodeIndex);
 
         /// @brief Delete a node
         /// @param[in] nodeIndex The index of the node to delete
