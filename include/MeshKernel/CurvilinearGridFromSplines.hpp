@@ -247,10 +247,10 @@ namespace meshkernel
         /// @param[in] v
         /// @param[out] validIndices
         /// @param[out] numValid
-        void GetValidSplineIndices(int numValues,
+        void GetValidSplineIndices(size_t numValues,
                                    const std::vector<int>& v,
                                    std::vector<int>& validIndices,
-                                   int& numValid) const;
+                                   size_t& numValid) const;
 
         /// <summary>
         /// Computes the intersection of two splines, one must have only two nodes (get_crosssplines)

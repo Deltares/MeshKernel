@@ -433,7 +433,7 @@ namespace meshkernel
         return isInPolygon;
     }
 
-    static void ComputeThreeBaseComponents(const Point& point, double (&exxp)[3], double (&eyyp)[3], double (&ezzp)[3])
+    static void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp)
     {
         double phi0 = point.y * degrad_hp;
         double lambda0 = point.x * degrad_hp;
@@ -708,9 +708,9 @@ namespace meshkernel
     {
         if (projection == Projections::sphericalAccurate)
         {
-            double exxp[3];
-            double eyyp[3];
-            double ezzp[3];
+            std::array<double, 3> exxp;
+            std::array<double, 3> eyyp;
+            std::array<double, 3> ezzp;
             ComputeThreeBaseComponents(reference, exxp, eyyp, ezzp);
 
             // get the 3D coordinate

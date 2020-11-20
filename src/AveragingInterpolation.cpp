@@ -178,40 +178,40 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
         throw std::invalid_argument("AveragingInterpolation::ComputeOnPolygon invalid interpolation point");
     }
 
-    std::vector<Point> searchPolygon(polygon.size());
-
     // increase polygon size
-    for (int i = 0, polygonSize = polygon.size(); i < polygonSize; i++)
+    std::vector<Point> searchPolygon;
+    searchPolygon.reserve(polygon.size());
+    for (const auto& value : polygon)
     {
-        searchPolygon[i] = polygon[i] * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius);
+        searchPolygon.emplace_back(value * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius));
     }
 
     // compute the polygon bounding box
     Point lowerLeft;
     Point upperRight;
     GetBoundingBox(searchPolygon, lowerLeft, upperRight);
-
     if (m_mesh->m_projection == Projections::spherical && upperRight.x - lowerLeft.x > 180.0)
     {
         const auto xmean = 0.5 * (upperRight.x + lowerLeft.x);
         lowerLeft.x = std::numeric_limits<double>::max();
         upperRight.x = std::numeric_limits<double>::lowest();
-        for (int i = 0, polygonSize = polygon.size(); i < polygonSize; i++)
+
+        for (auto& value : searchPolygon)
         {
-            if (searchPolygon[i].x < xmean)
+            if (value.x < xmean)
             {
-                searchPolygon[i].x = searchPolygon[i].x + 360.0;
-                lowerLeft.x = std::min(lowerLeft.x, searchPolygon[i].x);
-                upperRight.x = std::max(upperRight.x, searchPolygon[i].x);
+                value.x = value.x + 360.0;
+                lowerLeft.x = std::min(lowerLeft.x, value.x);
+                upperRight.x = std::max(upperRight.x, value.x);
             }
         }
     }
 
     result = doubleMissingValue;
     double searchRadiusSquared = std::numeric_limits<double>::lowest();
-    for (int i = 0, polygonSize = polygon.size(); i < polygonSize; i++)
+    for (const auto& value : searchPolygon)
     {
-        auto const squaredDistance = ComputeSquaredDistance(interpolationPoint, searchPolygon[i], m_mesh->m_projection);
+        auto const squaredDistance = ComputeSquaredDistance(interpolationPoint, value, m_mesh->m_projection);
         searchRadiusSquared = std::max(searchRadiusSquared, squaredDistance);
     }
     if (searchRadiusSquared <= 0.0)
