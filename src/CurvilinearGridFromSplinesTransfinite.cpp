@@ -96,11 +96,12 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
     for (int splineIndex = 0; splineIndex < numSplines; splineIndex++)
     {
         int numIntersections = 0;
-        for (int i = 0; i < m_splineIntersectionRatios[splineIndex].size(); i++)
+
+        for (const auto& value : m_splineIntersectionRatios[splineIndex])
         {
-            if (std::abs(m_splineIntersectionRatios[splineIndex][i]) > 0.0)
+            if (std::abs(value) > 0.0)
             {
-                intersectionDistances[numIntersections] = m_splines->GetSplineLength(splineIndex, 0.0, m_splineIntersectionRatios[splineIndex][i], 10, false);
+                intersectionDistances[numIntersections] = m_splines->GetSplineLength(splineIndex, 0.0, value, 10, false);
                 numIntersections++;
             }
         }
@@ -312,9 +313,9 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistan
 
     incrementRatio = (rightDistance - leftDistance) / distances.back();
 
-    for (int i = 0; i < distances.size(); i++)
+    for (auto& value : distances)
     {
-        distances[i] = leftDistance + incrementRatio * distances[i];
+        value = leftDistance + incrementRatio * value;
     }
 }
 
