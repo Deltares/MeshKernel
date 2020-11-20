@@ -190,7 +190,7 @@ namespace meshkernel
             int numConnectedNodes = 0;
             for (int e = 0; e < m_mesh->GetNumEdges(); e++)
             {
-                if (m_mesh->m_edgesNumFaces[e] != 1)
+                if (!m_mesh->IsEdgeOnBoundary(e))
                 {
                     continue;
                 }
@@ -212,7 +212,7 @@ namespace meshkernel
 
         if (initialize)
         {
-            if (m_mesh->m_edgesNumFaces[edgeIndex] != 1 || m_mesh->m_edges[edgeIndex].first < 0 || m_mesh->m_edges[edgeIndex].second < 0)
+            if (!m_mesh->IsEdgeOnBoundary(edgeIndex) || m_mesh->m_edges[edgeIndex].first < 0 || m_mesh->m_edges[edgeIndex].second < 0)
                 throw std::invalid_argument("LandBoundaries::AssignSegmentsToMeshNodes: Cannot not assign segment to mesh nodes.");
 
             int firstMeshNode = m_mesh->m_edges[edgeIndex].first;
@@ -263,7 +263,7 @@ namespace meshkernel
         {
             int edge = m_mesh->m_nodesEdges[lastVisitedNode][e];
 
-            if (m_mesh->m_edgesNumFaces[edge] != 1)
+            if (!m_mesh->IsEdgeOnBoundary(edge))
                 continue;
 
             int otherNode = m_mesh->m_edges[edge].first + m_mesh->m_edges[edge].second - lastVisitedNode;
@@ -603,7 +603,7 @@ namespace meshkernel
             crossedFaceIndex = -1;
             for (int e = 0; e < m_mesh->GetNumEdges(); e++)
             {
-                if (m_mesh->m_edgesNumFaces[e] != 1)
+                if (!m_mesh->IsEdgeOnBoundary(e))
                     continue;
 
                 bool isCellCrossed = IsFaceCrossedByLandBoundaries(m_mesh->m_edgesFaces[e][0],
@@ -696,7 +696,7 @@ namespace meshkernel
             {
                 for (int e = 0; e < m_mesh->GetNumEdges(); e++)
                 {
-                    if (m_mesh->m_edgesNumFaces[e] != 1 || m_mesh->m_edges[e].first < 0 || m_mesh->m_edges[e].second < 0)
+                    if (!m_mesh->IsEdgeOnBoundary(e) || m_mesh->m_edges[e].first < 0 || m_mesh->m_edges[e].second < 0)
                         continue;
 
                     bool isClose = false;
@@ -734,7 +734,7 @@ namespace meshkernel
                 {
                     // is a boundary edge, continue
                     int currentEdge = m_mesh->m_facesEdges[face][e];
-                    if (m_mesh->m_edgesNumFaces[currentEdge] <= 1)
+                    if (m_mesh->IsEdgeOnBoundary(currentEdge))
                         continue;
 
                     int otherFace = m_mesh->m_edgesFaces[currentEdge][0] + m_mesh->m_edgesFaces[currentEdge][1] - face;
@@ -1150,7 +1150,7 @@ namespace meshkernel
                 }
 
                 // In case of netboundaries only: set penalty when edge is not on the boundary
-                if (meshBoundOnly && m_mesh->m_edgesNumFaces[edgeIndex] != 1)
+                if (meshBoundOnly && !m_mesh->IsEdgeOnBoundary(edgeIndex))
                     maximumDistance = 1e6 * maximumDistance;
 
                 double edgeLength = ComputeDistance(currentNode, neighbouringNode, m_mesh->m_projection);

@@ -70,7 +70,7 @@ void meshkernel::Orthogonalizer::Compute()
                 // internal nodes
                 m_weights[n][nn] = aspectRatio;
 
-                if (m_mesh->m_edgesNumFaces[edgeIndex] == 1)
+                if (m_mesh->IsEdgeOnBoundary(edgeIndex))
                 {
                     // boundary nodes
                     m_weights[n][nn] = 0.5 * aspectRatio;
