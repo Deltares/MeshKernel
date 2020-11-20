@@ -708,9 +708,9 @@ namespace meshkernel
     {
         if (projection == Projections::sphericalAccurate)
         {
-            std::array<double, 3> exxp;
-            std::array<double, 3> eyyp;
-            std::array<double, 3> ezzp;
+            std::array<double, 3> exxp{0.0, 0.0, 0.0};
+            std::array<double, 3> eyyp{0.0, 0.0, 0.0};
+            std::array<double, 3> ezzp{0.0, 0.0, 0.0};
             ComputeThreeBaseComponents(reference, exxp, eyyp, ezzp);
 
             // get the 3D coordinate
