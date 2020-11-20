@@ -62,7 +62,7 @@ namespace meshkernel
         /// @param[in] numNodes The number of corner points
         /// @param[out] coordinatesDerivatives The second order derivative at corner points
         static void SecondOrderDerivative(const std::vector<Point>& splines,
-                                          int numNodes,
+                                          size_t numNodes,
                                           std::vector<Point>& coordinatesDerivatives);
 
         /// @brief Second order derivative at spline corner point coordinates
@@ -70,7 +70,7 @@ namespace meshkernel
         /// @param[in] numNodes The number of corner points
         /// @param[out] coordinatesDerivatives The second order derivative at corner points (x derivative or y derivative)
         static void SecondOrderDerivative(const std::vector<double>& coordinates,
-                                          int numNodes,
+                                          size_t numNodes,
                                           std::vector<double>& coordinatesDerivatives);
 
         /// @brief Computes the intersection of two splines (sect3r)
@@ -128,7 +128,7 @@ namespace meshkernel
         std::vector<std::vector<Point>> m_splineNodes;       // The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives; // The spline derivatives at the corner points
         std::vector<double> m_splinesLength;                 // The length of each spline
-        Projections m_projection;                            // The map projection
+        Projections m_projection = Projections::cartesian;   // The map projection
 
     private:
         /// @brief Adds a new corner point in an existing spline

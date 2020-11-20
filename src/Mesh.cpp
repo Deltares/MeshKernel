@@ -282,10 +282,8 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
     Set(edges, nodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
 
-meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const Polygons& polygons, Projections projection)
+meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const Polygons& polygons, Projections projection) : m_projection(projection)
 {
-    m_projection = projection;
-
     // compute triangulation
     TriangulationWrapper triangulationWrapper;
     const auto numPolygonNodes = static_cast<int>(inputNodes.size()); // open polygon

@@ -96,7 +96,7 @@ namespace meshkernel
         void ComputeLocalIncrements(int nodeIndex,
                                     double& dx0,
                                     double& dy0,
-                                    double* weightsSum);
+                                    std::array<double, 2>& weightsSum);
 
         /// @brief Update the nodal coordinates based on the increments
         /// @param[in] nodeIndex

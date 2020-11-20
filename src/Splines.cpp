@@ -36,7 +36,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Splines.hpp>
 
-meshkernel::Splines::Splines() : m_projection(Projections::cartesian){};
+meshkernel::Splines::Splines(){};
 
 meshkernel::Splines::Splines(Projections projection) : m_projection(projection){};
 
@@ -375,7 +375,7 @@ void meshkernel::Splines::ComputeCurvatureOnSplinePoint(int splineIndex,
     tangentialVector.y = dy / distance;
 }
 
-void meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline, int numNodes, std::vector<Point>& coordinatesDerivatives)
+void meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline, size_t numNodes, std::vector<Point>& coordinatesDerivatives)
 {
     std::vector<Point> u(numNodes);
     u[0] = {0.0, 0.0};
@@ -399,7 +399,7 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline
     }
 }
 
-void meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, int numNodes, std::vector<double>& coordinatesDerivatives)
+void meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, size_t numNodes, std::vector<double>& coordinatesDerivatives)
 {
     std::vector<double> u(numNodes);
     u[0] = 0.0;

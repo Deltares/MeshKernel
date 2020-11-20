@@ -28,6 +28,7 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <array>
 
 #include <MeshKernel/Operations.cpp>
 #include <MeshKernel/Smoother.hpp>
@@ -355,7 +356,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
 
     double dx0 = 0.0;
     double dy0 = 0.0;
-    double increments[2]{0.0, 0.0};
+    std::array<double, 2> increments{0.0, 0.0};
     ComputeLocalIncrements(nodeIndex, dx0, dy0, increments);
 
     if (increments[0] <= 1e-8 || increments[1] <= 1e-8)
@@ -380,9 +381,9 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
     {
         Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};
 
-        double exxp[3];
-        double eyyp[3];
-        double ezzp[3];
+        std::array<double, 3> exxp;
+        std::array<double, 3> eyyp;
+        std::array<double, 3> ezzp;
         ComputeThreeBaseComponents(m_mesh->m_nodes[nodeIndex], exxp, eyyp, ezzp);
 
         //get 3D-coordinates in rotated frame
@@ -400,7 +401,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeIndex, double& dx0, double& dy0, double* weightsSum)
+void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeIndex, double& dx0, double& dy0, std::array<double, 2>& weightsSum)
 {
     int numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
     auto cacheIndex = m_compressedEndNodeIndex[nodeIndex];
