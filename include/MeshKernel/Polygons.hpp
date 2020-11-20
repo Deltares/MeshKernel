@@ -37,16 +37,16 @@ namespace meshkernel
     class Polygons
     {
     public:
-        /// @brief Default contructor
+        /// @brief Default constructor
         Polygons();
 
         /// @brief Constructor
-        /// @param[in] polygon The polygon points
+        /// @param[in] polygon The polygon nodes
         /// @param[in] projection The projection to use
         Polygons(const std::vector<Point>& polygon,
                  Projections projection);
 
-        /// @brief Convert all meshboundaries to a polygon, including holes (copynetboundstopol)
+        /// @brief Convert all mesh boundaries to a polygon, including holes (copynetboundstopol)
         /// @param[in] mesh The input mesh
         /// @param[out] meshBoundaryPolygon The resulting polygon points
         /// @param[out] numNodesBoundaryPolygons The number of nodes in the resulting polygon
