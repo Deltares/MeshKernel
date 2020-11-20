@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+    <metadata>
+        <id>Deltares.MeshKernel</id>
+        <version>@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@@VERSION_SUFFIX@</version>
+        <authors>Deltares</authors>
+        <owners>Deltares</owners>
+        <description>Deltares back end mesh editing engine (C++ version)</description>
+        <copyright>Copyright 2020</copyright>
+    </metadata>
+    <files>
+        <file src="..\src\Release\*" target="native\Lib" />
+        <file src="Deltares.MeshKernel.targets" target="build\net461\Deltares.MeshKernel.targets" />
+    </files>
+</package>
