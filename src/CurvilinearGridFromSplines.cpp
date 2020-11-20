@@ -958,10 +958,7 @@ void meshkernel::CurvilinearGridFromSplines::FindFront(std::vector<std::vector<i
     }
 }
 
-//comp_vel
-void meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(
-    int layerIndex,
-    std::vector<Point>& velocityVector)
+void meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(int layerIndex, std::vector<Point>& velocityVector)
 {
     std::fill(velocityVector.begin(), velocityVector.end(), Point{doubleMissingValue, doubleMissingValue});
     Point normalVectorLeft;
@@ -978,15 +975,14 @@ void meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(
         int currentLeftIndex;
         int currentRightIndex;
         GetNeighbours(m_gridPoints[layerIndex], m, currentLeftIndex, currentRightIndex);
-
-        double squaredLeftRightDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][currentRightIndex], m_splines->m_projection);
-        double squaredLeftDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][m], m_splines->m_projection);
-        double squaredRightDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], m_splines->m_projection);
+        const auto squaredLeftRightDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][currentRightIndex], m_splines->m_projection);
 
         if (squaredLeftRightDistance <= m_onTopOfEachOtherSquaredTolerance)
         {
             continue;
         }
+        const auto squaredLeftDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentLeftIndex], m_gridPoints[layerIndex][m], m_splines->m_projection);
+        const auto squaredRightDistance = ComputeSquaredDistance(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], m_splines->m_projection);
 
         if (squaredLeftDistance <= m_onTopOfEachOtherSquaredTolerance || squaredRightDistance <= m_onTopOfEachOtherSquaredTolerance)
         {
@@ -1014,15 +1010,14 @@ void meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(
             continue;
         }
 
-        double cosphi = DotProduct(normalVectorLeft.x, normalVectorRight.x, normalVectorLeft.y, normalVectorRight.y);
-        Point leftVelocity = normalVectorLeft * m_edgeVelocities[currentLeftIndex];
-        Point rightVelocity = normalVectorRight * m_edgeVelocities[currentRightIndex - 1];
-        double rightLeftVelocityRatio = m_edgeVelocities[currentRightIndex - 1] / m_edgeVelocities[currentLeftIndex];
-
+        const auto cosphi = DotProduct(normalVectorLeft.x, normalVectorRight.x, normalVectorLeft.y, normalVectorRight.y);
         if (cosphi < -1.0 + cosTolerance)
         {
             continue;
         }
+        const auto leftVelocity = normalVectorLeft * m_edgeVelocities[currentLeftIndex];
+        const auto rightVelocity = normalVectorRight * m_edgeVelocities[currentRightIndex - 1];
+        double rightLeftVelocityRatio = m_edgeVelocities[currentRightIndex - 1] / m_edgeVelocities[currentLeftIndex];
 
         if (rightLeftVelocityRatio - cosphi > eps && 1.0 / rightLeftVelocityRatio - cosphi > eps || cosphi <= cosTolerance)
         {
@@ -1504,7 +1499,7 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
         localCornerPoints[i] = crossSplineLeftHeights[index][j];
     }
 
-    m_splines->SecondOrderDerivative(localCornerPoints, numValid, localSplineDerivatives);
+    Splines::SecondOrderDerivative(localCornerPoints, numValid, localSplineDerivatives);
 
     crossingSplinesDimensionalCoordinates[0] = m_splines->GetSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
     for (int i = 0; i < numM; ++i)
