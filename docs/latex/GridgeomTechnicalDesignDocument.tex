@@ -155,7 +155,7 @@ The algorithm works as follow:
 \item The edges crossing small flow edges are found. The flow edge length is computed from the face circumcenters and compared to an estimated cut off distance.
 The cutoff distance is computed using the face areas as follow:
 \begin{equation}
-	cutOffDistance = threshold * 0.5* (sqrt(Area $I$)+sqrt(Area $II$))
+	\textrm{cutOffDistance} = \textrm{threshold} \cdot 0.5 \cdot (\sqrt{\textrm{Area}_I}+\sqrt{\textrm{Area}_{II}})
 \end{equation}
 \item All small flow edges are flagged with invalid indices and removed from the mesh. Removal occors in Administrate function.
 \end{itemize}
