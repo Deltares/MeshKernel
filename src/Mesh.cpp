@@ -71,10 +71,11 @@ void meshkernel::Mesh::RemoveInvalidNodesAndEdges()
     // Mask nodes connected to valid edges
     std::vector<bool> connectedNodes(m_nodes.size(), false);
     int numInvalidEdges = 0;
-    for (int e = 0; e < m_edges.size(); ++e)
+
+    for (const auto& edge : m_edges)
     {
-        auto const firstNode = m_edges[e].first;
-        auto const secondNode = m_edges[e].second;
+        auto const firstNode = edge.first;
+        auto const secondNode = edge.second;
 
         if (firstNode < 0 || secondNode < 0)
         {

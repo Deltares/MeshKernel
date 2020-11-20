@@ -1113,11 +1113,11 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMask()
     }
 
     // only keep m_edgeMask = 1, set other values to 0
-    for (int i = 0; i < m_edgeMask.size(); i++)
+    for (auto& value : m_edgeMask)
     {
-        if (m_edgeMask[i] != 1)
+        if (value != 1)
         {
-            m_edgeMask[i] = 0;
+            value = 0;
         }
     }
 }

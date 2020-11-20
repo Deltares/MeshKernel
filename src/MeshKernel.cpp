@@ -126,12 +126,12 @@ namespace meshkernelapi
 
         const auto indexes = FindIndexes(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue);
 
-        for (auto i = 0; i < indexes.size(); i++)
+        for (const auto& index : indexes)
         {
-            int size = int(indexes[i][1]) - int(indexes[i][0]) + 1;
+            const auto size = index[1] - index[0] + 1;
             if (size > 0)
             {
-                spline.AddSpline(splineCornerPoints, indexes[i][0], size);
+                spline.AddSpline(splineCornerPoints, index[0], size);
             }
         }
 
