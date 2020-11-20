@@ -284,7 +284,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
             for (auto nn = 0; nn < numEdges; nn++)
             {
                 auto edgeIndex = m_mesh->m_nodesEdges[nearestPointIndex][nn];
-                if (m_mesh->m_edgesNumFaces[edgeIndex] == 1)
+                if (m_mesh->IsEdgeOnBoundary(edgeIndex))
                 {
                     numNodes++;
                     if (numNodes == 1)

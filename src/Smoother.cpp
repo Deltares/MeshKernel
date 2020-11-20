@@ -344,7 +344,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
         double rightXi = 0.0;
         double rightEta = 0.0;
         double alpha_x = 0.0;
-        if (m_mesh->m_edgesNumFaces[edgeIndex] == 1)
+        if (m_mesh->IsEdgeOnBoundary(edgeIndex))
         {
             // Boundary face
             if (m_boundaryEdgesCache[0] < 0)
@@ -437,7 +437,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
         double facetaL = -facetaR;
 
         //boundary link
-        if (m_mesh->m_edgesNumFaces[edgeIndex] == 1)
+        if (m_mesh->IsEdgeOnBoundary(edgeIndex))
         {
             facxi1 += -facxiL * 2.0 * alpha_x;
             facxi0 += -facxiL * 2.0 * (1.0 - alpha_x);
@@ -454,7 +454,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
         {
             m_Gxi[currentTopology][f][i] = facxiL * m_Az[currentTopology][faceLeftIndex][i];
             m_Geta[currentTopology][f][i] = facetaL * m_Az[currentTopology][faceLeftIndex][i];
-            if (m_mesh->m_edgesNumFaces[edgeIndex] == 2)
+            if (!m_mesh->IsEdgeOnBoundary(edgeIndex))
             {
                 m_Gxi[currentTopology][f][i] += facxiR * m_Az[currentTopology][faceRightIndex][i];
                 m_Geta[currentTopology][f][i] += facetaR * m_Az[currentTopology][faceRightIndex][i];
@@ -472,7 +472,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
         m_Diveta[currentTopology][f] = exiLR * leftRightSwap;
 
         // boundary link
-        if (m_mesh->m_edgesNumFaces[edgeIndex] == 1)
+        if (m_mesh->IsEdgeOnBoundary(edgeIndex))
         {
             m_Divxi[currentTopology][f] = 0.5 * m_Divxi[currentTopology][f] + etaBoundary * leftRightSwap;
             m_Diveta[currentTopology][f] = 0.5 * m_Diveta[currentTopology][f] - xiBoundary * leftRightSwap;
@@ -499,7 +499,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
     for (int f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
         // internal edge
-        if (m_mesh->m_edgesNumFaces[m_mesh->m_nodesEdges[currentNode][f]] == 2)
+        if (!m_mesh->IsEdgeOnBoundary(m_mesh->m_nodesEdges[currentNode][f]))
         {
             int rightNode = f - 1;
             if (rightNode < 0)
@@ -551,7 +551,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
         int faceLeft = m_mesh->m_edgesFaces[edgeIndex][0];
         int faceRigth = faceLeft;
 
-        if (m_mesh->m_edgesNumFaces[edgeIndex] == 2)
+        if (!m_mesh->IsEdgeOnBoundary(edgeIndex))
         {
             faceRigth = m_mesh->m_edgesFaces[edgeIndex][1];
         }
@@ -666,8 +666,8 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
             {
                 nextNode = nextNode - numSharedFaces;
             }
-            bool isBoundaryEdge = m_mesh->m_edgesNumFaces[m_mesh->m_nodesEdges[currentNode][f]] == 1;
-            phi = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], isBoundaryEdge);
+
+            phi = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], m_mesh->IsEdgeOnBoundary(m_mesh->m_nodesEdges[currentNode][f]));
             if (numFaceNodes == 3)
             {
                 numSquaredTriangles += 1;
@@ -767,8 +767,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
                 nextNode = nextNode - numSharedFaces;
             }
 
-            bool isBoundaryEdge = m_mesh->m_edgesNumFaces[m_mesh->m_nodesEdges[currentNode][f]] == 1;
-            dPhi0 = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], isBoundaryEdge);
+            dPhi0 = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], m_mesh->IsEdgeOnBoundary(m_mesh->m_nodesEdges[currentNode][f]));
             if (numFaceNodes == 3)
             {
                 dPhi0 = muSquaredTriangles * dPhi0;

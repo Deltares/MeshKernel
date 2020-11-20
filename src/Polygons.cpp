@@ -101,7 +101,7 @@ namespace meshkernel
 
         for (int e = 0; e < mesh.GetNumEdges(); e++)
         {
-            if (isVisited[e] || mesh.m_edgesNumFaces[e] != 1)
+            if (isVisited[e] || !mesh.IsEdgeOnBoundary(e))
             {
                 continue;
             }
@@ -189,7 +189,7 @@ namespace meshkernel
             }
 
             const auto currentEdge = mesh.m_nodesEdges[currentNode][e];
-            if (isVisited[currentEdge] || mesh.m_edgesNumFaces[currentEdge] != 1)
+            if (isVisited[currentEdge] || !mesh.IsEdgeOnBoundary(currentEdge))
             {
                 e++;
                 continue;

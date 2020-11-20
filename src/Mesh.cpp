@@ -835,7 +835,7 @@ void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas(bool computeM
         int numberOfInteriorEdges = 0;
         for (int n = 0; n < numberOfFaceNodes; n++)
         {
-            if (m_edgesNumFaces[m_facesEdges[f][n]] == 2)
+            if (!IsEdgeOnBoundary(m_facesEdges[f][n]))
             {
                 numberOfInteriorEdges += 1;
             }
@@ -888,7 +888,7 @@ void meshkernel::Mesh::ClassifyNodes()
             m_nodesTypes[firstNode] = -1;
             m_nodesTypes[secondNode] = -1;
         }
-        else if (m_edgesNumFaces[e] == 1)
+        else if (IsEdgeOnBoundary(e))
         {
             m_nodesTypes[firstNode] += 1;
             m_nodesTypes[secondNode] += 1;
@@ -911,7 +911,7 @@ void meshkernel::Mesh::ClassifyNodes()
                 for (int i = 0; i < m_nodesNumEdges[n]; i++)
                 {
                     const int edgeIndex = m_nodesEdges[n][i];
-                    if (m_edgesNumFaces[edgeIndex] == 1)
+                    if (IsEdgeOnBoundary(edgeIndex))
                     {
                         if (firstNode == 0)
                         {
@@ -2183,7 +2183,7 @@ void meshkernel::Mesh::GetOrthogonality(double* orthogonality)
         int firstVertex = m_edges[e].first;
         int secondVertex = m_edges[e].second;
 
-        if (firstVertex != 0 && secondVertex != 0 && e < GetNumEdges() && m_edgesNumFaces[e] == 2)
+        if (firstVertex != 0 && secondVertex != 0 && e < GetNumEdges() && !IsEdgeOnBoundary(e))
         {
             orthogonality[e] = NormalizedInnerProductTwoSegments(m_nodes[firstVertex],
                                                                  m_nodes[secondVertex],
@@ -2206,7 +2206,7 @@ void meshkernel::Mesh::GetSmoothness(double* smoothness)
         int firstVertex = m_edges[e].first;
         int secondVertex = m_edges[e].second;
 
-        if (firstVertex != 0 && secondVertex != 0 && e < GetNumEdges() && m_edgesNumFaces[e] == 2)
+        if (firstVertex != 0 && secondVertex != 0 && e < GetNumEdges() && !IsEdgeOnBoundary(e))
         {
             const auto leftFace = m_edgesFaces[e][0];
             const auto rightFace = m_edgesFaces[e][1];
@@ -2341,7 +2341,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
         if (!curvilinearGridIndicator[first] || !curvilinearGridIndicator[second])
             continue;
 
-        if (m_edgesNumFaces[e] == 1)
+        if (IsEdgeOnBoundary(e))
         {
             if (averageEdgesLength[e][0] > 0.0 &&
                 IsEqual(averageEdgesLength[e][0], doubleMissingValue))
