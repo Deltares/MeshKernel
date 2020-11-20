@@ -2108,14 +2108,6 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
 
         if (minCosPhiSmallTriangle < minCosPhi && thirdEdgeSmallTriangle >= 0 && IsEdgeOnBoundary(thirdEdgeSmallTriangle))
         {
-            Point normalPoint{doubleMissingValue, doubleMissingValue};
-            double ratio;
-            [[maybe_unused]] const auto distanceFromLine = DistanceFromLine(m_nodes[nodeToPreserve],
-                                                                            m_nodes[firstNodeToMerge],
-                                                                            m_nodes[secondNodeToMerge],
-                                                                            normalPoint,
-                                                                            ratio,
-                                                                            m_projection);
             smallTrianglesNodes.emplace_back(std::initializer_list<int>{nodeToPreserve, firstNodeToMerge, secondNodeToMerge});
         }
     }
