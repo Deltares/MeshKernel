@@ -77,48 +77,47 @@ namespace meshkernel
         }
 
         // mesh boundary to polygon
-        std::vector<Point> meshBoundaryPolygon;
-        int numNodesBoundaryPolygons;
-        m_polygons->MeshBoundaryToPolygon(*m_mesh, meshBoundaryPolygon, numNodesBoundaryPolygons);
+        const auto meshBoundaryPolygon = m_polygons->MeshBoundaryToPolygon(*m_mesh);
 
         // mask all landboundary nodes close to the mesh boundary (distanceFromMeshNode < minDistance)
         for (auto n = 0; n < m_nodes.size() - 1; n++)
         {
-            if (landBoundaryMask[n] != 0)
+            if (landBoundaryMask[n] == 0)
             {
+                continue;
+            }
 
-                Point firstPoint = m_nodes[n];
-                Point secondPoint = m_nodes[n + 1];
-                bool landBoundaryIsClose = false;
+            Point firstPoint = m_nodes[n];
+            Point secondPoint = m_nodes[n + 1];
+            bool landBoundaryIsClose = false;
 
-                for (int nn = 0; nn < numNodesBoundaryPolygons - 1; nn++)
+            for (auto nn = 0; nn < meshBoundaryPolygon.size() - 2; nn++)
+            {
+                Point firstMeshBoundaryNode = meshBoundaryPolygon[nn];
+                Point secondMeshBoundaryNode = meshBoundaryPolygon[nn + 1];
+
+                if (!firstMeshBoundaryNode.IsValid() || !secondMeshBoundaryNode.IsValid())
                 {
-                    Point firstMeshBoundaryNode = meshBoundaryPolygon[nn];
-                    Point secondMeshBoundaryNode = meshBoundaryPolygon[nn + 1];
-
-                    if (!firstMeshBoundaryNode.IsValid() || !secondMeshBoundaryNode.IsValid())
-                    {
-                        continue;
-                    }
-
-                    const double edgeLength = ComputeDistance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh->m_projection);
-                    const double minDistance = m_closeFactor * edgeLength;
-
-                    Point normalPoint;
-                    double rlout;
-                    const double distanceFromMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
-
-                    if (distanceFromMeshNode <= minDistance)
-                    {
-                        landBoundaryIsClose = true;
-                        break;
-                    }
+                    continue;
                 }
 
-                if (landBoundaryIsClose)
+                const double edgeLength = ComputeDistance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh->m_projection);
+                const double minDistance = m_closeFactor * edgeLength;
+
+                Point normalPoint;
+                double rlout;
+                const double distanceFromMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
+
+                if (distanceFromMeshNode <= minDistance)
                 {
-                    landBoundaryMask[n] = 1;
+                    landBoundaryIsClose = true;
+                    break;
                 }
+            }
+
+            if (landBoundaryIsClose)
+            {
+                landBoundaryMask[n] = 1;
             }
         }
 

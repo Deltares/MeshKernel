@@ -87,7 +87,7 @@ namespace meshkernel
         /// <param name="polygons">Selection polygon</param>
         /// <param name="projection">Projection to use</param>
         /// <returns></returns>
-        Mesh(std::vector<Point>& nodes, const Polygons& polygons, Projections projection);
+        Mesh(const std::vector<Point>& nodes, const Polygons& polygons, Projections projection);
 
         /// <summary>
         /// Add meshes: result is a mesh composed of the additions

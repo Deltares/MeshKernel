@@ -210,8 +210,7 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    polygons.CreatePointsInPolygons(generatedPoints);
+    const auto generatedPoints = polygons.ComputePointsInPolygons();
 
     meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projections::cartesian);
 
@@ -254,8 +253,7 @@ TEST(Mesh, TriangulateSamples)
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    polygons.CreatePointsInPolygons(generatedPoints);
+    const auto generatedPoints = polygons.ComputePointsInPolygons();
 
     meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projections::cartesian);
 }
@@ -303,9 +301,7 @@ TEST(Mesh, MeshBoundaryToPolygon)
 
     meshkernel::Polygons polygons;
 
-    std::vector<meshkernel::Point> meshBoundaryPolygon;
-    int numNodesBoundaryPolygons = 0;
-    polygons.MeshBoundaryToPolygon(mesh, meshBoundaryPolygon, numNodesBoundaryPolygons);
+    const auto meshBoundaryPolygon = polygons.MeshBoundaryToPolygon(mesh);
 
     const double tolerance = 1e-5;
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);

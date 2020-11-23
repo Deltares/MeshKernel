@@ -468,7 +468,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
 {
     std::vector<std::vector<size_t>> mIndicesOtherSide(1, std::vector<size_t>(2));
     std::vector<std::vector<size_t>> nIndicesThisSide(1, std::vector<size_t>(2));
-    std::vector<std::vector<Point>> gridPointsNDirection(m_gridPoints[0].size(), std::vector<Point>(m_gridPoints.size()));
+    std::vector<std::vector<Point>> gridPointsNDirection(m_gridPoints[0].size(), std::vector<Point>(m_gridPoints.size(), {doubleMissingValue, doubleMissingValue}));
     std::vector<std::vector<Point>> curvilinearMeshPoints;
     const double squaredDistanceTolerance = 1e-12;
 
@@ -612,11 +612,11 @@ void meshkernel::CurvilinearGridFromSplines::GrowLayer(int layerIndex)
 
     const auto numGridPoints = m_gridPoints.size() * m_gridPoints[0].size();
     std::vector<std::vector<int>> gridPointsIndices(numGridPoints, std::vector<int>(2, -1));
-    std::vector<Point> frontGridPoints(numGridPoints);
+    std::vector<Point> frontGridPoints(numGridPoints, {0.0, 0.0});
     int numFrontPoints;
     FindFront(gridPointsIndices, frontGridPoints, numFrontPoints);
 
-    std::vector<Point> frontVelocities(numGridPoints);
+    std::vector<Point> frontVelocities(numGridPoints, {0.0, 0.0});
     CopyVelocitiesToFront(layerIndex - 1,
                           velocityVectorAtGridPoints,
                           numFrontPoints,
@@ -1692,7 +1692,7 @@ void meshkernel::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
     double currentMaxWidth = std::numeric_limits<double>::max();
     std::vector<double> distances(numM);
     std::vector<double> adimensionalDistances(numM);
-    std::vector<Point> points(numM);
+    std::vector<Point> points(numM, {0.0, 0.0});
     while (currentMaxWidth > m_splinesToCurvilinearParametersNative.AverageWidth)
     {
         currentMaxWidth = 0.0;
