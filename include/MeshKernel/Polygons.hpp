@@ -46,7 +46,7 @@ namespace meshkernel
         Polygons(const std::vector<Point>& polygon,
                  Projections projection);
 
-        /// @brief Creates points inside the polygon using triangulation
+        /// @brief Creates points inside the polygon using triangulation (the edges size determines how many points will be generated)
         /// @param[out] generatedPoints the generated points
         std::vector<std::vector<Point>> ComputePointsInPolygons() const;
 
@@ -54,13 +54,13 @@ namespace meshkernel
         /// @param[in] startIndex The start index
         /// @param[in] endIndex The end index
         /// @param[in] refinementDistance The chosen refinement distance
-        /// @param[out] refinedPolygon The computed polygon
-        void RefinePolygonPart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon);
+        /// @return refinedPolygon The computed polygon
+        std::vector<Point> RefineFirstPolygon(int startIndex, int endIndex, double refinementDistance) const;
 
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
-        /// @param[in] Inner Inner or outer polygon offset
-        /// @return the new offset polygon
+        /// @param[in] Inner Offset inwards or outward
+        /// @return The new offset polygon
         Polygons OffsetCopy(double distance, bool Inner) const;
 
         /// @brief Checks if a point is included in a given polygon
@@ -84,22 +84,22 @@ namespace meshkernel
 
         std::vector<Point> m_nodes;                 // The polygon nodes
         Projections m_projection;                   // The current projection
-        std::vector<std::vector<size_t>> m_indices; // Start-end of polygon nodes in m_nodes
+        std::vector<std::vector<size_t>> m_indices; // Start-end indices of each polygon in m_nodes
 
     private:
         /// @brief Computes the perimeter of a closed polygon
         /// @param[in] polygonNodes The polygon nodes to use in the computation
-        /// @return perimeter The computed perimeter
+        /// @return perimeter The computed polygon perimeter
         double PerimeterClosedPolygon(const std::vector<Point>& polygonNodes) const;
 
         /// @brief Computes the lengths of the polygon edges
         /// @param[in] polygonNodes The polygon nodes to use in the computation
-        /// @return edgeLengths The length of each edge
+        /// @return edgeLengths The length of each polygon edge
         std::vector<double> PolygonEdgeLengths(const std::vector<Point>& polygonNodes) const;
 
         /// @brief Computes the maximum edge length
         /// @param[in] polygonNodes The polygon to use in the computation
-        /// @return maximumEdgeLength The maximum edge length
+        /// @return maximumEdgeLength The maximum edge length of the polygon
         double MaximumEdgeLength(const std::vector<Point>& polygonNodes) const;
     };
 } // namespace meshkernel

@@ -88,8 +88,7 @@ TEST(Polygons, RefinePolygon)
 
     // Execute
     std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    std::vector<meshkernel::Point> refinedPolygon;
-    polygons.RefinePolygonPart(0, 0, 1.0, refinedPolygon);
+    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
     ASSERT_EQ(13, refinedPolygon.size());
     const double tolerance = 1e-5;
@@ -137,9 +136,7 @@ TEST(Polygons, RefinePolygonOneSide)
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    std::vector<meshkernel::Point> refinedPolygon;
-    polygons.RefinePolygonPart(0, 1, 1.0, refinedPolygon);
+    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 1, 1.0);
 
     ASSERT_EQ(7, refinedPolygon.size());
     const double tolerance = 1e-5;
@@ -175,9 +172,7 @@ TEST(Polygons, RefinePolygonLongerSquare)
     meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
 
     // Execute
-    std::vector<std::vector<meshkernel::Point>> generatedPoints;
-    std::vector<meshkernel::Point> refinedPolygon;
-    polygons.RefinePolygonPart(0, 0, 1.0, refinedPolygon);
+    const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
     ASSERT_EQ(15, refinedPolygon.size());
     const double tolerance = 1e-5;
