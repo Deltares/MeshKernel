@@ -2502,3 +2502,115 @@ std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(int node) const
 
     return result;
 }
+
+std::vector<meshkernel::Point> meshkernel::Mesh::MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes)
+{
+
+    // Find faces
+    Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    std::vector<bool> isVisited(GetNumEdges(), false);
+    std::vector<Point> meshBoundaryPolygon;
+    meshBoundaryPolygon.reserve(GetNumNodes());
+
+    for (int e = 0; e < GetNumEdges(); e++)
+    {
+        if (isVisited[e] || !IsEdgeOnBoundary(e))
+        {
+            continue;
+        }
+
+        const auto firstNodeIndex = m_edges[e].first;
+        const auto secondNodeIndex = m_edges[e].second;
+        const auto firstNode = m_nodes[firstNodeIndex];
+        const auto secondNode = m_nodes[secondNodeIndex];
+
+        const auto firstNodeInPolygon = IsPointInPolygonNodes(m_nodes[firstNodeIndex], polygonNodes, 0, polygonNodes.size() - 1, m_projection);
+        const auto secondNodeInPolygon = IsPointInPolygonNodes(m_nodes[secondNodeIndex], polygonNodes, 0, polygonNodes.size() - 1, m_projection);
+
+        if (!firstNodeInPolygon && !secondNodeInPolygon)
+        {
+            continue;
+        }
+
+        //Start a new polyline
+        if (!meshBoundaryPolygon.empty())
+        {
+            meshBoundaryPolygon.emplace_back(doubleMissingValue, doubleMissingValue);
+        }
+
+        // Put the current edge on the mesh boundary, mark it as visited
+        const auto startPolygonEdges = meshBoundaryPolygon.size();
+        meshBoundaryPolygon.emplace_back(firstNode);
+        meshBoundaryPolygon.emplace_back(secondNode);
+        isVisited[e] = true;
+
+        // walk the current mesh boundary
+        auto currentNode = secondNodeIndex;
+        WalkBoundaryFromNode(polygonNodes, isVisited, currentNode, meshBoundaryPolygon);
+
+        const auto numNodesFirstTail = meshBoundaryPolygon.size();
+
+        // if the boundary polygon is not closed
+        if (currentNode != firstNodeIndex)
+        {
+            //Now grow a polyline starting at the other side of the original link L, i.e., the second tail
+            currentNode = firstNodeIndex;
+            WalkBoundaryFromNode(polygonNodes, isVisited, currentNode, meshBoundaryPolygon);
+        }
+
+        // There is a nonempty second tail, so reverse the first tail, so that they connect.
+        if (meshBoundaryPolygon.size() > numNodesFirstTail)
+        {
+            const auto start = startPolygonEdges + static_cast<size_t>(std::ceil((numNodesFirstTail - startPolygonEdges + 1) * 0.5));
+            for (auto n = start; n < numNodesFirstTail; n++)
+            {
+                const auto backupPoint = meshBoundaryPolygon[n];
+                const int replaceIndex = numNodesFirstTail - n + static_cast<size_t>(firstNodeIndex);
+                meshBoundaryPolygon[n] = meshBoundaryPolygon[replaceIndex];
+                meshBoundaryPolygon[replaceIndex] = backupPoint;
+            }
+        }
+
+        //Start a new polyline
+        meshBoundaryPolygon.emplace_back(doubleMissingValue, doubleMissingValue);
+    }
+    return meshBoundaryPolygon;
+}
+
+void meshkernel::Mesh::WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
+                                            std::vector<bool>& isVisited,
+                                            int& currentNode,
+                                            std::vector<Point>& meshBoundaryPolygon) const
+{
+    int e = 0;
+    bool currentNodeInPolygon = false;
+    while (e < m_nodesNumEdges[currentNode])
+    {
+        if (!currentNodeInPolygon)
+        {
+            currentNodeInPolygon = IsPointInPolygonNodes(m_nodes[currentNode], polygonNodes, 0, polygonNodes.size() - 1, m_projection);
+        }
+
+        if (!currentNodeInPolygon)
+        {
+            break;
+        }
+
+        const auto currentEdge = m_nodesEdges[currentNode][e];
+        if (isVisited[currentEdge] || !IsEdgeOnBoundary(currentEdge))
+        {
+            e++;
+            continue;
+        }
+
+        const auto firstNode = m_edges[currentEdge].first;
+        const auto secondNode = m_edges[currentEdge].second;
+
+        currentNode = secondNode == currentNode ? firstNode : secondNode;
+        e = 0;
+        currentNodeInPolygon = false;
+
+        meshBoundaryPolygon.emplace_back(m_nodes[currentNode]);
+        isVisited[currentEdge] = true;
+    }
+}

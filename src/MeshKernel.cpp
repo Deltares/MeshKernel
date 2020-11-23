@@ -739,9 +739,9 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            meshkernel::Polygons polygon;
 
-            const auto meshBoundaryPolygon = polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId]);
+            std::vector<meshkernel::Point> polygonNodes;
+            const auto meshBoundaryPolygon = meshInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
 
             ConvertPointVectorToGeometryListNative(meshBoundaryPolygon, geometryListNative);
         }
@@ -762,8 +762,9 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            meshkernel::Polygons polygon;
-            const auto meshBoundaryPolygon = polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId]);
+
+            std::vector<meshkernel::Point> polygonNodes;
+            const auto meshBoundaryPolygon = meshInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
             numberOfPolygonVertices = static_cast<int>(meshBoundaryPolygon.size());
         }
         catch (const std::exception& e)
@@ -1092,8 +1093,7 @@ namespace meshkernelapi
 
             meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
-            meshkernel::Polygons newPolygon;
-            polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
+            const auto newPolygon = polygon.OffsetCopy(distance, innerAndOuter);
 
             ConvertPointVectorToGeometryListNative(newPolygon.m_nodes, geometryListOut);
         }
@@ -1118,9 +1118,7 @@ namespace meshkernelapi
             ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
 
             meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-
-            meshkernel::Polygons newPolygon;
-            polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
+            const auto newPolygon = polygon.OffsetCopy(distance, innerAndOuter);
 
             numberOfPolygonVertices = newPolygon.GetNumNodes();
         }

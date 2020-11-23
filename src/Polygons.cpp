@@ -49,118 +49,6 @@ namespace meshkernel
         m_indices = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue);
     }
 
-    std::vector<Point> Polygons::MeshBoundaryToPolygon(Mesh& mesh) const
-    {
-
-        // Find faces
-        mesh.Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-        std::vector<bool> isVisited(mesh.GetNumEdges(), false);
-        std::vector<Point> meshBoundaryPolygon;
-        meshBoundaryPolygon.reserve(mesh.GetNumNodes());
-
-        for (int e = 0; e < mesh.GetNumEdges(); e++)
-        {
-            if (isVisited[e] || !mesh.IsEdgeOnBoundary(e))
-            {
-                continue;
-            }
-
-            const auto firstNodeIndex = mesh.m_edges[e].first;
-            const auto secondNodeIndex = mesh.m_edges[e].second;
-            const auto firstNode = mesh.m_nodes[firstNodeIndex];
-            const auto secondNode = mesh.m_nodes[secondNodeIndex];
-
-            const auto firstNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[firstNodeIndex], m_nodes, 0, GetNumNodes() - 1, mesh.m_projection);
-            const auto secondNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[secondNodeIndex], m_nodes, 0, GetNumNodes() - 1, mesh.m_projection);
-
-            if (!firstNodeInPolygon && !secondNodeInPolygon)
-            {
-                continue;
-            }
-
-            //Start a new polyline
-            if (!meshBoundaryPolygon.empty())
-            {
-                meshBoundaryPolygon.emplace_back(doubleMissingValue,doubleMissingValue);
-            }
-
-            // Put the current edge on the mesh boundary, mark it as visited
-            const auto startPolygonEdges = meshBoundaryPolygon.size();
-            meshBoundaryPolygon.emplace_back(firstNode);
-            meshBoundaryPolygon.emplace_back(secondNode);
-            isVisited[e] = true;
-
-            // walk the current mesh boundary
-            auto currentNode = secondNodeIndex;
-            WalkBoundaryFromNode(mesh, isVisited, currentNode, meshBoundaryPolygon);
-
-            const auto numNodesFirstTail = meshBoundaryPolygon.size();
-
-            // if the boundary polygon is not closed
-            if (currentNode != firstNodeIndex)
-            {
-                //Now grow a polyline starting at the other side of the original link L, i.e., the second tail
-                currentNode = firstNodeIndex;
-                WalkBoundaryFromNode(mesh, isVisited, currentNode, meshBoundaryPolygon);
-            }
-
-            // There is a nonempty second tail, so reverse the first tail, so that they connect.
-            if (meshBoundaryPolygon.size() > numNodesFirstTail)
-            {
-                const auto start = startPolygonEdges + static_cast<size_t>(std::ceil((numNodesFirstTail - startPolygonEdges + 1) * 0.5));
-                for (auto n = start; n < numNodesFirstTail; n++)
-                {
-                    const auto backupPoint = meshBoundaryPolygon[n];
-                    const int replaceIndex = numNodesFirstTail - n + static_cast<size_t>(firstNodeIndex);
-                    meshBoundaryPolygon[n] = meshBoundaryPolygon[replaceIndex];
-                    meshBoundaryPolygon[replaceIndex] = backupPoint;
-                }
-            }
-
-            //Start a new polyline
-            meshBoundaryPolygon.emplace_back(doubleMissingValue, doubleMissingValue);
-        }
-        return meshBoundaryPolygon;
-    }
-
-    void Polygons::WalkBoundaryFromNode(const Mesh& mesh,
-                                        std::vector<bool>& isVisited,
-                                        int& currentNode,
-                                        std::vector<Point>& meshBoundaryPolygon) const
-    {
-        int e = 0;
-        bool currentNodeInPolygon = false;
-        while (e < mesh.m_nodesNumEdges[currentNode])
-        {
-            if (!currentNodeInPolygon)
-            {
-                currentNodeInPolygon = IsPointInPolygonNodes(mesh.m_nodes[currentNode], m_nodes, 0, GetNumNodes() - 1, m_projection);
-            }
-
-            if (!currentNodeInPolygon)
-            {
-                break;
-            }
-
-            const auto currentEdge = mesh.m_nodesEdges[currentNode][e];
-            if (isVisited[currentEdge] || !mesh.IsEdgeOnBoundary(currentEdge))
-            {
-                e++;
-                continue;
-            }
-
-            const auto firstNode = mesh.m_edges[currentEdge].first;
-            const auto secondNode = mesh.m_edges[currentEdge].second;
-
-            currentNode = secondNode == currentNode ? firstNode : secondNode;
-            e = 0;
-            currentNodeInPolygon = false;
-
-            meshBoundaryPolygon.emplace_back(mesh.m_nodes[currentNode]);
-            isVisited[currentEdge] = true;
-        }
-    }
-
     std::vector<std::vector<Point>> Polygons::ComputePointsInPolygons() const
     {
 
@@ -189,9 +77,6 @@ namespace meshkernel
             FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass, isCounterClockWise);
 
             const auto perimeter = PerimeterClosedPolygon(localPolygon);
-
-            double maximumEdgeLength;
-            MaximumEdgeLength(localPolygon, numLocalPoints, maximumEdgeLength);
 
             // average triangle size
             const double averageEdgeLength = perimeter / static_cast<double>(numLocalPoints - 1);
@@ -347,23 +232,7 @@ namespace meshkernel
         refinedPolygon.resize(refinedNodeIndex);
     }
 
-    void Polygons::MaximumEdgeLength(const std::vector<Point>& localPolygon, size_t numPoints, double& maximumEdgeLength) const
-    {
-
-        if (localPolygon[0].x != localPolygon[numPoints - 1].x)
-        {
-            throw std::invalid_argument("Polygons::MaximumEdgeLength: The first and last point of the polygon is not the same.");
-        }
-
-        maximumEdgeLength = std::numeric_limits<double>::lowest();
-        for (int p = 0; p < numPoints - 1; ++p)
-        {
-            double edgeLength = ComputeDistance(m_nodes[p], m_nodes[p + 1], m_projection);
-            maximumEdgeLength = std::max(maximumEdgeLength, edgeLength);
-        }
-    }
-
-    void Polygons::OffsetCopy(double distance, bool innerAndOuter, Polygons& newPolygon)
+    Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     {
         int sizenewPolygon = GetNumNodes();
         if (innerAndOuter)
@@ -433,7 +302,7 @@ namespace meshkernel
         }
 
         // set the new polygon
-        newPolygon = {newPolygonPoints, m_projection};
+        return {newPolygonPoints, m_projection};
     }
 
     bool Polygons::IsPointInPolygon(const Point& point, int polygonIndex) const
@@ -525,6 +394,23 @@ namespace meshkernel
             edgeLengths.emplace_back(ComputeDistance(polygonNodes[firstNode], polygonNodes[secondNode], m_projection));
         }
         return edgeLengths;
+    }
+
+    double Polygons::MaximumEdgeLength(const std::vector<Point>& polygonNodes) const
+    {
+
+        if (polygonNodes.front() != polygonNodes.back())
+        {
+            throw std::invalid_argument("Polygons::MaximumEdgeLength: The first and last point of the polygon is not the same.");
+        }
+
+        auto maximumEdgeLength = std::numeric_limits<double>::lowest();
+        for (int p = 0; p < polygonNodes.size() - 1; ++p)
+        {
+            double edgeLength = ComputeDistance(m_nodes[p], m_nodes[p + 1], m_projection);
+            maximumEdgeLength = std::max(maximumEdgeLength, edgeLength);
+        }
+        return maximumEdgeLength;
     }
 
 }; // namespace meshkernel

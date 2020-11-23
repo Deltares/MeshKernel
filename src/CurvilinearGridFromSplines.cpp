@@ -304,10 +304,10 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
             double xMiddle = (m_gridLine[i].x + m_gridLine[i + 1].x) * 0.5;
             double yMiddle = (m_gridLine[i].y + m_gridLine[i + 1].y) * 0.5;
 
-            double xs1;
-            double xs2;
-            double ys1;
-            double ys2;
+            double xs1 = doubleMissingValue;
+            double xs2 = doubleMissingValue;
+            double ys1 = doubleMissingValue;
+            double ys2 = doubleMissingValue;
 
             if (m_splines->m_projection == Projections::cartesian)
             {
