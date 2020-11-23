@@ -333,13 +333,15 @@ void meshkernel::MeshRefinement::ConnectHangingNodes()
             const auto edgeIndex = m_mesh->m_facesEdges[f][n];
             const auto firstEdgeIndex = m_mesh->m_facesEdges[f][e];
             const auto secondEdgeIndex = m_mesh->m_facesEdges[f][ee];
-            if (m_brotherEdges[edgeIndex] != secondEdgeIndex)
+            if (m_brotherEdges[edgeIndex] == secondEdgeIndex)
             {
+                continue;
+            }
 
-                if (numNonHangingNodes > maximumNumberOfNodesPerFace - 1)
-                {
-                    return;
-                }
+            if (numNonHangingNodes > maximumNumberOfNodesPerFace - 1)
+            {
+                return;
+            }
 
                 auto successful = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex, edgeEndNodeCache[numNonHangingNodes]);
                 if (!successful)
@@ -352,7 +354,6 @@ void meshkernel::MeshRefinement::ConnectHangingNodes()
                         throw AlgorithmError("MeshRefinement::ConnectHangingNodes: Could not find common node.");
                 }
                 numNonHangingNodes++;
-            }
         }
 
         int numHangingNodes = numEdges - numNonHangingNodes;

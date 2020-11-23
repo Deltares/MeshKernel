@@ -1153,8 +1153,7 @@ void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
         throw std::invalid_argument("Mesh::MergeTwoNodes: Either the first or the second node-index is invalid.");
     }
 
-    int edgeIndex;
-    FindEdge(firstNodeIndex, secondNodeIndex, edgeIndex);
+    auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);
     if (edgeIndex >= 0)
     {
         m_edges[edgeIndex].first = -1;
@@ -1230,8 +1229,7 @@ void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
 
 void meshkernel::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
 {
-    int edgeIndex;
-    FindEdge(startNode, endNode, edgeIndex);
+    const auto edgeIndex = FindEdge(startNode, endNode);
 
     // The nodes are already connected
     if (edgeIndex >= 0)
@@ -1415,14 +1413,14 @@ bool meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, i
     }
 }
 
-void meshkernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const
+int meshkernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex) const
 {
     if (firstNodeIndex < 0 || secondNodeIndex < 0)
     {
         throw std::invalid_argument("Mesh::FindEdge: Invalid node index.");
     }
 
-    edgeIndex = -1;
+    int edgeIndex = -1;
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         int localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
@@ -1433,6 +1431,7 @@ void meshkernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex, int& ed
             break;
         }
     }
+    return edgeIndex;
 }
 
 void meshkernel::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const

@@ -165,6 +165,8 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
         }
         return interpolatedResults;
     }
+    default:
+        return std::vector<double>{};
     }
 }
 
