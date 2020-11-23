@@ -221,7 +221,7 @@ void meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 
 meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
 {
-    if (curvilinearGrid.m_grid.size() == 0)
+    if (curvilinearGrid.m_grid.empty())
     {
         throw std::invalid_argument("Mesh::Mesh: The curvilinear grid is empty.");
     }

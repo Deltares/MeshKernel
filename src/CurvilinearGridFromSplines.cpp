@@ -770,7 +770,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeMaximumGridLayerGrowTime(con
 
         Point firstPointIncremented(coordinates[i] + velocities[i] * dt);
         Point secondPointIncremented(coordinates[i + 1] + velocities[i + 1] * dt);
-        ;
+
         edgeIncrement[i] = InnerProductTwoSegments(coordinates[i], coordinates[i + 1], firstPointIncremented, secondPointIncremented, m_splines->m_projection) / edgeWidth[i] - edgeWidth[i];
         edgeIncrement[i] = edgeIncrement[i] / dt;
     }

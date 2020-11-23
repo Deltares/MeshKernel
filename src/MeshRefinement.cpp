@@ -596,14 +596,11 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
                 parentEdge[numNonHangingNodes] = edgeIndex;
                 numNonHangingNodes++;
             }
-            else if (m_brotherEdges[edgeIndex] != firstEdgeIndex || m_brotherEdges[edgeIndex] < 0)
+            else if ((m_brotherEdges[edgeIndex] != firstEdgeIndex || m_brotherEdges[edgeIndex] < 0) && (m_edgeMask[edgeIndex] != 0))
             {
-                if (m_edgeMask[edgeIndex] != 0)
-                {
-                    notHangingFaceNodes[numNonHangingNodes] = m_edgeMask[edgeIndex];
-                    parentEdge[numNonHangingNodes] = edgeIndex;
-                    numNonHangingNodes++;
-                }
+                notHangingFaceNodes[numNonHangingNodes] = m_edgeMask[edgeIndex];
+                parentEdge[numNonHangingNodes] = edgeIndex;
+                numNonHangingNodes++;
             }
 
             if (numNonHangingNodes >= maximumNumberOfNodesPerFace)

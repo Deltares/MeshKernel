@@ -37,9 +37,9 @@
 #include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
 
 meshkernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines,
-                                                                                         const meshkernelapi::CurvilinearParametersNative curvilinearParametersNative) : m_splines(splines),
-                                                                                                                                                                         m_numM(curvilinearParametersNative.MRefinement),
-                                                                                                                                                                         m_numN(curvilinearParametersNative.NRefinement)
+                                                                                         const meshkernelapi::CurvilinearParametersNative& curvilinearParametersNative) : m_splines(splines),
+                                                                                                                                                                          m_numM(curvilinearParametersNative.MRefinement),
+                                                                                                                                                                          m_numN(curvilinearParametersNative.NRefinement)
 
 {
 }
