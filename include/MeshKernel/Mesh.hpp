@@ -42,7 +42,6 @@ namespace meshkernel
 
     class Mesh
     {
-
     public:
         enum DeleteMeshOptions
         {
@@ -70,7 +69,7 @@ namespace meshkernel
         /// Default constructor
         /// </summary>
         /// <returns></returns>
-        Mesh();
+        Mesh() = default;
 
         /// <summary>
         /// Converting constructor, from curvilinear grid to mesh (gridtonet)
@@ -282,14 +281,12 @@ namespace meshkernel
         /// @param[in,out] normals Caching array for normals
         /// @param[in] numNodes Number of valid nodes in the cache
         /// @param[in] edgesNumFaces For meshes, the number of faces sharing the edges
-        /// @param[in] weightCircumCenter Circumcenter weight
         /// @returns The computed circumcenter
         [[nodiscard]] Point ComputeFaceCircumenter(std::vector<Point>& polygon,
                                                    std::vector<Point>& middlePoints,
                                                    std::vector<Point>& normals,
                                                    int numNodes,
-                                                   const std::vector<int>& edgesNumFaces,
-                                                   double weightCircumCenter) const;
+                                                   const std::vector<int>& edgesNumFaces) const;
 
         /// @brief Gets the mass centers of obtuse triangles
         /// @returns The center of obtuse triangles

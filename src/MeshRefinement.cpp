@@ -213,10 +213,7 @@ void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
     //remove isolated hanging nodes and connect if needed
     if (m_connectHangingNodes)
     {
-        auto numRemovedIsolatedHangingNodes = RemoveIsolatedHangingnodes();
-
         ConnectHangingNodes();
-
         m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 }
@@ -651,8 +648,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
                                                            middlePointsCache,
                                                            normalsCache,
                                                            numNonHangingEdges,
-                                                           localEdgesNumFaces,
-                                                           weightCircumCenter);
+                                                           localEdgesNumFaces);
 
             if (m_mesh->m_projection == Projections::spherical)
             {

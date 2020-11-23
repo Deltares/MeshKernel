@@ -411,7 +411,7 @@ namespace meshkernel
         auto startLandBoundaryIndex = m_segmentIndices[landBoundarySegment][0];
         auto endLandBoundaryIndex = m_segmentIndices[landBoundarySegment][1];
 
-        if (startLandBoundaryIndex < 0 || startLandBoundaryIndex >= m_nodes.size() || startLandBoundaryIndex >= endLandBoundaryIndex)
+        if (startLandBoundaryIndex >= m_nodes.size() || startLandBoundaryIndex >= endLandBoundaryIndex)
             throw std::invalid_argument("LandBoundaries::MakePath: Invalid boundary index.");
 
         // fractional location of the projected outer nodes(min and max) on the land boundary segment

@@ -42,7 +42,7 @@ namespace meshkernel
         /// Ctor with splines and parameters
         /// </summary>
         /// <returns></returns>
-        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, meshkernelapi::CurvilinearParametersNative curvilinearParametersNative);
+        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, const meshkernelapi::CurvilinearParametersNative curvilinearParametersNative);
 
         /// @brief Computes the adimensional intersections between splines.
         /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)

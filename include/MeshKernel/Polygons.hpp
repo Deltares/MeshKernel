@@ -36,7 +36,7 @@ namespace meshkernel
     {
     public:
         /// @brief Default constructor
-        Polygons();
+        Polygons() = default;
 
         /// @brief Constructor
         /// @param[in] polygon The polygon nodes

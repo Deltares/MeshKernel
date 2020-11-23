@@ -42,7 +42,7 @@ namespace meshkernel
         /// Ctor
         /// </summary>
         /// <returns></returns>
-        Splines();
+        Splines() = default;
 
         /// <summary>
         /// Ctor, set projection
