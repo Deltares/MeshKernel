@@ -46,7 +46,6 @@ namespace meshkernel
     const double one_over_earth_radius = 1.0 / earth_radius; //one over earth_radius(m-1);
     const double absLatitudeAtPoles = 0.0001;                // pole tolerance in degrees
     const double nearlyZero = 1e-16;                         // used to determine if a length is zero
-	const int numNodesInTriangle = 3;  
 
     //mesh constants
     const double minimumDeltaCoordinate = 1e-14;
@@ -57,6 +56,7 @@ namespace meshkernel
     const double minimumCellArea = 1e-12;
     const double weightCircumCenter = 1.0;
     const int numNodesQuads = 4;
+    const int numNodesInTriangle = 3;
 
     //orthogonalization
     const double minimumEdgeLength = 1e-4;

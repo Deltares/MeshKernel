@@ -44,10 +44,6 @@
 #include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernel/Exceptions.hpp>
 
-meshkernel::Mesh::Mesh()
-{
-}
-
 void meshkernel::Mesh::Set(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
                            Projections projection,
@@ -580,7 +576,7 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
     std::vector<std::size_t> indexes(m_nodesNumEdges[node]);
     std::vector<int> edgeNodeCopy{m_nodesEdges[node]};
     iota(indexes.begin(), indexes.end(), 0);
-    sort(indexes.begin(), indexes.end(), [&](std::size_t i1, std::size_t i2) { return m_edgeAngles[i1] < m_edgeAngles[i2]; });
+    sort(indexes.begin(), indexes.end(), [&, this](std::size_t i1, std::size_t i2) { return m_edgeAngles[i1] < m_edgeAngles[i2]; });
 
     for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
     {
@@ -854,8 +850,7 @@ void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas(bool computeM
                                                          middlePointsCache,
                                                          normalsCache,
                                                          numberOfFaceNodes,
-                                                         numEdgeFacesCache,
-                                                         weightCircumCenter);
+                                                         numEdgeFacesCache);
     }
 }
 
@@ -1835,8 +1830,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
                                                            std::vector<Point>& middlePoints,
                                                            std::vector<Point>& normals,
                                                            int numNodes,
-                                                           const std::vector<int>& edgesNumFaces,
-                                                           double weightCircumCenter) const
+                                                           const std::vector<int>& edgesNumFaces) const
 {
     const int maximumNumberCircumcenterIterations = 100;
     const double eps = m_projection == Projections::cartesian ? 1e-3 : 9e-10; //111km = 0-e digit.

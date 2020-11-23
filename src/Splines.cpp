@@ -36,8 +36,6 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Splines.hpp>
 
-meshkernel::Splines::Splines(){};
-
 meshkernel::Splines::Splines(Projections projection) : m_projection(projection){};
 
 /// add a new spline, return the index
@@ -52,7 +50,7 @@ void meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t st
     // compute basic properties
     m_splineDerivatives.emplace_back();
     SecondOrderDerivative(m_splineNodes.back(), size, m_splineDerivatives.back());
-    m_splinesLength.emplace_back(GetSplineLength(static_cast<int>(GetNumSplines() - 1), 0, size - 1));
+    m_splinesLength.emplace_back(GetSplineLength(GetNumSplines() - 1, 0, size - 1));
 }
 
 void meshkernel::Splines::DeleteSpline(int splineIndex)

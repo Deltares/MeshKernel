@@ -38,9 +38,6 @@
 
 namespace meshkernel
 {
-    Polygons::Polygons()
-    {
-    }
 
     Polygons::Polygons(const std::vector<Point>& polygon, Projections projection) : m_nodes(polygon), m_projection(projection)
     {
@@ -55,10 +52,10 @@ namespace meshkernel
         generatedPoints.reserve(m_indices.size());
         std::vector<Point> localPolygon(GetNumNodes());
 
-        for (int i = 0; i < m_indices.size(); ++i)
+        for (const auto& index : m_indices)
         {
             localPolygon.clear();
-            for (auto j = m_indices[i][0]; j <= m_indices[i][1]; ++j)
+            for (auto j = index[0]; j <= index[1]; ++j)
             {
                 localPolygon.emplace_back(m_nodes[j]);
             }
