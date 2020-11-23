@@ -147,7 +147,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     std::vector<Point> sideFour(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
 
     // Fill boundary coordinates
-    auto assignPolygonPointsToSegment = [this, start, end, numPolygonNodes](int nodeIndex, int numPointsSide, int dir, std::vector<Point>& sideToFill) {
+    auto assignPolygonPointsToSegment = [this, start, end, &numPolygonNodes](int nodeIndex, int numPointsSide, int dir, std::vector<Point>& sideToFill) {
         for (int i = 0; i < numPointsSide; i++)
         {
             sideToFill[i] = m_polygon->m_nodes[nodeIndex];
