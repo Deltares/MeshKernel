@@ -788,9 +788,7 @@ namespace meshkernelapi
             ConvertGeometryListNativeToPointVector(geometryListIn, polygonPoints);
 
             meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-
-            std::vector<meshkernel::Point> refinedPolygon;
-            polygon.RefinePolygonPart(firstIndex, secondIndex, distance, refinedPolygon);
+            const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
             ConvertPointVectorToGeometryListNative(refinedPolygon, geometryListOut);
         }
@@ -817,8 +815,7 @@ namespace meshkernelapi
 
             meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
-            std::vector<meshkernel::Point> refinedPolygon;
-            polygon.RefinePolygonPart(firstIndex, secondIndex, distance, refinedPolygon);
+            const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
             numberOfPolygonVertices = int(refinedPolygon.size());
         }

@@ -106,14 +106,13 @@ namespace meshkernel
         return generatedPoints;
     }
 
-    void Polygons::RefinePolygonPart(int startIndex,
-                                     int endIndex,
-                                     double refinementDistance,
-                                     std::vector<Point>& refinedPolygon)
+    std::vector<Point> Polygons::RefineFirstPolygon(int startIndex,
+                                                    int endIndex,
+                                                    double refinementDistance) const
     {
         if (m_indices.empty())
         {
-            throw std::invalid_argument("Polygons::RefinePolygonPart: No nodes in polygon.");
+            throw std::invalid_argument("Polygons::RefineFirstPolygon: No nodes in polygon.");
         }
 
         if (startIndex == 0 && endIndex == 0)
@@ -124,7 +123,7 @@ namespace meshkernel
 
         if (endIndex <= startIndex)
         {
-            throw std::invalid_argument("Polygons::RefinePolygonPart: The end index is smaller than the start index.");
+            throw std::invalid_argument("Polygons::RefineFirstPolygon: The end index is smaller than the start index.");
         }
 
         bool areIndicesValid = false;
@@ -141,7 +140,7 @@ namespace meshkernel
 
         if (!areIndicesValid)
         {
-            throw std::invalid_argument("Polygons::RefinePolygonPart: The indices are not valid.");
+            throw std::invalid_argument("Polygons::RefineFirstPolygon: The indices are not valid.");
         }
 
         const auto edgeLengths = PolygonEdgeLengths(m_nodes);
@@ -155,14 +154,14 @@ namespace meshkernel
         auto numNodesRefinedPart = int(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex));
         int numNodesNotRefinedPart = startIndex - m_indices[polygonIndex][0] + m_indices[polygonIndex][1] - endIndex;
         int totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
-        refinedPolygon.resize(totalNumNodes);
+        std::vector<Point> refinedPolygon;
+        refinedPolygon.reserve(totalNumNodes);
 
         // before refinement
         int refinedNodeIndex = 0;
         for (int i = m_indices[polygonIndex][0]; i <= startIndex; ++i)
         {
-            refinedPolygon[refinedNodeIndex] = m_nodes[i];
-            refinedNodeIndex++;
+            refinedPolygon.emplace_back(m_nodes[i]);
         }
 
         // refined part
@@ -181,8 +180,7 @@ namespace meshkernel
                 // if not snapped to the original last polygon point, snap it
                 if (!snappedToLastPoint)
                 {
-                    refinedPolygon[refinedNodeIndex] = m_nodes[nextNodeIndex];
-                    refinedNodeIndex++;
+                    refinedPolygon.emplace_back(m_nodes[nextNodeIndex]);
                 }
 
                 // find the next point
@@ -210,7 +208,7 @@ namespace meshkernel
             double distanceFromLastNode = pointLengthCoordinate - nodeLengthCoordinate[nodeIndex];
             double factor = distanceFromLastNode / edgeLengths[nodeIndex];
             Point p;
-            if (std::abs(factor - 1.0) <= std::numeric_limits<double>::epsilon())
+            if (IsEqual(factor, 1.0))
             {
                 snappedToLastPoint = true;
                 p = p1;
@@ -219,17 +217,16 @@ namespace meshkernel
             {
                 p = p0 + (p1 - p0) * distanceFromLastNode / edgeLengths[nodeIndex];
             }
-            refinedPolygon[refinedNodeIndex] = p;
-            refinedNodeIndex++;
+            refinedPolygon.emplace_back(p);
         }
 
         // after refinement
         for (int i = endIndex + 1; i <= m_indices[polygonIndex][1]; ++i)
         {
-            refinedPolygon[refinedNodeIndex] = m_nodes[i];
-            refinedNodeIndex++;
+            refinedPolygon.emplace_back(m_nodes[i]);
         }
-        refinedPolygon.resize(refinedNodeIndex);
+
+        return refinedPolygon;
     }
 
     Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
@@ -302,7 +299,8 @@ namespace meshkernel
         }
 
         // set the new polygon
-        return {newPolygonPoints, m_projection};
+        Polygons newPolygon{newPolygonPoints, m_projection};
+        return newPolygon;
     }
 
     bool Polygons::IsPointInPolygon(const Point& point, int polygonIndex) const
