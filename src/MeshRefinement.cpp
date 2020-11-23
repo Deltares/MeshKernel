@@ -230,10 +230,11 @@ int meshkernel::MeshRefinement::RemoveIsolatedHangingnodes()
             continue;
         }
 
-        int commonNode;
-        auto successful = m_mesh->FindCommonNode(e, brotherEdgeIndex, commonNode);
-        if (!successful)
+        const auto commonNode = m_mesh->FindCommonNode(e, brotherEdgeIndex);
+        if (commonNode == -1)
+        {
             continue;
+        }
 
         if (commonNode > 0 && m_mesh->m_nodesNumEdges[commonNode] == 2)
         {
@@ -343,17 +344,21 @@ void meshkernel::MeshRefinement::ConnectHangingNodes()
                 return;
             }
 
-                auto successful = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex, edgeEndNodeCache[numNonHangingNodes]);
-                if (!successful)
-                    throw AlgorithmError("MeshRefinement::ConnectHangingNodes: Could not find common node.");
+            edgeEndNodeCache[numNonHangingNodes] = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex);
+            if (edgeEndNodeCache[numNonHangingNodes] == -1)
+            {
+                throw AlgorithmError("MeshRefinement::ConnectHangingNodes: Could not find common node.");
+            }
 
-                if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
+            if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
+            {
+                hangingNodeCache[numNonHangingNodes] = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex);
+                if (hangingNodeCache[numNonHangingNodes] == -1)
                 {
-                    successful = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex, hangingNodeCache[numNonHangingNodes]);
-                    if (!successful)
-                        throw AlgorithmError("MeshRefinement::ConnectHangingNodes: Could not find common node.");
+                    throw AlgorithmError("MeshRefinement::ConnectHangingNodes: Could not find common node.");
                 }
-                numNonHangingNodes++;
+            }
+            numNonHangingNodes++;
         }
 
         int numHangingNodes = numEdges - numNonHangingNodes;
@@ -588,10 +593,11 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
             if (m_brotherEdges[edgeIndex] == secondEdgeIndex && secondEdgeIndex >= 0)
             {
                 numBrotherEdges++;
-                int newNode;
-                auto successful = m_mesh->FindCommonNode(edgeIndex, m_brotherEdges[edgeIndex], newNode);
-                if (!successful)
+                const auto newNode = m_mesh->FindCommonNode(edgeIndex, m_brotherEdges[edgeIndex]);
+                if (newNode == -1)
+                {
                     throw AlgorithmError("MeshRefinement::RefineFacesBySplittingEdges: Could not find common node.");
+                }
 
                 notHangingFaceNodes[numNonHangingNodes] = newNode;
                 parentEdge[numNonHangingNodes] = edgeIndex;
@@ -620,21 +626,22 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
         int numNonHangingEdges = 0;
         for (int e = 0; e < numEdges; e++)
         {
-            if (!ishanging[e])
+            if (ishanging[e])
             {
-                facePolygonWithoutHangingNodes[numNonHangingEdges] = m_polygonNodesCache[e];
-
-                auto mappedEdge = m_localNodeIndicesCache[e];
-                if (mappedEdge >= 0)
-                {
-                    localEdgesNumFaces[numNonHangingEdges] = m_mesh->m_edgesNumFaces[mappedEdge];
-                }
-                else
-                {
-                    localEdgesNumFaces[numNonHangingEdges] = 1;
-                }
-                numNonHangingEdges++;
+                continue;
             }
+            facePolygonWithoutHangingNodes[numNonHangingEdges] = m_polygonNodesCache[e];
+
+            auto mappedEdge = m_localNodeIndicesCache[e];
+            if (mappedEdge >= 0)
+            {
+                localEdgesNumFaces[numNonHangingEdges] = m_mesh->m_edgesNumFaces[mappedEdge];
+            }
+            else
+            {
+                localEdgesNumFaces[numNonHangingEdges] = 1;
+            }
+            numNonHangingEdges++;
         }
 
         // quads
@@ -844,16 +851,16 @@ void meshkernel::MeshRefinement::FindHangingNodes(int face,
             int commonNode = intMissingValue;
             if (m_brotherEdges[edgeIndex] == firstEdgeIndex)
             {
-                auto successful = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex, commonNode);
-                if (!successful)
+                commonNode = m_mesh->FindCommonNode(edgeIndex, firstEdgeIndex);
+                if (commonNode == -1)
                 {
                     throw AlgorithmError("MeshRefinement::FindHangingNodes: Could not find common node.");
                 }
             }
             else if (m_brotherEdges[edgeIndex] == secondEdgeIndex)
             {
-                auto successful = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex, commonNode);
-                if (!successful)
+                commonNode = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex);
+                if (commonNode == -1)
                 {
                     throw AlgorithmError("MeshRefinement::FindHangingNodes: Could not find common node.");
                 }
