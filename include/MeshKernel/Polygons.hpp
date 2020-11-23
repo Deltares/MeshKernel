@@ -46,11 +46,6 @@ namespace meshkernel
         Polygons(const std::vector<Point>& polygon,
                  Projections projection);
 
-        /// @brief Convert all mesh boundaries to a polygon, including holes (copynetboundstopol)
-        /// @param[in] mesh The input mesh
-        /// @returns meshBoundaryPolygon The resulting polygon mesh boundary
-        std::vector<Point> MeshBoundaryToPolygon(Mesh& mesh) const;
-
         /// @brief Creates points inside the polygon using triangulation
         /// @param[out] generatedPoints the generated points
         std::vector<std::vector<Point>> ComputePointsInPolygons() const;
@@ -65,8 +60,8 @@ namespace meshkernel
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
         /// @param[in] Inner Inner or outer polygon offset
-        /// @param[out] newPolygon the new polygon
-        void OffsetCopy(double distance, bool Inner, Polygons& newPolygon);
+        /// @return the new offset polygon
+        Polygons OffsetCopy(double distance, bool Inner) const;
 
         /// @brief Checks if a point is included in a given polygon
         /// @param[in] point The point to check
@@ -103,20 +98,8 @@ namespace meshkernel
         std::vector<double> PolygonEdgeLengths(const std::vector<Point>& polygonNodes) const;
 
         /// @brief Computes the maximum edge length
-        /// @param[in] localPolygon The polygon to use in the computation
-        /// @param[in] numPoints The number of polygon points
-        /// @param[out] maximumEdgeLength The maximum edge length
-        void MaximumEdgeLength(const std::vector<Point>& localPolygon, size_t numPoints, double& maximumEdgeLength) const;
-
-        /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        /// @param[in] mesh The input mesh
-        /// @param[in] isVisited the visited mesh nodes
-        /// @param[in] nodeIndex the node where to initialize the algorithm
-        /// @param[in] currentNode the current node
-        /// @param[out] meshBoundaryPolygon The resulting polygon points
-        void WalkBoundaryFromNode(const Mesh& mesh,
-                                  std::vector<bool>& isVisited,
-                                  int& currentNode,
-                                  std::vector<Point>& meshBoundaryPolygon) const;
+        /// @param[in] polygonNodes The polygon to use in the computation
+        /// @return maximumEdgeLength The maximum edge length
+        double MaximumEdgeLength(const std::vector<Point>& polygonNodes) const;
     };
 } // namespace meshkernel

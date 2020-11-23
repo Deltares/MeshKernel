@@ -8,10 +8,8 @@ TEST(Polygons, MeshBoundaryToPolygon)
 {
     auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
 
-    const std::vector<meshkernel::Point> polygon;
-    auto polygons = std::make_shared<meshkernel::Polygons>(polygon, meshkernel::Projections::cartesian);
-
-    const auto meshBoundaryPolygon = polygons->MeshBoundaryToPolygon(*mesh);
+    std::vector<meshkernel::Point> polygonNodes;
+    const auto meshBoundaryPolygon = mesh->MeshBoundaryToPolygon(polygonNodes);
 
     ASSERT_EQ(9, meshBoundaryPolygon.size());
 
@@ -229,10 +227,9 @@ TEST(Polygons, OffsetCopy)
 
     meshkernel::Polygons polygon(nodes, meshkernel::Projections::cartesian);
 
-    meshkernel::Polygons newPolygon;
     double distance = 10.0;
     bool innerAndOuter = false;
-    polygon.OffsetCopy(distance, innerAndOuter, newPolygon);
+    const auto newPolygon = polygon.OffsetCopy(distance, innerAndOuter);
 
     const double tolerance = 1e-5;
 

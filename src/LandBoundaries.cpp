@@ -77,12 +77,13 @@ namespace meshkernel
         }
 
         // mesh boundary to polygon
-        const auto meshBoundaryPolygon = m_polygons->MeshBoundaryToPolygon(*m_mesh);
+        std::vector<meshkernel::Point> polygonNodes;
+        const auto meshBoundaryPolygon = m_mesh->MeshBoundaryToPolygon(polygonNodes);
 
         // mask all landboundary nodes close to the mesh boundary (distanceFromMeshNode < minDistance)
         for (auto n = 0; n < m_nodes.size() - 1; n++)
         {
-            if (landBoundaryMask[n] == 0)
+            if (landBoundaryMask[n] == 0 || meshBoundaryPolygon.empty())
             {
                 continue;
             }
