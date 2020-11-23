@@ -154,7 +154,6 @@ namespace meshkernel
         refinedPolygon.reserve(totalNumNodes);
 
         // before refinement
-        int refinedNodeIndex = 0;
         for (int i = m_indices[polygonIndex][0]; i <= startIndex; ++i)
         {
             refinedPolygon.emplace_back(m_nodes[i]);

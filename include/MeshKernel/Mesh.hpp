@@ -167,8 +167,8 @@ namespace meshkernel
         /// @brief Find the edge sharing two nodes
         /// @param[in] firstNodeIndex The index of the first node
         /// @param[in] secondNodeIndex The index of the second node
-        /// @param[out] edgeIndex The edge index
-        void FindEdge(int firstNodeIndex, int secondNodeIndex, int& edgeIndex) const;
+        /// @return The edge index
+        int FindEdge(int firstNodeIndex, int secondNodeIndex) const;
 
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location
