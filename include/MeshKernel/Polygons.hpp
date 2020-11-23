@@ -32,8 +32,6 @@
 
 namespace meshkernel
 {
-    class Mesh;
-
     class Polygons
     {
     public:

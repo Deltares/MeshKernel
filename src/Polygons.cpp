@@ -30,7 +30,6 @@
 #include <utility>
 #include <vector>
 #include <stdexcept>
-#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Operations.cpp>
