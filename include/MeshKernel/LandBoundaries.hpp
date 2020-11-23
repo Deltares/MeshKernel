@@ -179,8 +179,8 @@ namespace meshkernel
         /// @param[out] endMeshNode
         void FindStartEndMeshNodesFromEdges(int startEdge,
                                             int endEdge,
-                                            meshkernel::Point startPoint,
-                                            meshkernel::Point endPoint,
+                                            Point startPoint,
+                                            Point endPoint,
                                             int& startMeshNode,
                                             int& endMeshNode) const;
 

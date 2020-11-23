@@ -77,7 +77,7 @@ namespace meshkernel
         }
 
         // mesh boundary to polygon
-        std::vector<meshkernel::Point> polygonNodes;
+        std::vector<Point> polygonNodes;
         const auto meshBoundaryPolygon = m_mesh->MeshBoundaryToPolygon(polygonNodes);
 
         // mask all landboundary nodes close to the mesh boundary (distanceFromMeshNode < minDistance)
@@ -1015,8 +1015,8 @@ namespace meshkernel
 
     void LandBoundaries::FindStartEndMeshNodesFromEdges(int startEdge,
                                                         int endEdge,
-                                                        meshkernel::Point startPoint,
-                                                        meshkernel::Point endPoint,
+                                                        Point startPoint,
+                                                        Point endPoint,
                                                         int& startMeshNode,
                                                         int& endMeshNode) const
     {

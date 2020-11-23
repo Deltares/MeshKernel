@@ -177,7 +177,7 @@ namespace meshkernel
         static auto ConvertToSamples(int numSamples, const double** samplesXCoordinate, const double** samplesYCoordinate, const double** samplesValue)
         {
             // Build the samples
-            std::vector<meshkernel::Sample> samples(numSamples);
+            std::vector<Sample> samples(numSamples);
             for (auto i = 0; i < samples.size(); ++i)
             {
                 samples[i].x = (*samplesXCoordinate)[i];
