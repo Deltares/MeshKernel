@@ -528,7 +528,7 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 
     double phi0 = 0.0;
     double phi;
-    m_edgeAngles.resize(meshkernel::maximumNumberOfEdgesPerNode);
+    m_edgeAngles.resize(maximumNumberOfEdgesPerNode);
     std::fill(m_edgeAngles.begin(), m_edgeAngles.end(), 0.0);
     for (auto edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
     {
@@ -1857,7 +1857,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
     centerOfMass.y = yCenter / numNodes;
 
     // for triangles, for now assume cartesian kernel
-    meshkernel::Point result = centerOfMass;
+    Point result = centerOfMass;
     if (numNodes == 3)
     {
         CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], m_projection, result);
@@ -1962,7 +1962,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
 std::vector<meshkernel::Point> meshkernel::Mesh::GetObtuseTrianglesCenters()
 {
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
-    std::vector<meshkernel::Point> result;
+    std::vector<Point> result;
     result.reserve(GetNumFaces());
     for (auto f = 0; f < GetNumFaces(); ++f)
     {
@@ -2507,7 +2507,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh::MeshBoundaryToPolygon(const std
 {
 
     // Find faces
-    Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
     std::vector<bool> isVisited(GetNumEdges(), false);
     std::vector<Point> meshBoundaryPolygon;
     meshBoundaryPolygon.reserve(GetNumNodes());
