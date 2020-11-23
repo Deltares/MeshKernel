@@ -1384,13 +1384,13 @@ bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
     return false;
 }
 
-bool meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, int& node) const
+int meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex) const
 {
-    auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
+    const auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
     auto firstEdgeEdgeSecondNode = m_edges[firstEdgeIndex].second;
 
-    auto secondEdgeFirstNode = m_edges[secondEdgeIndex].first;
-    auto secondEdgeSecondNode = m_edges[secondEdgeIndex].second;
+    const auto secondEdgeFirstNode = m_edges[secondEdgeIndex].first;
+    const auto secondEdgeSecondNode = m_edges[secondEdgeIndex].second;
 
     if (firstEdgeFirstNode < 0 || firstEdgeEdgeSecondNode < 0 || secondEdgeFirstNode < 0 || secondEdgeSecondNode < 0)
     {
@@ -1399,18 +1399,13 @@ bool meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex, i
 
     if (firstEdgeFirstNode == secondEdgeFirstNode || firstEdgeFirstNode == secondEdgeSecondNode)
     {
-        node = firstEdgeFirstNode;
-        return true;
+        return firstEdgeFirstNode;
     }
-    else if (firstEdgeEdgeSecondNode == secondEdgeFirstNode || firstEdgeEdgeSecondNode == secondEdgeSecondNode)
+    if (firstEdgeEdgeSecondNode == secondEdgeFirstNode || firstEdgeEdgeSecondNode == secondEdgeSecondNode)
     {
-        node = firstEdgeEdgeSecondNode;
-        return true;
+        return firstEdgeEdgeSecondNode;
     }
-    else
-    {
-        return false;
-    }
+    return -1;
 }
 
 int meshkernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex) const
