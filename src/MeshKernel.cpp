@@ -692,8 +692,8 @@ namespace meshkernelapi
 
             meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
 
-            std::vector<std::vector<meshkernel::Point>> generatedPoints;
-            polygon.CreatePointsInPolygons(generatedPoints);
+            // generate samples in all polygons
+            const auto generatedPoints = polygon.ComputePointsInPolygons();
 
             meshkernel::Mesh mesh(generatedPoints[0], polygon, meshInstances[meshKernelId]->m_projection);
             *meshInstances[meshKernelId] += mesh;
@@ -740,10 +740,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             meshkernel::Polygons polygon;
-            std::vector<meshkernel::Point> meshBoundaryPolygon;
 
-            int numNodesBoundaryPolygons;
-            polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId], meshBoundaryPolygon, numNodesBoundaryPolygons);
+            const auto meshBoundaryPolygon = polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId]);
 
             ConvertPointVectorToGeometryListNative(meshBoundaryPolygon, geometryListNative);
         }
@@ -765,9 +763,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             meshkernel::Polygons polygon;
-            std::vector<meshkernel::Point> meshBoundaryPolygon;
-
-            polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId], meshBoundaryPolygon, numberOfPolygonVertices);
+            const auto meshBoundaryPolygon = polygon.MeshBoundaryToPolygon(*meshInstances[meshKernelId]);
+            numberOfPolygonVertices = static_cast<int>(meshBoundaryPolygon.size());
         }
         catch (const std::exception& e)
         {

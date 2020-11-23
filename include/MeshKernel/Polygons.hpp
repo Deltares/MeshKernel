@@ -48,21 +48,12 @@ namespace meshkernel
 
         /// @brief Convert all mesh boundaries to a polygon, including holes (copynetboundstopol)
         /// @param[in] mesh The input mesh
-        /// @param[out] meshBoundaryPolygon The resulting polygon points
-        /// @param[out] numNodesBoundaryPolygons The number of nodes in the resulting polygon
-        void MeshBoundaryToPolygon(Mesh& mesh,
-                                   std::vector<Point>& meshBoundaryPolygon,
-                                   int& numNodesBoundaryPolygons) const;
+        /// @returns meshBoundaryPolygon The resulting polygon mesh boundary
+        std::vector<Point> MeshBoundaryToPolygon(Mesh& mesh) const;
 
         /// @brief Creates points inside the polygon using triangulation
         /// @param[out] generatedPoints the generated points
-        void CreatePointsInPolygons(std::vector<std::vector<Point>>& generatedPoints);
-
-        /// @brief Computes the perimeter of a closed polygon
-        /// @param[in] localPolygon The polygon to use in the computation
-        /// @param[in] numPoints The number of polygon points
-        /// @param[out] perimeter The computed perimeter
-        void PerimeterClosedPolygon(const std::vector<Point>& localPolygon, size_t numPoints, double& perimeter) const;
+        std::vector<std::vector<Point>> ComputePointsInPolygons() const;
 
         /// @brief Refines the polygon edges with additional nodes, from the start to the end index (refinepolygonpart)
         /// @param[in] startIndex The start index
@@ -70,11 +61,6 @@ namespace meshkernel
         /// @param[in] refinementDistance The chosen refinement distance
         /// @param[out] refinedPolygon The computed polygon
         void RefinePolygonPart(int startIndex, int endIndex, double refinementDistance, std::vector<Point>& refinedPolygon);
-
-        /// @brief Computes the lengths of the polygon edges
-        /// @param[in] localPolygon The polygon to use in the computation
-        /// @param[out] edgeLengths The length of each edge
-        void PolygonEdgeLengths(const std::vector<Point>& localPolygon, std::vector<double>& edgeLengths) const;
 
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
@@ -99,16 +85,23 @@ namespace meshkernel
 
         /// @brief Gets the number of polygon nodes
         /// @return the number of polygon nodes
-        [[nodiscard]] int GetNumNodes() const { return m_numNodes; }
+        [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
 
-        std::vector<Point> m_nodes;              // The polygon nodes
-        Projections m_projection;                // The current projection
-        int m_numNodes = 0;                      // (npl)
-        int m_numAllocatedNodes = 0;             // The size of currently allocated nodes (maxpol)
-        std::vector<std::vector<int>> m_indices; // Start-end of polygon nodes in m_nodes
-        int m_allocationSize = 100;              // The pre-allocation size
+        std::vector<Point> m_nodes;                 // The polygon nodes
+        Projections m_projection;                   // The current projection
+        std::vector<std::vector<size_t>> m_indices; // Start-end of polygon nodes in m_nodes
 
     private:
+        /// @brief Computes the perimeter of a closed polygon
+        /// @param[in] polygonNodes The polygon nodes to use in the computation
+        /// @return perimeter The computed perimeter
+        double PerimeterClosedPolygon(const std::vector<Point>& polygonNodes) const;
+
+        /// @brief Computes the lengths of the polygon edges
+        /// @param[in] polygonNodes The polygon nodes to use in the computation
+        /// @return edgeLengths The length of each edge
+        std::vector<double> PolygonEdgeLengths(const std::vector<Point>& polygonNodes) const;
+
         /// @brief Computes the maximum edge length
         /// @param[in] localPolygon The polygon to use in the computation
         /// @param[in] numPoints The number of polygon points
@@ -123,7 +116,6 @@ namespace meshkernel
         /// @param[out] meshBoundaryPolygon The resulting polygon points
         void WalkBoundaryFromNode(const Mesh& mesh,
                                   std::vector<bool>& isVisited,
-                                  int& nodeIndex,
                                   int& currentNode,
                                   std::vector<Point>& meshBoundaryPolygon) const;
     };

@@ -58,9 +58,9 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     }
 
     // for the current polygon find the number of nodes
-    const auto start = m_polygon->m_indices[0][0];
-    const auto end = m_polygon->m_indices[0][1];
-    const int numPolygonNodes = end - start + 1;
+    const auto start = static_cast<int>(m_polygon->m_indices[0][0]);
+    const auto end = static_cast<int>(m_polygon->m_indices[0][1]);
+    const size_t numPolygonNodes = end - start + 1;
 
     // get rid of size and orientation first part
     int diffForward = secondNode - firstNode;
@@ -223,8 +223,8 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     }
 
     // for the current polygon find the number of nodes
-    const auto start = m_polygon->m_indices[0][0];
-    const auto end = m_polygon->m_indices[0][1];
+    const auto start = static_cast<int>(m_polygon->m_indices[0][0]);
+    const auto end = static_cast<int>(m_polygon->m_indices[0][1]);
     const int numPolygonNodes = end - start + 1;
 
     // get rid of size and orientation first part

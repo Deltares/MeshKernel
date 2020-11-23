@@ -283,7 +283,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
     Set(edges, nodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
 
-meshkernel::Mesh::Mesh(std::vector<Point>& inputNodes, const Polygons& polygons, Projections projection) : m_projection(projection)
+meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& polygons, Projections projection) : m_projection(projection)
 {
     // compute triangulation
     TriangulationWrapper triangulationWrapper;
@@ -974,15 +974,16 @@ void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& m
         double OriginYCoordinate = makeGridParametersNative.OriginYCoordinate;
 
         // in case a polygon is there, re-compute parameters
-        if (polygons.m_numNodes >= 3)
+        if (!polygons.IsEmpty())
         {
             Point referencePoint{doubleMissingValue, doubleMissingValue};
             // rectangular grid in polygon
-            for (int i = 0; i < polygons.m_numNodes; ++i)
+
+            for (const auto& node : polygons.m_nodes)
             {
-                if (polygons.m_nodes[i].IsValid())
+                if (node.IsValid())
                 {
-                    referencePoint = polygons.m_nodes[i];
+                    referencePoint = node;
                     break;
                 }
             }
@@ -992,12 +993,12 @@ void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& m
             double xmax = -xmin;
             double etamin = std::numeric_limits<double>::max();
             double etamax = -etamin;
-            for (int i = 0; i < polygons.m_numNodes; ++i)
+            for (const auto& node : polygons.m_nodes)
             {
-                if (polygons.m_nodes[i].IsValid())
+                if (node.IsValid())
                 {
-                    double dx = GetDx(referencePoint, polygons.m_nodes[i], m_projection);
-                    double dy = GetDy(referencePoint, polygons.m_nodes[i], m_projection);
+                    double dx = GetDx(referencePoint, node, m_projection);
+                    double dy = GetDy(referencePoint, node, m_projection);
                     double xi = dx * cosineAngle + dy * sinAngle;
                     double eta = -dx * sinAngle + dy * cosineAngle;
                     xmin = std::min(xmin, xi);
@@ -1037,7 +1038,7 @@ void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& m
         }
 
         // in case a polygon is there, remove nodes outside
-        if (polygons.m_numNodes >= 3)
+        if (!polygons.IsEmpty())
         {
             std::vector<std::vector<bool>> nodeBasedMask(numN, std::vector<bool>(numM, false));
             std::vector<std::vector<bool>> faceBasedMask(numN - 1, std::vector<bool>(numM - 1, false));

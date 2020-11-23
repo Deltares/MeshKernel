@@ -61,6 +61,10 @@ namespace meshkernel
         double x;
         double y;
 
+        Point() : x(doubleMissingValue), y(doubleMissingValue){};
+
+        Point(double x, double y) : x(x), y(y){};
+
         Point operator+(Point const& rhs) const
         {
             Point point{
