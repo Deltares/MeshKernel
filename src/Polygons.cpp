@@ -298,7 +298,7 @@ namespace meshkernel
         return newPolygon;
     }
 
-    bool Polygons::IsPointInPolygon(const Point& point, int polygonIndex) const
+    bool Polygons::IsPointInPolygon(Point point, int polygonIndex) const
     {
         // empty polygon means everything is included
         if (m_indices.empty())
@@ -315,7 +315,7 @@ namespace meshkernel
         return inPolygon;
     }
 
-    bool Polygons::IsPointInPolygons(const Point& point) const
+    bool Polygons::IsPointInPolygons(Point point) const
     {
         // empty polygon means everything is included
         if (m_indices.empty())

@@ -30,6 +30,7 @@
 #include <vector>
 #include <memory>
 #include <MeshKernel/OrthogonalizationParametersNative.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
 
 namespace meshkernel
 {
@@ -38,7 +39,6 @@ namespace meshkernel
     class Mesh;
     class Smoother;
     class Orthogonalizer;
-    class LandBoundaries;
     class Polygons;
     enum class Projection;
 
@@ -64,7 +64,7 @@ namespace meshkernel
                                       std::shared_ptr<Orthogonalizer> orthogonalizer,
                                       std::shared_ptr<Polygons> polygon,
                                       std::shared_ptr<LandBoundaries> landBoundaries,
-                                      int projectToLandBoundaryOption,
+                                      LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
                                       const meshkernelapi::OrthogonalizationParametersNative& orthogonalizationParametersNative);
 
         void Initialize();
@@ -83,7 +83,7 @@ namespace meshkernel
 
     private:
         /// @brief Project mesh nodes back to the original mesh boundary (orthonet_project_on_boundary)
-        void ProjectOnOriginalMeshBoundary();
+        void SnapMeshToOriginalMeshBoundary();
 
         /// @brief Assembles the contributions of smoother and orthogonalizer
         void ComputeLinearSystemTerms();
@@ -113,7 +113,7 @@ namespace meshkernel
         std::shared_ptr<Orthogonalizer> m_orthogonalizer;                                     // A pointer to the orthogonalizer
         std::shared_ptr<Polygons> m_polygons;                                                 // The polygon where to perform the orthogonalization
         std::shared_ptr<LandBoundaries> m_landBoundaries;                                     // The land boundaries
-        int m_projectToLandBoundaryOption;                                                    // The project to land boundary option
+        LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption;            // The project to land boundary option
         meshkernelapi::OrthogonalizationParametersNative m_orthogonalizationParametersNative; // The orthogonalization parameters
 
         std::vector<int> m_localCoordinatesIndexes; // Used in sphericalAccurate projection (iloc)

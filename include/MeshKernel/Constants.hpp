@@ -37,7 +37,7 @@ namespace meshkernel
     const double doubleMissingValue = -999.0;
     const int intMissingValue = -999;
     const double squareRootOfThree = 1.73205080756887729352;
-    const double oneThird = 0.33333333333333333333;
+    const double oneThird = 1/3.0;
 
     //geometric constants
     const double degrad_hp = M_PI / 180.0;                   // conversion factor from degrees to radians(pi / 180)
