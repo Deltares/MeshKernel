@@ -36,8 +36,8 @@ namespace meshkernelapi
         int InnerIterations;
         double OrthogonalizationToSmoothingFactor;
         double OrthogonalizationToSmoothingFactorBoundary;
-        double Circumormasscenter;
-        double Smoothorarea;
+        double CircumCenterOrMassCenter;
+        double SmoothAngleOrSmoothArea;
         int AdaptMethod;
         double AdaptBeta;
         int AdaptNiterU;
