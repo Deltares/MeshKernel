@@ -2368,7 +2368,7 @@ void meshkernel::Mesh::TriangulateFaces()
     m_edgesRTreeRequiresUpdate = true;
 }
 
-bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vector<Point>& dualFace)
+void meshkernel::Mesh::MakeDualFace(int node, double enlargementFactor, std::vector<Point>& dualFace)
 {
     const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
@@ -2433,10 +2433,8 @@ bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vect
 
     for (auto& v : dualFace)
     {
-        v = centerOfMass + (v - centerOfMass) * enlargmentFactor;
+        v = centerOfMass + (v - centerOfMass) * enlargementFactor;
     }
-
-    return true;
 }
 
 std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(int node) const

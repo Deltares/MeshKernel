@@ -255,13 +255,13 @@ namespace meshkernel
         [[nodiscard]] int GetNumEdgesFaces(int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
         /// @brief Inquire if an edge is on boundary
-        /// @param the edge index
-        /// @return if the edge os on boundary
+        /// @param edge The edge index
+        /// @return If the edge is on boundary
         [[nodiscard]] bool IsEdgeOnBoundary(int edge) const { return m_edgesNumFaces[edge] == 1; }
 
         /// @brief Inquire if a face is on boundary
-        /// @param the edge index
-        /// @return if the edge os on boundary
+        /// @param face The face index
+        /// @return If the face is on boundary
         [[nodiscard]] bool IsFaceOnBoundary(int face) const;
 
         /// @brief Circumcenter of a face (getcircumcenter)
@@ -312,7 +312,7 @@ namespace meshkernel
         void GetSmoothness(double* smoothness);
 
         /// @brief Gets the aspect ratios, the ratio edges to segments connecting the face circumcenters lengths
-        /// @param aspectRatio The aspect ratios
+        /// @param aspectRatios The aspect ratios
         void GetAspectRatios(std::vector<double>& aspectRatios);
 
         ///  @brief Classifies the nodes (makenetnodescoding)
@@ -329,9 +329,10 @@ namespace meshkernel
         void TriangulateFaces();
 
         /// @brief Make a dual face around the node, enlarged by a factor
-        /// @param nodeIndex
-        /// @return
-        bool MakeDualFace(int node, double enlargmentFactor, std::vector<Point>& dualFace);
+        /// @param[in] node The node index
+        /// @param[in] enlargementFactor The factor by which the dual face is enlarged
+        /// @param[out] dualFace The dual face to be calculated
+        void MakeDualFace(int node, double enlargementFactor, std::vector<Point>& dualFace);
 
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
         /// @param[in] nodeIndex The node index

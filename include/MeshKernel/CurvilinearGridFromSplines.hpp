@@ -42,6 +42,7 @@ namespace meshkernel
     {
     public:
         /// @brief Ctor
+        /// @param splines Input splines
         /// @param curvilinearParametersNative The parameters for OrthogonalCurvilinearGridFromSplines algorithm
         /// @param splinesToCurvilinearParametersNative The parameters for OrthogonalCurvilinearGridFromSplines algorithm
         CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
