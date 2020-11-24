@@ -72,7 +72,7 @@ void meshkernel::OrthogonalizationAndSmoothing::Initialize()
     }
 
     // TODO: calculate volume weights for areal smoother
-    m_mumax = (1.0 - m_orthogonalizationParametersNative.Smoothorarea) * 0.5;
+    m_mumax = (1.0 - m_orthogonalizationParametersNative.SmoothAngleOrSmoothArea) * 0.5;
     m_mu = std::min(1e-2, m_mumax);
     m_orthogonalCoordinates.resize(m_mesh->GetNumNodes());
 
@@ -218,7 +218,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             }
             else
             {
-                m_compressedNodesNodes[cacheIndex] = int(m_smoother->GetCoonectedNodeIndex(n, nn));
+                m_compressedNodesNodes[cacheIndex] = int(m_smoother->GetConnectedNodeIndex(n, nn));
             }
 
             m_compressedWeightX[cacheIndex] = wwx;

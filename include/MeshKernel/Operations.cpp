@@ -376,14 +376,14 @@ namespace meshkernel
             }
 
             // enlarge around polygon
-            const double enlargmentFactor = 1.000001;
+            const double enlargementFactor = 1.000001;
             Cartesian3DPoint polygonCenterCartesian3D;
             SphericalToCartesian3D(polygonCenter, polygonCenterCartesian3D);
             for (int i = 0; i < currentPolygonSize; i++)
             {
-                cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargmentFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
-                cartesian3DPoints[i].y = polygonCenterCartesian3D.y + enlargmentFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
-                cartesian3DPoints[i].z = polygonCenterCartesian3D.z + enlargmentFactor * (cartesian3DPoints[i].z - polygonCenterCartesian3D.z);
+                cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargementFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
+                cartesian3DPoints[i].y = polygonCenterCartesian3D.y + enlargementFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
+                cartesian3DPoints[i].z = polygonCenterCartesian3D.z + enlargementFactor * (cartesian3DPoints[i].z - polygonCenterCartesian3D.z);
             }
 
             // convert point
@@ -702,7 +702,7 @@ namespace meshkernel
         }
     }
 
-    //spher2locvec, transforms vector with componentis in global spherical coordinate directions(xglob, yglob)
+    //spher2locvec, transforms vector with components in global spherical coordinate directions(xglob, yglob)
     ///to local coordinate directions(xloc, yloc) around reference point(xref, yref)
     static void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, Projections projection, Point& localComponents)
     {

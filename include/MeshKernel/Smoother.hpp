@@ -57,11 +57,11 @@ namespace meshkernel
             return m_weights[node][connectedNode];
         }
 
-        /// @brief Get the index of the coonected node as assigned by the smoother administration
+        /// @brief Get the index of the connected node as assigned by the smoother administration
         /// @brief node
         /// @brief connectedNode
         /// @returns
-        [[nodiscard]] inline auto GetCoonectedNodeIndex(int node, int connectedNode)
+        [[nodiscard]] inline auto GetConnectedNodeIndex(int node, int connectedNode)
         {
             return m_connectedNodes[node][connectedNode];
         }

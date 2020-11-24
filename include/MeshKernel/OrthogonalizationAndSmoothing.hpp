@@ -105,7 +105,7 @@ namespace meshkernel
         /// @brief Allocate linear system vectors
         void AllocateLinearSystem();
 
-        /// @brief Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
+        /// @brief Compute nodes local coordinates (comp_local_coords)
         void ComputeCoordinates() const;
 
         std::shared_ptr<Mesh> m_mesh;                                                         // A pointer to mesh
