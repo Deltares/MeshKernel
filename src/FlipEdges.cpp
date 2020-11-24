@@ -236,21 +236,13 @@ void meshkernel::FlipEdges::Compute() const
             DeleteEdgeFromNode(e, secondNode);
 
             // Add edge to m_mesh->m_nodesEdges[kl]
-            ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[nodeLeft], m_mesh->m_nodesEdges[nodeLeft]);
-            for (int i = 0; i < m_mesh->m_nodesNumEdges[nodeLeft] - 1; i++)
-            {
-                m_mesh->m_nodesEdges[nodeLeft][i] = m_mesh->m_nodesEdges[nodeLeft][i];
-            }
-            m_mesh->m_nodesEdges[nodeLeft][m_mesh->m_nodesNumEdges[nodeLeft] - 1] = e;
+            m_mesh->m_nodesEdges[nodeLeft].resize(m_mesh->m_nodesNumEdges[nodeLeft]);
+            m_mesh->m_nodesEdges[nodeLeft].back() = e;
             m_mesh->SortEdgesInCounterClockWiseOrder(nodeLeft);
 
             // Add edge to m_mesh->m_nodesEdges[kr]
-            ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[nodeRight], m_mesh->m_nodesEdges[nodeRight]);
-            for (int i = 0; i < m_mesh->m_nodesNumEdges[nodeRight] - 1; i++)
-            {
-                m_mesh->m_nodesEdges[nodeRight][i] = m_mesh->m_nodesEdges[nodeRight][i];
-            }
-            m_mesh->m_nodesEdges[nodeRight][m_mesh->m_nodesNumEdges[nodeRight] - 1] = e;
+            m_mesh->m_nodesEdges[nodeRight].resize(m_mesh->m_nodesNumEdges[nodeRight]);
+            m_mesh->m_nodesEdges[nodeRight].back() = e;
             m_mesh->SortEdgesInCounterClockWiseOrder(nodeRight);
         }
     }
