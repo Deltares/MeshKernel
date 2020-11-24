@@ -151,7 +151,7 @@ void meshkernel::FlipEdges::Compute() const
             int secondEdgeRightFace;
             for (int i = 0; i < NumEdgesLeftFace; i++)
             {
-                int edgeIndex = m_mesh->m_facesEdges[leftFace][i];
+                const auto edgeIndex = m_mesh->m_facesEdges[leftFace][i];
                 if (edgeIndex == e)
                 {
                     continue;
@@ -395,7 +395,6 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
     return topologyFunctional;
 }
 
-//comp_nnow
 int meshkernel::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const
 {
     if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] < 0)
