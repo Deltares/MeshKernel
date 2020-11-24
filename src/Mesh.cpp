@@ -313,7 +313,7 @@ meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& pol
         }
 
         // mark all edges of this triangle as good ones
-        for (int j = 0; j < 3; ++j)
+        for (int j = 0; j < numNodesInTriangle; ++j)
         {
             edgeNodesFlag[triangulationWrapper.m_faceEdges[i][j]] = true;
         }
@@ -1848,7 +1848,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
     Point result = centerOfMass;
     if (numNodes == 3)
     {
-        CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], m_projection, result);
+        result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], m_projection);
     }
     else if (!edgesNumFaces.empty())
     {
@@ -2266,7 +2266,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
     for (int f = 0; f < GetNumFaces(); f++)
     {
         auto numberOfFaceNodes = GetNumFaceEdges(f);
-        if (numberOfFaceNodes < 3)
+        if (numberOfFaceNodes < numNodesInTriangle)
             continue;
 
         for (int n = 0; n < numberOfFaceNodes; n++)

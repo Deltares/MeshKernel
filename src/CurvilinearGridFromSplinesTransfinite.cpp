@@ -73,9 +73,6 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
     std::vector<Point> sideThree;
     std::vector<Point> sideFour;
 
-    // The vector storing the transfinite interpolation results
-    std::vector<std::vector<Point>> interpolationResult(numMPoints, std::vector<Point>(numNPoints));
-
     // allocate local vectors
     distances.reserve(maxNumPoints);
     adimensionalDistances.reserve(maxNumPoints);
@@ -211,14 +208,13 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
             }
 
             // call transfinite interpolation
-            InterpolateTransfinite(sideOne,
-                                   sideTwo,
-                                   sideThree,
-                                   sideFour,
-                                   m_splines->m_projection,
-                                   m_numM,
-                                   m_numN,
-                                   interpolationResult);
+            const auto interpolationResult = InterpolateTransfinite(sideOne,
+                                                                    sideTwo,
+                                                                    sideThree,
+                                                                    sideFour,
+                                                                    m_splines->m_projection,
+                                                                    m_numM,
+                                                                    m_numN);
 
             // assign the points
             for (int k = 0; k < numMPoints; k++)

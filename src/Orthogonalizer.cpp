@@ -65,34 +65,38 @@ void meshkernel::Orthogonalizer::Compute()
             const auto aspectRatio = m_aspectRatios[edgeIndex];
             m_weights[n][nn] = 0.0;
 
-            if (aspectRatio > doubleMissingValue)
+            if (IsEqual(aspectRatio, doubleMissingValue))
             {
-                // internal nodes
-                m_weights[n][nn] = aspectRatio;
-
-                if (m_mesh->IsEdgeOnBoundary(edgeIndex))
-                {
-                    // boundary nodes
-                    m_weights[n][nn] = 0.5 * aspectRatio;
-
-                    // compute the edge length
-                    Point neighbouringNode = m_mesh->m_nodes[m_mesh->m_nodesNodes[n][nn]];
-                    const auto neighbouringNodeDistance = ComputeDistance(neighbouringNode, m_mesh->m_nodes[n], m_mesh->m_projection);
-
-                    const auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
-                    bool flippedNormal;
-                    Point normal;
-                    NormalVectorInside(m_mesh->m_nodes[n], neighbouringNode, m_mesh->m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh->m_projection);
-
-                    if (m_mesh->m_projection == Projections::spherical && m_mesh->m_projection != Projections::sphericalAccurate)
-                    {
-                        normal.x = normal.x * std::cos(degrad_hp * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
-                    }
-
-                    m_rhs[n][0] += neighbouringNodeDistance * normal.x * 0.5;
-                    m_rhs[n][1] += neighbouringNodeDistance * normal.y * 0.5;
-                }
+                continue;
             }
+
+            // internal nodes
+            m_weights[n][nn] = aspectRatio;
+
+            if (!m_mesh->IsEdgeOnBoundary(edgeIndex))
+            {
+                continue;
+            }
+
+            // boundary nodes
+            m_weights[n][nn] = 0.5 * aspectRatio;
+
+            // compute the edge length
+            Point neighbouringNode = m_mesh->m_nodes[m_mesh->m_nodesNodes[n][nn]];
+            const auto neighbouringNodeDistance = ComputeDistance(neighbouringNode, m_mesh->m_nodes[n], m_mesh->m_projection);
+
+            const auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
+            bool flippedNormal;
+            Point normal;
+            NormalVectorInside(m_mesh->m_nodes[n], neighbouringNode, m_mesh->m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh->m_projection);
+
+            if (m_mesh->m_projection == Projections::spherical && m_mesh->m_projection != Projections::sphericalAccurate)
+            {
+                normal.x = normal.x * std::cos(degrad_hp * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
+            }
+
+            m_rhs[n][0] += neighbouringNodeDistance * normal.x * 0.5;
+            m_rhs[n][1] += neighbouringNodeDistance * normal.y * 0.5;
         }
 
         // normalize

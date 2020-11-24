@@ -75,7 +75,7 @@ void meshkernel::TriangulationInterpolation::Compute()
     for (int f = 0; f < triangulationWrapper.m_numFaces; ++f)
     {
         // compute triangle polygons
-        for (int n = 0; n < 3; ++n)
+        for (int n = 0; n < numNodesInTriangle; ++n)
         {
             auto const node = triangulationWrapper.m_faceNodes[f][n];
             triangles[f][n] = {m_samples[node].x, m_samples[node].y};
@@ -128,7 +128,7 @@ void meshkernel::TriangulationInterpolation::Compute()
 
             // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the point location
             numFacesSearched++;
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < numNodesInTriangle; ++i)
             {
                 const auto edge = triangulationWrapper.m_faceEdges[triangle][i];
                 if (triangulationWrapper.m_edgesFaces[edge][1] == 0)
