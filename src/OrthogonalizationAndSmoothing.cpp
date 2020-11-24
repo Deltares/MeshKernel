@@ -45,7 +45,7 @@ meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::sh
                                                                          std::shared_ptr<Orthogonalizer> orthogonalizer,
                                                                          std::shared_ptr<Polygons> polygon,
                                                                          std::shared_ptr<LandBoundaries> landBoundaries,
-                                                                         int projectToLandBoundaryOption,
+                                                                         LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
                                                                          const meshkernelapi::OrthogonalizationParametersNative& orthogonalizationParametersNative) : m_mesh(mesh),
                                                                                                                                                                       m_smoother(smoother),
                                                                                                                                                                       m_orthogonalizer(orthogonalizer),
@@ -74,18 +74,13 @@ void meshkernel::OrthogonalizationAndSmoothing::Initialize()
     // TODO: calculate volume weights for areal smoother
     m_mumax = (1.0 - m_orthogonalizationParametersNative.Smoothorarea) * 0.5;
     m_mu = std::min(1e-2, m_mumax);
-    m_orthogonalCoordinates.resize(m_mesh->GetNumNodes());
 
     // back-up original nodes, for projection on original mesh boundary
     m_originalNodes = m_mesh->m_nodes;
     m_orthogonalCoordinates = m_mesh->m_nodes;
 
-    // project on land boundary
-    if (m_projectToLandBoundaryOption >= 1)
-    {
-        // account for enclosing polygon
-        m_landBoundaries->FindNearestMeshBoundary(m_projectToLandBoundaryOption);
-    }
+    // account for enclosing polygon
+    m_landBoundaries->FindNearestMeshBoundary(m_projectToLandBoundaryOption);
 
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops)
     if (m_mesh->m_projection == Projections::sphericalAccurate)
@@ -243,20 +238,17 @@ void meshkernel::OrthogonalizationAndSmoothing::InnerIteration()
     m_mesh->m_nodes = m_orthogonalCoordinates;
 
     // project on the original net boundary
-    ProjectOnOriginalMeshBoundary();
+    SnapMeshToOriginalMeshBoundary();
 
     // compute local coordinates
     // TODO: Not implemented yet
     // ComputeCoordinates();
 
     // project on land boundary
-    if (m_projectToLandBoundaryOption >= 1)
-    {
-        m_landBoundaries->SnapMeshToLandBoundaries();
-    }
+    m_landBoundaries->SnapMeshToLandBoundaries();
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
+void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 {
     Point normalSecondPoint{doubleMissingValue, doubleMissingValue};
     Point normalThirdPoint{doubleMissingValue, doubleMissingValue};
@@ -293,7 +285,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
                         leftNode = m_mesh->m_nodesNodes[n][nn];
                         if (leftNode == intMissingValue)
                         {
-                            throw AlgorithmError("OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary: The left node is invalid.");
+                            throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The left node is invalid.");
                         }
                         secondPoint = m_originalNodes[leftNode];
                     }
@@ -302,7 +294,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary()
                         rightNode = m_mesh->m_nodesNodes[n][nn];
                         if (rightNode == intMissingValue)
                         {
-                            throw AlgorithmError("OrthogonalizationAndSmoothing::ProjectOnOriginalMeshBoundary: The right node is invalid.");
+                            throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The right node is invalid.");
                         }
                         thirdPoint = m_originalNodes[rightNode];
                     }

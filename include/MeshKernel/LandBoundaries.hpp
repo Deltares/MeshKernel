@@ -39,6 +39,15 @@ namespace meshkernel
     {
 
     public:
+        enum class ProjectToLandBoundaryOption
+        {
+            DoNotProjectToLandBoundary = 0,
+            ToOriginalNetBoundary = 1,
+            OuterMeshBoundaryToLandBoundary = 2,
+            InnerAndOuterMeshBoundaryToLandBoundary = 3,
+            WholeMesh = 4
+        };
+
         /// <summary>
         /// Default Ctor
         /// </summary>
@@ -54,8 +63,8 @@ namespace meshkernel
         void Administrate();
 
         /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline)
-        /// @param[in] snapping
-        void FindNearestMeshBoundary(int snapping);
+        /// @param[in] projectToLandBoundaryOption the option to use to project to land boundary
+        void FindNearestMeshBoundary(ProjectToLandBoundaryOption projectToLandBoundaryOption);
 
         /// @brief Snap mesh nodes to land boundaies (snap_to_landboundary)
         /// @param mesh
@@ -86,7 +95,7 @@ namespace meshkernel
                              int numNodesLoc,
                              int nodeIndex);
 
-        /// @brief Assigns to each mesh node a land boundary a segment index (m_nodeLandBoundarySegments)
+        /// @brief Assigns to each mesh node a land boundary segment index ()
         /// @param[in] landBoundarySegment
         /// @param[in] meshBoundOnly
         /// @param[out] numNodesInPath

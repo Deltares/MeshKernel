@@ -51,7 +51,7 @@ meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
     {
         try
         {
-            m_landBoundaries->FindNearestMeshBoundary(4);
+            m_landBoundaries->FindNearestMeshBoundary(LandBoundaries::ProjectToLandBoundaryOption::WholeMesh);
         }
         catch (const std::exception&)
         {
