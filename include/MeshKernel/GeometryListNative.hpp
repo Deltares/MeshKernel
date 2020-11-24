@@ -32,8 +32,8 @@ namespace meshkernelapi
     struct GeometryListNative
     {
         int type;
-        double geometrySeperator;
-        double innerOuterSeperator;
+        double geometrySeparator;
+        double innerOuterSeparator;
         int numberOfCoordinates;
         double* xCoordinates = nullptr;
         double* yCoordinates = nullptr;
