@@ -765,7 +765,7 @@ namespace meshkernelapi
 
             std::vector<meshkernel::Point> polygonNodes;
             const auto meshBoundaryPolygon = meshInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
-            numberOfPolygonVertices = static_cast<int>(meshBoundaryPolygon.size());
+            numberOfPolygonVertices = static_cast<int>(meshBoundaryPolygon.size() - 1); // last value is a separator
         }
         catch (const std::exception& e)
         {
