@@ -82,16 +82,10 @@ void meshkernel::FlipEdges::Compute() const
         {
             break;
         }
-        else
-        {
-            numFlippedEdges = 0;
-        }
+        numFlippedEdges = 0;
 
         for (int e = 0; e < numEdges; e++)
         {
-            // check if nodes have been masked
-            auto const firstNode = m_mesh->m_edges[e].first;
-            auto const secondNode = m_mesh->m_edges[e].second;
 
             if (m_mesh->IsEdgeOnBoundary(e))
             {
@@ -104,154 +98,160 @@ void meshkernel::FlipEdges::Compute() const
 
             const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(leftFace);
             const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(rightFace);
-            if (NumEdgesLeftFace != 3 || NumEdgesRightFace != 3)
+            if (NumEdgesLeftFace != numNodesInTriangle || NumEdgesRightFace != numNodesInTriangle)
             {
                 return;
             }
 
             int nodeLeft = -1;
             int nodeRight = -1;
-            int topologyFunctional = 1000;
-            ComputeTopologyFunctional(e, nodeLeft, nodeRight, topologyFunctional);
+            const auto topologyFunctional = ComputeTopologyFunctional(e, nodeLeft, nodeRight);
 
-            if (topologyFunctional < 0)
+            if (topologyFunctional >= 0)
             {
-                // Check if the quadrilateral composed by the two adjacent triangles is concave,
-                // in which case the diagonals crosses
-                Point intersection;
-                double crossProduct;
-                double firstRatio;
-                double secondRatio;
-                const auto areEdgesCrossing = AreLinesCrossing(m_mesh->m_nodes[firstNode],
-                                                               m_mesh->m_nodes[secondNode],
-                                                               m_mesh->m_nodes[nodeLeft],
-                                                               m_mesh->m_nodes[nodeRight],
-                                                               false,
-                                                               intersection,
-                                                               crossProduct,
-                                                               firstRatio,
-                                                               secondRatio,
-                                                               m_mesh->m_projection);
+                continue;
+            }
 
-                if (!areEdgesCrossing)
+            // check if nodes have been masked
+            auto const firstNode = m_mesh->m_edges[e].first;
+            auto const secondNode = m_mesh->m_edges[e].second;
+
+            // Check if the quadrilateral composed by the two adjacent triangles is concave,
+            // in which case the diagonals crosses
+            Point intersection;
+            double crossProduct;
+            double firstRatio;
+            double secondRatio;
+
+            const auto areEdgesCrossing = AreLinesCrossing(m_mesh->m_nodes[firstNode],
+                                                           m_mesh->m_nodes[secondNode],
+                                                           m_mesh->m_nodes[nodeLeft],
+                                                           m_mesh->m_nodes[nodeRight],
+                                                           false,
+                                                           intersection,
+                                                           crossProduct,
+                                                           firstRatio,
+                                                           secondRatio,
+                                                           m_mesh->m_projection);
+
+            if (!areEdgesCrossing)
+            {
+                continue;
+            }
+
+            // Flip the edges
+            m_mesh->m_edges[e].first = nodeLeft;
+            m_mesh->m_edges[e].second = nodeRight;
+            numFlippedEdges++;
+
+            // Find the other edges
+            int firstEdgeLeftFace;
+            int firstEdgeRightFace;
+            int secondEdgeLeftFace;
+            int secondEdgeRightFace;
+            for (int i = 0; i < NumEdgesLeftFace; i++)
+            {
+                int edgeIndex = m_mesh->m_facesEdges[leftFace][i];
+                if (edgeIndex == e)
                 {
                     continue;
                 }
+                const int first = m_mesh->m_edges[edgeIndex].first;
+                const int second = m_mesh->m_edges[edgeIndex].second;
 
-                // Flip the edges
-                m_mesh->m_edges[e].first = nodeLeft;
-                m_mesh->m_edges[e].second = nodeRight;
-                numFlippedEdges++;
-
-                // Find the other edges
-                int firstEdgeLeftFace;
-                int firstEdgeRightFace;
-                int secondEdgeLeftFace;
-                int secondEdgeRightFace;
-                for (int i = 0; i < NumEdgesLeftFace; i++)
+                if (first == firstNode || second == firstNode)
                 {
-                    int edgeIndex = m_mesh->m_facesEdges[leftFace][i];
-                    if (edgeIndex == e)
-                    {
-                        continue;
-                    }
-                    const int first = m_mesh->m_edges[edgeIndex].first;
-                    const int second = m_mesh->m_edges[edgeIndex].second;
-
-                    if (first == firstNode || second == firstNode)
-                    {
-                        firstEdgeLeftFace = edgeIndex;
-                    }
-                    if (first == secondNode || second == secondNode)
-                    {
-                        secondEdgeLeftFace = edgeIndex;
-                    }
+                    firstEdgeLeftFace = edgeIndex;
                 }
-
-                for (int i = 0; i < NumEdgesRightFace; i++)
+                if (first == secondNode || second == secondNode)
                 {
-                    int edgeIndex = m_mesh->m_facesEdges[rightFace][i];
-                    if (edgeIndex == e)
-                    {
-                        continue;
-                    }
-                    const int first = m_mesh->m_edges[edgeIndex].first;
-                    const int second = m_mesh->m_edges[edgeIndex].second;
-
-                    if (first == firstNode || second == firstNode)
-                    {
-                        firstEdgeRightFace = edgeIndex;
-                    }
-                    if (first == secondNode || second == secondNode)
-                    {
-                        secondEdgeRightFace = edgeIndex;
-                    }
+                    secondEdgeLeftFace = edgeIndex;
                 }
-
-                // change face orientation
-                m_mesh->m_facesNodes[leftFace][0] = nodeLeft;
-                m_mesh->m_facesNodes[leftFace][1] = nodeRight;
-                m_mesh->m_facesNodes[leftFace][2] = firstNode;
-
-                m_mesh->m_facesEdges[leftFace][0] = e;
-                m_mesh->m_facesEdges[leftFace][1] = firstEdgeRightFace;
-                m_mesh->m_facesEdges[leftFace][2] = firstEdgeLeftFace;
-
-                m_mesh->m_facesNodes[rightFace][0] = nodeLeft;
-                m_mesh->m_facesNodes[rightFace][1] = nodeRight;
-                m_mesh->m_facesNodes[rightFace][2] = secondNode;
-
-                m_mesh->m_facesEdges[rightFace][0] = e;
-                m_mesh->m_facesEdges[rightFace][1] = secondEdgeRightFace;
-                m_mesh->m_facesEdges[rightFace][2] = secondEdgeLeftFace;
-
-                if (m_mesh->m_edgesFaces[firstEdgeRightFace][0] == rightFace)
-                {
-                    m_mesh->m_edgesFaces[firstEdgeRightFace][0] = leftFace;
-                }
-                else
-                {
-                    m_mesh->m_edgesFaces[firstEdgeRightFace][1] = leftFace;
-                }
-
-                if (m_mesh->m_edgesFaces[secondEdgeLeftFace][0] == leftFace)
-                {
-                    m_mesh->m_edgesFaces[secondEdgeLeftFace][0] = rightFace;
-                }
-                else
-                {
-                    m_mesh->m_edgesFaces[secondEdgeLeftFace][1] = rightFace;
-                }
-
-                m_mesh->m_nodesNumEdges[firstNode] = m_mesh->m_nodesNumEdges[firstNode] - 1;
-                m_mesh->m_nodesNumEdges[secondNode] = m_mesh->m_nodesNumEdges[secondNode] - 1;
-                m_mesh->m_nodesNumEdges[nodeLeft] = m_mesh->m_nodesNumEdges[nodeLeft] + 1;
-                m_mesh->m_nodesNumEdges[nodeRight] = m_mesh->m_nodesNumEdges[nodeRight] + 1;
-
-                // Delete edge from m_mesh->m_nodesEdges[firstNode]
-                DeleteEdgeFromNode(e, firstNode);
-
-                // Delete edge from m_mesh->m_nodesEdges[secondNode]
-                DeleteEdgeFromNode(e, secondNode);
-
-                // Add edge to m_mesh->m_nodesEdges[kl]
-                ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[nodeLeft], m_mesh->m_nodesEdges[nodeLeft]);
-                for (int i = 0; i < m_mesh->m_nodesNumEdges[nodeLeft] - 1; i++)
-                {
-                    m_mesh->m_nodesEdges[nodeLeft][i] = m_mesh->m_nodesEdges[nodeLeft][i];
-                }
-                m_mesh->m_nodesEdges[nodeLeft][m_mesh->m_nodesNumEdges[nodeLeft] - 1] = e;
-                m_mesh->SortEdgesInCounterClockWiseOrder(nodeLeft);
-
-                // Add edge to m_mesh->m_nodesEdges[kr]
-                ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[nodeRight], m_mesh->m_nodesEdges[nodeRight]);
-                for (int i = 0; i < m_mesh->m_nodesNumEdges[nodeRight] - 1; i++)
-                {
-                    m_mesh->m_nodesEdges[nodeRight][i] = m_mesh->m_nodesEdges[nodeRight][i];
-                }
-                m_mesh->m_nodesEdges[nodeRight][m_mesh->m_nodesNumEdges[nodeRight] - 1] = e;
-                m_mesh->SortEdgesInCounterClockWiseOrder(nodeRight);
             }
+
+            for (int i = 0; i < NumEdgesRightFace; i++)
+            {
+                const auto edgeIndex = m_mesh->m_facesEdges[rightFace][i];
+                if (edgeIndex == e)
+                {
+                    continue;
+                }
+                const int first = m_mesh->m_edges[edgeIndex].first;
+                const int second = m_mesh->m_edges[edgeIndex].second;
+
+                if (first == firstNode || second == firstNode)
+                {
+                    firstEdgeRightFace = edgeIndex;
+                }
+                if (first == secondNode || second == secondNode)
+                {
+                    secondEdgeRightFace = edgeIndex;
+                }
+            }
+
+            // change face orientation
+            m_mesh->m_facesNodes[leftFace][0] = nodeLeft;
+            m_mesh->m_facesNodes[leftFace][1] = nodeRight;
+            m_mesh->m_facesNodes[leftFace][2] = firstNode;
+
+            m_mesh->m_facesEdges[leftFace][0] = e;
+            m_mesh->m_facesEdges[leftFace][1] = firstEdgeRightFace;
+            m_mesh->m_facesEdges[leftFace][2] = firstEdgeLeftFace;
+
+            m_mesh->m_facesNodes[rightFace][0] = nodeLeft;
+            m_mesh->m_facesNodes[rightFace][1] = nodeRight;
+            m_mesh->m_facesNodes[rightFace][2] = secondNode;
+
+            m_mesh->m_facesEdges[rightFace][0] = e;
+            m_mesh->m_facesEdges[rightFace][1] = secondEdgeRightFace;
+            m_mesh->m_facesEdges[rightFace][2] = secondEdgeLeftFace;
+
+            if (m_mesh->m_edgesFaces[firstEdgeRightFace][0] == rightFace)
+            {
+                m_mesh->m_edgesFaces[firstEdgeRightFace][0] = leftFace;
+            }
+            else
+            {
+                m_mesh->m_edgesFaces[firstEdgeRightFace][1] = leftFace;
+            }
+
+            if (m_mesh->m_edgesFaces[secondEdgeLeftFace][0] == leftFace)
+            {
+                m_mesh->m_edgesFaces[secondEdgeLeftFace][0] = rightFace;
+            }
+            else
+            {
+                m_mesh->m_edgesFaces[secondEdgeLeftFace][1] = rightFace;
+            }
+
+            m_mesh->m_nodesNumEdges[firstNode] = m_mesh->m_nodesNumEdges[firstNode] - 1;
+            m_mesh->m_nodesNumEdges[secondNode] = m_mesh->m_nodesNumEdges[secondNode] - 1;
+            m_mesh->m_nodesNumEdges[nodeLeft] = m_mesh->m_nodesNumEdges[nodeLeft] + 1;
+            m_mesh->m_nodesNumEdges[nodeRight] = m_mesh->m_nodesNumEdges[nodeRight] + 1;
+
+            // Delete edge from m_mesh->m_nodesEdges[firstNode]
+            DeleteEdgeFromNode(e, firstNode);
+
+            // Delete edge from m_mesh->m_nodesEdges[secondNode]
+            DeleteEdgeFromNode(e, secondNode);
+
+            // Add edge to m_mesh->m_nodesEdges[kl]
+            ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[nodeLeft], m_mesh->m_nodesEdges[nodeLeft]);
+            for (int i = 0; i < m_mesh->m_nodesNumEdges[nodeLeft] - 1; i++)
+            {
+                m_mesh->m_nodesEdges[nodeLeft][i] = m_mesh->m_nodesEdges[nodeLeft][i];
+            }
+            m_mesh->m_nodesEdges[nodeLeft][m_mesh->m_nodesNumEdges[nodeLeft] - 1] = e;
+            m_mesh->SortEdgesInCounterClockWiseOrder(nodeLeft);
+
+            // Add edge to m_mesh->m_nodesEdges[kr]
+            ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[nodeRight], m_mesh->m_nodesEdges[nodeRight]);
+            for (int i = 0; i < m_mesh->m_nodesNumEdges[nodeRight] - 1; i++)
+            {
+                m_mesh->m_nodesEdges[nodeRight][i] = m_mesh->m_nodesEdges[nodeRight][i];
+            }
+            m_mesh->m_nodesEdges[nodeRight][m_mesh->m_nodesNumEdges[nodeRight] - 1] = e;
+            m_mesh->SortEdgesInCounterClockWiseOrder(nodeRight);
         }
     }
 
@@ -290,15 +290,15 @@ void meshkernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
     ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[firstNode], m_mesh->m_nodesEdges[firstNode]);
 }
 
-void meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
-                                                      int& nodeLeft,
-                                                      int& nodeRight,
-                                                      int& topologyFunctional) const
+int meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
+                                                     int& nodeLeft,
+                                                     int& nodeRight) const
 {
+    const int largeTopologyFunctionalValue = 1000;
 
     if (m_mesh->IsEdgeOnBoundary(edge))
     {
-        return;
+        return largeTopologyFunctionalValue;
     }
 
     const auto firstNode = m_mesh->m_edges[edge].first;
@@ -308,9 +308,9 @@ void meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
     const auto NumEdgesLeftFace = m_mesh->GetNumFaceEdges(faceL);
     const auto NumEdgesRightFace = m_mesh->GetNumFaceEdges(faceR);
 
-    if (NumEdgesLeftFace != 3 || NumEdgesRightFace != 3)
+    if (NumEdgesLeftFace != numNodesInTriangle || NumEdgesRightFace != numNodesInTriangle)
     {
-        return;
+        return largeTopologyFunctionalValue;
     }
 
     // find the nodes that are connected to both k1 and k
@@ -327,7 +327,7 @@ void meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
 
     if (nodeLeft < 0 || nodeRight < 0)
     {
-        return;
+        return largeTopologyFunctionalValue;
     }
 
     // check that kl is part of faceL
@@ -343,7 +343,7 @@ void meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
 
     if (!nodeFound)
     {
-        return;
+        return largeTopologyFunctionalValue;
     }
 
     // check that kr is part of faceR
@@ -359,7 +359,7 @@ void meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
 
     if (!nodeFound)
     {
-        return;
+        return largeTopologyFunctionalValue;
     }
 
     //  compute the change in functional
@@ -373,36 +373,34 @@ void meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
         if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] >= 0 && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] >= 0)
         {
             //edge is associated with a land boundary, keep the edge
-            topologyFunctional = 1000;
-            return;
+            return largeTopologyFunctionalValue;
         }
-        else
-        {
-            const auto n1L = DifferenceFromOptimum(firstNode, secondNode, nodeLeft);
-            const auto n1R = DifferenceFromOptimum(firstNode, secondNode, nodeRight);
 
-            const auto n2R = DifferenceFromOptimum(secondNode, firstNode, nodeLeft);
-            const auto n2L = DifferenceFromOptimum(secondNode, firstNode, nodeRight);
+        const auto n1L = DifferenceFromOptimum(firstNode, secondNode, nodeLeft);
+        const auto n1R = DifferenceFromOptimum(firstNode, secondNode, nodeRight);
 
-            nL = DifferenceFromOptimum(nodeLeft, firstNode, secondNode);
-            nR = DifferenceFromOptimum(nodeRight, firstNode, secondNode);
+        const auto n2R = DifferenceFromOptimum(secondNode, firstNode, nodeLeft);
+        const auto n2L = DifferenceFromOptimum(secondNode, firstNode, nodeRight);
 
-            topologyFunctional = (n1L - 1) * (n1L - 1) +
-                                 (n1R - 1) * (n1R - 1) +
-                                 (n2L - 1) * (n2L - 1) +
-                                 (n2R - 1) * (n2R - 1) +
-                                 2 * ((nL + 1) * (nL + 1) + (nR + 1) * (nR + 1)) -
-                                 (n1L * n1L + n1R * n1R + n2L * n2L + n2R * n2R + 2 * (nL * nL + nR * nR));
-        }
+        nL = DifferenceFromOptimum(nodeLeft, firstNode, secondNode);
+        nR = DifferenceFromOptimum(nodeRight, firstNode, secondNode);
+
+        const int topologyFunctional = (n1L - 1) * (n1L - 1) +
+                                       (n1R - 1) * (n1R - 1) +
+                                       (n2L - 1) * (n2L - 1) +
+                                       (n2R - 1) * (n2R - 1) +
+                                       2 * ((nL + 1) * (nL + 1) + (nR + 1) * (nR + 1)) -
+                                       (n1L * n1L + n1R * n1R + n2L * n2L + n2R * n2R + 2 * (nL * nL + nR * nR));
+        return topologyFunctional;
     }
-    else
-    {
-        topologyFunctional = (n1 - 1) * (n1 - 1) +
-                             (n2 - 1) * (n2 - 1) +
-                             (nL + 1) * (nL + 1) +
-                             (nR + 1) * (nR + 1) -
-                             (n1 * n1 + n2 * n2 + nL * nL + nR * nR);
-    }
+
+    const int topologyFunctional = (n1 - 1) * (n1 - 1) +
+                                   (n2 - 1) * (n2 - 1) +
+                                   (nL + 1) * (nL + 1) +
+                                   (nR + 1) * (nR + 1) -
+                                   (n1 * n1 + n2 * n2 + nL * nL + nR * nR);
+
+    return topologyFunctional;
 }
 
 //comp_nnow
