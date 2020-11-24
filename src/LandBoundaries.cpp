@@ -725,7 +725,7 @@ namespace meshkernel
             else
             {
                 // face is crossed
-                if (m_mesh->GetNumFaces() < 3)
+                if (m_mesh->GetNumFaces() < numNodesInTriangle)
                     continue;
 
                 int isFaceFound = 0;

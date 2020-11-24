@@ -286,8 +286,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
     auto triangleCenter = ((m_polygon->m_nodes[firstNode] * (1.0 - xia) + m_polygon->m_nodes[secondNode] * xia) * xic + m_polygon->m_nodes[thirdNode] * (1.0 - xic) +
                            (m_polygon->m_nodes[secondNode] * (1.0 - xib) + m_polygon->m_nodes[thirdNode] * xib) * xia + m_polygon->m_nodes[firstNode] * (1.0 - xia) +
-                           (m_polygon->m_nodes[thirdNode] * (1.0 - xic) + m_polygon->m_nodes[firstNode] * xic) * xib + m_polygon->m_nodes[secondNode] * (1.0 - xib)) /
-                          3.0;
+                           (m_polygon->m_nodes[thirdNode] * (1.0 - xic) + m_polygon->m_nodes[firstNode] * xic) * xib + m_polygon->m_nodes[secondNode] * (1.0 - xib)) * oneThird;
 
     const auto maxM = *std::max_element(numM.begin(), numM.end());
     const auto maxN = *std::max_element(numN.begin(), numN.end());
@@ -298,7 +297,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     std::vector<Point> sideFour(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
 
     curvilinearGrid.Set(n1 + n3 + 1, n2 + n3 + 1);
-    for (int t = 0; t < 3; ++t)
+    for (int t = 0; t < numNodesInTriangle; ++t)
     {
         std::fill(sideOne.begin(), sideOne.end(), Point{doubleMissingValue, doubleMissingValue});
         std::fill(sideTwo.begin(), sideTwo.end(), Point{doubleMissingValue, doubleMissingValue});
