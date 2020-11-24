@@ -182,15 +182,13 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     assignPolygonPointsToSegment(firstNode, numMNodes, direction, sideThree);
     assignPolygonPointsToSegment(fourthNode, numMNodes, -direction, sideFour);
 
-    std::vector<std::vector<Point>> result;
-    InterpolateTransfinite(sideOne,
-                           sideTwo,
-                           sideThree,
-                           sideFour,
-                           m_polygon->m_projection,
-                           numMNodes - 1,
-                           numNNodes - 1,
-                           result);
+    const auto result = InterpolateTransfinite(sideOne,
+                                               sideTwo,
+                                               sideThree,
+                                               sideFour,
+                                               m_polygon->m_projection,
+                                               numMNodes - 1,
+                                               numNNodes - 1);
 
     // Assign the points to the curvilinear grid
     curvilinearGrid.Set(numMNodes, numNNodes);
@@ -351,15 +349,13 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
             sideTwo[i] = m_polygon->m_nodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
-        std::vector<std::vector<Point>> result;
-        InterpolateTransfinite(sideOne,
-                               sideTwo,
-                               sideThree,
-                               sideFour,
-                               m_polygon->m_projection,
-                               numM[t],
-                               numN[t],
-                               result);
+        const auto result = InterpolateTransfinite(sideOne,
+                                                   sideTwo,
+                                                   sideThree,
+                                                   sideFour,
+                                                   m_polygon->m_projection,
+                                                   numM[t],
+                                                   numN[t]);
 
         // add to grid
         if (t == 0)

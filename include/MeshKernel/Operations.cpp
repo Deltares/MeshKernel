@@ -1513,14 +1513,13 @@ namespace meshkernel
     }
 
     //(TRANFN2)
-    static void InterpolateTransfinite(const std::vector<Point>& sideOne,
-                                       const std::vector<Point>& sideTwo,
-                                       const std::vector<Point>& sideThree,
-                                       const std::vector<Point>& sideFour,
-                                       Projections projections,
-                                       int numM,
-                                       int numN,
-                                       std::vector<std::vector<Point>>& result)
+    static std::vector<std::vector<Point>> InterpolateTransfinite(const std::vector<Point>& sideOne,
+                                                                  const std::vector<Point>& sideTwo,
+                                                                  const std::vector<Point>& sideThree,
+                                                                  const std::vector<Point>& sideFour,
+                                                                  Projections projections,
+                                                                  int numM,
+                                                                  int numN)
     {
         double totalLengthOne;
         std::vector<double> sideOneAdimensional(sideOne.size());
@@ -1576,7 +1575,7 @@ namespace meshkernel
         }
 
         //border points
-        result.resize(numMPoints, std::vector<Point>(numNPoints));
+        std::vector<std::vector<Point>> result(numMPoints, std::vector<Point>(numNPoints));
         for (int i = 0; i < numMPoints; i++)
         {
             result[i][0] = sideThree[i];
@@ -1675,6 +1674,8 @@ namespace meshkernel
                 }
             }
         }
+
+        return result;
     }
 
     [[nodiscard]] static auto ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)
