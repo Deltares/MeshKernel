@@ -65,35 +65,27 @@ namespace meshkernel
             other
         };
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        /// <returns></returns>
+        /// @brief Default constructor
+        /// @returns
         Mesh() = default;
 
-        /// <summary>
-        /// Converting constructor, from curvilinear grid to mesh (gridtonet)
-        /// </summary>
-        /// <param name="curvilinearGrid"></param>
-        /// <param name="projection"></param>
-        /// <returns></returns>
+        /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
+        /// @brief curvilinearGrid
+        /// @brief projection
+        /// @returns
         Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection);
 
-        /// <summary>
-        /// Create triangular grid from nodes (triangulatesamplestonetwork)
-        /// </summary>
-        /// <param name="nodes">Input nodes</param>
-        /// <param name="polygons">Selection polygon</param>
-        /// <param name="projection">Projection to use</param>
-        /// <returns></returns>
+        /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
+        /// @brief nodes Input nodes
+        /// @brief polygons Selection polygon
+        /// @brief projection Projection to use
+        /// @returns
         Mesh(const std::vector<Point>& nodes, const Polygons& polygons, Projections projection);
 
-        /// <summary>
-        /// Add meshes: result is a mesh composed of the additions
+        /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to the first
-        /// </summary>
-        /// <param name="rhs">The mesh to add</param>
-        /// <returns>The resulting mesh</returns>
+        /// @brief rhs The mesh to add
+        /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
 
         /// @brief Set the mesh starting from the edges and nodes
@@ -114,9 +106,7 @@ namespace meshkernel
         /// @brief Compute face circumcenters
         void ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters = false);
 
-        /// <summary>
-        /// Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
-        /// </summary>
+        /// @brief Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
         void FindFaces();
 
         /// @brief Gets the corners of a box bounding the mesh

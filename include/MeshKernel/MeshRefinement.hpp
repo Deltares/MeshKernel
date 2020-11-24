@@ -50,11 +50,9 @@ namespace meshkernel
         };
 
     public:
-        /// <summary>
-        /// Constructor, pass a mesh reference
-        /// </summary>
-        /// <param name="mesh">The mesh to be refined</param>
-        /// <returns></returns>
+     /// @brief Constructor, pass a mesh reference
+        /// @brief mesh The mesh to be refined
+        /// @returns 
         explicit MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging);
 
         explicit MeshRefinement(std::shared_ptr<Mesh> mesh);

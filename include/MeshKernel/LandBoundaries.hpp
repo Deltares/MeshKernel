@@ -39,13 +39,11 @@ namespace meshkernel
     {
 
     public:
-        /// <summary>
-        /// Default Ctor
-        /// </summary>
-        /// <param name="landBoundary"></param>
-        /// <param name="mesh"></param>
-        /// <param name="polygons"></param>
-        /// <returns></returns>
+        /// @brief Default Ctor
+        /// @brief landBoundary
+        /// @brief mesh
+        /// @brief polygons
+        /// @returns
         LandBoundaries(const std::vector<Point>& landBoundary,
                        std::shared_ptr<Mesh> mesh,
                        std::shared_ptr<Polygons> polygons);
@@ -184,19 +182,17 @@ namespace meshkernel
                                             int& startMeshNode,
                                             int& endMeshNode) const;
 
-        /// <summary>
-        /// Connect mesh nodes starting from startMeshNode, using Dijkstra's shortest path algorithm.
+        /// @brief Connect mesh nodes starting from startMeshNode, using Dijkstra's shortest path algorithm.
         /// The distance of each edge is the edge length multiplied by the distance from the land boundary
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <param name="polygons"></param>
-        /// <param name="landBoundarySegment"></param>
-        /// <param name="startLandBoundaryIndex"></param>
-        /// <param name="endLandBoundaryIndex"></param>
-        /// <param name="startMeshNode"></param>
-        /// <param name="meshBoundOnly"></param>
-        /// <param name="connectedNodes"></param>
-        /// <returns></returns>
+        /// @brief mesh
+        /// @brief polygons
+        /// @brief landBoundarySegment
+        /// @brief startLandBoundaryIndex
+        /// @brief endLandBoundaryIndex
+        /// @brief startMeshNode
+        /// @brief meshBoundOnly
+        /// @brief connectedNodes
+        /// @returns
         void ShortestPath(int landBoundarySegment,
                           int startLandBoundaryIndex,
                           int endLandBoundaryIndex,

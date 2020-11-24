@@ -31,64 +31,40 @@ namespace meshkernelapi
 {
     struct MakeGridParametersNative
     {
-        /// <summary>
-        /// The type of grid to create : square = 0, wieber = 1, hexagonal type 1 = 2,  hexagonal type 2 = 3, triangular = 4 (0)
-        /// </summary>
+     /// @brief The type of grid to create : square = 0, wieber = 1, hexagonal type 1 = 2,  hexagonal type 2 = 3, triangular = 4 (0)
         int GridType;
 
-        /// <summary>
-        /// The number of columns in x direction
-        /// </summary>
+     /// @brief The number of columns in x direction
         int NumberOfColumns;
 
-        /// <summary>
-        /// The number of columns in y direction
-        /// </summary>
+     /// @brief The number of columns in y direction
         int NumberOfRows;
 
-        /// <summary>
-        /// The grid angle
-        /// </summary>
+     /// @brief The grid angle
         double GridAngle;
 
-        /// <summary>
-        /// The grid block size, used in x and y direction
-        /// </summary>
+     /// @brief The grid block size, used in x and y direction
         double GridBlockSize;
 
-        /// <summary>
-        /// The line thickness in mm (interactor setting)
-        /// </summary>
+     /// @brief The line thickness in mm (interactor setting)
         double LineThickness;
 
-        /// <summary>
-        /// (interactor setting)
-        /// </summary>
+     /// @brief (interactor setting)
         double hSize;
 
-        /// <summary>
-        /// The x coordinate of the origin, located at the bottom left corner
-        /// </summary>
+     /// @brief The x coordinate of the origin, located at the bottom left corner
         double OriginXCoordinate;
 
-        /// <summary>
-        /// The y coordinate of the origin, located at the bottom left corner
-        /// </summary>
+     /// @brief The y coordinate of the origin, located at the bottom left corner
         double OriginYCoordinate;
 
-        /// <summary>
-        /// The z coordinate of the origin, located at the bottom left corner
-        /// </summary>
+     /// @brief The z coordinate of the origin, located at the bottom left corner
         double OriginZCoordinate;
 
-        /// <summary>
-        /// The grid block size in x dimension, used only for squared grids
-        /// </summary>
+     /// @brief The grid block size in x dimension, used only for squared grids
         double XGridBlockSize;
 
-        /// <summary>
-        /// The grid block size in y dimension, used only for squared grids
-        /// </summary>
+     /// @brief The grid block size in y dimension, used only for squared grids
         double YGridBlockSize;
     };
 } // namespace meshkernelapi

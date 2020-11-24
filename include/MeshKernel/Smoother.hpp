@@ -40,43 +40,35 @@ namespace meshkernel
     {
 
     public:
-        /// <summary>
-        /// Mesh ctor
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
+     /// @brief Mesh ctor
+        /// @brief mesh 
+        /// @returns 
         explicit Smoother(std::shared_ptr<Mesh> mesh);
 
         /// @brief Computes the smoother weights
         void Compute();
 
-        /// <summary>
-        /// Gets the weight for a certain node and connected node
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="connectedNode"></param>
-        /// <returns></returns>
+     /// @brief Gets the weight for a certain node and connected node
+        /// @brief node 
+        /// @brief connectedNode 
+        /// @returns 
         [[nodiscard]] inline auto GetWeight(int node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
 
-        /// <summary>
-        /// Get the index of the coonected node as assigned by the smoother administration
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="connectedNode"></param>
-        /// <returns></returns>
+     /// @brief Get the index of the coonected node as assigned by the smoother administration
+        /// @brief node 
+        /// @brief connectedNode 
+        /// @returns 
         [[nodiscard]] inline auto GetCoonectedNodeIndex(int node, int connectedNode)
         {
             return m_connectedNodes[node][connectedNode];
         }
 
-        /// <summary>
-        /// Get number of connected nodes
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
+     /// @brief Get number of connected nodes
+        /// @brief node 
+        /// @returns 
         [[nodiscard]] inline auto GetNumConnectedNodes(int node)
         {
             return m_numConnectedNodes[node];
@@ -93,11 +85,9 @@ namespace meshkernel
         /// @brief Computes all operators of the elliptic smoother
         void ComputeOperators();
 
-        /// <summary>
-        /// Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
+     /// @brief Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
+        /// @brief mesh 
+        /// @returns 
         bool ComputeCoordinates();
 
         /// @brief Computes the smoother weights from the operators (orthonet_compweights_smooth)
@@ -123,14 +113,12 @@ namespace meshkernel
                               int numSharedFaces,
                               int numConnectedNodes);
 
-        /// <summary>
-        /// Compute optimal edge angle
-        /// </summary>
-        /// <param name="numFaceNodes"></param>
-        /// <param name="theta1"></param>
-        /// <param name="theta2"></param>
-        /// <param name="isBoundaryEdge"></param>
-        /// <returns></returns>
+     /// @brief Compute optimal edge angle
+        /// @brief numFaceNodes 
+        /// @brief theta1 
+        /// @brief theta2 
+        /// @brief isBoundaryEdge 
+        /// @returns 
         [[nodiscard]] double OptimalEdgeAngle(int numFaceNodes,
                                               double theta1 = -1.0,
                                               double theta2 = -1.0,
@@ -153,13 +141,11 @@ namespace meshkernel
         /// @param[out] J
         void ComputeJacobian(int currentNode, std::vector<double>& J) const;
 
-        /// <summary>
-        /// Compute the matrix norm
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="matCoefficents"></param>
-        /// <returns></returns>
+     /// @brief Compute the matrix norm
+        /// @brief x 
+        /// @brief y 
+        /// @brief matCoefficents 
+        /// @returns 
         [[nodiscard]] double MatrixNorm(const std::vector<double>& x,
                                         const std::vector<double>& y,
                                         const std::vector<double>& matCoefficents) const;

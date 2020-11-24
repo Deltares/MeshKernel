@@ -39,43 +39,35 @@ namespace meshkernel
     {
 
     public:
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <returns></returns>
+     /// @brief Ctor
+        /// @returns 
         explicit Orthogonalizer(std::shared_ptr<Mesh> mesh);
 
         /// @brief Computes the smoother weights and the right hans side
         void Compute();
 
-        /// <summary>
-        /// Gets the weight for a certain node and connected node
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="connectedNode"></param>
-        /// <returns>The contribution of orthogonalizer to the left hand side, the linear system</returns>
+     /// @brief Gets the weight for a certain node and connected node
+        /// @brief node 
+        /// @brief connectedNode 
+        /// @returns The contribution of orthogonalizer to the left hand side, the linear system
         [[nodiscard]] inline double GetWeight(int node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
 
-        /// <summary>
-        /// Gets the weight for a certain node and connected node
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="connectedNode"></param>
-        /// <returns>The contribution of orthogonalizer to the right hand size</returns>
+     /// @brief Gets the weight for a certain node and connected node
+        /// @brief node 
+        /// @brief connectedNode 
+        /// @returns The contribution of orthogonalizer to the right hand size
         [[nodiscard]] inline double GetRightHandSide(int node, int connectedNode)
         {
             return m_rhs[node][connectedNode];
         }
 
     private:
-        /// <summary>
-        /// Computes the aspect ratio of each edge (orthonet_compute_aspect)
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns>If the method succeeded</returns>
+     /// @brief Computes the aspect ratio of each edge (orthonet_compute_aspect)
+        /// @brief mesh 
+        /// @returns If the method succeeded
         bool AspectRatio(const Mesh& mesh);
 
         std::shared_ptr<Mesh> m_mesh;
