@@ -60,19 +60,21 @@ namespace meshkernel
             throw std::invalid_argument("LandBoundaries::Administrate: The land boundaries contain no nodes.");
         }
 
-        //mask the landboundary that is inside the selecting polygon
-        std::vector<int> landBoundaryMask(m_nodes.size() - 1, 0);
+        // do not consider the landboundary nodes outside the polygon
+        std::vector<bool> nodeMask(m_nodes.size() - 1, false);
         for (int n = 0; n < m_nodes.size() - 1; n++)
         {
-            if (m_nodes[n].IsValid() && m_nodes[n + 1].IsValid())
+            if (!m_nodes[n].IsValid() || !m_nodes[n + 1].IsValid())
             {
-                bool firstPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n], 0);
-                bool secondPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n + 1], 0);
+                continue;
+            }
 
-                if (firstPointInPolygon || secondPointInPolygon)
-                {
-                    landBoundaryMask[n] = -1;
-                }
+            bool firstPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n], 0);
+            bool secondPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n + 1], 0);
+
+            if (firstPointInPolygon || secondPointInPolygon)
+            {
+                nodeMask[n] = true;
             }
         }
 
@@ -83,7 +85,7 @@ namespace meshkernel
         // mask all landboundary nodes close to the mesh boundary (distanceFromMeshNode < minDistance)
         for (auto n = 0; n < m_nodes.size() - 1; n++)
         {
-            if (landBoundaryMask[n] == 0 || meshBoundaryPolygon.empty())
+            if (!nodeMask[n] || meshBoundaryPolygon.empty())
             {
                 continue;
             }
@@ -118,16 +120,16 @@ namespace meshkernel
 
             if (landBoundaryIsClose)
             {
-                landBoundaryMask[n] = 1;
+                nodeMask[n] = true;
             }
         }
 
-        // find the start/end node of the landboundaries. Emplace them in m_segmentIndices if the land-boundary segment is close to a mesh node
+        // find the start/end node of the landboundaries. Emplace back them in m_segmentIndices if the land-boundary segment is close to a mesh node
         const auto indices = FindIndexes(m_nodes, 0, m_nodes.size(), doubleMissingValue);
         m_segmentIndices.reserve(indices.size());
         for (const auto& index : indices)
         {
-            if (landBoundaryMask[index[0]] != 0)
+            if (nodeMask[index[0]])
             {
                 m_segmentIndices.emplace_back(index);
             }
