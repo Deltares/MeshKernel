@@ -192,7 +192,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
     Point lowerLeft;
     Point upperRight;
     GetBoundingBox(searchPolygon, lowerLeft, upperRight);
-    if (m_mesh->m_projection == Projections::spherical && upperRight.x - lowerLeft.x > 180.0)
+    if (m_mesh->m_projection == Projection::spherical && upperRight.x - lowerLeft.x > 180.0)
     {
         const auto xmean = 0.5 * (upperRight.x + lowerLeft.x);
         lowerLeft.x = std::numeric_limits<double>::max();

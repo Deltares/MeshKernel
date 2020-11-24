@@ -84,7 +84,7 @@ void meshkernel::Orthogonalizer::Compute()
                     Point normal;
                     NormalVectorInside(m_mesh->m_nodes[n], neighbouringNode, m_mesh->m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh->m_projection);
 
-                    if (m_mesh->m_projection == Projections::spherical && m_mesh->m_projection != Projections::sphericalAccurate)
+                    if (m_mesh->m_projection == Projection::spherical && m_mesh->m_projection != Projection::sphericalAccurate)
                     {
                         normal.x = normal.x * std::cos(degrad_hp * 0.5 * (m_mesh->m_nodes[n].y + neighbouringNode.y));
                     }

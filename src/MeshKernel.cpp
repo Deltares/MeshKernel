@@ -256,11 +256,11 @@ namespace meshkernelapi
             // spherical or cartesian
             if (isGeographic)
             {
-                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projections::spherical);
+                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projection::spherical);
             }
             else
             {
-                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projections::cartesian);
+                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projection::cartesian);
             }
         }
         catch (const std::exception& e)
@@ -970,7 +970,7 @@ namespace meshkernelapi
             {
                 //create a valid instance, by default cartesian
                 *meshInstances[meshKernelId] = meshkernel::Mesh();
-                meshInstances[meshKernelId]->m_projection = meshkernel::Projections::cartesian;
+                meshInstances[meshKernelId]->m_projection = meshkernel::Projection::cartesian;
             }
 
             meshkernel::Point newNode{xCoordinate, yCoordinate};
@@ -1697,15 +1697,15 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            // Projections
-            auto projection = meshkernel::Projections::cartesian;
+            // Projection
+            auto projection = meshkernel::Projection::cartesian;
             if (spherical == 1)
             {
-                projection = meshkernel::Projections::spherical;
+                projection = meshkernel::Projection::spherical;
             }
             if (sphericalAccurate == 1)
             {
-                projection = meshkernel::Projections::sphericalAccurate;
+                projection = meshkernel::Projection::sphericalAccurate;
             }
 
             // Set the mesh
@@ -1764,15 +1764,15 @@ namespace meshkernelapi
                                   int& spherical,
                                   int& sphericalAccurate)
     {
-        // Projections
-        auto projection = meshkernel::Projections::cartesian;
+        // Projection
+        auto projection = meshkernel::Projection::cartesian;
         if (spherical == 1)
         {
-            projection = meshkernel::Projections::spherical;
+            projection = meshkernel::Projection::spherical;
         }
         if (sphericalAccurate == 1)
         {
-            projection = meshkernel::Projections::sphericalAccurate;
+            projection = meshkernel::Projection::sphericalAccurate;
         }
 
         // Locations

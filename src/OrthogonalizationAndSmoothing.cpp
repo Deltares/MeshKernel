@@ -88,7 +88,7 @@ void meshkernel::OrthogonalizationAndSmoothing::Initialize()
     }
 
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops)
-    if (m_mesh->m_projection == Projections::sphericalAccurate)
+    if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
         if (m_orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor < 1.0)
         {
@@ -345,7 +345,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
 {
     throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
 
-    if (m_mesh->m_projection == Projections::sphericalAccurate)
+    if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
         //TODO : missing implementation
     }
@@ -368,7 +368,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
     dx0 = (dx0 + m_compressedRhs[firstCacheIndex]) / increments[0];
     dy0 = (dy0 + m_compressedRhs[firstCacheIndex + 1]) / increments[1];
     constexpr double relaxationFactor = 0.75;
-    if (m_mesh->m_projection == Projections::cartesian || m_mesh->m_projection == Projections::spherical)
+    if (m_mesh->m_projection == Projection::cartesian || m_mesh->m_projection == Projection::spherical)
     {
         double x0 = m_mesh->m_nodes[nodeIndex].x + dx0;
         double y0 = m_mesh->m_nodes[nodeIndex].y + dy0;
@@ -377,7 +377,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
         m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh->m_nodes[nodeIndex].x;
         m_orthogonalCoordinates[nodeIndex].y = relaxationFactor * y0 + relaxationFactorCoordinates * m_mesh->m_nodes[nodeIndex].y;
     }
-    if (m_mesh->m_projection == Projections::sphericalAccurate)
+    if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
         Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};
 
@@ -412,7 +412,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeI
         const auto currentNode = m_compressedNodesNodes[cacheIndex];
         cacheIndex++;
 
-        if (m_mesh->m_projection == Projections::cartesian)
+        if (m_mesh->m_projection == Projection::cartesian)
         {
             const double wwxTransformed = wwx;
             const double wwyTransformed = wwy;
@@ -422,7 +422,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeI
             weightsSum[1] += wwyTransformed;
         }
 
-        if (m_mesh->m_projection == Projections::spherical)
+        if (m_mesh->m_projection == Projection::spherical)
         {
             const double wwxTransformed = wwx * earth_radius * degrad_hp *
                                           std::cos(0.5 * (m_mesh->m_nodes[nodeIndex].y + m_mesh->m_nodes[currentNode].y) * degrad_hp);
@@ -433,7 +433,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeI
             weightsSum[0] += wwxTransformed;
             weightsSum[1] += wwyTransformed;
         }
-        if (m_mesh->m_projection == Projections::sphericalAccurate)
+        if (m_mesh->m_projection == Projection::sphericalAccurate)
         {
             const double wwxTransformed = wwx * earth_radius * degrad_hp;
             const double wwyTransformed = wwy * earth_radius * degrad_hp;

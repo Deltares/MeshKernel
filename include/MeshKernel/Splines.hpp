@@ -45,7 +45,7 @@ namespace meshkernel
         /// @brief Ctor, set projection
         /// @brief projection The map projection
         /// @returns
-        explicit Splines(Projections projection);
+        explicit Splines(Projection projection);
 
         /// @brief Adds a new spline to m_splineCornerPoints
         /// @param[in] splines The spline corner points
@@ -122,7 +122,7 @@ namespace meshkernel
         std::vector<std::vector<Point>> m_splineNodes;       // The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives; // The spline derivatives at the corner points
         std::vector<double> m_splinesLength;                 // The length of each spline
-        Projections m_projection = Projections::cartesian;   // The map projection
+        Projection m_projection = Projection::cartesian;     // The map projection
 
     private:
         /// @brief Adds a new corner point in an existing spline

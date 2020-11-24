@@ -49,7 +49,7 @@ namespace meshkernel
         return std::abs(value - referenceValue) < std::numeric_limits<T>::epsilon();
     }
 
-    enum class Projections
+    enum class Projection
     {
         cartesian,        // jsferic  = 0
         spherical,        // jsferic  = 1

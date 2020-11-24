@@ -39,7 +39,7 @@
 namespace meshkernel
 {
 
-    Polygons::Polygons(const std::vector<Point>& polygon, Projections projection) : m_nodes(polygon), m_projection(projection)
+    Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m_nodes(polygon), m_projection(projection)
     {
         // find the polygons in the current list of points
         m_indices = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue);
@@ -269,7 +269,7 @@ namespace meshkernel
 
         // negative sign introduced because normal vector pointing inward
         distance = -distance;
-        if (m_projection == Projections::spherical)
+        if (m_projection == Projection::spherical)
         {
             distance = distance / (earth_radius * degrad_hp);
         }
@@ -279,7 +279,7 @@ namespace meshkernel
         {
             auto dx = normalVectors[i].x * distance;
             auto dy = normalVectors[i].y * distance;
-            if (m_projection == Projections::spherical)
+            if (m_projection == Projection::spherical)
             {
                 dx = dx / std::cos((m_nodes[i].y + 0.5 * dy) * degrad_hp);
             }

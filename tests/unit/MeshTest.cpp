@@ -24,7 +24,7 @@ TEST(Mesh, OneQuadTestConstructor)
     meshkernel::Mesh mesh;
 
     // 2 Execution
-    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     // 3 Validation
     // expect nodesEdges to be sorted ccw
@@ -87,7 +87,7 @@ TEST(Mesh, MakeMeshInPolygon)
     nodes.push_back({301.252502, 471.380371});
     nodes.push_back({302.002502, 472.130371});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     meshkernel::Mesh mesh;
     meshkernelapi::MakeGridParametersNative makeGridParametersNative;
@@ -119,7 +119,7 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
     nodes.push_back({301.252502, 471.380371});
     nodes.push_back({302.002502, 472.130371});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projections::spherical);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::spherical);
 
     meshkernel::Mesh mesh;
     meshkernelapi::MakeGridParametersNative makeGridParametersNative;
@@ -143,7 +143,7 @@ TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
 {
     //1 Setup
     std::vector<meshkernel::Point> nodes;
-    meshkernel::Polygons polygons(nodes, meshkernel::Projections::spherical);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::spherical);
 
     meshkernel::Mesh mesh;
     meshkernelapi::MakeGridParametersNative makeGridParametersNative;
@@ -207,12 +207,12 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     nodes.push_back({301.252502, 471.380371});
     nodes.push_back({302.002502, 472.130371});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     // Execute
     const auto generatedPoints = polygons.ComputePointsInPolygons();
 
-    meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projections::cartesian);
+    meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
 
     //// Assert
     constexpr double tolerance = 1e-5;
@@ -250,12 +250,12 @@ TEST(Mesh, TriangulateSamples)
     nodes.push_back({501.418832237663, 1642.90729527249});
     nodes.push_back({498.503152894023, 1645.82297461613});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     // Execute
     const auto generatedPoints = polygons.ComputePointsInPolygons();
 
-    meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projections::cartesian);
+    meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
 }
 
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
@@ -275,7 +275,7 @@ TEST(Mesh, TwoTrianglesDuplicatedEdges)
 
     meshkernel::Mesh mesh;
     // 2 Execution
-    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     // 3 Validation
     ASSERT_EQ(2, mesh.GetNumFaces());
@@ -297,7 +297,7 @@ TEST(Mesh, MeshBoundaryToPolygon)
     edges.push_back({2, 1});
 
     meshkernel::Mesh mesh;
-    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
     const auto meshBoundaryPolygon = mesh.MeshBoundaryToPolygon(polygonNodes);
@@ -332,7 +332,7 @@ TEST(Mesh, HangingEdge)
     edges.push_back({2, 1});
 
     meshkernel::Mesh mesh;
-    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     ASSERT_EQ(1, mesh.GetNumFaces());
 }
@@ -377,7 +377,7 @@ TEST(Mesh, NodeMerging)
     }
 
     meshkernel::Mesh mesh;
-    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     // Add overlapping nodes
     double generatingDistance = std::sqrt(std::pow(meshkernel::mergingDistance * 0.9, 2) / 2.0);
@@ -413,7 +413,7 @@ TEST(Mesh, NodeMerging)
     edges.resize(edgeIndex);
 
     // re set with augmented nodes
-    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     // 2. Act
     meshkernel::Polygons polygon;
@@ -465,7 +465,7 @@ TEST(Mesh, MillionQuads)
     meshkernel::Mesh mesh;
     // now build node-edge mapping
     auto start(std::chrono::steady_clock::now());
-    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
@@ -478,7 +478,7 @@ TEST(Mesh, MillionQuads)
 TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 {
     // Setup
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
     mesh->m_nodesRTree.BuildTree(mesh->m_nodes);
 
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
@@ -501,7 +501,7 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 {
     // Setup
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     meshkernel::Point newPoint{10.0, 10.0};
     mesh->m_nodesRTree.BuildTree(mesh->m_nodes);
@@ -520,7 +520,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     //1 Setup
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
     mesh->ComputeEdgesCenters();
     mesh->m_edgesRTree.BuildTree(mesh->m_edgesCenters);
 
@@ -544,7 +544,7 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     //1 Setup
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
     mesh->ComputeEdgesCenters();
     mesh->m_edgesRTree.BuildTree(mesh->m_edgesCenters);
 
@@ -560,7 +560,7 @@ TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
 {
     //1 Setup
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // By default, no nodesRTree is build
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
@@ -578,7 +578,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
 TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
 {
     //1 Setup
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
     const auto edgeIndex = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
@@ -607,7 +607,7 @@ TEST(Mesh, GetObtuseTriangles)
         {3, 1}};
 
     meshkernel::Mesh mesh;
-    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, only one obtuse triangle should be found
     const auto obtuseTrianglesCount = mesh.GetObtuseTrianglesCenters().size();
@@ -634,7 +634,7 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
     };
 
     meshkernel::Mesh mesh;
-    mesh.Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, by setting the smallFlowEdgesThreshold high, a small flow edge will be found
     const auto numSmallFlowEdgeFirstQuery = mesh.GetEdgesCrossingSmallFlowEdges(100).size();

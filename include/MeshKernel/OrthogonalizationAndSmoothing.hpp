@@ -40,7 +40,7 @@ namespace meshkernel
     class Orthogonalizer;
     class LandBoundaries;
     class Polygons;
-    enum class Projections;
+    enum class Projection;
 
     /// <summary>
     /// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize internal face angles or area).

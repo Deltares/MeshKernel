@@ -1134,7 +1134,7 @@ void meshkernel::Smoother::ComputeJacobian(int currentNode, std::vector<double>&
 {
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
     const auto numNodes = m_numTopologyNodes[currentTopology];
-    if (m_mesh->m_projection == Projections::cartesian)
+    if (m_mesh->m_projection == Projection::cartesian)
     {
         J[0] = 0.0;
         J[1] = 0.0;
@@ -1148,7 +1148,7 @@ void meshkernel::Smoother::ComputeJacobian(int currentNode, std::vector<double>&
             J[3] += m_Jeta[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
         }
     }
-    if (m_mesh->m_projection == Projections::spherical || m_mesh->m_projection == Projections::sphericalAccurate)
+    if (m_mesh->m_projection == Projection::spherical || m_mesh->m_projection == Projection::sphericalAccurate)
     {
         double cosFactor = std::cos(m_mesh->m_nodes[currentNode].y * degrad_hp);
         J[0] = 0.0;

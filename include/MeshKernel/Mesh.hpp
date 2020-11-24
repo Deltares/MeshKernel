@@ -70,30 +70,29 @@ namespace meshkernel
         Mesh() = default;
 
         /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
-        /// @brief curvilinearGrid
-        /// @brief projection
+        /// @param curvilinearGrid The curvilinear grid to create the mesh from
+        /// @param projection The \ref Projection to use
         /// @returns
-        Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection);
+        Mesh(const CurvilinearGrid& curvilinearGrid, Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
-        /// @brief nodes Input nodes
-        /// @brief polygons Selection polygon
-        /// @brief projection Projection to use
-        /// @returns
-        Mesh(const std::vector<Point>& nodes, const Polygons& polygons, Projections projection);
+        /// @param[in] nodes Input nodes
+        /// @param[in] polygons Selection polygon
+        /// @param[in] projection Projection to use
+        Mesh(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to the first
-        /// @brief rhs The mesh to add
+        /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
 
         /// @brief Set the mesh starting from the edges and nodes
-        /// @param[in] edges">The input edges</param>
+        /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
         /// @param[in] projection Projection to use
         /// @param[in] administration Type of administration to perform
-        void Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        void Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         /// @param administrationOption Type of administration to perform
@@ -389,7 +388,7 @@ namespace meshkernel
         std::vector<double> m_facesCircumcentersy; // The circumcenters y-coordinate
         std::vector<double> m_facesCircumcentersz; // The circumcenters z-coordinate
 
-        Projections m_projection; // The projection used
+        Projection m_projection; // The projection used
 
         SpatialTrees::RTree m_nodesRTree; // Spatial R-Tree used to inquire node vertices
         SpatialTrees::RTree m_edgesRTree; // Spatial R-Tree used to inquire edges centers

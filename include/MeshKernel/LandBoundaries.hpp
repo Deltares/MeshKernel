@@ -209,7 +209,7 @@ namespace meshkernel
         /// @param pointOnLandBoundary
         /// @param nearestLandBoundaryNodeIndex
         /// @param edgeRatio
-        void NearestLandBoundaryNode(const Projections& projection,
+        void NearestLandBoundaryNode(const Projection& projection,
                                      const Point& node,
                                      int startLandBoundaryIndex,
                                      int endLandBoundaryIndex,

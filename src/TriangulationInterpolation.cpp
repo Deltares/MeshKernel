@@ -36,9 +36,9 @@
 
 meshkernel::TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>& m_locations,
                                                                    const std::vector<Sample>& samples,
-                                                                   Projections projection) : m_locations(m_locations),
-                                                                                             m_samples(samples),
-                                                                                             m_projection(projection){};
+                                                                   Projection projection) : m_locations(m_locations),
+                                                                                            m_samples(samples),
+                                                                                            m_projection(projection){};
 
 void meshkernel::TriangulationInterpolation::Compute()
 {

@@ -309,14 +309,14 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
             double ys1 = doubleMissingValue;
             double ys2 = doubleMissingValue;
 
-            if (m_splines->m_projection == Projections::cartesian)
+            if (m_splines->m_projection == Projection::cartesian)
             {
                 xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x;
                 xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x;
                 ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y;
                 ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y;
             }
-            if (m_splines->m_projection == Projections::spherical)
+            if (m_splines->m_projection == Projection::spherical)
             {
                 const double factor = 1.0 / (earth_radius * degrad_hp);
                 xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x * factor;
@@ -987,7 +987,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(int l
         if (squaredLeftDistance <= m_onTopOfEachOtherSquaredTolerance || squaredRightDistance <= m_onTopOfEachOtherSquaredTolerance)
         {
             NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][currentLeftIndex], normalVectorLeft, m_splines->m_projection);
-            if (m_splines->m_projection == Projections::spherical)
+            if (m_splines->m_projection == Projection::spherical)
             {
                 normalVectorLeft.x = normalVectorLeft.x * std::cos(degrad_hp * 0.5 * (m_gridPoints[layerIndex][currentLeftIndex].y + m_gridPoints[layerIndex][currentRightIndex].y));
             }
@@ -998,7 +998,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(int l
             NormalVectorOutside(m_gridPoints[layerIndex][m], m_gridPoints[layerIndex][currentLeftIndex], normalVectorLeft, m_splines->m_projection);
             NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], normalVectorRight, m_splines->m_projection);
 
-            if (m_splines->m_projection == Projections::spherical)
+            if (m_splines->m_projection == Projection::spherical)
             {
                 normalVectorLeft.x = normalVectorLeft.x * std::cos(degrad_hp * 0.5 * (m_gridPoints[layerIndex][currentLeftIndex].y + m_gridPoints[layerIndex][m].y));
                 normalVectorRight.x = normalVectorRight.x * std::cos(degrad_hp * 0.5 * (m_gridPoints[layerIndex][currentRightIndex].y + m_gridPoints[layerIndex][m].y));
@@ -1034,7 +1034,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(int l
             velocityVector[m] = rightVelocity * 1.0 / (rightLeftVelocityRatio * cosphi);
         }
 
-        if (m_splines->m_projection == Projections::spherical)
+        if (m_splines->m_projection == Projection::spherical)
         {
             velocityVector[m].x = velocityVector[m].x * one_over_earth_radius * raddeg_hp / std::cos(degrad_hp * m_gridPoints[layerIndex][m].y);
             velocityVector[m].y = velocityVector[m].y * one_over_earth_radius * raddeg_hp;

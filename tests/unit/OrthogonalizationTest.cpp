@@ -41,7 +41,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 
     // Execute
     auto mesh = std::make_shared<meshkernel::Mesh>();
-    mesh->Set(edges, nodes, meshkernel::Projections::cartesian);
+    mesh->Set(edges, nodes, meshkernel::Projection::cartesian);
 
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
@@ -220,7 +220,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
 
     std::vector<meshkernel::Point> landBoundary;
-    auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshkernel::Projections::cartesian);
+    auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshkernel::Projection::cartesian);
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh, polygon);
 
     meshkernel::OrthogonalizationAndSmoothing orthogonalization(mesh,
@@ -320,7 +320,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 {
-    auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, meshkernel::Projection::cartesian);
 
     int projectToLandBoundaryOption = 0;
     meshkernelapi::OrthogonalizationParametersNative orthogonalizationParametersNative;
@@ -423,7 +423,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 {
     //1 Setup
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, meshkernel::Projections::spherical, {41.1, 41.1});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, meshkernel::Projection::spherical, {41.1, 41.1});
 
     int projectToLandBoundaryOption = 0;
     meshkernelapi::OrthogonalizationParametersNative orthogonalizationParametersNative;
@@ -512,7 +512,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
                                         {0, 2}};
 
     auto mesh = std::make_shared<meshkernel::Mesh>();
-    mesh->Set(edges, nodes, meshkernel::Projections::spherical);
+    mesh->Set(edges, nodes, meshkernel::Projection::spherical);
 
     int projectToLandBoundaryOption = 0;
     meshkernelapi::OrthogonalizationParametersNative orthogonalizationParametersNative;
