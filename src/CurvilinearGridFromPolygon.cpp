@@ -182,15 +182,13 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     assignPolygonPointsToSegment(firstNode, numMNodes, direction, sideThree);
     assignPolygonPointsToSegment(fourthNode, numMNodes, -direction, sideFour);
 
-    std::vector<std::vector<Point>> result;
-    InterpolateTransfinite(sideOne,
-                           sideTwo,
-                           sideThree,
-                           sideFour,
-                           m_polygon->m_projection,
-                           numMNodes - 1,
-                           numNNodes - 1,
-                           result);
+    const auto result = InterpolateTransfinite(sideOne,
+                                               sideTwo,
+                                               sideThree,
+                                               sideFour,
+                                               m_polygon->m_projection,
+                                               numMNodes - 1,
+                                               numNNodes - 1);
 
     // Assign the points to the curvilinear grid
     curvilinearGrid.Set(numMNodes, numNNodes);
@@ -284,10 +282,10 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     const auto xib = double(n2) / double(numPointsSecondSide);
     const auto xic = double(n3) / double(numPointsThirdSide);
 
-    auto triangleCenter = ((m_polygon->m_nodes[firstNode] * (1.0 - xia) + m_polygon->m_nodes[secondNode] * xia) * xic + m_polygon->m_nodes[thirdNode] * (1.0 - xic) +
-                           (m_polygon->m_nodes[secondNode] * (1.0 - xib) + m_polygon->m_nodes[thirdNode] * xib) * xia + m_polygon->m_nodes[firstNode] * (1.0 - xia) +
-                           (m_polygon->m_nodes[thirdNode] * (1.0 - xic) + m_polygon->m_nodes[firstNode] * xic) * xib + m_polygon->m_nodes[secondNode] * (1.0 - xib)) /
-                          3.0;
+    const auto triangleCenter = ((m_polygon->m_nodes[firstNode] * (1.0 - xia) + m_polygon->m_nodes[secondNode] * xia) * xic + m_polygon->m_nodes[thirdNode] * (1.0 - xic) +
+                                 (m_polygon->m_nodes[secondNode] * (1.0 - xib) + m_polygon->m_nodes[thirdNode] * xib) * xia + m_polygon->m_nodes[firstNode] * (1.0 - xia) +
+                                 (m_polygon->m_nodes[thirdNode] * (1.0 - xic) + m_polygon->m_nodes[firstNode] * xic) * xib + m_polygon->m_nodes[secondNode] * (1.0 - xib)) *
+                                oneThird;
 
     const auto maxM = *std::max_element(numM.begin(), numM.end());
     const auto maxN = *std::max_element(numN.begin(), numN.end());
@@ -298,7 +296,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     std::vector<Point> sideFour(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
 
     curvilinearGrid.Set(n1 + n3 + 1, n2 + n3 + 1);
-    for (int t = 0; t < 3; ++t)
+    for (int t = 0; t < numNodesInTriangle; ++t)
     {
         std::fill(sideOne.begin(), sideOne.end(), Point{doubleMissingValue, doubleMissingValue});
         std::fill(sideTwo.begin(), sideTwo.end(), Point{doubleMissingValue, doubleMissingValue});
@@ -351,15 +349,13 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
             sideTwo[i] = m_polygon->m_nodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
-        std::vector<std::vector<Point>> result;
-        InterpolateTransfinite(sideOne,
-                               sideTwo,
-                               sideThree,
-                               sideFour,
-                               m_polygon->m_projection,
-                               numM[t],
-                               numN[t],
-                               result);
+        const auto result = InterpolateTransfinite(sideOne,
+                                                   sideTwo,
+                                                   sideThree,
+                                                   sideFour,
+                                                   m_polygon->m_projection,
+                                                   numM[t],
+                                                   numN[t]);
 
         // add to grid
         if (t == 0)

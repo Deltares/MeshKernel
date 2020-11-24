@@ -321,7 +321,7 @@ namespace meshkernel
             return true;
         }
         const int currentPolygonSize = endNode - startNode + 1;
-        if (currentPolygonSize < 3 || polygonNodes.size() < currentPolygonSize)
+        if (currentPolygonSize < numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }
@@ -1178,7 +1178,7 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    static void CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, const Projections projection, Point& circumcenter)
+    static Point CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, const Projections projection)
     {
 
         double dx2 = GetDx(p1, p2, projection);
@@ -1194,6 +1194,7 @@ namespace meshkernel
             z = (dx2 * (dx2 - dx3) + dy2 * (dy2 - dy3)) / den;
         }
 
+        Point circumcenter;
         if (projection == Projections::cartesian)
         {
             circumcenter.x = p1.x + 0.5 * (dx3 - z * dy3);
@@ -1201,7 +1202,7 @@ namespace meshkernel
         }
         if (projection == Projections::spherical)
         {
-            double phi = (p1.y + p2.y + p3.y) / 3.0;
+            double phi = (p1.y + p2.y + p3.y) * oneThird;
             double xf = 1.0 / cos(degrad_hp * phi);
             circumcenter.x = p1.x + xf * 0.5 * (dx3 - z * dy3) * raddeg_hp / earth_radius;
             circumcenter.y = p1.y + 0.5 * (dy3 + z * dx3) * raddeg_hp / earth_radius;
@@ -1210,6 +1211,7 @@ namespace meshkernel
         {
             //TODO: compute in case of spherical accurate
         }
+        return circumcenter;
     }
 
     /// (cross, cross3D)
@@ -1511,14 +1513,13 @@ namespace meshkernel
     }
 
     //(TRANFN2)
-    static void InterpolateTransfinite(const std::vector<Point>& sideOne,
-                                       const std::vector<Point>& sideTwo,
-                                       const std::vector<Point>& sideThree,
-                                       const std::vector<Point>& sideFour,
-                                       Projections projections,
-                                       int numM,
-                                       int numN,
-                                       std::vector<std::vector<Point>>& result)
+    static std::vector<std::vector<Point>> InterpolateTransfinite(const std::vector<Point>& sideOne,
+                                                                  const std::vector<Point>& sideTwo,
+                                                                  const std::vector<Point>& sideThree,
+                                                                  const std::vector<Point>& sideFour,
+                                                                  Projections projections,
+                                                                  int numM,
+                                                                  int numN)
     {
         double totalLengthOne;
         std::vector<double> sideOneAdimensional(sideOne.size());
@@ -1574,7 +1575,7 @@ namespace meshkernel
         }
 
         //border points
-        result.resize(numMPoints, std::vector<Point>(numNPoints));
+        std::vector<std::vector<Point>> result(numMPoints, std::vector<Point>(numNPoints));
         for (int i = 0; i < numMPoints; i++)
         {
             result[i][0] = sideThree[i];
@@ -1673,6 +1674,8 @@ namespace meshkernel
                 }
             }
         }
+
+        return result;
     }
 
     [[nodiscard]] static auto ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)

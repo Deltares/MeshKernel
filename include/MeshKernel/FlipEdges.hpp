@@ -57,11 +57,10 @@ namespace meshkernel
         /// @param[in] edge The current edge
         /// @param[out] nodeLeft The node at the left side of the edge
         /// @param[out] nodeRight The node at the left side of the edge
-        /// @param[out] topologyFunctional The computed functional
-        void ComputeTopologyFunctional(int edge,
-                                       int& nodeLeft,
-                                       int& nodeRight,
-                                       int& topologyFunctional) const;
+        /// @return topologyFunctional The computed functional
+        int ComputeTopologyFunctional(int edge,
+                                      int& nodeLeft,
+                                      int& nodeRight) const;
 
         /// @brief Determine the optimal number of connected nodes for each node (nmk_opt)
         /// @param nodeIndex

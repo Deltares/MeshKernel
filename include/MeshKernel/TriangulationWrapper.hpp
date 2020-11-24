@@ -169,7 +169,7 @@ namespace meshkernel
             for (int f = 0; f < m_numFaces; ++f)
             {
 
-                for (int n = 0; n < 3; ++n)
+                for (int n = 0; n < numNodesInTriangle; ++n)
                 {
                     auto const edge = faceEdgesFlat[edgeCounter] - 1;
                     edgeCounter++;

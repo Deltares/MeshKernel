@@ -175,6 +175,7 @@ These triangles having the above properties are merged by collapsing the face no
 
 This class implements the mesh orthogonalization and smoothing algorithm as described in \dflowfm technical manual (consult this manual for the mathematical details on the equations). The algorithm is composed of two differential equations: the first equation maximizes orthogonalization between edges and flow links and the second equation reduces the differences of the internal mesh angles (mesh smoothness). For this reason, the OrthogonalizationAndSmoothing class is composed of a smoother and an orthogonalizer, where the nodal contributions are computed by separate classes, as opposed to the original Fortran implementation. Essentially, the algorithm executes two loops:
 \begin{itemize}
+\item An initialization step: The original mesh boundaries are saved. In case the mesh needs to be snapped to the land boundaries, the closest mesh edges to each land boundary are found (FindNearestMeshBoundary).
 \item An outer loop, which itself is composed of the following steps:
 \begin{enumerate}
 \item Computation of the orthogonalizer contributions.
@@ -183,16 +184,18 @@ This class implements the mesh orthogonalization and smoothing algorithm as desc
 \item Summation of the two contributions (matrix assembly).
 The two contributions are weighted based on the desired smoothing to orthogonality ratio. OpenMP thread parallelization is used when summing the terms (loop iterations are independent).
 \end{enumerate}
-\item An inner iteration: the resulting linear system is solved explicitly. The nodal coordinates are updated and the nodes moving on the mesh boundary are projected to the original mesh boundary. If the project to land boundary flag is activated, the boundary nodes are projected to the land boundaries. Also in this case OpenMP parallelization is used in OrthogonalizationAndSmoothing::InnerIteration() because the update of the nodal coordinates has been made iteration-independent.
+\item An inner iteration: the resulting linear system is solved explicitly. The nodal coordinates are updated and the nodes moving on the mesh boundary are projected to the original mesh boundary (SnapMeshToOriginalMeshBoundary). In case a projection to land boundary is requested, the mesh nodes are projected to the land boundaries. An OpenMP parallelization is used in OrthogonalizationAndSmoothing::InnerIteration() because the update of the nodal coordinates was made iteration-independent.
 \end{itemize}
 MeshKernel API has five functions to enable the client to display the mesh during the computations (interactivity). These functions are:
 \begin{itemize}
-\item ggeo\_orthogonalize\_initialize
+\item ggeo\_orthogonalize\_initialize 
 \item ggeo\_orthogonalize\_prepare\_outer\_iteration
-\item ggeo\_orthogonalize\_inner\_iteration
+\item ggeo\_orthogonalize\_inner\_iteration.
 \item ggeo\_orthogonalize\_finalize\_outer\_iteration
 \item ggeo\_orthogonalize\_delete
 \end{itemize}
+
+
 The execution flow of these functions is shown in Figure A1 of the Appendix. Additional details about these functions can be retrieved from the API documentation.
 %------------------------------------------------------------------------------
 \chapter{The MeshRefinement class}

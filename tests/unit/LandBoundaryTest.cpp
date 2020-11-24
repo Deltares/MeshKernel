@@ -22,7 +22,7 @@ TEST(LandBoundaries, OneLandBoundary)
 
     // Execute
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
-    landboundaries->FindNearestMeshBoundary(2);
+    landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption ::OuterMeshBoundaryToLandBoundary);
 
     // Checks
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[0]);
@@ -59,7 +59,7 @@ TEST(LandBoundaries, TwoLandBoundaries)
 
     // Execute
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
-    landboundaries->FindNearestMeshBoundary(2);
+    landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption::OuterMeshBoundaryToLandBoundary);
 
     // Checks
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[0]);
@@ -91,7 +91,7 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
 
     // Execute
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
-    landboundaries->FindNearestMeshBoundary(2);
+    landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption ::OuterMeshBoundaryToLandBoundary);
 
     // Checks
     EXPECT_EQ(0, landboundaries->m_meshNodesLandBoundarySegments[0]);
@@ -127,7 +127,7 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
 
     // Execute
     auto landboundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundaryPolygon, mesh, polygons);
-    landboundaries->FindNearestMeshBoundary(2);
+    landboundaries->FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption ::OuterMeshBoundaryToLandBoundary);
 
     // Checks
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[0]);
