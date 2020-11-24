@@ -295,7 +295,7 @@ namespace meshkernel
         {
             central,
             crossing,
-            arficial,
+            artificial,
             lateral
         };
 

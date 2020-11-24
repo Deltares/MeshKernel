@@ -329,7 +329,7 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
             newCrossSpline[1] = {xs2, ys2};
             m_splines->AddSpline(newCrossSpline, 0, newCrossSpline.size());
             // flag the cross spline as artificially added
-            m_type.emplace_back(SplineTypes::arficial);
+            m_type.emplace_back(SplineTypes::artificial);
         }
     }
 
@@ -365,7 +365,7 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
         for (int i = 0; i < m_numCrossingSplines[s]; ++i)
         {
             int crossingSplineIndex = m_crossingSplinesIndices[s][i];
-            if (m_type[crossingSplineIndex] == SplineTypes::arficial)
+            if (m_type[crossingSplineIndex] == SplineTypes::artificial)
             {
                 m_numCrossSplineLeftHeights[s][i] = m_numCrossSplineLeftHeights[s][i] - 1;
                 m_numCrossSplineRightHeights[s][i] = m_numCrossSplineRightHeights[s][i] - 1;
@@ -1805,7 +1805,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeSplineProperties(const bool 
         //mark new splines as artificial cross splines
         for (size_t s = m_numOriginalSplines; s < m_splines->GetNumSplines(); ++s)
         {
-            m_type[s] = SplineTypes::arficial;
+            m_type[s] = SplineTypes::artificial;
         }
     }
 

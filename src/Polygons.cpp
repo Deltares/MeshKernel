@@ -234,7 +234,7 @@ namespace meshkernel
 
         std::vector<Point> normalVectors(sizenewPolygon);
         double dxNormalPreviousEdge = 0.0;
-        double dyNormalPreviuosEdge = 0.0;
+        double dyNormalPreviousEdge = 0.0;
         double dxNormal = 0.0;
         double dyNormal = 0.0;
         for (int n = 0; n < GetNumNodes(); n++)
@@ -250,21 +250,21 @@ namespace meshkernel
             else
             {
                 dxNormal = dxNormalPreviousEdge;
-                dyNormal = dyNormalPreviuosEdge;
+                dyNormal = dyNormalPreviousEdge;
             }
 
             if (n == 0)
             {
                 dxNormalPreviousEdge = dxNormal;
-                dyNormalPreviuosEdge = dyNormal;
+                dyNormalPreviousEdge = dyNormal;
             }
 
-            double factor = 1.0 / (1.0 + dxNormalPreviousEdge * dxNormal + dyNormalPreviuosEdge * dyNormal);
+            double factor = 1.0 / (1.0 + dxNormalPreviousEdge * dxNormal + dyNormalPreviousEdge * dyNormal);
             normalVectors[n].x = factor * (dxNormalPreviousEdge + dxNormal);
-            normalVectors[n].y = factor * (dyNormalPreviuosEdge + dyNormal);
+            normalVectors[n].y = factor * (dyNormalPreviousEdge + dyNormal);
 
             dxNormalPreviousEdge = dxNormal;
-            dyNormalPreviuosEdge = dyNormal;
+            dyNormalPreviousEdge = dyNormal;
         }
 
         // negative sign introduced because normal vector pointing inward
