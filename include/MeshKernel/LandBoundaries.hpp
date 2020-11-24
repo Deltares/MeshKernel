@@ -55,7 +55,7 @@ namespace meshkernel
         /// @param[in] snapping
         void FindNearestMeshBoundary(int snapping);
 
-        /// @brief Snap mesh nodes to land boundaies (snap_to_landboundary)
+        /// @brief Snap mesh nodes to land boundaries (snap_to_landboundary)
         /// @param mesh
         void SnapMeshToLandBoundaries();
 

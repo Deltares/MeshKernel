@@ -31,19 +31,19 @@ namespace meshkernelapi
 {
     struct CurvilinearParametersNative
     {
-     /// @brief M-refinement factor for regular grid generation (mfacmax, 2000)
+        /// @brief M-refinement factor for regular grid generation (mfacmax, 2000)
         int MRefinement;
 
-     /// @brief N-refinement factor for regular grid generation (nfacmax, 40)
+        /// @brief N-refinement factor for regular grid generation (nfacmax, 40)
         int NRefinement;
 
-     /// @brief Nr. of inner iterations in regular grid smoothing (10).
+        /// @brief Nr. of inner iterations in regular grid smoothing (10).
         int SmoothingIterations;
 
-     /// @brief Smoothing parameter (0.5).
+        /// @brief Smoothing parameter (0.5).
         double SmoothingParameter;
 
-     /// @brief Attraction/repulsion parameter (0).
+        /// @brief Attraction/repulsion parameter (0).
         double AttractionParameter;
     };
 } // namespace meshkernelapi

@@ -36,7 +36,7 @@ namespace meshkernel
     class FlipEdges
     {
     public:
-     /// @brief Ctor
+        /// @brief Ctor
         /// @brief mesh The input mesh
         /// @brief landBoundary The land boundary
         /// @brief triangulateFaces Option to triangulate all faces or not

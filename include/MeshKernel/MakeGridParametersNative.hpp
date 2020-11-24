@@ -31,40 +31,40 @@ namespace meshkernelapi
 {
     struct MakeGridParametersNative
     {
-     /// @brief The type of grid to create : square = 0, wieber = 1, hexagonal type 1 = 2,  hexagonal type 2 = 3, triangular = 4 (0)
+        /// @brief The type of grid to create : square = 0, wieber = 1, hexagonal type 1 = 2,  hexagonal type 2 = 3, triangular = 4 (0)
         int GridType;
 
-     /// @brief The number of columns in x direction
+        /// @brief The number of columns in x direction
         int NumberOfColumns;
 
-     /// @brief The number of columns in y direction
+        /// @brief The number of columns in y direction
         int NumberOfRows;
 
-     /// @brief The grid angle
+        /// @brief The grid angle
         double GridAngle;
 
-     /// @brief The grid block size, used in x and y direction
+        /// @brief The grid block size, used in x and y direction
         double GridBlockSize;
 
-     /// @brief The line thickness in mm (interactor setting)
+        /// @brief The line thickness in mm (interactor setting)
         double LineThickness;
 
-     /// @brief (interactor setting)
+        /// @brief (interactor setting)
         double hSize;
 
-     /// @brief The x coordinate of the origin, located at the bottom left corner
+        /// @brief The x coordinate of the origin, located at the bottom left corner
         double OriginXCoordinate;
 
-     /// @brief The y coordinate of the origin, located at the bottom left corner
+        /// @brief The y coordinate of the origin, located at the bottom left corner
         double OriginYCoordinate;
 
-     /// @brief The z coordinate of the origin, located at the bottom left corner
+        /// @brief The z coordinate of the origin, located at the bottom left corner
         double OriginZCoordinate;
 
-     /// @brief The grid block size in x dimension, used only for squared grids
+        /// @brief The grid block size in x dimension, used only for squared grids
         double XGridBlockSize;
 
-     /// @brief The grid block size in y dimension, used only for squared grids
+        /// @brief The grid block size in y dimension, used only for squared grids
         double YGridBlockSize;
     };
 } // namespace meshkernelapi

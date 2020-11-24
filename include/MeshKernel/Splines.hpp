@@ -38,13 +38,13 @@ namespace meshkernel
     {
 
     public:
-     /// @brief Ctor
-        /// @returns 
+        /// @brief Ctor
+        /// @returns
         Splines() = default;
 
-     /// @brief Ctor, set projection
+        /// @brief Ctor, set projection
         /// @brief projection The map projection
-        /// @returns 
+        /// @returns
         explicit Splines(Projections projection);
 
         /// @brief Adds a new spline to m_splineCornerPoints
@@ -84,7 +84,7 @@ namespace meshkernel
                                     double& firstSplineRatio,
                                     double& secondSplineRatio);
 
-     /// @brief Computes the spline length in s coordinates (GETDIS)
+        /// @brief Computes the spline length in s coordinates (GETDIS)
         /// @brief index The spline index
         /// @brief startIndex Adimensional start spline
         /// @brief endIndex Adimensional end spline

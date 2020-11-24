@@ -39,25 +39,25 @@ namespace meshkernel
     {
 
     public:
-     /// @brief Ctor
-        /// @returns 
+        /// @brief Ctor
+        /// @returns
         explicit Orthogonalizer(std::shared_ptr<Mesh> mesh);
 
         /// @brief Computes the smoother weights and the right hans side
         void Compute();
 
-     /// @brief Gets the weight for a certain node and connected node
-        /// @brief node 
-        /// @brief connectedNode 
+        /// @brief Gets the weight for a certain node and connected node
+        /// @brief node
+        /// @brief connectedNode
         /// @returns The contribution of orthogonalizer to the left hand side, the linear system
         [[nodiscard]] inline double GetWeight(int node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
 
-     /// @brief Gets the weight for a certain node and connected node
-        /// @brief node 
-        /// @brief connectedNode 
+        /// @brief Gets the weight for a certain node and connected node
+        /// @brief node
+        /// @brief connectedNode
         /// @returns The contribution of orthogonalizer to the right hand size
         [[nodiscard]] inline double GetRightHandSide(int node, int connectedNode)
         {
@@ -65,8 +65,8 @@ namespace meshkernel
         }
 
     private:
-     /// @brief Computes the aspect ratio of each edge (orthonet_compute_aspect)
-        /// @brief mesh 
+        /// @brief Computes the aspect ratio of each edge (orthonet_compute_aspect)
+        /// @brief mesh
         /// @returns If the method succeeded
         bool AspectRatio(const Mesh& mesh);
 

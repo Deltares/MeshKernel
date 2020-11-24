@@ -40,35 +40,35 @@ namespace meshkernel
     {
 
     public:
-     /// @brief Mesh ctor
-        /// @brief mesh 
-        /// @returns 
+        /// @brief Mesh ctor
+        /// @brief mesh
+        /// @returns
         explicit Smoother(std::shared_ptr<Mesh> mesh);
 
         /// @brief Computes the smoother weights
         void Compute();
 
-     /// @brief Gets the weight for a certain node and connected node
-        /// @brief node 
-        /// @brief connectedNode 
-        /// @returns 
+        /// @brief Gets the weight for a certain node and connected node
+        /// @brief node
+        /// @brief connectedNode
+        /// @returns
         [[nodiscard]] inline auto GetWeight(int node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
 
-     /// @brief Get the index of the coonected node as assigned by the smoother administration
-        /// @brief node 
-        /// @brief connectedNode 
-        /// @returns 
+        /// @brief Get the index of the coonected node as assigned by the smoother administration
+        /// @brief node
+        /// @brief connectedNode
+        /// @returns
         [[nodiscard]] inline auto GetCoonectedNodeIndex(int node, int connectedNode)
         {
             return m_connectedNodes[node][connectedNode];
         }
 
-     /// @brief Get number of connected nodes
-        /// @brief node 
-        /// @returns 
+        /// @brief Get number of connected nodes
+        /// @brief node
+        /// @returns
         [[nodiscard]] inline auto GetNumConnectedNodes(int node)
         {
             return m_numConnectedNodes[node];
@@ -85,9 +85,9 @@ namespace meshkernel
         /// @brief Computes all operators of the elliptic smoother
         void ComputeOperators();
 
-     /// @brief Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
-        /// @brief mesh 
-        /// @returns 
+        /// @brief Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
+        /// @brief mesh
+        /// @returns
         bool ComputeCoordinates();
 
         /// @brief Computes the smoother weights from the operators (orthonet_compweights_smooth)
@@ -113,12 +113,12 @@ namespace meshkernel
                               int numSharedFaces,
                               int numConnectedNodes);
 
-     /// @brief Compute optimal edge angle
-        /// @brief numFaceNodes 
-        /// @brief theta1 
-        /// @brief theta2 
-        /// @brief isBoundaryEdge 
-        /// @returns 
+        /// @brief Compute optimal edge angle
+        /// @brief numFaceNodes
+        /// @brief theta1
+        /// @brief theta2
+        /// @brief isBoundaryEdge
+        /// @returns
         [[nodiscard]] double OptimalEdgeAngle(int numFaceNodes,
                                               double theta1 = -1.0,
                                               double theta2 = -1.0,
@@ -141,11 +141,11 @@ namespace meshkernel
         /// @param[out] J
         void ComputeJacobian(int currentNode, std::vector<double>& J) const;
 
-     /// @brief Compute the matrix norm
-        /// @brief x 
-        /// @brief y 
-        /// @brief matCoefficents 
-        /// @returns 
+        /// @brief Compute the matrix norm
+        /// @brief x
+        /// @brief y
+        /// @brief matCoefficents
+        /// @returns
         [[nodiscard]] double MatrixNorm(const std::vector<double>& x,
                                         const std::vector<double>& y,
                                         const std::vector<double>& matCoefficents) const;
