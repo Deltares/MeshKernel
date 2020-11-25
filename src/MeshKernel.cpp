@@ -586,8 +586,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_get_splines(const GeometryListNative& geometryListIn,
-                                        GeometryListNative& geometry_list_out,
-                                        int number_of_points_between_vertices)
+                                        GeometryListNative& geometryListOut,
+                                        int numberOfPointsBetweenVertices)
     {
         int exitCode = Success;
         try
@@ -617,10 +617,10 @@ namespace meshkernelapi
 
                 for (int n = 0; n < numNodes - 1; n++)
                 {
-                    for (int p = 0; p <= number_of_points_between_vertices; p++)
+                    for (int p = 0; p <= numberOfPointsBetweenVertices; p++)
                     {
 
-                        double pointAdimensionalCoordinate = n + double(p) / double(number_of_points_between_vertices);
+                        double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenVertices);
                         meshkernel::Point pointCoordinate{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue};
                         bool successful = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
                         if (!successful)
@@ -628,20 +628,20 @@ namespace meshkernelapi
                             break;
                         }
 
-                        geometry_list_out.xCoordinates[index] = pointCoordinate.x;
-                        geometry_list_out.yCoordinates[index] = pointCoordinate.y;
-                        geometry_list_out.zCoordinates[index] = meshkernel::doubleMissingValue;
+                        geometryListOut.xCoordinates[index] = pointCoordinate.x;
+                        geometryListOut.yCoordinates[index] = pointCoordinate.y;
+                        geometryListOut.zCoordinates[index] = meshkernel::doubleMissingValue;
                         index++;
                     }
                 }
 
-                geometry_list_out.xCoordinates[index] = meshkernel::doubleMissingValue;
-                geometry_list_out.yCoordinates[index] = meshkernel::doubleMissingValue;
-                geometry_list_out.zCoordinates[index] = meshkernel::doubleMissingValue;
+                geometryListOut.xCoordinates[index] = meshkernel::doubleMissingValue;
+                geometryListOut.yCoordinates[index] = meshkernel::doubleMissingValue;
+                geometryListOut.zCoordinates[index] = meshkernel::doubleMissingValue;
                 index++;
             }
 
-            geometry_list_out.numberOfCoordinates = index - 1;
+            geometryListOut.numberOfCoordinates = index - 1;
         }
         catch (const std::exception& e)
         {

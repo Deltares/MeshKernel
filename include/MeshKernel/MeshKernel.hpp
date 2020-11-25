@@ -114,7 +114,7 @@ namespace meshkernelapi
         /// @param[in] isTriangulationRequired The option to triangulate also non triangular cells (if activated squares becomes triangles)
         /// @param[in] isAccountingForLandBoundariesRequired The option to account for land boundaries
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
-        /// @param[in] orthogonalizationParameters The structure containing the user defined orthogonalization parameters
+        /// @param[in] orthogonalizationParametersNative The structure containing the user defined orthogonalization parameters
         /// @param[in] geometryListNativePolygon The polygon where to perform the orthogonalization
         /// @param[in] geometryListNativeLandBoundaries The land boundaries to account for in the orthogonalization process
         /// @returns Error code
@@ -148,22 +148,22 @@ namespace meshkernelapi
 
         /// @brief Gets the orthogonality
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[out] geometryListIn The orthogonality values of each edge
+        /// @param[out] geometryList The orthogonality values of each edge
         /// @returns Error code
         MKERNEL_API int mkernel_get_orthogonality(int meshKernelId, GeometryListNative& geometryList);
 
         /// @brief Gets the smoothness
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[out] geometryListIn The smoothness values of each edge
+        /// @param[out] geometryList The smoothness values of each edge
         /// @returns Error code
         MKERNEL_API int mkernel_get_smoothness(int meshKernelId, GeometryListNative& geometryList);
 
         /// @brief Get spline intermediate points
-        /// @param[in] disposableGeometryListIn The input corner vertices of the splines
-        /// @param[out] disposableGeometryListOut The output spline
+        /// @param[in] geometryListIn The input corner vertices of the splines
+        /// @param[out] geometryListOut The output spline
         /// @param[out] numberOfPointsBetweenVertices The number of spline vertices between the corners points
         /// @returns Error code
-        MKERNEL_API int mkernel_get_splines(const GeometryListNative& geometryListIn, GeometryListNative& geometry_list_out, int number_of_points_between_vertices);
+        MKERNEL_API int mkernel_get_splines(const GeometryListNative& geometryListIn, GeometryListNative& geometryListOut, int numberOfPointsBetweenVertices);
 
         /// @brief Get the coordinates of the closest existing vertex
         /// @param[in] meshKernelId Id of the grid state
@@ -272,15 +272,16 @@ namespace meshkernelapi
         /// @brief Gets the selected mesh node indexes  (see how to pass arrays in https://www.mono-project.com/docs/advanced/pinvoke/#memory-management)
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input polygons
+        /// @param[in] inside Count nodes indices inside (1) or outside (0) the polygon
         /// @param[in] numberOfMeshVertices The number of selected nodes
-        /// @param[out] selectedVerticesPtr The selected vertices indexes
+        /// @param[out] selectedVertices The selected vertices indexes
         /// @returns Error code
         MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices);
 
         /// @brief Counts the number of selected mesh node indexes
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input polygons
-        /// @param[in] inside Count nodes inside (1) or outside (0) polygon
+        /// @param[in] inside Count nodes inside (1) or outside (0) the polygon
         /// @param[out] numberOfMeshVertices The number of selected nodes
         /// @returns Error code
         MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices);
@@ -295,7 +296,9 @@ namespace meshkernelapi
 
         /// @brief Inserts a new node
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[in] disposableGeometryList The polygon where to perform the operation
+        /// @param[in] xCoordinate X-coordinate of the new node
+        /// @param[in] yCoordinate y-coordinate of the new node
+        /// @param[in] zCoordinate z-coordinate of the new node
         /// @param[out] vertexIndex The index of the new mesh node
         /// @returns Error code
         MKERNEL_API int mkernel_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int& vertexIndex);
@@ -316,14 +319,12 @@ namespace meshkernelapi
         /// @brief Deletes the closest mesh edge within the search radius from the input point
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input point coordinates
-        /// @param[in] searchRadius The search radius
         /// @returns Error code
         MKERNEL_API int mkernel_delete_edge(int meshKernelId, GeometryListNative& geometryListIn);
 
         /// @brief Deletes the closest mesh edge within the search radius from the input point
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input point coordinates
-        /// @param[in] searchRadius The search radius
         /// @param[out] edgeIndex The edge index
         /// @returns Error code
         MKERNEL_API int mkernel_find_edge(int meshKernelId, GeometryListNative& geometryListIn, int& edgeIndex);
@@ -453,7 +454,7 @@ namespace meshkernelapi
         /// @param[in] samplesValue The sample values
         /// @param[in] numSamples The number of samples
         /// @param[out] results The interpolation results
-        /// @param[in] locationType The location type (see \ref InterpolationLocation)
+        /// @param[in] locationType The location type
         /// @param[in] spherical Current projection (0 cartesian, 1 spherical)
         /// @param[in] sphericalAccurate Accurate spherical projection (0 default spherical, 1 spherical accurate)
         /// @return Error code (0 Successful)
