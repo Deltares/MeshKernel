@@ -256,11 +256,11 @@ namespace meshkernelapi
             // spherical or cartesian
             if (isGeographic)
             {
-                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projections::spherical);
+                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projection::spherical);
             }
             else
             {
-                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projections::cartesian);
+                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projection::cartesian);
             }
         }
         catch (const std::exception& e)
@@ -586,8 +586,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_get_splines(const GeometryListNative& geometryListIn,
-                                        GeometryListNative& geometry_list_out,
-                                        int number_of_points_between_vertices)
+                                        GeometryListNative& geometryListOut,
+                                        int numberOfPointsBetweenVertices)
     {
         int exitCode = Success;
         try
@@ -617,10 +617,10 @@ namespace meshkernelapi
 
                 for (int n = 0; n < numNodes - 1; n++)
                 {
-                    for (int p = 0; p <= number_of_points_between_vertices; p++)
+                    for (int p = 0; p <= numberOfPointsBetweenVertices; p++)
                     {
 
-                        double pointAdimensionalCoordinate = n + double(p) / double(number_of_points_between_vertices);
+                        double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenVertices);
                         meshkernel::Point pointCoordinate{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue};
                         bool successful = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
                         if (!successful)
@@ -628,20 +628,20 @@ namespace meshkernelapi
                             break;
                         }
 
-                        geometry_list_out.xCoordinates[index] = pointCoordinate.x;
-                        geometry_list_out.yCoordinates[index] = pointCoordinate.y;
-                        geometry_list_out.zCoordinates[index] = meshkernel::doubleMissingValue;
+                        geometryListOut.xCoordinates[index] = pointCoordinate.x;
+                        geometryListOut.yCoordinates[index] = pointCoordinate.y;
+                        geometryListOut.zCoordinates[index] = meshkernel::doubleMissingValue;
                         index++;
                     }
                 }
 
-                geometry_list_out.xCoordinates[index] = meshkernel::doubleMissingValue;
-                geometry_list_out.yCoordinates[index] = meshkernel::doubleMissingValue;
-                geometry_list_out.zCoordinates[index] = meshkernel::doubleMissingValue;
+                geometryListOut.xCoordinates[index] = meshkernel::doubleMissingValue;
+                geometryListOut.yCoordinates[index] = meshkernel::doubleMissingValue;
+                geometryListOut.zCoordinates[index] = meshkernel::doubleMissingValue;
                 index++;
             }
 
-            geometry_list_out.numberOfCoordinates = index - 1;
+            geometryListOut.numberOfCoordinates = index - 1;
         }
         catch (const std::exception& e)
         {
@@ -970,7 +970,7 @@ namespace meshkernelapi
             {
                 //create a valid instance, by default cartesian
                 *meshInstances[meshKernelId] = meshkernel::Mesh();
-                meshInstances[meshKernelId]->m_projection = meshkernel::Projections::cartesian;
+                meshInstances[meshKernelId]->m_projection = meshkernel::Projection::cartesian;
             }
 
             meshkernel::Point newNode{xCoordinate, yCoordinate};
@@ -1281,7 +1281,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId,
                                                                 const GeometryListNative& geometryListIn,
                                                                 const CurvilinearParametersNative& curvilinearParameters,
-                                                                const SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
+                                                                const SplinesToCurvilinearParametersNative& splinesToCurvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -1295,7 +1295,7 @@ namespace meshkernelapi
             auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
             SetSplines(geometryListIn, *spline);
 
-            meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splineToCurvilinearParameters);
+            meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splinesToCurvilinearParameters);
 
             meshkernel::CurvilinearGrid curvilinearGrid;
             curvilinearGridFromSplines.Compute(curvilinearGrid);
@@ -1707,15 +1707,15 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            // Projections
-            auto projection = meshkernel::Projections::cartesian;
+            // Projection
+            auto projection = meshkernel::Projection::cartesian;
             if (spherical == 1)
             {
-                projection = meshkernel::Projections::spherical;
+                projection = meshkernel::Projection::spherical;
             }
             if (sphericalAccurate == 1)
             {
-                projection = meshkernel::Projections::sphericalAccurate;
+                projection = meshkernel::Projection::sphericalAccurate;
             }
 
             // Set the mesh
@@ -1771,15 +1771,15 @@ namespace meshkernelapi
                                   int& spherical,
                                   int& sphericalAccurate)
     {
-        // Projections
-        auto projection = meshkernel::Projections::cartesian;
+        // Projection
+        auto projection = meshkernel::Projection::cartesian;
         if (spherical == 1)
         {
-            projection = meshkernel::Projections::spherical;
+            projection = meshkernel::Projection::spherical;
         }
         if (sphericalAccurate == 1)
         {
-            projection = meshkernel::Projections::sphericalAccurate;
+            projection = meshkernel::Projection::sphericalAccurate;
         }
 
         // Locations

@@ -42,6 +42,7 @@ namespace meshkernel
     {
     public:
         /// @brief Ctor
+        /// @param splines Input splines
         /// @param curvilinearParametersNative The parameters for OrthogonalCurvilinearGridFromSplines algorithm
         /// @param splinesToCurvilinearParametersNative The parameters for OrthogonalCurvilinearGridFromSplines algorithm
         CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
@@ -106,16 +107,14 @@ namespace meshkernel
                                              const std::vector<Point>& velocities,
                                              std::vector<double>& maximumGridLayerGrowTime) const;
 
-        /// <summary>
-        /// Copy growth velocities to the advancing front, add points at front corners corners (copy_vel_to_front)
-        /// </summary>
-        /// <param name="layerIndex"></param>
-        /// <param name="previousVelocities"></param>
-        /// <param name="numFrontPoints"></param>
-        /// <param name="gridPointsIndices"></param>
-        /// <param name="frontGridPoints"></param>
-        /// <param name="velocities"></param>
-        /// <returns></returns>
+        /// @brief Copy growth velocities to the advancing front, add points at front corners corners (copy_vel_to_front)
+        /// @brief layerIndex
+        /// @brief previousVelocities
+        /// @brief numFrontPoints
+        /// @brief gridPointsIndices
+        /// @brief frontGridPoints
+        /// @brief velocities
+        /// @returns
         void CopyVelocitiesToFront(const int layerIndex,
                                    const std::vector<Point>& previousVelocities,
                                    int& numFrontPoints,
@@ -123,13 +122,11 @@ namespace meshkernel
                                    std::vector<Point>& frontGridPoints,
                                    std::vector<Point>& velocities);
 
-        /// <summary>
-        /// Computes the points at front, which have to be moved.
-        /// </summary>
-        /// <param name="gridPointsIndices"></param>
-        /// <param name="frontGridPoints"></param>
-        /// <param name="numFrontPoints"></param>
-        /// <returns></returns>
+        /// @brief Computes the points at front, which have to be moved.
+        /// @brief gridPointsIndices
+        /// @brief frontGridPoints
+        /// @brief numFrontPoints
+        /// @returns
         void FindFront(std::vector<std::vector<int>>& gridPointsIndices,
                        std::vector<Point>& frontGridPoints,
                        int& numFrontPoints);
@@ -139,27 +136,23 @@ namespace meshkernel
         /// @param velocityVector
         void ComputeVelocitiesAtGridPoints(int layerIndex, std::vector<Point>& velocityVector);
 
-        /// <summary>
-        /// Get left and right points at given layer for a given index (get_LR)
-        /// </summary>
-        /// <param name="gridPoints">The layer</param>
-        /// <param name="index"></param>
-        /// <param name="currentLeftIndex"></param>
-        /// <param name="currentRightIndex"></param>
-        /// <returns></returns>
+        /// @brief Get left and right points at given layer for a given index (get_LR)
+        /// @brief gridPoints The layer
+        /// @brief index
+        /// @brief currentLeftIndex
+        /// @brief currentRightIndex
+        /// @returns
         void GetNeighbours(const std::vector<Point>& gridPoints,
                            int index,
                            int& currentLeftIndex,
                            int& currentRightIndex) const;
 
-        /// <summary>
-        /// Compute the edge grow velocities (comp_edgevel)
+        /// @brief Compute the edge grow velocities (comp_edgevel)
         /// TODO: can this be split in compute heights and computeGrowFactors
-        /// </summary>
-        /// <param name="edgeVelocities"></param>
-        /// <param name="growFactorOnSubintervalAndEdge"></param>
-        /// <param name="numPerpendicularFacesOnSubintervalAndEdge"></param>
-        /// <returns></returns>
+        /// @brief edgeVelocities
+        /// @brief growFactorOnSubintervalAndEdge
+        /// @brief numPerpendicularFacesOnSubintervalAndEdge
+        /// @returns
         void ComputeEdgeVelocities(std::vector<double>& edgeVelocities,
                                    std::vector<std::vector<double>>& growFactorOnSubintervalAndEdge,
                                    std::vector<std::vector<int>>& numPerpendicularFacesOnSubintervalAndEdge);
@@ -174,22 +167,18 @@ namespace meshkernel
                                int numberOfGridLayers,
                                double& result) const;
 
-        /// <summary>
-        /// Computes the exponential grid height
-        /// </summary>
-        /// <param name="aspectRatioGrowFactor"></param>
-        /// <param name="firstGridLayerHeights"></param>
-        /// <param name="numberOfGridLayers"></param>
-        /// <returns></returns>
+        /// @brief Computes the exponential grid height
+        /// @brief aspectRatioGrowFactor
+        /// @brief firstGridLayerHeights
+        /// @brief numberOfGridLayers
+        /// @returns
         [[nodiscard]] double ComputeTotalExponentialHeight(double aspectRatioGrowFactor,
                                                            double firstGridLayerHeights,
                                                            int numberOfGridLayers) const;
 
-        /// <summary>
-        /// Compute the number of grid layers for a given grow factor, first grid layer height and total grid height (comp_nfac)
-        /// </summary>
-        /// <param name="hhMaxRatio"></param>
-        /// <returns></returns>
+        /// @brief Compute the number of grid layers for a given grow factor, first grid layer height and total grid height (comp_nfac)
+        /// @brief hhMaxRatio
+        /// @returns
         [[nodiscard]] int ComputeNumberExponentialIntervals(double hhMaxRatio) const;
 
         /// @brief Computes the sub-interval velocities (left and right)
@@ -249,11 +238,9 @@ namespace meshkernel
                                    std::vector<int>& validIndices,
                                    size_t& numValid) const;
 
-        /// <summary>
-        /// Computes the intersection of two splines, one must have only two nodes (get_crosssplines)
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        /// @brief Computes the intersection of two splines, one must have only two nodes (get_crosssplines)
+        /// @brief index
+        /// @returns
         void GetSplineIntersections(int index);
 
         /// @brief Generate a gridline on a spline with a prescribed maximum mesh width (make_gridline)
@@ -279,15 +266,13 @@ namespace meshkernel
         /// @param crossingSplineLocalIndex
         void ComputeSubHeights(int centerSplineIndex, int crossingSplineLocalIndex);
 
-        /// <summary>
-        /// Computes curvature in a point on a spline (comp_curv)
-        /// </summary>
-        /// <param name="splineIndex"></param>
-        /// <param name="adimensionalPointCoordinate"></param>
-        /// <param name="curvatureFactor"></param>
-        /// <param name="normalVector"></param>
-        /// <param name="tangentialVector"></param>
-        /// <returns></returns>
+        /// @brief Computes curvature in a point on a spline (comp_curv)
+        /// @brief splineIndex
+        /// @brief adimensionalPointCoordinate
+        /// @brief curvatureFactor
+        /// @brief normalVector
+        /// @brief tangentialVector
+        /// @returns
         bool ComputeCurvatureOnSplinePoint(int splineIndex,
                                            double adimensionalPointCoordinate,
                                            double& curvatureFactor,
@@ -297,24 +282,20 @@ namespace meshkernel
         /// @brief Remove skewed cells and cells whose aspect ratio exceeds a prescibed value (postgrid)
         void RemoveSkinnyTriangles();
 
-        /// <summary>
-        /// Delete a spline
-        /// </summary>
-        /// <param name="splineIndex">The spline index to delete</param>
-        /// <returns></returns>
+        /// @brief Delete a spline
+        /// @brief splineIndex The spline index to delete
+        /// @returns
         bool DeleteSpline(int splineIndex);
 
         /// @brief Allocate spline properties arrays
         void AllocateSplinesProperties();
 
-        /// <summary>
-        /// The spline type
-        /// </summary>
+        /// @brief The spline type
         enum class SplineTypes
         {
             central,
             crossing,
-            arficial,
+            artificial,
             lateral
         };
 

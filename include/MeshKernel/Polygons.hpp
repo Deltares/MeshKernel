@@ -42,7 +42,7 @@ namespace meshkernel
         /// @param[in] polygon The polygon nodes
         /// @param[in] projection The projection to use
         Polygons(const std::vector<Point>& polygon,
-                 Projections projection);
+                 Projection projection);
 
         /// @brief Creates points inside the polygon using triangulation (the edges size determines how many points will be generated)
         /// @param[out] generatedPoints the generated points
@@ -81,7 +81,7 @@ namespace meshkernel
         [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
 
         std::vector<Point> m_nodes;                 // The polygon nodes
-        Projections m_projection;                   // The current projection
+        Projection m_projection;                    // The current projection
         std::vector<std::vector<size_t>> m_indices; // Start-end indices of each polygon in m_nodes
 
     private:

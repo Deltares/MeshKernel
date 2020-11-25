@@ -13,7 +13,7 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplines)
                                                {4.314185E+02, 1.947381E+02},
                                                {8.064374E+02, 3.987241E+02}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline{{2.894012E+01, 2.010146E+02},
@@ -95,7 +95,7 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesOneNSwapped)
                                                {4.314185E+02, 1.947381E+02},
                                                {8.064374E+02, 3.987241E+02}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline{{2.894012E+01, 2.010146E+02},
@@ -176,7 +176,7 @@ TEST(CurvilinearGridFromSplinesTransfinite, FiveSplines)
                                                {4.314185E+02, 1.947381E+02},
                                                {8.064374E+02, 3.987241E+02}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline{{2.894012E+01, 2.010146E+02},

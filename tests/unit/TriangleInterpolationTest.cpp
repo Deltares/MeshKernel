@@ -12,7 +12,7 @@ TEST(TriangleInterpolation, InterpolateOnNodes)
     auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/TriangleInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
-    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_nodes, samples, meshkernel::Projections::cartesian);
+    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_nodes, samples, meshkernel::Projection::cartesian);
     triangulationInterpolation.Compute();
 
     const auto results = triangulationInterpolation.GetResults();
@@ -40,7 +40,7 @@ TEST(TriangleInterpolation, InterpolateOnEdges)
 
     mesh->ComputeEdgesCenters();
 
-    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_edgesCenters, samples, meshkernel::Projections::cartesian);
+    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_edgesCenters, samples, meshkernel::Projection::cartesian);
     triangulationInterpolation.Compute();
 
     const auto results = triangulationInterpolation.GetResults();
@@ -65,7 +65,7 @@ TEST(TriangleInterpolation, InterpolateOnFaces)
     auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/TriangleInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
-    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_facesMassCenters, samples, meshkernel::Projections::cartesian);
+    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_facesMassCenters, samples, meshkernel::Projection::cartesian);
     triangulationInterpolation.Compute();
 
     const auto results = triangulationInterpolation.GetResults();
@@ -89,11 +89,11 @@ TEST(TriangleInterpolation, InterpolateOnFacesUsingSphericalAccurateOption)
 {
     // Set up
     std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/TriangleInterpolationTests/SphericalCutted.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/TriangleInterpolationTests/SphericalCutted.nc", meshkernel::Projections::cartesian);
+    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/TriangleInterpolationTests/SphericalCutted.nc", meshkernel::Projection::cartesian);
     ASSERT_GT(mesh->GetNumNodes(), 0);
     ASSERT_GT(samples.size(), 0);
 
-    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_facesMassCenters, samples, meshkernel::Projections::sphericalAccurate);
+    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_facesMassCenters, samples, meshkernel::Projection::sphericalAccurate);
     triangulationInterpolation.Compute();
 
     const auto results = triangulationInterpolation.GetResults();

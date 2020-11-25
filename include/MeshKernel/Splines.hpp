@@ -38,18 +38,14 @@ namespace meshkernel
     {
 
     public:
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <returns></returns>
+        /// @brief Ctor
+        /// @returns
         Splines() = default;
 
-        /// <summary>
-        /// Ctor, set projection
-        /// </summary>
-        /// <param name="projection">The map projection</param>
-        /// <returns></returns>
-        explicit Splines(Projections projection);
+        /// @brief Ctor, set projection
+        /// @brief projection The map projection
+        /// @returns
+        explicit Splines(Projection projection);
 
         /// @brief Adds a new spline to m_splineCornerPoints
         /// @param[in] splines The spline corner points
@@ -88,17 +84,15 @@ namespace meshkernel
                                     double& firstSplineRatio,
                                     double& secondSplineRatio);
 
-        /// <summary>
-        /// Computes the spline length in s coordinates (GETDIS)
-        /// </summary>
-        /// <param name="index">The spline index</param>
-        /// <param name="startIndex">Adimensional start spline</param>
-        /// <param name="endIndex">Adimensional end spline</param>
-        /// <param name="numSamples">How many intervals to use between the startIndex and endIndex</param>
-        /// <param name="accountForCurvature">Accounting for curvature</param>
-        /// <param name="height">When accounting for curvature, the height to use</param>
-        /// <param name="assignedDelta">When larger than zero, the number of intervals the spline is divided when computing the length</param>
-        /// <returns>The computed length</returns>
+        /// @brief Computes the spline length in s coordinates (GETDIS)
+        /// @brief index The spline index
+        /// @brief startIndex Adimensional start spline
+        /// @brief endIndex Adimensional end spline
+        /// @brief numSamples How many intervals to use between the startIndex and endIndex
+        /// @brief accountForCurvature Accounting for curvature
+        /// @brief height When accounting for curvature, the height to use
+        /// @brief assignedDelta When larger than zero, the number of intervals the spline is divided when computing the length
+        /// @returns The computed length
         [[nodiscard]] double GetSplineLength(int index,
                                              double startIndex,
                                              double endIndex,
@@ -128,7 +122,7 @@ namespace meshkernel
         std::vector<std::vector<Point>> m_splineNodes;       // The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives; // The spline derivatives at the corner points
         std::vector<double> m_splinesLength;                 // The length of each spline
-        Projections m_projection = Projections::cartesian;   // The map projection
+        Projection m_projection = Projection::cartesian;     // The map projection
 
     private:
         /// @brief Adds a new corner point in an existing spline

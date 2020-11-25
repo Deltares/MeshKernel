@@ -111,5 +111,6 @@
     },
     "[cmake]": {
         "editor.formatOnSave": true,
-    }
+    },
+    "cSpell.enabled": false
 }

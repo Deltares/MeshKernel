@@ -39,10 +39,10 @@ namespace meshkernel
         /// @brief Constructor
         /// @param[in] locations interpolation points (where the values should be computed)
         /// @param[in] samples  Values to use for the interpolation
-        /// @param[in] projection Projection to use (\ref Projections)
+        /// @param[in] projection Projection to use (\ref Projection)
         TriangulationInterpolation(const std::vector<Point>& locations,
                                    const std::vector<Sample>& samples,
-                                   Projections projection);
+                                   Projection projection);
 
         /// @brief Compute results on the interpolation points
         void Compute();
@@ -57,7 +57,7 @@ namespace meshkernel
     private:
         const std::vector<Point>& m_locations;
         const std::vector<Sample>& m_samples;
-        Projections m_projection;
+        Projection m_projection;
         std::vector<double> m_results;
     };
 

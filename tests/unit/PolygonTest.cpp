@@ -49,7 +49,7 @@ TEST(Polygons, CreatePointsInPolygons)
     nodes.push_back({301.252502, 471.380371});
     nodes.push_back({302.002502, 472.130371});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     // Execute
     const auto generatedPoints = polygons.ComputePointsInPolygons();
@@ -84,7 +84,7 @@ TEST(Polygons, RefinePolygon)
     nodes.push_back({0, 3});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     // Execute
     std::vector<std::vector<meshkernel::Point>> generatedPoints;
@@ -133,7 +133,7 @@ TEST(Polygons, RefinePolygonOneSide)
     nodes.push_back({0, 3});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 1, 1.0);
@@ -169,7 +169,7 @@ TEST(Polygons, RefinePolygonLongerSquare)
     nodes.push_back({3.5, 0});
     nodes.push_back({0, 0});
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projections::cartesian);
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
@@ -220,7 +220,7 @@ TEST(Polygons, OffsetCopy)
     nodes.push_back({308.002533, 397.879639});
     nodes.push_back({296.752472, 397.879639});
 
-    meshkernel::Polygons polygon(nodes, meshkernel::Projections::cartesian);
+    meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
 
     double distance = 10.0;
     bool innerAndOuter = false;

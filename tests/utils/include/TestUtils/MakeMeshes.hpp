@@ -30,10 +30,10 @@
 #include <string>
 #include <MeshKernel/Mesh.hpp>
 
-std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projections projection = meshkernel::Projections::cartesian);
+std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
 
 std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile();
 
-std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projections projection, meshkernel::Point origin = {0.0, 0.0});
+std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin = {0.0, 0.0});
 
 std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting();
