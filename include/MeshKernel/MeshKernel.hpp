@@ -44,7 +44,8 @@
 #define MKERNEL_API __attribute__((visibility("default")))
 #endif
 
-// contains all mesh instances
+/// \namespace meshkernelapi
+/// @brief Contains all mesh instances
 namespace meshkernelapi
 {
 #ifdef __cplusplus

@@ -32,6 +32,8 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 
+/// \namespace meshkernel
+/// @brief Contains the logic of the C++ static library
 namespace meshkernel
 {
     // Forward declarations
