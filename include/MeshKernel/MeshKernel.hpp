@@ -443,6 +443,14 @@ namespace meshkernelapi
         /// @return Error code (0 Successful)
         MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles);
 
+        /// @brief Gets the double value used in the back-end library as separator and missing value
+        /// @return The double missing value used in mesh kernel
+        MKERNEL_API double mkernel_get_separator();
+
+        /// @brief Gets the double value used to separate the inner part of a polygon from its outer part
+        /// @return The double missing value used in mesh kernel
+        MKERNEL_API double mkernel_get_inner_outer_separator();
+
         /// @brief Triangle interpolation (ec_module)
         /// @param[in] meshGeometryDimensions Mesh dimensions
         /// @param[in] meshGeometry Mesh data

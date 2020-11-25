@@ -1678,6 +1678,16 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API double mkernel_get_separator()
+    {
+        return meshkernel::doubleMissingValue;
+    }
+
+    MKERNEL_API double mkernel_get_inner_outer_separator()
+    {
+        return meshkernel::innerOuterSeparator;
+    }
+
     MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
                               const MeshGeometry& meshGeometry,
                               const int& startIndex,
@@ -1724,13 +1734,10 @@ namespace meshkernelapi
             }
 
             // Execute averaging
-            const auto location = static_cast<meshkernel::InterpolationLocation>(locationType);
-            const auto method = static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethod);
-
             meshkernel::AveragingInterpolation averaging(mesh,
                                                          samples,
-                                                         method,
-                                                         location,
+                                                         static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethod),
+                                                         static_cast<meshkernel::InterpolationLocation>(locationType),
                                                          relativeSearchSize,
                                                          false,
                                                          false);
