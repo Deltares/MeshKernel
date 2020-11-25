@@ -9,7 +9,7 @@
 
 TEST(MeshRefinement, FourByFourWithFourSamples)
 {
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projection::cartesian);
 
     //sample points
     std::vector<meshkernel::Sample> samples{
@@ -100,7 +100,7 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 
 TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 {
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projection::cartesian);
 
     //sample points
     std::vector<meshkernel::Sample> samples{
@@ -306,7 +306,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 {
     // Prepare
 
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projection::cartesian);
 
     //sample points
     std::vector<meshkernel::Sample> samples{
@@ -402,7 +402,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 TEST(MeshRefinement, WindowOfRefinementFile)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, {197253.0, 442281.0});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projection::cartesian, {197253.0, 442281.0});
 
     // Sample points
     std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
@@ -467,7 +467,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projections::cartesian, {197253.0, 442281.0});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projection::cartesian, {197253.0, 442281.0});
 
     // Sample points
     std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
@@ -536,7 +536,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 TEST(MeshRefinement, RefineBasedOnPolygon)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, meshkernel::Projection::cartesian);
 
     meshkernel::MeshRefinement meshRefinement(mesh);
 
@@ -596,7 +596,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 {
     // Prepare
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projections::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, meshkernel::Projection::cartesian);
 
     meshkernel::MeshRefinement meshRefinement(mesh);
 
@@ -634,7 +634,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 {
 
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, meshkernel::Projections::spherical, {41.1, 41.1});
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, meshkernel::Projection::spherical, {41.1, 41.1});
 
     //sample points
     std::vector<meshkernel::Sample> samples{

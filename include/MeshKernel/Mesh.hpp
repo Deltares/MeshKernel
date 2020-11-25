@@ -32,6 +32,8 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 
+/// \namespace meshkernel
+/// @brief Contains the logic of the C++ static library
 namespace meshkernel
 {
     // Forward declarations
@@ -65,43 +67,34 @@ namespace meshkernel
             other
         };
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        /// <returns></returns>
+        /// @brief Default constructor
+        /// @returns
         Mesh() = default;
 
-        /// <summary>
-        /// Converting constructor, from curvilinear grid to mesh (gridtonet)
-        /// </summary>
-        /// <param name="curvilinearGrid"></param>
-        /// <param name="projection"></param>
-        /// <returns></returns>
-        Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection);
+        /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
+        /// @param curvilinearGrid The curvilinear grid to create the mesh from
+        /// @param projection The \ref Projection to use
+        /// @returns
+        Mesh(const CurvilinearGrid& curvilinearGrid, Projection projection);
 
-        /// <summary>
-        /// Create triangular grid from nodes (triangulatesamplestonetwork)
-        /// </summary>
-        /// <param name="nodes">Input nodes</param>
-        /// <param name="polygons">Selection polygon</param>
-        /// <param name="projection">Projection to use</param>
-        /// <returns></returns>
-        Mesh(const std::vector<Point>& nodes, const Polygons& polygons, Projections projection);
+        /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
+        /// @param[in] nodes Input nodes
+        /// @param[in] polygons Selection polygon
+        /// @param[in] projection Projection to use
+        Mesh(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
-        /// <summary>
-        /// Add meshes: result is a mesh composed of the additions
+        /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to the first
-        /// </summary>
-        /// <param name="rhs">The mesh to add</param>
-        /// <returns>The resulting mesh</returns>
+        /// @param[in] rhs The mesh to add
+        /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
 
         /// @brief Set the mesh starting from the edges and nodes
-        /// @param[in] edges">The input edges</param>
+        /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
         /// @param[in] projection Projection to use
         /// @param[in] administration Type of administration to perform
-        void Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projections projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        void Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         /// @param administrationOption Type of administration to perform
@@ -114,9 +107,7 @@ namespace meshkernel
         /// @brief Compute face circumcenters
         void ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters = false);
 
-        /// <summary>
-        /// Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
-        /// </summary>
+        /// @brief Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
         void FindFaces();
 
         /// @brief Gets the corners of a box bounding the mesh
@@ -265,13 +256,13 @@ namespace meshkernel
         [[nodiscard]] int GetNumEdgesFaces(int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
         /// @brief Inquire if an edge is on boundary
-        /// @param the edge index
-        /// @return if the edge os on boundary
+        /// @param edge The edge index
+        /// @return If the edge is on boundary
         [[nodiscard]] bool IsEdgeOnBoundary(int edge) const { return m_edgesNumFaces[edge] == 1; }
 
         /// @brief Inquire if a face is on boundary
-        /// @param the edge index
-        /// @return if the edge os on boundary
+        /// @param face The face index
+        /// @return If the face is on boundary
         [[nodiscard]] bool IsFaceOnBoundary(int face) const;
 
         /// @brief Circumcenter of a face (getcircumcenter)
@@ -322,7 +313,7 @@ namespace meshkernel
         void GetSmoothness(double* smoothness);
 
         /// @brief Gets the aspect ratios, the ratio edges to segments connecting the face circumcenters lengths
-        /// @param aspectRatio The aspect ratios
+        /// @param aspectRatios The aspect ratios
         void GetAspectRatios(std::vector<double>& aspectRatios);
 
         ///  @brief Classifies the nodes (makenetnodescoding)
@@ -339,12 +330,13 @@ namespace meshkernel
         void TriangulateFaces();
 
         /// @brief Make a dual face around the node, enlarged by a factor
-        /// @param nodeIndex
-        /// @return
-        bool MakeDualFace(int node, double enlargmentFactor, std::vector<Point>& dualFace);
+        /// @param[in] node The node index
+        /// @param[in] enlargementFactor The factor by which the dual face is enlarged
+        /// @param[out] dualFace The dual face to be calculated
+        void MakeDualFace(int node, double enlargementFactor, std::vector<Point>& dualFace);
 
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
-        /// @param[in] nodeIndex The node index
+        /// @param[in] node The node index
         /// @return The face indexses
         [[nodiscard]] std::vector<int> SortedFacesAroundNode(int node) const;
 
@@ -353,9 +345,8 @@ namespace meshkernel
         std::vector<Point> MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes);
 
         /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        /// @param[in] mesh The input mesh
+        /// @param[in] polygonNodes The input mesh
         /// @param[in] isVisited the visited mesh nodes
-        /// @param[in] nodeIndex the node where to initialize the algorithm
         /// @param[in] currentNode the current node
         /// @param[out] meshBoundaryPolygon The resulting polygon points
         void WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
@@ -398,7 +389,7 @@ namespace meshkernel
         std::vector<double> m_facesCircumcentersy; // The circumcenters y-coordinate
         std::vector<double> m_facesCircumcentersz; // The circumcenters z-coordinate
 
-        Projections m_projection; // The projection used
+        Projection m_projection; // The projection used
 
         SpatialTrees::RTree m_nodesRTree; // Spatial R-Tree used to inquire node vertices
         SpatialTrees::RTree m_edgesRTree; // Spatial R-Tree used to inquire edges centers

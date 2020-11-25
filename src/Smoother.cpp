@@ -549,11 +549,11 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
         auto nextNode = m_connectedNodesCache[f + 1]; // the first entry is always the stencil node
         int faceLeft = m_mesh->m_edgesFaces[edgeIndex][0];
-        int faceRigth = faceLeft;
+        int faceRight = faceLeft;
 
         if (!m_mesh->IsEdgeOnBoundary(edgeIndex))
         {
-            faceRigth = m_mesh->m_edgesFaces[edgeIndex][1];
+            faceRight = m_mesh->m_edgesFaces[edgeIndex][1];
         }
 
         //check if it is a rectangular node (not currentNode itself)
@@ -564,7 +564,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
             for (int ff = 0; ff < m_mesh->m_edgesNumFaces[edge]; ff++)
             {
                 auto face = m_mesh->m_edgesFaces[edge][ff];
-                if (face != faceLeft && face != faceRigth)
+                if (face != faceLeft && face != faceRight)
                 {
                     isSquare = isSquare && m_mesh->GetNumFaceEdges(face) == 4;
                 }
@@ -982,9 +982,9 @@ double meshkernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, d
     return angle;
 }
 
-double meshkernel::Smoother::MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficents) const
+double meshkernel::Smoother::MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients) const
 {
-    const double norm = (matCoefficents[0] * x[0] + matCoefficents[1] * x[1]) * y[0] + (matCoefficents[2] * x[0] + matCoefficents[3] * x[1]) * y[1];
+    const double norm = (matCoefficients[0] * x[0] + matCoefficients[1] * x[1]) * y[0] + (matCoefficients[2] * x[0] + matCoefficients[3] * x[1]) * y[1];
     return norm;
 }
 
@@ -1134,7 +1134,7 @@ void meshkernel::Smoother::ComputeJacobian(int currentNode, std::vector<double>&
 {
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
     const auto numNodes = m_numTopologyNodes[currentTopology];
-    if (m_mesh->m_projection == Projections::cartesian)
+    if (m_mesh->m_projection == Projection::cartesian)
     {
         J[0] = 0.0;
         J[1] = 0.0;
@@ -1148,7 +1148,7 @@ void meshkernel::Smoother::ComputeJacobian(int currentNode, std::vector<double>&
             J[3] += m_Jeta[currentTopology][i] * m_mesh->m_nodes[m_topologyConnectedNodes[currentTopology][i]].y;
         }
     }
-    if (m_mesh->m_projection == Projections::spherical || m_mesh->m_projection == Projections::sphericalAccurate)
+    if (m_mesh->m_projection == Projection::spherical || m_mesh->m_projection == Projection::sphericalAccurate)
     {
         double cosFactor = std::cos(m_mesh->m_nodes[currentNode].y * degrad_hp);
         J[0] = 0.0;

@@ -36,7 +36,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Splines.hpp>
 
-meshkernel::Splines::Splines(Projections projection) : m_projection(projection){};
+meshkernel::Splines::Splines(Projection projection) : m_projection(projection){};
 
 /// add a new spline, return the index
 void meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t start, size_t size)
@@ -354,7 +354,7 @@ void meshkernel::Splines::ComputeCurvatureOnSplinePoint(int splineIndex,
     Point pp = m_splineDerivatives[splineIndex][leftCornerPoint] * leftSegment +
                m_splineDerivatives[splineIndex][rightCornerPoint] * rightSegment;
 
-    if (m_projection == Projections::spherical)
+    if (m_projection == Projection::spherical)
     {
         p.TransformSphericalToCartesian(pointCoordinate.y);
         pp.TransformSphericalToCartesian(pointCoordinate.y);

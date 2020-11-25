@@ -46,7 +46,7 @@
 
 void meshkernel::Mesh::Set(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
-                           Projections projection,
+                           Projection projection,
                            AdministrationOptions administration)
 {
     // copy edges and nodes
@@ -219,7 +219,7 @@ void meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
     ClassifyNodes();
 }
 
-meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections projection)
+meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projection projection)
 {
     if (curvilinearGrid.m_grid.empty())
     {
@@ -279,7 +279,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projections proje
     Set(edges, nodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
 
-meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& polygons, Projections projection) : m_projection(projection)
+meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& polygons, Projection projection) : m_projection(projection)
 {
     // compute triangulation
     TriangulationWrapper triangulationWrapper;
@@ -603,7 +603,7 @@ void meshkernel::Mesh::RemoveDegeneratedTriangles()
         auto thirdNode = m_facesNodes[f][2];
 
         // account for periodic spherical coordinate
-        if ((m_projection == Projections::spherical || m_projection == Projections::sphericalAccurate) && IsPointOnPole(m_nodes[firstNode]))
+        if ((m_projection == Projection::spherical || m_projection == Projection::sphericalAccurate) && IsPointOnPole(m_nodes[firstNode]))
         {
             const auto saveFirstNode = firstNode;
             firstNode = secondNode;
@@ -1004,7 +1004,7 @@ void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& m
 
             double xShift = xmin * cosineAngle - etamin * sinAngle;
             double yShift = xmin * sinAngle + etamin * cosineAngle;
-            if (m_projection == Projections::spherical)
+            if (m_projection == Projection::spherical)
             {
                 xShift = xShift / earth_radius * raddeg_hp;
                 yShift = yShift / (earth_radius * std::cos(referencePoint.y * degrad_hp)) * raddeg_hp;
@@ -1023,7 +1023,7 @@ void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& m
             {
                 double newPointXCoordinate = OriginXCoordinate + m * XGridBlockSize * cosineAngle - n * YGridBlockSize * sinAngle;
                 double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
-                if (m_projection == Projections::spherical && n > 0)
+                if (m_projection == Projection::spherical && n > 0)
                 {
                     newPointYCoordinate = XGridBlockSize * cos(degrad_hp * CurvilinearGrid.m_grid[n - 1][m].y);
                 }
@@ -1451,7 +1451,7 @@ void meshkernel::Mesh::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
 
 void meshkernel::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
 {
-    if (m_projection == Projections::spherical && maxx - minx > 180.0)
+    if (m_projection == Projection::spherical && maxx - minx > 180.0)
     {
         for (int n = 0; n < GetNumNodes(); ++n)
         {
@@ -1826,7 +1826,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
                                                            const std::vector<int>& edgesNumFaces) const
 {
     const int maximumNumberCircumcenterIterations = 100;
-    const double eps = m_projection == Projections::cartesian ? 1e-3 : 9e-10; //111km = 0-e digit.
+    const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; //111km = 0-e digit.
 
     Point centerOfMass;
     double area;
@@ -2367,7 +2367,7 @@ void meshkernel::Mesh::TriangulateFaces()
     m_edgesRTreeRequiresUpdate = true;
 }
 
-bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vector<Point>& dualFace)
+void meshkernel::Mesh::MakeDualFace(int node, double enlargementFactor, std::vector<Point>& dualFace)
 {
     const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
@@ -2379,7 +2379,7 @@ bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vect
         const auto edgeIndex = m_nodesEdges[node][e];
         auto edgeCenter = m_edgesCenters[edgeIndex];
 
-        if (m_projection == Projections::spherical)
+        if (m_projection == Projection::spherical)
         {
             const auto firstNodeIndex = m_edges[edgeIndex].first;
             const auto secondNodeIndex = m_edges[edgeIndex].second;
@@ -2418,7 +2418,7 @@ bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vect
     bool isCounterClockWise;
     FaceAreaAndCenterOfMass(dualFace, dualFace.size() - 1, m_projection, area, centerOfMass, isCounterClockWise);
 
-    if (m_projection == Projections::spherical)
+    if (m_projection == Projection::spherical)
     {
         if (centerOfMass.x - m_nodes[node].x > 180.0)
         {
@@ -2432,10 +2432,8 @@ bool meshkernel::Mesh::MakeDualFace(int node, double enlargmentFactor, std::vect
 
     for (auto& v : dualFace)
     {
-        v = centerOfMass + (v - centerOfMass) * enlargmentFactor;
+        v = centerOfMass + (v - centerOfMass) * enlargementFactor;
     }
-
-    return true;
 }
 
 std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(int node) const

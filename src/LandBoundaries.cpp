@@ -890,7 +890,7 @@ namespace meshkernel
                 }
             }
 
-            // search the next land boundary edge if projections are not within is within the segment currentNode / currentNode + 1
+            // search the next land boundary edge if projection is not within is within the segment currentNode / currentNode + 1
             searchIter = 0;
             while ((searchIter == 0 || currentNode < startNodeLandBoundaryIndex || currentNode > endNodeLandBoundaryIndex - 1) && searchIter < 3)
             {
@@ -1186,7 +1186,7 @@ namespace meshkernel
         }
     }
 
-    void LandBoundaries::NearestLandBoundaryNode(const Projections& projection,
+    void LandBoundaries::NearestLandBoundaryNode(const Projection& projection,
                                                  const Point& node,
                                                  int startLandBoundaryIndex,
                                                  int endLandBoundaryIndex,

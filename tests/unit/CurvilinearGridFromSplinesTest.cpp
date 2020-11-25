@@ -13,7 +13,7 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
                                                {374.752960205078, 336.378997802734},
                                                {850.255920410156, 499.130676269531}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline{{72.5010681152344, 391.129577636719},
@@ -77,7 +77,7 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
                                                {354.502838134766, 518.630859375000},
                                                {770.755432128906, 607.881774902344}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline;
@@ -127,7 +127,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
                                                {340.139086327869, 819.656657068422},
                                                {2048.50780774173, 1644.48279915859}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline;
@@ -154,7 +154,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplines.Compute(curvilinearGrid);
 
-    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
+    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
     const double tolerance = 1e-6;
     ASSERT_NEAR(588.142743143705, mesh.m_nodes[0].x, tolerance);
@@ -206,7 +206,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
                                                {340.139086327869, 819.656657068422},
                                                {2048.50780774173, 1644.48279915859}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline;
@@ -233,7 +233,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplines.Compute(curvilinearGrid);
 
-    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
+    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
     const double tolerance = 1e-6;
     ASSERT_NEAR(548.641052099198, mesh.m_nodes[0].x, tolerance);
@@ -285,7 +285,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
                                                {340.139086327869, 819.656657068422},
                                                {2048.50780774173, 1644.48279915859}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline;
@@ -314,7 +314,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplines.Compute(curvilinearGrid);
 
-    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
+    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
     const double tolerance = 1e-6;
 
@@ -408,7 +408,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
                                                {746.335897103372, 234.634172294657},
                                                {1498.58116776234, 776.950530211586}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline{{-250.826438421303, 394.996536194825},
@@ -447,7 +447,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplines.Compute(curvilinearGrid);
 
-    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
+    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
     const double tolerance = 1e-6;
     ASSERT_NEAR(100.529546838174, mesh.m_nodes[0].x, tolerance);
@@ -494,7 +494,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
 }
 TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSplies)
 {
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> firstCentralSpline{{1.542516E+02, 7.687640E+01},
                                                       {3.192526E+02, 2.733784E+02},
@@ -554,7 +554,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplines.Compute(curvilinearGrid);
 
-    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
+    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
     const double tolerance = 1e-6;
 
@@ -607,7 +607,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
                                                {4.109865E+01, 4.110418E+01},
                                                {4.110644E+01, 4.110904E+01}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::spherical);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::spherical);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline{{4.109612E+01, 4.110473E+01},
@@ -635,7 +635,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplines.Compute(curvilinearGrid);
 
-    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::spherical);
+    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projection::spherical);
 
     const double tolerance = 1e-6;
 
@@ -688,7 +688,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
                                                {111.984583950396, 845.689124424167},
                                                {1465.84415268176, 1608.50892444055}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline{{-333.478887051536, 921.388799234953},
@@ -717,7 +717,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplines.Compute(curvilinearGrid);
 
-    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
+    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
     const double tolerance = 1e-6;
 
@@ -780,7 +780,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
                                                {111.984583950396, 845.689124424167},
                                                {1465.84415268176, 1608.50892444055}};
 
-    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projections::cartesian);
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
     splines->AddSpline(firstSpline, 0, firstSpline.size());
 
     std::vector<meshkernel::Point> secondSpline{{-333.478887051536, 921.388799234953},
@@ -809,7 +809,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplines.Compute(curvilinearGrid);
 
-    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projections::cartesian);
+    meshkernel::Mesh mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
     const double tolerance = 1e-6;
 

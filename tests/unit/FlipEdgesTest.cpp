@@ -11,7 +11,7 @@
 TEST(FlipEdges, FlipEdgesWithLandBoundary)
 {
     //1 Setup
-    auto mesh = MakeRectangularMeshForTesting(3, 3, 10, meshkernel::Projections::cartesian, {0.0, 0.0});
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
 
     //set landboundaries
     auto polygon = std::make_shared<meshkernel::Polygons>();
