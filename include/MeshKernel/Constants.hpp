@@ -34,12 +34,15 @@
 namespace meshkernel
 {
     // missing value
+    const double innerOuterSeparator = -998.0;
     const double doubleMissingValue = -999.0;
     const int intMissingValue = -999;
-    const double squareRootOfThree = 1.73205080756887729352;
-    const double oneThird = 1/3.0;
 
-    //geometric constants
+    // often used values
+    const double squareRootOfThree = 1.73205080756887729352;
+    const double oneThird = 1 / 3.0;
+
+    // geometric constants
     const double degrad_hp = M_PI / 180.0;                   // conversion factor from degrees to radians(pi / 180)
     const double raddeg_hp = 180.0 / M_PI;                   // conversion factor from radians to degrees(180 / pi)
     const double earth_radius = 6378137.0;                   // earth radius(m)
@@ -47,7 +50,7 @@ namespace meshkernel
     const double absLatitudeAtPoles = 0.0001;                // pole tolerance in degrees
     const double nearlyZero = 1e-16;                         // used to determine if a length is zero
 
-    //mesh constants
+    // mesh constants
     const double minimumDeltaCoordinate = 1e-14;
     const int maximumNumberOfEdgesPerNode = 12;
     const int maximumNumberOfEdgesPerFace = 6;
@@ -58,7 +61,7 @@ namespace meshkernel
     const int numNodesQuads = 4;
     const int numNodesInTriangle = 3;
 
-    //orthogonalization
+    // orthogonalization
     const double minimumEdgeLength = 1e-4;
     const double curvilinearToOrthogonalRatio = 0.5;         //curvi - linear - like(0.0) or pure(1.0) orthogonalisation
     const double orthogonalizationToSmoothingFactor = 0.975; //Factor between grid smoothing and grid ortho resp (0.<=ATPF<=1.)

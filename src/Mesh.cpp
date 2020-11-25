@@ -859,9 +859,6 @@ void meshkernel::Mesh::ClassifyNodes()
     m_nodesTypes.resize(GetNumNodes(), 0);
     std::fill(m_nodesTypes.begin(), m_nodesTypes.end(), 0);
 
-    // threshold for corner points
-    const double cornerCosine = 0.25;
-
     for (int e = 0; e < GetNumEdges(); e++)
     {
         const auto firstNode = m_edges[e].first;
@@ -882,7 +879,7 @@ void meshkernel::Mesh::ClassifyNodes()
             m_nodesTypes[firstNode] = -1;
             m_nodesTypes[secondNode] = -1;
         }
-        else if (IsEdgeOnBoundary(e))
+        if (IsEdgeOnBoundary(e))
         {
             m_nodesTypes[firstNode] += 1;
             m_nodesTypes[secondNode] += 1;
@@ -904,17 +901,19 @@ void meshkernel::Mesh::ClassifyNodes()
                 int secondNode = 0;
                 for (int i = 0; i < m_nodesNumEdges[n]; i++)
                 {
-                    const int edgeIndex = m_nodesEdges[n][i];
-                    if (IsEdgeOnBoundary(edgeIndex))
+                    const auto edgeIndex = m_nodesEdges[n][i];
+                    if (!IsEdgeOnBoundary(edgeIndex))
                     {
-                        if (firstNode == 0)
-                        {
-                            firstNode = m_edges[edgeIndex].first + m_edges[edgeIndex].second - n;
-                        }
-                        else
-                        {
-                            secondNode = m_edges[edgeIndex].first + m_edges[edgeIndex].second - n;
-                        }
+                        continue;
+                    }
+                    if (firstNode == 0)
+                    {
+                        firstNode = m_edges[edgeIndex].first + m_edges[edgeIndex].second - n;
+                    }
+                    else
+                    {
+                        secondNode = m_edges[edgeIndex].first + m_edges[edgeIndex].second - n;
+                        break;
                     }
                 }
 
@@ -922,12 +921,13 @@ void meshkernel::Mesh::ClassifyNodes()
                 m_nodesTypes[n] = 2;
                 if (firstNode >= 0 && secondNode >= 0)
                 {
-                    double cosPhi =
-                        NormalizedInnerProductTwoSegments(m_nodes[n], m_nodes[firstNode], m_nodes[n], m_nodes[secondNode], m_projection);
+                    double cosPhi = NormalizedInnerProductTwoSegments(m_nodes[n], m_nodes[firstNode], m_nodes[n], m_nodes[secondNode], m_projection);
 
-                    // void angle
+                    // threshold for corner points
+                    const double cornerCosine = 0.25;
                     if (cosPhi > -cornerCosine)
                     {
+                        // void angle
                         m_nodesTypes[n] = 3;
                     }
                 }
@@ -943,7 +943,6 @@ void meshkernel::Mesh::ClassifyNodes()
             //internal node
             m_nodesTypes[n] = 1;
         }
-
         if (m_nodesNumEdges[n] < 2)
         {
             //hanging node
