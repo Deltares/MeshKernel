@@ -1281,7 +1281,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId,
                                                                 const GeometryListNative& geometryListIn,
                                                                 const CurvilinearParametersNative& curvilinearParameters,
-                                                                const SplinesToCurvilinearParametersNative& splineToCurvilinearParameters)
+                                                                const SplinesToCurvilinearParametersNative& splinesToCurvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -1295,7 +1295,7 @@ namespace meshkernelapi
             auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
             SetSplines(geometryListIn, *spline);
 
-            meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splineToCurvilinearParameters);
+            meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splinesToCurvilinearParameters);
 
             meshkernel::CurvilinearGrid curvilinearGrid;
             curvilinearGridFromSplines.Compute(curvilinearGrid);

@@ -334,7 +334,7 @@ namespace meshkernel
         void MakeDualFace(int node, double enlargementFactor, std::vector<Point>& dualFace);
 
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
-        /// @param[in] nodeIndex The node index
+        /// @param[in] node The node index
         /// @return The face indexses
         [[nodiscard]] std::vector<int> SortedFacesAroundNode(int node) const;
 
@@ -343,9 +343,8 @@ namespace meshkernel
         std::vector<Point> MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes);
 
         /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        /// @param[in] mesh The input mesh
+        /// @param[in] polygonNodes The input mesh
         /// @param[in] isVisited the visited mesh nodes
-        /// @param[in] nodeIndex the node where to initialize the algorithm
         /// @param[in] currentNode the current node
         /// @param[out] meshBoundaryPolygon The resulting polygon points
         void WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,

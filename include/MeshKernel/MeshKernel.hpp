@@ -176,10 +176,10 @@ namespace meshkernelapi
         /// @brief Make curvilinear grid from splines with an advancing front.
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListNative The input splines corners
-        /// @param[in] curvilinearParametersNative The input parameters to generate the curvilinear grid
-        /// @param[in] splinesToCurvilinearParametersNative The parameters of the advancing front algorithm
+        /// @param[in] curvilinearParameters The input parameters to generate the curvilinear grid
+        /// @param[in] splinesToCurvilinearParameters The parameters of the advancing front algorithm
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId, const GeometryListNative& geometryListNative, const CurvilinearParametersNative& curvilinearParameters, const SplinesToCurvilinearParametersNative& splineToCurvilinearParameters);
+        MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId, const GeometryListNative& geometryListNative, const CurvilinearParametersNative& curvilinearParameters, const SplinesToCurvilinearParametersNative& splinesToCurvilinearParameters);
 
         /// @brief Generate a curvilinear grid from splines with the advancing front method. Initialization step (interactive)
         /// @param[in] meshKernelId Id of the mesh state
@@ -280,6 +280,7 @@ namespace meshkernelapi
         /// @brief Counts the number of selected mesh node indexes
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input polygons
+        /// @param[in] inside Count nodes inside (1) or outside (0) polygon
         /// @param[out] numberOfMeshVertices The number of selected nodes
         /// @returns Error code
         MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, GeometryListNative& geometryListIn, int inside, int& numberOfMeshVertices);
