@@ -34,6 +34,7 @@
 namespace meshkernel
 {
     // missing value
+    const double innerOuterSeparator = -998.0;
     const double doubleMissingValue = -999.0;
     const int intMissingValue = -999;
 
