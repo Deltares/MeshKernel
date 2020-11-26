@@ -196,7 +196,7 @@ namespace meshkernel
         }
     };
 
-    /// @brief Converts arrays of edge nodes to corresponging vector
+    /// @brief Converts arrays of edge nodes to corresponding vector
     static std::vector<Edge> ConvertToEdgeNodesVector(int numEdges, const int* edge_nodes)
     {
         std::vector<Edge> edges(numEdges);

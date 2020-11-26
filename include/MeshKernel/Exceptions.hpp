@@ -4,7 +4,7 @@
 
 namespace meshkernel
 {
-    /// @brief Custom excpetion to desribe an error caused by an algorithm
+    /// @brief Custom exception to describe an error caused by an algorithm
     class AlgorithmError : public std::runtime_error
     {
     public:

@@ -35,7 +35,7 @@ namespace meshkernel
     class Polygons;
     class Mesh;
 
-    /// @brief A class desribing land boundaries, which are used to visualise the land-water interface
+    /// @brief A class describing land boundaries, which are used to visualise the land-water interface
     class LandBoundaries
     {
 
