@@ -47,12 +47,12 @@ meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::sh
                                                                          std::shared_ptr<LandBoundaries> landBoundaries,
                                                                          LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
                                                                          const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters) : m_mesh(mesh),
-                                                                                                                                                                      m_smoother(smoother),
-                                                                                                                                                                      m_orthogonalizer(orthogonalizer),
-                                                                                                                                                                      m_polygons(polygon),
-                                                                                                                                                                      m_landBoundaries(landBoundaries),
-                                                                                                                                                                      m_projectToLandBoundaryOption(projectToLandBoundaryOption),
-                                                                                                                                                                      m_orthogonalizationParameters(orthogonalizationParameters)
+                                                                                                                                                          m_smoother(smoother),
+                                                                                                                                                          m_orthogonalizer(orthogonalizer),
+                                                                                                                                                          m_polygons(polygon),
+                                                                                                                                                          m_landBoundaries(landBoundaries),
+                                                                                                                                                          m_projectToLandBoundaryOption(projectToLandBoundaryOption),
+                                                                                                                                                          m_orthogonalizationParameters(orthogonalizationParameters)
 {
 }
 
