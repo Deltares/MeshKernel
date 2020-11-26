@@ -29,9 +29,21 @@
 
 namespace meshkernelapi
 {
-    struct MakeGridParametersNative
+    /// @brief This struct describes the necessary parameters to create a new mesh.
+    ///
+    /// @see mkernel_make_mesh
+    struct MakeMeshParameters
     {
-        /// @brief The type of grid to create : square = 0, wieber = 1, hexagonal type 1 = 2,  hexagonal type 2 = 3, triangular = 4 (0)
+        /// @brief The type of grid to create.
+        ///
+        /// The possible types are:
+        /// - square = 0
+        /// - wieber = 1
+        /// - hexagonal type 1 = 2
+        /// - hexagonal type 2 = 3
+        /// - triangular = 4
+        ///
+        /// Square is the suggested default.
         int GridType;
 
         /// @brief The number of columns in x direction

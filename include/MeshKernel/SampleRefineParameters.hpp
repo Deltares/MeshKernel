@@ -29,14 +29,30 @@
 
 namespace meshkernelapi
 {
-    struct GeometryListNative
+    struct SampleRefineParameters
     {
-        int type;
-        double geometrySeparator;
-        double innerOuterSeparator;
-        int numberOfCoordinates;
-        double* xCoordinates = nullptr;
-        double* yCoordinates = nullptr;
-        double* zCoordinates = nullptr;
+        /// @brief Sample vector dimension
+        int SampleVectorDimension;
+
+        /// @brief Maximum number of refinement iterations, set to 1 if only one refinement is wanted
+        int MaxNumberOfRefinementIterations;
+
+        /// @brief Minimum cell size
+        double MinimumCellSize;
+
+        /// @brief Directional refinement, 1 yes 0 no
+        int DirectionalRefinement;
+
+        /// @brief Refinement criterion type
+        int RefinementType;
+
+        /// @brief Connect hanging nodes at the end of the iteration, 1 yes 0 no
+        int ConnectHangingNodes;
+
+        /// @brief Maximum time-step in courant grid
+        double MaximumTimeStepInCourantGrid;
+
+        /// @brief Take samples outside face into account , 1 yes 0 no
+        int AccountForSamplesOutside;
     };
 } // namespace meshkernelapi

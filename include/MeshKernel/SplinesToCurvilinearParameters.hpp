@@ -29,21 +29,39 @@
 
 namespace meshkernelapi
 {
-    struct CurvilinearParametersNative
+    struct SplinesToCurvilinearParameters
     {
-        /// @brief M-refinement factor for regular grid generation (mfacmax, 2000)
-        int MRefinement;
+        /// @brief Aspect ratio (mfacmax, 0.1)
+        double AspectRatio;
 
-        /// @brief N-refinement factor for regular grid generation (nfacmax, 40)
-        int NRefinement;
+        /// @brief Grow factor of aspect ratio (1.1)
+        double AspectRatioGrowFactor;
 
-        /// @brief Nr. of inner iterations in regular grid smoothing (10).
-        int SmoothingIterations;
+        /// @brief Average mesh width on center spline (0.005)
+        double AverageWidth;
 
-        /// @brief Smoothing parameter (0.5).
-        double SmoothingParameter;
+        /// @brief Curvature adapted grid spacing, 1 or not 0 (1)
+        int CurvatureAdapetedGridSpacing;
 
-        /// @brief Attraction/repulsion parameter (0).
-        double AttractionParameter;
+        /// @brief Grow the grid outside the prescribed grid height (1)
+        int GrowGridOutside;
+
+        /// @brief Maximum number of layers in the uniform part (5)
+        int MaximumNumberOfGridCellsInTheUniformPart;
+
+        /// @brief On-top-of-each-other tolerance (0.0001)
+        double GridsOnTopOfEachOtherTolerance;
+
+        /// @brief Minimum allowed absolute value of crossing-angle cosine (0.95)
+        double MinimumCosineOfCrossingAngles;
+
+        /// @brief Check for collisions with other parts of the front, 1 or not 0 (0)
+        int CheckFrontCollisions;
+
+        /// @brief Uniform grid size, netboundary to grid only (0.0)
+        double UniformGridSize;
+
+        /// @brief Remove skinny triangles (1)
+        int RemoveSkinnyTriangles;
     };
 } // namespace meshkernelapi

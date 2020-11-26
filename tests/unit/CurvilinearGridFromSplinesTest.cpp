@@ -22,21 +22,21 @@ TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
     // construct CurvilinearGridFromSplines
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    meshkernelapi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
-    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParametersNative.AverageWidth = 500.0;
-    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
-    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
-    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
-    curvilinearParametersNative.MRefinement = 20;
-    curvilinearParametersNative.NRefinement = 40;
+    splinesToCurvilinearParameters.AspectRatio = 0.1;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 500.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParameters.RemoveSkinnyTriangles = 0;
+    curvilinearParameters.MRefinement = 20;
+    curvilinearParameters.NRefinement = 40;
 
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     curvilinearGridFromSplines.ComputeSplineProperties(false);
     curvilinearGridFromSplines.MakeAllGridLines();
@@ -97,21 +97,21 @@ TEST(CurvilinearGridFromSplines, ComputeBoundingBox)
     splines->AddSpline(fourthSpline, 0, fourthSpline.size());
 
     // construct CurvilinearGridFromSplines
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    meshkernelapi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
-    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParametersNative.AverageWidth = 500.0;
-    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
-    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = false;
-    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
-    curvilinearParametersNative.MRefinement = 20;
-    curvilinearParametersNative.NRefinement = 40;
+    splinesToCurvilinearParameters.AspectRatio = 0.1;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 500.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing = false;
+    splinesToCurvilinearParameters.RemoveSkinnyTriangles = 0;
+    curvilinearParameters.MRefinement = 20;
+    curvilinearParameters.NRefinement = 40;
 
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
     curvilinearGridFromSplines.ComputeSplineProperties(false);
 
     const double tolerance = 1e-6;
@@ -136,21 +136,21 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
     // construct CurvilinearGridFromSplines
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    meshkernelapi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
-    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParametersNative.AverageWidth = 500.0;
-    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
-    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
-    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
-    curvilinearParametersNative.MRefinement = 20;
-    curvilinearParametersNative.NRefinement = 40;
+    splinesToCurvilinearParameters.AspectRatio = 0.1;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 500.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParameters.RemoveSkinnyTriangles = 0;
+    curvilinearParameters.MRefinement = 20;
+    curvilinearParameters.NRefinement = 40;
 
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplines.Compute(curvilinearGrid);
 
@@ -214,21 +214,21 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
     secondSpline.emplace_back(meshkernel::Point{600.169022647819, 321.964950993679});
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    meshkernelapi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
-    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParametersNative.AverageWidth = 500.0;
-    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
-    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = false;
-    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
-    curvilinearParametersNative.MRefinement = 20;
-    curvilinearParametersNative.NRefinement = 40;
+    splinesToCurvilinearParameters.AspectRatio = 0.1;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 500.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing = false;
+    splinesToCurvilinearParameters.RemoveSkinnyTriangles = 0;
+    curvilinearParameters.MRefinement = 20;
+    curvilinearParameters.NRefinement = 40;
 
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplines.Compute(curvilinearGrid);
@@ -293,22 +293,22 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     secondSpline.emplace_back(meshkernel::Point{600.169022647819, 321.964950993679});
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    meshkernelapi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
-    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParametersNative.AverageWidth = 500.0;
-    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
-    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
-    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
-    curvilinearParametersNative.MRefinement = 10;
-    curvilinearParametersNative.NRefinement = 20;
+    splinesToCurvilinearParameters.AspectRatio = 0.1;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 500.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParameters.RemoveSkinnyTriangles = 0;
+    curvilinearParameters.MRefinement = 10;
+    curvilinearParameters.NRefinement = 20;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
@@ -426,22 +426,22 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
 
     splines->AddSpline(fourthSpline, 0, fourthSpline.size());
 
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    meshkernelapi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
-    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParametersNative.AverageWidth = 500.0;
-    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
-    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
-    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
-    curvilinearParametersNative.MRefinement = 10;
-    curvilinearParametersNative.NRefinement = 20;
+    splinesToCurvilinearParameters.AspectRatio = 0.1;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 500.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParameters.RemoveSkinnyTriangles = 0;
+    curvilinearParameters.MRefinement = 10;
+    curvilinearParameters.NRefinement = 20;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
@@ -533,22 +533,22 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
 
     splines->AddSpline(seventhBankSpline, 0, seventhBankSpline.size());
 
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    meshkernelapi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
-    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParametersNative.AverageWidth = 50.0;
-    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
-    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
-    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
-    curvilinearParametersNative.MRefinement = 20;
-    curvilinearParametersNative.NRefinement = 40;
+    splinesToCurvilinearParameters.AspectRatio = 0.1;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 50.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParameters.RemoveSkinnyTriangles = 0;
+    curvilinearParameters.MRefinement = 20;
+    curvilinearParameters.NRefinement = 40;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
@@ -614,22 +614,22 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
                                                 {4.109923E+01, 4.110212E+01}};
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    meshkernelapi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParametersNative.AspectRatio = 0.1;
-    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParametersNative.AverageWidth = 100.0;
-    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
-    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
-    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
-    curvilinearParametersNative.MRefinement = 10;
-    curvilinearParametersNative.NRefinement = 20;
+    splinesToCurvilinearParameters.AspectRatio = 0.1;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 100.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParameters.RemoveSkinnyTriangles = 0;
+    curvilinearParameters.MRefinement = 10;
+    curvilinearParameters.NRefinement = 20;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
@@ -696,22 +696,22 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
 
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    meshkernelapi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParametersNative.AspectRatio = 0.5;
-    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParametersNative.AverageWidth = 120.0;
-    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
-    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
-    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = 0;
-    curvilinearParametersNative.MRefinement = 20;
-    curvilinearParametersNative.NRefinement = 3;
+    splinesToCurvilinearParameters.AspectRatio = 0.5;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 120.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParameters.RemoveSkinnyTriangles = 0;
+    curvilinearParameters.MRefinement = 20;
+    curvilinearParameters.NRefinement = 3;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;
@@ -788,22 +788,22 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
 
     splines->AddSpline(secondSpline, 0, secondSpline.size());
 
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    meshkernelapi::SplinesToCurvilinearParametersNative splinesToCurvilinearParametersNative;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParametersNative.AspectRatio = 0.5;
-    splinesToCurvilinearParametersNative.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParametersNative.AverageWidth = 120.0;
-    splinesToCurvilinearParametersNative.GridsOnTopOfEachOtherTolerance = 1e-4;
-    splinesToCurvilinearParametersNative.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParametersNative.CheckFrontCollisions = false;
-    splinesToCurvilinearParametersNative.CurvatureAdapetedGridSpacing = true;
-    splinesToCurvilinearParametersNative.RemoveSkinnyTriangles = true;
-    curvilinearParametersNative.MRefinement = 20;
-    curvilinearParametersNative.NRefinement = 3;
+    splinesToCurvilinearParameters.AspectRatio = 0.5;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 120.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing = true;
+    splinesToCurvilinearParameters.RemoveSkinnyTriangles = true;
+    curvilinearParameters.MRefinement = 20;
+    curvilinearParameters.NRefinement = 3;
 
     // create the algorithm
-    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParametersNative, splinesToCurvilinearParametersNative);
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
     meshkernel::CurvilinearGrid curvilinearGrid;

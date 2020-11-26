@@ -29,7 +29,7 @@
 
 namespace meshkernelapi
 {
-    struct OrthogonalizationParametersNative
+    struct OrthogonalizationParameters
     {
         /// @brief Number of outer iterations in orthogonalization. Increase this parameter for complex grids (2)
         int OuterIterations;

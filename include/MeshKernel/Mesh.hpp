@@ -28,7 +28,7 @@
 #pragma once
 
 #include <vector>
-#include <MeshKernel/MakeGridParametersNative.hpp>
+#include <MeshKernel/MakeMeshParameters.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 
@@ -39,8 +39,8 @@ namespace meshkernel
     // Forward declarations
     class CurvilinearGrid;
     class Polygons;
-    class MakeGridParametersNative;
-    class GeometryListNative;
+    class MakeMeshParameters;
+    class GeometryList;
 
     class Mesh
     {
@@ -130,9 +130,9 @@ namespace meshkernel
         void MergeTwoNodes(int startNode, int endNode);
 
         /// @brief Make a new rectangular mesh, composed of quads (makenet)
-        /// @param[in] makeGridParametersNative The structure containing the make grid parameters
+        /// @param[in] MakeMeshParameters The structure containing the make grid parameters
         /// @param[in] polygons The polygon to account for
-        void MakeMesh(const meshkernelapi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons);
+        void MakeMesh(const meshkernelapi::MakeMeshParameters& MakeMeshParameters, const Polygons& polygons);
 
         /// @brief Deletes a mesh in a polygon, using several options (delnet)
         /// @param[in] polygons The polygon where to perform the operation

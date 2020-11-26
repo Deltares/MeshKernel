@@ -114,7 +114,7 @@ state = mkernel_set_state(meshKernelId, meshGeometryDimensions, meshGeometry, is
 std::vector<double> newPositionX{1.0};
 std::vector<double> newPositionY{3.0};
 
-GeometryListNative geometryListIn;
+GeometryList geometryListIn;
 geometryListIn.xCoordinates = &newPositionX[0];
 geometryListIn.yCoordinates = &newPositionY[0];
 

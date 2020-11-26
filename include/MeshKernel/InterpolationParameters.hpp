@@ -29,7 +29,7 @@
 
 namespace meshkernelapi
 {
-    struct InterpolationParametersNative
+    struct InterpolationParameters
     {
         /// Actual interpolation type (1)
         int InterpolationType;

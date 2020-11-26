@@ -90,19 +90,19 @@ TEST(Mesh, MakeMeshInPolygon)
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     meshkernel::Mesh mesh;
-    meshkernelapi::MakeGridParametersNative makeGridParametersNative;
-    makeGridParametersNative.GridType = 0;
-    makeGridParametersNative.GridAngle = 0.0;
-    makeGridParametersNative.OriginXCoordinate = 0.0;
-    makeGridParametersNative.OriginYCoordinate = 0.0;
-    makeGridParametersNative.OriginZCoordinate = 0.0;
-    makeGridParametersNative.NumberOfColumns = 3;
-    makeGridParametersNative.NumberOfRows = 3;
-    makeGridParametersNative.XGridBlockSize = 100.0;
-    makeGridParametersNative.YGridBlockSize = 100.0;
+    meshkernelapi::MakeMeshParameters MakeMeshParameters;
+    MakeMeshParameters.GridType = 0;
+    MakeMeshParameters.GridAngle = 0.0;
+    MakeMeshParameters.OriginXCoordinate = 0.0;
+    MakeMeshParameters.OriginYCoordinate = 0.0;
+    MakeMeshParameters.OriginZCoordinate = 0.0;
+    MakeMeshParameters.NumberOfColumns = 3;
+    MakeMeshParameters.NumberOfRows = 3;
+    MakeMeshParameters.XGridBlockSize = 100.0;
+    MakeMeshParameters.YGridBlockSize = 100.0;
 
     // 2 Execution
-    mesh.MakeMesh(makeGridParametersNative, polygons);
+    mesh.MakeMesh(MakeMeshParameters, polygons);
     ASSERT_EQ(43, mesh.GetNumEdges());
     ASSERT_EQ(27, mesh.GetNumNodes());
 }
@@ -122,19 +122,19 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::spherical);
 
     meshkernel::Mesh mesh;
-    meshkernelapi::MakeGridParametersNative makeGridParametersNative;
-    makeGridParametersNative.GridType = 0;
-    makeGridParametersNative.GridAngle = 0.0;
-    makeGridParametersNative.OriginXCoordinate = 0.0;
-    makeGridParametersNative.OriginYCoordinate = 0.0;
-    makeGridParametersNative.OriginZCoordinate = 0.0;
-    makeGridParametersNative.NumberOfColumns = 3;
-    makeGridParametersNative.NumberOfRows = 3;
-    makeGridParametersNative.XGridBlockSize = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
-    makeGridParametersNative.YGridBlockSize = 5000000.0;
+    meshkernelapi::MakeMeshParameters MakeMeshParameters;
+    MakeMeshParameters.GridType = 0;
+    MakeMeshParameters.GridAngle = 0.0;
+    MakeMeshParameters.OriginXCoordinate = 0.0;
+    MakeMeshParameters.OriginYCoordinate = 0.0;
+    MakeMeshParameters.OriginZCoordinate = 0.0;
+    MakeMeshParameters.NumberOfColumns = 3;
+    MakeMeshParameters.NumberOfRows = 3;
+    MakeMeshParameters.XGridBlockSize = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
+    MakeMeshParameters.YGridBlockSize = 5000000.0;
 
     // 2 Execution: function not producing grid points (points gets transformed in meters, therfore everything is outside)
-    mesh.MakeMesh(makeGridParametersNative, polygons);
+    mesh.MakeMesh(MakeMeshParameters, polygons);
     ASSERT_EQ(0, mesh.GetNumEdges());
     ASSERT_EQ(0, mesh.GetNumNodes());
 }
@@ -146,37 +146,37 @@ TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::spherical);
 
     meshkernel::Mesh mesh;
-    meshkernelapi::MakeGridParametersNative makeGridParametersNative;
-    makeGridParametersNative.GridType = 0;
-    makeGridParametersNative.GridAngle = 0.0;
-    makeGridParametersNative.OriginXCoordinate = 0.0;
-    makeGridParametersNative.OriginYCoordinate = 0.0;
-    makeGridParametersNative.OriginZCoordinate = 0.0;
-    makeGridParametersNative.NumberOfColumns = 3;
-    makeGridParametersNative.NumberOfRows = 3;
-    makeGridParametersNative.XGridBlockSize = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
-    makeGridParametersNative.YGridBlockSize = 5000000.0;
+    meshkernelapi::MakeMeshParameters MakeMeshParameters;
+    MakeMeshParameters.GridType = 0;
+    MakeMeshParameters.GridAngle = 0.0;
+    MakeMeshParameters.OriginXCoordinate = 0.0;
+    MakeMeshParameters.OriginYCoordinate = 0.0;
+    MakeMeshParameters.OriginZCoordinate = 0.0;
+    MakeMeshParameters.NumberOfColumns = 3;
+    MakeMeshParameters.NumberOfRows = 3;
+    MakeMeshParameters.XGridBlockSize = 5000000.0; //resolution in meters (when using spherical coordinates distances are usually much larger)
+    MakeMeshParameters.YGridBlockSize = 5000000.0;
 
     // 2 Execution
-    mesh.MakeMesh(makeGridParametersNative, polygons);
+    mesh.MakeMesh(MakeMeshParameters, polygons);
     ASSERT_EQ(24, mesh.GetNumEdges());
     ASSERT_EQ(16, mesh.GetNumNodes());
 
     // x coordinate
     ASSERT_EQ(0.0, mesh.m_nodes[0].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize, mesh.m_nodes[1].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize * 2, mesh.m_nodes[2].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize * 3, mesh.m_nodes[3].x);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize, mesh.m_nodes[1].x);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize * 2, mesh.m_nodes[2].x);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize * 3, mesh.m_nodes[3].x);
 
     ASSERT_EQ(0.0, mesh.m_nodes[4].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize, mesh.m_nodes[5].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize * 2, mesh.m_nodes[6].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize * 3, mesh.m_nodes[7].x);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize, mesh.m_nodes[5].x);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize * 2, mesh.m_nodes[6].x);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize * 3, mesh.m_nodes[7].x);
 
     ASSERT_EQ(0.0, mesh.m_nodes[8].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize, mesh.m_nodes[9].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize * 2, mesh.m_nodes[10].x);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize * 3, mesh.m_nodes[11].x);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize, mesh.m_nodes[9].x);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize * 2, mesh.m_nodes[10].x);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize * 3, mesh.m_nodes[11].x);
 
     // y coordinate
     ASSERT_EQ(0.0, mesh.m_nodes[0].y);
@@ -184,10 +184,10 @@ TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
     ASSERT_EQ(0.0, mesh.m_nodes[2].y);
     ASSERT_EQ(0.0, mesh.m_nodes[3].y);
 
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize, mesh.m_nodes[4].y);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize, mesh.m_nodes[5].y);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize, mesh.m_nodes[6].y);
-    ASSERT_EQ(makeGridParametersNative.XGridBlockSize, mesh.m_nodes[7].y);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize, mesh.m_nodes[4].y);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize, mesh.m_nodes[5].y);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize, mesh.m_nodes[6].y);
+    ASSERT_EQ(MakeMeshParameters.XGridBlockSize, mesh.m_nodes[7].y);
 
     ASSERT_EQ(3830222.2156113400, mesh.m_nodes[8].y);
     ASSERT_EQ(3830222.2156113400, mesh.m_nodes[9].y);
