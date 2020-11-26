@@ -29,8 +29,8 @@
 
 #include <vector>
 #include <memory>
-#include <MeshKernel/SplinesToCurvilinearParametersNative.hpp>
-#include <MeshKernel/CurvilinearParametersNative.hpp>
+#include <MeshKernel/SplinesToCurvilinearParameters.hpp>
+#include <MeshKernel/CurvilinearParameters.hpp>
 #include <MeshKernel/Entities.hpp>
 
 namespace meshkernel
@@ -43,11 +43,11 @@ namespace meshkernel
     public:
         /// @brief Ctor
         /// @param splines Input splines
-        /// @param curvilinearParametersNative The parameters for OrthogonalCurvilinearGridFromSplines algorithm
-        /// @param splinesToCurvilinearParametersNative The parameters for OrthogonalCurvilinearGridFromSplines algorithm
+        /// @param curvilinearParameters The parameters for OrthogonalCurvilinearGridFromSplines algorithm
+        /// @param splinesToCurvilinearParameters The parameters for OrthogonalCurvilinearGridFromSplines algorithm
         CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
-                                   const meshkernelapi::CurvilinearParametersNative& curvilinearParametersNative,
-                                   const meshkernelapi::SplinesToCurvilinearParametersNative& splinesToCurvilinearParametersNative);
+                                   const meshkernelapi::CurvilinearParameters& curvilinearParameters,
+                                   const meshkernelapi::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
         /// Computes the spline properties, such as cross splines (get_splineprops)
         /// @param restoreOriginalProperties
@@ -300,8 +300,8 @@ namespace meshkernel
         };
 
         // algorithm parameters
-        meshkernelapi::CurvilinearParametersNative m_curvilinearParametersNative;
-        meshkernelapi::SplinesToCurvilinearParametersNative m_splinesToCurvilinearParametersNative;
+        meshkernelapi::CurvilinearParameters m_curvilinearParameters;
+        meshkernelapi::SplinesToCurvilinearParameters m_splinesToCurvilinearParameters;
 
         const int m_maxNumCenterSplineHeights = 10; // Nsubmax, naz number of different heights a cross spline can have (is determined by how many crossing spline the user can input)
         const int m_maxNUniformPart = 5;            // maximum number of layers in the uniform part

@@ -6,7 +6,7 @@
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
-#include <MeshKernel/OrthogonalizationParametersNative.hpp>
+#include <MeshKernel/OrthogonalizationParameters.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
@@ -31,13 +31,13 @@ TEST(PerformanceTest, FlipEdgesAndOrthogonalization)
     ASSERT_TRUE(successful);
 
     int projectToLandBoundaryOption = 0;
-    meshkernelapi::OrthogonalizationParametersNative orthogonalizationParametersNative;
-    orthogonalizationParametersNative.OuterIterations = 2;
-    orthogonalizationParametersNative.InnerIterations = 25;
-    orthogonalizationParametersNative.BoundaryIterations = 25;
-    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactor = 0.975;
-    orthogonalizationParametersNative.OrthogonalizationToSmoothingFactorBoundary = 0.975;
-    orthogonalizationParametersNative.SmoothAngleOrSmoothArea = 0.0;
+    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.OuterIterations = 2;
+    orthogonalizationParameters.InnerIterations = 25;
+    orthogonalizationParameters.BoundaryIterations = 25;
+    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+    orthogonalizationParameters.OrthogonalizationToSmoothingFactorBoundary = 0.975;
+    orthogonalizationParameters.SmoothAngleOrSmoothArea = 0.0;
 
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
@@ -48,7 +48,7 @@ TEST(PerformanceTest, FlipEdgesAndOrthogonalization)
                                                                 polygon,
                                                                 landboundaries,
                                                                 projectToLandBoundaryOption,
-                                                                orthogonalizationParametersNative);
+                                                                orthogonalizationParameters);
     // execute orthogonalization
     successful = orthogonalization.Initialize();
     ASSERT_TRUE(successful);

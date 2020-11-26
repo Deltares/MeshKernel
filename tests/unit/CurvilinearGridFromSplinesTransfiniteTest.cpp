@@ -30,10 +30,10 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplines)
                                                 {7.475956E+02, 3.336055E+02}};
     splines->AddSpline(fourthSpline, 0, fourthSpline.size());
 
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    curvilinearParametersNative.NRefinement = 40;
-    curvilinearParametersNative.MRefinement = 20;
-    meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParametersNative);
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    curvilinearParameters.NRefinement = 40;
+    curvilinearParameters.MRefinement = 20;
+    meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParameters);
 
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
@@ -111,10 +111,10 @@ TEST(CurvilinearGridFromSplinesTransfinite, FourSplinesOneNSwapped)
                                                {2.799988E+02, -2.807726E+01}};
     splines->AddSpline(thirdSpline, 0, thirdSpline.size());
 
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    curvilinearParametersNative.NRefinement = 40;
-    curvilinearParametersNative.MRefinement = 20;
-    meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParametersNative);
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    curvilinearParameters.NRefinement = 40;
+    curvilinearParameters.MRefinement = 20;
+    meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParameters);
 
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
@@ -196,10 +196,10 @@ TEST(CurvilinearGridFromSplinesTransfinite, FiveSplines)
                                                {5.513401E+02, 1.545069E+02}};
     splines->AddSpline(fifthSpline, 0, fifthSpline.size());
 
-    meshkernelapi::CurvilinearParametersNative curvilinearParametersNative;
-    curvilinearParametersNative.NRefinement = 40;
-    curvilinearParametersNative.MRefinement = 20;
-    meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParametersNative);
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    curvilinearParameters.NRefinement = 40;
+    curvilinearParameters.MRefinement = 20;
+    meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(splines, curvilinearParameters);
 
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
