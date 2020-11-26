@@ -106,13 +106,13 @@ namespace meshkernel
         /// @brief Compute nodes local coordinates (comp_local_coords)
         void ComputeCoordinates() const;
 
-        std::shared_ptr<Mesh> m_mesh;                                                         // A pointer to mesh
-        std::shared_ptr<Smoother> m_smoother;                                                 // A pointer to the smoother
-        std::shared_ptr<Orthogonalizer> m_orthogonalizer;                                     // A pointer to the orthogonalizer
-        std::shared_ptr<Polygons> m_polygons;                                                 // The polygon where to perform the orthogonalization
-        std::shared_ptr<LandBoundaries> m_landBoundaries;                                     // The land boundaries
-        LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption;            // The project to land boundary option
-        meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters; // The orthogonalization parameters
+        std::shared_ptr<Mesh> m_mesh;                                              // A pointer to mesh
+        std::shared_ptr<Smoother> m_smoother;                                      // A pointer to the smoother
+        std::shared_ptr<Orthogonalizer> m_orthogonalizer;                          // A pointer to the orthogonalizer
+        std::shared_ptr<Polygons> m_polygons;                                      // The polygon where to perform the orthogonalization
+        std::shared_ptr<LandBoundaries> m_landBoundaries;                          // The land boundaries
+        LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; // The project to land boundary option
+        meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters;  // The orthogonalization parameters
 
         std::vector<int> m_localCoordinatesIndexes; // Used in sphericalAccurate projection (iloc)
         std::vector<Point> m_localCoordinates;      // Used in sphericalAccurate projection (xloc,yloc)
