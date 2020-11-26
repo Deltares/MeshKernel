@@ -53,6 +53,9 @@ namespace meshkernel
         namespace bgi = boost::geometry::index;
         constexpr int QueryVectorCapacity = 100;
 
+        /// @brief Class wrapping the boost::geometry::index::rtree code
+        ///
+        /// This class is required for inquiring adjacent nodes in the merging algorithm.
         class RTree
         {
 

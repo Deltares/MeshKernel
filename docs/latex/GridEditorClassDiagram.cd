@@ -152,32 +152,32 @@
       <Field Name="m_splines" />
     </ShowAsAssociation>
   </Class>
-  <Struct Name="GridGeomApi::CurvilinearParametersNative" Collapsed="true">
+  <Struct Name="GridGeomApi::CurvilinearParameters" Collapsed="true">
     <Position X="1.25" Y="3.5" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAABAAAAAAAAABgACAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
-      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\CurvilinearParametersNative.hpp</FileName>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\CurvilinearParameters.hpp</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="GridGeomApi::GeometryListNative" Collapsed="true">
+  <Struct Name="GridGeomApi::GeometryList" Collapsed="true">
     <Position X="1.25" Y="7.25" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAEAAABAAAAAAAAAAACAAABAAAAAAAAEAABAAE=</HashCode>
-      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\GeometryListNative.hpp</FileName>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\GeometryList.hpp</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="GridGeomApi::InterpolationParametersNative" Collapsed="true">
+  <Struct Name="GridGeomApi::InterpolationParameters" Collapsed="true">
     <Position X="1.25" Y="8" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAIAAAEAAAAAAAACAEAAAAAAAgAAAAACAAIAABAAAA=</HashCode>
-      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\InterpolationParametersNative.hpp</FileName>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\InterpolationParameters.hpp</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="GridGeomApi::MakeGridParametersNative" Collapsed="true">
+  <Struct Name="GridGeomApi::MakeMeshParameters" Collapsed="true">
     <Position X="1.25" Y="4.25" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAABAAAAACAAABIAQACAgBAAAGEAAAIAAAAA=</HashCode>
-      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\MakeGridParametersNative.hpp</FileName>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\MakeMeshParameters.hpp</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="GridGeomApi::MeshGeometry" Collapsed="true">
@@ -194,25 +194,25 @@
       <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\MeshGeometryDimensions.hpp</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="GridGeomApi::OrthogonalizationParametersNative" Collapsed="true">
+  <Struct Name="GridGeomApi::OrthogonalizationParameters" Collapsed="true">
     <Position X="1.25" Y="2.75" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAABAAAAAgAAAAAAASIAAAAgAAgkAAAAAACAAAggAA=</HashCode>
-      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\OrthogonalizationParametersNative.hpp</FileName>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\OrthogonalizationParameters.hpp</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="GridGeomApi::SampleRefineParametersNative" Collapsed="true">
+  <Struct Name="GridGeomApi::SampleRefineParameters" Collapsed="true">
     <Position X="1.25" Y="8.75" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAgAACAAAIAAAEAAAAICCAAAAAAAAEA=</HashCode>
-      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\SampleRefineParametersNative.hpp</FileName>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\SampleRefineParameters.hpp</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="GridGeomApi::SplinesToCurvilinearParametersNative" Collapsed="true">
+  <Struct Name="GridGeomApi::SplinesToCurvilinearParameters" Collapsed="true">
     <Position X="1.25" Y="6.5" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAQAIAAQEAAAAAAABgAQQAAAABAAAAAAAAAUAAAAAAA=</HashCode>
-      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\SplinesToCurvilinearParametersNative.hpp</FileName>
+      <FileName>D:\LUCA\ENGINES\GridGeom++\lastCheckout\src\SplinesToCurvilinearParameters.hpp</FileName>
     </TypeIdentifier>
   </Struct>
   <Font Name="Segoe UI" Size="9" />

@@ -40,7 +40,7 @@
 #include <MeshKernel/SpatialTrees.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/MakeGridParametersNative.hpp>
+#include <MeshKernel/MakeMeshParameters.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernel/Exceptions.hpp>
 
@@ -951,21 +951,21 @@ void meshkernel::Mesh::ClassifyNodes()
     }
 }
 
-void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeGridParametersNative& makeGridParametersNative, const Polygons& polygons)
+void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeMeshParameters, const Polygons& polygons)
 {
     CurvilinearGrid CurvilinearGrid;
     m_projection = polygons.m_projection;
-    if (makeGridParametersNative.GridType == 0)
+    if (MakeMeshParameters.GridType == 0)
     {
         // regular grid
-        int numM = makeGridParametersNative.NumberOfColumns + 1;
-        int numN = makeGridParametersNative.NumberOfRows + 1;
-        double XGridBlockSize = makeGridParametersNative.XGridBlockSize;
-        double YGridBlockSize = makeGridParametersNative.YGridBlockSize;
-        double cosineAngle = std::cos(makeGridParametersNative.GridAngle * degrad_hp);
-        double sinAngle = std::sin(makeGridParametersNative.GridAngle * degrad_hp);
-        double OriginXCoordinate = makeGridParametersNative.OriginXCoordinate;
-        double OriginYCoordinate = makeGridParametersNative.OriginYCoordinate;
+        int numM = MakeMeshParameters.NumberOfColumns + 1;
+        int numN = MakeMeshParameters.NumberOfRows + 1;
+        double XGridBlockSize = MakeMeshParameters.XGridBlockSize;
+        double YGridBlockSize = MakeMeshParameters.YGridBlockSize;
+        double cosineAngle = std::cos(MakeMeshParameters.GridAngle * degrad_hp);
+        double sinAngle = std::sin(MakeMeshParameters.GridAngle * degrad_hp);
+        double OriginXCoordinate = MakeMeshParameters.OriginXCoordinate;
+        double OriginYCoordinate = MakeMeshParameters.OriginYCoordinate;
 
         // in case a polygon is there, re-compute parameters
         if (!polygons.IsEmpty())

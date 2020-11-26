@@ -28,8 +28,8 @@
 #pragma once
 
 #include <vector>
-#include <MeshKernel/SampleRefineParametersNative.hpp>
-#include <MeshKernel/InterpolationParametersNative.hpp>
+#include <MeshKernel/SampleRefineParameters.hpp>
+#include <MeshKernel/InterpolationParameters.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 #include <MeshKernel/AveragingInterpolation.hpp>
@@ -71,12 +71,12 @@ namespace meshkernel
         ///    4.4 Refine face by splitting edges, RefineFacesBySplittingEdges
         /// 5. Connect hanging nodes if requested, RemoveIsolatedHangingnodes, ConnectHangingNodes
         /// @param polygon The polygon where to perform refinement (option 2, refine in polygon)
-        /// @param sampleRefineParametersNative Refinement based on samples parameters
-        /// @param interpolationParametersNative Interpolation parameters
+        /// @param sampleRefineParameters Refinement based on samples parameters
+        /// @param interpolationParameters Interpolation parameters
         void Refine(
             const Polygons& polygon,
-            const meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
-            const meshkernelapi::InterpolationParametersNative& interpolationParametersNative);
+            const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
+            const meshkernelapi::InterpolationParameters& interpolationParameters);
 
     private:
         /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh

@@ -28,7 +28,7 @@
 #pragma once
 
 #include <vector>
-#include <MeshKernel/CurvilinearParametersNative.hpp>
+#include <MeshKernel/CurvilinearParameters.hpp>
 
 namespace meshkernel
 {
@@ -40,7 +40,7 @@ namespace meshkernel
     public:
         /// @brief Ctor with splines and parameters
         /// @returns
-        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, const meshkernelapi::CurvilinearParametersNative& curvilinearParametersNative);
+        CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, const meshkernelapi::CurvilinearParameters& curvilinearParameters);
 
         /// @brief Computes the adimensional intersections between splines.
         /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)

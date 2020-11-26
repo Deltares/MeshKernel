@@ -43,8 +43,8 @@ meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh, std::shar
 meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) : m_mesh(mesh){};
 
 void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
-                                        const meshkernelapi::SampleRefineParametersNative& sampleRefineParametersNative,
-                                        const meshkernelapi::InterpolationParametersNative& interpolationParametersNative)
+                                        const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
+                                        const meshkernelapi::InterpolationParameters& interpolationParameters)
 {
     // administrate mesh once more
     m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -65,26 +65,26 @@ void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
 
     if (isRefinementBasedOnSamples)
     {
-        m_deltaTimeMaxCourant = sampleRefineParametersNative.MinimumCellSize / std::sqrt(gravity);
-        m_refineOutsideFace = sampleRefineParametersNative.AccountForSamplesOutside == 1 ? true : false;
-        m_minimumFaceSize = sampleRefineParametersNative.MinimumCellSize;
-        m_connectHangingNodes = sampleRefineParametersNative.ConnectHangingNodes == 1 ? true : false;
+        m_deltaTimeMaxCourant = sampleRefineParameters.MinimumCellSize / std::sqrt(gravity);
+        m_refineOutsideFace = sampleRefineParameters.AccountForSamplesOutside == 1 ? true : false;
+        m_minimumFaceSize = sampleRefineParameters.MinimumCellSize;
+        m_connectHangingNodes = sampleRefineParameters.ConnectHangingNodes == 1 ? true : false;
 
-        if (sampleRefineParametersNative.RefinementType == 1)
+        if (sampleRefineParameters.RefinementType == 1)
         {
             m_refinementType = RefinementType::RidgeRefinement;
         }
-        if (sampleRefineParametersNative.RefinementType == 2)
+        if (sampleRefineParameters.RefinementType == 2)
         {
             m_refinementType = RefinementType::WaveCourant;
         }
-        if (sampleRefineParametersNative.RefinementType == 3)
+        if (sampleRefineParameters.RefinementType == 3)
         {
             m_refinementType = RefinementType::RefinementLevels;
         }
     }
 
-    m_maxNumberOfRefinementIterations = interpolationParametersNative.MaxNumberOfRefinementIterations;
+    m_maxNumberOfRefinementIterations = interpolationParameters.MaxNumberOfRefinementIterations;
 
     // get bounding box
     Point lowerLeft{doubleMissingValue, doubleMissingValue};
@@ -95,7 +95,7 @@ void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
     }
 
     // select the nodes to refine
-    if (!isRefinementBasedOnSamples && interpolationParametersNative.RefineIntersected)
+    if (!isRefinementBasedOnSamples && interpolationParameters.RefineIntersected)
     {
         m_refineIntersectedFaces = true;
         m_mesh->MaskFaceEdgesInPolygon(polygon, false, true);

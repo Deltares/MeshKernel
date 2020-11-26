@@ -1,8 +1,8 @@
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/SampleRefineParametersNative.hpp>
-#include <MeshKernel/InterpolationParametersNative.hpp>
+#include <MeshKernel/SampleRefineParameters.hpp>
+#include <MeshKernel/InterpolationParameters.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 #include <gtest/gtest.h>
@@ -28,17 +28,17 @@ TEST(MeshRefinement, FourByFourWithFourSamples)
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
-    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
-    sampleRefineParametersNative.MinimumCellSize = 1.0;
-    sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.ConnectHangingNodes = 1;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.32;
+    sampleRefineParameters.MinimumCellSize = 1.0;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
-    interpolationParametersNative.RefineIntersected = false;
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 1;
+    interpolationParameters.RefineIntersected = false;
 
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     // 3 Validation edges connecting hanging nodes
 
@@ -119,17 +119,17 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
-    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.64;
-    sampleRefineParametersNative.MinimumCellSize = 2.0;
-    sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.ConnectHangingNodes = 1;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.64;
+    sampleRefineParameters.MinimumCellSize = 2.0;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
-    interpolationParametersNative.RefineIntersected = false;
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 4;
+    interpolationParameters.RefineIntersected = false;
 
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     //Assert number of edges and nodes
     ASSERT_EQ(131, mesh->GetNumEdges());
@@ -220,17 +220,17 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
-    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 15.97;
-    sampleRefineParametersNative.MinimumCellSize = 50.0;
-    sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.ConnectHangingNodes = 1;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 15.97;
+    sampleRefineParameters.MinimumCellSize = 50.0;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
-    interpolationParametersNative.RefineIntersected = false;
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 1;
+    interpolationParameters.RefineIntersected = false;
 
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     // edges connecting hanging nodes
     ASSERT_EQ(10, mesh->m_edges[32].first);
@@ -266,14 +266,14 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
     meshkernel::MeshRefinement meshRefinement(mesh);
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
-    interpolationParametersNative.RefineIntersected = false;
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 1;
+    interpolationParameters.RefineIntersected = false;
 
     std::vector<meshkernel::Sample> samples;
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     // total number of edges
     ASSERT_EQ(15, mesh->GetNumNodes());
@@ -348,17 +348,17 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerface)
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
-    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
-    sampleRefineParametersNative.MinimumCellSize = 3.0;
-    sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.ConnectHangingNodes = 1;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.96;
+    sampleRefineParameters.MinimumCellSize = 3.0;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
-    interpolationParametersNative.RefineIntersected = false;
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 2;
+    interpolationParameters.RefineIntersected = false;
 
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     // assert on number of nodes and edges
     ASSERT_EQ(150, mesh->GetNumNodes());
@@ -417,17 +417,17 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
-    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
-    sampleRefineParametersNative.MinimumCellSize = 3.0;
-    sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.ConnectHangingNodes = 1;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.96;
+    sampleRefineParameters.MinimumCellSize = 3.0;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 4;
-    interpolationParametersNative.RefineIntersected = false;
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 4;
+    interpolationParameters.RefineIntersected = false;
 
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     // total number of edges
     ASSERT_EQ(1614, mesh->GetNumNodes());
@@ -482,18 +482,18 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
-    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
-    sampleRefineParametersNative.MinimumCellSize = 0.5;
-    sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.ConnectHangingNodes = 1;
-    sampleRefineParametersNative.RefinementType = 3;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.96;
+    sampleRefineParameters.MinimumCellSize = 0.5;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
+    sampleRefineParameters.RefinementType = 3;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 10;
-    interpolationParametersNative.RefineIntersected = false;
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 10;
+    interpolationParameters.RefineIntersected = false;
 
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     // total number of edges
     ASSERT_EQ(413, mesh->GetNumNodes());
@@ -549,17 +549,17 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
-    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.96;
-    sampleRefineParametersNative.MinimumCellSize = 3.0;
-    sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.ConnectHangingNodes = 1;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.96;
+    sampleRefineParameters.MinimumCellSize = 3.0;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
-    interpolationParametersNative.RefineIntersected = false;
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 1;
+    interpolationParameters.RefineIntersected = false;
 
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     // total number of edges
     ASSERT_EQ(30, mesh->GetNumNodes());
@@ -612,18 +612,18 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
-    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.32;
-    sampleRefineParametersNative.MinimumCellSize = 1.0;
-    sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.ConnectHangingNodes = 1;
-    sampleRefineParametersNative.RefinementType = 3;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.32;
+    sampleRefineParameters.MinimumCellSize = 1.0;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
+    sampleRefineParameters.RefinementType = 3;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 2;
-    interpolationParametersNative.RefineIntersected = false;
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 2;
+    interpolationParameters.RefineIntersected = false;
 
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     // assert on number of nodes and edges
     ASSERT_EQ(48, mesh->GetNumNodes());
@@ -653,17 +653,17 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 
     meshkernel::MeshRefinement meshRefinement(mesh, averaging);
     meshkernel::Polygons polygon;
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
-    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.000527;
-    sampleRefineParametersNative.MinimumCellSize = 0.00165;
-    sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.ConnectHangingNodes = 1;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.000527;
+    sampleRefineParameters.MinimumCellSize = 0.00165;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
-    interpolationParametersNative.RefineIntersected = false;
-    sampleRefineParametersNative.RefinementType = 2;
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 1;
+    interpolationParameters.RefineIntersected = false;
+    sampleRefineParameters.RefinementType = 2;
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     ASSERT_EQ(60, mesh->GetNumEdges());
     ASSERT_EQ(32, mesh->GetNumNodes());
@@ -700,17 +700,17 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 
     meshkernel::MeshRefinement meshRefinement(mesh);
     meshkernel::Polygons polygon;
-    meshkernelapi::SampleRefineParametersNative sampleRefineParametersNative;
-    sampleRefineParametersNative.MaximumTimeStepInCourantGrid = 0.000527;
-    sampleRefineParametersNative.MinimumCellSize = 0.00165;
-    sampleRefineParametersNative.AccountForSamplesOutside = false;
-    sampleRefineParametersNative.ConnectHangingNodes = 1;
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.000527;
+    sampleRefineParameters.MinimumCellSize = 0.00165;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
 
-    meshkernelapi::InterpolationParametersNative interpolationParametersNative;
-    interpolationParametersNative.MaxNumberOfRefinementIterations = 1;
-    interpolationParametersNative.RefineIntersected = false;
-    sampleRefineParametersNative.RefinementType = 2;
-    meshRefinement.Refine(polygon, sampleRefineParametersNative, interpolationParametersNative);
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 1;
+    interpolationParameters.RefineIntersected = false;
+    sampleRefineParameters.RefinementType = 2;
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
     mesh->ComputeEdgeLengths();
 

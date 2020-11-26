@@ -29,30 +29,21 @@
 
 namespace meshkernelapi
 {
-    struct SampleRefineParametersNative
+    struct CurvilinearParameters
     {
-        /// @brief Sample vector dimension
-        int SampleVectorDimension;
+        /// @brief M-refinement factor for regular grid generation (mfacmax, 2000)
+        int MRefinement;
 
-        /// @brief Maximum number of refinement iterations, set to 1 if only one refinement is wanted
-        int MaxNumberOfRefinementIterations;
+        /// @brief N-refinement factor for regular grid generation (nfacmax, 40)
+        int NRefinement;
 
-        /// @brief Minimum cell size
-        double MinimumCellSize;
+        /// @brief Nr. of inner iterations in regular grid smoothing (10).
+        int SmoothingIterations;
 
-        /// @brief Directional refinement, 1 yes 0 no
-        int DirectionalRefinement;
+        /// @brief Smoothing parameter (0.5).
+        double SmoothingParameter;
 
-        /// @brief Refinement criterion type
-        int RefinementType;
-
-        /// @brief Connect hanging nodes at the end of the iteration, 1 yes 0 no
-        int ConnectHangingNodes;
-
-        /// @brief Maximum time-step in courant grid
-        double MaximumTimeStepInCourantGrid;
-
-        /// @brief Take samples outside face into account , 1 yes 0 no
-        int AccountForSamplesOutside;
+        /// @brief Attraction/repulsion parameter (0).
+        double AttractionParameter;
     };
 } // namespace meshkernelapi
