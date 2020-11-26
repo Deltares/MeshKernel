@@ -1496,6 +1496,12 @@ namespace meshkernel
         area = std::abs(area);
     }
 
+    /// @brief Interpolate spline points
+    /// @param[in] coordinates
+    /// @param[in] coordinatesDerivatives
+    /// @param[in] pointAdimensionalCoordinate
+    /// @param[out] pointCoordinate
+    /// @returns False if an error occurs
     template <typename T>
     [[nodiscard]] bool InterpolateSplinePoint(const std::vector<T>& coordinates,
                                               const std::vector<T>& coordinatesDerivatives,
@@ -1763,8 +1769,13 @@ namespace meshkernel
         }
     }
 
+    /// @brief Get the bounding box
+    /// @tparam T Requires IsCoordinate<T>
+    /// @param[in] values
+    /// @param[out] lowerLeft
+    /// @param[out] upperRight
     template <typename T>
-    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight) //requires IsCoordinate<T>
+    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight)
     {
 
         double minx = std::numeric_limits<double>::max();
@@ -1791,8 +1802,14 @@ namespace meshkernel
         upperRight = {maxx, maxy};
     }
 
+    /// @brief Checks if value is in bounding box
+    /// @tparam T Requires IsCoordinate<T>
+    /// @param[in] point
+    /// @param[in] lowerLeft
+    /// @param[in] upperRight
+    /// @returns If value is in bounding box
     template <typename T>
-    bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight) //requires IsCoordinate<T>
+    bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight)
     {
 
         return point.x >= lowerLeft.x && point.x <= upperRight.x &&
