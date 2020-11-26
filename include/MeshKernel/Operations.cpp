@@ -225,6 +225,9 @@ namespace meshkernel
         }
     }
 
+    /// @brief Add a value to each element of a vector
+    /// @param vec Vector which will get a value added to
+    /// @param value Value to be added to each vector element
     template <typename T>
     static void AddValueToVector(std::vector<T>& vec, const T value)
     {
@@ -234,7 +237,10 @@ namespace meshkernel
         }
     }
 
-    // algorithm performing the zero's search using the golden section algorithm's
+    /// @brief Algorithm performing the zero's search using the golden section algorithm's
+    /// @param func Function
+    /// @param min Minimum
+    /// @param max Maximum
     template <typename F>
     [[nodiscard]] static double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
     {
@@ -285,6 +291,9 @@ namespace meshkernel
         return f1 < f2 ? x1 : x2;
     }
 
+    /// @brief Get the next circular forward index
+    /// @param[in] currentIndex Current index
+    /// @param[in] size Size
     [[nodiscard]] static int NextCircularForwardIndex(int currentIndex, int size)
     {
         int index = currentIndex + 1;
@@ -295,6 +304,9 @@ namespace meshkernel
         return index;
     }
 
+    /// @brief Get the next circular backward index
+    /// @param[in] currentIndex Current index
+    /// @param[in] size Size
     [[nodiscard]] static int NextCircularBackwardIndex(int currentIndex, int size)
     {
         int index = currentIndex - 1;
@@ -305,12 +317,16 @@ namespace meshkernel
         return index;
     }
 
+    /// @brief Determines if point is on pole
+    /// @param[in] point Point
     [[nodiscard]] static bool IsPointOnPole(const Point& point)
     {
         return std::abs(std::abs(point.y) - 90.0) < absLatitudeAtPoles;
     }
 
-    ///sphertocart3D transform 2d spherical to 3d cartesian
+    /// @brief Transforms 2D point in spherical coordinates to 3D cartesian coordinates
+    /// @param[in] sphericalPoint
+    /// @param[out] cartesianPoint
     static void SphericalToCartesian3D(const Point& sphericalPoint, Cartesian3DPoint& cartesianPoint)
     {
         cartesianPoint.z = earth_radius * sin(sphericalPoint.y * degrad_hp);
@@ -319,7 +335,10 @@ namespace meshkernel
         cartesianPoint.y = rr * sin(sphericalPoint.x * degrad_hp);
     }
 
-    ///Cart3Dtospher Transform 3d cartesian coordinates to 2d spherical
+    /// @brief Transforms 3D cartesian coordinates to 2D point in spherical coordinates
+    /// @param[in] cartesianPoint
+    /// @param[in] referenceLongitude
+    /// @param[out] sphericalPoint
     static void Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude, Point& sphericalPoint)
     {
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
@@ -327,19 +346,28 @@ namespace meshkernel
         sphericalPoint.x = angle + std::lround((referenceLongitude - angle) / 360.0) * 360.0;
     }
 
-    /// IsLeft(): tests if a point is Left|On|Right of an infinite line.
-    ///    Input:  three points leftPoint, rightPoint, and point
-    ///    Return: >0 for point left of the line through leftPoint and rightPoint
-    ///            =0 for point  on the line
-    ///            <0 for point  right of the line
+    /// @brief Tests if a point is Left|On|Right of an infinite line.
+    /// @param[in] leftPoint
+    /// @param[in] rightPoint
+    /// @param[in] point
+    /// @returns
+    ///          - >0 for point left of the line through leftPoint and rightPoint
+    ///          - =0 for point  on the line
+    ///          - <0 for point  right of the line
     [[nodiscard]] static double IsLeft(const Point& leftPoint, const Point& rightPoint, const Point& point)
     {
         double left = (rightPoint.x - leftPoint.x) * (point.y - leftPoint.y) - (point.x - leftPoint.x) * (rightPoint.y - leftPoint.y);
         return left;
     }
 
-    /// Check if a point is in polygonNodes using the winding number method
-    /// polygonNodes: a closed polygonNodes consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
+    /// @brief Checks if a point is in polygonNodes using the winding number method
+    /// @param[in] point
+    /// @param[in] polygonNodes A closed polygonNodes consisting of a vector of numberOfPolygonPoints + 1 in counter clockwise order
+    /// @param[in] startNode
+    /// @param[in] endNode
+    /// @param[in] projection
+    /// @param[in] polygonCenter
+    /// @returns If point is in polygon nodes
     [[nodiscard]] static bool IsPointInPolygonNodes(Point point,
                                                     const std::vector<Point>& polygonNodes,
                                                     int startNode,
@@ -465,6 +493,7 @@ namespace meshkernel
         return isInPolygon;
     }
 
+    /// @brief Computes three base components
     static void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp)
     {
         double phi0 = point.y * degrad_hp;
@@ -483,6 +512,7 @@ namespace meshkernel
         ezzp[2] = cos(phi0);
     };
 
+    /// @brief Computes two base components
     static void ComputeTwoBaseComponents(const Point& point, double (&elambda)[3], double (&ephi)[3])
     {
         double phi0 = point.y * degrad_hp;
@@ -497,6 +527,10 @@ namespace meshkernel
         ephi[2] = cos(phi0);
     };
 
+    /// @brief Gets dx for the given projection
+    /// @param[in] firstPoint
+    /// @param[in] secondPoint
+    /// @param[in] projection
     [[nodiscard]] static double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
         double delta = secondPoint.x - firstPoint.x;
