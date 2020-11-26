@@ -348,7 +348,7 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
     int nL = m_mesh->m_nodesNumEdges[nodeLeft] - OptimalNumberOfConnectedNodes(nodeLeft);
     int nR = m_mesh->m_nodesNumEdges[nodeRight] - OptimalNumberOfConnectedNodes(nodeRight);
 
-    if (m_projectToLandBoundary)
+    if (m_projectToLandBoundary && m_landBoundaries->GetNumNodes() > 0)
     {
         if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] >= 0 && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] >= 0)
         {
