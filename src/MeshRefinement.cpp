@@ -134,8 +134,7 @@ void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
                 edge = -edge;
             }
 
-            //TODO: implement SmoothEdgeRefinementMask
-            //SmoothEdgeRefinementMask();
+            //TODO: implement SmoothEdgeRefinementMask SmoothEdgeRefinementMask();
         }
         else
         {

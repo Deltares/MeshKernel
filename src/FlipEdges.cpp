@@ -43,21 +43,9 @@ meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
                                                                m_triangulateFaces(triangulateFaces),
                                                                m_projectToLandBoundary(projectToLandBoundary)
 {
-    if (m_landBoundaries->GetNumNodes() <= 0)
-    {
-        m_projectToLandBoundary = false;
-    }
     if (m_projectToLandBoundary)
     {
-        try
-        {
-            m_landBoundaries->FindNearestMeshBoundary(LandBoundaries::ProjectToLandBoundaryOption::WholeMesh);
-        }
-        catch (const std::exception&)
-        {
-            // TODO: log exception: need to rethrow the exception
-            m_projectToLandBoundary = false;
-        }
+        m_landBoundaries->FindNearestMeshBoundary(LandBoundaries::ProjectToLandBoundaryOption::WholeMesh);
     }
 };
 

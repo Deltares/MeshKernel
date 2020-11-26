@@ -57,7 +57,7 @@ namespace meshkernel
     {
         if (m_nodes.empty())
         {
-            throw std::invalid_argument("LandBoundaries::Administrate: The land boundaries contain no nodes.");
+            return;
         }
 
         // do not consider the landboundary nodes outside the polygon

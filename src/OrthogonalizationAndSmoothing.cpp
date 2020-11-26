@@ -241,8 +241,7 @@ void meshkernel::OrthogonalizationAndSmoothing::InnerIteration()
     SnapMeshToOriginalMeshBoundary();
 
     // compute local coordinates
-    // TODO: Not implemented yet
-    // ComputeCoordinates();
+    // TODO: Not implemented yet ComputeCoordinates();
 
     // project on land boundary
     m_landBoundaries->SnapMeshToLandBoundaries();
