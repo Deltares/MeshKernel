@@ -196,7 +196,7 @@ namespace meshkernel
         }
     };
 
-    /// @brief Converts arrays of edge nodes to corresponding vector
+    /// @brief Converts array of edge nodes to corresponding vector
     static std::vector<Edge> ConvertToEdgeNodesVector(int numEdges, const int* edge_nodes)
     {
         std::vector<Edge> edges(numEdges);
@@ -212,7 +212,7 @@ namespace meshkernel
         return edges;
     }
 
-    /// @brief Converts arrays of nodes to corresponding vector
+    /// @brief Converts array of nodes to corresponding vector
     static std::vector<Point> ConvertToNodesVector(int numNodes, const double* nodex, const double* nodey)
     {
         std::vector<Point> nodes(numNodes);
@@ -224,6 +224,7 @@ namespace meshkernel
         return nodes;
     }
 
+    /// @brief Converts array of face centers to corresponding vector
     static std::vector<Point> ConvertToFaceCentersVector(int numFaces, const double* facex, const double* facey)
     {
         std::vector<Point> faceCenters(numFaces);

@@ -36,19 +36,21 @@
 
 namespace meshkernel
 {
-    // coordinate reference independent operations
+    /// @brief Defines generic dot product for one dimension
     template <typename T>
     [[nodiscard]] static T DotProduct(const T& dx1, const T& dx2)
     {
         return dx1 * dx2;
     }
 
+    /// @brief Defines generic dot product of infinite dimensions
     template <typename T, typename... Args>
     [[nodiscard]] static T DotProduct(const T& dx1, const T& dx2, Args&... args)
     {
         return dx1 * dx2 + DotProduct(args...);
     }
 
+    /// @brief Defines vector product in cartesian 3D-space
     [[nodiscard]] static auto VectorProduct(Cartesian3DPoint a, Cartesian3DPoint b)
     {
         return Cartesian3DPoint{
@@ -57,11 +59,18 @@ namespace meshkernel
             a.x * b.y - a.y * b.x};
     }
 
+    /// @brief Defines inner product in cartesian 3D-space
     [[nodiscard]] static auto InnerProduct(Cartesian3DPoint a, Cartesian3DPoint b)
     {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
+    /// @brief Resizes an vector if given size is greater than the current size of the given vector
+    ///
+    /// Use ResizeVectorIfNeededWithMinimumSize in order to reserve a minimal size.
+    /// @param[in] newSize The size the vector should minimally have
+    /// @param[in,out] vectorToResize The vector to resize
+    /// @param[in] fillValue Value with which the vector should be filled if resize is necessary
     template <typename T>
     void ResizeVectorIfNeeded(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
     {
@@ -73,6 +82,14 @@ namespace meshkernel
         }
     }
 
+    /// @brief Resizes an vector if given size is greater than the current size of the given vector.
+    ///        Also allows to input a minimal size which should be reserved.
+    ///
+    /// Use ResizeVectorIfNeededWithMinimumSize in order to reserve a minimal size.
+    /// @param[in] newSize The size the vector should minimally have
+    /// @param[in,out] vectorToResize The vector to resize
+    /// @param[in] minSize Minimal size which should be reserved
+    /// @param[in] fillValue Value with which the vector should be filled if resize is necessary
     template <typename T>
     void ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
     {
@@ -84,6 +101,10 @@ namespace meshkernel
         }
     }
 
+    /// @brief Find index of a certain element
+    /// @param[in] vec Vector to search in
+    /// @param[in] el Element to search for
+    /// @returns Index of element
     template <typename T>
     [[nodiscard]] static int FindIndex(const std::vector<T>& vec, T el)
     {
@@ -99,7 +120,13 @@ namespace meshkernel
         return index;
     }
 
-    static auto FindIndexes(const std::vector<Point>& vec,
+    /// @brief Find valid index within a certain range
+    /// @param[in] vec Vector to search in
+    /// @param[in] start Start of the range to search for
+    /// @param[in] start End of the range to search for
+    /// @param[in] separator Separator
+    /// @returns Indices of elements
+    static auto FindIndices(const std::vector<Point>& vec,
                             const size_t start,
                             const size_t end,
                             const double& separator)
@@ -143,8 +170,10 @@ namespace meshkernel
         return result;
     }
 
+    /// @brief Sort a vector by its value
+    /// @param v Vector to sort
     template <typename T>
-    [[nodiscard]] static std::vector<int> SortedIndexes(const std::vector<T>& v)
+    [[nodiscard]] static std::vector<int> SortedIndices(const std::vector<T>& v)
     {
         std::vector<int> idx(v.size());
         iota(idx.begin(), idx.end(), 0);
@@ -152,7 +181,9 @@ namespace meshkernel
         return idx;
     }
 
-    //chmike's algorithm
+    /// @brief Reorder vector by using chmike's algorithm
+    /// @param[in, out] vector Vector to reorder
+    /// @param[in] order Order
     template <class T>
     static void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
     {
@@ -164,10 +195,11 @@ namespace meshkernel
         v = ordered;
     }
 
+    /// @brief Make vector monotonic
+    /// @param[in, out] Vector to be made monotonic
     template <typename T>
-    static void MakeMonothonic(std::vector<T>& v)
+    static void MakeMonotonic(std::vector<T>& v)
     {
-
         bool isMonotonic = false;
         int maxIter = 10;
         int iter = 0;

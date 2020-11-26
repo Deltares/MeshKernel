@@ -124,7 +124,7 @@ namespace meshkernelapi
         std::vector<meshkernel::Point> splineCornerPoints;
         ConvertGeometryListToPointVector(geometryListIn, splineCornerPoints);
 
-        const auto indexes = FindIndexes(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue);
+        const auto indexes = FindIndices(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue);
 
         for (const auto& index : indexes)
         {
@@ -604,7 +604,7 @@ namespace meshkernelapi
                 splines[i].y = geometryListIn.yCoordinates[i];
             }
 
-            const auto indexes = FindIndexes(splines, 0, splines.size(), meshkernel::doubleMissingValue);
+            const auto indexes = FindIndices(splines, 0, splines.size(), meshkernel::doubleMissingValue);
             const auto numSplines = indexes.size();
             std::vector<meshkernel::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
 

@@ -485,7 +485,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
     size_t startGridLine = 0;
     while (startIndex < m_gridPoints[0].size())
     {
-        auto mIndicesThisSide = FindIndexes(m_gridPoints[0], startIndex, m_numM, doubleMissingValue);
+        auto mIndicesThisSide = FindIndices(m_gridPoints[0], startIndex, m_numM, doubleMissingValue);
 
         mIndicesOtherSide[0][0] = mIndicesThisSide[0][1] + 2;
         mIndicesOtherSide[0][1] = mIndicesOtherSide[0][0] + (mIndicesThisSide[0][1] - mIndicesThisSide[0][0]);
@@ -498,7 +498,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
         //check if this part is connected to another part
         for (auto i = mIndicesThisSide[0][0]; i < mIndicesThisSide[0][1] + 1; ++i)
         {
-            nIndicesThisSide = FindIndexes(gridPointsNDirection[i], 0, gridPointsNDirection[i].size(), doubleMissingValue);
+            nIndicesThisSide = FindIndices(gridPointsNDirection[i], 0, gridPointsNDirection[i].size(), doubleMissingValue);
             minN = std::min(minN, nIndicesThisSide[0][0]);
             maxN = std::max(maxN, nIndicesThisSide[0][1]);
 
@@ -518,7 +518,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
                 }
                 else
                 {
-                    const auto nIndicesOtherSide = FindIndexes(gridPointsNDirection[mOther], 0, gridPointsNDirection[mOther].size(), doubleMissingValue);
+                    const auto nIndicesOtherSide = FindIndices(gridPointsNDirection[mOther], 0, gridPointsNDirection[mOther].size(), doubleMissingValue);
                     minNOther = std::min(minNOther, nIndicesOtherSide[0][0]);
                     maxNOther = std::max(maxNOther, nIndicesOtherSide[0][1]);
                 }
@@ -1596,7 +1596,7 @@ void meshkernel::CurvilinearGridFromSplines::GetSplineIntersections(const int in
         }
     }
 
-    const auto sortedIndices = SortedIndexes(m_crossSplineCoordinates[index]);
+    const auto sortedIndices = SortedIndices(m_crossSplineCoordinates[index]);
     ReorderVector(m_crossSplineCoordinates[index], sortedIndices);
     ReorderVector(m_crossingSplinesIndices[index], sortedIndices);
     ReorderVector(m_isLeftOriented[index], sortedIndices);
