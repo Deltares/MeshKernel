@@ -35,6 +35,9 @@ namespace meshkernel
     class CurvilinearGrid;
     class Splines;
 
+    /// @brief A class used to create a curvilinear grid from 4 splines in blocks
+    ///
+    /// Usually CurvilinearGridFromSplines should be preferred.
     class CurvilinearGridFromSplinesTransfinite
     {
     public:
@@ -43,6 +46,7 @@ namespace meshkernel
         CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, const meshkernelapi::CurvilinearParameters& curvilinearParameters);
 
         /// @brief Computes the adimensional intersections between splines.
+        ///
         /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)
         void ComputeIntersections();
 
@@ -54,10 +58,10 @@ namespace meshkernel
 
     private:
         /// @brief Order the splines such that their index increases in m or n direction
-        /// @param startFirst
-        /// @param endFirst
-        /// @param startSecond
-        /// @param endSecond
+        /// @param[in] startFirst
+        /// @param[in] endFirst
+        /// @param[in] startSecond
+        /// @param[in] endSecond
         /// @returns Boolean to indicate that procedure has to be repeated
         [[nodiscard]] bool OrderSplines(int startFirst,
                                         int endFirst,

@@ -36,6 +36,7 @@ namespace meshkernel
     class Polygons;
     class CurvilinearGrid;
 
+    /// @brief A class used to compute a CurvilinearGrid from a polygon
     class CurvilinearGridFromPolygon
     {
     public:

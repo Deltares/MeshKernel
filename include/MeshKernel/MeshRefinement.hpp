@@ -40,6 +40,7 @@ namespace meshkernel
     class Mesh;
     class Polygons;
 
+    /// @brief A class used to refine a Mesh
     class MeshRefinement
     {
         enum class RefinementType

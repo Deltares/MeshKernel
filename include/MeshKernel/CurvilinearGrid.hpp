@@ -32,6 +32,7 @@
 
 namespace meshkernel
 {
+    /// @brief A class representing a curvilinear grid
     class CurvilinearGrid
     {
 

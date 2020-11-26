@@ -73,7 +73,7 @@ namespace meshkernel
     // physical constants
     const double gravity = 9.81;
 
-    // Operations averaging methods
+    ///@brief Operations averaging methods
     enum class AveragingMethod
     {
         SimpleAveraging = 1,
@@ -85,7 +85,7 @@ namespace meshkernel
         KdTree = 7
     };
 
-    // Interpolation locations
+    /// @brief Interpolation locations
     enum class InterpolationLocation
     {
         Faces = 0,

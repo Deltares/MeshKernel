@@ -42,6 +42,7 @@ namespace meshkernel
     class MakeMeshParameters;
     class GeometryList;
 
+    /// @brief A class describing an unstructured mesh
     class Mesh
     {
     public:

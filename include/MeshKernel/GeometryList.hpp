@@ -29,6 +29,7 @@
 
 namespace meshkernelapi
 {
+    /// @brief A struct used to describe a list of geometries in a C-compatible manner
     struct GeometryList
     {
         int type;

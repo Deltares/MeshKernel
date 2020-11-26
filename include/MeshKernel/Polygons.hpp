@@ -32,6 +32,7 @@
 
 namespace meshkernel
 {
+    /// @brief A class describing polygons
     class Polygons
     {
     public:

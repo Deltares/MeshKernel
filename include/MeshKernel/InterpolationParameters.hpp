@@ -29,6 +29,7 @@
 
 namespace meshkernelapi
 {
+    /// @brief A struct used to describe the interpolation parameters in a C-compatible manner
     struct InterpolationParameters
     {
         /// Actual interpolation type (1)

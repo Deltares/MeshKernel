@@ -29,6 +29,7 @@
 
 namespace meshkernelapi
 {
+    /// @brief A struct used to describe the orthogonalization parameters in a C-compatible manner
     struct OrthogonalizationParameters
     {
         /// @brief Number of outer iterations in orthogonalization. Increase this parameter for complex grids (2)

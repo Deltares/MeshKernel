@@ -29,6 +29,9 @@
 
 namespace meshkernelapi
 {
+    /// @brief A struct used to describe the values of an unstructured mesh in a C-compatible manner
+    ///
+    /// \see MeshGeometryDimensions
     struct MeshGeometry
     {
         int* edge_nodes = nullptr;

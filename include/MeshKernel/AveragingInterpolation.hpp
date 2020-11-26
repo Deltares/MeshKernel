@@ -36,10 +36,11 @@ namespace meshkernel
     class Mesh;
     struct Sample;
 
+    /// @brief The class used to interpolate based on averaging
     class AveragingInterpolation
     {
     public:
-        // Averaging methods
+        /// @brief Averaging methods
         enum class Method
         {
             SimpleAveraging = 1,

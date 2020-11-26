@@ -43,12 +43,16 @@ namespace meshkernel
     //    t.y;
     //};
 
+    /// @brief Generic function determining if two values are equal
+    ///
+    /// This is especially useful for floating point values.
     template <typename T>
     static bool IsEqual(T value, T referenceValue)
     {
         return std::abs(value - referenceValue) < std::numeric_limits<T>::epsilon();
     }
 
+    /// @brief Enumerator describing the supported projections
     enum class Projection
     {
         cartesian,        // jsferic  = 0
@@ -56,6 +60,7 @@ namespace meshkernel
         sphericalAccurate // jasfer3D = 1
     };
 
+    /// @brief A struct describing a point in a two-dimensional space
     struct Point
     {
         double x;
@@ -159,8 +164,10 @@ namespace meshkernel
         }
     };
 
+    /// @brief Describes an edge with two indices
     typedef std::pair<int, int> Edge;
 
+    /// @brief A struct describing the three coordinates in a cartesian projection.
     struct Cartesian3DPoint
     {
         double x;
@@ -168,6 +175,7 @@ namespace meshkernel
         double z;
     };
 
+    /// @brief A struct describing a sample with two coordinates and a value
     struct Sample
     {
         double x;
@@ -188,6 +196,7 @@ namespace meshkernel
         }
     };
 
+    /// @brief Converts arrays of edge nodes to corresponging vector
     static std::vector<Edge> ConvertToEdgeNodesVector(int numEdges, const int* edge_nodes)
     {
         std::vector<Edge> edges(numEdges);
@@ -203,6 +212,7 @@ namespace meshkernel
         return edges;
     }
 
+    /// @brief Converts arrays of nodes to corresponding vector
     static std::vector<Point> ConvertToNodesVector(int numNodes, const double* nodex, const double* nodey)
     {
         std::vector<Point> nodes(numNodes);

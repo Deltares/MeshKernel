@@ -34,6 +34,7 @@ namespace meshkernel
 {
     class CurvilinearGrid;
 
+    /// @brief A class describing splines
     class Splines
     {
 
@@ -150,9 +151,10 @@ namespace meshkernel
         void AllocateSplinesProperties();
     };
 
-    struct FuncDimensionalToAdimensionalDistance
+    /// @brief This struct is used to create a function for converting an adimensional distance to a dimensional one
+    struct FuncAdimensionalToDimensionalDistance
     {
-        FuncDimensionalToAdimensionalDistance(Splines* splines,
+        FuncAdimensionalToDimensionalDistance(Splines* splines,
                                               int splineIndex,
                                               bool isSpacingCurvatureAdapted,
                                               double h) : m_spline(splines),
@@ -166,9 +168,9 @@ namespace meshkernel
         }
 
         // this is the function we want to find the root
-        double operator()(double adimensionalDistancereferencePoint)
+        double operator()(double adimensionalDistanceReferencePoint)
         {
-            double distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0, adimensionalDistancereferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
+            double distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
             distanceFromReferencePoint = std::abs(distanceFromReferencePoint - m_DimensionalDistance);
             return distanceFromReferencePoint;
         }

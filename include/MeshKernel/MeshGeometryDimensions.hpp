@@ -29,6 +29,9 @@
 
 namespace meshkernelapi
 {
+    /// @brief A struct used to describe the geometry dimensions of an unstructured mesh in a C-compatible manner
+    ///
+    /// \see MeshGeometry
     struct MeshGeometryDimensions
     {
         char name[255];

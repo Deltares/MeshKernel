@@ -37,6 +37,9 @@ namespace meshkernel
 
     struct Point;
     struct Sample;
+    /// @brief Wrapper around the Triangle library
+    ///
+    /// \see https://www.cs.cmu.edu/~quake/triangle.html
     struct TriangulationWrapper
     {
         enum class TriangulationOptions

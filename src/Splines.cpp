@@ -426,7 +426,7 @@ void meshkernel::Splines::InterpolatePointsOnSpline(int index,
                                                     std::vector<Point>& points,
                                                     std::vector<double>& adimensionalDistances)
 {
-    FuncDimensionalToAdimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
+    FuncAdimensionalToDimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
     const auto numNodes = static_cast<int>(m_splineNodes[index].size());
     for (size_t i = 0, size = distances.size(); i < size; ++i)
     {

@@ -33,6 +33,9 @@ namespace meshkernel
     class Mesh;
     class LandBoundaries;
 
+    /// @brief A class used to flip edges in order to minimise the number of edges connected to a node.
+    ///
+    /// The optimal number of edges to a node is six
     class FlipEdges
     {
     public:

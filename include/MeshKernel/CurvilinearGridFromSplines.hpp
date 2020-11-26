@@ -38,6 +38,9 @@ namespace meshkernel
     class CurvilinearGrid;
     class Splines;
 
+    /// @brief A class used to create a curvilinear grid from a central spline
+    ///
+    /// Usually this class should be preferred over CurvilinearGridFromSplinesTransfinite.
     class CurvilinearGridFromSplines
     {
     public:
