@@ -54,7 +54,7 @@ namespace meshkernel
         /// @param curvilinearGrid
         void Compute(CurvilinearGrid& curvilinearGrid);
 
-        std::shared_ptr<Splines> m_splines; // A pointer to spline
+        std::shared_ptr<Splines> m_splines; ///< A pointer to spline
 
     private:
         /// @brief Order the splines such that their index increases in m or n direction
@@ -105,13 +105,13 @@ namespace meshkernel
                                     const std::vector<double>& intersectionDistances,
                                     std::vector<double>& distances) const;
 
-        std::vector<int> m_splineType;                                          // The spline types (1 horizontal, -1 vertical)
-        std::vector<std::vector<double>> m_splineIntersectionRatios;            // For each spline, stores the intersections in terms of total spline length
-        std::vector<std::vector<int>> m_splineGroupIndexAndFromToIntersections; // For each spline: position in m or n group, from and to spline crossing indices (MN12)
-        int m_numMSplines = -1;                                                 // The index of the last m spline
-        int m_numNSplines = -1;                                                 // The index of the last m spline
-        int m_numM = 0;                                                         // Number of m columns
-        int m_numN = 0;                                                         // Number of n rows
+        std::vector<int> m_splineType;                                          ///< The spline types (1 horizontal, -1 vertical)
+        std::vector<std::vector<double>> m_splineIntersectionRatios;            ///< For each spline, stores the intersections in terms of total spline length
+        std::vector<std::vector<int>> m_splineGroupIndexAndFromToIntersections; ///< For each spline: position in m or n group, from and to spline crossing indices (MN12)
+        int m_numMSplines = -1;                                                 ///< The index of the last m spline
+        int m_numNSplines = -1;                                                 ///< The index of the last m spline
+        int m_numM = 0;                                                         ///< Number of m columns
+        int m_numN = 0;                                                         ///< Number of n rows
     };
 
 } // namespace meshkernel

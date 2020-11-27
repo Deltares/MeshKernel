@@ -170,8 +170,13 @@ namespace meshkernel
     /// @brief A struct describing the three coordinates in a cartesian projection.
     struct Cartesian3DPoint
     {
+        /// @brief x-coordinate
         double x;
+
+        /// @brief y-coordinate
         double y;
+        
+        /// @brief z-coordinate
         double z;
     };
 

@@ -37,6 +37,9 @@ namespace meshkernel
     {
 
     public:
+        /// @brief Create a new curvilinear grid
+        /// @param[in] m Number of lines
+        /// @param[in] n Number of points per line
         void Set(int m, int n)
         {
 
@@ -46,13 +49,13 @@ namespace meshkernel
             m_grid.resize(mMax, std::vector<Point>(nMax, {doubleMissingValue, doubleMissingValue}));
         }
 
+        /// @brief Assign point to the curvilinear grid
+        /// @param[in] grid Input grid
         void Set(const std::vector<std::vector<Point>>& grid)
         {
             m_grid = grid;
         }
 
-        std::vector<std::vector<Point>> m_grid;
-        int m_n;
-        int m_m;
+        std::vector<std::vector<Point>> m_grid; ///< Member variable storing the grid
     };
 } // namespace meshkernel

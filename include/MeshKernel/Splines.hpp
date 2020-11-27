@@ -154,6 +154,11 @@ namespace meshkernel
     /// @brief This struct is used to create a function for converting an adimensional distance to a dimensional one
     struct FuncAdimensionalToDimensionalDistance
     {
+        /// @brief Constructor
+        /// @param[in] splines Pointer to splines
+        /// @param[in] splineIndex Spline index
+        /// @param[in] isSpacingCurvatureAdapted Is spacing curvature adapted
+        /// @param[in] h When accounting for curvature, the height to use
         FuncAdimensionalToDimensionalDistance(Splines* splines,
                                               int splineIndex,
                                               bool isSpacingCurvatureAdapted,
@@ -161,13 +166,14 @@ namespace meshkernel
                                                           m_splineIndex(splineIndex),
                                                           m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
                                                           m_h(h){};
-
+        /// @brief Set dimensional distance
+        /// @param[in] distance Distance
         void SetDimensionalDistance(double distance)
         {
             m_DimensionalDistance = distance;
         }
 
-        // this is the function we want to find the root
+        /// @brief This is the function we want to find the root of
         double operator()(double adimensionalDistanceReferencePoint)
         {
             double distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
@@ -175,12 +181,12 @@ namespace meshkernel
             return distanceFromReferencePoint;
         }
 
-        Splines* m_spline;
-        int m_splineIndex;
-        bool m_isSpacingCurvatureAdapted;
-        double m_h;
-        int m_numSamples = 10;
-        double m_DimensionalDistance = 0.0;
+        Splines* m_spline;                  ///< Pointer to splines
+        int m_splineIndex;                  ///< Spline index
+        bool m_isSpacingCurvatureAdapted;   ///< Is spacing curvature adapted
+        double m_h;                         ///< When accounting for curvature, the height to use
+        int m_numSamples = 10;              ///< Number of samples
+        double m_DimensionalDistance = 0.0; ///< Dimensional distance
     };
 
 } // namespace meshkernel

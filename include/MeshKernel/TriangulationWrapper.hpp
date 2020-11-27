@@ -32,6 +32,9 @@ namespace meshkernel
 {
     extern "C"
     {
+        /// @brief Function of the Triangle library
+        ///
+        /// \see https://www.cs.cmu.edu/~quake/triangle.html
         void Triangulation(int* jatri, double* xs, double* ys, int* ns, int* indx, int* numtri, int* edgeidx, int* numedge, int* triedge, double* xs3, double* ys3, int* ns3, double* trisize);
     }
 
