@@ -16,12 +16,12 @@ namespace meshkernel
         /// @brief Constructs the 1d mesh from ad UGrid network and mesh (ggeo_convert_1d_arrays_dll)
         /// @param network
         /// @param mesh1dUgrid
-        void Set(const meshkernelapi::Mesh1DGeometry& network,
-                 const meshkernelapi::Mesh1DDimensions& mesh1dUgrid,
-                 const meshkernelapi::Network1DGeometry& network1DGeometry,
-                 const meshkernelapi::Network1DDimensions& network1DDimensions,
-                 const std::vector<int>& nodeMask,
-                 Projection projection){
+        Mesh1D(const meshkernelapi::Mesh1DGeometry& network,
+               const meshkernelapi::Mesh1DDimensions& mesh1dUgrid,
+               const meshkernelapi::Network1DGeometry& network1DGeometry,
+               const meshkernelapi::Network1DDimensions& network1DDimensions,
+               const std::vector<int>& nodeMask,
+               Projection projection){
             // Conversion operations
         };
 

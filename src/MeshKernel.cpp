@@ -1867,7 +1867,7 @@ namespace meshkernelapi
 
         // spherical or cartesian
 
-        mesh1dInstances[meshKernelId]->Set(networkUgrid, mesh1dUgrid, network1DGeometry, network1DDimensions, nodemask, static_cast<meshkernel::Projection>(isGeographic));
+        mesh1dInstances[meshKernelId] = std::make_shared<meshkernel::Mesh1D>(networkUgrid, mesh1dUgrid, network1DGeometry, network1DDimensions, nodemask, static_cast<meshkernel::Projection>(isGeographic));
 
         return 0;
     }
