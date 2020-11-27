@@ -51,11 +51,13 @@ namespace meshkernel
         };
 
     public:
-        /// @brief Constructor, pass a mesh reference
-        /// @brief mesh The mesh to be refined
-        /// @returns
+        /// @brief Constructor
+        /// @param[in] mesh The mesh to be refined
+        /// @param[in] averaging The averaging interpolation to use
         explicit MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging);
 
+        /// @brief Constructor
+        /// @param[in] mesh The mesh to be refined
         explicit MeshRefinement(std::shared_ptr<Mesh> mesh);
 
         /// @brief Refine a mesh (refinecellsandfaces2).
@@ -158,10 +160,10 @@ namespace meshkernel
 
         double m_deltaTimeMaxCourant = 0.0;         ///< The maximum courant number for delta time
         double m_minimumFaceSize = 5e4;             ///< Minimum face size
-        bool m_directionalRefinement = false;       ///< Wether there is directional refinement
-        bool m_refineOutsideFace = false;           ///< Wether to refine outside the face
-        bool m_connectHangingNodes = true;          ///< Wether to connect hanging nodes
-        bool m_refineIntersectedFaces = false;      ///< Wether to refine intersected faces
+        bool m_directionalRefinement = false;       ///< Whether there is directional refinement
+        bool m_refineOutsideFace = false;           ///< Whether to refine outside the face
+        bool m_connectHangingNodes = true;          ///< Whether to connect hanging nodes
+        bool m_refineIntersectedFaces = false;      ///< Whether to refine intersected faces
         int m_maxNumberOfRefinementIterations = 10; ///< Maximum number of refinement iterations
 
         RefinementType m_refinementType; /// The type of refinement to use
