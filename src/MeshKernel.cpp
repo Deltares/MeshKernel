@@ -50,11 +50,21 @@
 #include <MeshKernel/SplinesToCurvilinearParameters.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/AveragingInterpolation.hpp>
+#include <MeshKernel/Mesh1D.hpp>
+#include <MeshKernel/Contacts.hpp>
+#include <MeshKernel/Mesh1DGeometry.hpp>
+#include <MeshKernel/Mesh1DDimensions.hpp>
+#include <MeshKernel/Network1DGeometry.hpp>
+#include <MeshKernel/Network1DDimensions.hpp>
+#include <MeshKernel/ContactsGeometry.hpp>
+#include <MeshKernel/ContactsDimensions.hpp>
 
 namespace meshkernelapi
 {
     // The vector containing the mesh instances
     static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;
+    static std::vector<std::shared_ptr<meshkernel::Mesh1D>> mesh1dInstances;
+    static std::vector<std::shared_ptr<meshkernel::Contacts>> contactsInstances;
 
     // For interactivity
     static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
@@ -1800,6 +1810,121 @@ namespace meshkernelapi
             (*results)[i] = interpolationResults[i];
         }
 
+        return 0;
+    }
+
+    // 1d part
+    MKERNEL_API int mkernel_new_1dmesh(int& meshKernelId)
+    {
+        meshKernelId = int(mesh1dInstances.size());
+        mesh1dInstances.emplace_back(std::make_shared<meshkernel::Mesh1D>());
+        return 0;
+    };
+
+    MKERNEL_API int mkernel_deallocate_1d_state(int meshKernelId)
+    {
+        if (meshKernelId < 0 && meshKernelId >= mesh1dInstances.size())
+        {
+            return -1;
+        }
+
+        mesh1dInstances.erase(mesh1dInstances.begin() + meshKernelId);
+        return 0;
+    }
+
+    MKERNEL_API int mkernel_new_contacts(int& meshKernelId)
+    {
+        meshKernelId = int(contactsInstances.size());
+        contactsInstances.emplace_back(std::make_shared<meshkernel::Contacts>());
+        return 0;
+    };
+
+    MKERNEL_API int mkernel_deallocate_contacts(int meshKernelId)
+    {
+        if (meshKernelId < 0 && meshKernelId >= contactsInstances.size())
+        {
+            return -1;
+        }
+
+        contactsInstances.erase(contactsInstances.begin() + meshKernelId);
+        return 0;
+    }
+
+    // (ggeo_convert_1d_arrays_dll )
+
+    MKERNEL_API int mkernel_set_1d_state(int meshKernelId,
+                                         const Mesh1DGeometry& networkUgrid,
+                                         const Mesh1DDimensions& mesh1dUgrid,
+                                         const Network1DGeometry& network1DGeometry,
+                                         const Network1DDimensions& network1DDimensions,
+                                         std::vector<int> nodemask,
+                                         bool isGeographic)
+    {
+        if (meshKernelId < 0 && meshKernelId >= mesh1dInstances.size())
+        {
+            return -1;
+        }
+
+        // spherical or cartesian
+
+        mesh1dInstances[meshKernelId]->Set(networkUgrid, mesh1dUgrid, network1DGeometry, network1DDimensions, nodemask, static_cast<meshkernel::Projection>(isGeographic));
+
+        return 0;
+    }
+
+    // (ggeo_convert_dll)
+    MKERNEL_API int mkernel_set_contacts_state(int contactsId, int mesh1dId, int mesh2did, bool isGeographic)
+    {
+        if (contactsId < 0 && contactsId >= contactsInstances.size() ||
+            mesh1dId < 0 && mesh1dId >= mesh1dInstances.size() ||
+            mesh2did < 0 && mesh2did >= meshInstances.size())
+        {
+            return -1;
+        }
+
+        contactsInstances[contactsId]->Set(mesh1dInstances[mesh1dId], meshInstances[mesh2did], static_cast<meshkernel::Projection>(isGeographic));
+        return 0;
+    }
+
+    //(ggeo_make1D2Dinternalnetlinks_dll)
+    MKERNEL_API int mkernel_compute_single_connections(int contactsId)
+    {
+        return 0;
+    }
+
+    //(ggeo_make1D2Dembeddedlinks_dll)
+    MKERNEL_API int mkernel_compute_multiple_connections(int contactsId)
+    {
+        return 0;
+    }
+
+    //(ggeo_make1D2Droofgutterpipes_dll)
+    MKERNEL_API int mkernel_compute_polygon_connections(int contactsId, const GeometryList& geometryListIn)
+    {
+        return 0;
+    }
+
+    //(ggeo_make1D2Dstreetinletpipes_dll)
+    MKERNEL_API int mkernel_point_connections(int contactsId, const std::vector<meshkernel::Point>& points)
+    {
+        return 0;
+    }
+
+    //(ggeo_make1D2DRiverLinks_dll)
+    MKERNEL_API int mkernel_compute_boundary_connections(int contactsId)
+    {
+        return 0;
+    }
+
+    // (ggeo_get_links_count_dll)
+    MKERNEL_API int mkernel_get_contacts_count(int contactsId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    {
+        return 0;
+    }
+
+    // (ggeo_get_links_dll)
+    MKERNEL_API int mkernel_get_contacts(int contactsId, ContactsGeometry& meshGeometryDimensions, ContactsDimensions& meshGeometry)
+    {
         return 0;
     }
 
