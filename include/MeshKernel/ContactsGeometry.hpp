@@ -31,6 +31,10 @@ namespace meshkernelapi
 {
     struct ContactsGeometry
     {
+        int* meshFrom = nullptr;
+        int* meshTo = nullptr;
+        int* contact_type = nullptr;
+        void* contact_ids = nullptr;
+        void* contact_long_names = nullptr;
     };
-
 } // namespace meshkernelapi

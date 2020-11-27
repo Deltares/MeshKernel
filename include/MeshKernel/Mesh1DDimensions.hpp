@@ -31,6 +31,12 @@ namespace meshkernelapi
 {
     struct Mesh1DDimensions
     {
+        char name[255];
+        int numnode;
+        int numedge;
+        char networkname[255];
+        int epgs;
+        int startIndex;
     };
 
 } // namespace meshkernelapi

@@ -31,6 +31,14 @@ namespace meshkernelapi
 {
     struct ContactsDimensions
     {
+        char name[255];
+        int num_contacts;
+        char mesh_from[255];
+        char mesh_to[255];
+        int mesh_from_type;
+        int mesh_to_type;
+        int epgs;
+        int startIndex;
     };
 
 } // namespace meshkernelapi

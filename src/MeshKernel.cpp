@@ -1873,7 +1873,7 @@ namespace meshkernelapi
     }
 
     // (ggeo_convert_dll)
-    MKERNEL_API int mkernel_set_contacts_state(int contactsId, int mesh1dId, int mesh2did, bool isGeographic)
+    MKERNEL_API int mkernel_set_contacts_state(int contactsId, int mesh1dId, int mesh2did)
     {
         if (contactsId < 0 && contactsId >= contactsInstances.size() ||
             mesh1dId < 0 && mesh1dId >= mesh1dInstances.size() ||
@@ -1882,7 +1882,7 @@ namespace meshkernelapi
             return -1;
         }
 
-        contactsInstances[contactsId]->Set(mesh1dInstances[mesh1dId], meshInstances[mesh2did], static_cast<meshkernel::Projection>(isGeographic));
+        contactsInstances[contactsId] = std::make_shared<meshkernel::Contacts>(mesh1dInstances[mesh1dId], meshInstances[mesh2did]);
         return 0;
     }
 

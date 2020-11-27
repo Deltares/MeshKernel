@@ -18,11 +18,9 @@ namespace meshkernel
         /// @param mesh1d
         /// @param mesh
         /// @param projection
-        void Set(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh> mesh, Projection projection)
+        Contacts(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh> mesh) : m_mesh1d(mesh1d), m_mesh(mesh)
         {
-            m_mesh = mesh;
-            m_mesh1d = mesh1d;
-            m_projection = projection;
+            // assert mesh1d and mesh have the same projection!
         }
 
         /// @brief Computes 1D-2D connections, where every single 1d node is connected to one 2d face mass center (ggeo_make1D2Dinternalnetlinks_dll)
@@ -57,8 +55,6 @@ namespace meshkernel
     private:
         std::shared_ptr<Mesh> m_mesh;
         std::shared_ptr<Mesh1D> m_mesh1d;
-        Projection m_projection;
-
         // nodes
         std::vector<int> m_meshIndices;
         std::vector<int> m_mesh1dIndices;

@@ -31,6 +31,19 @@ namespace meshkernelapi
 {
     struct Mesh1DGeometry
     {
+        int* branchid = nullptr;
+        double* branch_offsets = nullptr;
+        double* nodex = nullptr;
+        double* nodey = nullptr;
+
+        int* edge_nodes = nullptr;
+        double* edge_idx = nullptr;
+        double* edge_offsets = nullptr;
+        double* edgex = nullptr;
+        double* edgey = nullptr;
+
+        void* nodeids = nullptr;
+        void* nodelongnames = nullptr;
     };
 
 } // namespace meshkernelapi

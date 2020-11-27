@@ -31,6 +31,19 @@ namespace meshkernelapi
 {
     struct Network1DGeometry
     {
+        double* nnodex = nullptr;
+        double* nnodey = nullptr;
+        int* nedge_nodes = nullptr;
+        double* nbranchlengths = nullptr;
+        int* nbranchgeometrynodes = nullptr;
+        double* ngeopointx = nullptr;
+        double* ngeopointy = nullptr;
+        int* nbranchorder = nullptr;
+
+        int* nbranchids = nullptr;
+        void* nbranchlongnames = nullptr;
+        int* nnodeids = nullptr;
+        void* nnodelongnames = nullptr;
     };
 
 } // namespace meshkernelapi
