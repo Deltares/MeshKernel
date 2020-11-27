@@ -65,6 +65,7 @@ namespace meshkernel
                                       LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
                                       const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters);
 
+        /// @brief Initializes the object
         void Initialize();
 
         /// @brief Executes the entire algorithm

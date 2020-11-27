@@ -54,7 +54,7 @@ namespace meshkernel
             FacesCompletelyIncluded = 2
         };
 
-        /// Enumerator describing the different options to adminstrate a mesh
+        /// Enumerator describing the different options to administrate a mesh
         enum class AdministrationOptions
         {
             AdministrateMeshEdges,

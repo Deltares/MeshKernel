@@ -70,8 +70,10 @@ namespace meshkernel
             typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;
 
         public:
+            /// @brief Builds the tree
+            /// @tparam T Requires IsCoordinate<T>
             template <typename T>
-            void BuildTree(std::vector<T>& nodes) //requires IsCoordinate<T>
+            void BuildTree(std::vector<T>& nodes)
             {
                 m_points.reserve(m_points.size());
                 m_points.clear();
@@ -87,6 +89,9 @@ namespace meshkernel
                 m_rtree2D = RTree2D(m_points.begin(), m_points.end());
             }
 
+            /// @brief Determines the nearest neighbours on squared distance
+            /// @param[in] node
+            /// @param[in] searchRadiusSquared
             void NearestNeighboursOnSquaredDistance(Point node, double searchRadiusSquared)
             {
                 double searchRadius = std::sqrt(searchRadiusSquared);
@@ -109,6 +114,7 @@ namespace meshkernel
                 }
             }
 
+            /// @brief Determines the nearest neighbour
             void NearestNeighbour(Point node)
             {
 
@@ -124,6 +130,8 @@ namespace meshkernel
                 }
             }
 
+            /// @brief Removes node
+            /// @param[in] position Position of the node to remove
             void RemoveNode(int position)
             {
                 const auto numberRemoved = m_rtree2D.remove(m_points[position]);
@@ -134,27 +142,32 @@ namespace meshkernel
                 m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
             }
 
+            /// @brief Inserts node
+            /// @param[in] node Node to insert
             void InsertNode(const Point& node)
             {
                 m_points.emplace_back(Point2D{node.x, node.y}, m_points.size());
                 m_rtree2D.insert(m_points.end() - 1, m_points.end());
             }
 
+            /// @brief Determine size of the RTree
             [[nodiscard]] auto Size() const
             {
                 return m_rtree2D.size();
             }
 
+            /// @brief Determine if RTree is empty
             [[nodiscard]] auto Empty() const
             {
                 return m_rtree2D.empty();
             }
-
+            /// @brief Get query result size
             [[nodiscard]] auto GetQueryResultSize() const
             {
                 return m_queryCache.size();
             }
 
+            /// @brief Get query sample index
             [[nodiscard]] auto GetQuerySampleIndex(int index) const
             {
                 return m_queryIndices[index];

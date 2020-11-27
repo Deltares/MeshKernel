@@ -63,13 +63,18 @@ namespace meshkernel
     /// @brief A struct describing a point in a two-dimensional space
     struct Point
     {
-        double x;
-        double y;
+        double x; ///< X-coordinate
+        double y; ///< Y-coordinate
 
+        /// @brief Constructor initializing with missing values
         Point() : x(doubleMissingValue), y(doubleMissingValue){};
 
+        /// @brief Constructor initializing with given arguments
+        /// @param[in] x
+        /// @param[in] y
         Point(double x, double y) : x(x), y(y){};
 
+        /// @brief Overloads addition with another Point
         Point operator+(Point const& rhs) const
         {
             Point point{
@@ -78,6 +83,7 @@ namespace meshkernel
             return point;
         }
 
+        /// @brief Overloads addition with a double
         Point operator+(double const& rhs) const
         {
             Point point{
@@ -86,6 +92,7 @@ namespace meshkernel
             return point;
         }
 
+        /// @brief Overloads subtraction with another Point
         Point operator-(Point const& rhs) const
         {
             Point point{
@@ -94,6 +101,7 @@ namespace meshkernel
             return point;
         }
 
+        /// @brief Overloads subtraction with a double
         Point operator-(double const& rhs) const
         {
             Point point{
@@ -102,6 +110,7 @@ namespace meshkernel
             return point;
         }
 
+        /// @brief Overloads multiplication with another Point
         Point operator*(Point const& rhs) const
         {
             Point point{
@@ -110,6 +119,7 @@ namespace meshkernel
             return point;
         }
 
+        /// @brief Overloads multiplication with a double
         Point operator*(double const& rhs) const
         {
             Point point{
@@ -118,6 +128,7 @@ namespace meshkernel
             return point;
         }
 
+        /// @brief Overloads division with another Point
         Point operator/(Point const& rhs) const
         {
             Point point{
@@ -126,6 +137,7 @@ namespace meshkernel
             return point;
         }
 
+        /// @brief Overloads division with a double
         Point operator/(double const& rhs) const
         {
             Point point{
@@ -134,6 +146,7 @@ namespace meshkernel
             return point;
         }
 
+        /// @brief Overloads equality with another Point
         bool operator==(const Point& rhs) const
         {
             bool isEqual = IsEqual(x, rhs.x) &&
@@ -142,6 +155,7 @@ namespace meshkernel
             return isEqual;
         }
 
+        /// @brief Overloads inequality with another Point
         bool operator!=(const Point& rhs) const
         {
             bool isEqual = IsEqual(x, rhs.x) &&
@@ -149,12 +163,14 @@ namespace meshkernel
             return !isEqual;
         }
 
+        /// @brief Transforms spherical coordinates to cartesian
         void TransformSphericalToCartesian(double referenceLatitude)
         {
             x = x * degrad_hp * earth_radius * std::cos(degrad_hp * referenceLatitude);
             y = y * degrad_hp * earth_radius;
         }
 
+        /// @brief Determines if the Point instance is valid
         [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
         {
             bool isInvalid = IsEqual(x, missingValue) ||
@@ -170,23 +186,23 @@ namespace meshkernel
     /// @brief A struct describing the three coordinates in a cartesian projection.
     struct Cartesian3DPoint
     {
-        /// @brief x-coordinate
-        double x;
-
-        /// @brief y-coordinate
-        double y;
-        
-        /// @brief z-coordinate
-        double z;
+        double x; ///< X-coordinate
+        double y; ///< Y-coordinate
+        double z; ///< Z-coordinate
     };
 
     /// @brief A struct describing a sample with two coordinates and a value
     struct Sample
     {
-        double x;
-        double y;
-        double value;
+        double x;     ///< X-coordinate
+        double y;     ///< Y-coordinate
+        double value; ///< Value
 
+        /// @brief Convert double arrays to std::vector<Sample>
+        /// @param[in] numSamples Number of samples
+        /// @param[in] samplesXCoordinate X-coordinates of the samples
+        /// @param[in] samplesYCoordinate Y-coordinates of the samples
+        /// @param[in] samplesValue Values of the samples
         static auto ConvertToSamples(int numSamples, const double** samplesXCoordinate, const double** samplesYCoordinate, const double** samplesValue)
         {
             // Build the samples

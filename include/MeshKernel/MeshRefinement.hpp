@@ -67,11 +67,11 @@ namespace meshkernel
         /// 2. Find the brother edges, the edge sharing a hanging node, FindBrotherEdges
         /// 3. Mask nodes at the polygon perimeter, ComputeNodeMaskAtPolygonPerimeter
         /// 4. Do refinement iterations
-        ///    4.1 Find the brother edges, FindBrotherEdges
-        ///    4.2 Compute the edge refinement mask based on samples, ComputeRefinementMasksFromSamples
-        ///    4.3 Compute the edge refinement mask based on polygon, ComputeEdgesRefinementMask
-        ///    4.3 Compute if a face should be split, ComputeIfFaceShouldBeSplit
-        ///    4.4 Refine face by splitting edges, RefineFacesBySplittingEdges
+        ///    -# Find the brother edges, FindBrotherEdges
+        ///    -# Compute the edge refinement mask based on samples, ComputeRefinementMasksFromSamples
+        ///    -# Compute the edge refinement mask based on polygon, ComputeEdgesRefinementMask
+        ///    -# Compute if a face should be split, ComputeIfFaceShouldBeSplit
+        ///    -# Refine face by splitting edges, RefineFacesBySplittingEdges
         /// 5. Connect hanging nodes if requested, RemoveIsolatedHangingnodes, ConnectHangingNodes
         /// @param polygon The polygon where to perform refinement (option 2, refine in polygon)
         /// @param sampleRefineParameters Refinement based on samples parameters
