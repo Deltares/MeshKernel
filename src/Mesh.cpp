@@ -1016,7 +1016,7 @@ void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeMes
             numM = int(std::ceil((xmax - xmin) / YGridBlockSize) + 1);
         }
 
-        CurvilinearGrid.Set(numN, numM);
+        CurvilinearGrid = {numN, numM};
         for (int n = 0; n < numN; ++n)
         {
             for (int m = 0; m < numM; ++m)

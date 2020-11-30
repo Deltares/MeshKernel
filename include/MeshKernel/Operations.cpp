@@ -1769,11 +1769,11 @@ namespace meshkernel
         }
     }
 
-    /// @brief Get the bounding box
+    /// @brief Given a vector of coordinates, get the lowest upper and right points
     /// @tparam T Requires IsCoordinate<T>
-    /// @param[in] values
-    /// @param[out] lowerLeft
-    /// @param[out] upperRight
+    /// @param[in] values The values
+    /// @param[out] lowerLeft The lower left corner
+    /// @param[out] upperRight The upper right corner
     template <typename T>
     void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight)
     {
