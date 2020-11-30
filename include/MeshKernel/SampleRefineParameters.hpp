@@ -29,6 +29,7 @@
 
 namespace meshkernelapi
 {
+    /// @brief A struct used to describe the sample refine parameters in a C-compatible manner
     struct SampleRefineParameters
     {
         /// @brief Sample vector dimension

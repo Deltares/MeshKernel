@@ -32,6 +32,7 @@
 
 namespace meshkernel
 {
+    /// @brief A class describing polygons
     class Polygons
     {
     public:
@@ -80,9 +81,9 @@ namespace meshkernel
         /// @return the number of polygon nodes
         [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
 
-        std::vector<Point> m_nodes;                 // The polygon nodes
-        Projection m_projection;                    // The current projection
-        std::vector<std::vector<size_t>> m_indices; // Start-end indices of each polygon in m_nodes
+        std::vector<Point> m_nodes;                 ///< The polygon nodes
+        Projection m_projection;                    ///< The current projection
+        std::vector<std::vector<size_t>> m_indices; ///< Start-end indices of each polygon in m_nodes
 
     private:
         /// @brief Computes the perimeter of a closed polygon

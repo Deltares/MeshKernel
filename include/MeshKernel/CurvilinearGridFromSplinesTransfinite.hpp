@@ -35,6 +35,9 @@ namespace meshkernel
     class CurvilinearGrid;
     class Splines;
 
+    /// @brief A class used to create a curvilinear grid from 4 splines in blocks
+    ///
+    /// Usually CurvilinearGridFromSplines should be preferred.
     class CurvilinearGridFromSplinesTransfinite
     {
     public:
@@ -43,6 +46,7 @@ namespace meshkernel
         CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines, const meshkernelapi::CurvilinearParameters& curvilinearParameters);
 
         /// @brief Computes the adimensional intersections between splines.
+        ///
         /// Also orders the m splines (the horizontal ones) before the n splines (the vertical ones)
         void ComputeIntersections();
 
@@ -50,14 +54,14 @@ namespace meshkernel
         /// @param curvilinearGrid
         void Compute(CurvilinearGrid& curvilinearGrid);
 
-        std::shared_ptr<Splines> m_splines; // A pointer to spline
+        std::shared_ptr<Splines> m_splines; ///< A pointer to spline
 
     private:
         /// @brief Order the splines such that their index increases in m or n direction
-        /// @param startFirst
-        /// @param endFirst
-        /// @param startSecond
-        /// @param endSecond
+        /// @param[in] startFirst
+        /// @param[in] endFirst
+        /// @param[in] startSecond
+        /// @param[in] endSecond
         /// @returns Boolean to indicate that procedure has to be repeated
         [[nodiscard]] bool OrderSplines(int startFirst,
                                         int endFirst,
@@ -101,13 +105,13 @@ namespace meshkernel
                                     const std::vector<double>& intersectionDistances,
                                     std::vector<double>& distances) const;
 
-        std::vector<int> m_splineType;                                          // The spline types (1 horizontal, -1 vertical)
-        std::vector<std::vector<double>> m_splineIntersectionRatios;            // For each spline, stores the intersections in terms of total spline length
-        std::vector<std::vector<int>> m_splineGroupIndexAndFromToIntersections; // For each spline: position in m or n group, from and to spline crossing indices (MN12)
-        int m_numMSplines = -1;                                                 // The index of the last m spline
-        int m_numNSplines = -1;                                                 // The index of the last m spline
-        int m_numM = 0;                                                         // Number of m columns
-        int m_numN = 0;                                                         // Number of n rows
+        std::vector<int> m_splineType;                                          ///< The spline types (1 horizontal, -1 vertical)
+        std::vector<std::vector<double>> m_splineIntersectionRatios;            ///< For each spline, stores the intersections in terms of total spline length
+        std::vector<std::vector<int>> m_splineGroupIndexAndFromToIntersections; ///< For each spline: position in m or n group, from and to spline crossing indices (MN12)
+        int m_numMSplines = -1;                                                 ///< The index of the last m spline
+        int m_numNSplines = -1;                                                 ///< The index of the last m spline
+        int m_numM = 0;                                                         ///< Number of m columns
+        int m_numN = 0;                                                         ///< Number of n rows
     };
 
 } // namespace meshkernel

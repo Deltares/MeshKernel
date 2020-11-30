@@ -29,6 +29,7 @@
 
 namespace meshkernelapi
 {
+    /// @brief A struct used to describe the spline to curvilinear grid parameters in a C-compatible manner
     struct SplinesToCurvilinearParameters
     {
         /// @brief Aspect ratio (mfacmax, 0.1)

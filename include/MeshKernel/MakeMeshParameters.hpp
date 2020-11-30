@@ -29,7 +29,7 @@
 
 namespace meshkernelapi
 {
-    /// @brief This struct describes the necessary parameters to create a new mesh.
+    /// @brief This struct describes the necessary parameters to create a new mesh in a C-compatible manner
     ///
     /// @see mkernel_make_mesh
     struct MakeMeshParameters

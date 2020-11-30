@@ -34,6 +34,7 @@ namespace meshkernel
 {
     class CurvilinearGrid;
 
+    /// @brief A class describing splines
     class Splines
     {
 
@@ -119,10 +120,10 @@ namespace meshkernel
         /// @return the number of splines
         int GetNumSplines() const { return static_cast<int>(m_splineNodes.size()); }
 
-        std::vector<std::vector<Point>> m_splineNodes;       // The spline corner points
-        std::vector<std::vector<Point>> m_splineDerivatives; // The spline derivatives at the corner points
-        std::vector<double> m_splinesLength;                 // The length of each spline
-        Projection m_projection = Projection::cartesian;     // The map projection
+        std::vector<std::vector<Point>> m_splineNodes;       ///< The spline corner points
+        std::vector<std::vector<Point>> m_splineDerivatives; ///< The spline derivatives at the corner points
+        std::vector<double> m_splinesLength;                 ///< The length of each spline
+        Projection m_projection = Projection::cartesian;     ///< The map projection
 
     private:
         /// @brief Adds a new corner point in an existing spline
@@ -150,35 +151,42 @@ namespace meshkernel
         void AllocateSplinesProperties();
     };
 
-    struct FuncDimensionalToAdimensionalDistance
+    /// @brief This struct is used to create a function for converting an adimensional distance to a dimensional one
+    struct FuncAdimensionalToDimensionalDistance
     {
-        FuncDimensionalToAdimensionalDistance(Splines* splines,
+        /// @brief Constructor
+        /// @param[in] splines Pointer to splines
+        /// @param[in] splineIndex Spline index
+        /// @param[in] isSpacingCurvatureAdapted Is spacing curvature adapted
+        /// @param[in] h When accounting for curvature, the height to use
+        FuncAdimensionalToDimensionalDistance(Splines* splines,
                                               int splineIndex,
                                               bool isSpacingCurvatureAdapted,
                                               double h) : m_spline(splines),
                                                           m_splineIndex(splineIndex),
                                                           m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
                                                           m_h(h){};
-
+        /// @brief Set dimensional distance
+        /// @param[in] distance Distance
         void SetDimensionalDistance(double distance)
         {
             m_DimensionalDistance = distance;
         }
 
-        // this is the function we want to find the root
-        double operator()(double adimensionalDistancereferencePoint)
+        /// @brief This is the function we want to find the root of
+        double operator()(double adimensionalDistanceReferencePoint)
         {
-            double distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0, adimensionalDistancereferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
+            double distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
             distanceFromReferencePoint = std::abs(distanceFromReferencePoint - m_DimensionalDistance);
             return distanceFromReferencePoint;
         }
 
-        Splines* m_spline;
-        int m_splineIndex;
-        bool m_isSpacingCurvatureAdapted;
-        double m_h;
-        int m_numSamples = 10;
-        double m_DimensionalDistance = 0.0;
+        Splines* m_spline;                  ///< Pointer to splines
+        int m_splineIndex;                  ///< Spline index
+        bool m_isSpacingCurvatureAdapted;   ///< Is spacing curvature adapted
+        double m_h;                         ///< When accounting for curvature, the height to use
+        int m_numSamples = 10;              ///< Number of samples
+        double m_DimensionalDistance = 0.0; ///< Dimensional distance
     };
 
 } // namespace meshkernel

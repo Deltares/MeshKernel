@@ -32,29 +32,36 @@ namespace meshkernel
 {
     extern "C"
     {
+        /// @brief Function of the Triangle library
+        ///
+        /// \see https://www.cs.cmu.edu/~quake/triangle.html
         void Triangulation(int* jatri, double* xs, double* ys, int* ns, int* indx, int* numtri, int* edgeidx, int* numedge, int* triedge, double* xs3, double* ys3, int* ns3, double* trisize);
     }
 
     struct Point;
     struct Sample;
+    /// @brief Wrapper around the Triangle library
+    ///
+    /// \see https://www.cs.cmu.edu/~quake/triangle.html
     struct TriangulationWrapper
     {
+        /// @brief Enumerator describing all triangulation options
         enum class TriangulationOptions
         {
-            TriangulatePoints = 1,                // generate Delaunay triangulation from input nodes
-            GeneratePoints = 2,                   // generate internal nodes in polygon that produce a Delaunay triangulation
-            TriangulatePointsAndGenerateFaces = 3 // generate Delaunay triangulation from input nodes with m_faceEdges and m_edgeNodes
+            TriangulatePoints = 1,                ///< generate Delaunay triangulation from input nodes
+            GeneratePoints = 2,                   ///< generate internal nodes in polygon that produce a Delaunay triangulation
+            TriangulatePointsAndGenerateFaces = 3 ///< generate Delaunay triangulation from input nodes with m_faceEdges and m_edgeNodes
         };
 
-        std::vector<Point> m_nodes;
-        std::vector<std::vector<int>> m_faceNodes;
-        std::vector<std::vector<int>> m_faceEdges;
-        std::vector<std::vector<int>> m_edgeNodes;
-        std::vector<std::vector<int>> m_edgesFaces;
+        std::vector<Point> m_nodes;                 ///< Nodes
+        std::vector<std::vector<int>> m_faceNodes;  ///< Face nodes
+        std::vector<std::vector<int>> m_faceEdges;  ///< Face edges
+        std::vector<std::vector<int>> m_edgeNodes;  ///< Edge nodes
+        std::vector<std::vector<int>> m_edgesFaces; ///< Edge faces
 
-        int m_numEdges;
-        int m_numNodes;
-        int m_numFaces;
+        int m_numEdges; ///< Number of edges
+        int m_numNodes; ///< Number of nodes
+        int m_numFaces; ///< Number of faces
 
         /// @brief
         /// @tparam T A type that contains x and y fields

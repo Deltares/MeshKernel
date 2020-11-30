@@ -105,7 +105,7 @@ void meshkernel::TriangulationInterpolation::Compute()
         }
 
         // find the nearest triangle
-        samplesRtree.NearestNeighbour(m_locations[n]);
+        samplesRtree.NearestNeighbors(m_locations[n]);
         if (samplesRtree.GetQueryResultSize() <= 0)
         {
             continue;

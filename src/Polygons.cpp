@@ -42,7 +42,7 @@ namespace meshkernel
     Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m_nodes(polygon), m_projection(projection)
     {
         // find the polygons in the current list of points
-        m_indices = FindIndexes(polygon, 0, polygon.size(), doubleMissingValue);
+        m_indices = FindIndices(polygon, 0, polygon.size(), doubleMissingValue);
     }
 
     std::vector<std::vector<Point>> Polygons::ComputePointsInPolygons() const

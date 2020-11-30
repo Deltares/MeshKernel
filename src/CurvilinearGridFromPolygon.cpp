@@ -191,7 +191,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
                                                numNNodes - 1);
 
     // Assign the points to the curvilinear grid
-    curvilinearGrid.Set(numMNodes, numNNodes);
+    curvilinearGrid = {numMNodes, numNNodes};
     for (int i = 0; i < numMNodes; i++)
     {
         for (int j = 0; j < numNNodes; j++)
@@ -295,7 +295,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     std::vector<Point> sideThree(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
     std::vector<Point> sideFour(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
 
-    curvilinearGrid.Set(n1 + n3 + 1, n2 + n3 + 1);
+    curvilinearGrid = {n1 + n3 + 1, n2 + n3 + 1};
     for (int t = 0; t < numNodesInTriangle; ++t)
     {
         std::fill(sideOne.begin(), sideOne.end(), Point{doubleMissingValue, doubleMissingValue});

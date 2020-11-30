@@ -125,7 +125,7 @@ namespace meshkernel
         }
 
         // find the start/end node of the landboundaries. Emplace back them in m_segmentIndices if the land-boundary segment is close to a mesh node
-        const auto indices = FindIndexes(m_nodes, 0, m_nodes.size(), doubleMissingValue);
+        const auto indices = FindIndices(m_nodes, 0, m_nodes.size(), doubleMissingValue);
         m_segmentIndices.reserve(indices.size());
         for (const auto& index : indices)
         {

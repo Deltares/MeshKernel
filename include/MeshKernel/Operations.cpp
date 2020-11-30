@@ -36,19 +36,21 @@
 
 namespace meshkernel
 {
-    // coordinate reference independent operations
+    /// @brief Defines generic dot product for one dimension
     template <typename T>
     [[nodiscard]] static T DotProduct(const T& dx1, const T& dx2)
     {
         return dx1 * dx2;
     }
 
+    /// @brief Defines generic dot product of infinite dimensions
     template <typename T, typename... Args>
     [[nodiscard]] static T DotProduct(const T& dx1, const T& dx2, Args&... args)
     {
         return dx1 * dx2 + DotProduct(args...);
     }
 
+    /// @brief Defines vector product in cartesian 3D-space
     [[nodiscard]] static auto VectorProduct(Cartesian3DPoint a, Cartesian3DPoint b)
     {
         return Cartesian3DPoint{
@@ -57,11 +59,18 @@ namespace meshkernel
             a.x * b.y - a.y * b.x};
     }
 
+    /// @brief Defines inner product in cartesian 3D-space
     [[nodiscard]] static auto InnerProduct(Cartesian3DPoint a, Cartesian3DPoint b)
     {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
+    /// @brief Resizes an vector if given size is greater than the current size of the given vector
+    ///
+    /// Use ResizeVectorIfNeededWithMinimumSize in order to reserve a minimal size.
+    /// @param[in] newSize The size the vector should minimally have
+    /// @param[in,out] vectorToResize The vector to resize
+    /// @param[in] fillValue Value with which the vector should be filled if resize is necessary
     template <typename T>
     void ResizeVectorIfNeeded(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
     {
@@ -73,6 +82,14 @@ namespace meshkernel
         }
     }
 
+    /// @brief Resizes an vector if given size is greater than the current size of the given vector.
+    ///        Also allows to input a minimal size which should be reserved.
+    ///
+    /// Use ResizeVectorIfNeededWithMinimumSize in order to reserve a minimal size.
+    /// @param[in] newSize The size the vector should minimally have
+    /// @param[in,out] vectorToResize The vector to resize
+    /// @param[in] minSize Minimal size which should be reserved
+    /// @param[in] fillValue Value with which the vector should be filled if resize is necessary
     template <typename T>
     void ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
     {
@@ -84,6 +101,10 @@ namespace meshkernel
         }
     }
 
+    /// @brief Find index of a certain element
+    /// @param[in] vec Vector to search in
+    /// @param[in] el Element to search for
+    /// @returns Index of element
     template <typename T>
     [[nodiscard]] static int FindIndex(const std::vector<T>& vec, T el)
     {
@@ -99,7 +120,13 @@ namespace meshkernel
         return index;
     }
 
-    static auto FindIndexes(const std::vector<Point>& vec,
+    /// @brief Find valid index within a certain range
+    /// @param[in] vec Vector to search in
+    /// @param[in] start Start of the range to search for
+    /// @param[in] start End of the range to search for
+    /// @param[in] separator Separator
+    /// @returns Indices of elements
+    static auto FindIndices(const std::vector<Point>& vec,
                             const size_t start,
                             const size_t end,
                             const double& separator)
@@ -143,8 +170,10 @@ namespace meshkernel
         return result;
     }
 
+    /// @brief Sort a vector by its value
+    /// @param v Vector to sort
     template <typename T>
-    [[nodiscard]] static std::vector<int> SortedIndexes(const std::vector<T>& v)
+    [[nodiscard]] static std::vector<int> SortedIndices(const std::vector<T>& v)
     {
         std::vector<int> idx(v.size());
         iota(idx.begin(), idx.end(), 0);
@@ -152,7 +181,9 @@ namespace meshkernel
         return idx;
     }
 
-    //chmike's algorithm
+    /// @brief Reorder vector by using chmike's algorithm
+    /// @param[in, out] vector Vector to reorder
+    /// @param[in] order Order
     template <class T>
     static void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
     {
@@ -164,10 +195,11 @@ namespace meshkernel
         v = ordered;
     }
 
+    /// @brief Make vector monotonic
+    /// @param[in, out] Vector to be made monotonic
     template <typename T>
-    static void MakeMonothonic(std::vector<T>& v)
+    static void MakeMonotonic(std::vector<T>& v)
     {
-
         bool isMonotonic = false;
         int maxIter = 10;
         int iter = 0;
@@ -193,6 +225,9 @@ namespace meshkernel
         }
     }
 
+    /// @brief Add a value to each element of a vector
+    /// @param vec Vector which will get a value added to
+    /// @param value Value to be added to each vector element
     template <typename T>
     static void AddValueToVector(std::vector<T>& vec, const T value)
     {
@@ -202,7 +237,10 @@ namespace meshkernel
         }
     }
 
-    // algorithm performing the zero's search using the golden section algorithm's
+    /// @brief Algorithm performing the zero's search using the golden section algorithm's
+    /// @param func Function
+    /// @param min Minimum
+    /// @param max Maximum
     template <typename F>
     [[nodiscard]] static double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
     {
@@ -253,6 +291,9 @@ namespace meshkernel
         return f1 < f2 ? x1 : x2;
     }
 
+    /// @brief Get the next circular forward index
+    /// @param[in] currentIndex Current index
+    /// @param[in] size Size
     [[nodiscard]] static int NextCircularForwardIndex(int currentIndex, int size)
     {
         int index = currentIndex + 1;
@@ -263,6 +304,9 @@ namespace meshkernel
         return index;
     }
 
+    /// @brief Get the next circular backward index
+    /// @param[in] currentIndex Current index
+    /// @param[in] size Size
     [[nodiscard]] static int NextCircularBackwardIndex(int currentIndex, int size)
     {
         int index = currentIndex - 1;
@@ -273,12 +317,16 @@ namespace meshkernel
         return index;
     }
 
+    /// @brief Determines if point is on pole
+    /// @param[in] point Point
     [[nodiscard]] static bool IsPointOnPole(const Point& point)
     {
         return std::abs(std::abs(point.y) - 90.0) < absLatitudeAtPoles;
     }
 
-    ///sphertocart3D transform 2d spherical to 3d cartesian
+    /// @brief Transforms 2D point in spherical coordinates to 3D cartesian coordinates
+    /// @param[in] sphericalPoint
+    /// @param[out] cartesianPoint
     static void SphericalToCartesian3D(const Point& sphericalPoint, Cartesian3DPoint& cartesianPoint)
     {
         cartesianPoint.z = earth_radius * sin(sphericalPoint.y * degrad_hp);
@@ -287,7 +335,10 @@ namespace meshkernel
         cartesianPoint.y = rr * sin(sphericalPoint.x * degrad_hp);
     }
 
-    ///Cart3Dtospher Transform 3d cartesian coordinates to 2d spherical
+    /// @brief Transforms 3D cartesian coordinates to 2D point in spherical coordinates
+    /// @param[in] cartesianPoint
+    /// @param[in] referenceLongitude
+    /// @param[out] sphericalPoint
     static void Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude, Point& sphericalPoint)
     {
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
@@ -295,19 +346,28 @@ namespace meshkernel
         sphericalPoint.x = angle + std::lround((referenceLongitude - angle) / 360.0) * 360.0;
     }
 
-    /// IsLeft(): tests if a point is Left|On|Right of an infinite line.
-    ///    Input:  three points leftPoint, rightPoint, and point
-    ///    Return: >0 for point left of the line through leftPoint and rightPoint
-    ///            =0 for point  on the line
-    ///            <0 for point  right of the line
+    /// @brief Tests if a point is Left|On|Right of an infinite line.
+    /// @param[in] leftPoint
+    /// @param[in] rightPoint
+    /// @param[in] point
+    /// @returns
+    ///          - >0 for point left of the line through leftPoint and rightPoint
+    ///          - =0 for point  on the line
+    ///          - <0 for point  right of the line
     [[nodiscard]] static double IsLeft(const Point& leftPoint, const Point& rightPoint, const Point& point)
     {
         double left = (rightPoint.x - leftPoint.x) * (point.y - leftPoint.y) - (point.x - leftPoint.x) * (rightPoint.y - leftPoint.y);
         return left;
     }
 
-    /// Check if a point is in polygonNodes using the winding number method
-    /// polygonNodes: a closed polygonNodes consisting f a vector of numberOfPolygonPoints + 1 in counter clockwise order
+    /// @brief Checks if a point is in polygonNodes using the winding number method
+    /// @param[in] point
+    /// @param[in] polygonNodes A closed polygonNodes consisting of a vector of numberOfPolygonPoints + 1 in counter clockwise order
+    /// @param[in] startNode
+    /// @param[in] endNode
+    /// @param[in] projection
+    /// @param[in] polygonCenter
+    /// @returns If point is in polygon nodes
     [[nodiscard]] static bool IsPointInPolygonNodes(Point point,
                                                     const std::vector<Point>& polygonNodes,
                                                     int startNode,
@@ -433,6 +493,7 @@ namespace meshkernel
         return isInPolygon;
     }
 
+    /// @brief Computes three base components
     static void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp)
     {
         double phi0 = point.y * degrad_hp;
@@ -451,6 +512,7 @@ namespace meshkernel
         ezzp[2] = cos(phi0);
     };
 
+    /// @brief Computes two base components
     static void ComputeTwoBaseComponents(const Point& point, double (&elambda)[3], double (&ephi)[3])
     {
         double phi0 = point.y * degrad_hp;
@@ -465,6 +527,10 @@ namespace meshkernel
         ephi[2] = cos(phi0);
     };
 
+    /// @brief Gets dx for the given projection
+    /// @param[in] firstPoint
+    /// @param[in] secondPoint
+    /// @param[in] projection
     [[nodiscard]] static double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
         double delta = secondPoint.x - firstPoint.x;
@@ -1430,6 +1496,12 @@ namespace meshkernel
         area = std::abs(area);
     }
 
+    /// @brief Interpolate spline points
+    /// @param[in] coordinates
+    /// @param[in] coordinatesDerivatives
+    /// @param[in] pointAdimensionalCoordinate
+    /// @param[out] pointCoordinate
+    /// @returns False if an error occurs
     template <typename T>
     [[nodiscard]] bool InterpolateSplinePoint(const std::vector<T>& coordinates,
                                               const std::vector<T>& coordinatesDerivatives,
@@ -1697,8 +1769,13 @@ namespace meshkernel
         }
     }
 
+    /// @brief Given a vector of coordinates, get the lowest upper and right points
+    /// @tparam T Requires IsCoordinate<T>
+    /// @param[in] values The values
+    /// @param[out] lowerLeft The lower left corner
+    /// @param[out] upperRight The upper right corner
     template <typename T>
-    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight) //requires IsCoordinate<T>
+    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight)
     {
 
         double minx = std::numeric_limits<double>::max();
@@ -1725,8 +1802,14 @@ namespace meshkernel
         upperRight = {maxx, maxy};
     }
 
+    /// @brief Checks if value is in bounding box
+    /// @tparam T Requires IsCoordinate<T>
+    /// @param[in] point The point to inquire
+    /// @param[in] lowerLeft The lower left corner of the bounding box
+    /// @param[in] upperRight The upper right corner of the bounding box
+    /// @returns If the point is in the bounding box
     template <typename T>
-    bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight) //requires IsCoordinate<T>
+    bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight)
     {
 
         return point.x >= lowerLeft.x && point.x <= upperRight.x &&

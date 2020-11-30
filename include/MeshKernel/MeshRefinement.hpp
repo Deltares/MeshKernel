@@ -40,6 +40,7 @@ namespace meshkernel
     class Mesh;
     class Polygons;
 
+    /// @brief A class used to refine a Mesh
     class MeshRefinement
     {
         enum class RefinementType
@@ -50,11 +51,13 @@ namespace meshkernel
         };
 
     public:
-        /// @brief Constructor, pass a mesh reference
-        /// @brief mesh The mesh to be refined
-        /// @returns
+        /// @brief Constructor
+        /// @param[in] mesh The mesh to be refined
+        /// @param[in] averaging The averaging interpolation to use
         explicit MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging);
 
+        /// @brief Constructor
+        /// @param[in] mesh The mesh to be refined
         explicit MeshRefinement(std::shared_ptr<Mesh> mesh);
 
         /// @brief Refine a mesh (refinecellsandfaces2).
@@ -64,11 +67,11 @@ namespace meshkernel
         /// 2. Find the brother edges, the edge sharing a hanging node, FindBrotherEdges
         /// 3. Mask nodes at the polygon perimeter, ComputeNodeMaskAtPolygonPerimeter
         /// 4. Do refinement iterations
-        ///    4.1 Find the brother edges, FindBrotherEdges
-        ///    4.2 Compute the edge refinement mask based on samples, ComputeRefinementMasksFromSamples
-        ///    4.3 Compute the edge refinement mask based on polygon, ComputeEdgesRefinementMask
-        ///    4.3 Compute if a face should be split, ComputeIfFaceShouldBeSplit
-        ///    4.4 Refine face by splitting edges, RefineFacesBySplittingEdges
+        ///    -# Find the brother edges, FindBrotherEdges
+        ///    -# Compute the edge refinement mask based on samples, ComputeRefinementMasksFromSamples
+        ///    -# Compute the edge refinement mask based on polygon, ComputeEdgesRefinementMask
+        ///    -# Compute if a face should be split, ComputeIfFaceShouldBeSplit
+        ///    -# Refine face by splitting edges, RefineFacesBySplittingEdges
         /// 5. Connect hanging nodes if requested, RemoveIsolatedHangingnodes, ConnectHangingNodes
         /// @param polygon The polygon where to perform refinement (option 2, refine in polygon)
         /// @param sampleRefineParameters Refinement based on samples parameters
@@ -144,27 +147,24 @@ namespace meshkernel
         /// The sample node RTree
         SpatialTrees::RTree m_samplesRTree;
 
-        std::vector<int> m_faceMask;     /// Refine face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
-        std::vector<int> m_edgeMask;     /// If 0, edge is not split
-        std::vector<int> m_brotherEdges; /// The index of the brother edge for each edge
+        std::vector<int> m_faceMask;     ///< Refine face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
+        std::vector<int> m_edgeMask;     ///< If 0, edge is not split
+        std::vector<int> m_brotherEdges; ///< The index of the brother edge for each edge
 
         /// Local caches
-        std::vector<int> m_refineEdgeCache;
-        std::vector<bool> m_isHangingNodeCache;
-        std::vector<bool> m_isHangingEdgeCache;
-        std::vector<Point> m_polygonNodesCache;
-        std::vector<int> m_localNodeIndicesCache;
-        std::vector<int> m_edgeIndicesCache;
+        std::vector<bool> m_isHangingNodeCache;   ///< Cache for maintaining if node is hanging
+        std::vector<bool> m_isHangingEdgeCache;   ///< Cache for maintaining if edge is hanging
+        std::vector<Point> m_polygonNodesCache;   ///< Cache for maintaining polygon nodes
+        std::vector<int> m_localNodeIndicesCache; ///< Cache for maintaining local node indices
+        std::vector<int> m_edgeIndicesCache;      ///< Cache for maintaining edge indices
 
-        std::vector<bool> m_subtractedSample; /// Is the sample value subtracted (e.g. in refinement by levels)
-
-        double m_deltaTimeMaxCourant = 0.0;
-        double m_minimumFaceSize = 5e4;
-        bool m_directionalRefinement = false;
-        bool m_refineOutsideFace = false;
-        bool m_connectHangingNodes = true;
-        bool m_refineIntersectedFaces = false;
-        int m_maxNumberOfRefinementIterations = 10;
+        double m_deltaTimeMaxCourant = 0.0;         ///< The maximum courant number for delta time
+        double m_minimumFaceSize = 5e4;             ///< Minimum face size
+        bool m_directionalRefinement = false;       ///< Whether there is directional refinement
+        bool m_refineOutsideFace = false;           ///< Whether to refine outside the face
+        bool m_connectHangingNodes = true;          ///< Whether to connect hanging nodes
+        bool m_refineIntersectedFaces = false;      ///< Whether to refine intersected faces
+        int m_maxNumberOfRefinementIterations = 10; ///< Maximum number of refinement iterations
 
         RefinementType m_refinementType; /// The type of refinement to use
 
