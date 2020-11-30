@@ -1125,7 +1125,7 @@ void meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     // merge the closest nodes
     for (int i = 0; i < filteredNodes.size(); i++)
     {
-        nodesRtree.NearestNeighboursOnSquaredDistance(filteredNodes[i], mergingDistanceSquared);
+        nodesRtree.NearestNeighborsOnSquaredDistance(filteredNodes[i], mergingDistanceSquared);
 
         const auto resultSize = nodesRtree.GetQueryResultSize();
         if (resultSize > 1)
@@ -1483,7 +1483,7 @@ int meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
     }
 
     double const searchRadiusSquared = searchRadius * searchRadius;
-    m_nodesRTree.NearestNeighboursOnSquaredDistance(point, searchRadiusSquared);
+    m_nodesRTree.NearestNeighborsOnSquaredDistance(point, searchRadiusSquared);
     auto resultSize = m_nodesRTree.GetQueryResultSize();
 
     if (resultSize >= 1)
@@ -1511,7 +1511,7 @@ int meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
         m_edgesRTreeRequiresUpdate = false;
     }
 
-    m_edgesRTree.NearestNeighbour(point);
+    m_edgesRTree.NearestNeighbors(point);
     auto const resultSize = m_edgesRTree.GetQueryResultSize();
     if (resultSize >= 1)
     {

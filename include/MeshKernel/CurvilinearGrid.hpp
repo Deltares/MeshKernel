@@ -37,22 +37,23 @@ namespace meshkernel
     {
 
     public:
+        /// @brief Default constructor
+        /// @returns
+        CurvilinearGrid() = default;
+
         /// @brief Create a new curvilinear grid
-        /// @param[in] m Number of lines
-        /// @param[in] n Number of points per line
-        void Set(int m, int n)
+        /// @param[in] m Number of columns (horizontal direction)
+        /// @param[in] n Number of rows (vertical direction)
+        CurvilinearGrid(int m, int n)
         {
-
-            int mMax = m + 1;
-            int nMax = n + 1;
-
-            m_grid.resize(mMax, std::vector<Point>(nMax, {doubleMissingValue, doubleMissingValue}));
+            m_grid.resize(m + 1, std::vector<Point>(n + 1, {doubleMissingValue, doubleMissingValue}));
         }
 
-        /// @brief Assign point to the curvilinear grid
-        /// @param[in] grid Input grid
-        void Set(const std::vector<std::vector<Point>>& grid)
+        /// @brief Sets the point to the curvilinear grid
+        /// @param[in] grid Input grid points
+        CurvilinearGrid(const std::vector<std::vector<Point>>& grid)
         {
+            CurvilinearGrid(int(grid.size()), int(grid[0].size()));
             m_grid = grid;
         }
 

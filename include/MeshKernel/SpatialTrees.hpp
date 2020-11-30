@@ -89,10 +89,10 @@ namespace meshkernel
                 m_rtree2D = RTree2D(m_points.begin(), m_points.end());
             }
 
-            /// @brief Determines the nearest neighbours on squared distance
-            /// @param[in] node
-            /// @param[in] searchRadiusSquared
-            void NearestNeighboursOnSquaredDistance(Point node, double searchRadiusSquared)
+            /// @brief Determines the nearest neighbors on squared distance
+            /// @param[in] node The node
+            /// @param[in] searchRadiusSquared The squared search radius around the node
+            void NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)
             {
                 double searchRadius = std::sqrt(searchRadiusSquared);
 
@@ -114,8 +114,9 @@ namespace meshkernel
                 }
             }
 
-            /// @brief Determines the nearest neighbour
-            void NearestNeighbour(Point node)
+            /// @brief Determines the nearest neighbor
+            /// @param[in] node The node
+            void NearestNeighbors(Point node)
             {
 
                 m_queryCache.reserve(QueryVectorCapacity);
@@ -131,7 +132,7 @@ namespace meshkernel
             }
 
             /// @brief Removes node
-            /// @param[in] position Position of the node to remove
+            /// @param[in] position Position of the node to remove in m_points
             void RemoveNode(int position)
             {
                 const auto numberRemoved = m_rtree2D.remove(m_points[position]);
@@ -142,8 +143,8 @@ namespace meshkernel
                 m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
             }
 
-            /// @brief Inserts node
-            /// @param[in] node Node to insert
+            /// @brief Inserts a node
+            /// @param[in] node Node to insert in m_points
             void InsertNode(const Point& node)
             {
                 m_points.emplace_back(Point2D{node.x, node.y}, m_points.size());
@@ -156,18 +157,18 @@ namespace meshkernel
                 return m_rtree2D.size();
             }
 
-            /// @brief Determine if RTree is empty
+            /// @brief Determine if the RTree is empty
             [[nodiscard]] auto Empty() const
             {
                 return m_rtree2D.empty();
             }
-            /// @brief Get query result size
+            /// @brief Get the size of the query
             [[nodiscard]] auto GetQueryResultSize() const
             {
                 return m_queryCache.size();
             }
 
-            /// @brief Get query sample index
+            /// @brief Get the index of a sample in the query
             [[nodiscard]] auto GetQuerySampleIndex(int index) const
             {
                 return m_queryIndices[index];

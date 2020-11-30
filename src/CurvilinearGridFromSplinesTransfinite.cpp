@@ -87,7 +87,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
     // Allocate the curvilinear grid. We can have multiple divisions along N and M.
     const int TotalMColumns = (m_numNSplines - 1) * m_numM;
     const int TotalNRows = (m_numMSplines - 1) * m_numN;
-    curvilinearGrid.Set(TotalMColumns, TotalNRows);
+    curvilinearGrid = {TotalMColumns, TotalNRows};
 
     int numMSplines = 0;
     int numNSplines = 0;

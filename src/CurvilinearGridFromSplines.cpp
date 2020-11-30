@@ -568,8 +568,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
         startGridLine = endGridlineIndex + 2;
     }
 
-    curvilinearGrid.Set(int(curvilinearMeshPoints.size()), int(curvilinearMeshPoints[0].size()));
-    curvilinearGrid.Set(curvilinearMeshPoints);
+    curvilinearGrid = {curvilinearMeshPoints};
 }
 
 void meshkernel::CurvilinearGridFromSplines::GetSubIntervalAndGridLayer(int layer, int& gridLayer, int& subLayerIndex)
