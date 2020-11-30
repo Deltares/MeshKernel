@@ -44,14 +44,9 @@ To build:
 cmake --build build
 ```
 
-To build docs (requires Doxygen, output in `build/docs/html`):
-```powershell
-cmake --build build --target docs
-```
-
-
-
-
+### Docs
+The docs are only built when there are changes.
+The output can be found at `build/docs/html`.
 
 ## Examples
 
