@@ -256,11 +256,11 @@ namespace meshkernelapi
             // spherical or cartesian
             if (isGeographic)
             {
-                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projection::spherical);
+                meshInstances[meshKernelId] = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::spherical);
             }
             else
             {
-                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projection::cartesian);
+                meshInstances[meshKernelId] = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
             }
         }
         catch (const std::exception& e)
@@ -1721,8 +1721,7 @@ namespace meshkernelapi
             // Set the mesh
             const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
             const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
-            const auto mesh = std::make_shared<meshkernel::Mesh>();
-            mesh->Set(edges, nodes, projection);
+            const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
 
             // Build the samples
             std::vector<meshkernel::Sample> samples(numSamples);

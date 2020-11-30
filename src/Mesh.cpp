@@ -44,15 +44,18 @@
 #include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernel/Exceptions.hpp>
 
-void meshkernel::Mesh::Set(const std::vector<Edge>& edges,
-                           const std::vector<Point>& nodes,
-                           Projection projection,
-                           AdministrationOptions administration)
+meshkernel::Mesh::Mesh(const std::vector<Edge>& edges,
+                       const std::vector<Point>& nodes,
+                       Projection projection,
+                       AdministrationOptions administration)
 {
     // copy edges and nodes
     m_edges = edges;
     m_nodes = nodes;
     m_projection = projection;
+
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
 
     Administrate(administration);
 
@@ -276,7 +279,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projection projec
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    Set(edges, nodes, projection, AdministrationOptions::AdministrateMeshEdges);
+    *this = Mesh(edges, nodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
 
 meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& polygons, Projection projection) : m_projection(projection)
@@ -344,7 +347,7 @@ meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& pol
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    Set(edges, inputNodes, projection, AdministrationOptions::AdministrateMeshEdges);
+    *this = Mesh(edges, inputNodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
 
 bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const

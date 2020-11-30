@@ -14,8 +14,6 @@
 
 std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
 {
-    auto mesh = std::make_shared<meshkernel::Mesh>();
-
     auto netcdf = LoadLibrary("netcdf.dll");
 
     if (!netcdf)
@@ -112,7 +110,7 @@ std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, m
         index++;
     }
 
-    mesh->Set(edges, nodes, projection);
+    const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
     return mesh;
 }
 
@@ -154,9 +152,7 @@ std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile(
     edges.push_back({5, 9});
     edges.push_back({4, 5});
 
-    auto mesh = std::make_shared<meshkernel::Mesh>();
-    mesh->Set(edges, nodes, meshkernel::Projection::cartesian);
-
+    const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
     return mesh;
 }
 
@@ -196,9 +192,7 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
         }
     }
 
-    auto mesh = std::make_shared<meshkernel::Mesh>();
-    mesh->Set(edges, nodes, projection);
-
+    const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
     return mesh;
 }
 
@@ -388,8 +382,6 @@ std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
         edges[i].second -= 1;
     }
 
-    auto mesh = std::make_shared<meshkernel::Mesh>();
-    mesh->Set(edges, nodes, meshkernel::Projection::cartesian);
-
+    const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
     return mesh;
 }

@@ -87,18 +87,18 @@ namespace meshkernel
         /// @param[in] projection Projection to use
         Mesh(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
+        /// @brief Construct the mesh starting from the edges and nodes
+        /// @param[in] edges The input edges
+        /// @param[in] nodes The input nodes
+        /// @param[in] projection Projection to use
+        /// @param[in] administration Type of administration to perform
+        Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to the first
         /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
-
-        /// @brief Set the mesh starting from the edges and nodes
-        /// @param[in] edges The input edges
-        /// @param[in] nodes The input nodes
-        /// @param[in] projection Projection to use
-        /// @param[in] administration Type of administration to perform
-        void Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         /// @param administrationOption Type of administration to perform

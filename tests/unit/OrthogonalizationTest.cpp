@@ -40,9 +40,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
     orthogonalizationParameters.SmoothAngleOrSmoothArea = 1.0;
 
     // Execute
-    auto mesh = std::make_shared<meshkernel::Mesh>();
-    mesh->Set(edges, nodes, meshkernel::Projection::cartesian);
-
+    auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
     auto smoother = std::make_shared<meshkernel::Smoother>(mesh);
     auto polygon = std::make_shared<meshkernel::Polygons>();
@@ -511,8 +509,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
                                         {2, 1},
                                         {0, 2}};
 
-    auto mesh = std::make_shared<meshkernel::Mesh>();
-    mesh->Set(edges, nodes, meshkernel::Projection::spherical);
+    auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::spherical);
 
     const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;

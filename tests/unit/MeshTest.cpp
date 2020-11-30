@@ -21,10 +21,8 @@ TEST(Mesh, OneQuadTestConstructor)
     edges.push_back({0, 1});
     edges.push_back({2, 3});
 
-    meshkernel::Mesh mesh;
-
     // 2 Execution
-    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
 
     // 3 Validation
     // expect nodesEdges to be sorted ccw
@@ -275,7 +273,7 @@ TEST(Mesh, TwoTrianglesDuplicatedEdges)
 
     meshkernel::Mesh mesh;
     // 2 Execution
-    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
 
     // 3 Validation
     ASSERT_EQ(2, mesh.GetNumFaces());
@@ -297,7 +295,7 @@ TEST(Mesh, MeshBoundaryToPolygon)
     edges.push_back({2, 1});
 
     meshkernel::Mesh mesh;
-    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
     const auto meshBoundaryPolygon = mesh.MeshBoundaryToPolygon(polygonNodes);
@@ -332,7 +330,7 @@ TEST(Mesh, HangingEdge)
     edges.push_back({2, 1});
 
     meshkernel::Mesh mesh;
-    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
 
     ASSERT_EQ(1, mesh.GetNumFaces());
 }
@@ -377,7 +375,7 @@ TEST(Mesh, NodeMerging)
     }
 
     meshkernel::Mesh mesh;
-    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
 
     // Add overlapping nodes
     double generatingDistance = std::sqrt(std::pow(meshkernel::mergingDistance * 0.9, 2) / 2.0);
@@ -413,7 +411,7 @@ TEST(Mesh, NodeMerging)
     edges.resize(edgeIndex);
 
     // re set with augmented nodes
-    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
 
     // 2. Act
     meshkernel::Polygons polygon;
@@ -465,7 +463,7 @@ TEST(Mesh, MillionQuads)
     meshkernel::Mesh mesh;
     // now build node-edge mapping
     auto start(std::chrono::steady_clock::now());
-    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
@@ -607,7 +605,7 @@ TEST(Mesh, GetObtuseTriangles)
         {3, 1}};
 
     meshkernel::Mesh mesh;
-    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, only one obtuse triangle should be found
     const auto obtuseTrianglesCount = mesh.GetObtuseTrianglesCenters().size();
@@ -634,7 +632,7 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
     };
 
     meshkernel::Mesh mesh;
-    mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, by setting the smallFlowEdgesThreshold high, a small flow edge will be found
     const auto numSmallFlowEdgeFirstQuery = mesh.GetEdgesCrossingSmallFlowEdges(100).size();
