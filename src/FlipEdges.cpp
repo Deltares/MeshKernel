@@ -43,21 +43,9 @@ meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
                                                                m_triangulateFaces(triangulateFaces),
                                                                m_projectToLandBoundary(projectToLandBoundary)
 {
-    if (m_landBoundaries->GetNumNodes() <= 0)
-    {
-        m_projectToLandBoundary = false;
-    }
     if (m_projectToLandBoundary)
     {
-        try
-        {
-            m_landBoundaries->FindNearestMeshBoundary(LandBoundaries::ProjectToLandBoundaryOption::WholeMesh);
-        }
-        catch (const std::exception&)
-        {
-            // TODO: log exception: need to rethrow the exception
-            m_projectToLandBoundary = false;
-        }
+        m_landBoundaries->FindNearestMeshBoundary(LandBoundaries::ProjectToLandBoundaryOption::WholeMesh);
     }
 };
 
@@ -360,7 +348,7 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
     int nL = m_mesh->m_nodesNumEdges[nodeLeft] - OptimalNumberOfConnectedNodes(nodeLeft);
     int nR = m_mesh->m_nodesNumEdges[nodeRight] - OptimalNumberOfConnectedNodes(nodeRight);
 
-    if (m_projectToLandBoundary)
+    if (m_projectToLandBoundary && m_landBoundaries->GetNumNodes() > 0)
     {
         if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] >= 0 && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] >= 0)
         {
