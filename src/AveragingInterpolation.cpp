@@ -222,13 +222,13 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
     }
 
     // Get the closest sample
-    m_samplesRtree.NearestNeighboursOnSquaredDistance(interpolationPoint, searchRadiusSquared);
+    m_samplesRtree.NearestNeighborsOnSquaredDistance(interpolationPoint, searchRadiusSquared);
     if (m_samplesRtree.GetQueryResultSize() == 0)
     {
         if (m_useClosestSampleIfNoneAvailable)
         {
             // use the closest sample if none available
-            m_samplesRtree.NearestNeighbour(interpolationPoint);
+            m_samplesRtree.NearestNeighbors(interpolationPoint);
             if (m_samplesRtree.GetQueryResultSize() > 0)
             {
                 const auto sampleIndex = m_samplesRtree.GetQuerySampleIndex(0);

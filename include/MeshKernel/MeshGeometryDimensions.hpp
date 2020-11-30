@@ -29,20 +29,46 @@
 
 namespace meshkernelapi
 {
+    /// @brief A struct used to describe the geometry dimensions of an unstructured mesh in a C-compatible manner
+    ///
+    /// \see MeshGeometry
     struct MeshGeometryDimensions
     {
+        /// @brief
         char name[255];
+
+        /// @brief The mesh dimension (e.g. 1D or 2D)
         int dim;
+
+        /// @brief The number of mesh nodes
         int numnode;
+
+        /// @brief The number of edges
         int numedge;
+
+        /// @brief The number of faces
         int numface;
+
+        /// @brief The maximum amount of nodes a face can have
         int maxnumfacenodes;
+
+        /// @brief The index of the layer the current mesh represents
         int numlayer;
+
+        /// @brief The layer type the current mesh represents
         int layertype;
+
+        /// @brief The number of network nodes
         int nnodes;
+
+        /// @brief The number of network branches
         int nbranches;
+
+        /// @brief The number of geometry nodes
         int ngeometry;
-        int epgs;
+
+        /// @brief The epsg code of the mesh projection
+        int epsg;
     };
 
 } // namespace meshkernelapi

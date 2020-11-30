@@ -35,10 +35,12 @@ namespace meshkernel
     class Polygons;
     class Mesh;
 
+    /// @brief A class describing land boundaries, which are used to visualise the land-water interface
     class LandBoundaries
     {
 
     public:
+        /// Enumerator describing the options how to project to the land boundary
         enum class ProjectToLandBoundaryOption
         {
             DoNotProjectToLandBoundary = 0,
@@ -72,7 +74,7 @@ namespace meshkernel
         /// @return the number of nodes
         int GetNumNodes() const { return static_cast<int>(m_nodes.size()); };
 
-        std::vector<int> m_meshNodesLandBoundarySegments; // lanseg_map, mesh nodes to land boundary mapping
+        std::vector<int> m_meshNodesLandBoundarySegments; ///< lanseg_map, mesh nodes to land boundary mapping
 
     private:
         /// @brief Build an additional boundary for not assigned nodes (connect_boundary_paths)

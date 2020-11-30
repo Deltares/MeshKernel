@@ -38,6 +38,9 @@ namespace meshkernel
     class CurvilinearGrid;
     class Splines;
 
+    /// @brief A class used to create a curvilinear grid from a central spline
+    ///
+    /// Usually this class should be preferred over CurvilinearGridFromSplinesTransfinite.
     class CurvilinearGridFromSplines
     {
     public:
@@ -79,12 +82,12 @@ namespace meshkernel
         /// @brief For the central spline, computes the spline subdivisions along the spline (make_wholegridline)
         void MakeAllGridLines();
 
-        std::vector<Point> m_gridLine;                        // coordinates of the first gridline (xg1, yg1)
-        std::vector<double> m_gridLineDimensionalCoordinates; // center spline coordinates of the first gridline (sg1)
-        std::vector<double> m_maximumGridHeights;             // maximum transversal grid height ()
-        size_t m_numM = 0;                                    // Number of columns in the curvilinear grid
+        std::vector<Point> m_gridLine;                        ///< Coordinates of the first gridline (xg1, yg1)
+        std::vector<double> m_gridLineDimensionalCoordinates; ///< Center spline coordinates of the first gridline (sg1)
+        std::vector<double> m_maximumGridHeights;             ///< Maximum transversal grid height ()
+        size_t m_numM = 0;                                    ///< Number of columns in the curvilinear grid
 
-        std::shared_ptr<Splines> m_splines; // A pointer to spline
+        std::shared_ptr<Splines> m_splines; ///< A pointer to spline
 
     private:
         /// @brief From the layer index gets the next grid layer and the transversal sublayer index (get_isub)

@@ -42,9 +42,11 @@ namespace meshkernel
     class MakeMeshParameters;
     class GeometryList;
 
+    /// @brief A class describing an unstructured mesh
     class Mesh
     {
     public:
+        /// Enumerator describing the different options to delete a mesh
         enum DeleteMeshOptions
         {
             AllVerticesInside = 0,
@@ -52,12 +54,14 @@ namespace meshkernel
             FacesCompletelyIncluded = 2
         };
 
+        /// Enumerator describing the different options to administrate a mesh
         enum class AdministrationOptions
         {
             AdministrateMeshEdges,
             AdministrateMeshEdgesAndFaces
         };
 
+        /// Enumerator describing the different node types
         enum class NodeTypes
         {
             internalNode,
@@ -355,46 +359,46 @@ namespace meshkernel
                                   std::vector<Point>& meshBoundaryPolygon) const;
 
         // nodes
-        std::vector<Point> m_nodes;                 // The mesh nodes (xk, yk)
-        std::vector<std::vector<int>> m_nodesEdges; // For each node, the indices of connected edges (nod%lin)
-        std::vector<int> m_nodesNumEdges;           // For each node, the number of connected edges (nmk)
-        std::vector<int> m_nodeMask;                // The node mask (kc)
-        std::vector<std::vector<int>> m_nodesNodes; // For each node, its neighbours
-        std::vector<int> m_nodesTypes;              // The node types (nb)
+        std::vector<Point> m_nodes;                 ///< The mesh nodes (xk, yk)
+        std::vector<std::vector<int>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
+        std::vector<int> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
+        std::vector<int> m_nodeMask;                ///< The node mask (kc)
+        std::vector<std::vector<int>> m_nodesNodes; ///< For each node, its neighbours
+        std::vector<int> m_nodesTypes;              ///< The node types (nb)
 
         // edges
-        std::vector<Edge> m_edges;                  // The edges, defined as first and second node(kn)
-        std::vector<std::vector<int>> m_edgesFaces; // For each edge, the shared face index (lne)
-        std::vector<int> m_edgesNumFaces;           // For each edge, the number of shared faces(lnn)
-        std::vector<double> m_edgeLengths;          // The edge lengths
-        std::vector<int> m_edgeMask;                // The edge mask (lc)
-        std::vector<Point> m_edgesCenters;          // The edges centers
+        std::vector<Edge> m_edges;                  ///< The edges, defined as first and second node(kn)
+        std::vector<std::vector<int>> m_edgesFaces; ///< For each edge, the shared face index (lne)
+        std::vector<int> m_edgesNumFaces;           ///< For each edge, the number of shared faces(lnn)
+        std::vector<double> m_edgeLengths;          ///< The edge lengths
+        std::vector<int> m_edgeMask;                ///< The edge mask (lc)
+        std::vector<Point> m_edgesCenters;          ///< The edges centers
 
         // faces
-        std::vector<std::vector<int>> m_facesNodes; // The nodes composing the faces, in ccw order (netcell%Nod)
-        std::vector<int> m_numFacesNodes;           // The number of nodes composing the face (netcell%N)
-        std::vector<std::vector<int>> m_facesEdges; // The edge indices composing the face (netcell%lin)
-        std::vector<Point> m_facesCircumcenters;    // The face circumcenters the face circumcenter (xz, yz)
-        std::vector<Point> m_facesMassCenters;      // The faces centers of mass (xzw, yzw)
-        std::vector<double> m_faceArea;             // The face area
-        std::vector<Point> m_polygonNodesCache;     // Cache to store the face nodes
+        std::vector<std::vector<int>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
+        std::vector<int> m_numFacesNodes;           ///< The number of nodes composing the face (netcell%N)
+        std::vector<std::vector<int>> m_facesEdges; ///< The edge indices composing the face (netcell%lin)
+        std::vector<Point> m_facesCircumcenters;    ///< The face circumcenters the face circumcenter (xz, yz)
+        std::vector<Point> m_facesMassCenters;      ///< The faces centers of mass (xzw, yzw)
+        std::vector<double> m_faceArea;             ///< The face area
+        std::vector<Point> m_polygonNodesCache;     ///< Cache to store the face nodes
 
         // vectors for communicating with the client
-        std::vector<double> m_nodex;               // The nodes x-coordinate
-        std::vector<double> m_nodey;               // The nodes y-coordinate
-        std::vector<double> m_nodez;               // The nodes z-coordinate
-        std::vector<int> m_edgeNodes;              // For each edge, the nodes
-        std::vector<int> m_faceNodes;              // For each face, the nodes
-        std::vector<double> m_facesCircumcentersx; // The circumcenters x-coordinate
-        std::vector<double> m_facesCircumcentersy; // The circumcenters y-coordinate
-        std::vector<double> m_facesCircumcentersz; // The circumcenters z-coordinate
+        std::vector<double> m_nodex;               ///< The nodes x-coordinate
+        std::vector<double> m_nodey;               ///< The nodes y-coordinate
+        std::vector<double> m_nodez;               ///< The nodes z-coordinate
+        std::vector<int> m_edgeNodes;              ///< For each edge, the nodes
+        std::vector<int> m_faceNodes;              ///< For each face, the nodes
+        std::vector<double> m_facesCircumcentersx; ///< The circumcenters x-coordinate
+        std::vector<double> m_facesCircumcentersy; ///< The circumcenters y-coordinate
+        std::vector<double> m_facesCircumcentersz; ///< The circumcenters z-coordinate
 
-        Projection m_projection; // The projection used
+        Projection m_projection; ///< The projection used
 
-        SpatialTrees::RTree m_nodesRTree; // Spatial R-Tree used to inquire node vertices
-        SpatialTrees::RTree m_edgesRTree; // Spatial R-Tree used to inquire edges centers
+        SpatialTrees::RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node vertices
+        SpatialTrees::RTree m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
 
-        int m_maxNumNeighbours = 0;
+        int m_maxNumNeighbours = 0; ///< Maximum number of neighbors
 
     private:
         /// @brief Node administration (setnodadmin)
@@ -428,12 +432,12 @@ namespace meshkernel
         /// @brief Removes all invalid nodes and edges
         void RemoveInvalidNodesAndEdges();
 
-        int m_numFaces = 0;               // number of valid faces (nump)
-        int m_numNodes = 0;               // Number of valid nodes in m_nodes
-        int m_numEdges = 0;               // Number of valid edges in m_edges
-        std::vector<double> m_edgeAngles; // internal cache for sorting the edges around nodes
+        int m_numFaces = 0;               ///< Number of valid faces (nump)
+        int m_numNodes = 0;               ///< Number of valid nodes in m_nodes
+        int m_numEdges = 0;               ///< Number of valid edges in m_edges
+        std::vector<double> m_edgeAngles; ///< Internal cache for sorting the edges around nodes
 
-        bool m_nodesRTreeRequiresUpdate = false; //m_nodesRTree requires an update
-        bool m_edgesRTreeRequiresUpdate = false; //m_edgesRTree requires an update
+        bool m_nodesRTreeRequiresUpdate = false; ///< m_nodesRTree requires an update
+        bool m_edgesRTreeRequiresUpdate = false; ///< m_edgesRTree requires an update
     };
 } // namespace meshkernel

@@ -32,6 +32,7 @@
 
 namespace meshkernel
 {
+    /// @brief A class used for triangulation interpolation
     class TriangulationInterpolation
     {
 

@@ -70,8 +70,10 @@ namespace meshkernel
             typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;
 
         public:
+            /// @brief Builds the tree
+            /// @tparam T Requires IsCoordinate<T>
             template <typename T>
-            void BuildTree(std::vector<T>& nodes) //requires IsCoordinate<T>
+            void BuildTree(std::vector<T>& nodes)
             {
                 m_points.reserve(m_points.size());
                 m_points.clear();
@@ -87,7 +89,10 @@ namespace meshkernel
                 m_rtree2D = RTree2D(m_points.begin(), m_points.end());
             }
 
-            void NearestNeighboursOnSquaredDistance(Point node, double searchRadiusSquared)
+            /// @brief Determines the nearest neighbors on squared distance
+            /// @param[in] node The node
+            /// @param[in] searchRadiusSquared The squared search radius around the node
+            void NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)
             {
                 double searchRadius = std::sqrt(searchRadiusSquared);
 
@@ -109,7 +114,9 @@ namespace meshkernel
                 }
             }
 
-            void NearestNeighbour(Point node)
+            /// @brief Determines the nearest neighbor
+            /// @param[in] node The node
+            void NearestNeighbors(Point node)
             {
 
                 m_queryCache.reserve(QueryVectorCapacity);
@@ -124,6 +131,8 @@ namespace meshkernel
                 }
             }
 
+            /// @brief Removes node
+            /// @param[in] position Position of the node to remove in m_points
             void RemoveNode(int position)
             {
                 const auto numberRemoved = m_rtree2D.remove(m_points[position]);
@@ -134,27 +143,32 @@ namespace meshkernel
                 m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
             }
 
+            /// @brief Inserts a node
+            /// @param[in] node Node to insert in m_points
             void InsertNode(const Point& node)
             {
                 m_points.emplace_back(Point2D{node.x, node.y}, m_points.size());
                 m_rtree2D.insert(m_points.end() - 1, m_points.end());
             }
 
+            /// @brief Determine size of the RTree
             [[nodiscard]] auto Size() const
             {
                 return m_rtree2D.size();
             }
 
+            /// @brief Determine if the RTree is empty
             [[nodiscard]] auto Empty() const
             {
                 return m_rtree2D.empty();
             }
-
+            /// @brief Get the size of the query
             [[nodiscard]] auto GetQueryResultSize() const
             {
                 return m_queryCache.size();
             }
 
+            /// @brief Get the index of a sample in the query
             [[nodiscard]] auto GetQuerySampleIndex(int index) const
             {
                 return m_queryIndices[index];
