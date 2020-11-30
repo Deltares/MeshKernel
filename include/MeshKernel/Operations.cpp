@@ -1804,10 +1804,10 @@ namespace meshkernel
 
     /// @brief Checks if value is in bounding box
     /// @tparam T Requires IsCoordinate<T>
-    /// @param[in] point
-    /// @param[in] lowerLeft
-    /// @param[in] upperRight
-    /// @returns If value is in bounding box
+    /// @param[in] point The point to inquire
+    /// @param[in] lowerLeft The lower left corner of the bounding box
+    /// @param[in] upperRight The upper right corner of the bounding box
+    /// @returns If the point is in the bounding box
     template <typename T>
     bool IsValueInBoundingBox(T point, Point lowerLeft, Point upperRight)
     {
