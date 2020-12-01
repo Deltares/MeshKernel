@@ -1432,8 +1432,8 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGridHeights()
 
             for (int j = 0; j < m_maxNumCenterSplineHeights; ++j)
             {
-                AddValueToVector(numHeightsLeft, -1);
-                AddValueToVector(numHeightsRight, -1);
+                std::for_each(numHeightsLeft.begin(), numHeightsLeft.end(), [](auto& n) { n += -1; });
+                std::for_each(numHeightsRight.begin(), numHeightsRight.end(), [](auto& n) { n += -1; });
 
                 FindNearestCrossSplines(s, j,
                                         numHeightsLeft,

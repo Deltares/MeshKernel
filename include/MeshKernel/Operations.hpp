@@ -77,7 +77,7 @@ namespace meshkernel
     /// @param[in] el Element to search for
     /// @returns Index of element
     template <typename T>
-    [[nodiscard]] static int FindIndex(const std::vector<T>& vec, T el)
+    [[nodiscard]] int FindIndex(const std::vector<T>& vec, T el)
     {
         int index = 0;
         for (int n = 0; n < vec.size(); n++)
@@ -91,33 +91,33 @@ namespace meshkernel
         return index;
     }
 
-    /// @brief Find valid index within a certain range
-    /// @param[in] vec Vector to search in
-    /// @param[in] start Start of the range to search for
-    /// @param[in] start End of the range to search for
-    /// @param[in] separator Separator
+    /// @brief Find all start-end position in a vector separated by a separator
+    /// @param[in] vec The vector with separator
+    /// @param[in] start The start of the range to search for
+    /// @param[in] start The end of the range to search for
+    /// @param[in] separator The separator value
     /// @returns Indices of elements
     std::vector<std::vector<size_t>> FindIndices(const std::vector<Point>& vec,
                                                  size_t start,
                                                  size_t end,
-                                                 const double& separator);
+                                                 double separator);
 
-    /// @brief Sort a vector by its value
-    /// @param v Vector to sort
+    /// @brief Sort a vector and return the sorted indices
+    /// @param v The vector to sort
     template <typename T>
-    [[nodiscard]] static std::vector<int> SortedIndices(const std::vector<T>& v)
+    [[nodiscard]] std::vector<int> SortedIndices(const std::vector<T>& v)
     {
-        std::vector<int> idx(v.size());
-        iota(idx.begin(), idx.end(), 0);
-        std::stable_sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) { return v[i1] < v[i2]; });
-        return idx;
+        std::vector<int> indices(v.size());
+        iota(indices.begin(), indices.end(), 0);
+        std::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2) { return v[i1] < v[i2]; });
+        return indices;
     }
 
-    /// @brief Reorder vector by using chmike's algorithm
-    /// @param[in, out] vector Vector to reorder
-    /// @param[in] order Order
+    /// @brief Reorder vector accordingly to a specific order
+    /// @param[in, out] vector The vector to reorder
+    /// @param[in] order The order to use
     template <class T>
-    static void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
+    void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
     {
         std::vector<T> ordered(v.size());
         for (int i = 0; i < order.size(); ++i)
@@ -127,54 +127,12 @@ namespace meshkernel
         v = ordered;
     }
 
-    /// @brief Make vector monotonic
-    /// @param[in, out] Vector to be made monotonic
-    template <typename T>
-    static void MakeMonotonic(std::vector<T>& v)
-    {
-        bool isMonotonic = false;
-        int maxIter = 10;
-        int iter = 0;
-        while (!isMonotonic && iter < maxIter)
-        {
-            isMonotonic = true;
-            maxIter++;
-            for (int n = 0; n < v.size(); ++n)
-            {
-                if (v[n + 1] - v[n] < 0.0)
-                {
-                    isMonotonic = false;
-                    break;
-                }
-            }
-            if (!isMonotonic)
-            {
-                for (int n = 1; n < v.size() - 1; ++n)
-                {
-                    v[n] = 0.5 * (v[n - 1] + v[n + 1]);
-                }
-            }
-        }
-    }
-
-    /// @brief Add a value to each element of a vector
-    /// @param vec Vector which will get a value added to
-    /// @param value Value to be added to each vector element
-    template <typename T>
-    static void AddValueToVector(std::vector<T>& vec, const T value)
-    {
-        for (auto& val : vec)
-        {
-            val += value;
-        }
-    }
-
     /// @brief Algorithm performing the zero's search using the golden section algorithm's
     /// @param func Function
     /// @param min Minimum
     /// @param max Maximum
     template <typename F>
-    [[nodiscard]] static double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
+    [[nodiscard]] double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
     {
         //golden distance factors
         const double c = 0.38196602;

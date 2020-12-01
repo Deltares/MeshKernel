@@ -50,7 +50,7 @@ namespace meshkernel
     std::vector<std::vector<size_t>> FindIndices(const std::vector<Point>& vec,
                                                  size_t start,
                                                  size_t end,
-                                                 const double& separator)
+                                                 double separator)
     {
         std::vector<std::vector<size_t>> result;
 
