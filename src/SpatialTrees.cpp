@@ -25,7 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
 #include <MeshKernel/SpatialTrees.hpp>
 
 void meshkernel::SpatialTrees::RTree::NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)

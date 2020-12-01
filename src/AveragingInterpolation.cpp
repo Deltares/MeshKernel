@@ -25,8 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
 #include <stdexcept>
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Exceptions.hpp>

@@ -25,8 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
 #include <stdexcept>
 #include <vector>
 #include <MeshKernel/Constants.hpp>

@@ -25,8 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
 #include <algorithm>
 #include <cmath>
 #include <MeshKernel/Constants.hpp>

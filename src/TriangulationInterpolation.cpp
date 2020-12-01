@@ -25,7 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 
