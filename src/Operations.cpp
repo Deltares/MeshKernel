@@ -280,7 +280,7 @@ namespace meshkernel
         ezzp[2] = cos(phi0);
     };
 
-    void ComputeTwoBaseComponents(const Point& point, double (&elambda)[3], double (&ephi)[3])
+    void ComputeTwoBaseComponents(const Point& point, std::array<double, 3>& elambda, std::array<double, 3>& ephi)
     {
         double phi0 = point.y * degrad_hp;
         double lambda0 = point.x * degrad_hp;
@@ -492,8 +492,8 @@ namespace meshkernel
             SphericalToCartesian3D(firstPoint, firstPointCartesianCoordinates);
             SphericalToCartesian3D(secondPoint, secondPointCartesianCoordinates);
 
-            double elambda[3];
-            double ephi[3];
+            std::array<double, 3> elambda{0.0, 0.0, 0.0};
+            std::array<double, 3> ephi{0.0, 0.0, 0.0};
             ComputeTwoBaseComponents(insidePoint, elambda, ephi);
 
             double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
@@ -548,8 +548,8 @@ namespace meshkernel
             globalCoordinatesCartesianRotated.z = ezzp[0] * globalCoordinatesCartesian.x + ezzp[1] * globalCoordinatesCartesian.y + ezzp[2] * globalCoordinatesCartesian.z;
 
             // Compute global base vectors at other point in 3D(xx, yy, zz) frame
-            double elambda[3];
-            double ephi[3];
+            std::array<double, 3> elambda{0.0, 0.0, 0.0};
+            std::array<double, 3> ephi{0.0, 0.0, 0.0};
             ComputeTwoBaseComponents(globalCoordinates, elambda, ephi);
 
             double vxx = globalComponents.x * elambda[0] + globalComponents.y * ephi[0];
@@ -561,8 +561,8 @@ namespace meshkernel
             Cartesian3DToSpherical(globalCoordinatesCartesianRotated, reference.x, globalCoordinatesToLocal);
 
             //compute base vectors at other point in rotated 3D(xxp, yyp, zzp) frame
-            double elambdap[3];
-            double ephip[3];
+            std::array<double, 3> elambdap{0.0, 0.0, 0.0};
+            std::array<double, 3> ephip{0.0, 0.0, 0.0};
             ComputeTwoBaseComponents(globalCoordinatesToLocal, elambdap, ephip);
 
             //compute local base vectors in(xx, yy, zz) frame
@@ -605,8 +605,8 @@ namespace meshkernel
             SphericalToCartesian3D(secondPoint, secondPointCartesianCoordinates);
 
             //compute the base vectors at middle point
-            double elambda[3];
-            double ephi[3];
+            std::array<double, 3> elambda{0.0, 0.0, 0.0};
+            std::array<double, 3> ephi{0.0, 0.0, 0.0};
             ComputeTwoBaseComponents(middlePoint, elambda, ephi);
 
             // project vector in local base
@@ -667,8 +667,9 @@ namespace meshkernel
             MiddlePoint(firstPoint, secondPoint, middle, projection);
             Point localComponents;
             TransformGlobalVectorToLocal(firstPoint, middle, normal, projection, localComponents);
-            double elambda[3];
-            double ephi[3];
+
+            std::array<double, 3> elambda{0.0, 0.0, 0.0};
+            std::array<double, 3> ephi{0.0, 0.0, 0.0};
             ComputeTwoBaseComponents(firstPoint, elambda, ephi);
 
             double vxx = localComponents.x * elambda[0] + localComponents.y * ephi[0];
@@ -1436,7 +1437,7 @@ namespace meshkernel
     std::vector<Point> ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges)
     {
         std::vector<Point> edgesCenters;
-        edgesCenters.reserve(std::max(int(edgesCenters.capacity()), numEdges));
+        edgesCenters.reserve(std::max(static_cast<int>(edgesCenters.capacity()), numEdges));
 
         for (int e = 0; e < numEdges; e++)
         {
