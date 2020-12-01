@@ -4,12 +4,6 @@ if(NOT Doxygen_FOUND)
   return()
 endif()
 
-find_package(Sphinx)
-if(NOT Sphinx_FOUND)
-  message(STATUS "Sphinx not found, not building docs")
-  return()
-endif()
-
 set(DOXYGEN_INPUT_DIR "${PROJECT_SOURCE_DIR}/include/MeshKernel")
 set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/doxygen)
 set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/html/index.html)
@@ -23,12 +17,11 @@ configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
 
 # Only regenerate Doxygen when the Doxyfile or public headers change
+add_custom_target(docs)
 add_custom_command(
-  OUTPUT ${DOXYGEN_INDEX_FILE}
-  DEPENDS "${HEADER_LIST}"
+  TARGET docs
   COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/include"
-  MAIN_DEPENDENCY ${DOXYFILE_OUT}
-  ${DOXYFILE_IN}
+  MAIN_DEPENDENCY ${DOXYFILE_OUT} ${DOXYFILE_IN}
   COMMENT "Generating docs"
   VERBATIM)
