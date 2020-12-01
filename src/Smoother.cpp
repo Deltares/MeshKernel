@@ -27,15 +27,15 @@
 
 #pragma once
 
-#include <vector>
 #include <algorithm>
 #include <stdexcept>
+#include <vector>
 
-#include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Operations.cpp>
 #include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Smoother.hpp>
 
 meshkernel::Smoother::Smoother(std::shared_ptr<Mesh> mesh) : m_mesh(mesh)

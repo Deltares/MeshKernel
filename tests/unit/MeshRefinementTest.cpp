@@ -1,11 +1,11 @@
-#include <MeshKernel/MeshRefinement.hpp>
+#include <gtest/gtest.h>
+#include <MeshKernel/InterpolationParameters.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/SampleRefineParameters.hpp>
-#include <MeshKernel/InterpolationParameters.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
-#include <gtest/gtest.h>
 
 TEST(MeshRefinement, FourByFourWithFourSamples)
 {

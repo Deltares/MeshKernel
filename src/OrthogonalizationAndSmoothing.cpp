@@ -25,20 +25,20 @@
 //
 //------------------------------------------------------------------------------
 
-#include <vector>
 #include <algorithm>
-#include <numeric>
 #include <array>
+#include <numeric>
+#include <vector>
 
-#include <MeshKernel/Operations.cpp>
-#include <MeshKernel/Smoother.hpp>
-#include <MeshKernel/Orthogonalizer.hpp>
-#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
+#include <MeshKernel/Orthogonalizer.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Smoother.hpp>
 
 meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mesh> mesh,
                                                                          std::shared_ptr<Smoother> smoother,

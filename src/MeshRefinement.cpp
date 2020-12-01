@@ -25,18 +25,18 @@
 //
 //------------------------------------------------------------------------------
 
-#include <vector>
+#include <algorithm>
 #include <cmath>
 #include <numeric>
-#include <algorithm>
+#include <vector>
 #include <MeshKernel/MeshRefinement.hpp>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
-#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
-#include <MeshKernel/Operations.cpp>
 #include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
 
 meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging) : m_mesh(mesh), m_averaging(averaging){};
 

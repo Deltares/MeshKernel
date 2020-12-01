@@ -1,8 +1,8 @@
-#include <MeshKernel/Operations.cpp>
-#include <MeshKernel/Entities.hpp>
-#include <gtest/gtest.h>
 #include <chrono>
 #include <random>
+#include <gtest/gtest.h>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Operations.hpp>
 
 TEST(FunctionsTest, NormalVectorInsideTestCartesian)
 {

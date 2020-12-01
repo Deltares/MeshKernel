@@ -27,14 +27,14 @@
 
 #pragma once
 
+#include <stdexcept>
 #include <utility>
 #include <vector>
-#include <stdexcept>
-#include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Operations.cpp>
-#include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/TriangulationWrapper.hpp>
 
 namespace meshkernel
 {

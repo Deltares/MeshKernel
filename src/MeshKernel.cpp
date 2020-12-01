@@ -29,7 +29,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include <MeshKernel/MeshKernel.hpp>
+#include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
@@ -40,8 +40,9 @@
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/MeshKernel.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
-#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -49,7 +50,6 @@
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/SplinesToCurvilinearParameters.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
-#include <MeshKernel/AveragingInterpolation.hpp>
 
 namespace meshkernelapi
 {

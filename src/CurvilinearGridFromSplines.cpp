@@ -27,17 +27,17 @@
 
 #pragma once
 
-#include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <algorithm>
 #include <cassert>
 #include <vector>
 #include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/CurvilinearParameters.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/SplinesToCurvilinearParameters.hpp>
-#include <MeshKernel/Exceptions.hpp>
 
 meshkernel::CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
                                                                    const meshkernelapi::CurvilinearParameters& curvilinearParameters,

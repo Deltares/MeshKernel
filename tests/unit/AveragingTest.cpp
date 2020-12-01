@@ -1,7 +1,7 @@
-#include <MeshKernel/AveragingInterpolation.hpp>
-#include <TestUtils/SampleFileReader.hpp>
-#include <TestUtils/MakeMeshes.hpp>
 #include <gtest/gtest.h>
+#include <MeshKernel/AveragingInterpolation.hpp>
+#include <TestUtils/MakeMeshes.hpp>
+#include <TestUtils/SampleFileReader.hpp>
 
 //Simple averaging
 TEST(Averaging, InterpolateOnEdgesSimpleAveraging)

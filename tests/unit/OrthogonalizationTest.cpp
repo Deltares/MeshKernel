@@ -1,14 +1,14 @@
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
-#include <MeshKernel/Smoother.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/Orthogonalizer.hpp>
-#include <TestUtils/MakeMeshes.hpp>
-#include <gtest/gtest.h>
 #include <chrono>
+#include <gtest/gtest.h>
+#include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
+#include <MeshKernel/Orthogonalizer.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Smoother.hpp>
+#include <TestUtils/MakeMeshes.hpp>
 
 #if defined(_WIN32)
 #include <Windows.h>

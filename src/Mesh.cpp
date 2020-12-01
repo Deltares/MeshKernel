@@ -25,24 +25,24 @@
 //
 //------------------------------------------------------------------------------
 
-#include <vector>
+#include <algorithm>
 #include <array>
 #include <cmath>
-#include <numeric>
-#include <algorithm>
-#include <stdexcept>
 #include <initializer_list>
+#include <numeric>
+#include <stdexcept>
+#include <vector>
 
-#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Operations.cpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/MakeMeshParameters.hpp>
-#include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/MakeMeshParameters.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/TriangulationWrapper.hpp>
 
 meshkernel::Mesh::Mesh(const std::vector<Edge>& edges,
                        const std::vector<Point>& nodes,

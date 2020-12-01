@@ -27,13 +27,13 @@
 
 #pragma once
 
-#include <vector>
 #include <algorithm>
 #include <stdexcept>
+#include <vector>
 
-#include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Operations.cpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
 meshkernel::Splines::Splines(Projection projection) : m_projection(projection){};
