@@ -1433,10 +1433,10 @@ namespace meshkernel
         return result;
     }
 
-    std::vector<Point> ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters)
+    std::vector<Point> ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges)
     {
+        std::vector<Point> edgesCenters;
         edgesCenters.reserve(std::max(int(edgesCenters.capacity()), numEdges));
-        edgesCenters.clear();
 
         for (int e = 0; e < numEdges; e++)
         {

@@ -424,7 +424,7 @@ namespace meshkernel
                                                            int numM,
                                                            int numN);
 
-    [[nodiscard]] std::vector<Point> ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::vector<Point>& edgesCenters);
+    [[nodiscard]] std::vector<Point> ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges);
 
     double LinearInterpolationInTriangle(Point interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, Projection projection);
 

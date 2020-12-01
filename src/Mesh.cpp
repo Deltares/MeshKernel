@@ -47,7 +47,7 @@
 meshkernel::Mesh::Mesh(const std::vector<Edge>& edges,
                        const std::vector<Point>& nodes,
                        Projection projection,
-                       AdministrationOptions administration) : m_edges(edges), m_nodes(nodes), m_projection(projection)
+                       AdministrationOptions administration) : m_nodes(nodes), m_edges(edges), m_projection(projection)
 {
 
     Administrate(administration);
@@ -1366,7 +1366,7 @@ void meshkernel::Mesh::ComputeEdgeLengths()
 
 void meshkernel::Mesh::ComputeEdgesCenters()
 {
-    ComputeEdgeCenters(GetNumEdges(), m_nodes, m_edges, m_edgesCenters);
+    m_edgesCenters = ComputeEdgeCenters(GetNumEdges(), m_nodes, m_edges);
 }
 
 bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
