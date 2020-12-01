@@ -47,15 +47,8 @@
 meshkernel::Mesh::Mesh(const std::vector<Edge>& edges,
                        const std::vector<Point>& nodes,
                        Projection projection,
-                       AdministrationOptions administration)
+                       AdministrationOptions administration) : m_edges(edges), m_nodes(nodes), m_projection(projection)
 {
-    // copy edges and nodes
-    m_edges = edges;
-    m_nodes = nodes;
-    m_projection = projection;
-
-    m_nodesRTreeRequiresUpdate = true;
-    m_edgesRTreeRequiresUpdate = true;
 
     Administrate(administration);
 

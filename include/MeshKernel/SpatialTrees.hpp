@@ -92,87 +92,31 @@ namespace meshkernel
             /// @brief Determines the nearest neighbors on squared distance
             /// @param[in] node The node
             /// @param[in] searchRadiusSquared The squared search radius around the node
-            void NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)
-            {
-                double searchRadius = std::sqrt(searchRadiusSquared);
-
-                Box2D box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
-                Point2D nodeSought = Point2D(node.x, node.y);
-
-                m_queryCache.reserve(QueryVectorCapacity);
-                m_queryCache.clear();
-                m_rtree2D.query(
-                    bgi::within(box) &&
-                        bgi::satisfies([&nodeSought, &searchRadiusSquared](value2D const& v) { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }),
-                    std::back_inserter(m_queryCache));
-
-                m_queryIndices.reserve(m_queryCache.size());
-                m_queryIndices.clear();
-                for (const auto& v : m_queryCache)
-                {
-                    m_queryIndices.emplace_back(v.second);
-                }
-            }
+            void NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared);
 
             /// @brief Determines the nearest neighbor
             /// @param[in] node The node
-            void NearestNeighbors(Point node)
-            {
-
-                m_queryCache.reserve(QueryVectorCapacity);
-                m_queryCache.clear();
-                Point2D nodeSought = Point2D(node.x, node.y);
-                m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
-
-                if (!m_queryCache.empty())
-                {
-                    m_queryIndices.clear();
-                    m_queryIndices.emplace_back(m_queryCache[0].second);
-                }
-            }
+            void NearestNeighbors(Point node);
 
             /// @brief Removes node
             /// @param[in] position Position of the node to remove in m_points
-            void RemoveNode(int position)
-            {
-                const auto numberRemoved = m_rtree2D.remove(m_points[position]);
-                if (numberRemoved != 1)
-                {
-                    throw std::invalid_argument("SpatialTrees::RemoveNode: Could not remove node at given position.");
-                }
-                m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
-            }
+            void RemoveNode(int position);
 
             /// @brief Inserts a node
             /// @param[in] node Node to insert in m_points
-            void InsertNode(const Point& node)
-            {
-                m_points.emplace_back(Point2D{node.x, node.y}, m_points.size());
-                m_rtree2D.insert(m_points.end() - 1, m_points.end());
-            }
+            void InsertNode(const Point& node);
 
             /// @brief Determine size of the RTree
-            [[nodiscard]] auto Size() const
-            {
-                return m_rtree2D.size();
-            }
+            [[nodiscard]] size_t Size() const;
 
             /// @brief Determine if the RTree is empty
-            [[nodiscard]] auto Empty() const
-            {
-                return m_rtree2D.empty();
-            }
+            [[nodiscard]] bool Empty() const;
+
             /// @brief Get the size of the query
-            [[nodiscard]] auto GetQueryResultSize() const
-            {
-                return m_queryCache.size();
-            }
+            [[nodiscard]] size_t GetQueryResultSize() const;
 
             /// @brief Get the index of a sample in the query
-            [[nodiscard]] auto GetQuerySampleIndex(int index) const
-            {
-                return m_queryIndices[index];
-            }
+            [[nodiscard]] int GetQuerySampleIndex(int index) const;
 
         private:
             RTree2D m_rtree2D;

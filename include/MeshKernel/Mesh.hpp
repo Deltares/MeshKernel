@@ -234,7 +234,7 @@ namespace meshkernel
         /// @brief Compute the lengths of all edges in one go
         void ComputeEdgeLengths();
 
-        /// @brief Computes the edges centers
+        /// @brief Computes the edges centers  in one go
         void ComputeEdgesCenters();
 
         /// @brief Get the number of valid nodes
@@ -437,7 +437,7 @@ namespace meshkernel
         int m_numEdges = 0;               ///< Number of valid edges in m_edges
         std::vector<double> m_edgeAngles; ///< Internal cache for sorting the edges around nodes
 
-        bool m_nodesRTreeRequiresUpdate = false; ///< m_nodesRTree requires an update
-        bool m_edgesRTreeRequiresUpdate = false; ///< m_edgesRTree requires an update
+        bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
+        bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
     };
 } // namespace meshkernel
