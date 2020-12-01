@@ -267,7 +267,8 @@ void meshkernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
             count++;
         }
     }
-    ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[firstNode], m_mesh->m_nodesEdges[firstNode]);
+
+    m_mesh->m_nodesEdges[firstNode].resize(m_mesh->m_nodesNumEdges[firstNode]);
 }
 
 int meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,

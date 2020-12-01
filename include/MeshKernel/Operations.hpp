@@ -37,60 +37,40 @@
 namespace meshkernel
 {
     /// @brief Defines generic dot product for one dimension
+    /// @tparam T Requires * operator
+    /// @param dx1 First component
+    /// @param dx2 Second component
+    /// @return The dot product
     template <typename T>
-    [[nodiscard]] static T DotProduct(const T& dx1, const T& dx2)
+    [[nodiscard]] T DotProduct(const T& dx1, const T& dx2)
     {
         return dx1 * dx2;
     }
 
     /// @brief Defines generic dot product of infinite dimensions
+    /// @tparam T Requires * operator
+    /// @tparam ...Args Parameter pack, requires a multiple of 2 number of parameters
+    /// @param dx1 First component
+    /// @param dx2 Second component
+    /// @param ...args Parameter pack
+    /// @return The dot product
     template <typename T, typename... Args>
-    [[nodiscard]] static T DotProduct(const T& dx1, const T& dx2, Args&... args)
+    [[nodiscard]] T DotProduct(const T& dx1, const T& dx2, Args&... args)
     {
         return dx1 * dx2 + DotProduct(args...);
     }
 
-    /// @brief Defines vector product in cartesian 3D-space
+    /// @brief Defines vector product for cartesian 3D-space
+    /// @param a The first cartesian 3D point
+    /// @param b The second cartesian 3D point
+    /// @return The vector product
     [[nodiscard]] Cartesian3DPoint VectorProduct(Cartesian3DPoint a, Cartesian3DPoint b);
 
     /// @brief Defines inner product in cartesian 3D-space
+    /// @param a The first cartesian 3D point
+    /// @param b The second cartesian 3D point
+    /// @return The resulting inner product
     [[nodiscard]] double InnerProduct(Cartesian3DPoint a, Cartesian3DPoint b);
-
-    /// @brief Resizes an vector if given size is greater than the current size of the given vector
-    ///
-    /// Use ResizeVectorIfNeededWithMinimumSize in order to reserve a minimal size.
-    /// @param[in] newSize The size the vector should minimally have
-    /// @param[in,out] vectorToResize The vector to resize
-    /// @param[in] fillValue Value with which the vector should be filled if resize is necessary
-    template <typename T>
-    void ResizeVectorIfNeeded(int newSize, std::vector<T>& vectorToResize, T fillValue = T())
-    {
-        const int currentSize = int(vectorToResize.size());
-        if (newSize > currentSize)
-        {
-            newSize = std::max(newSize, int(currentSize * 1.2));
-            vectorToResize.resize(newSize, fillValue);
-        }
-    }
-
-    /// @brief Resizes an vector if given size is greater than the current size of the given vector.
-    ///        Also allows to input a minimal size which should be reserved.
-    ///
-    /// Use ResizeVectorIfNeededWithMinimumSize in order to reserve a minimal size.
-    /// @param[in] newSize The size the vector should minimally have
-    /// @param[in,out] vectorToResize The vector to resize
-    /// @param[in] minSize Minimal size which should be reserved
-    /// @param[in] fillValue Value with which the vector should be filled if resize is necessary
-    template <typename T>
-    void ResizeVectorIfNeededWithMinimumSize(int newSize, std::vector<T>& vectorToResize, int minSize, T fillValue = T())
-    {
-        const int currentSize = int(vectorToResize.size());
-        if (newSize > currentSize)
-        {
-            newSize = std::max(minSize, int(5 * newSize));
-            vectorToResize.resize(newSize, fillValue);
-        }
-    }
 
     /// @brief Find index of a certain element
     /// @param[in] vec Vector to search in

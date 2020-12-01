@@ -1632,7 +1632,7 @@ void meshkernel::CurvilinearGridFromSplines::MakeAllGridLines()
         // upper bound of m_gridLine, with two sides of spline and two missing values added
         int sizeGridLine = gridLineIndex + 1 + 2 * (m_curvilinearParameters.MRefinement + 1) + 2;
         // increase size
-        ResizeVectorIfNeeded(sizeGridLine, m_gridLine, {doubleMissingValue, doubleMissingValue});
+        m_gridLine.resize(sizeGridLine);
         m_gridLineDimensionalCoordinates.resize(sizeGridLine);
 
         if (gridLineIndex > 0)

@@ -174,10 +174,10 @@ void meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
         return;
     }
 
-    ResizeVectorIfNeeded(int(m_nodes.size()), m_nodesEdges);
+    m_nodesEdges.resize(m_nodes.size());
     std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<int>(maximumNumberOfEdgesPerNode, 0));
 
-    ResizeVectorIfNeeded(int(m_nodes.size()), m_nodesNumEdges);
+    m_nodesNumEdges.resize(m_nodes.size());
     std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(), 0);
 
     NodeAdministration();
@@ -194,10 +194,11 @@ void meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 
     // face administration
     m_numFaces = 0;
-    ResizeVectorIfNeeded(int(m_edges.size()), m_edgesNumFaces);
+
+    m_edgesNumFaces.resize(m_edges.size());
     std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
 
-    ResizeVectorIfNeeded(int(m_edges.size()), m_edgesFaces);
+    m_edgesFaces.resize(m_edges.size());
     std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<int>(2, -1));
 
     m_facesMassCenters.clear();
@@ -1239,7 +1240,7 @@ void meshkernel::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeInde
 
     // increment the edges container
     newEdgeIndex = GetNumEdges();
-    ResizeVectorIfNeeded(newEdgeIndex + 1, m_edges, std::make_pair(intMissingValue, intMissingValue));
+    m_edges.resize(newEdgeIndex + 1);
     m_edges[newEdgeIndex].first = startNode;
     m_edges[newEdgeIndex].second = endNode;
     m_numEdges++;
@@ -1252,10 +1253,11 @@ void meshkernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
     int newSize = GetNumNodes() + 1;
     newNodeIndex = GetNumNodes();
 
-    ResizeVectorIfNeeded(newSize, m_nodes);
-    ResizeVectorIfNeeded(newSize, m_nodeMask);
-    ResizeVectorIfNeeded(newSize, m_nodesNumEdges);
-    ResizeVectorIfNeeded(newSize, m_nodesEdges);
+    m_nodes.resize(newSize);
+    m_nodeMask.resize(newSize);
+    m_nodesNumEdges.resize(newSize);
+    m_nodesEdges.resize(newSize);
+
     m_numNodes++;
 
     m_nodes[newNodeIndex] = newPoint;
@@ -1744,10 +1746,11 @@ meshkernel::Mesh& meshkernel::Mesh::operator+=(Mesh const& rhs)
         throw std::invalid_argument("Mesh::operator+=: The two meshes cannot be added.");
     }
 
-    int rhsNumNodes = rhs.GetNumNodes();
-    int rhsNumEdges = rhs.GetNumEdges();
-    ResizeVectorIfNeeded(GetNumEdges() + rhsNumEdges, m_edges, {intMissingValue, intMissingValue});
-    ResizeVectorIfNeeded(GetNumNodes() + rhsNumNodes, m_nodes, {doubleMissingValue, doubleMissingValue});
+    const auto rhsNumNodes = rhs.GetNumNodes();
+    const auto rhsNumEdges = rhs.GetNumEdges();
+
+    m_edges.resize(GetNumEdges() + rhsNumEdges);
+    m_nodes.resize(GetNumNodes() + rhsNumNodes);
 
     //copy mesh nodes
     for (int n = GetNumNodes(); n < GetNumNodes() + rhsNumNodes; ++n)

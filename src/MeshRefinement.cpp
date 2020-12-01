@@ -718,7 +718,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
             int newEdgeIndex;
             m_mesh->ConnectNodes(m_edgeMask[e], m_mesh->m_edges[e].second, newEdgeIndex);
             m_mesh->m_edges[e].second = m_edgeMask[e];
-            ResizeVectorIfNeeded(m_mesh->GetNumEdges(), m_brotherEdges);
+            m_brotherEdges.resize(m_mesh->GetNumEdges());
             m_brotherEdges[newEdgeIndex] = e;
             m_brotherEdges[e] = newEdgeIndex;
         }
