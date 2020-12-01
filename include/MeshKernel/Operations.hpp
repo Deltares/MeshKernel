@@ -346,8 +346,6 @@ namespace meshkernel
                                         double& ratioSecondSegment,
                                         const Projection& projection);
 
-    bool IsCounterClockWisePolygon(std::vector<Point>& polygon, int numPoints, Projection projection);
-
     void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, Projection projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
 
     /// @brief Interpolate spline points

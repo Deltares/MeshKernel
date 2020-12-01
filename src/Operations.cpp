@@ -566,12 +566,12 @@ namespace meshkernel
             ComputeTwoBaseComponents(globalCoordinatesToLocal, elambdap, ephip);
 
             //compute local base vectors in(xx, yy, zz) frame
-            double elambdaloc[3];
+            std::array<double, 3> elambdaloc;
             elambdaloc[0] = exxp[0] * elambdap[0] + eyyp[0] * elambdap[1] + ezzp[0] * elambda[2];
             elambdaloc[1] = exxp[1] * elambdap[0] + eyyp[1] * elambdap[1] + ezzp[1] * elambda[2];
             elambdaloc[2] = exxp[2] * elambdap[0] + eyyp[2] * elambdap[1] + ezzp[2] * elambda[2];
 
-            double ephiloc[3];
+            std::array<double, 3> ephiloc;
             ephiloc[0] = exxp[0] * ephip[0] + eyyp[0] * ephip[1] + ezzp[0] * ephip[2];
             ephiloc[1] = exxp[1] * ephip[0] + eyyp[1] * ephip[1] + ezzp[1] * ephip[2];
             ephiloc[2] = exxp[2] * ephip[0] + eyyp[2] * ephip[1] + ezzp[2] * ephip[2];
@@ -719,7 +719,7 @@ namespace meshkernel
     {
         minX = std::numeric_limits<double>::max();
         minY = std::numeric_limits<double>::max();
-        for (int i = 0; i < numPoints; i++)
+        for (auto i = 0; i < numPoints; i++)
         {
             minX = std::min(polygon[i].x, minX);
             if (abs(polygon[i].y) < abs(minY))
@@ -731,7 +731,7 @@ namespace meshkernel
         if (projection == Projection::spherical)
         {
             double maxX = std::numeric_limits<double>::lowest();
-            for (int i = 0; i < numPoints; i++)
+            for (auto i = 0; i < numPoints; i++)
             {
                 maxX = std::max(polygon[i].x, maxX);
             }
@@ -1147,41 +1147,6 @@ namespace meshkernel
         }
 
         return isCrossing;
-    }
-
-    bool IsCounterClockWisePolygon(std::vector<Point>& polygon, int numPoints, Projection projection)
-    {
-        if (numPoints <= 0)
-        {
-            throw std::invalid_argument("IsCounterClockWisePolygon: The polygon contains no nodes.");
-        }
-
-        double minX;
-        double minY;
-        ReferencePoint(polygon, numPoints, minX, minY, projection);
-
-        Point reference{minX, minY};
-        double area = 0.0;
-        for (int n = 0; n < numPoints; n++)
-        {
-            const auto nextNode = NextCircularForwardIndex(n, numPoints);
-            double dx0 = GetDx(reference, polygon[n], projection);
-            double dy0 = GetDy(reference, polygon[n], projection);
-            double dx1 = GetDx(reference, polygon[nextNode], projection);
-            double dy1 = GetDy(reference, polygon[nextNode], projection);
-
-            double xc = 0.5 * (dx0 + dx1);
-            double yc = 0.5 * (dy0 + dy1);
-
-            dx0 = GetDx(polygon[n], polygon[nextNode], projection);
-            dy0 = GetDy(polygon[n], polygon[nextNode], projection);
-            double dsx = dy0;
-            double dsy = -dx0;
-            double xds = xc * dsx + yc * dsy;
-            area = area + 0.5 * xds;
-        }
-
-        return area > 0.0;
     }
 
     void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, Projection projection, double& area, Point& centerOfMass, bool& isCounterClockWise)
