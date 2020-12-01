@@ -38,7 +38,6 @@
 
 #include <vector>
 #include <utility>
-#include <stdexcept>
 
 // r-tree
 // https://gist.github.com/logc/10272165
