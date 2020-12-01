@@ -52,7 +52,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns
-        [[nodiscard]] inline auto GetWeight(int node, int connectedNode)
+        [[nodiscard]] auto GetWeight(int node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
@@ -61,7 +61,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns
-        [[nodiscard]] inline auto GetConnectedNodeIndex(int node, int connectedNode)
+        [[nodiscard]] auto GetConnectedNodeIndex(int node, int connectedNode)
         {
             return m_connectedNodes[node][connectedNode];
         }
@@ -69,7 +69,7 @@ namespace meshkernel
         /// @brief Get number of connected nodes
         /// @brief node
         /// @returns
-        [[nodiscard]] inline auto GetNumConnectedNodes(int node)
+        [[nodiscard]] auto GetNumConnectedNodes(int node)
         {
             return m_numConnectedNodes[node];
         }
@@ -191,7 +191,7 @@ namespace meshkernel
         std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping;
         std::vector<std::vector<size_t>> m_topologyConnectedNodes;
 
-        std::vector<int> m_numConnectedNodes;              // (nmk2)
+        std::vector<size_t> m_numConnectedNodes;           // (nmk2)
         std::vector<std::vector<size_t>> m_connectedNodes; // (kk2)
 
         // Class variables

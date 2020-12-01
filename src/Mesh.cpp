@@ -280,10 +280,8 @@ meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& pol
 {
     // compute triangulation
     TriangulationWrapper triangulationWrapper;
-    const auto numPolygonNodes = static_cast<int>(inputNodes.size()); // open polygon
-    const auto numberOfTriangles = static_cast<int>(inputNodes.size()) * 6 + 10;
+    const auto numberOfTriangles = inputNodes.size() * 6 + 10;
     triangulationWrapper.Compute(inputNodes,
-                                 numPolygonNodes,
                                  TriangulationWrapper::TriangulationOptions::TriangulatePointsAndGenerateFaces,
                                  0.0,
                                  numberOfTriangles);
@@ -310,7 +308,7 @@ meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& pol
         }
 
         // mark all edges of this triangle as good ones
-        for (int j = 0; j < numNodesInTriangle; ++j)
+        for (auto j = 0; j < numNodesInTriangle; ++j)
         {
             edgeNodesFlag[triangulationWrapper.m_faceEdges[i][j]] = true;
         }
@@ -619,7 +617,7 @@ void meshkernel::Mesh::RemoveDegeneratedTriangles()
         if (IsEqual(den, 0.0))
         {
             // Flag edges to remove
-            for (int e = 0; e < numNodesInTriangle; ++e)
+            for (auto e = 0; e < numNodesInTriangle; ++e)
             {
                 const auto edge = m_facesEdges[f][e];
                 m_edges[edge] = {-1, -1};
@@ -2043,7 +2041,7 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
         // compute the average area of neighboring faces
         double averageOtherFacesArea = 0.0;
         int numNonBoundaryFaces = 0;
-        for (int e = 0; e < numNodesInTriangle; ++e)
+        for (auto e = 0; e < numNodesInTriangle; ++e)
         {
             // the edge must not be at the boundary, otherwise there is no "other" face
             const auto edge = m_facesEdges[face][e];
@@ -2067,10 +2065,10 @@ void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalArea
 
         double minCosPhiSmallTriangle = 1.0;
         int nodeToPreserve = intMissingValue;
-        int firstNodeToMerge = intMissingValue;
-        int secondNodeToMerge = intMissingValue;
+        int firstNodeToMerge;
+        int secondNodeToMerge;
         int thirdEdgeSmallTriangle = intMissingValue;
-        for (int e = 0; e < numNodesInTriangle; ++e)
+        for (auto e = 0; e < numNodesInTriangle; ++e)
         {
             const auto previousEdge = NextCircularBackwardIndex(e, numNodesInTriangle);
             const auto nextEdge = NextCircularForwardIndex(e, numNodesInTriangle);

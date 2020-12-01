@@ -294,7 +294,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     std::vector<Point> sideFour(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
 
     curvilinearGrid = {n1 + n3 + 1, n2 + n3 + 1};
-    for (int t = 0; t < numNodesInTriangle; ++t)
+    for (auto t = 0; t < numNodesInTriangle; ++t)
     {
         std::fill(sideOne.begin(), sideOne.end(), Point{doubleMissingValue, doubleMissingValue});
         std::fill(sideTwo.begin(), sideTwo.end(), Point{doubleMissingValue, doubleMissingValue});

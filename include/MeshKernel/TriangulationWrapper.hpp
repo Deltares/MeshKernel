@@ -59,23 +59,21 @@ namespace meshkernel
         std::vector<std::vector<int>> m_edgeNodes;  ///< Edge nodes
         std::vector<std::vector<int>> m_edgesFaces; ///< Edge faces
 
-        int m_numEdges; ///< Number of edges
-        int m_numNodes; ///< Number of nodes
-        int m_numFaces; ///< Number of faces
+        size_t m_numEdges; ///< Number of edges
+        size_t m_numNodes; ///< Number of nodes
+        size_t m_numFaces; ///< Number of faces
 
         /// @brief
         /// @tparam T A type that contains x and y fields
-        /// @param inputNodes The input points
         /// @param numPoints The number of input points
         /// @param triangulationOption Triangulation option, see \ref TriangulationOptions
         /// @param averageTriangleArea An estimation of the average area of triangles (required for option 2)
         /// @param estimatedNumberOfTriangles An estimation of the average number of triangles (required for option 2)
         template <typename T>
         void Compute(const std::vector<T>& inputNodes,
-                     int numPoints,
                      TriangulationOptions triangulationOption,
                      double averageTriangleArea,
-                     int estimatedNumberOfTriangles)
+                     size_t estimatedNumberOfTriangles)
         {
             // TODO: move implementation to source files as soon as we can use modules (c++20)
 
@@ -87,9 +85,11 @@ namespace meshkernel
                 yLocalPolygon[i] = inputNodes[i].y;
             }
 
-            m_numFaces = -1;
-            m_numEdges = 0;
-            m_numNodes = 0;
+            int numFaces = -1;
+            int numEdges = 0;
+            int numNodes = 0;
+
+            int numInputNodes = triangulationOption == TriangulationOptions::TriangulatePointsAndGenerateFaces ? static_cast<int>(inputNodes.size()) : static_cast<int>(inputNodes.size() - 1);
             auto intTriangulationOption = static_cast<int>(triangulationOption);
 
             std::vector<int> faceNodesFlat;
@@ -98,42 +98,46 @@ namespace meshkernel
             std::vector<double> xNodesFlat;
             std::vector<double> yNodesFlat;
 
-            if (estimatedNumberOfTriangles <= 0)
+            if (estimatedNumberOfTriangles == 0)
             {
-                estimatedNumberOfTriangles = static_cast<int>(inputNodes.size()) * 6 + 10;
+                estimatedNumberOfTriangles = inputNodes.size() * 6 + 10;
             }
 
             // If the number of estimated triangles is not sufficient, triangulation must be repeated
-            while (m_numFaces < 0)
+            while (numFaces < 0)
             {
-                m_numFaces = estimatedNumberOfTriangles;
-                faceNodesFlat.resize(int(estimatedNumberOfTriangles) * 3);
-                edgeNodesFlat.resize(int(estimatedNumberOfTriangles) * 2);
-                faceEdgesFlat.resize(int(estimatedNumberOfTriangles) * 3);
-                xNodesFlat.resize(int(estimatedNumberOfTriangles) * 3, doubleMissingValue);
-                yNodesFlat.resize(int(estimatedNumberOfTriangles) * 3, doubleMissingValue);
+                numFaces = estimatedNumberOfTriangles;
+                faceNodesFlat.resize(numFaces * 3);
+                edgeNodesFlat.resize(numFaces * 2);
+                faceEdgesFlat.resize(numFaces * 3);
+                xNodesFlat.resize(numFaces * 3, doubleMissingValue);
+                yNodesFlat.resize(numFaces * 3, doubleMissingValue);
                 Triangulation(&intTriangulationOption,
                               &xLocalPolygon[0],
                               &yLocalPolygon[0],
-                              &numPoints,
+                              &numInputNodes,
                               &faceNodesFlat[0], // INDX
-                              &m_numFaces,
+                              &numFaces,
                               &edgeNodesFlat[0], // EDGEINDX
-                              &m_numEdges,
+                              &numEdges,
                               &faceEdgesFlat[0], // TRIEDGE
                               &xNodesFlat[0],
                               &yNodesFlat[0],
-                              &m_numNodes,
+                              &numNodes,
                               &averageTriangleArea);
-                if (estimatedNumberOfTriangles)
+                if (estimatedNumberOfTriangles > 0)
                 {
-                    estimatedNumberOfTriangles = -m_numFaces;
+                    estimatedNumberOfTriangles = -numFaces;
                 }
             }
 
+            m_numFaces = numFaces <= 0 ? static_cast<size_t>(0) : static_cast<size_t>(numFaces);
+            m_numEdges = static_cast<size_t>(numEdges);
+            m_numNodes = static_cast<size_t>(numNodes);
+
             // Create nodes
             m_nodes.resize(m_numNodes);
-            for (int i = 0; i < m_numNodes; ++i)
+            for (auto i = 0; i < m_numNodes; ++i)
             {
                 m_nodes[i] = {xNodesFlat[i], yNodesFlat[i]};
             }
@@ -142,7 +146,7 @@ namespace meshkernel
             m_faceNodes.resize(m_numFaces, std::vector<int>(3, intMissingValue));
             m_faceEdges.resize(m_numFaces, std::vector<int>(3, intMissingValue));
             int faceCounter = 0;
-            for (int f = 0; f < m_numFaces; ++f)
+            for (auto f = 0; f < m_numFaces; ++f)
             {
                 m_faceNodes[f][0] = faceNodesFlat[faceCounter] - 1;
                 m_faceEdges[f][0] = faceEdgesFlat[faceCounter] - 1;
@@ -163,7 +167,7 @@ namespace meshkernel
 
             m_edgeNodes.resize(m_numEdges, std::vector<int>(2, intMissingValue));
             int edgeCounter = 0;
-            for (int e = 0; e < m_numEdges; ++e)
+            for (auto e = 0; e < m_numEdges; ++e)
             {
                 m_edgeNodes[e][0] = edgeNodesFlat[edgeCounter] - 1;
                 edgeCounter++;
@@ -173,10 +177,10 @@ namespace meshkernel
 
             m_edgesFaces.resize(m_numEdges, std::vector<int>(2, intMissingValue));
             edgeCounter = 0;
-            for (int f = 0; f < m_numFaces; ++f)
+            for (auto f = 0; f < m_numFaces; ++f)
             {
 
-                for (int n = 0; n < numNodesInTriangle; ++n)
+                for (auto n = 0; n < numNodesInTriangle; ++n)
                 {
                     auto const edge = faceEdgesFlat[edgeCounter] - 1;
                     edgeCounter++;

@@ -91,7 +91,7 @@ namespace meshkernel
         return result;
     }
 
-    int NextCircularForwardIndex(int currentIndex, int size)
+    int NextCircularForwardIndex(int currentIndex, size_t size)
     {
         int index = currentIndex + 1;
         if (index >= size)
@@ -101,7 +101,7 @@ namespace meshkernel
         return index;
     }
 
-    int NextCircularBackwardIndex(int currentIndex, int size)
+    int NextCircularBackwardIndex(int currentIndex, size_t size)
     {
         int index = currentIndex - 1;
         if (index < 0)
@@ -715,7 +715,7 @@ namespace meshkernel
         }
     }
 
-    void ReferencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projection& projection)
+    void ReferencePoint(std::vector<Point>& polygon, size_t numPoints, double& minX, double& minY, const Projection& projection)
     {
         minX = std::numeric_limits<double>::max();
         minY = std::numeric_limits<double>::max();

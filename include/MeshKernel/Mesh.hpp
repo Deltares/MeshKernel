@@ -361,7 +361,7 @@ namespace meshkernel
         // nodes
         std::vector<Point> m_nodes;                 ///< The mesh nodes (xk, yk)
         std::vector<std::vector<int>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
-        std::vector<int> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
+        std::vector<size_t> m_nodesNumEdges;        ///< For each node, the number of connected edges (nmk)
         std::vector<int> m_nodeMask;                ///< The node mask (kc)
         std::vector<std::vector<int>> m_nodesNodes; ///< For each node, its neighbours
         std::vector<int> m_nodesTypes;              ///< The node types (nb)
@@ -369,14 +369,14 @@ namespace meshkernel
         // edges
         std::vector<Edge> m_edges;                  ///< The edges, defined as first and second node(kn)
         std::vector<std::vector<int>> m_edgesFaces; ///< For each edge, the shared face index (lne)
-        std::vector<int> m_edgesNumFaces;           ///< For each edge, the number of shared faces(lnn)
+        std::vector<size_t> m_edgesNumFaces;        ///< For each edge, the number of shared faces(lnn)
         std::vector<double> m_edgeLengths;          ///< The edge lengths
         std::vector<int> m_edgeMask;                ///< The edge mask (lc)
         std::vector<Point> m_edgesCenters;          ///< The edges centers
 
         // faces
         std::vector<std::vector<int>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
-        std::vector<int> m_numFacesNodes;           ///< The number of nodes composing the face (netcell%N)
+        std::vector<size_t> m_numFacesNodes;        ///< The number of nodes composing the face (netcell%N)
         std::vector<std::vector<int>> m_facesEdges; ///< The edge indices composing the face (netcell%lin)
         std::vector<Point> m_facesCircumcenters;    ///< The face circumcenters the face circumcenter (xz, yz)
         std::vector<Point> m_facesMassCenters;      ///< The faces centers of mass (xzw, yzw)

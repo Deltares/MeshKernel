@@ -212,9 +212,7 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
 
     meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
 
-    //// Assert
-    constexpr double tolerance = 1e-5;
-
+    // Assert
     ASSERT_EQ(6, mesh.GetNumEdges());
 
     ASSERT_EQ(4, mesh.m_edges[0].first);
