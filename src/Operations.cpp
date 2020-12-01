@@ -991,7 +991,7 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    Point CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, const Projection projection)
+    Point CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Projection projection)
     {
 
         double dx2 = GetDx(p1, p2, projection);

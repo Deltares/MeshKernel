@@ -251,7 +251,7 @@ void meshkernel::Smoother::ComputeWeights()
     }
 }
 
-void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
+void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
 {
     // the current topology index
     const int currentTopology = m_nodeTopologyMapping[currentNode];
@@ -284,7 +284,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
         if (numFaceNodes == 3)
         {
             // for triangular faces
-            int nodeIndex = FindIndex(m_mesh->m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
+            const auto nodeIndex = FindIndex(m_mesh->m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
             const auto nodeLeft = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
             const auto nodeRight = NextCircularForwardIndex(nodeIndex, numFaceNodes);
 
@@ -530,9 +530,9 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
     }
 }
 
-void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
-                                            int numSharedFaces,
-                                            int numConnectedNodes)
+void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
+                                            size_t numSharedFaces,
+                                            size_t numConnectedNodes)
 {
     // the angles for the squared nodes connected to the stencil nodes, first the ones directly connected, then the others
     std::vector<double> thetaSquare(numConnectedNodes, doubleMissingValue);
@@ -542,7 +542,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
     int numNonStencilQuad = 0;
 
     //loop over the connected edges
-    for (int f = 0; f < numSharedFaces; f++)
+    for (auto f = 0; f < numSharedFaces; f++)
     {
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
         auto nextNode = m_connectedNodesCache[f + 1]; // the first entry is always the stencil node
@@ -618,7 +618,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
         isSquareFace[leftFaceIndex] = isSquareFace[leftFaceIndex] || isSquare;
     }
 
-    for (int f = 0; f < numSharedFaces; f++)
+    for (auto f = 0; f < numSharedFaces; f++)
     {
         // boundary face
         if (m_sharedFacesCache[f] < 0)
@@ -646,7 +646,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
     double phiTriangles = 0.0;
     double phiTot = 0.0;
     numNonStencilQuad = 0;
-    for (int f = 0; f < numSharedFaces; f++)
+    for (auto f = 0; f < numSharedFaces; f++)
     {
         // boundary face
         if (m_sharedFacesCache[f] < 0)

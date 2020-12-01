@@ -642,14 +642,14 @@ void meshkernel::Mesh::RemoveDegeneratedTriangles()
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 }
 
-void meshkernel::Mesh::FindFacesRecursive(int startingNode,
-                                          int node,
-                                          int index,
-                                          int previousEdge,
-                                          std::vector<int>& edges,
-                                          std::vector<int>& nodes,
-                                          std::vector<int>& sortedEdgesFaces,
-                                          std::vector<int>& sortedNodes,
+void meshkernel::Mesh::FindFacesRecursive(size_t startingNode,
+                                          size_t node,
+                                          size_t index,
+                                          size_t previousEdge,
+                                          std::vector<size_t>& edges,
+                                          std::vector<size_t>& nodes,
+                                          std::vector<size_t>& sortedEdgesFaces,
+                                          std::vector<size_t>& sortedNodes,
                                           std::vector<Point>& nodalValues)
 {
     // The selected edge does not exist.
@@ -666,7 +666,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
 
     edges[index] = previousEdge;
     nodes[index] = node;
-    const int otherNode = m_edges[previousEdge].first + m_edges[previousEdge].second - node;
+    const auto otherNode = static_cast<size_t>(m_edges[previousEdge].first + m_edges[previousEdge].second - node);
 
     // enclosure found
     if (otherNode == startingNode && index == edges.size() - 1)
@@ -674,7 +674,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         // no duplicated nodes allowed
         sortedNodes = nodes;
         std::sort(sortedNodes.begin(), sortedNodes.end());
-        for (int n = 0; n < sortedNodes.size() - 1; n++)
+        for (auto n = 0; n < sortedNodes.size() - 1; n++)
         {
             if (sortedNodes[n + 1] == sortedNodes[n])
             {
@@ -697,12 +697,12 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         if (!oneEdgeHasNoFace)
         {
             // is an internal face only if all edges have a different face
-            for (int ee = 0; ee < edges.size(); ee++)
+            for (auto ee = 0; ee < edges.size(); ee++)
             {
                 sortedEdgesFaces[ee] = m_edgesFaces[edges[ee]][0];
             }
             std::sort(sortedEdgesFaces.begin(), sortedEdgesFaces.end());
-            for (int n = 0; n < sortedEdgesFaces.size() - 1; n++)
+            for (auto n = 0; n < sortedEdgesFaces.size() - 1; n++)
             {
                 if (sortedEdgesFaces[n + 1] == sortedEdgesFaces[n])
                     return;
@@ -711,7 +711,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
 
         // the order of the edges in a new face must be counterclockwise
         // in order to evaluate the clockwise order, the signed face area is computed
-        for (int n = 0; n < nodes.size(); n++)
+        for (auto n = 0; n < nodes.size(); n++)
         {
             nodalValues[n] = m_nodes[nodes[n]];
         }
@@ -729,7 +729,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         for (const auto& edge : edges)
         {
             m_edgesNumFaces[edge] += 1;
-            const int numFace = m_edgesNumFaces[edge];
+            const auto numFace = m_edgesNumFaces[edge];
             m_edgesFaces[edge][numFace - 1] = m_numFaces - 1;
         }
 
@@ -742,8 +742,8 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         return;
     }
 
-    int edgeIndexOtherNode = 0;
-    for (int e = 0; e < m_nodesNumEdges[otherNode]; e++)
+    size_t edgeIndexOtherNode = 0;
+    for (auto e = 0; e < m_nodesNumEdges[otherNode]; e++)
     {
         if (m_nodesEdges[otherNode][e] == previousEdge)
         {
@@ -752,14 +752,17 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         }
     }
 
-    edgeIndexOtherNode = edgeIndexOtherNode - 1;
-    if (edgeIndexOtherNode < 0)
+    if (edgeIndexOtherNode == 0)
     {
-        edgeIndexOtherNode = edgeIndexOtherNode + m_nodesNumEdges[otherNode];
+        edgeIndexOtherNode = m_nodesNumEdges[otherNode] - 1;
     }
-    if (edgeIndexOtherNode > m_nodesNumEdges[otherNode] - 1)
+    else if (edgeIndexOtherNode > m_nodesNumEdges[otherNode])
     {
-        edgeIndexOtherNode = edgeIndexOtherNode - m_nodesNumEdges[otherNode];
+        edgeIndexOtherNode = edgeIndexOtherNode - m_nodesNumEdges[otherNode] - 1;
+    }
+    else
+    {
+        edgeIndexOtherNode = edgeIndexOtherNode - 1;
     }
 
     const int edge = m_nodesEdges[otherNode][edgeIndexOtherNode];
@@ -768,14 +771,14 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
 
 void meshkernel::Mesh::FindFaces()
 {
-    for (int numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
+    for (auto numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
-        std::vector<int> edges(numEdgesPerFace);
-        std::vector<int> nodes(numEdgesPerFace);
-        std::vector<int> sortedEdgesFaces(numEdgesPerFace);
-        std::vector<int> sortedNodes(numEdgesPerFace);
+        std::vector<size_t> edges(numEdgesPerFace);
+        std::vector<size_t> nodes(numEdgesPerFace);
+        std::vector<size_t> sortedEdgesFaces(numEdgesPerFace);
+        std::vector<size_t> sortedNodes(numEdgesPerFace);
         std::vector<Point> nodalValues(numEdgesPerFace);
-        for (int n = 0; n < GetNumNodes(); n++)
+        for (auto n = 0; n < GetNumNodes(); n++)
         {
             if (!m_nodes[n].IsValid())
                 continue;
@@ -788,9 +791,9 @@ void meshkernel::Mesh::FindFaces()
     }
 
     m_numFacesNodes.resize(m_numFaces);
-    for (int f = 0; f < m_numFaces; ++f)
+    for (auto f = 0; f < m_numFaces; ++f)
     {
-        m_numFacesNodes[f] = int(m_facesNodes[f].size());
+        m_numFacesNodes[f] = m_facesNodes[f].size();
     }
 }
 

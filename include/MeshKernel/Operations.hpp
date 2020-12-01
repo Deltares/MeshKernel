@@ -268,6 +268,7 @@ namespace meshkernel
     ///an 'inside' point 3. Similar to normalout, except that the normal
     ///vector may be flipped based on the 'inside' point.
     ///TODO:test me
+    ///
     void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, Projection projection);
 
     void Add(Point& point, const Point& normal, double increment, double xf, const Projection& projection);
@@ -290,9 +291,26 @@ namespace meshkernel
     // dcosphi
     [[nodiscard]] double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
 
-    Point CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, const Projection projection);
+    /// @brief
+    /// @param p1
+    /// @param p2
+    /// @param p3
+    /// @param projection
+    /// @return
+    Point CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Projection projection);
 
-    /// (cross, cross3D)
+    /// @brief (cross, cross3D)
+    /// @param firstSegmentFistPoint
+    /// @param firstSegmentSecondPoint
+    /// @param secondSegmentFistPoint
+    /// @param secondSegmentSecondPoint
+    /// @param adimensionalCrossProduct
+    /// @param intersectionPoint
+    /// @param crossProduct
+    /// @param ratioFirstSegment
+    /// @param ratioSecondSegment
+    /// @param projection
+    /// @return
     [[nodiscard]] bool AreLinesCrossing(const Point& firstSegmentFistPoint,
                                         const Point& firstSegmentSecondPoint,
                                         const Point& secondSegmentFistPoint,
@@ -304,6 +322,13 @@ namespace meshkernel
                                         double& ratioSecondSegment,
                                         const Projection& projection);
 
+    /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges
+    /// @param polygon The input vector containing the nodes of the polygon.
+    /// @param numberOfPolygonPoints The number of points to account for in the input vector.
+    /// @param projection The projection to use.
+    /// @param area The resulting area.
+    /// @param centerOfMass The resulting center of mass.
+    /// @param isCounterClockWise The orientation of the edges.
     void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, Projection projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
 
     /// @brief Interpolate spline points
@@ -344,7 +369,7 @@ namespace meshkernel
     }
 
     template <class T>
-    static void SwapVectorElements(std::vector<T>& v, int numElements)
+    void SwapVectorElements(std::vector<T>& v, int numElements)
     {
         if (numElements > v.size())
         {
@@ -363,7 +388,7 @@ namespace meshkernel
 
     // get the sign
     template <typename T>
-    [[nodiscard]] static int sgn(T val)
+    [[nodiscard]] int sgn(T val)
     {
         return (T(0) < val ? 1 : 0) - (val < T(0) ? 1 : 0);
     }
