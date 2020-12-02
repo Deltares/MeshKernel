@@ -17,6 +17,7 @@ xbuild
 
 # Visual Studio
 .vs
+.vscode
 
 # User specific
 post_build.bat

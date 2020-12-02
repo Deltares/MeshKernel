@@ -47,7 +47,7 @@ namespace meshkernel
                  Projection projection);
 
         /// @brief Creates points inside the polygon using triangulation (the edges size determines how many points will be generated)
-        /// @param[out] generatedPoints the generated points
+        /// @returns The generated points
         std::vector<std::vector<Point>> ComputePointsInPolygons() const;
 
         /// @brief Refines the polygon edges with additional nodes, from the start to the end index (refinepolygonpart)

@@ -46,7 +46,7 @@
 #endif
 
 /// \namespace meshkernelapi
-/// @brief Contains all mesh instances
+/// @brief Contains all structs and functions exposed at the API level
 namespace meshkernelapi
 {
 #ifdef __cplusplus

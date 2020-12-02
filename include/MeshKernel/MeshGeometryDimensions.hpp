@@ -34,7 +34,7 @@ namespace meshkernelapi
     /// \see MeshGeometry
     struct MeshGeometryDimensions
     {
-        /// @brief
+        /// @brief name
         char name[255];
 
         /// @brief The mesh dimension (e.g. 1D or 2D)
