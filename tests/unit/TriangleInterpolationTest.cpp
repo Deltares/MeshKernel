@@ -1,9 +1,10 @@
-#include <MeshKernel/Mesh.hpp>
-#include "Meshkernel/Entities.hpp"
-#include <MeshKernel/TriangulationInterpolation.hpp>
-#include <TestUtils/SampleFileReader.hpp>
-#include <TestUtils/MakeMeshes.hpp>
 #include <gtest/gtest.h>
+
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/TriangulationInterpolation.hpp>
+#include <Meshkernel/Entities.hpp>
+#include <TestUtils/MakeMeshes.hpp>
+#include <TestUtils/SampleFileReader.hpp>
 
 TEST(TriangleInterpolation, InterpolateOnNodes)
 {

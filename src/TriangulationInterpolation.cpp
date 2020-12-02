@@ -25,13 +25,12 @@
 //
 //------------------------------------------------------------------------------
 
-#include <MeshKernel/TriangulationInterpolation.hpp>
-#include <MeshKernel/TriangulationWrapper.hpp>
-
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/TriangulationInterpolation.hpp>
+#include <MeshKernel/TriangulationWrapper.hpp>
 
 meshkernel::TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>& m_locations,
                                                                    const std::vector<Sample>& samples,

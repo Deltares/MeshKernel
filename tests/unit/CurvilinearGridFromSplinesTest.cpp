@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/Entities.hpp>

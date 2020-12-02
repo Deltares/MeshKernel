@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
+
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/Entities.hpp>

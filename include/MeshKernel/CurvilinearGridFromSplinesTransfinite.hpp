@@ -27,7 +27,9 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
+
 #include <MeshKernel/CurvilinearParameters.hpp>
 
 namespace meshkernel

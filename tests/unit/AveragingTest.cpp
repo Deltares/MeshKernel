@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>

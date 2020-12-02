@@ -29,12 +29,12 @@
 #include <cmath>
 #include <numeric>
 #include <vector>
-#include <MeshKernel/MeshRefinement.hpp>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 

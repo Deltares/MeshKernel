@@ -1,7 +1,8 @@
 #pragma once
 #include <chrono>
-#include <random>
 #include <gtest/gtest.h>
+#include <random>
+
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 

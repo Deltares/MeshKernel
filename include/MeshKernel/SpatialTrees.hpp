@@ -26,8 +26,9 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <MeshKernel/Entities.hpp>
+
 #include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Entities.hpp>
 
 // include boost
 #define BOOST_ALLOW_DEPRECATED_HEADERS
@@ -36,8 +37,8 @@
 #include <boost/geometry/index/rtree.hpp>
 #undef BOOST_ALLOW_DEPRECATED_HEADERS
 
-#include <vector>
 #include <utility>
+#include <vector>
 
 // r-tree
 // https://gist.github.com/logc/10272165

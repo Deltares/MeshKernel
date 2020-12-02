@@ -1,3 +1,5 @@
+#include <gtest/gtest.h>
+
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -5,8 +7,6 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/MakeMeshes.hpp>
-
-#include <gtest/gtest.h>
 
 TEST(FlipEdges, FlipEdgesWithLandBoundary)
 {

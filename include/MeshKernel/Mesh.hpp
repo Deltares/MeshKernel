@@ -28,8 +28,9 @@
 #pragma once
 
 #include <vector>
-#include <MeshKernel/MakeMeshParameters.hpp>
+
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/MakeMeshParameters.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 
 /// \namespace meshkernel

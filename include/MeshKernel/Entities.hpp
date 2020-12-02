@@ -27,11 +27,12 @@
 
 #pragma once
 
-#include <utility>
-#include <vector>
-#include <MeshKernel/Constants.hpp>
 #include <cmath>
 #include <limits>
+#include <utility>
+#include <vector>
+
+#include <MeshKernel/Constants.hpp>
 
 namespace meshkernel
 {

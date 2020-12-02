@@ -1,9 +1,11 @@
 #include <gtest/gtest.h>
+
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygons.hpp>
+
 TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
 {
     std::vector<meshkernel::Point> polygonPoints{{273.502319, 478.880432},

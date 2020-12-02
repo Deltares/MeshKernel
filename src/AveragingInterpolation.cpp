@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <stdexcept>
+
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>

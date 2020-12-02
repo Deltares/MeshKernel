@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <MeshKernel/InterpolationParameters.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/MeshRefinement.hpp>

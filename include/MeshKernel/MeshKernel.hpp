@@ -26,15 +26,16 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <MeshKernel/MeshGeometryDimensions.hpp>
-#include <MeshKernel/MeshGeometry.hpp>
-#include <MeshKernel/GeometryList.hpp>
-#include <MeshKernel/OrthogonalizationParameters.hpp>
+
 #include <MeshKernel/CurvilinearParameters.hpp>
-#include <MeshKernel/SplinesToCurvilinearParameters.hpp>
-#include <MeshKernel/MakeMeshParameters.hpp>
+#include <MeshKernel/GeometryList.hpp>
 #include <MeshKernel/InterpolationParameters.hpp>
+#include <MeshKernel/MakeMeshParameters.hpp>
+#include <MeshKernel/MeshGeometry.hpp>
+#include <MeshKernel/MeshGeometryDimensions.hpp>
+#include <MeshKernel/OrthogonalizationParameters.hpp>
 #include <MeshKernel/SampleRefineParameters.hpp>
+#include <MeshKernel/SplinesToCurvilinearParameters.hpp>
 
 #if defined(_WIN32)
 #if !defined(MKERNEL_API)

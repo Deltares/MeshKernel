@@ -28,6 +28,7 @@
 #include <stdexcept>
 #include <utility>
 #include <vector>
+
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>

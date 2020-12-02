@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <cassert>
 #include <vector>
+
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/CurvilinearParameters.hpp>

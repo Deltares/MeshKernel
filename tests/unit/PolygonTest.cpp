@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygons.hpp>
