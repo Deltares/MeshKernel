@@ -17,7 +17,7 @@ jobs:
       - name: Install doxygen
         run: sudo apt-get install doxygen
 
-      - name: Check Doxygen
+      - name: Check doxygen
         run: |
           set -e 
           python3 scripts/doxygen_ci.py --fail-with-warnings

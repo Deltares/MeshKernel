@@ -67,7 +67,6 @@ namespace meshkernel
         void FindNearestMeshBoundary(ProjectToLandBoundaryOption projectToLandBoundaryOption);
 
         /// @brief Snap mesh nodes to land boundaries (snap_to_landboundary)
-        /// @param mesh
         void SnapMeshToLandBoundaries();
 
         /// @brief Gets the number of nodes
