@@ -1,11 +1,10 @@
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/Splines.hpp>
-#include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <gtest/gtest.h>
+
+#include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridFromSplines.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Splines.hpp>
 
 TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
 {

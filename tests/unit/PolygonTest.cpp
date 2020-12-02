@@ -1,8 +1,9 @@
-#include <MeshKernel/Mesh.hpp>
+#include <gtest/gtest.h>
+
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/MakeMeshes.hpp>
-#include <gtest/gtest.h>
 
 TEST(Polygons, MeshBoundaryToPolygon)
 {

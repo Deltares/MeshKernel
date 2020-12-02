@@ -29,7 +29,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include <MeshKernel/MeshKernel.hpp>
+#include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
@@ -40,8 +40,9 @@
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/MeshKernel.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
-#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -49,7 +50,6 @@
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/SplinesToCurvilinearParameters.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
-#include <MeshKernel/AveragingInterpolation.hpp>
 
 namespace meshkernelapi
 {
@@ -185,7 +185,7 @@ namespace meshkernelapi
         {
             const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
             const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
-            ComputeEdgeCenters(meshGeometryDimensions.numedge, nodes, edges, locations);
+            locations = ComputeEdgeCenters(meshGeometryDimensions.numedge, nodes, edges);
         }
         if (interpolationLocation == meshkernel::InterpolationLocation::Faces)
         {
@@ -256,11 +256,11 @@ namespace meshkernelapi
             // spherical or cartesian
             if (isGeographic)
             {
-                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projection::spherical);
+                meshInstances[meshKernelId] = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::spherical);
             }
             else
             {
-                meshInstances[meshKernelId]->Set(edges, nodes, meshkernel::Projection::cartesian);
+                meshInstances[meshKernelId] = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
             }
         }
         catch (const std::exception& e)
@@ -1721,8 +1721,7 @@ namespace meshkernelapi
             // Set the mesh
             const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
             const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
-            const auto mesh = std::make_shared<meshkernel::Mesh>();
-            mesh->Set(edges, nodes, projection);
+            const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
 
             // Build the samples
             std::vector<meshkernel::Sample> samples(numSamples);

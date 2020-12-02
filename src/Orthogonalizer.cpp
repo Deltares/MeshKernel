@@ -25,16 +25,14 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
-#include <vector>
 #include <algorithm>
 #include <numeric>
+#include <vector>
 
-#include <MeshKernel/Operations.cpp>
 #include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 
 meshkernel::Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh> mesh) : m_mesh(mesh)

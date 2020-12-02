@@ -25,16 +25,15 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
+#include <stdexcept>
 #include <utility>
 #include <vector>
-#include <stdexcept>
-#include <MeshKernel/Polygons.hpp>
+
 #include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Operations.cpp>
-#include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/TriangulationWrapper.hpp>
 
 namespace meshkernel
 {
@@ -62,7 +61,7 @@ namespace meshkernel
 
             // not a closed polygon
             const auto numLocalPoints = localPolygon.size();
-            if (localPolygon[numLocalPoints - 1] != localPolygon[0])
+            if (localPolygon[numLocalPoints - 1] != localPolygon[0] || localPolygon.size() < 4)
             {
                 continue;
             }
@@ -75,23 +74,19 @@ namespace meshkernel
             const auto perimeter = PerimeterClosedPolygon(localPolygon);
 
             // average triangle size
-            const double averageEdgeLength = perimeter / static_cast<double>(numLocalPoints - 1);
+            const auto averageEdgeLength = perimeter / static_cast<double>(numLocalPoints - 1);
             const double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
 
             // estimated number of triangles
-            const int SafetySize = 11;
-            const auto numberOfTriangles = int(SafetySize * localPolygonArea / averageTriangleArea);
-            if (numberOfTriangles <= 0)
+            const size_t SafetySize = 11;
+            const auto numberOfTriangles = static_cast<size_t>(SafetySize * localPolygonArea / averageTriangleArea);
+            if (numberOfTriangles == 0)
             {
                 throw AlgorithmError("Polygons::ComputePointsInPolygons: The number of triangles is <= 0.");
             }
 
             TriangulationWrapper triangulationWrapper;
-
-            const auto numPolygonNodes = static_cast<int>(localPolygon.size() - 1); // open polygon
-
             triangulationWrapper.Compute(localPolygon,
-                                         numPolygonNodes,
                                          TriangulationWrapper::TriangulationOptions::GeneratePoints,
                                          averageTriangleArea,
                                          numberOfTriangles);

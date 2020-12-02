@@ -25,15 +25,14 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
 #include <vector>
-#include <MeshKernel/Operations.cpp>
+
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Operations.hpp>
 
 meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
                                  std::shared_ptr<LandBoundaries> landBoundary,
@@ -267,7 +266,8 @@ void meshkernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
             count++;
         }
     }
-    ResizeVectorIfNeeded(m_mesh->m_nodesNumEdges[firstNode], m_mesh->m_nodesEdges[firstNode]);
+
+    m_mesh->m_nodesEdges[firstNode].resize(m_mesh->m_nodesNumEdges[firstNode]);
 }
 
 int meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,

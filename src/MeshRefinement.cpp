@@ -25,18 +25,18 @@
 //
 //------------------------------------------------------------------------------
 
-#include <vector>
+#include <algorithm>
 #include <cmath>
 #include <numeric>
-#include <algorithm>
-#include <MeshKernel/MeshRefinement.hpp>
+#include <vector>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
-#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
-#include <MeshKernel/Operations.cpp>
 #include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/MeshRefinement.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
 
 meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging) : m_mesh(mesh), m_averaging(averaging){};
 
@@ -718,7 +718,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
             int newEdgeIndex;
             m_mesh->ConnectNodes(m_edgeMask[e], m_mesh->m_edges[e].second, newEdgeIndex);
             m_mesh->m_edges[e].second = m_edgeMask[e];
-            ResizeVectorIfNeeded(m_mesh->GetNumEdges(), m_brotherEdges);
+            m_brotherEdges.resize(m_mesh->GetNumEdges());
             m_brotherEdges[newEdgeIndex] = e;
             m_brotherEdges[e] = newEdgeIndex;
         }

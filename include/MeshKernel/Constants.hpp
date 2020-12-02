@@ -58,8 +58,8 @@ namespace meshkernel
     const int maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
     const double minimumCellArea = 1e-12;                                      ///< Minimum cell area
     const double weightCircumCenter = 1.0;                                     ///< Weight circum center
-    const int numNodesQuads = 4;                                               ///< Number of nodes in a quadrilateral
-    const int numNodesInTriangle = 3;                                          ///< Number of nodes in a triangle
+    const size_t numNodesQuads = 4;                                            ///< Number of nodes in a quadrilateral
+    const size_t numNodesInTriangle = 3;                                       ///< Number of nodes in a triangle
 
     // orthogonalization
     const double minimumEdgeLength = 1e-4;                   ///< Minimum edge length

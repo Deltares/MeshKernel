@@ -28,8 +28,9 @@
 #pragma once
 
 #include <vector>
-#include <MeshKernel/MakeMeshParameters.hpp>
+
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/MakeMeshParameters.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 
 /// \namespace meshkernel
@@ -87,18 +88,18 @@ namespace meshkernel
         /// @param[in] projection Projection to use
         Mesh(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
+        /// @brief Construct the mesh starting from the edges and nodes
+        /// @param[in] edges The input edges
+        /// @param[in] nodes The input nodes
+        /// @param[in] projection Projection to use
+        /// @param[in] administration Type of administration to perform
+        Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to the first
         /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
-
-        /// @brief Set the mesh starting from the edges and nodes
-        /// @param[in] edges The input edges
-        /// @param[in] nodes The input nodes
-        /// @param[in] projection Projection to use
-        /// @param[in] administration Type of administration to perform
-        void Set(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         /// @param administrationOption Type of administration to perform
@@ -234,7 +235,7 @@ namespace meshkernel
         /// @brief Compute the lengths of all edges in one go
         void ComputeEdgeLengths();
 
-        /// @brief Computes the edges centers
+        /// @brief Computes the edges centers  in one go
         void ComputeEdgesCenters();
 
         /// @brief Get the number of valid nodes
@@ -437,7 +438,7 @@ namespace meshkernel
         int m_numEdges = 0;               ///< Number of valid edges in m_edges
         std::vector<double> m_edgeAngles; ///< Internal cache for sorting the edges around nodes
 
-        bool m_nodesRTreeRequiresUpdate = false; ///< m_nodesRTree requires an update
-        bool m_edgesRTreeRequiresUpdate = false; ///< m_edgesRTree requires an update
+        bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
+        bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
     };
 } // namespace meshkernel

@@ -1,9 +1,10 @@
 #pragma once
+#include <chrono>
+#include <gtest/gtest.h>
+#include <random>
+
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
-#include <gtest/gtest.h>
-#include <chrono>
-#include <random>
 
 TEST(SpatialTrees, RTreeRemovePoint)
 {

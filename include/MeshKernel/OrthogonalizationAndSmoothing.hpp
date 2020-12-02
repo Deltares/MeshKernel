@@ -27,10 +27,11 @@
 
 #pragma once
 
-#include <vector>
 #include <memory>
-#include <MeshKernel/OrthogonalizationParameters.hpp>
+#include <vector>
+
 #include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/OrthogonalizationParameters.hpp>
 
 namespace meshkernel
 {
