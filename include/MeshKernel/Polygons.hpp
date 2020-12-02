@@ -28,6 +28,7 @@
 #pragma once
 
 #include <vector>
+
 #include <MeshKernel/Entities.hpp>
 
 namespace meshkernel

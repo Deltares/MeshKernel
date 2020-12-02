@@ -25,17 +25,15 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
-#include <vector>
 #include <algorithm>
 #include <stdexcept>
+#include <vector>
 
-#include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Operations.cpp>
 #include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Smoother.hpp>
 
 meshkernel::Smoother::Smoother(std::shared_ptr<Mesh> mesh) : m_mesh(mesh)
@@ -544,7 +542,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
     int numNonStencilQuad = 0;
 
     //loop over the connected edges
-    for (int f = 0; f < numSharedFaces; f++)
+    for (auto f = 0; f < numSharedFaces; f++)
     {
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
         auto nextNode = m_connectedNodesCache[f + 1]; // the first entry is always the stencil node
@@ -620,7 +618,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
         isSquareFace[leftFaceIndex] = isSquareFace[leftFaceIndex] || isSquare;
     }
 
-    for (int f = 0; f < numSharedFaces; f++)
+    for (auto f = 0; f < numSharedFaces; f++)
     {
         // boundary face
         if (m_sharedFacesCache[f] < 0)
@@ -648,7 +646,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
     double phiTriangles = 0.0;
     double phiTot = 0.0;
     numNonStencilQuad = 0;
-    for (int f = 0; f < numSharedFaces; f++)
+    for (auto f = 0; f < numSharedFaces; f++)
     {
         // boundary face
         if (m_sharedFacesCache[f] < 0)

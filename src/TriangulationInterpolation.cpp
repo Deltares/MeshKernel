@@ -25,14 +25,12 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
-
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Operations.cpp>
-#include <MeshKernel/SpatialTrees.hpp>
-#include <MeshKernel/Exceptions.hpp>
 
 meshkernel::TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>& m_locations,
                                                                    const std::vector<Sample>& samples,
@@ -52,11 +50,8 @@ void meshkernel::TriangulationInterpolation::Compute()
     }
 
     // triangulate samples
-    const auto numPolygonNodes = static_cast<int>(m_samples.size());
     TriangulationWrapper triangulationWrapper;
-
     triangulationWrapper.Compute(m_samples,
-                                 numPolygonNodes,
                                  TriangulationWrapper::TriangulationOptions::TriangulatePointsAndGenerateFaces,
                                  0.0,
                                  0);
@@ -72,10 +67,10 @@ void meshkernel::TriangulationInterpolation::Compute()
     std::vector<std::vector<Point>> triangles(triangulationWrapper.m_numFaces, std::vector<Point>(4, {doubleMissingValue, doubleMissingValue}));
     std::vector<std::vector<double>> values(triangulationWrapper.m_numFaces, std::vector<double>(4, doubleMissingValue));
 
-    for (int f = 0; f < triangulationWrapper.m_numFaces; ++f)
+    for (auto f = 0; f < triangulationWrapper.m_numFaces; ++f)
     {
         // compute triangle polygons
-        for (int n = 0; n < numNodesInTriangle; ++n)
+        for (auto n = 0; n < numNodesInTriangle; ++n)
         {
             auto const node = triangulationWrapper.m_faceNodes[f][n];
             triangles[f][n] = {m_samples[node].x, m_samples[node].y};

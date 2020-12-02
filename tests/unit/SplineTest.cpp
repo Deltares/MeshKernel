@@ -1,10 +1,9 @@
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Splines.hpp>
-#include <MeshKernel/Operations.cpp>
 #include <gtest/gtest.h>
+
+#include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Splines.hpp>
 
 TEST(Splines, SetSpline)
 {

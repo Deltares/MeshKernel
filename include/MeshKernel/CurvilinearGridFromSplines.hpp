@@ -27,11 +27,12 @@
 
 #pragma once
 
-#include <vector>
 #include <memory>
-#include <MeshKernel/SplinesToCurvilinearParameters.hpp>
+#include <vector>
+
 #include <MeshKernel/CurvilinearParameters.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/SplinesToCurvilinearParameters.hpp>
 
 namespace meshkernel
 {

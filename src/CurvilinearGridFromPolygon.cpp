@@ -25,15 +25,14 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
-#include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <algorithm>
-#include <vector>
 #include <stdexcept>
+#include <vector>
+
 #include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
 meshkernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon){};
@@ -296,7 +295,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     std::vector<Point> sideFour(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
 
     curvilinearGrid = {n1 + n3 + 1, n2 + n3 + 1};
-    for (int t = 0; t < numNodesInTriangle; ++t)
+    for (auto t = 0; t < numNodesInTriangle; ++t)
     {
         std::fill(sideOne.begin(), sideOne.end(), Point{doubleMissingValue, doubleMissingValue});
         std::fill(sideTwo.begin(), sideTwo.end(), Point{doubleMissingValue, doubleMissingValue});

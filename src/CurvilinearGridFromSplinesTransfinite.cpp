@@ -25,16 +25,15 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
 #include <algorithm>
 #include <memory>
 #include <vector>
+
 #include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Operations.cpp>
-#include <MeshKernel/Splines.hpp>
 #include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Splines.hpp>
 
 meshkernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines,
                                                                                          const meshkernelapi::CurvilinearParameters& curvilinearParameters) : m_splines(splines),

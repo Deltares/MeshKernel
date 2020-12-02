@@ -25,17 +25,16 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
-#include <vector>
 #include <stdexcept>
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/Entities.hpp>
+#include <vector>
+
 #include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Operations.cpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
 
 namespace meshkernel
 {

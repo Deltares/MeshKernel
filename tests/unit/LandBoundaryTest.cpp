@@ -1,10 +1,11 @@
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
-#include <TestUtils/MakeMeshes.hpp>
 #include <gtest/gtest.h>
+
+#include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <TestUtils/MakeMeshes.hpp>
 
 TEST(LandBoundaries, OneLandBoundary)
 {

@@ -25,19 +25,18 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
-#include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <algorithm>
 #include <cassert>
 #include <vector>
+
 #include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/CurvilinearParameters.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Operations.cpp>
+#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/SplinesToCurvilinearParameters.hpp>
-#include <MeshKernel/Exceptions.hpp>
 
 meshkernel::CurvilinearGridFromSplines::CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
                                                                    const meshkernelapi::CurvilinearParameters& curvilinearParameters,
@@ -1434,8 +1433,8 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGridHeights()
 
             for (int j = 0; j < m_maxNumCenterSplineHeights; ++j)
             {
-                AddValueToVector(numHeightsLeft, -1);
-                AddValueToVector(numHeightsRight, -1);
+                std::for_each(numHeightsLeft.begin(), numHeightsLeft.end(), [](auto& n) { n += -1; });
+                std::for_each(numHeightsRight.begin(), numHeightsRight.end(), [](auto& n) { n += -1; });
 
                 FindNearestCrossSplines(s, j,
                                         numHeightsLeft,
@@ -1596,9 +1595,9 @@ void meshkernel::CurvilinearGridFromSplines::GetSplineIntersections(const int in
     }
 
     const auto sortedIndices = SortedIndices(m_crossSplineCoordinates[index]);
-    ReorderVector(m_crossSplineCoordinates[index], sortedIndices);
-    ReorderVector(m_crossingSplinesIndices[index], sortedIndices);
-    ReorderVector(m_isLeftOriented[index], sortedIndices);
+    m_crossSplineCoordinates[index] = ReorderVector(m_crossSplineCoordinates[index], sortedIndices);
+    m_crossingSplinesIndices[index] = ReorderVector(m_crossingSplinesIndices[index], sortedIndices);
+    m_isLeftOriented[index] = ReorderVector(m_isLeftOriented[index], sortedIndices);
 }
 
 void meshkernel::CurvilinearGridFromSplines::MakeAllGridLines()
@@ -1632,7 +1631,7 @@ void meshkernel::CurvilinearGridFromSplines::MakeAllGridLines()
         // upper bound of m_gridLine, with two sides of spline and two missing values added
         int sizeGridLine = gridLineIndex + 1 + 2 * (m_curvilinearParameters.MRefinement + 1) + 2;
         // increase size
-        ResizeVectorIfNeeded(sizeGridLine, m_gridLine, {doubleMissingValue, doubleMissingValue});
+        m_gridLine.resize(sizeGridLine);
         m_gridLineDimensionalCoordinates.resize(sizeGridLine);
 
         if (gridLineIndex > 0)

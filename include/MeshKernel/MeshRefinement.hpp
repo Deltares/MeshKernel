@@ -28,11 +28,12 @@
 #pragma once
 
 #include <vector>
-#include <MeshKernel/SampleRefineParameters.hpp>
-#include <MeshKernel/InterpolationParameters.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+
 #include <MeshKernel/AveragingInterpolation.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/InterpolationParameters.hpp>
+#include <MeshKernel/SampleRefineParameters.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
 
 namespace meshkernel
 {

@@ -25,14 +25,13 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
+#include <stdexcept>
 
-#include <MeshKernel/Operations.cpp>
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Exceptions.hpp>
-#include <stdexcept>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
 
 meshkernel::AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh> mesh,
                                                            std::vector<Sample>& samples,
