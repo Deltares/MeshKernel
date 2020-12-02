@@ -9,16 +9,16 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Download a recent, static build of clang-format
-      run: |
+      - uses: actions/checkout@v2
+      - name: Download a recent, static build of clang-format
+        run: |
           wget --no-verbose https://github.com/angular/clang-format/raw/master/bin/linux_x64/clang-format
           chmod a+x clang-format
-    - name: Print clang-format version
-      run: |
+      - name: Print clang-format version
+        run: |
           ./clang-format --version
-    - name: Run clang-format and report result
-      run: |
+      - name: Run clang-format and report result
+        run: |
           cd src      
           # Parse full lines
           export IFS=$'\n'

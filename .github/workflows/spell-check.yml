@@ -9,8 +9,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: codespell-project/actions-codespell@master
-      with:
-        check_filenames: true
-        skip: tests,extern,build,.git,.gitignore,*.tif,*.ppt,*.pdf,*.jpg,*.cd
+      - uses: actions/checkout@v2
+      - uses: codespell-project/actions-codespell@master
+        with:
+          check_filenames: true
+          skip: tests,extern,build,.git,.gitignore,*.tif,*.ppt,*.pdf,*.jpg,*.cd
