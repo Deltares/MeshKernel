@@ -95,7 +95,7 @@ namespace meshkernel
     /// @brief Find all start-end positions in a vector separated by a separator
     /// @param[in] vec The vector with separator
     /// @param[in] start The start of the range to search for
-    /// @param[in] start The end of the range to search for
+    /// @param[in] end The end of the range to search for
     /// @param[in] separator The value of the separator
     /// @returns Indices of elements
     std::vector<std::vector<size_t>> FindIndices(const std::vector<Point>& vec,
@@ -116,7 +116,7 @@ namespace meshkernel
     }
 
     /// @brief Reorder vector accordingly to a specific order
-    /// @param[in] vector The vector to reorder
+    /// @param[in] v The vector to reorder
     /// @param[in] order The order to use
     /// @returns The reordered vector
     template <typename T>
@@ -132,9 +132,9 @@ namespace meshkernel
     }
 
     /// @brief Algorithm performing the zero's search using the golden section algorithm's
-    /// @param func[in] Function to search for a root
-    /// @param min[in] min The minimum value of the interval
-    /// @param max[in] max The maximum value of the interval
+    /// @param[in] func Function to search for a root
+    /// @param[in] min The minimum value of the interval
+    /// @param[in] max The maximum value of the interval
     /// @returns The value where the function is approximately 0
     template <typename F>
     [[nodiscard]] double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
@@ -251,31 +251,33 @@ namespace meshkernel
     /// @param[in] projection
     [[nodiscard]] double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
 
+    /// @brief Gets dy for the given projection
+    /// @param[in] firstPoint
+    /// @param[in] secondPoint
+    /// @param[in] projection
     [[nodiscard]] double GetDy(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
 
-    ///dprodout: out product of two segments
+    ///@brief Outer product of two segments (dprodout)
     [[nodiscard]] double OuterProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment,
                                                  const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
-    /// half
     void MiddlePoint(const Point& firstPoint, const Point& secondPoint, Point& result, const Projection& projection);
 
     void ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projection& projection, Point& centre);
 
-    ///normalin, Normalized vector in direction 1 -> 2, in the orientation of (xu,yu)
+    /// @brief normalin, Normalized vector in direction 1 -> 2, in the orientation of (xu,yu)
     void NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, const Projection& projection);
 
-    //spher2locvec, transforms vector with components in global spherical coordinate directions(xglob, yglob)
-    ///to local coordinate directions(xloc, yloc) around reference point(xref, yref)
+    // @brief Transforms vector with components in global spherical coordinate directions(xglob, yglob)
+    ///       to local coordinate directions(xloc, yloc) around reference point(xref, yref)
     void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, Projection projection, Point& localComponents);
 
     ///normalout
     void NormalVectorOutside(const Point& firstPoint, const Point& secondPoint, Point& result, const Projection& projection);
 
-    ///normaloutchk
-    ///Computes the normal vector to a line 1-2, which is *outward* w.r.t.
-    ///an 'inside' point 3. Similar to normalout, except that the normal
-    ///vector may be flipped based on the 'inside' point.
-    ///TODO:test me
+    /// @brief Computes the normal vector to a line 1-2, which is *outward* w.r.t.
+    ///an 'inside' point 3.
+    ///
+    /// Similar to normalout, except that the normal vector may be flipped based on the 'inside' point.
     void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, Projection projection);
 
     void Add(Point& point, const Point& normal, double increment, double xf, const Projection& projection);
