@@ -193,13 +193,13 @@ namespace meshkernel
     [[nodiscard]] int NextCircularForwardIndex(int currentIndex, int size);
 
     /// @brief Get the next backward index
-    /// @param[in] currentIndex Current The current index
+    /// @param[in] currentIndex The current index
     /// @param[in] size The size of the vector
     /// @returns The next backward index
     [[nodiscard]] int NextCircularBackwardIndex(int currentIndex, int size);
 
     /// @brief Determines if point is close to the poles (latitude close to 90 degrees)
-    /// @param[in] point Point The current point
+    /// @param[in] point The current point
     /// @returns If the point is on the pole
     [[nodiscard]] bool IsPointOnPole(const Point& point);
 
