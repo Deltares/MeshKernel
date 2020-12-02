@@ -67,12 +67,12 @@ namespace meshkernel
         /// @brief Determine the optimal number of connected nodes for each node (nmk_opt)
         /// @param nodeIndex
         /// @returns Optimal number of connected nodes
-        [[nodiscard]] size_t OptimalNumberOfConnectedNodes(int nodeIndex) const;
+        [[nodiscard]] int OptimalNumberOfConnectedNodes(int nodeIndex) const;
 
         /// @brief Compute the difference with the optimal number of edges by counting the numbers of edges that
         ///        connect nodes firstNode and secondNode, and are on the land boundary path (comp_nnow)
         /// @returns Difference form optimum
-        [[nodiscard]] size_t DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const;
+        [[nodiscard]] int DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const;
 
         /// @brief Remove a connected edge from a node
         /// @param[in] edgeIndex The index of the edge to remove

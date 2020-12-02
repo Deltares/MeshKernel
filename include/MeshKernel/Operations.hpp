@@ -184,12 +184,12 @@ namespace meshkernel
     /// @brief Get the next circular forward index
     /// @param[in] currentIndex Current index
     /// @param[in] size Size
-    [[nodiscard]] int NextCircularForwardIndex(int currentIndex, size_t size);
+    [[nodiscard]] int NextCircularForwardIndex(int currentIndex, int size);
 
     /// @brief Get the next circular backward index
     /// @param[in] currentIndex Current index
     /// @param[in] size Size
-    [[nodiscard]] int NextCircularBackwardIndex(int currentIndex, size_t size);
+    [[nodiscard]] int NextCircularBackwardIndex(int currentIndex, int size);
 
     /// @brief Determines if point is on pole
     /// @param[in] point Point
@@ -268,12 +268,11 @@ namespace meshkernel
     ///an 'inside' point 3. Similar to normalout, except that the normal
     ///vector may be flipped based on the 'inside' point.
     ///TODO:test me
-    ///
     void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, Projection projection);
 
     void Add(Point& point, const Point& normal, double increment, double xf, const Projection& projection);
 
-    void ReferencePoint(std::vector<Point>& polygon, size_t numPoints, double& minX, double& minY, const Projection& projection);
+    void ReferencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projection& projection);
 
     [[nodiscard]] double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
 

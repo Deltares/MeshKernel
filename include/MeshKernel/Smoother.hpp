@@ -95,7 +95,7 @@ namespace meshkernel
 
         /// Computes operators of the elliptic smoother by node (orthonet_comp_operators)
         /// @param[in] currentNode
-        void ComputeOperatorsNode(size_t currentNode);
+        void ComputeOperatorsNode(int currentNode);
 
         /// @brief Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
         /// @param[in] currentNode
@@ -109,9 +109,9 @@ namespace meshkernel
         /// @param[in] currentNode
         /// @param[in] numSharedFaces
         /// @param[in] numConnectedNodes
-        void ComputeNodeXiEta(size_t currentNode,
-                              size_t numSharedFaces,
-                              size_t numConnectedNodes);
+        void ComputeNodeXiEta(int currentNode,
+                              int numSharedFaces,
+                              int numConnectedNodes);
 
         /// @brief Compute optimal edge angle
         /// @brief numFaceNodes
@@ -191,7 +191,7 @@ namespace meshkernel
         std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping;
         std::vector<std::vector<size_t>> m_topologyConnectedNodes;
 
-        std::vector<size_t> m_numConnectedNodes;           // (nmk2)
+        std::vector<int> m_numConnectedNodes;              // (nmk2)
         std::vector<std::vector<size_t>> m_connectedNodes; // (kk2)
 
         // Class variables

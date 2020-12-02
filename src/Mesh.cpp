@@ -642,14 +642,14 @@ void meshkernel::Mesh::RemoveDegeneratedTriangles()
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 }
 
-void meshkernel::Mesh::FindFacesRecursive(size_t startingNode,
-                                          size_t node,
-                                          size_t index,
-                                          size_t previousEdge,
-                                          std::vector<size_t>& edges,
-                                          std::vector<size_t>& nodes,
-                                          std::vector<size_t>& sortedEdgesFaces,
-                                          std::vector<size_t>& sortedNodes,
+void meshkernel::Mesh::FindFacesRecursive(int startingNode,
+                                          int node,
+                                          int index,
+                                          int previousEdge,
+                                          std::vector<int>& edges,
+                                          std::vector<int>& nodes,
+                                          std::vector<int>& sortedEdgesFaces,
+                                          std::vector<int>& sortedNodes,
                                           std::vector<Point>& nodalValues)
 {
     // The selected edge does not exist.
@@ -666,7 +666,7 @@ void meshkernel::Mesh::FindFacesRecursive(size_t startingNode,
 
     edges[index] = previousEdge;
     nodes[index] = node;
-    const auto otherNode = static_cast<size_t>(m_edges[previousEdge].first + m_edges[previousEdge].second - node);
+    const auto otherNode = m_edges[previousEdge].first + m_edges[previousEdge].second - node;
 
     // enclosure found
     if (otherNode == startingNode && index == edges.size() - 1)
@@ -742,7 +742,7 @@ void meshkernel::Mesh::FindFacesRecursive(size_t startingNode,
         return;
     }
 
-    size_t edgeIndexOtherNode = 0;
+    int edgeIndexOtherNode = 0;
     for (auto e = 0; e < m_nodesNumEdges[otherNode]; e++)
     {
         if (m_nodesEdges[otherNode][e] == previousEdge)
@@ -773,10 +773,10 @@ void meshkernel::Mesh::FindFaces()
 {
     for (auto numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
-        std::vector<size_t> edges(numEdgesPerFace);
-        std::vector<size_t> nodes(numEdgesPerFace);
-        std::vector<size_t> sortedEdgesFaces(numEdgesPerFace);
-        std::vector<size_t> sortedNodes(numEdgesPerFace);
+        std::vector<int> edges(numEdgesPerFace);
+        std::vector<int> nodes(numEdgesPerFace);
+        std::vector<int> sortedEdgesFaces(numEdgesPerFace);
+        std::vector<int> sortedNodes(numEdgesPerFace);
         std::vector<Point> nodalValues(numEdgesPerFace);
         for (auto n = 0; n < GetNumNodes(); n++)
         {
@@ -793,7 +793,7 @@ void meshkernel::Mesh::FindFaces()
     m_numFacesNodes.resize(m_numFaces);
     for (auto f = 0; f < m_numFaces; ++f)
     {
-        m_numFacesNodes[f] = m_facesNodes[f].size();
+        m_numFacesNodes[f] = int(m_facesNodes[f].size());
     }
 }
 

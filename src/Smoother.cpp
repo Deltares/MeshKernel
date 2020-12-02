@@ -251,7 +251,7 @@ void meshkernel::Smoother::ComputeWeights()
     }
 }
 
-void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
+void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
 {
     // the current topology index
     const int currentTopology = m_nodeTopologyMapping[currentNode];
@@ -284,7 +284,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
         if (numFaceNodes == 3)
         {
             // for triangular faces
-            const auto nodeIndex = FindIndex(m_mesh->m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
+            int nodeIndex = FindIndex(m_mesh->m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
             const auto nodeLeft = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
             const auto nodeRight = NextCircularForwardIndex(nodeIndex, numFaceNodes);
 
@@ -530,9 +530,9 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
     }
 }
 
-void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
-                                            size_t numSharedFaces,
-                                            size_t numConnectedNodes)
+void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
+                                            int numSharedFaces,
+                                            int numConnectedNodes)
 {
     // the angles for the squared nodes connected to the stencil nodes, first the ones directly connected, then the others
     std::vector<double> thetaSquare(numConnectedNodes, doubleMissingValue);
@@ -841,8 +841,8 @@ void meshkernel::Smoother::NodeAdministration(int currentNode,
         }
 
         // find the face shared by the two edges
-        const int firstFace = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], static_cast<size_t>(2)), static_cast<size_t>(1)) - 1;
-        const int secondFace = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], static_cast<size_t>(2)), static_cast<size_t>(1)) - 1;
+        const int firstFace = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], int(2)), int(1)) - 1;
+        const int secondFace = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], int(2)), int(1)) - 1;
 
         if (m_mesh->m_edgesFaces[firstEdge][0] != newFaceIndex &&
             (m_mesh->m_edgesFaces[firstEdge][0] == m_mesh->m_edgesFaces[secondEdge][0] ||
