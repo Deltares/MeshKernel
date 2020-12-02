@@ -27,8 +27,13 @@ def configure_doxyfile(
         file.write(doxyfile_data)
 
 
-def file_empty(path: Path):
-    return path.stat().st_size == 0
+def file_empty(file: Path):
+    return file.stat().st_size == 0
+
+
+def print_file(file: Path):
+    with open(file, "r") as f:
+        print(f.read())
 
 
 # Set paths
@@ -64,4 +69,6 @@ if args.fail_with_warnings:
     # Check if file is empty
     # If it is not, there were warnings and we exit with 1
     if not file_empty(doxygen_log_path):
+        print("There were warnings")
+        print_file(doxygen_log_path)
         sys.exit(1)
