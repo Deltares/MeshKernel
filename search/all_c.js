@@ -21,5 +21,6 @@ var searchData=
   ['orthogonalizationtosmoothingfactorboundary',['OrthogonalizationToSmoothingFactorBoundary',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a5cb0f79e9703d1df52f7bb40f6f289d7',1,'meshkernelapi::OrthogonalizationParameters']]],
   ['orthogonalizer',['Orthogonalizer',['../classmeshkernel_1_1_orthogonalizer.html',1,'meshkernel::Orthogonalizer'],['../classmeshkernel_1_1_orthogonalizer.html#ad5680f08f4c21468f97c30f4ac2ad85f',1,'meshkernel::Orthogonalizer::Orthogonalizer()']]],
   ['orthopure',['OrthoPure',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#adfb8b967c48314b2249dcbef26a22ab0',1,'meshkernelapi::OrthogonalizationParameters']]],
-  ['outeriterations',['OuterIterations',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a84423a23994e4ee20c5bc2ec03688b1d',1,'meshkernelapi::OrthogonalizationParameters']]]
+  ['outeriterations',['OuterIterations',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a84423a23994e4ee20c5bc2ec03688b1d',1,'meshkernelapi::OrthogonalizationParameters']]],
+  ['outerproducttwosegments',['OuterProductTwoSegments',['../namespacemeshkernel.html#aa317bc371eac300a27e31ff97cb6fad2',1,'meshkernel']]]
 ];

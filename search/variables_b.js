@@ -24,6 +24,6 @@ var searchData=
   ['numface',['numface',['../structmeshkernelapi_1_1_mesh_geometry_dimensions.html#a1932af01a4b4fbb381a2a42a9855c3dd',1,'meshkernelapi::MeshGeometryDimensions']]],
   ['numlayer',['numlayer',['../structmeshkernelapi_1_1_mesh_geometry_dimensions.html#a646351d4951d47e9237d0412d975d6c9',1,'meshkernelapi::MeshGeometryDimensions']]],
   ['numnode',['numnode',['../structmeshkernelapi_1_1_mesh_geometry_dimensions.html#a9c8379777f8b76936b9e020ec09b800e',1,'meshkernelapi::MeshGeometryDimensions']]],
-  ['numnodesintriangle',['numNodesInTriangle',['../namespacemeshkernel.html#a0bed7dae2eb5f457399515f336097dfa',1,'meshkernel']]],
-  ['numnodesquads',['numNodesQuads',['../namespacemeshkernel.html#ae107c828e6a751b679c0117a10bfc495',1,'meshkernel']]]
+  ['numnodesintriangle',['numNodesInTriangle',['../namespacemeshkernel.html#accd0385ee4debd52a1562bccea666675',1,'meshkernel']]],
+  ['numnodesquads',['numNodesQuads',['../namespacemeshkernel.html#a1809132d4aabf786058dd76cbda961b2',1,'meshkernel']]]
 ];

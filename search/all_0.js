@@ -10,6 +10,7 @@ var searchData=
   ['administrate',['Administrate',['../classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73',1,'meshkernel::LandBoundaries::Administrate()'],['../classmeshkernel_1_1_mesh.html#a1c2e08ad61b4689e2de776485e95e85c',1,'meshkernel::Mesh::Administrate()']]],
   ['administrationoptions',['AdministrationOptions',['../classmeshkernel_1_1_mesh.html#abcb2d5ea13c60da537fa5b94bb1f8a1b',1,'meshkernel::Mesh']]],
   ['algorithmerror',['AlgorithmError',['../classmeshkernel_1_1_algorithm_error.html',1,'meshkernel::AlgorithmError'],['../classmeshkernel_1_1_algorithm_error.html#af87252531c363685fb0157f5560de503',1,'meshkernel::AlgorithmError::AlgorithmError(const std::string &amp;msg)'],['../classmeshkernel_1_1_algorithm_error.html#aa4dd70ac0169e30b28339e8db0420e58',1,'meshkernel::AlgorithmError::AlgorithmError(const char *msg)']]],
+  ['arelinescrossing',['AreLinesCrossing',['../namespacemeshkernel.html#a225666eea1b104e834106a2a1b069bb0',1,'meshkernel']]],
   ['aspectratio',['AspectRatio',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a1e16a0a95f142cda1a3022cd469cf6ef',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
   ['aspectratiogrowfactor',['AspectRatioGrowFactor',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#af677d95fe512f3c84d89ac49856b5575',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
   ['attractionparameter',['AttractionParameter',['../structmeshkernelapi_1_1_curvilinear_parameters.html#ac5baa30f6e8e41bf8ecbd413395c7809',1,'meshkernelapi::CurvilinearParameters']]],

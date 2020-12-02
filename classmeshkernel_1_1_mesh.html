@@ -114,12 +114,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3a118594d2abb4111fc5c6884c02b936"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a3a118594d2abb4111fc5c6884c02b936">Mesh</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;nodes, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
 <tr class="memdesc:a3a118594d2abb4111fc5c6884c02b936"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create triangular grid from nodes (triangulatesamplestonetwork)  <a href="#a3a118594d2abb4111fc5c6884c02b936">More...</a><br /></td></tr>
 <tr class="separator:a3a118594d2abb4111fc5c6884c02b936"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a018c230088c0f6088426146c5b648d68"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a018c230088c0f6088426146c5b648d68">Mesh</a> (const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a85847d7b9e4e11fdc96057fb00101606">Edge</a> &gt; &amp;edges, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;nodes, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection, <a class="el" href="classmeshkernel_1_1_mesh.html#abcb2d5ea13c60da537fa5b94bb1f8a1b">AdministrationOptions</a> administration=AdministrationOptions::AdministrateMeshEdgesAndFaces)</td></tr>
+<tr class="memdesc:a018c230088c0f6088426146c5b648d68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct the mesh starting from the edges and nodes.  <a href="#a018c230088c0f6088426146c5b648d68">More...</a><br /></td></tr>
+<tr class="separator:a018c230088c0f6088426146c5b648d68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abae11e12a202c2e4d2ee57fae97f9881"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881">operator+=</a> (<a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> const &amp;rhs)</td></tr>
 <tr class="memdesc:abae11e12a202c2e4d2ee57fae97f9881"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add meshes: result is a mesh composed of the additions firstMesh += secondmesh results in the second mesh being added to the first.  <a href="#abae11e12a202c2e4d2ee57fae97f9881">More...</a><br /></td></tr>
 <tr class="separator:abae11e12a202c2e4d2ee57fae97f9881"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0247713694e942687335b0081b72d4f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a0247713694e942687335b0081b72d4f6">Set</a> (const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a85847d7b9e4e11fdc96057fb00101606">Edge</a> &gt; &amp;edges, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;nodes, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection, <a class="el" href="classmeshkernel_1_1_mesh.html#abcb2d5ea13c60da537fa5b94bb1f8a1b">AdministrationOptions</a> administration=AdministrationOptions::AdministrateMeshEdgesAndFaces)</td></tr>
-<tr class="memdesc:a0247713694e942687335b0081b72d4f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the mesh starting from the edges and nodes.  <a href="#a0247713694e942687335b0081b72d4f6">More...</a><br /></td></tr>
-<tr class="separator:a0247713694e942687335b0081b72d4f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad90337919be6540bb7cc8d34d52d22bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ad90337919be6540bb7cc8d34d52d22bc">SetFlatCopies</a> (<a class="el" href="classmeshkernel_1_1_mesh.html#abcb2d5ea13c60da537fa5b94bb1f8a1b">AdministrationOptions</a> administrationOption)</td></tr>
 <tr class="memdesc:ad90337919be6540bb7cc8d34d52d22bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end.  <a href="#ad90337919be6540bb7cc8d34d52d22bc">More...</a><br /></td></tr>
 <tr class="separator:ad90337919be6540bb7cc8d34d52d22bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -203,7 +203,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="separator:aa53c21ff61cbbc740bfe5b1e6285c177"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48b2912121a8b224b96f3f8e15397884"><td class="memItemLeft" align="right" valign="top"><a id="a48b2912121a8b224b96f3f8e15397884"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a48b2912121a8b224b96f3f8e15397884">ComputeEdgesCenters</a> ()</td></tr>
-<tr class="memdesc:a48b2912121a8b224b96f3f8e15397884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the edges centers. <br /></td></tr>
+<tr class="memdesc:a48b2912121a8b224b96f3f8e15397884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the edges centers in one go. <br /></td></tr>
 <tr class="separator:a48b2912121a8b224b96f3f8e15397884"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2b1904b6d60164118a81d79b8df0cf7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ac2b1904b6d60164118a81d79b8df0cf7">GetNumNodes</a> () const</td></tr>
 <tr class="memdesc:ac2b1904b6d60164118a81d79b8df0cf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of valid nodes.  <a href="#ac2b1904b6d60164118a81d79b8df0cf7">More...</a><br /></td></tr>
@@ -416,7 +416,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <div class="textblock"><p>A class describing an unstructured mesh. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a05bc04f7af254a40598f8b9627da6e60"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a05bc04f7af254a40598f8b9627da6e60">&#9670;&nbsp;</a></span>Mesh() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a05bc04f7af254a40598f8b9627da6e60">&#9670;&nbsp;</a></span>Mesh() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -444,7 +444,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div>
 </div>
 <a id="ad46670c3e9aba963b2f11f8c3cd5066b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad46670c3e9aba963b2f11f8c3cd5066b">&#9670;&nbsp;</a></span>Mesh() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad46670c3e9aba963b2f11f8c3cd5066b">&#9670;&nbsp;</a></span>Mesh() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -482,7 +482,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 </div>
 </div>
 <a id="a3a118594d2abb4111fc5c6884c02b936"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a118594d2abb4111fc5c6884c02b936">&#9670;&nbsp;</a></span>Mesh() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a118594d2abb4111fc5c6884c02b936">&#9670;&nbsp;</a></span>Mesh() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -519,6 +519,57 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
     <tr><td class="paramdir">[in]</td><td class="paramname">nodes</td><td>Input nodes </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>Selection polygon </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>Projection to use </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a018c230088c0f6088426146c5b648d68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a018c230088c0f6088426146c5b648d68">&#9670;&nbsp;</a></span>Mesh() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">meshkernel::Mesh::Mesh </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a85847d7b9e4e11fdc96057fb00101606">Edge</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>edges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td>
+          <td class="paramname"><em>projection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#abcb2d5ea13c60da537fa5b94bb1f8a1b">AdministrationOptions</a>&#160;</td>
+          <td class="paramname"><em>administration</em> = <code>AdministrationOptions::AdministrateMeshEdgesAndFaces</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct the mesh starting from the edges and nodes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edges</td><td>The input edges </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nodes</td><td>The input nodes </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>Projection to use </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">administration</td><td>Type of administration to perform </td></tr>
   </table>
   </dd>
 </dl>
@@ -1854,57 +1905,6 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">minFractionalAreaTriangles</td><td>Small triangles at the boundaries will be eliminated. This threshold is the ration of the face area to the average area of neighboring faces. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a0247713694e942687335b0081b72d4f6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0247713694e942687335b0081b72d4f6">&#9670;&nbsp;</a></span>Set()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void meshkernel::Mesh::Set </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a85847d7b9e4e11fdc96057fb00101606">Edge</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>edges</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>nodes</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td>
-          <td class="paramname"><em>projection</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh.html#abcb2d5ea13c60da537fa5b94bb1f8a1b">AdministrationOptions</a>&#160;</td>
-          <td class="paramname"><em>administration</em> = <code>AdministrationOptions::AdministrateMeshEdgesAndFaces</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set the mesh starting from the edges and nodes. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">edges</td><td>The input edges </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">nodes</td><td>The input nodes </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>Projection to use </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">administration</td><td>Type of administration to perform </td></tr>
   </table>
   </dd>
 </dl>

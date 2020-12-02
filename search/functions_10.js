@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['walkboundaryfromnode',['WalkBoundaryFromNode',['../classmeshkernel_1_1_mesh.html#aa6eaa56bad7d035ad14e1c98ff106b20',1,'meshkernel::Mesh']]]
+  ['vectorproduct',['VectorProduct',['../namespacemeshkernel.html#ac87f81234d2aa31256f2703b2d30fe8c',1,'meshkernel']]]
 ];

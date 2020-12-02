@@ -6,6 +6,5 @@ var searchData=
   ['removenode',['RemoveNode',['../classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a9c53a97199bb58fa4967cd4b24cd598f',1,'meshkernel::SpatialTrees::RTree']]],
   ['removesmallflowedges',['RemoveSmallFlowEdges',['../classmeshkernel_1_1_mesh.html#a830653856a40dff5cfabdc9d27463019',1,'meshkernel::Mesh']]],
   ['removesmalltrianglesatboundaries',['RemoveSmallTrianglesAtBoundaries',['../classmeshkernel_1_1_mesh.html#adb2beadf6841850c69799c2e9685adef',1,'meshkernel::Mesh']]],
-  ['resizevectorifneeded',['ResizeVectorIfNeeded',['../namespacemeshkernel.html#add01dff5cf4945538c454e469049d3c4',1,'meshkernel']]],
-  ['resizevectorifneededwithminimumsize',['ResizeVectorIfNeededWithMinimumSize',['../namespacemeshkernel.html#adca4fbc71f127dda912e01bf75aa9579',1,'meshkernel']]]
+  ['reordervector',['ReorderVector',['../namespacemeshkernel.html#a74bb7dfbf5c2511d489980a7f8360c51',1,'meshkernel']]]
 ];

@@ -176,18 +176,156 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:add01dff5cf4945538c454e469049d3c4"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:add01dff5cf4945538c454e469049d3c4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#add01dff5cf4945538c454e469049d3c4">ResizeVectorIfNeeded</a> (int newSize, std::vector&lt; T &gt; &amp;vectorToResize, T fillValue=T())</td></tr>
-<tr class="memdesc:add01dff5cf4945538c454e469049d3c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes an vector if given size is greater than the current size of the given vector.  <a href="#add01dff5cf4945538c454e469049d3c4">More...</a><br /></td></tr>
-<tr class="separator:add01dff5cf4945538c454e469049d3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adca4fbc71f127dda912e01bf75aa9579"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:adca4fbc71f127dda912e01bf75aa9579"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#adca4fbc71f127dda912e01bf75aa9579">ResizeVectorIfNeededWithMinimumSize</a> (int newSize, std::vector&lt; T &gt; &amp;vectorToResize, int minSize, T fillValue=T())</td></tr>
-<tr class="memdesc:adca4fbc71f127dda912e01bf75aa9579"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes an vector if given size is greater than the current size of the given vector. Also allows to input a minimal size which should be reserved.  <a href="#adca4fbc71f127dda912e01bf75aa9579">More...</a><br /></td></tr>
-<tr class="separator:adca4fbc71f127dda912e01bf75aa9579"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7eba48571f6e2e6ec9857d9499d235d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab7eba48571f6e2e6ec9857d9499d235d"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ab7eba48571f6e2e6ec9857d9499d235d">DotProduct</a> (const T &amp;dx1, const T &amp;dx2)</td></tr>
+<tr class="memdesc:ab7eba48571f6e2e6ec9857d9499d235d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines generic dot product for one dimension.  <a href="#ab7eba48571f6e2e6ec9857d9499d235d">More...</a><br /></td></tr>
+<tr class="separator:ab7eba48571f6e2e6ec9857d9499d235d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac36c4ebc5ddac1360895f5af36574640"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:ac36c4ebc5ddac1360895f5af36574640"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ac36c4ebc5ddac1360895f5af36574640">DotProduct</a> (const T &amp;dx1, const T &amp;dx2, Args &amp;... args)</td></tr>
+<tr class="memdesc:ac36c4ebc5ddac1360895f5af36574640"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines generic dot product of infinite dimensions.  <a href="#ac36c4ebc5ddac1360895f5af36574640">More...</a><br /></td></tr>
+<tr class="separator:ac36c4ebc5ddac1360895f5af36574640"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac87f81234d2aa31256f2703b2d30fe8c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ac87f81234d2aa31256f2703b2d30fe8c">VectorProduct</a> (<a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> a, <a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> b)</td></tr>
+<tr class="memdesc:ac87f81234d2aa31256f2703b2d30fe8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines vector product for cartesian 3D-space.  <a href="#ac87f81234d2aa31256f2703b2d30fe8c">More...</a><br /></td></tr>
+<tr class="separator:ac87f81234d2aa31256f2703b2d30fe8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a33e0dbdbcb8fcab16d3e25678801dc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a7a33e0dbdbcb8fcab16d3e25678801dc">InnerProduct</a> (<a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> a, <a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> b)</td></tr>
+<tr class="memdesc:a7a33e0dbdbcb8fcab16d3e25678801dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines inner product in cartesian 3D-space.  <a href="#a7a33e0dbdbcb8fcab16d3e25678801dc">More...</a><br /></td></tr>
+<tr class="separator:a7a33e0dbdbcb8fcab16d3e25678801dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25c2567bb894559fe04e7a5e3b0cf7dc"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a25c2567bb894559fe04e7a5e3b0cf7dc"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a25c2567bb894559fe04e7a5e3b0cf7dc">FindIndex</a> (const std::vector&lt; T &gt; &amp;vec, T el)</td></tr>
+<tr class="memdesc:a25c2567bb894559fe04e7a5e3b0cf7dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find index of a certain element.  <a href="#a25c2567bb894559fe04e7a5e3b0cf7dc">More...</a><br /></td></tr>
+<tr class="separator:a25c2567bb894559fe04e7a5e3b0cf7dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b994233de718f8c272ca3bdb62ddcf2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5b994233de718f8c272ca3bdb62ddcf2">FindIndices</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;vec, size_t start, size_t end, double separator)</td></tr>
+<tr class="memdesc:a5b994233de718f8c272ca3bdb62ddcf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find all start-end positions in a vector separated by a separator.  <a href="#a5b994233de718f8c272ca3bdb62ddcf2">More...</a><br /></td></tr>
+<tr class="separator:a5b994233de718f8c272ca3bdb62ddcf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9db7d2120f2007a591648001a3e97271"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a9db7d2120f2007a591648001a3e97271"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a9db7d2120f2007a591648001a3e97271">SortedIndices</a> (const std::vector&lt; T &gt; &amp;v)</td></tr>
+<tr class="memdesc:a9db7d2120f2007a591648001a3e97271"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort a vector and return the sorted indices.  <a href="#a9db7d2120f2007a591648001a3e97271">More...</a><br /></td></tr>
+<tr class="separator:a9db7d2120f2007a591648001a3e97271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74bb7dfbf5c2511d489980a7f8360c51"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a74bb7dfbf5c2511d489980a7f8360c51"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a74bb7dfbf5c2511d489980a7f8360c51">ReorderVector</a> (const std::vector&lt; T &gt; &amp;v, const std::vector&lt; int &gt; &amp;order)</td></tr>
+<tr class="memdesc:a74bb7dfbf5c2511d489980a7f8360c51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reorder vector accordingly to a specific order.  <a href="#a74bb7dfbf5c2511d489980a7f8360c51">More...</a><br /></td></tr>
+<tr class="separator:a74bb7dfbf5c2511d489980a7f8360c51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa72d2c72f71ee69084ae3a53bd98f29e"><td class="memTemplParams" colspan="2">template&lt;typename F &gt; </td></tr>
+<tr class="memitem:aa72d2c72f71ee69084ae3a53bd98f29e"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aa72d2c72f71ee69084ae3a53bd98f29e">FindFunctionRootWithGoldenSectionSearch</a> (F func, double min, double max)</td></tr>
+<tr class="memdesc:aa72d2c72f71ee69084ae3a53bd98f29e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Algorithm performing the zero's search using the golden section algorithm's.  <a href="#aa72d2c72f71ee69084ae3a53bd98f29e">More...</a><br /></td></tr>
+<tr class="separator:aa72d2c72f71ee69084ae3a53bd98f29e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac38238c1f4da6badd1cadf3fa385a30f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ac38238c1f4da6badd1cadf3fa385a30f">NextCircularForwardIndex</a> (int currentIndex, int size)</td></tr>
+<tr class="memdesc:ac38238c1f4da6badd1cadf3fa385a30f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the next forward index.  <a href="#ac38238c1f4da6badd1cadf3fa385a30f">More...</a><br /></td></tr>
+<tr class="separator:ac38238c1f4da6badd1cadf3fa385a30f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aded9d630998734a30ef90006cc4a3c45"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aded9d630998734a30ef90006cc4a3c45">NextCircularBackwardIndex</a> (int currentIndex, int size)</td></tr>
+<tr class="memdesc:aded9d630998734a30ef90006cc4a3c45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the next backward index.  <a href="#aded9d630998734a30ef90006cc4a3c45">More...</a><br /></td></tr>
+<tr class="separator:aded9d630998734a30ef90006cc4a3c45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a944190110ee7b7ddafca823efcb04d71"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71">IsPointOnPole</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point)</td></tr>
+<tr class="memdesc:a944190110ee7b7ddafca823efcb04d71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if point is close to the poles (latitude close to 90 degrees)  <a href="#a944190110ee7b7ddafca823efcb04d71">More...</a><br /></td></tr>
+<tr class="separator:a944190110ee7b7ddafca823efcb04d71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a944e964e1a4685a90a492513c11f2905"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905">SphericalToCartesian3D</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;sphericalPoint)</td></tr>
+<tr class="memdesc:a944e964e1a4685a90a492513c11f2905"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms 2D point in spherical coordinates to 3D cartesian coordinates.  <a href="#a944e964e1a4685a90a492513c11f2905">More...</a><br /></td></tr>
+<tr class="separator:a944e964e1a4685a90a492513c11f2905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a365dedd2e7656ed3ead0716a39de0c9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a365dedd2e7656ed3ead0716a39de0c9f">Cartesian3DToSpherical</a> (const <a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> &amp;cartesianPoint, double referenceLongitude, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;sphericalPoint)</td></tr>
+<tr class="memdesc:a365dedd2e7656ed3ead0716a39de0c9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms 3D cartesian coordinates to 2D point in spherical coordinates.  <a href="#a365dedd2e7656ed3ead0716a39de0c9f">More...</a><br /></td></tr>
+<tr class="separator:a365dedd2e7656ed3ead0716a39de0c9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dce9fe20343a37372cb4e442ae836c9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5dce9fe20343a37372cb4e442ae836c9">IsLeft</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;leftPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;rightPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point)</td></tr>
+<tr class="memdesc:a5dce9fe20343a37372cb4e442ae836c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests if a point is Left|On|Right of an infinite line.  <a href="#a5dce9fe20343a37372cb4e442ae836c9">More...</a><br /></td></tr>
+<tr class="separator:a5dce9fe20343a37372cb4e442ae836c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97ede7e70f0fd2292f9891ad5a97d3ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a97ede7e70f0fd2292f9891ad5a97d3ea">IsPointInPolygonNodes</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodes, int startNode, int endNode, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> polygonCenter={<a class="el" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">doubleMissingValue</a>, <a class="el" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">doubleMissingValue</a>})</td></tr>
+<tr class="memdesc:a97ede7e70f0fd2292f9891ad5a97d3ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is in polygonNodes using the winding number method.  <a href="#a97ede7e70f0fd2292f9891ad5a97d3ea">More...</a><br /></td></tr>
+<tr class="separator:a97ede7e70f0fd2292f9891ad5a97d3ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a351c3fd8e9cb0d3e60a79dbdfc43af9a"><td class="memItemLeft" align="right" valign="top"><a id="a351c3fd8e9cb0d3e60a79dbdfc43af9a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a351c3fd8e9cb0d3e60a79dbdfc43af9a">ComputeThreeBaseComponents</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point, std::array&lt; double, 3 &gt; &amp;exxp, std::array&lt; double, 3 &gt; &amp;eyyp, std::array&lt; double, 3 &gt; &amp;ezzp)</td></tr>
+<tr class="memdesc:a351c3fd8e9cb0d3e60a79dbdfc43af9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes three base components. <br /></td></tr>
+<tr class="separator:a351c3fd8e9cb0d3e60a79dbdfc43af9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad08b467bb0943757f7db680c09a98977"><td class="memItemLeft" align="right" valign="top"><a id="ad08b467bb0943757f7db680c09a98977"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ad08b467bb0943757f7db680c09a98977">ComputeTwoBaseComponents</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point, double(&amp;elambda)[3], double(&amp;ephi)[3])</td></tr>
+<tr class="memdesc:ad08b467bb0943757f7db680c09a98977"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes two base components. <br /></td></tr>
+<tr class="separator:ad08b467bb0943757f7db680c09a98977"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad844f35f613267b0de16948a5f2e5942"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ad844f35f613267b0de16948a5f2e5942">GetDx</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:ad844f35f613267b0de16948a5f2e5942"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets dx for the given projection.  <a href="#ad844f35f613267b0de16948a5f2e5942">More...</a><br /></td></tr>
+<tr class="separator:ad844f35f613267b0de16948a5f2e5942"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1de81f67a976505204902c219d063c10"><td class="memItemLeft" align="right" valign="top"><a id="a1de81f67a976505204902c219d063c10"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>GetDy</b> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="separator:a1de81f67a976505204902c219d063c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa317bc371eac300a27e31ff97cb6fad2"><td class="memItemLeft" align="right" valign="top"><a id="aa317bc371eac300a27e31ff97cb6fad2"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aa317bc371eac300a27e31ff97cb6fad2">OuterProductTwoSegments</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPointFirstSegment, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPointFirstSegment, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPointSecondSegment, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPointSecondSegment, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:aa317bc371eac300a27e31ff97cb6fad2"><td class="mdescLeft">&#160;</td><td class="mdescRight">dprodout: out product of two segments <br /></td></tr>
+<tr class="separator:aa317bc371eac300a27e31ff97cb6fad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15509860605a624adea32f2962584988"><td class="memItemLeft" align="right" valign="top"><a id="a15509860605a624adea32f2962584988"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a15509860605a624adea32f2962584988">MiddlePoint</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;result, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:a15509860605a624adea32f2962584988"><td class="mdescLeft">&#160;</td><td class="mdescRight">half <br /></td></tr>
+<tr class="separator:a15509860605a624adea32f2962584988"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ffdb19d5b6c82941c6117fb87226260"><td class="memItemLeft" align="right" valign="top"><a id="a4ffdb19d5b6c82941c6117fb87226260"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeMiddlePoint</b> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;centre)</td></tr>
+<tr class="separator:a4ffdb19d5b6c82941c6117fb87226260"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c9f3d1db12a072196d403ab89b0ec16"><td class="memItemLeft" align="right" valign="top"><a id="a6c9f3d1db12a072196d403ab89b0ec16"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a6c9f3d1db12a072196d403ab89b0ec16">NormalVector</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;insidePoint, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;result, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:a6c9f3d1db12a072196d403ab89b0ec16"><td class="mdescLeft">&#160;</td><td class="mdescRight">normalin, Normalized vector in direction 1 -&gt; 2, in the orientation of (xu,yu) <br /></td></tr>
+<tr class="separator:a6c9f3d1db12a072196d403ab89b0ec16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace99f0f267de5e4f654aebcac6242ee6"><td class="memItemLeft" align="right" valign="top"><a id="ace99f0f267de5e4f654aebcac6242ee6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ace99f0f267de5e4f654aebcac6242ee6">TransformGlobalVectorToLocal</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;reference, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;globalCoordinates, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;globalComponents, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;localComponents)</td></tr>
+<tr class="memdesc:ace99f0f267de5e4f654aebcac6242ee6"><td class="mdescLeft">&#160;</td><td class="mdescRight">to local coordinate directions(xloc, yloc) around reference point(xref, yref) <br /></td></tr>
+<tr class="separator:ace99f0f267de5e4f654aebcac6242ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a766550ca488f678ea25b217a29353cde"><td class="memItemLeft" align="right" valign="top"><a id="a766550ca488f678ea25b217a29353cde"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a766550ca488f678ea25b217a29353cde">NormalVectorOutside</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;result, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:a766550ca488f678ea25b217a29353cde"><td class="mdescLeft">&#160;</td><td class="mdescRight">normalout <br /></td></tr>
+<tr class="separator:a766550ca488f678ea25b217a29353cde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6eee71b2114f7d6f06fefd118bc12ca2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a6eee71b2114f7d6f06fefd118bc12ca2">NormalVectorInside</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;insidePoint, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;normal, bool &amp;flippedNormal, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="separator:a6eee71b2114f7d6f06fefd118bc12ca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a072a53ffa665fbc33cedf5bcce0eceff"><td class="memItemLeft" align="right" valign="top"><a id="a072a53ffa665fbc33cedf5bcce0eceff"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Add</b> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;normal, double increment, double xf, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="separator:a072a53ffa665fbc33cedf5bcce0eceff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5573a040c3b6f5e3f25435bf752c0e6"><td class="memItemLeft" align="right" valign="top"><a id="ae5573a040c3b6f5e3f25435bf752c0e6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ReferencePoint</b> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const int numPoints, double &amp;minX, double &amp;minY, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="separator:ae5573a040c3b6f5e3f25435bf752c0e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a358b556c559ed3109e2e5688794655d5"><td class="memItemLeft" align="right" valign="top"><a id="a358b556c559ed3109e2e5688794655d5"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeSquaredDistance</b> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="separator:a358b556c559ed3109e2e5688794655d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f6d26597793c1768be2f91121dd4432"><td class="memItemLeft" align="right" valign="top"><a id="a9f6d26597793c1768be2f91121dd4432"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeDistance</b> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="separator:a9f6d26597793c1768be2f91121dd4432"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9496a63d5f5eb2f88ff9383ac455462e"><td class="memItemLeft" align="right" valign="top"><a id="a9496a63d5f5eb2f88ff9383ac455462e"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>DistanceFromLine</b> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstNode, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondNode, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;normalPoint, double &amp;ratio, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="separator:a9496a63d5f5eb2f88ff9383ac455462e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5217853621a3c14ec06e4017e000a674"><td class="memItemLeft" align="right" valign="top"><a id="a5217853621a3c14ec06e4017e000a674"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5217853621a3c14ec06e4017e000a674">InnerProductTwoSegments</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> firstPointFirstSegment, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> secondPointFirstSegment, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> firstPointSecondSegment, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> secondPointSecondSegment, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="memdesc:a5217853621a3c14ec06e4017e000a674"><td class="mdescLeft">&#160;</td><td class="mdescRight">dprodin inner product of two segments <br /></td></tr>
+<tr class="separator:a5217853621a3c14ec06e4017e000a674"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf5d12194a4aca66c9e83cb675000ac5"><td class="memItemLeft" align="right" valign="top"><a id="aaf5d12194a4aca66c9e83cb675000ac5"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>NormalizedInnerProductTwoSegments</b> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> firstPointFirstSegment, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> secondPointFirstSegment, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> firstPointSecondSegment, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> secondPointSecondSegment, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="separator:aaf5d12194a4aca66c9e83cb675000ac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b07c6d2e652d6b308cb36a0aaadfa0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0b07c6d2e652d6b308cb36a0aaadfa0b">CircumcenterOfTriangle</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;p1, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;p2, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;p3, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="separator:a0b07c6d2e652d6b308cb36a0aaadfa0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a225666eea1b104e834106a2a1b069bb0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a225666eea1b104e834106a2a1b069bb0">AreLinesCrossing</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentFistPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentSecondPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentFistPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentSecondPoint, bool adimensionalCrossProduct, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;intersectionPoint, double &amp;crossProduct, double &amp;ratioFirstSegment, double &amp;ratioSecondSegment, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:a225666eea1b104e834106a2a1b069bb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">(cross, cross3D)  <a href="#a225666eea1b104e834106a2a1b069bb0">More...</a><br /></td></tr>
+<tr class="separator:a225666eea1b104e834106a2a1b069bb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92726102aab434dafee757ce44ca9b0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a92726102aab434dafee757ce44ca9b0c">FaceAreaAndCenterOfMass</a> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, size_t numberOfPolygonPoints, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection, double &amp;area, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;centerOfMass, bool &amp;isCounterClockWise)</td></tr>
+<tr class="memdesc:a92726102aab434dafee757ce44ca9b0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the area of a polygon, its center of mass, and the orientation of the edges.  <a href="#a92726102aab434dafee757ce44ca9b0c">More...</a><br /></td></tr>
+<tr class="separator:a92726102aab434dafee757ce44ca9b0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8d65ed377e7d797ad5fc860a59325f0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:af8d65ed377e7d797ad5fc860a59325f0"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#af8d65ed377e7d797ad5fc860a59325f0">InterpolateSplinePoint</a> (const std::vector&lt; T &gt; &amp;coordinates, const std::vector&lt; T &gt; &amp;coordinatesDerivatives, double pointAdimensionalCoordinate, T &amp;pointCoordinate)</td></tr>
 <tr class="memdesc:af8d65ed377e7d797ad5fc860a59325f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolate spline points.  <a href="#af8d65ed377e7d797ad5fc860a59325f0">More...</a><br /></td></tr>
 <tr class="separator:af8d65ed377e7d797ad5fc860a59325f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af07fe64d6a57ea0f04a2dca588e90c36"><td class="memTemplParams" colspan="2"><a id="af07fe64d6a57ea0f04a2dca588e90c36"></a>
+template&lt;class T &gt; </td></tr>
+<tr class="memitem:af07fe64d6a57ea0f04a2dca588e90c36"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SwapVectorElements</b> (std::vector&lt; T &gt; &amp;v, int numElements)</td></tr>
+<tr class="separator:af07fe64d6a57ea0f04a2dca588e90c36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20ac89524bdd0b26925097b72f26e905"><td class="memItemLeft" align="right" valign="top"><a id="a20ac89524bdd0b26925097b72f26e905"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeAdimensionalDistancesFromPointSerie</b> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;v, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection, std::vector&lt; double &gt; &amp;result, double &amp;totalDistance)</td></tr>
+<tr class="separator:a20ac89524bdd0b26925097b72f26e905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f0c68fd74f7232f452d77bac69696e2"><td class="memTemplParams" colspan="2"><a id="a5f0c68fd74f7232f452d77bac69696e2"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a5f0c68fd74f7232f452d77bac69696e2"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><b>sgn</b> (T val)</td></tr>
+<tr class="separator:a5f0c68fd74f7232f452d77bac69696e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7363e6378e4a487bbd6b5472f02cb603"><td class="memItemLeft" align="right" valign="top"><a id="a7363e6378e4a487bbd6b5472f02cb603"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>TwoSegmentsSign</b> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;p1, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;p2, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;p3, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;p4, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="separator:a7363e6378e4a487bbd6b5472f02cb603"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cad99c6c023d8bea01a6c768e296c9c"><td class="memItemLeft" align="right" valign="top"><a id="a3cad99c6c023d8bea01a6c768e296c9c"></a>
+std::vector&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>InterpolateTransfinite</b> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;sideOne, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;sideTwo, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;sideThree, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;sideFour, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection, int numM, int numN)</td></tr>
+<tr class="separator:a3cad99c6c023d8bea01a6c768e296c9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0baf93f2ac39b494edd580738106519"><td class="memItemLeft" align="right" valign="top"><a id="ab0baf93f2ac39b494edd580738106519"></a>
+std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeEdgeCenters</b> (int numEdges, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;nodes, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a85847d7b9e4e11fdc96057fb00101606">Edge</a> &gt; &amp;edges)</td></tr>
+<tr class="separator:ab0baf93f2ac39b494edd580738106519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e4defb7701d8341c7b2215ec82a297a"><td class="memItemLeft" align="right" valign="top"><a id="a3e4defb7701d8341c7b2215ec82a297a"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>LinearInterpolationInTriangle</b> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> interpolationPoint, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const std::vector&lt; double &gt; &amp;values, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="separator:a3e4defb7701d8341c7b2215ec82a297a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51467c938a9ccb56f1a984791eb5b758"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a51467c938a9ccb56f1a984791eb5b758"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a51467c938a9ccb56f1a984791eb5b758">GetBoundingBox</a> (const std::vector&lt; T &gt; &amp;values, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;lowerLeft, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;upperRight)</td></tr>
 <tr class="memdesc:a51467c938a9ccb56f1a984791eb5b758"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a vector of coordinates, get the lowest upper and right points.  <a href="#a51467c938a9ccb56f1a984791eb5b758">More...</a><br /></td></tr>
@@ -196,6 +334,9 @@ Functions</h2></td></tr>
 <tr class="memitem:afa1ab97872eda99e0d5aa5334ea5c619"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#afa1ab97872eda99e0d5aa5334ea5c619">IsValueInBoundingBox</a> (T point, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> lowerLeft, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> upperRight)</td></tr>
 <tr class="memdesc:afa1ab97872eda99e0d5aa5334ea5c619"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if value is in bounding box.  <a href="#afa1ab97872eda99e0d5aa5334ea5c619">More...</a><br /></td></tr>
 <tr class="separator:afa1ab97872eda99e0d5aa5334ea5c619"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a625f93ae1d0a0abea2d031f5d16b851a"><td class="memItemLeft" align="right" valign="top"><a id="a625f93ae1d0a0abea2d031f5d16b851a"></a>
+<a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeAverageCoordinate</b> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;points, int numPoints, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="separator:a625f93ae1d0a0abea2d031f5d16b851a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a4e91c351aad4f859d9ac69f026d29e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5a4e91c351aad4f859d9ac69f026d29e">Triangulation</a> (int *jatri, double *xs, double *ys, int *ns, int *indx, int *numtri, int *edgeidx, int *numedge, int *triedge, double *xs3, double *ys3, int *ns3, double *trisize)</td></tr>
 <tr class="memdesc:a5a4e91c351aad4f859d9ac69f026d29e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function of the Triangle library.  <a href="#a5a4e91c351aad4f859d9ac69f026d29e">More...</a><br /></td></tr>
 <tr class="separator:a5a4e91c351aad4f859d9ac69f026d29e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -274,14 +415,14 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0749d5ac40719df6e147211e58f6083d">weightCircumCenter</a> = 1.0</td></tr>
 <tr class="memdesc:a0749d5ac40719df6e147211e58f6083d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weight circum center. <br /></td></tr>
 <tr class="separator:a0749d5ac40719df6e147211e58f6083d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae107c828e6a751b679c0117a10bfc495"><td class="memItemLeft" align="right" valign="top"><a id="ae107c828e6a751b679c0117a10bfc495"></a>
-const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ae107c828e6a751b679c0117a10bfc495">numNodesQuads</a> = 4</td></tr>
-<tr class="memdesc:ae107c828e6a751b679c0117a10bfc495"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of nodes in a quadrilateral. <br /></td></tr>
-<tr class="separator:ae107c828e6a751b679c0117a10bfc495"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bed7dae2eb5f457399515f336097dfa"><td class="memItemLeft" align="right" valign="top"><a id="a0bed7dae2eb5f457399515f336097dfa"></a>
-const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0bed7dae2eb5f457399515f336097dfa">numNodesInTriangle</a> = 3</td></tr>
-<tr class="memdesc:a0bed7dae2eb5f457399515f336097dfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of nodes in a triangle. <br /></td></tr>
-<tr class="separator:a0bed7dae2eb5f457399515f336097dfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1809132d4aabf786058dd76cbda961b2"><td class="memItemLeft" align="right" valign="top"><a id="a1809132d4aabf786058dd76cbda961b2"></a>
+const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a1809132d4aabf786058dd76cbda961b2">numNodesQuads</a> = 4</td></tr>
+<tr class="memdesc:a1809132d4aabf786058dd76cbda961b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of nodes in a quadrilateral. <br /></td></tr>
+<tr class="separator:a1809132d4aabf786058dd76cbda961b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accd0385ee4debd52a1562bccea666675"><td class="memItemLeft" align="right" valign="top"><a id="accd0385ee4debd52a1562bccea666675"></a>
+const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#accd0385ee4debd52a1562bccea666675">numNodesInTriangle</a> = 3</td></tr>
+<tr class="memdesc:accd0385ee4debd52a1562bccea666675"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of nodes in a triangle. <br /></td></tr>
+<tr class="separator:accd0385ee4debd52a1562bccea666675"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c43acbca41e9612154031ba73ad7b3f"><td class="memItemLeft" align="right" valign="top"><a id="a5c43acbca41e9612154031ba73ad7b3f"></a>
 const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5c43acbca41e9612154031ba73ad7b3f">minimumEdgeLength</a> = 1e-4</td></tr>
 <tr class="memdesc:a5c43acbca41e9612154031ba73ad7b3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum edge length. <br /></td></tr>
@@ -310,6 +451,498 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the logic of the C++ static library. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a225666eea1b104e834106a2a1b069bb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a225666eea1b104e834106a2a1b069bb0">&#9670;&nbsp;</a></span>AreLinesCrossing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool meshkernel::AreLinesCrossing </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>firstSegmentFistPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>firstSegmentSecondPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>secondSegmentFistPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>secondSegmentSecondPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>adimensionalCrossProduct</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>intersectionPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>crossProduct</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>ratioFirstSegment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>ratioSecondSegment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>(cross, cross3D) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">firstSegmentFistPoint</td><td></td></tr>
+    <tr><td class="paramname">firstSegmentSecondPoint</td><td></td></tr>
+    <tr><td class="paramname">secondSegmentFistPoint</td><td></td></tr>
+    <tr><td class="paramname">secondSegmentSecondPoint</td><td></td></tr>
+    <tr><td class="paramname">adimensionalCrossProduct</td><td></td></tr>
+    <tr><td class="paramname">intersectionPoint</td><td></td></tr>
+    <tr><td class="paramname">crossProduct</td><td></td></tr>
+    <tr><td class="paramname">ratioFirstSegment</td><td></td></tr>
+    <tr><td class="paramname">ratioSecondSegment</td><td></td></tr>
+    <tr><td class="paramname">projection</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a365dedd2e7656ed3ead0716a39de0c9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a365dedd2e7656ed3ead0716a39de0c9f">&#9670;&nbsp;</a></span>Cartesian3DToSpherical()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Cartesian3DToSpherical </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>cartesianPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>referenceLongitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>sphericalPoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transforms 3D cartesian coordinates to 2D point in spherical coordinates. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">cartesianPoint</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">referenceLongitude</td><td></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">sphericalPoint</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0b07c6d2e652d6b308cb36a0aaadfa0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b07c6d2e652d6b308cb36a0aaadfa0b">&#9670;&nbsp;</a></span>CircumcenterOfTriangle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> meshkernel::CircumcenterOfTriangle </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>p1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>p2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>p3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p1</td><td></td></tr>
+    <tr><td class="paramname">p2</td><td></td></tr>
+    <tr><td class="paramname">p3</td><td></td></tr>
+    <tr><td class="paramname">projection</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="ab7eba48571f6e2e6ec9857d9499d235d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7eba48571f6e2e6ec9857d9499d235d">&#9670;&nbsp;</a></span>DotProduct() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T meshkernel::DotProduct </td>
+          <td>(</td>
+          <td class="paramtype">const T &amp;&#160;</td>
+          <td class="paramname"><em>dx1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;&#160;</td>
+          <td class="paramname"><em>dx2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Defines generic dot product for one dimension. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>Requires * operator </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">dx1</td><td>First component </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dx2</td><td>Second component </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The dot product </dd></dl>
+
+</div>
+</div>
+<a id="ac36c4ebc5ddac1360895f5af36574640"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac36c4ebc5ddac1360895f5af36574640">&#9670;&nbsp;</a></span>DotProduct() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T meshkernel::DotProduct </td>
+          <td>(</td>
+          <td class="paramtype">const T &amp;&#160;</td>
+          <td class="paramname"><em>dx1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;&#160;</td>
+          <td class="paramname"><em>dx2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Args &amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Defines generic dot product of infinite dimensions. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>Requires * operator </td></tr>
+    <tr><td class="paramname">...Args</td><td>Parameter pack, requires a multiple of 2 number of parameters </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">dx1</td><td>First component </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dx2</td><td>Second component </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">...args</td><td>Parameter pack </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The dot product </dd></dl>
+
+</div>
+</div>
+<a id="a92726102aab434dafee757ce44ca9b0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92726102aab434dafee757ce44ca9b0c">&#9670;&nbsp;</a></span>FaceAreaAndCenterOfMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::FaceAreaAndCenterOfMass </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numberOfPolygonPoints</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td>
+          <td class="paramname"><em>projection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>area</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>centerOfMass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>isCounterClockWise</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the area of a polygon, its center of mass, and the orientation of the edges. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">polygon</td><td>The input vector containing the nodes of the polygon. </td></tr>
+    <tr><td class="paramname">numberOfPolygonPoints</td><td>The number of points to account for in the input vector. </td></tr>
+    <tr><td class="paramname">projection</td><td>The projection to use. </td></tr>
+    <tr><td class="paramname">area</td><td>The resulting area. </td></tr>
+    <tr><td class="paramname">centerOfMass</td><td>The resulting center of mass. </td></tr>
+    <tr><td class="paramname">isCounterClockWise</td><td>The orientation of the edges. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa72d2c72f71ee69084ae3a53bd98f29e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa72d2c72f71ee69084ae3a53bd98f29e">&#9670;&nbsp;</a></span>FindFunctionRootWithGoldenSectionSearch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename F &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::FindFunctionRootWithGoldenSectionSearch </td>
+          <td>(</td>
+          <td class="paramtype">F&#160;</td>
+          <td class="paramname"><em>func</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>max</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Algorithm performing the zero's search using the golden section algorithm's. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">func[in]</td><td>Function to search for a root </td></tr>
+    <tr><td class="paramname">min[in]</td><td>min The minimum value of the interval </td></tr>
+    <tr><td class="paramname">max[in]</td><td>max The maximum value of the interval </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The value where the function is approximately 0 </dd></dl>
+
+</div>
+</div>
+<a id="a25c2567bb894559fe04e7a5e3b0cf7dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25c2567bb894559fe04e7a5e3b0cf7dc">&#9670;&nbsp;</a></span>FindIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int meshkernel::FindIndex </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>el</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find index of a certain element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">vec</td><td>The vector to search in </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">el</td><td>The element to search for </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The index of element </dd></dl>
+
+</div>
+</div>
+<a id="a5b994233de718f8c272ca3bdb62ddcf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b994233de718f8c272ca3bdb62ddcf2">&#9670;&nbsp;</a></span>FindIndices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::vector&lt;size_t&gt; &gt; meshkernel::FindIndices </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>end</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>separator</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find all start-end positions in a vector separated by a separator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">vec</td><td>The vector with separator </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">start</td><td>The start of the range to search for </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">start</td><td>The end of the range to search for </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">separator</td><td>The value of the separator </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Indices of elements </dd></dl>
+
+</div>
+</div>
 <a id="a51467c938a9ccb56f1a984791eb5b758"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a51467c938a9ccb56f1a984791eb5b758">&#9670;&nbsp;</a></span>GetBoundingBox()</h2>
 
@@ -359,6 +992,88 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ad844f35f613267b0de16948a5f2e5942"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad844f35f613267b0de16948a5f2e5942">&#9670;&nbsp;</a></span>GetDx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::GetDx </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>firstPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>secondPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets dx for the given projection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">firstPoint</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondPoint</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7a33e0dbdbcb8fcab16d3e25678801dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a33e0dbdbcb8fcab16d3e25678801dc">&#9670;&nbsp;</a></span>InnerProduct()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::InnerProduct </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a>&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a>&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Defines inner product in cartesian 3D-space. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The first cartesian 3D point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The second cartesian 3D point </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The resulting inner product </dd></dl>
 
 </div>
 </div>
@@ -416,6 +1131,149 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a5dce9fe20343a37372cb4e442ae836c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dce9fe20343a37372cb4e442ae836c9">&#9670;&nbsp;</a></span>IsLeft()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::IsLeft </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>leftPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>rightPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests if a point is Left|On|Right of an infinite line. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">leftPoint</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rightPoint</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>&gt;0 for point left of the line through leftPoint and rightPoint</li>
+<li>=0 for point on the line</li>
+<li>&lt;0 for point right of the line </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="a97ede7e70f0fd2292f9891ad5a97d3ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ede7e70f0fd2292f9891ad5a97d3ea">&#9670;&nbsp;</a></span>IsPointInPolygonNodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool meshkernel::IsPointInPolygonNodes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>polygonNodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>startNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>endNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td>
+          <td class="paramname"><em>projection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td>
+          <td class="paramname"><em>polygonCenter</em> = <code>{<a class="el" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">doubleMissingValue</a>,&#160;<a class="el" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">doubleMissingValue</a>}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if a point is in polygonNodes using the winding number method. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygonNodes</td><td>A closed polygonNodes consisting of a vector of numberOfPolygonPoints + 1 in counter clockwise order </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startNode</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">endNode</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygonCenter</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>If point is in polygon nodes </dd></dl>
+
+</div>
+</div>
+<a id="a944190110ee7b7ddafca823efcb04d71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a944190110ee7b7ddafca823efcb04d71">&#9670;&nbsp;</a></span>IsPointOnPole()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool meshkernel::IsPointOnPole </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determines if point is close to the poles (latitude close to 90 degrees) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td><a class="el" href="structmeshkernel_1_1_point.html" title="A struct describing a point in a two-dimensional space. ">Point</a> The current point </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>If the point is on the pole </dd></dl>
+
+</div>
+</div>
 <a id="afa1ab97872eda99e0d5aa5334ea5c619"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afa1ab97872eda99e0d5aa5334ea5c619">&#9670;&nbsp;</a></span>IsValueInBoundingBox()</h2>
 
@@ -469,31 +1327,23 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="add01dff5cf4945538c454e469049d3c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add01dff5cf4945538c454e469049d3c4">&#9670;&nbsp;</a></span>ResizeVectorIfNeeded()</h2>
+<a id="aded9d630998734a30ef90006cc4a3c45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aded9d630998734a30ef90006cc4a3c45">&#9670;&nbsp;</a></span>NextCircularBackwardIndex()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void meshkernel::ResizeVectorIfNeeded </td>
+          <td class="memname">int meshkernel::NextCircularBackwardIndex </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>newSize</em>, </td>
+          <td class="paramname"><em>currentIndex</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>vectorToResize</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">T&#160;</td>
-          <td class="paramname"><em>fillValue</em> = <code>T()</code>&#160;</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -503,49 +1353,35 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Resizes an vector if given size is greater than the current size of the given vector. </p>
-<p>Use ResizeVectorIfNeededWithMinimumSize in order to reserve a minimal size. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Get the next backward index. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">newSize</td><td>The size the vector should minimally have </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">vectorToResize</td><td>The vector to resize </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">fillValue</td><td>Value with which the vector should be filled if resize is necessary </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">currentIndex</td><td>Current The current index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>The size of the vector </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>The next backward index </dd></dl>
 
 </div>
 </div>
-<a id="adca4fbc71f127dda912e01bf75aa9579"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adca4fbc71f127dda912e01bf75aa9579">&#9670;&nbsp;</a></span>ResizeVectorIfNeededWithMinimumSize()</h2>
+<a id="ac38238c1f4da6badd1cadf3fa385a30f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac38238c1f4da6badd1cadf3fa385a30f">&#9670;&nbsp;</a></span>NextCircularForwardIndex()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void meshkernel::ResizeVectorIfNeededWithMinimumSize </td>
+          <td class="memname">int meshkernel::NextCircularForwardIndex </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>newSize</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>vectorToResize</em>, </td>
+          <td class="paramname"><em>currentIndex</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>minSize</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">T&#160;</td>
-          <td class="paramname"><em>fillValue</em> = <code>T()</code>&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -555,13 +1391,161 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Resizes an vector if given size is greater than the current size of the given vector. Also allows to input a minimal size which should be reserved. </p>
-<p>Use ResizeVectorIfNeededWithMinimumSize in order to reserve a minimal size. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Get the next forward index. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">newSize</td><td>The size the vector should minimally have </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">vectorToResize</td><td>The vector to resize </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">minSize</td><td>Minimal size which should be reserved </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">fillValue</td><td>Value with which the vector should be filled if resize is necessary </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">currentIndex</td><td>The current index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>The size of the vector </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The next forward index </dd></dl>
+
+</div>
+</div>
+<a id="a6eee71b2114f7d6f06fefd118bc12ca2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6eee71b2114f7d6f06fefd118bc12ca2">&#9670;&nbsp;</a></span>NormalVectorInside()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::NormalVectorInside </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>firstPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>secondPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>insidePoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>normal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>flippedNormal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>normaloutchk Computes the normal vector to a line 1-2, which is <em>outward</em> w.r.t. an 'inside' point 3. Similar to normalout, except that the normal vector may be flipped based on the 'inside' point. TODO:test me </p>
+
+</div>
+</div>
+<a id="a74bb7dfbf5c2511d489980a7f8360c51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74bb7dfbf5c2511d489980a7f8360c51">&#9670;&nbsp;</a></span>ReorderVector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">auto meshkernel::ReorderVector </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>order</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reorder vector accordingly to a specific order. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">vector</td><td>The vector to reorder </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">order</td><td>The order to use </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The reordered vector </dd></dl>
+
+</div>
+</div>
+<a id="a9db7d2120f2007a591648001a3e97271"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9db7d2120f2007a591648001a3e97271">&#9670;&nbsp;</a></span>SortedIndices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; meshkernel::SortedIndices </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sort a vector and return the sorted indices. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>The vector to sort </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The indices of elements </dd></dl>
+
+</div>
+</div>
+<a id="a944e964e1a4685a90a492513c11f2905"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a944e964e1a4685a90a492513c11f2905">&#9670;&nbsp;</a></span>SphericalToCartesian3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> meshkernel::SphericalToCartesian3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>sphericalPoint</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transforms 2D point in spherical coordinates to 3D cartesian coordinates. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">sphericalPoint</td><td>The current spherical point (2 coordinates) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">cartesianPoint</td><td>The converted cartesian 3d point </td></tr>
   </table>
   </dd>
 </dl>
@@ -662,6 +1646,44 @@ template&lt;typename T &gt; </div>
 
 <p>Function of the Triangle library. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://www.cs.cmu.edu/~quake/triangle.html">https://www.cs.cmu.edu/~quake/triangle.html</a> </dd></dl>
+
+</div>
+</div>
+<a id="ac87f81234d2aa31256f2703b2d30fe8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac87f81234d2aa31256f2703b2d30fe8c">&#9670;&nbsp;</a></span>VectorProduct()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> meshkernel::VectorProduct </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a>&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a>&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Defines vector product for cartesian 3D-space. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">a</td><td>The first cartesian 3D point </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The second cartesian 3D point </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The vector product </dd></dl>
 
 </div>
 </div>

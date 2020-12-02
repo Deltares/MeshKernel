@@ -11,5 +11,6 @@ var searchData=
   ['operator_2f',['operator/',['../structmeshkernel_1_1_point.html#afbd9599b74c4e9829e903e69a4d10bab',1,'meshkernel::Point::operator/(Point const &amp;rhs) const'],['../structmeshkernel_1_1_point.html#a958a65c922febb232d139ae9df7d71a7',1,'meshkernel::Point::operator/(double const &amp;rhs) const']]],
   ['operator_3d_3d',['operator==',['../structmeshkernel_1_1_point.html#ac702fdf239b107e02f4cdf0927f96f47',1,'meshkernel::Point']]],
   ['orthogonalizationandsmoothing',['OrthogonalizationAndSmoothing',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#a95606dbb4168fd7b87fcfec11211a92e',1,'meshkernel::OrthogonalizationAndSmoothing']]],
-  ['orthogonalizer',['Orthogonalizer',['../classmeshkernel_1_1_orthogonalizer.html#ad5680f08f4c21468f97c30f4ac2ad85f',1,'meshkernel::Orthogonalizer']]]
+  ['orthogonalizer',['Orthogonalizer',['../classmeshkernel_1_1_orthogonalizer.html#ad5680f08f4c21468f97c30f4ac2ad85f',1,'meshkernel::Orthogonalizer']]],
+  ['outerproducttwosegments',['OuterProductTwoSegments',['../namespacemeshkernel.html#aa317bc371eac300a27e31ff97cb6fad2',1,'meshkernel']]]
 ];
