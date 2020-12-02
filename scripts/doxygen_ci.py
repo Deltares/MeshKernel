@@ -55,21 +55,13 @@ subprocess.call(f"doxygen {doxyfile_path}", shell=True)
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--fail-with-warnings",
-    action="store_false",
+    action="store_true",
     help="let the script exit with code 1 with doxygen warnings",
 )
 args = parser.parse_args()
-print(doxygen_log_path)
-print(Path.cwd())
-subprocess.call("ls -Al", shell=True)
-
-
-print(1)
 
 if args.fail_with_warnings:
-    print(2)
     # Check if file is empty
     # If it is not, there were warnings and we exit with 1
     if not file_empty(doxygen_log_path):
-        print(3)
         sys.exit(1)
