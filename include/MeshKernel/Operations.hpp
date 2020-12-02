@@ -38,8 +38,8 @@ namespace meshkernel
 {
     /// @brief Defines generic dot product for one dimension
     /// @tparam T Requires * operator
-    /// @param dx1 First component
-    /// @param dx2 Second component
+    /// @param[in] dx1 First component
+    /// @param[in] dx2 Second component
     /// @return The dot product
     template <typename T>
     [[nodiscard]] T DotProduct(const T& dx1, const T& dx2)
@@ -50,9 +50,9 @@ namespace meshkernel
     /// @brief Defines generic dot product of infinite dimensions
     /// @tparam T Requires * operator
     /// @tparam ...Args Parameter pack, requires a multiple of 2 number of parameters
-    /// @param dx1 First component
-    /// @param dx2 Second component
-    /// @param ...args Parameter pack
+    /// @param[in] dx1 First component
+    /// @param[in] dx2 Second component
+    /// @param[in] ...args Parameter pack
     /// @return The dot product
     template <typename T, typename... Args>
     [[nodiscard]] T DotProduct(const T& dx1, const T& dx2, Args&... args)
@@ -61,21 +61,21 @@ namespace meshkernel
     }
 
     /// @brief Defines vector product for cartesian 3D-space
-    /// @param a The first cartesian 3D point
-    /// @param b The second cartesian 3D point
+    /// @param[in] a The first cartesian 3D point
+    /// @param[in] b The second cartesian 3D point
     /// @return The vector product
     [[nodiscard]] Cartesian3DPoint VectorProduct(Cartesian3DPoint a, Cartesian3DPoint b);
 
     /// @brief Defines inner product in cartesian 3D-space
-    /// @param a The first cartesian 3D point
-    /// @param b The second cartesian 3D point
+    /// @param[in] a The first cartesian 3D point
+    /// @param[in] b The second cartesian 3D point
     /// @return The resulting inner product
     [[nodiscard]] double InnerProduct(Cartesian3DPoint a, Cartesian3DPoint b);
 
     /// @brief Find index of a certain element
-    /// @param[in] vec Vector to search in
-    /// @param[in] el Element to search for
-    /// @returns Index of element
+    /// @param[in] vec The vector to search in
+    /// @param[in] el The element to search for
+    /// @returns The index of element
     template <typename T>
     [[nodiscard]] int FindIndex(const std::vector<T>& vec, T el)
     {
@@ -91,11 +91,11 @@ namespace meshkernel
         return index;
     }
 
-    /// @brief Find all start-end position in a vector separated by a separator
+    /// @brief Find all start-end positions in a vector separated by a separator
     /// @param[in] vec The vector with separator
     /// @param[in] start The start of the range to search for
     /// @param[in] start The end of the range to search for
-    /// @param[in] separator The separator value
+    /// @param[in] separator The value of the separator
     /// @returns Indices of elements
     std::vector<std::vector<size_t>> FindIndices(const std::vector<Point>& vec,
                                                  size_t start,
@@ -103,7 +103,8 @@ namespace meshkernel
                                                  double separator);
 
     /// @brief Sort a vector and return the sorted indices
-    /// @param v The vector to sort
+    /// @param[in] v The vector to sort
+    /// @returns The indices of elements
     template <typename T>
     [[nodiscard]] std::vector<int> SortedIndices(const std::vector<T>& v)
     {
@@ -114,23 +115,26 @@ namespace meshkernel
     }
 
     /// @brief Reorder vector accordingly to a specific order
-    /// @param[in, out] vector The vector to reorder
+    /// @param[in] vector The vector to reorder
     /// @param[in] order The order to use
-    template <class T>
-    void ReorderVector(std::vector<T>& v, std::vector<int> const& order)
+    /// @returns The reordered vector
+    template <typename T>
+    auto ReorderVector(const std::vector<T>& v, const std::vector<int>& order)
     {
-        std::vector<T> ordered(v.size());
-        for (int i = 0; i < order.size(); ++i)
+        std::vector<T> ordered;
+        ordered.reserve(v.size());
+        for (const auto& value : order)
         {
-            ordered[i] = v[order[i]];
+            ordered.emplace_back(v[value]);
         }
-        v = ordered;
+        return ordered;
     }
 
     /// @brief Algorithm performing the zero's search using the golden section algorithm's
-    /// @param func Function
-    /// @param min Minimum
-    /// @param max Maximum
+    /// @param func[in] Function to search for a root
+    /// @param min[in] min The minimum value of the interval
+    /// @param max[in] max The maximum value of the interval
+    /// @returns The value where the function is approximately 0
     template <typename F>
     [[nodiscard]] double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
     {
@@ -181,24 +185,27 @@ namespace meshkernel
         return f1 < f2 ? x1 : x2;
     }
 
-    /// @brief Get the next circular forward index
-    /// @param[in] currentIndex Current index
-    /// @param[in] size Size
+    /// @brief Get the next forward index
+    /// @param[in] currentIndex The current index
+    /// @param[in] size The size of the vector
+    /// @returns The next forward index
     [[nodiscard]] int NextCircularForwardIndex(int currentIndex, int size);
 
-    /// @brief Get the next circular backward index
-    /// @param[in] currentIndex Current index
-    /// @param[in] size Size
+    /// @brief Get the next backward index
+    /// @param[in] currentIndex Current The current index
+    /// @param[in] size The size of the vector
+    /// @returns The next backward index
     [[nodiscard]] int NextCircularBackwardIndex(int currentIndex, int size);
 
-    /// @brief Determines if point is on pole
-    /// @param[in] point Point
+    /// @brief Determines if point is close to the poles (latitude close to 90 degrees)
+    /// @param[in] point Point The current point
+    /// @returns If the point is on the pole
     [[nodiscard]] bool IsPointOnPole(const Point& point);
 
     /// @brief Transforms 2D point in spherical coordinates to 3D cartesian coordinates
-    /// @param[in] sphericalPoint
-    /// @param[out] cartesianPoint
-    void SphericalToCartesian3D(const Point& sphericalPoint, Cartesian3DPoint& cartesianPoint);
+    /// @param[in] sphericalPoint The current spherical point (2 coordinates)
+    /// @param[out] cartesianPoint The converted cartesian 3d point
+    Cartesian3DPoint SphericalToCartesian3D(const Point& sphericalPoint);
 
     /// @brief Transforms 3D cartesian coordinates to 2D point in spherical coordinates
     /// @param[in] cartesianPoint
@@ -285,10 +292,10 @@ namespace meshkernel
     [[nodiscard]] double DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, Point& normalPoint, double& ratio, const Projection& projection);
 
     /// dprodin inner product of two segments
-    [[nodiscard]] double InnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
+    [[nodiscard]] double InnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection);
 
     // dcosphi
-    [[nodiscard]] double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
+    [[nodiscard]] double NormalizedInnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection);
 
     /// @brief
     /// @param p1

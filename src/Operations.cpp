@@ -116,12 +116,14 @@ namespace meshkernel
         return std::abs(std::abs(point.y) - 90.0) < absLatitudeAtPoles;
     }
 
-    void SphericalToCartesian3D(const Point& sphericalPoint, Cartesian3DPoint& cartesianPoint)
+    Cartesian3DPoint SphericalToCartesian3D(const Point& sphericalPoint)
     {
-        cartesianPoint.z = earth_radius * sin(sphericalPoint.y * degrad_hp);
+        Cartesian3DPoint result;
+        result.z = earth_radius * sin(sphericalPoint.y * degrad_hp);
         double rr = earth_radius * cos(sphericalPoint.y * degrad_hp);
-        cartesianPoint.x = rr * cos(sphericalPoint.x * degrad_hp);
-        cartesianPoint.y = rr * sin(sphericalPoint.x * degrad_hp);
+        result.x = rr * cos(sphericalPoint.x * degrad_hp);
+        result.y = rr * sin(sphericalPoint.x * degrad_hp);
+        return result;
     }
 
     void Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude, Point& sphericalPoint)
@@ -198,16 +200,16 @@ namespace meshkernel
         if (projection == Projection::sphericalAccurate)
         {
             // get 3D polygon coordinates
-            std::vector<Cartesian3DPoint> cartesian3DPoints(currentPolygonSize);
-            for (int i = 0; i < currentPolygonSize; i++)
+            std::vector<Cartesian3DPoint> cartesian3DPoints;
+            cartesian3DPoints.reserve(currentPolygonSize);
+            for (auto i = 0; i < currentPolygonSize; i++)
             {
-                SphericalToCartesian3D(polygonNodes[startNode + i], cartesian3DPoints[i]);
+                cartesian3DPoints.emplace_back(SphericalToCartesian3D(polygonNodes[startNode + i]));
             }
 
             // enlarge around polygon
             const double enlargementFactor = 1.000001;
-            Cartesian3DPoint polygonCenterCartesian3D;
-            SphericalToCartesian3D(polygonCenter, polygonCenterCartesian3D);
+            const Cartesian3DPoint polygonCenterCartesian3D{SphericalToCartesian3D(polygonCenter)};
             for (int i = 0; i < currentPolygonSize; i++)
             {
                 cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargementFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
@@ -216,8 +218,7 @@ namespace meshkernel
             }
 
             // convert point
-            Cartesian3DPoint pointCartesian3D;
-            SphericalToCartesian3D(point, pointCartesian3D);
+            const Cartesian3DPoint pointCartesian3D{SphericalToCartesian3D(point)};
 
             //get test direction: e_lambda
             const double lambda = point.x * degrad_hp;
@@ -363,26 +364,22 @@ namespace meshkernel
     {
         if (projection == Projection::sphericalAccurate)
         {
-            Cartesian3DPoint firstPointFirstSegmentCartesian;
-            SphericalToCartesian3D(firstPointFirstSegment, firstPointFirstSegmentCartesian);
+            const Cartesian3DPoint firstPointFirstSegmentCartesian{SphericalToCartesian3D(firstPointFirstSegment)};
             auto xx1 = firstPointFirstSegmentCartesian.x;
             auto yy1 = firstPointFirstSegmentCartesian.y;
             auto zz1 = firstPointFirstSegmentCartesian.z;
 
-            Cartesian3DPoint secondPointFirstSegmentCartesian;
-            SphericalToCartesian3D(secondPointFirstSegment, secondPointFirstSegmentCartesian);
+            const Cartesian3DPoint secondPointFirstSegmentCartesian{SphericalToCartesian3D(secondPointFirstSegment)};
             auto xx2 = secondPointFirstSegmentCartesian.x;
             auto yy2 = secondPointFirstSegmentCartesian.y;
             auto zz2 = secondPointFirstSegmentCartesian.z;
 
-            Cartesian3DPoint firstPointSecondSegmentCartesian;
-            SphericalToCartesian3D(firstPointSecondSegment, firstPointSecondSegmentCartesian);
+            const Cartesian3DPoint firstPointSecondSegmentCartesian{SphericalToCartesian3D(firstPointSecondSegment)};
             auto xx3 = firstPointSecondSegmentCartesian.x;
             auto yy3 = firstPointSecondSegmentCartesian.y;
             auto zz3 = firstPointSecondSegmentCartesian.z;
 
-            Cartesian3DPoint secondPointSecondSegmentCartesian;
-            SphericalToCartesian3D(secondPointSecondSegment, secondPointSecondSegmentCartesian);
+            const Cartesian3DPoint secondPointSecondSegmentCartesian{SphericalToCartesian3D(secondPointSecondSegment)};
             auto xx4 = secondPointSecondSegmentCartesian.x;
             auto yy4 = secondPointSecondSegmentCartesian.y;
             auto zz4 = secondPointSecondSegmentCartesian.z;
@@ -426,10 +423,8 @@ namespace meshkernel
         }
         if (projection == Projection::sphericalAccurate)
         {
-            Cartesian3DPoint firstPointCartesianCoordinates{doubleMissingValue, doubleMissingValue};
-            SphericalToCartesian3D(firstPoint, firstPointCartesianCoordinates);
-            Cartesian3DPoint secondPointCartesianCoordinates{doubleMissingValue, doubleMissingValue};
-            SphericalToCartesian3D(secondPoint, secondPointCartesianCoordinates);
+            const Cartesian3DPoint firstPointCartesianCoordinates{SphericalToCartesian3D(firstPoint)};
+            const Cartesian3DPoint secondPointCartesianCoordinates{SphericalToCartesian3D(secondPoint)};
 
             Cartesian3DPoint middleCartesianPointCoordinate{doubleMissingValue, doubleMissingValue};
             middleCartesianPointCoordinate.x = 0.5 * (firstPointCartesianCoordinates.x + secondPointCartesianCoordinates.x);
@@ -487,10 +482,8 @@ namespace meshkernel
     {
         if (projection == Projection::sphericalAccurate)
         {
-            Cartesian3DPoint firstPointCartesianCoordinates;
-            Cartesian3DPoint secondPointCartesianCoordinates;
-            SphericalToCartesian3D(firstPoint, firstPointCartesianCoordinates);
-            SphericalToCartesian3D(secondPoint, secondPointCartesianCoordinates);
+            const Cartesian3DPoint firstPointCartesianCoordinates{SphericalToCartesian3D(firstPoint)};
+            const Cartesian3DPoint secondPointCartesianCoordinates{SphericalToCartesian3D(secondPoint)};
 
             std::array<double, 3> elambda{0.0, 0.0, 0.0};
             std::array<double, 3> ephi{0.0, 0.0, 0.0};
@@ -538,8 +531,7 @@ namespace meshkernel
             ComputeThreeBaseComponents(reference, exxp, eyyp, ezzp);
 
             // get the 3D coordinate
-            Cartesian3DPoint globalCoordinatesCartesian;
-            SphericalToCartesian3D(globalCoordinates, globalCoordinatesCartesian);
+            const Cartesian3DPoint globalCoordinatesCartesian{SphericalToCartesian3D(globalCoordinates)};
 
             //project to rotated frame
             Cartesian3DPoint globalCoordinatesCartesianRotated;
@@ -599,10 +591,8 @@ namespace meshkernel
             Point middlePoint;
             MiddlePoint(firstPoint, secondPoint, middlePoint, projection);
 
-            Cartesian3DPoint firstPointCartesianCoordinates;
-            SphericalToCartesian3D(firstPoint, firstPointCartesianCoordinates);
-            Cartesian3DPoint secondPointCartesianCoordinates;
-            SphericalToCartesian3D(secondPoint, secondPointCartesianCoordinates);
+            const Cartesian3DPoint firstPointCartesianCoordinates{SphericalToCartesian3D(firstPoint)};
+            const Cartesian3DPoint secondPointCartesianCoordinates{SphericalToCartesian3D(secondPoint)};
 
             //compute the base vectors at middle point
             std::array<double, 3> elambda{0.0, 0.0, 0.0};
@@ -676,8 +666,7 @@ namespace meshkernel
             double vyy = localComponents.x * elambda[1] + localComponents.y * ephi[1];
             double vzz = localComponents.x * elambda[2] + localComponents.y * ephi[2];
 
-            Cartesian3DPoint firstPointCartesian;
-            SphericalToCartesian3D(firstPoint, firstPointCartesian);
+            const Cartesian3DPoint firstPointCartesian{SphericalToCartesian3D(firstPoint)};
 
             Cartesian3DPoint rotatedPoint;
             double alpha = 0.0;
@@ -761,14 +750,12 @@ namespace meshkernel
 
         if (projection == Projection::sphericalAccurate)
         {
-            Cartesian3DPoint firstPointCartesian{doubleMissingValue, doubleMissingValue};
-            SphericalToCartesian3D(firstPoint, firstPointCartesian);
+            const Cartesian3DPoint firstPointCartesian{SphericalToCartesian3D(firstPoint)};
             auto xx1 = firstPointCartesian.x;
             auto yy1 = firstPointCartesian.y;
             auto zz1 = firstPointCartesian.z;
 
-            Cartesian3DPoint secondPointCartesian{doubleMissingValue, doubleMissingValue};
-            SphericalToCartesian3D(secondPoint, secondPointCartesian);
+            const Cartesian3DPoint secondPointCartesian{SphericalToCartesian3D(secondPoint)};
             auto xx2 = secondPointCartesian.x;
             auto yy2 = secondPointCartesian.y;
             auto zz2 = secondPointCartesian.z;
@@ -818,20 +805,17 @@ namespace meshkernel
 
         if (projection == Projection::sphericalAccurate)
         {
-            Cartesian3DPoint firstNodeCartesian;
-            SphericalToCartesian3D(firstNode, firstNodeCartesian);
+            const Cartesian3DPoint firstNodeCartesian{SphericalToCartesian3D(firstNode)};
             auto xx1 = firstNodeCartesian.x;
             auto yy1 = firstNodeCartesian.y;
             auto zz1 = firstNodeCartesian.z;
 
-            Cartesian3DPoint secondNodeCartesian;
-            SphericalToCartesian3D(secondNode, secondNodeCartesian);
+            const Cartesian3DPoint secondNodeCartesian{SphericalToCartesian3D(secondNode)};
             auto xx2 = secondNodeCartesian.x;
             auto yy2 = secondNodeCartesian.y;
             auto zz2 = secondNodeCartesian.z;
 
-            Cartesian3DPoint pointCartesian;
-            SphericalToCartesian3D(point, pointCartesian);
+            const Cartesian3DPoint pointCartesian{SphericalToCartesian3D(point)};
             auto xx3 = pointCartesian.x;
             auto yy3 = pointCartesian.y;
             auto zz3 = pointCartesian.z;
@@ -875,19 +859,14 @@ namespace meshkernel
         return -1.0;
     }
 
-    double InnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection)
+    double InnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection)
     {
         if (projection == Projection::sphericalAccurate)
         {
-            Cartesian3DPoint firstPointFirstSegment3D;
-            Cartesian3DPoint secondPointFirstSegment3D;
-            Cartesian3DPoint firstPointSecondSegment3D;
-            Cartesian3DPoint secondPointSecondSegment3D;
-
-            SphericalToCartesian3D(firstPointFirstSegment, firstPointFirstSegment3D);
-            SphericalToCartesian3D(secondPointFirstSegment, secondPointFirstSegment3D);
-            SphericalToCartesian3D(firstPointSecondSegment, firstPointSecondSegment3D);
-            SphericalToCartesian3D(secondPointSecondSegment, secondPointSecondSegment3D);
+            const Cartesian3DPoint firstPointFirstSegment3D{SphericalToCartesian3D(firstPointFirstSegment)};
+            const Cartesian3DPoint secondPointFirstSegment3D{SphericalToCartesian3D(secondPointFirstSegment)};
+            const Cartesian3DPoint firstPointSecondSegment3D{SphericalToCartesian3D(firstPointSecondSegment)};
+            const Cartesian3DPoint secondPointSecondSegment3D{SphericalToCartesian3D(secondPointSecondSegment)};
 
             double dx1 = secondPointFirstSegment3D.x - firstPointFirstSegment3D.x;
             double dy1 = secondPointFirstSegment3D.y - firstPointFirstSegment3D.y;
@@ -915,30 +894,26 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection)
+    double NormalizedInnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection)
     {
         if (projection == Projection::sphericalAccurate)
         {
-            Cartesian3DPoint firstPointFirstSegmentCartesian;
-            SphericalToCartesian3D(firstPointFirstSegment, firstPointFirstSegmentCartesian);
+            const Cartesian3DPoint firstPointFirstSegmentCartesian{SphericalToCartesian3D(firstPointFirstSegment)};
             auto xx1 = firstPointFirstSegmentCartesian.x;
             auto yy1 = firstPointFirstSegmentCartesian.y;
             auto zz1 = firstPointFirstSegmentCartesian.z;
 
-            Cartesian3DPoint secondPointFirstSegmentCartesian;
-            SphericalToCartesian3D(secondPointFirstSegment, secondPointFirstSegmentCartesian);
+            const Cartesian3DPoint secondPointFirstSegmentCartesian{SphericalToCartesian3D(secondPointFirstSegment)};
             auto xx2 = secondPointFirstSegmentCartesian.x;
             auto yy2 = secondPointFirstSegmentCartesian.y;
             auto zz2 = secondPointFirstSegmentCartesian.z;
 
-            Cartesian3DPoint firstPointSecondSegmentCartesian;
-            SphericalToCartesian3D(firstPointSecondSegment, firstPointSecondSegmentCartesian);
+            const Cartesian3DPoint firstPointSecondSegmentCartesian{SphericalToCartesian3D(firstPointSecondSegment)};
             auto xx3 = firstPointSecondSegmentCartesian.x;
             auto yy3 = firstPointSecondSegmentCartesian.y;
             auto zz3 = firstPointSecondSegmentCartesian.z;
 
-            Cartesian3DPoint secondPointSecondSegmentCartesian;
-            SphericalToCartesian3D(secondPointSecondSegment, secondPointSecondSegmentCartesian);
+            const Cartesian3DPoint secondPointSecondSegmentCartesian{SphericalToCartesian3D(secondPointSecondSegment)};
             auto xx4 = secondPointSecondSegmentCartesian.x;
             auto yy4 = secondPointSecondSegmentCartesian.y;
             auto zz4 = secondPointSecondSegmentCartesian.z;
@@ -1082,17 +1057,13 @@ namespace meshkernel
 
         if (projection == Projection::sphericalAccurate)
         {
-            Cartesian3DPoint firstSegmentFistCartesian3DPoint;
-            SphericalToCartesian3D(firstSegmentFistPoint, firstSegmentFistCartesian3DPoint);
+            const Cartesian3DPoint firstSegmentFistCartesian3DPoint{SphericalToCartesian3D(firstSegmentFistPoint)};
 
-            Cartesian3DPoint firstSegmentSecondCartesian3DPoint;
-            SphericalToCartesian3D(firstSegmentSecondPoint, firstSegmentSecondCartesian3DPoint);
+            const Cartesian3DPoint firstSegmentSecondCartesian3DPoint{SphericalToCartesian3D(firstSegmentSecondPoint)};
 
-            Cartesian3DPoint secondSegmentFistCartesian3DPoint;
-            SphericalToCartesian3D(secondSegmentFistPoint, secondSegmentFistCartesian3DPoint);
+            const Cartesian3DPoint secondSegmentFistCartesian3DPoint{SphericalToCartesian3D(secondSegmentFistPoint)};
 
-            Cartesian3DPoint secondSegmentSecondCartesian3DPoint;
-            SphericalToCartesian3D(secondSegmentSecondPoint, secondSegmentSecondCartesian3DPoint);
+            const Cartesian3DPoint secondSegmentSecondCartesian3DPoint{SphericalToCartesian3D(secondSegmentSecondPoint)};
 
             auto n12 = VectorProduct(firstSegmentFistCartesian3DPoint, firstSegmentSecondCartesian3DPoint);
             const auto n12InnerProduct = std::sqrt(InnerProduct(n12, n12));
@@ -1454,8 +1425,7 @@ namespace meshkernel
             Cartesian3DPoint averagePoint3D{0.0, 0.0, 0.0};
             for (int i = 0; i < numPoints; ++i)
             {
-                Cartesian3DPoint point3D;
-                SphericalToCartesian3D(points[i], point3D);
+                const Cartesian3DPoint point3D{SphericalToCartesian3D(points[i])};
                 averagePoint3D.x += point3D.x;
                 averagePoint3D.y += point3D.y;
                 averagePoint3D.z += point3D.z;

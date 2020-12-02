@@ -1594,9 +1594,9 @@ void meshkernel::CurvilinearGridFromSplines::GetSplineIntersections(const int in
     }
 
     const auto sortedIndices = SortedIndices(m_crossSplineCoordinates[index]);
-    ReorderVector(m_crossSplineCoordinates[index], sortedIndices);
-    ReorderVector(m_crossingSplinesIndices[index], sortedIndices);
-    ReorderVector(m_isLeftOriented[index], sortedIndices);
+    m_crossSplineCoordinates[index] = ReorderVector(m_crossSplineCoordinates[index], sortedIndices);
+    m_crossingSplinesIndices[index] = ReorderVector(m_crossingSplinesIndices[index], sortedIndices);
+    m_isLeftOriented[index] = ReorderVector(m_isLeftOriented[index], sortedIndices);
 }
 
 void meshkernel::CurvilinearGridFromSplines::MakeAllGridLines()

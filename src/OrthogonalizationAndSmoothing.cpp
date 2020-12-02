@@ -378,8 +378,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
         ComputeThreeBaseComponents(m_mesh->m_nodes[nodeIndex], exxp, eyyp, ezzp);
 
         //get 3D-coordinates in rotated frame
-        Cartesian3DPoint cartesianLocalPoint;
-        SphericalToCartesian3D(localPoint, cartesianLocalPoint);
+        const Cartesian3DPoint cartesianLocalPoint{SphericalToCartesian3D(localPoint)};
 
         //project to fixed frame
         Cartesian3DPoint transformedCartesianLocalPoint;
