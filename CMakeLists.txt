@@ -9,7 +9,6 @@ project(
   LANGUAGES CXX)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-
   if(WIN32)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc /MP")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc /MP")
@@ -31,12 +30,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   include(CTest)
 
   # Docs only available if this is the main app
-  find_package(Doxygen)
-  if(Doxygen_FOUND)
-    add_subdirectory(docs)
-  else()
-    message(STATUS "Doxygen not found, not building docs")
-  endif()
+  add_subdirectory(docs)
 
   # Run packaging scripts
   add_subdirectory(package)

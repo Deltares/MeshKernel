@@ -1,0 +1,23 @@
+name: DoxygenCheck
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Install doxygen
+        run: sudo apt-get install doxygen
+
+      - name: Check doxygen
+        run: |
+          set -e 
+          python3 scripts/doxygen_ci.py --fail-with-warnings

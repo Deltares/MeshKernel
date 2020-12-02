@@ -50,9 +50,6 @@ cmake --build build --target docs
 ```
 
 
-
-
-
 ## Examples
 
 1. Creating a triangular mesh inside a polygon
