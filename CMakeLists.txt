@@ -8,9 +8,6 @@ project(
   DESCRIPTION "Library for creating and editing meshes."
   LANGUAGES CXX)
 
-# Add the cmake folder so the custom modules are found
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   if(WIN32)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc /MP")
