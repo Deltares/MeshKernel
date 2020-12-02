@@ -3,8 +3,6 @@ name: DoxygenDeploy
 on:
   push:
     branches: [master]
-  pull_request:
-  
 
 jobs:
   check:
@@ -20,9 +18,9 @@ jobs:
 
       - name: Run doxygen
         run: python3 scripts/doxygen_ci.py
-      
+
       - name: Deploy to github pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/docs/html 
+          publish_dir: ./build/docs/html
