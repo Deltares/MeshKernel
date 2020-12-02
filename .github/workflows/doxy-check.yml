@@ -19,5 +19,6 @@ jobs:
 
       - name: Check doxygen
         run: |
+          # Set error mode. Makes bash bail on first non-zero exit code
           set -e 
           python3 scripts/doxygen_ci.py --fail-with-warnings
