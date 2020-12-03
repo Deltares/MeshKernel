@@ -1864,7 +1864,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
 
         if (numValidEdges > 0)
         {
-            for (int n = 0; n < numNodes; n++)
+            for (auto n = 0; n < numNodes; n++)
             {
                 if (edgesNumFaces[n] == 2)
                 {
@@ -1876,20 +1876,17 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
                 }
             }
 
-            Point previousCircumCenter = estimatedCircumCenter;
-            double xf = 1.0 / std::cos(degrad_hp * centerOfMass.y);
-
             for (int iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
             {
-                previousCircumCenter = estimatedCircumCenter;
-                for (int n = 0; n < numNodes; n++)
+                Point previousCircumCenter = estimatedCircumCenter;
+                for (auto n = 0; n < numNodes; n++)
                 {
                     if (edgesNumFaces[n] == 2)
                     {
-                        double dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
-                        double dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);
-                        double increment = -0.1 * DotProduct(dx, normals[n].x, dy, normals[n].y);
-                        Add(estimatedCircumCenter, normals[n], increment, xf, m_projection);
+                        const auto dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
+                        const auto dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);
+                        const auto increment = -0.1 * DotProduct(dx, normals[n].x, dy, normals[n].y);
+                        AddIncrementToPoint(normals[n], increment, centerOfMass, m_projection, estimatedCircumCenter);
                     }
                 }
                 if (iter > 0 &&

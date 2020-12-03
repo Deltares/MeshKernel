@@ -710,7 +710,7 @@ namespace meshkernel
         }
     }
 
-    void Add(Point& point, const Point& normal, double increment, double xf, const Projection& projection)
+    void AddIncrementToPoint(Point normal, double increment, Point referencePoint, Projection projection, Point& point)
     {
         if (projection == Projection::cartesian)
         {
@@ -719,7 +719,8 @@ namespace meshkernel
         }
         if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
         {
-            double convertedIncrement = raddeg_hp * increment / earth_radius;
+            const double xf = 1.0 / std::cos(degrad_hp * referencePoint.y);
+            const double convertedIncrement = raddeg_hp * increment / earth_radius;
             point.x = point.x + normal.x * convertedIncrement * xf;
             point.y = point.y + normal.y * convertedIncrement;
         }

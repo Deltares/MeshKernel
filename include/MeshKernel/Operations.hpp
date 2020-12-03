@@ -262,25 +262,25 @@ namespace meshkernel
                                                  const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
 
     /// @brief Computes the middle point.
-    /// @param[in] firstPoint The first point.
-    /// @param[in] secondPoint The second point.
+    /// @param[in] firstPoint The first point of the segment.
+    /// @param[in] secondPoint The second point of the segment.
     /// @param[in] projection  The coordinate system projection.
     /// @return The middle point.
     [[nodiscard]] Point ComputeMiddlePoint(Point firstPoint, Point secondPoint, Projection projection);
 
     /// @brief Computes the middle point (account for poles, latitudes close to 90 degrees)
-    /// @param[in] firstPoint The first point.
-    /// @param[in] secondPoint The second point.
+    /// @param[in] firstPoint The first point of the segment.
+    /// @param[in] secondPoint  The second point of the segment.
     /// @param[in] projection  The coordinate system projection.
     /// @return The middle point.
     [[nodiscard]] Point ComputeMiddlePointAccountingForPoles(Point firstPoint, Point secondPoint, Projection projection);
 
-    /// @brief Normalized vector of a segment in direction 1 -> 2, in the orientation of (xu,yu)
-    /// @param[in] firstPoint The first point.
-    /// @param[in] secondPoint The second point.
-    /// @param[in] insidePoint
+    /// @brief Normalized vector of a segment in direction 1 -> 2 with the insidePoint orientation
+    /// @param[in] firstPoint The first point of the segment.
+    /// @param[in] secondPoint The second point of the segment.
+    /// @param[in] insidePoint The inside point of the segment
     /// @param[in] projection The coordinate system projection.
-    /// @return The
+    /// @return The Normal vector
     [[nodiscard]] Point NormalVector(Point firstPoint, Point secondPoint, Point insidePoint, Projection projection);
 
     /// @brief Transforms vector with components in global spherical coordinate directions(xglob, yglob)
@@ -291,8 +291,6 @@ namespace meshkernel
     ///
     /// \see NormalVectorInside
     ///
-
-    /// @brief
     Point NormalVectorOutside(Point firstPoint, Point secondPoint, Projection projection);
 
     /// @brief Computes the normal vector to a line 1-2, which is *outward* w.r.t.
@@ -301,11 +299,13 @@ namespace meshkernel
     /// Similar to NormalVectorOutside, except that the normal vector may be flipped based on the 'inside' point.
     void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, Projection projection);
 
-    /// @brief Moves a point by adding a vector to it
-    /// @param[in,out] point The point to be moved
-    /// @param[in] normal The direction the point will be moved
-    /// @param[in] increment The length of the movement
-    void Add(Point& point, const Point& normal, double increment, double xf, const Projection& projection);
+    /// @brief Moves a point by adding an increment vector to it.
+    /// @param[in] normal normal The increment direction.
+    /// @param[in] increment The increment to use.
+    /// @param[in] referencePoint the reference point containing the reference latitude to use.
+    /// @param[in] projection The coordinate system projection.
+    /// @param[in,out] point The point to be incremented.
+    void AddIncrementToPoint(Point normal, double increment, Point referencePoint, Projection projection, Point& point);
 
     /// @brief For a given polygon compute a reference point (the function can also shift the input polygon coordinates)
     /// @param[in,out] polygon The input polygon.
