@@ -463,9 +463,9 @@ namespace meshkernel
     /// @param[in] sideThree The third side of the area.
     /// @param[in] sideFour The fourth side of the area.
     /// @param[in] projection The projection to use.
-    /// @param[in] numM The number of columns to generate (horizontal direction)
-    /// @param[in] numN  The number of rows to generate (vertical direction)
-    /// @return The resulting dicretization (expressed as number of points)
+    /// @param[in] numM The number of columns to generate (horizontal direction).
+    /// @param[in] numN  The number of rows to generate (vertical direction).
+    /// @return The resulting dicretization (expressed as number of points).
     [[nodiscard]] std::vector<std::vector<Point>> DiscretizeTransfinite(const std::vector<Point>& sideOne,
                                                                         const std::vector<Point>& sideTwo,
                                                                         const std::vector<Point>& sideThree,
@@ -475,17 +475,17 @@ namespace meshkernel
                                                                         int numN);
 
     /// @brief Computes the edge centers
-    /// @param[in] nodes The vector of edge nodes
-    /// @param[in] edges The vector of edge indexes
-    /// @return The vector containing the edge centers
+    /// @param[in] nodes The vector of edge nodes.
+    /// @param[in] edges The vector of edge indexes.
+    /// @return The vector containing the edge centers.
     [[nodiscard]] std::vector<Point> ComputeEdgeCenters(const std::vector<Point>& nodes, const std::vector<Edge>& edges);
 
-    /// @brief
-    /// @param interpolationPoint
-    /// @param polygon
-    /// @param values
-    /// @param projection
-    /// @return
+    /// @brief Given a triangles with values on each vertex, computes the interpolated value inside the triangle, using linear interpolation.
+    /// @param[in] interpolationPoint The point where to interpolate.
+    /// @param[in] polygon The polygon containing the triangle vertices.
+    /// @param[in] values The values at each vertex.
+    /// @param[in] projection The projection to use.
+    /// @return The interpolated value.
     [[nodiscard]] double LinearInterpolationInTriangle(Point interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, Projection projection);
 
     /// @brief Given a vector of coordinates, get the lowest upper and right points
@@ -521,7 +521,7 @@ namespace meshkernel
         upperRight = {maxx, maxy};
     }
 
-    /// @brief Checks if value is in bounding box
+    /// @brief Checks if value is inside a bounding box
     /// @tparam T Requires IsCoordinate<T>
     /// @param[in] point The point to inquire
     /// @param[in] lowerLeft The lower left corner of the bounding box
@@ -535,11 +535,10 @@ namespace meshkernel
                point.y >= lowerLeft.y && point.y <= upperRight.y;
     }
 
-    /// @brief
-    /// @param points
-    /// @param numPoints
-    /// @param projection
-    /// @return
-    [[nodiscard]] Point ComputeAverageCoordinate(const std::vector<Point>& points, int numPoints, Projection projection);
+    /// @brief Given a series of point computes the average coordinate
+    /// @param[in] points The point series.
+    /// @param[in] projection The projection to use.
+    /// @return The average coordinate.
+    [[nodiscard]] Point ComputeAverageCoordinate(const std::vector<Point>& points, Projection projection);
 
 } // namespace meshkernel
