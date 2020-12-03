@@ -293,15 +293,29 @@ namespace meshkernel
 
     void ReferencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projection& projection);
 
-    [[nodiscard]] double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+    /// @brief Computes the squared distance between two points
+    /// @param firstPoint The first point
+    /// @param secondPoint The second point
+    /// @param projection The coordinate system projection
+    /// @return The squared distance
+    [[nodiscard]] double ComputeSquaredDistance(Point firstPoint, Point secondPoint, Projection projection);
 
-    //dbdistance
-    [[nodiscard]] double ComputeDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+    /// @brief Computes the  distance between two points (dbdistance)
+    /// @param firstPoint The first point
+    /// @param secondPoint The second point
+    /// @param projection The coordinate system projection
+    /// @return The  distance
+    [[nodiscard]] double ComputeDistance(Point firstPoint, Point secondPoint, Projection projection);
 
-    // dLINEDIS3
-    // Computes the perpendicular distance from point to a line firstNode - secondNode.
-    // normalPoint: coordinates of the projected point from point onto the line
-    [[nodiscard]] double DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, Point& normalPoint, double& ratio, const Projection& projection);
+    /// @brief Computes the perpendicular distance of a point from a segment firstNode - secondNode (dlinedis3)
+    /// @param point The point to consider in the distance calculation
+    /// @param firstNode The first point of the segment
+    /// @param secondNode The second point of the segment
+    /// @param projection The coordinate system projection
+    /// @param normalPoint The intersection of the normal projection with the segment
+    /// @param ratio the distance from the first node, expressed as a ratio to the segment length
+    /// @return The normal distance from the segment
+    [[nodiscard]] double DistanceFromLine(Point point, Point firstNode, Point secondNode, Projection projection, Point& normalPoint, double& ratio);
 
     /// dprodin inner product of two segments
     [[nodiscard]] double InnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection);

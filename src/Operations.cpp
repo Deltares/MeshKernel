@@ -741,7 +741,7 @@ namespace meshkernel
         }
     }
 
-    double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
+    double ComputeSquaredDistance(Point firstPoint, Point secondPoint, Projection projection)
     {
 
         if (!firstPoint.IsValid() || !secondPoint.IsValid())
@@ -775,7 +775,7 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    double ComputeDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
+    double ComputeDistance(Point firstPoint, Point secondPoint, Projection projection)
     {
         double distance = ComputeSquaredDistance(firstPoint, secondPoint, projection);
         if (distance >= 0.0)
@@ -785,7 +785,7 @@ namespace meshkernel
         return distance;
     }
 
-    double DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, Point& normalPoint, double& ratio, const Projection& projection)
+    double DistanceFromLine(Point point, Point firstNode, Point secondNode, Projection projection, Point& normalPoint, double& ratio)
     {
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {
@@ -796,7 +796,7 @@ namespace meshkernel
                 ratio = (GetDx(firstNode, point, projection) * GetDx(firstNode, secondNode, projection) +
                          GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) /
                         squaredDistance;
-                double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
+                const auto correctedRatio = std::max(std::min(1.0, ratio), 0.0);
                 normalPoint.x = firstNode.x + correctedRatio * (secondNode.x - firstNode.x);
                 normalPoint.y = firstNode.y + correctedRatio * (secondNode.y - firstNode.y);
                 dis = ComputeDistance(point, normalPoint, projection);
