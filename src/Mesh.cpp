@@ -1854,7 +1854,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
         Point estimatedCircumCenter = centerOfMass;
 
         int numValidEdges = 0;
-        for (int n = 0; n < numNodes; ++n)
+        for (auto n = 0; n < numNodes; ++n)
         {
             if (edgesNumFaces[n] == 2)
             {
