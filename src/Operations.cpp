@@ -1123,6 +1123,17 @@ namespace meshkernel
         return isCrossing;
     }
 
+    int CrossProductSign(Point firstSegmentFistPoint, Point firstSegmentSecondPoint, Point secondSegmentFistPoint, Point secondSegmentSecondPoint, Projection projection)
+    {
+
+        const auto dx1 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+        const auto dy1 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+        const auto dx2 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+        const auto dy2 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
+        const auto val = dx1 * dy2 - dy1 * dx2;
+        return sgn(val);
+    }
+
     void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, Projection projection, double& area, Point& centerOfMass, bool& isCounterClockWise)
     {
         if (numberOfPolygonPoints <= 0)
@@ -1185,32 +1196,24 @@ namespace meshkernel
             result[i] = result[i - 1] + ComputeDistance(v[i - 1], v[i], projection);
         }
         totalDistance = result.back();
+        if (IsEqual(totalDistance, 0.0))
+        {
+            return;
+        }
         const double inverseTotalDistance = 1.0 / totalDistance;
-        // normalize
         for (int i = 1; i < v.size(); i++)
         {
             result[i] = result[i] * inverseTotalDistance;
         }
     }
 
-    int TwoSegmentsSign(const Point& p1, const Point& p2, const Point& p3, const Point& p4, Projection projection)
-    {
-
-        const auto dx1 = GetDx(p1, p2, projection);
-        const auto dy1 = GetDy(p1, p2, projection);
-        const auto dx2 = GetDx(p3, p4, projection);
-        const auto dy2 = GetDy(p3, p4, projection);
-        const auto val = dx1 * dy2 - dy1 * dx2;
-        return sgn(val);
-    }
-
-    std::vector<std::vector<Point>> InterpolateTransfinite(const std::vector<Point>& sideOne,
-                                                           const std::vector<Point>& sideTwo,
-                                                           const std::vector<Point>& sideThree,
-                                                           const std::vector<Point>& sideFour,
-                                                           Projection projection,
-                                                           int numM,
-                                                           int numN)
+    std::vector<std::vector<Point>> DiscretizeTransfinite(const std::vector<Point>& sideOne,
+                                                          const std::vector<Point>& sideTwo,
+                                                          const std::vector<Point>& sideThree,
+                                                          const std::vector<Point>& sideFour,
+                                                          Projection projection,
+                                                          int numM,
+                                                          int numN)
     {
         double totalLengthOne;
         std::vector<double> sideOneAdimensional(sideOne.size());
@@ -1369,16 +1372,15 @@ namespace meshkernel
         return result;
     }
 
-    std::vector<Point> ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges)
+    std::vector<Point> ComputeEdgeCenters(const std::vector<Point>& nodes, const std::vector<Edge>& edges)
     {
         std::vector<Point> edgesCenters;
-        edgesCenters.reserve(std::max(static_cast<int>(edgesCenters.capacity()), numEdges));
+        edgesCenters.reserve(edges.size());
 
-        for (int e = 0; e < numEdges; e++)
+        for (const auto& edge : edges)
         {
-            auto const first = edges[e].first;
-            auto const second = edges[e].second;
-
+            auto const first = edge.first;
+            auto const second = edge.second;
             if (first < 0 || second < 0)
             {
                 continue;

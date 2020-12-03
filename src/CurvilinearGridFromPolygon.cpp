@@ -181,7 +181,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     assignPolygonPointsToSegment(firstNode, numMNodes, direction, sideThree);
     assignPolygonPointsToSegment(fourthNode, numMNodes, -direction, sideFour);
 
-    const auto result = InterpolateTransfinite(sideOne,
+    const auto result = DiscretizeTransfinite(sideOne,
                                                sideTwo,
                                                sideThree,
                                                sideFour,
@@ -348,7 +348,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
             sideTwo[i] = m_polygon->m_nodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
-        const auto result = InterpolateTransfinite(sideOne,
+        const auto result = DiscretizeTransfinite(sideOne,
                                                    sideTwo,
                                                    sideThree,
                                                    sideFour,

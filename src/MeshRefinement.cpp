@@ -120,7 +120,7 @@ void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
         }
 
         // Compute all edge lengths at once
-        m_mesh->ComputeEdgeLengths();
+        m_mesh->ComputeEdgesLengths();
 
         const auto numEdgesBeforeRefinement = m_mesh->GetNumEdges();
 

@@ -353,13 +353,13 @@ namespace meshkernel
     /// @param[in] firstSegmentSecondPoint The second point of the first segment
     /// @param[in] secondSegmentFistPoint The first point of the second segment
     /// @param[in] secondSegmentSecondPoint The second point of the second segment
-    /// @param[in] adimensionalCrossProduct Compute the adimensional cross product
+    /// @param[in] adimensionalCrossProduct Compute the dimensionless cross product
     /// @param[in] projection The coordinate system projection
     /// @param[in,out] intersectionPoint The intersection point
     /// @param[in,out] crossProduct The cross product of the intersection
     /// @param[in,out] ratioFirstSegment The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
     /// @param[in,out] ratioSecondSegment The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
-    /// @return If the teo segments are crossing
+    /// @return If the two segments are crossing
     [[nodiscard]] bool AreSegmentsCrossing(Point firstSegmentFistPoint,
                                            Point firstSegmentSecondPoint,
                                            Point secondSegmentFistPoint,
@@ -371,6 +371,15 @@ namespace meshkernel
                                            double& ratioFirstSegment,
                                            double& ratioSecondSegment);
 
+    /// @brief Computes the sign of the cross product between two segments (duitpl)
+    /// @param[in] firstSegmentFistPoint The first point of the first segment
+    /// @param[in] firstSegmentSecondPoint The second point of the first segment
+    /// @param[in] secondSegmentFistPoint The first point of the second segment
+    /// @param[in] secondSegmentSecondPoint The second point of the second segment
+    /// @param[in] projection The coordinate system projection
+    /// @return The cross product sign
+    [[nodiscard]] int CrossProductSign(Point firstSegmentFistPoint, Point firstSegmentSecondPoint, Point secondSegmentFistPoint, Point secondSegmentSecondPoint, Projection projection);
+
     /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges
     /// @param[in] polygon The input vector containing the nodes of the polygon.
     /// @param[in] numberOfPolygonPoints The number of points to account for in the input vector.
@@ -380,7 +389,7 @@ namespace meshkernel
     /// @param[in,out] isCounterClockWise The orientation of the edges.
     void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, Projection projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
 
-    /// @brief Computes the coordinate of a point on a spline, given the adimensional distance from the first corner point
+    /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point
     /// @param[in] coordinates
     /// @param[in] coordinatesDerivatives
     /// @param[in] pointAdimensionalCoordinate
@@ -448,21 +457,36 @@ namespace meshkernel
         return (T(0) < val ? 1 : 0) - (val < T(0) ? 1 : 0);
     }
 
-    //(DUITPL)
-    [[nodiscard]] int TwoSegmentsSign(const Point& p1, const Point& p2, const Point& p3, const Point& p4, Projection projection);
+    /// @brief Computes the transfinite discretization inside the area defined by 4 sides, each one discretized with a series of points (tranfn2).
+    /// @param[in] sideOne The first side of the area.
+    /// @param[in] sideTwo The second side of the area.
+    /// @param[in] sideThree The third side of the area.
+    /// @param[in] sideFour The fourth side of the area.
+    /// @param[in] projection The projection to use.
+    /// @param[in] numM The number of columns to generate (horizontal direction)
+    /// @param[in] numN  The number of rows to generate (vertical direction)
+    /// @return The resulting dicretization (expressed as number of points)
+    [[nodiscard]] std::vector<std::vector<Point>> DiscretizeTransfinite(const std::vector<Point>& sideOne,
+                                                                        const std::vector<Point>& sideTwo,
+                                                                        const std::vector<Point>& sideThree,
+                                                                        const std::vector<Point>& sideFour,
+                                                                        Projection projection,
+                                                                        int numM,
+                                                                        int numN);
 
-    //(TRANFN2)
-    std::vector<std::vector<Point>> InterpolateTransfinite(const std::vector<Point>& sideOne,
-                                                           const std::vector<Point>& sideTwo,
-                                                           const std::vector<Point>& sideThree,
-                                                           const std::vector<Point>& sideFour,
-                                                           Projection projection,
-                                                           int numM,
-                                                           int numN);
+    /// @brief Computes the edge centers
+    /// @param[in] nodes The vector of edge nodes
+    /// @param[in] edges The vector of edge indexes
+    /// @return The vector containing the edge centers
+    [[nodiscard]] std::vector<Point> ComputeEdgeCenters(const std::vector<Point>& nodes, const std::vector<Edge>& edges);
 
-    [[nodiscard]] std::vector<Point> ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges);
-
-    double LinearInterpolationInTriangle(Point interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, Projection projection);
+    /// @brief
+    /// @param interpolationPoint
+    /// @param polygon
+    /// @param values
+    /// @param projection
+    /// @return
+    [[nodiscard]] double LinearInterpolationInTriangle(Point interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, Projection projection);
 
     /// @brief Given a vector of coordinates, get the lowest upper and right points
     /// @tparam T Requires IsCoordinate<T>
@@ -511,6 +535,11 @@ namespace meshkernel
                point.y >= lowerLeft.y && point.y <= upperRight.y;
     }
 
+    /// @brief
+    /// @param points
+    /// @param numPoints
+    /// @param projection
+    /// @return
     [[nodiscard]] Point ComputeAverageCoordinate(const std::vector<Point>& points, int numPoints, Projection projection);
 
 } // namespace meshkernel

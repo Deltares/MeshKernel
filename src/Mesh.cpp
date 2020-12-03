@@ -1353,11 +1353,11 @@ void meshkernel::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
     }
 }
 
-void meshkernel::Mesh::ComputeEdgeLengths()
+void meshkernel::Mesh::ComputeEdgesLengths()
 {
     auto const numEdges = GetNumEdges();
     m_edgeLengths.resize(numEdges, doubleMissingValue);
-    for (int e = 0; e < numEdges; e++)
+    for (auto e = 0; e < numEdges; e++)
     {
         auto const first = m_edges[e].first;
         auto const second = m_edges[e].second;
@@ -1367,12 +1367,12 @@ void meshkernel::Mesh::ComputeEdgeLengths()
 
 void meshkernel::Mesh::ComputeEdgesCenters()
 {
-    m_edgesCenters = ComputeEdgeCenters(GetNumEdges(), m_nodes, m_edges);
+    m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
 }
 
 bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
 {
-    for (int n = 0; n < GetNumFaceEdges(faceIndex); n++)
+    for (auto n = 0; n < GetNumFaceEdges(faceIndex); n++)
     {
         if (m_nodeMask[m_facesNodes[faceIndex][n]] != 1)
         {
