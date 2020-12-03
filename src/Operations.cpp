@@ -705,10 +705,10 @@ namespace meshkernel
         }
     }
 
-    void ReferencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projection& projection)
+    Point ReferencePoint(std::vector<Point>& polygon, int numPoints, Projection projection)
     {
-        minX = std::numeric_limits<double>::max();
-        minY = std::numeric_limits<double>::max();
+        auto minX = std::numeric_limits<double>::max();
+        auto minY = std::numeric_limits<double>::max();
         for (auto i = 0; i < numPoints; i++)
         {
             minX = std::min(polygon[i].x, minX);
@@ -739,6 +739,8 @@ namespace meshkernel
                 minX = minX + 360.0;
             }
         }
+
+        return Point{minX, minY};
     }
 
     double ComputeSquaredDistance(Point firstPoint, Point secondPoint, Projection projection)
@@ -1003,16 +1005,16 @@ namespace meshkernel
         return circumcenter;
     }
 
-    bool AreLinesCrossing(const Point& firstSegmentFistPoint,
-                          const Point& firstSegmentSecondPoint,
-                          const Point& secondSegmentFistPoint,
-                          const Point& secondSegmentSecondPoint,
-                          bool adimensionalCrossProduct,
-                          Point& intersectionPoint,
-                          double& crossProduct,
-                          double& ratioFirstSegment,
-                          double& ratioSecondSegment,
-                          const Projection& projection)
+    bool AreSegmentsCrossing(Point firstSegmentFistPoint,
+                             Point firstSegmentSecondPoint,
+                             Point secondSegmentFistPoint,
+                             Point secondSegmentSecondPoint,
+                             bool adimensionalCrossProduct,
+                             Projection projection,
+                             Point& intersectionPoint,
+                             double& crossProduct,
+                             double& ratioFirstSegment,
+                             double& ratioSecondSegment)
     {
         bool isCrossing = false;
         ratioFirstSegment = doubleMissingValue;
@@ -1128,15 +1130,11 @@ namespace meshkernel
             throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon contains no nodes.");
         }
 
-        double minX;
-        double minY;
-        ReferencePoint(polygon, numberOfPolygonPoints, minX, minY, projection);
-
-        Point reference{minX, minY};
         area = 0.0;
         double xCenterOfMass = 0.0;
         double yCenterOfMass = 0.0;
         const double minArea = 1e-8;
+        const Point reference = ReferencePoint(polygon, numberOfPolygonPoints, projection);
         for (int n = 0; n < numberOfPolygonPoints; n++)
         {
             const auto nextNode = NextCircularForwardIndex(n, numberOfPolygonPoints);
@@ -1170,11 +1168,11 @@ namespace meshkernel
         if (projection == Projection::spherical)
         {
             yCenterOfMass = yCenterOfMass / (earth_radius * degrad_hp);
-            xCenterOfMass = xCenterOfMass / (earth_radius * degrad_hp * std::cos((yCenterOfMass + minY) * degrad_hp));
+            xCenterOfMass = xCenterOfMass / (earth_radius * degrad_hp * std::cos((yCenterOfMass + reference.y) * degrad_hp));
         }
 
-        centerOfMass.x = xCenterOfMass + minX;
-        centerOfMass.y = yCenterOfMass + minY;
+        centerOfMass.x = xCenterOfMass + reference.x;
+        centerOfMass.y = yCenterOfMass + reference.y;
 
         area = std::abs(area);
     }

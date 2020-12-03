@@ -1246,7 +1246,7 @@ namespace meshkernel
                 double crossProduct;
                 double firstRatio;
                 double secondRatio;
-                bool areCrossing = AreLinesCrossing(firstMeshNode, secondMeshNode, firstNode, secondNode, adimensional, intersection, crossProduct, firstRatio, secondRatio, m_mesh->m_projection);
+                bool areCrossing = AreSegmentsCrossing(firstMeshNode, secondMeshNode, firstNode, secondNode, adimensional, m_mesh->m_projection, intersection, crossProduct, firstRatio, secondRatio);
 
                 if (areCrossing)
                 {

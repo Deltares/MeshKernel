@@ -110,16 +110,16 @@ void meshkernel::FlipEdges::Compute() const
             double firstRatio;
             double secondRatio;
 
-            const auto areEdgesCrossing = AreLinesCrossing(m_mesh->m_nodes[firstNode],
-                                                           m_mesh->m_nodes[secondNode],
-                                                           m_mesh->m_nodes[nodeLeft],
-                                                           m_mesh->m_nodes[nodeRight],
-                                                           false,
-                                                           intersection,
-                                                           crossProduct,
-                                                           firstRatio,
-                                                           secondRatio,
-                                                           m_mesh->m_projection);
+            const auto areEdgesCrossing = AreSegmentsCrossing(m_mesh->m_nodes[firstNode],
+                                                              m_mesh->m_nodes[secondNode],
+                                                              m_mesh->m_nodes[nodeLeft],
+                                                              m_mesh->m_nodes[nodeRight],
+                                                              false,
+                                                              m_mesh->m_projection,
+                                                              intersection,
+                                                              crossProduct,
+                                                              firstRatio,
+                                                              secondRatio);
 
             if (!areEdgesCrossing)
             {

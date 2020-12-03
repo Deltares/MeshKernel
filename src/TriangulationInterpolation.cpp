@@ -139,16 +139,16 @@ void meshkernel::TriangulationInterpolation::Compute()
                 double crossProduct;
                 double firstRatio;
                 double secondRatio;
-                const auto areCrossing = AreLinesCrossing(trianglesCircumcenters[triangle],
-                                                          m_locations[n],
-                                                          {m_samples[k1].x, m_samples[k1].y},
-                                                          {m_samples[k2].x, m_samples[k2].y},
-                                                          false,
-                                                          intersection,
-                                                          crossProduct,
-                                                          firstRatio,
-                                                          secondRatio,
-                                                          m_projection);
+                const auto areCrossing = AreSegmentsCrossing(trianglesCircumcenters[triangle],
+                                                             m_locations[n],
+                                                             {m_samples[k1].x, m_samples[k1].y},
+                                                             {m_samples[k2].x, m_samples[k2].y},
+                                                             false,
+                                                             m_projection,
+                                                             intersection,
+                                                             crossProduct,
+                                                             firstRatio,
+                                                             secondRatio);
 
                 if (areCrossing)
                 {

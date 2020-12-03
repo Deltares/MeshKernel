@@ -291,7 +291,12 @@ namespace meshkernel
     /// @param[in] increment The length of the movement
     void Add(Point& point, const Point& normal, double increment, double xf, const Projection& projection);
 
-    void ReferencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projection& projection);
+    /// @brief For a given polygon compute a reference point (the function can also shift the input polygon coordinates)
+    /// @param[in,out] polygon The input polygon
+    /// @param[in] numPoints The number of points to account for in the input polygon
+    /// @param[in] projection The coordinate system projection
+    /// @return The reference point
+    [[nodiscard]] Point ReferencePoint(std::vector<Point>& polygon, int numPoints, Projection projection);
 
     /// @brief Computes the squared distance between two points
     /// @param[in] firstPoint The first point
@@ -313,7 +318,7 @@ namespace meshkernel
     /// @param[in] secondNode The second point of the segment
     /// @param[in] projection The coordinate system projection
     /// @param[in,out] normalPoint The intersection of the normal projection with the segment
-    /// @param[in,out] ratio the distance from the first node, expressed as a ratio to the segment length
+    /// @param[in,out] ratio The distance from the first node, expressed as a ratio of the segment length
     /// @return The normal distance from the segment
     [[nodiscard]] double DistanceFromLine(Point point, Point firstNode, Point secondNode, Projection projection, Point& normalPoint, double& ratio);
 
@@ -343,39 +348,39 @@ namespace meshkernel
     /// @return The resulting circumcenter
     [[nodiscard]] Point CircumcenterOfTriangle(Point firstVertex, Point secondVertex, Point thirdVertex, Projection projection);
 
-    /// @brief (cross, cross3D)
-    /// @param firstSegmentFistPoint
-    /// @param firstSegmentSecondPoint
-    /// @param secondSegmentFistPoint
-    /// @param secondSegmentSecondPoint
-    /// @param adimensionalCrossProduct
-    /// @param intersectionPoint
-    /// @param crossProduct
-    /// @param ratioFirstSegment
-    /// @param ratioSecondSegment
-    /// @param projection
-    /// @return
-    [[nodiscard]] bool AreLinesCrossing(const Point& firstSegmentFistPoint,
-                                        const Point& firstSegmentSecondPoint,
-                                        const Point& secondSegmentFistPoint,
-                                        const Point& secondSegmentSecondPoint,
-                                        bool adimensionalCrossProduct,
-                                        Point& intersectionPoint,
-                                        double& crossProduct,
-                                        double& ratioFirstSegment,
-                                        double& ratioSecondSegment,
-                                        const Projection& projection);
+    /// @brief Determines if two segments are crossing (cross, cross3D)
+    /// @param[in] firstSegmentFistPoint The first point of the first segment
+    /// @param[in] firstSegmentSecondPoint The second point of the first segment
+    /// @param[in] secondSegmentFistPoint The first point of the second segment
+    /// @param[in] secondSegmentSecondPoint The second point of the second segment
+    /// @param[in] adimensionalCrossProduct Compute the adimensional cross product
+    /// @param[in] projection The coordinate system projection
+    /// @param[in,out] intersectionPoint The intersection point
+    /// @param[in,out] crossProduct The cross product of the intersection
+    /// @param[in,out] ratioFirstSegment The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
+    /// @param[in,out] ratioSecondSegment The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
+    /// @return If the teo segments are crossing
+    [[nodiscard]] bool AreSegmentsCrossing(Point firstSegmentFistPoint,
+                                           Point firstSegmentSecondPoint,
+                                           Point secondSegmentFistPoint,
+                                           Point secondSegmentSecondPoint,
+                                           bool adimensionalCrossProduct,
+                                           Projection projection,
+                                           Point& intersectionPoint,
+                                           double& crossProduct,
+                                           double& ratioFirstSegment,
+                                           double& ratioSecondSegment);
 
     /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges
-    /// @param polygon The input vector containing the nodes of the polygon.
-    /// @param numberOfPolygonPoints The number of points to account for in the input vector.
-    /// @param projection The projection to use.
-    /// @param area The resulting area.
-    /// @param centerOfMass The resulting center of mass.
-    /// @param isCounterClockWise The orientation of the edges.
+    /// @param[in] polygon The input vector containing the nodes of the polygon.
+    /// @param[in] numberOfPolygonPoints The number of points to account for in the input vector.
+    /// @param[in] projection The projection to use.
+    /// @param[in,out] area The resulting area.
+    /// @param[in,out] centerOfMass The resulting center of mass.
+    /// @param[in,out] isCounterClockWise The orientation of the edges.
     void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, Projection projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
 
-    /// @brief Interpolate spline points
+    /// @brief Computes the coordinate of a point on a spline, given the adimensional distance from the first corner point
     /// @param[in] coordinates
     /// @param[in] coordinatesDerivatives
     /// @param[in] pointAdimensionalCoordinate

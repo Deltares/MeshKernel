@@ -94,16 +94,16 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
             double crossProduct;
             double firstRatio;
             double secondRatio;
-            bool areCrossing = AreLinesCrossing(m_splineNodes[first][n],
-                                                m_splineNodes[first][n + 1],
-                                                m_splineNodes[second][nn],
-                                                m_splineNodes[second][nn + 1],
-                                                false,
-                                                intersection,
-                                                crossProduct,
-                                                firstRatio,
-                                                secondRatio,
-                                                m_projection);
+            bool areCrossing = AreSegmentsCrossing(m_splineNodes[first][n],
+                                                   m_splineNodes[first][n + 1],
+                                                   m_splineNodes[second][nn],
+                                                   m_splineNodes[second][nn + 1],
+                                                   false,
+                                                   m_projection,
+                                                   intersection,
+                                                   crossProduct,
+                                                   firstRatio,
+                                                   secondRatio);
 
             if (areCrossing)
             {
@@ -211,16 +211,16 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
         double crossProduct;
         double firstRatio = doubleMissingValue;
         double secondRatio = doubleMissingValue;
-        bool areCrossing = AreLinesCrossing(firstLeftSplinePoint,
-                                            firstRightSplinePoint,
-                                            secondLeftSplinePoint,
-                                            secondRightSplinePoint,
-                                            true,
-                                            closestIntersection,
-                                            crossProduct,
-                                            firstRatio,
-                                            secondRatio,
-                                            m_projection);
+        bool areCrossing = AreSegmentsCrossing(firstLeftSplinePoint,
+                                               firstRightSplinePoint,
+                                               secondLeftSplinePoint,
+                                               secondRightSplinePoint,
+                                               true,
+                                               m_projection,
+                                               closestIntersection,
+                                               crossProduct,
+                                               firstRatio,
+                                               secondRatio);
 
         // search close by
         if (firstRatio > -2.0 && firstRatio < 3.0 && secondRatio > -2.0 && secondRatio < 3.0)
