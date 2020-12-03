@@ -8,6 +8,11 @@ project(
   DESCRIPTION "Library for creating and editing meshes."
   LANGUAGES CXX)
 
+# Note that headers are optional, and do not affect add_library, but they will
+# not show up in IDEs unless they are listed in add_library.
+file(GLOB HEADER_LIST CONFIGURE_DEPENDS
+     "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.hpp")
+
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   if(WIN32)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc /MP")

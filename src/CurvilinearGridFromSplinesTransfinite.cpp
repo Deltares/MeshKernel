@@ -207,13 +207,13 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
             }
 
             // call transfinite interpolation
-            const auto interpolationResult = InterpolateTransfinite(sideOne,
-                                                                    sideTwo,
-                                                                    sideThree,
-                                                                    sideFour,
-                                                                    m_splines->m_projection,
-                                                                    m_numM,
-                                                                    m_numN);
+            const auto interpolationResult = DiscretizeTransfinite(sideOne,
+                                                                   sideTwo,
+                                                                   sideThree,
+                                                                   sideFour,
+                                                                   m_splines->m_projection,
+                                                                   m_numM,
+                                                                   m_numN);
 
             // assign the points
             for (int k = 0; k < numMPoints; k++)
@@ -357,7 +357,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                     if (crossProductIntersection * m_splineType[i] < 0.0)
                     {
                         // switch j
-                        SwapVectorElements(m_splines->m_splineNodes[j], numNodesJSpline);
+                        SwapVectorElements(m_splines->m_splineNodes[j]);
                         secondSplineRatio = static_cast<double>(numNodesJSpline) - 1.0 - secondSplineRatio;
                     }
                 }
@@ -367,7 +367,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
                     if (crossProductIntersection * m_splineType[j] > 0.0)
                     {
                         // switch i
-                        SwapVectorElements(m_splines->m_splineNodes[i], numNodesISpline);
+                        SwapVectorElements(m_splines->m_splineNodes[i]);
                         firstSplineRatio = static_cast<double>(numNodesISpline) - 1.0 - firstSplineRatio;
                     }
                 }

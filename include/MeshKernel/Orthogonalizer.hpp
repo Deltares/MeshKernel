@@ -33,7 +33,7 @@ namespace meshkernel
     class Mesh;
 
     /// <summary>
-    /// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize internal face angles or area).
+    /// Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or area).
     /// </summary>
     class Orthogonalizer
     {

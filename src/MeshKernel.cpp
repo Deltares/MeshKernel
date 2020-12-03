@@ -185,7 +185,7 @@ namespace meshkernelapi
         {
             const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
             const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
-            locations = ComputeEdgeCenters(meshGeometryDimensions.numedge, nodes, edges);
+            locations = ComputeEdgeCenters(nodes, edges);
         }
         if (interpolationLocation == meshkernel::InterpolationLocation::Faces)
         {

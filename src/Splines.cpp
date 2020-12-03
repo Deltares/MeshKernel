@@ -94,16 +94,16 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
             double crossProduct;
             double firstRatio;
             double secondRatio;
-            bool areCrossing = AreLinesCrossing(m_splineNodes[first][n],
-                                                m_splineNodes[first][n + 1],
-                                                m_splineNodes[second][nn],
-                                                m_splineNodes[second][nn + 1],
-                                                false,
-                                                intersection,
-                                                crossProduct,
-                                                firstRatio,
-                                                secondRatio,
-                                                m_projection);
+            bool areCrossing = AreSegmentsCrossing(m_splineNodes[first][n],
+                                                   m_splineNodes[first][n + 1],
+                                                   m_splineNodes[second][nn],
+                                                   m_splineNodes[second][nn + 1],
+                                                   false,
+                                                   m_projection,
+                                                   intersection,
+                                                   crossProduct,
+                                                   firstRatio,
+                                                   secondRatio);
 
             if (areCrossing)
             {
@@ -211,16 +211,16 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
         double crossProduct;
         double firstRatio = doubleMissingValue;
         double secondRatio = doubleMissingValue;
-        bool areCrossing = AreLinesCrossing(firstLeftSplinePoint,
-                                            firstRightSplinePoint,
-                                            secondLeftSplinePoint,
-                                            secondRightSplinePoint,
-                                            true,
-                                            closestIntersection,
-                                            crossProduct,
-                                            firstRatio,
-                                            secondRatio,
-                                            m_projection);
+        bool areCrossing = AreSegmentsCrossing(firstLeftSplinePoint,
+                                               firstRightSplinePoint,
+                                               secondLeftSplinePoint,
+                                               secondRightSplinePoint,
+                                               true,
+                                               m_projection,
+                                               closestIntersection,
+                                               crossProduct,
+                                               firstRatio,
+                                               secondRatio);
 
         // search close by
         if (firstRatio > -2.0 && firstRatio < 3.0 && secondRatio > -2.0 && secondRatio < 3.0)
@@ -360,12 +360,12 @@ void meshkernel::Splines::ComputeCurvatureOnSplinePoint(int splineIndex,
 
     curvatureFactor = std::abs(pp.x * p.y - pp.y * p.x) / std::pow((p.x * p.x + p.y * p.y + 1e-8), 1.5);
 
-    Point incremenetedPointCoordinate = pointCoordinate + p * 1e-4;
-    NormalVectorOutside(pointCoordinate, incremenetedPointCoordinate, normalVector, m_projection);
+    Point incrementedPointCoordinate = pointCoordinate + p * 1e-4;
+    normalVector = NormalVectorOutside(pointCoordinate, incrementedPointCoordinate, m_projection);
 
-    double distance = ComputeDistance(pointCoordinate, incremenetedPointCoordinate, m_projection);
-    double dx = GetDx(pointCoordinate, incremenetedPointCoordinate, m_projection);
-    double dy = GetDy(pointCoordinate, incremenetedPointCoordinate, m_projection);
+    double distance = ComputeDistance(pointCoordinate, incrementedPointCoordinate, m_projection);
+    double dx = GetDx(pointCoordinate, incrementedPointCoordinate, m_projection);
+    double dy = GetDy(pointCoordinate, incrementedPointCoordinate, m_projection);
 
     tangentialVector.x = dx / distance;
     tangentialVector.y = dy / distance;

@@ -22,7 +22,7 @@ file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
 # Only regenerate Doxygen when the Doxyfile or public headers change
 add_custom_command(
   OUTPUT ${DOXYGEN_INDEX_FILE}
-  DEPENDS "${HEADER_LIST}"
+  DEPENDS ${HEADER_LIST}
   COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/include"
   MAIN_DEPENDENCY ${DOXYFILE_OUT}

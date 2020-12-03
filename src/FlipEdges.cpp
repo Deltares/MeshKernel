@@ -110,16 +110,16 @@ void meshkernel::FlipEdges::Compute() const
             double firstRatio;
             double secondRatio;
 
-            const auto areEdgesCrossing = AreLinesCrossing(m_mesh->m_nodes[firstNode],
-                                                           m_mesh->m_nodes[secondNode],
-                                                           m_mesh->m_nodes[nodeLeft],
-                                                           m_mesh->m_nodes[nodeRight],
-                                                           false,
-                                                           intersection,
-                                                           crossProduct,
-                                                           firstRatio,
-                                                           secondRatio,
-                                                           m_mesh->m_projection);
+            const auto areEdgesCrossing = AreSegmentsCrossing(m_mesh->m_nodes[firstNode],
+                                                              m_mesh->m_nodes[secondNode],
+                                                              m_mesh->m_nodes[nodeLeft],
+                                                              m_mesh->m_nodes[nodeRight],
+                                                              false,
+                                                              m_mesh->m_projection,
+                                                              intersection,
+                                                              crossProduct,
+                                                              firstRatio,
+                                                              secondRatio);
 
             if (!areEdgesCrossing)
             {
@@ -391,7 +391,7 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, i
     }
 
     // connected edges needs to be counterclockwise
-    int sign = TwoSegmentsSign(m_mesh->m_nodes[nodeIndex], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[secondNode], m_mesh->m_projection);
+    int sign = CrossProductSign(m_mesh->m_nodes[nodeIndex], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[secondNode], m_mesh->m_projection);
     bool isClockWise = sign < 0 ? true : false;
     if (isClockWise)
     {
