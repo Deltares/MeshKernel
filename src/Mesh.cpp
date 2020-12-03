@@ -1872,7 +1872,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
                     if (nextNode == numNodes)
                         nextNode = 0;
                     middlePoints[n] = (polygon[n] + polygon[nextNode]) * 0.5;
-                    NormalVector(polygon[n], polygon[nextNode], middlePoints[n], normals[n], m_projection);
+                    normals[n] = NormalVector(polygon[n], polygon[nextNode], middlePoints[n], m_projection);
                 }
             }
 

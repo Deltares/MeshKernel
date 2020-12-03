@@ -361,7 +361,7 @@ void meshkernel::Splines::ComputeCurvatureOnSplinePoint(int splineIndex,
     curvatureFactor = std::abs(pp.x * p.y - pp.y * p.x) / std::pow((p.x * p.x + p.y * p.y + 1e-8), 1.5);
 
     Point incremenetedPointCoordinate = pointCoordinate + p * 1e-4;
-    NormalVectorOutside(pointCoordinate, incremenetedPointCoordinate, normalVector, m_projection);
+    normalVector = NormalVectorOutside(pointCoordinate, incremenetedPointCoordinate, m_projection);
 
     double distance = ComputeDistance(pointCoordinate, incremenetedPointCoordinate, m_projection);
     double dx = GetDx(pointCoordinate, incremenetedPointCoordinate, m_projection);

@@ -387,7 +387,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
         transformedCartesianLocalPoint.z = exxp[2] * cartesianLocalPoint.x + eyyp[2] * cartesianLocalPoint.y + ezzp[2] * cartesianLocalPoint.z;
 
         //transform to spherical coordinates
-        Cartesian3DToSpherical(transformedCartesianLocalPoint, m_mesh->m_nodes[nodeIndex].x, m_orthogonalCoordinates[nodeIndex]);
+        m_orthogonalCoordinates[nodeIndex] = Cartesian3DToSpherical(transformedCartesianLocalPoint, m_mesh->m_nodes[nodeIndex].x);
     }
 }
 
