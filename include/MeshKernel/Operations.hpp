@@ -257,29 +257,38 @@ namespace meshkernel
     /// @param[in] projection
     [[nodiscard]] double GetDy(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
 
-    ///@brief Outer product of two segments (dprodout)
+    /// @brief Outer product of two segments (dprodout)
     [[nodiscard]] double OuterProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment,
                                                  const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
+
+    /// @brief Compute the middle point
     void MiddlePoint(const Point& firstPoint, const Point& secondPoint, Point& result, const Projection& projection);
 
+    /// @brief Compute the middle point
     void ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projection& projection, Point& centre);
 
-    /// @brief normalin, Normalized vector in direction 1 -> 2, in the orientation of (xu,yu)
+    /// @brief Normalized vector in direction 1 -> 2, in the orientation of (xu,yu)
     void NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, const Projection& projection);
 
-    // @brief Transforms vector with components in global spherical coordinate directions(xglob, yglob)
+    /// @brief Transforms vector with components in global spherical coordinate directions(xglob, yglob)
     ///       to local coordinate directions(xloc, yloc) around reference point(xref, yref)
     void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, Projection projection, Point& localComponents);
 
-    ///normalout
+    /// @brief Computes the normal vector outside
+    ///
+    /// \see NormalVectorInside
     void NormalVectorOutside(const Point& firstPoint, const Point& secondPoint, Point& result, const Projection& projection);
 
     /// @brief Computes the normal vector to a line 1-2, which is *outward* w.r.t.
-    ///an 'inside' point 3.
+    ///         an 'inside' point 3.
     ///
-    /// Similar to normalout, except that the normal vector may be flipped based on the 'inside' point.
+    /// Similar to NormalVectorOutside, except that the normal vector may be flipped based on the 'inside' point.
     void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, Projection projection);
 
+    /// @brief Moves a point by adding a vector to it
+    /// @param[in,out] point The point to be moved
+    /// @param[in] normal The direction the point will be moved
+    /// @param[in] increment The length of the movement
     void Add(Point& point, const Point& normal, double increment, double xf, const Projection& projection);
 
     void ReferencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projection& projection);
