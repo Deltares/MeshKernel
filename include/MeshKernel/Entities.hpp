@@ -37,12 +37,12 @@
 namespace meshkernel
 {
     // to re-enable when compiling with c++20 support
-    //template <typename T>
-    //concept IsCoordinate = requires(T t)
-    //{
-    //    t.x;
-    //    t.y;
-    //};
+    template <typename T>
+    concept IsCoordinate = requires(T t)
+    {
+        t.x;
+        t.y;
+    };
 
     /// @brief Generic function determining if two values are equal
     ///
