@@ -869,13 +869,13 @@ namespace meshkernel
             const Cartesian3DPoint firstPointSecondSegment3D{SphericalToCartesian3D(firstPointSecondSegment)};
             const Cartesian3DPoint secondPointSecondSegment3D{SphericalToCartesian3D(secondPointSecondSegment)};
 
-            double dx1 = secondPointFirstSegment3D.x - firstPointFirstSegment3D.x;
-            double dy1 = secondPointFirstSegment3D.y - firstPointFirstSegment3D.y;
-            double dz1 = secondPointFirstSegment3D.z - firstPointFirstSegment3D.z;
+            const double dx1 = secondPointFirstSegment3D.x - firstPointFirstSegment3D.x;
+            const double dy1 = secondPointFirstSegment3D.y - firstPointFirstSegment3D.y;
+            const double dz1 = secondPointFirstSegment3D.z - firstPointFirstSegment3D.z;
 
-            double dx2 = secondPointSecondSegment3D.x - firstPointSecondSegment3D.x;
-            double dy2 = secondPointSecondSegment3D.y - firstPointSecondSegment3D.y;
-            double dz2 = secondPointSecondSegment3D.z - firstPointSecondSegment3D.z;
+            const double dx2 = secondPointSecondSegment3D.x - firstPointSecondSegment3D.x;
+            const double dy2 = secondPointSecondSegment3D.y - firstPointSecondSegment3D.y;
+            const double dz2 = secondPointSecondSegment3D.z - firstPointSecondSegment3D.z;
 
             return DotProduct(dx1, dx2, dy1, dy2, dz1, dz2);
         }
@@ -889,7 +889,7 @@ namespace meshkernel
             double dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
             double dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
 
-            return dx1 * dx2 + dy1 * dy2;
+            return DotProduct(dx1, dx2, dy1, dy2);
         }
 
         return doubleMissingValue;
@@ -967,14 +967,14 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    Point CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Projection projection)
+    Point CircumcenterOfTriangle(Point firstVertex, Point secondVertex, Point thirdVertex, Projection projection)
     {
 
-        double dx2 = GetDx(p1, p2, projection);
-        double dy2 = GetDy(p1, p2, projection);
+        double dx2 = GetDx(firstVertex, secondVertex, projection);
+        double dy2 = GetDy(firstVertex, secondVertex, projection);
 
-        double dx3 = GetDx(p1, p3, projection);
-        double dy3 = GetDy(p1, p3, projection);
+        double dx3 = GetDx(firstVertex, thirdVertex, projection);
+        double dy3 = GetDy(firstVertex, thirdVertex, projection);
 
         double den = dy2 * dx3 - dy3 * dx2;
         double z = 0.0;
@@ -986,15 +986,15 @@ namespace meshkernel
         Point circumcenter;
         if (projection == Projection::cartesian)
         {
-            circumcenter.x = p1.x + 0.5 * (dx3 - z * dy3);
-            circumcenter.y = p1.y + 0.5 * (dy3 + z * dx3);
+            circumcenter.x = firstVertex.x + 0.5 * (dx3 - z * dy3);
+            circumcenter.y = firstVertex.y + 0.5 * (dy3 + z * dx3);
         }
         if (projection == Projection::spherical)
         {
-            double phi = (p1.y + p2.y + p3.y) * oneThird;
+            double phi = (firstVertex.y + secondVertex.y + thirdVertex.y) * oneThird;
             double xf = 1.0 / cos(degrad_hp * phi);
-            circumcenter.x = p1.x + xf * 0.5 * (dx3 - z * dy3) * raddeg_hp / earth_radius;
-            circumcenter.y = p1.y + 0.5 * (dy3 + z * dx3) * raddeg_hp / earth_radius;
+            circumcenter.x = firstVertex.x + xf * 0.5 * (dx3 - z * dy3) * raddeg_hp / earth_radius;
+            circumcenter.y = firstVertex.y + 0.5 * (dy3 + z * dx3) * raddeg_hp / earth_radius;
         }
         if (projection == Projection::sphericalAccurate)
         {

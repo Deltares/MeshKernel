@@ -294,42 +294,54 @@ namespace meshkernel
     void ReferencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projection& projection);
 
     /// @brief Computes the squared distance between two points
-    /// @param firstPoint The first point
-    /// @param secondPoint The second point
-    /// @param projection The coordinate system projection
+    /// @param[in] firstPoint The first point
+    /// @param[in] secondPoint The second point
+    /// @param[in] projection The coordinate system projection
     /// @return The squared distance
     [[nodiscard]] double ComputeSquaredDistance(Point firstPoint, Point secondPoint, Projection projection);
 
     /// @brief Computes the  distance between two points (dbdistance)
-    /// @param firstPoint The first point
-    /// @param secondPoint The second point
-    /// @param projection The coordinate system projection
+    /// @param[in] firstPoint The first point
+    /// @param[in] secondPoint The second point
+    /// @param[in] projection The coordinate system projection
     /// @return The  distance
     [[nodiscard]] double ComputeDistance(Point firstPoint, Point secondPoint, Projection projection);
 
     /// @brief Computes the perpendicular distance of a point from a segment firstNode - secondNode (dlinedis3)
-    /// @param point The point to consider in the distance calculation
-    /// @param firstNode The first point of the segment
-    /// @param secondNode The second point of the segment
-    /// @param projection The coordinate system projection
-    /// @param normalPoint The intersection of the normal projection with the segment
-    /// @param ratio the distance from the first node, expressed as a ratio to the segment length
+    /// @param[in] point The point to consider in the distance calculation
+    /// @param[in] firstNode The first point of the segment
+    /// @param[in] secondNode The second point of the segment
+    /// @param[in] projection The coordinate system projection
+    /// @param[in,out] normalPoint The intersection of the normal projection with the segment
+    /// @param[in,out] ratio the distance from the first node, expressed as a ratio to the segment length
     /// @return The normal distance from the segment
     [[nodiscard]] double DistanceFromLine(Point point, Point firstNode, Point secondNode, Projection projection, Point& normalPoint, double& ratio);
 
-    /// dprodin inner product of two segments
+    /// @brief Inner product of two segments (dprodin)
+    /// @param[in] firstPointFirstSegment The first point of the first segment
+    /// @param[in] secondPointFirstSegment The second point of the first segment
+    /// @param[in] firstPointSecondSegment The first point of the second segment
+    /// @param[in] secondPointSecondSegment The second point of the second segment
+    /// @param[in] projection The coordinate system projection
+    /// @return The resulting inner product
     [[nodiscard]] double InnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection);
 
-    // dcosphi
+    /// @brief The normalized inner product of two segments (dcosphi)
+    /// @param[in] firstPointFirstSegment The first point of the first segment
+    /// @param[in] secondPointFirstSegment The second point of the first segment
+    /// @param[in] firstPointSecondSegment The first point of the second segment
+    /// @param[in] secondPointSecondSegment The second point of the second segment
+    /// @param[in] projection The coordinate system projection
+    /// @return The resulting normalized inner product
     [[nodiscard]] double NormalizedInnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection);
 
-    /// @brief
-    /// @param p1
-    /// @param p2
-    /// @param p3
-    /// @param projection
-    /// @return
-    Point CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Projection projection);
+    /// @brief Computes the circumcenter of a triangle
+    /// @param[in] firstVertex The first triangle vertex
+    /// @param[in] secondVertex The second triangle vertex
+    /// @param[in] thirdVertex The third triangle vertex
+    /// @param[in] projection The coordinate system projection
+    /// @return The resulting circumcenter
+    [[nodiscard]] Point CircumcenterOfTriangle(Point firstVertex, Point secondVertex, Point thirdVertex, Projection projection);
 
     /// @brief (cross, cross3D)
     /// @param firstSegmentFistPoint
