@@ -47,11 +47,12 @@
 
 namespace meshkernel
 {
+    /// @brief Contains the logic to describe spatial trees
     namespace SpatialTrees
     {
         namespace bg = boost::geometry;
         namespace bgi = boost::geometry::index;
-        constexpr int QueryVectorCapacity = 100;
+        constexpr int QueryVectorCapacity = 100; ///< Capacity of the query vector
 
         /// @brief Class wrapping the boost::geometry::index::rtree code
         ///
@@ -106,16 +107,16 @@ namespace meshkernel
             /// @param[in] node Node to insert in m_points
             void InsertNode(const Point& node);
 
-            /// @brief Determine size of the RTree
+            /// @brief Determines size of the RTree
             [[nodiscard]] size_t Size() const;
 
-            /// @brief Determine if the RTree is empty
+            /// @brief Determines if the RTree is empty
             [[nodiscard]] bool Empty() const;
 
-            /// @brief Get the size of the query
+            /// @brief Gets the size of the query
             [[nodiscard]] size_t GetQueryResultSize() const;
 
-            /// @brief Get the index of a sample in the query
+            /// @brief Gets the index of a sample in the query
             [[nodiscard]] int GetQuerySampleIndex(int index) const;
 
         private:
