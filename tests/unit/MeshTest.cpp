@@ -423,8 +423,8 @@ TEST(Mesh, NodeMerging)
 
 TEST(Mesh, MillionQuads)
 {
-    const int n = 11; // x
-    const int m = 11; // y
+    const int n = 4; // x
+    const int m = 4; // y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
@@ -459,10 +459,9 @@ TEST(Mesh, MillionQuads)
         }
     }
 
-    meshkernel::Mesh mesh;
     // now build node-edge mapping
     auto start(std::chrono::steady_clock::now());
-    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();

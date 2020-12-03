@@ -262,7 +262,7 @@ namespace meshkernel
     void ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projection& projection, Point& centre);
 
     ///normalin, Normalized vector in direction 1 -> 2, in the orientation of (xu,yu)
-    void NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, const Projection& projection);
+    Point NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, const Projection& projection);
 
     //spher2locvec, transforms vector with components in global spherical coordinate directions(xglob, yglob)
     ///to local coordinate directions(xloc, yloc) around reference point(xref, yref)

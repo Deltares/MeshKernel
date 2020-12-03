@@ -479,8 +479,9 @@ namespace meshkernel
         }
     }
 
-    void NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& result, const Projection& projection)
+    Point NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, const Projection& projection)
     {
+        Point result;
         if (projection == Projection::sphericalAccurate)
         {
             const Cartesian3DPoint firstPointCartesianCoordinates{SphericalToCartesian3D(firstPoint)};
@@ -520,6 +521,7 @@ namespace meshkernel
                 result.y = dy / distance;
             }
         }
+        return result;
     }
 
     void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, Projection projection, Point& localComponents)
@@ -699,7 +701,7 @@ namespace meshkernel
         }
         if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
         {
-            double convertedIncrement = raddeg_hp * increment / earth_radius;
+            const double convertedIncrement = raddeg_hp * increment / earth_radius;
             point.x = point.x + normal.x * convertedIncrement * xf;
             point.y = point.y + normal.y * convertedIncrement;
         }

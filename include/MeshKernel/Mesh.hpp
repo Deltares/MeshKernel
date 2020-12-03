@@ -207,7 +207,7 @@ namespace meshkernel
                                std::vector<int>& edgeIndicesCache,
                                int& numClosedPolygonNodes) const;
 
-        /// @brief For a face, fills the polygonNodesCache with the face nodes
+        /// @brief For a face, fills the polygonNodesCache with the face nodes (get_cellpolygon)
         /// @param[in] faceIndex The face index
         /// @param[out] polygonNodesCache The cache array to be filled
         /// @param[out] numClosedPolygonNodes The number of valid face nodes

@@ -46,9 +46,9 @@ namespace meshkernel
     {
         enum class RefinementType
         {
-            RidgeRefinement,
-            WaveCourant,
-            RefinementLevels
+            RidgeRefinement = 1,
+            WaveCourant = 2,
+            RefinementLevels = 3
         };
 
     public:
@@ -105,7 +105,6 @@ namespace meshkernel
                                                    int& numEdgesToBeRefined);
 
         /// Computes the edge refinement mask (comp_jalink)
-        /// @returns If the method succeeded
         void ComputeEdgesRefinementMask();
 
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)

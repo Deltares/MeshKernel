@@ -499,7 +499,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
         const auto firstNode = m_mesh->m_nodes[firstNodeIndex];
         const auto secondNode = m_mesh->m_nodes[secondNodeIndex];
 
-        Point middle{(firstNode.x + secondNode.x) / 2.0, (firstNode.y + secondNode.y) / 2.0};
+        Point middle{(firstNode.x + secondNode.x) * 0.5, (firstNode.y + secondNode.y) * 0.5};
         if (m_mesh->m_projection == Projection::spherical)
         {
 
