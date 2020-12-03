@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['samplevectordimension',['SampleVectorDimension',['../structmeshkernelapi_1_1_sample_refine_parameters.html#a66f5e9261490e54b5656af35a18efae0',1,'meshkernelapi::SampleRefineParameters']]],
-  ['smoothangleorsmootharea',['SmoothAngleOrSmoothArea',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a15a643a2dcbeaa8c91cb114f986adb65',1,'meshkernelapi::OrthogonalizationParameters']]],
-  ['smoothingiterations',['SmoothingIterations',['../structmeshkernelapi_1_1_curvilinear_parameters.html#ae92081554a85f14e5d2d5bbdc991c4c4',1,'meshkernelapi::CurvilinearParameters']]],
-  ['smoothingparameter',['SmoothingParameter',['../structmeshkernelapi_1_1_curvilinear_parameters.html#a73537ad5bf175d937bb1e2ecd8833214',1,'meshkernelapi::CurvilinearParameters']]],
-  ['squarerootofthree',['squareRootOfThree',['../namespacemeshkernel.html#abe79a717873ddb5760feae84567d98de',1,'meshkernel']]],
-  ['startindex',['startIndex',['../structmeshkernelapi_1_1_mesh_geometry.html#a38e8b5c0f84ee832b4ee887ecb7b94f7',1,'meshkernelapi::MeshGeometry']]]
+  ['raddeg_5fhp',['raddeg_hp',['../namespacemeshkernel.html#a64209ad0c58850d197b587a0f42a524a',1,'meshkernel']]],
+  ['refineintersected',['RefineIntersected',['../structmeshkernelapi_1_1_interpolation_parameters.html#a67befa3ce63a4747f4f9303cae351339',1,'meshkernelapi::InterpolationParameters']]],
+  ['refinementtype',['RefinementType',['../structmeshkernelapi_1_1_sample_refine_parameters.html#ab7fa47696223d76552c5ef9f36b3b38e',1,'meshkernelapi::SampleRefineParameters']]],
+  ['relativesearchradius',['RelativeSearchRadius',['../structmeshkernelapi_1_1_interpolation_parameters.html#ae04437a491827725acb579e48d017766',1,'meshkernelapi::InterpolationParameters']]],
+  ['removeskinnytriangles',['RemoveSkinnyTriangles',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#aa79429c210b534ed798c4651d6cbf96c',1,'meshkernelapi::SplinesToCurvilinearParameters']]]
 ];

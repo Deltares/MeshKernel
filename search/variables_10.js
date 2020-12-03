@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['uniformgridsize',['UniformGridSize',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a1b7e43d68ffa8821e0a515ffac1c4058',1,'meshkernelapi::SplinesToCurvilinearParameters']]]
+  ['type',['type',['../structmeshkernelapi_1_1_geometry_list.html#a7c703ed11eacdd4b36b49df0bb4b6213',1,'meshkernelapi::GeometryList']]]
 ];

@@ -73,7 +73,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The struct containing the parameters to generate a curvilinear grid.  <a href="structmeshkernelapi_1_1_curvilinear_parameters.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner.  <a href="structmeshkernelapi_1_1_curvilinear_parameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe a list of geometries in a C-compatible manner.  <a href="structmeshkernelapi_1_1_geometry_list.html#details">More...</a><br /></td></tr>
@@ -103,16 +103,16 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:aa91999e96fef4fef238e00c127b1ddf0"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa91999e96fef4fef238e00c127b1ddf0">mkernel_new_mesh</a> (int &amp;meshKernelId)</td></tr>
-<tr class="memdesc:aa91999e96fef4fef238e00c127b1ddf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new mesh state and return the generated <code>meshKernelId</code>.  <a href="#aa91999e96fef4fef238e00c127b1ddf0">More...</a><br /></td></tr>
+<tr class="memdesc:aa91999e96fef4fef238e00c127b1ddf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new mesh state and returns the generated <code>meshKernelId</code>.  <a href="#aa91999e96fef4fef238e00c127b1ddf0">More...</a><br /></td></tr>
 <tr class="separator:aa91999e96fef4fef238e00c127b1ddf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57d1b16ba8121e1f11b1692b755647c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3">mkernel_deallocate_state</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:a57d1b16ba8121e1f11b1692b755647c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate mesh state.  <a href="#a57d1b16ba8121e1f11b1692b755647c3">More...</a><br /></td></tr>
+<tr class="memdesc:a57d1b16ba8121e1f11b1692b755647c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocates mesh state.  <a href="#a57d1b16ba8121e1f11b1692b755647c3">More...</a><br /></td></tr>
 <tr class="separator:a57d1b16ba8121e1f11b1692b755647c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa036e9990df74c9f60dbe7cbf58b26e5"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa036e9990df74c9f60dbe7cbf58b26e5">mkernel_delete_mesh</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;disposableGeometryList, int deletionOption, bool invertDeletion)</td></tr>
 <tr class="memdesc:aa036e9990df74c9f60dbe7cbf58b26e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a mesh in a polygon using several options.  <a href="#aa036e9990df74c9f60dbe7cbf58b26e5">More...</a><br /></td></tr>
 <tr class="separator:aa036e9990df74c9f60dbe7cbf58b26e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fb610cce246d111d2a8d33ba4c330e3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9fb610cce246d111d2a8d33ba4c330e3">mkernel_set_state</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh_geometry_dimensions.html">MeshGeometryDimensions</a> &amp;meshGeometryDimensions, const <a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html">MeshGeometry</a> &amp;meshGeometry, bool isGeographic)</td></tr>
-<tr class="memdesc:a9fb610cce246d111d2a8d33ba4c330e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the grid state.  <a href="#a9fb610cce246d111d2a8d33ba4c330e3">More...</a><br /></td></tr>
+<tr class="memdesc:a9fb610cce246d111d2a8d33ba4c330e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the grid state.  <a href="#a9fb610cce246d111d2a8d33ba4c330e3">More...</a><br /></td></tr>
 <tr class="separator:a9fb610cce246d111d2a8d33ba4c330e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28c457de3e35dc0492a5d97523e7b018"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a28c457de3e35dc0492a5d97523e7b018">mkernel_get_mesh</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh_geometry_dimensions.html">MeshGeometryDimensions</a> &amp;meshGeometryDimensions, <a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html">MeshGeometry</a> &amp;meshGeometry)</td></tr>
 <tr class="memdesc:a28c457de3e35dc0492a5d97523e7b018"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mesh state as a <a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html" title="A struct used to describe the values of an unstructured mesh in a C-compatible manner. ">MeshGeometry</a> structure.  <a href="#a28c457de3e35dc0492a5d97523e7b018">More...</a><br /></td></tr>
@@ -127,16 +127,16 @@ Functions</h2></td></tr>
 <tr class="memdesc:a11b9e793ad04df591cbc3322cbe60443"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orthogonalization initialization (first function to use in interactive mode)  <a href="#a11b9e793ad04df591cbc3322cbe60443">More...</a><br /></td></tr>
 <tr class="separator:a11b9e793ad04df591cbc3322cbe60443"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3c21e8ef448dd42d7feb8777f3604e6"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae3c21e8ef448dd42d7feb8777f3604e6">mkernel_orthogonalize_prepare_outer_iteration</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:ae3c21e8ef448dd42d7feb8777f3604e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare outer orthogonalization iteration (interactive mode)  <a href="#ae3c21e8ef448dd42d7feb8777f3604e6">More...</a><br /></td></tr>
+<tr class="memdesc:ae3c21e8ef448dd42d7feb8777f3604e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares outer orthogonalization iteration (interactive mode)  <a href="#ae3c21e8ef448dd42d7feb8777f3604e6">More...</a><br /></td></tr>
 <tr class="separator:ae3c21e8ef448dd42d7feb8777f3604e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbf4048e8388afcbe952eeb94ab68c8d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#abbf4048e8388afcbe952eeb94ab68c8d">mkernel_orthogonalize_inner_iteration</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:abbf4048e8388afcbe952eeb94ab68c8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform inner orthogonalization iteration (interactive mode)  <a href="#abbf4048e8388afcbe952eeb94ab68c8d">More...</a><br /></td></tr>
+<tr class="memdesc:abbf4048e8388afcbe952eeb94ab68c8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs inner orthogonalization iteration (interactive mode)  <a href="#abbf4048e8388afcbe952eeb94ab68c8d">More...</a><br /></td></tr>
 <tr class="separator:abbf4048e8388afcbe952eeb94ab68c8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adda366f0cf29788ec130c441749949f8"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#adda366f0cf29788ec130c441749949f8">mkernel_orthogonalize_finalize_outer_iteration</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:adda366f0cf29788ec130c441749949f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalize orthogonalization outer iteration (interactive mode)  <a href="#adda366f0cf29788ec130c441749949f8">More...</a><br /></td></tr>
+<tr class="memdesc:adda366f0cf29788ec130c441749949f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalizes orthogonalization outer iteration (interactive mode)  <a href="#adda366f0cf29788ec130c441749949f8">More...</a><br /></td></tr>
 <tr class="separator:adda366f0cf29788ec130c441749949f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f578691450ccf43afc4edb544ea5c64"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9f578691450ccf43afc4edb544ea5c64">mkernel_orthogonalize_delete</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:a9f578691450ccf43afc4edb544ea5c64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clean up back-end orthogonalization algorithm (interactive mode)  <a href="#a9f578691450ccf43afc4edb544ea5c64">More...</a><br /></td></tr>
+<tr class="memdesc:a9f578691450ccf43afc4edb544ea5c64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleans up back-end orthogonalization algorithm (interactive mode)  <a href="#a9f578691450ccf43afc4edb544ea5c64">More...</a><br /></td></tr>
 <tr class="separator:a9f578691450ccf43afc4edb544ea5c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53714036d3ae59f2f6621e70837e086a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a53714036d3ae59f2f6621e70837e086a">mkernel_get_orthogonality</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
 <tr class="memdesc:a53714036d3ae59f2f6621e70837e086a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the orthogonality.  <a href="#a53714036d3ae59f2f6621e70837e086a">More...</a><br /></td></tr>
@@ -148,13 +148,13 @@ Functions</h2></td></tr>
 <tr class="memdesc:a2abf4729edd92fb3c7c7e0a65b7823c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get spline intermediate points.  <a href="#a2abf4729edd92fb3c7c7e0a65b7823c8">More...</a><br /></td></tr>
 <tr class="separator:a2abf4729edd92fb3c7c7e0a65b7823c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a899a6c6bce33cfade1c262ad035b32b0"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a899a6c6bce33cfade1c262ad035b32b0">mkernel_get_node_coordinate</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, double searchRadius, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut)</td></tr>
-<tr class="memdesc:a899a6c6bce33cfade1c262ad035b32b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the coordinates of the closest existing vertex.  <a href="#a899a6c6bce33cfade1c262ad035b32b0">More...</a><br /></td></tr>
+<tr class="memdesc:a899a6c6bce33cfade1c262ad035b32b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the coordinates of the closest existing vertex.  <a href="#a899a6c6bce33cfade1c262ad035b32b0">More...</a><br /></td></tr>
 <tr class="separator:a899a6c6bce33cfade1c262ad035b32b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4aaa8170f2df2ffb21ad2cc72dadb251"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a4aaa8170f2df2ffb21ad2cc72dadb251">mkernel_curvilinear_mesh_from_splines_ortho</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters)</td></tr>
-<tr class="memdesc:a4aaa8170f2df2ffb21ad2cc72dadb251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make curvilinear grid from splines with an advancing front.  <a href="#a4aaa8170f2df2ffb21ad2cc72dadb251">More...</a><br /></td></tr>
+<tr class="memdesc:a4aaa8170f2df2ffb21ad2cc72dadb251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes curvilinear grid from splines with an advancing front.  <a href="#a4aaa8170f2df2ffb21ad2cc72dadb251">More...</a><br /></td></tr>
 <tr class="separator:a4aaa8170f2df2ffb21ad2cc72dadb251"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa88658a7e8f3fd6a3bdade672ccd2b0a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa88658a7e8f3fd6a3bdade672ccd2b0a">mkernel_curvilinear_mesh_from_splines_ortho_initialize</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters)</td></tr>
-<tr class="memdesc:aa88658a7e8f3fd6a3bdade672ccd2b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a curvilinear grid from splines with the advancing front method. Initialization step (interactive)  <a href="#aa88658a7e8f3fd6a3bdade672ccd2b0a">More...</a><br /></td></tr>
+<tr class="memdesc:aa88658a7e8f3fd6a3bdade672ccd2b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a curvilinear grid from splines with the advancing front method. Initialization step (interactive)  <a href="#aa88658a7e8f3fd6a3bdade672ccd2b0a">More...</a><br /></td></tr>
 <tr class="separator:aa88658a7e8f3fd6a3bdade672ccd2b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a528936784a5660adb5301fd8a2bc668b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a528936784a5660adb5301fd8a2bc668b">mkernel_curvilinear_mesh_from_splines_iteration</a> (int meshKernelId, int layer)</td></tr>
 <tr class="memdesc:a528936784a5660adb5301fd8a2bc668b"><td class="mdescLeft">&#160;</td><td class="mdescRight">One advancment of the front in curvilinear grid from splines (interactive)  <a href="#a528936784a5660adb5301fd8a2bc668b">More...</a><br /></td></tr>
@@ -163,16 +163,16 @@ Functions</h2></td></tr>
 <tr class="memdesc:a68b35834f12634f16bde06320c2b31d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts curvilinear grid to mesh and refreshes the state (interactive)  <a href="#a68b35834f12634f16bde06320c2b31d6">More...</a><br /></td></tr>
 <tr class="separator:a68b35834f12634f16bde06320c2b31d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb63dbf65b2def2be7100d534a3c3562"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aeb63dbf65b2def2be7100d534a3c3562">mkernel_curvilinear_mesh_from_splines_ortho_delete</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:aeb63dbf65b2def2be7100d534a3c3562"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalize curvilinear grid from splines algorithm.  <a href="#aeb63dbf65b2def2be7100d534a3c3562">More...</a><br /></td></tr>
+<tr class="memdesc:aeb63dbf65b2def2be7100d534a3c3562"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalizes curvilinear grid from splines algorithm.  <a href="#aeb63dbf65b2def2be7100d534a3c3562">More...</a><br /></td></tr>
 <tr class="separator:aeb63dbf65b2def2be7100d534a3c3562"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a56a205105723dd616e5383aff75086"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1a56a205105723dd616e5383aff75086">mkernel_make_mesh</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_make_mesh_parameters.html">MakeMeshParameters</a> &amp;makeGridParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
-<tr class="memdesc:a1a56a205105723dd616e5383aff75086"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a new mesh.  <a href="#a1a56a205105723dd616e5383aff75086">More...</a><br /></td></tr>
+<tr class="memdesc:a1a56a205105723dd616e5383aff75086"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new mesh.  <a href="#a1a56a205105723dd616e5383aff75086">More...</a><br /></td></tr>
 <tr class="separator:a1a56a205105723dd616e5383aff75086"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76181eec0085991a5cf0afb4aa671563"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a76181eec0085991a5cf0afb4aa671563">mkernel_make_mesh_from_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
-<tr class="memdesc:a76181eec0085991a5cf0afb4aa671563"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a triangular grid in a polygon.  <a href="#a76181eec0085991a5cf0afb4aa671563">More...</a><br /></td></tr>
+<tr class="memdesc:a76181eec0085991a5cf0afb4aa671563"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a triangular grid in a polygon.  <a href="#a76181eec0085991a5cf0afb4aa671563">More...</a><br /></td></tr>
 <tr class="separator:a76181eec0085991a5cf0afb4aa671563"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98d3dd671e3f2d21de691d5f24dd86ba"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a98d3dd671e3f2d21de691d5f24dd86ba">mkernel_make_mesh_from_samples</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
-<tr class="memdesc:a98d3dd671e3f2d21de691d5f24dd86ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a triangular mesh from samples.  <a href="#a98d3dd671e3f2d21de691d5f24dd86ba">More...</a><br /></td></tr>
+<tr class="memdesc:a98d3dd671e3f2d21de691d5f24dd86ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a triangular mesh from samples.  <a href="#a98d3dd671e3f2d21de691d5f24dd86ba">More...</a><br /></td></tr>
 <tr class="separator:a98d3dd671e3f2d21de691d5f24dd86ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8891dba28f07e8ed5715a47ba57d144e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8891dba28f07e8ed5715a47ba57d144e">mkernel_copy_mesh_boundaries_to_polygon</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
 <tr class="memdesc:a8891dba28f07e8ed5715a47ba57d144e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the mesh boundary polygon.  <a href="#a8891dba28f07e8ed5715a47ba57d144e">More...</a><br /></td></tr>
@@ -184,7 +184,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a757cb24349b7a6c3df27e64a08ece938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the refined polygon.  <a href="#a757cb24349b7a6c3df27e64a08ece938">More...</a><br /></td></tr>
 <tr class="separator:a757cb24349b7a6c3df27e64a08ece938"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa11d24e49178a0daeb78467b6168185"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#afa11d24e49178a0daeb78467b6168185">mkernel_refine_polygon_count</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int firstIndex, int secondIndex, double distance, int &amp;numberOfPolygonVertices)</td></tr>
-<tr class="memdesc:afa11d24e49178a0daeb78467b6168185"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of vertices after polygon refinement.  <a href="#afa11d24e49178a0daeb78467b6168185">More...</a><br /></td></tr>
+<tr class="memdesc:afa11d24e49178a0daeb78467b6168185"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of vertices after polygon refinement.  <a href="#afa11d24e49178a0daeb78467b6168185">More...</a><br /></td></tr>
 <tr class="separator:afa11d24e49178a0daeb78467b6168185"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6d7d43f685e9b98be2345a99d32d614"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab6d7d43f685e9b98be2345a99d32d614">mkernel_merge_nodes</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn)</td></tr>
 <tr class="memdesc:ab6d7d43f685e9b98be2345a99d32d614"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges vertices within a distance of 0.001 m, effectively removing small edges.  <a href="#ab6d7d43f685e9b98be2345a99d32d614">More...</a><br /></td></tr>
@@ -208,7 +208,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a87f5acd2993cb7a4f38b25f38c569a90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a node with specified <code>nodeIndex</code>.  <a href="#a87f5acd2993cb7a4f38b25f38c569a90">More...</a><br /></td></tr>
 <tr class="separator:a87f5acd2993cb7a4f38b25f38c569a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed41a4795d16c79001be4828290ae448"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aed41a4795d16c79001be4828290ae448">mkernel_move_node</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int nodeIndex)</td></tr>
-<tr class="memdesc:aed41a4795d16c79001be4828290ae448"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to move a selected node to a new position.  <a href="#aed41a4795d16c79001be4828290ae448">More...</a><br /></td></tr>
+<tr class="memdesc:aed41a4795d16c79001be4828290ae448"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a selected node to a new position.  <a href="#aed41a4795d16c79001be4828290ae448">More...</a><br /></td></tr>
 <tr class="separator:aed41a4795d16c79001be4828290ae448"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b2ebbee9c355f1a33edcc82bfd76c53"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a6b2ebbee9c355f1a33edcc82bfd76c53">mkernel_delete_edge</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn)</td></tr>
 <tr class="memdesc:a6b2ebbee9c355f1a33edcc82bfd76c53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the closest mesh edge within the search radius from the input point.  <a href="#a6b2ebbee9c355f1a33edcc82bfd76c53">More...</a><br /></td></tr>
@@ -217,16 +217,16 @@ Functions</h2></td></tr>
 <tr class="memdesc:ad956fd9d124dad1db8625907d93c8bab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the closest mesh edge within the search radius from the input point.  <a href="#ad956fd9d124dad1db8625907d93c8bab">More...</a><br /></td></tr>
 <tr class="separator:ad956fd9d124dad1db8625907d93c8bab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5c0c3600778e87cd991a1c44ccabfac"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa5c0c3600778e87cd991a1c44ccabfac">mkernel_offsetted_polygon</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, bool innerPolygon, double distance, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut)</td></tr>
-<tr class="memdesc:aa5c0c3600778e87cd991a1c44ccabfac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offset a polygon.  <a href="#aa5c0c3600778e87cd991a1c44ccabfac">More...</a><br /></td></tr>
+<tr class="memdesc:aa5c0c3600778e87cd991a1c44ccabfac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offsets a polygon.  <a href="#aa5c0c3600778e87cd991a1c44ccabfac">More...</a><br /></td></tr>
 <tr class="separator:aa5c0c3600778e87cd991a1c44ccabfac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a475f17ae1127d47a04038e1daeedd66c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a475f17ae1127d47a04038e1daeedd66c">mkernel_offsetted_polygon_count</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, bool innerPolygon, double distance, int &amp;numberOfPolygonVertices)</td></tr>
-<tr class="memdesc:a475f17ae1127d47a04038e1daeedd66c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of vertices of the offsetted polygon Count the number of vertices after polygon refinement.  <a href="#a475f17ae1127d47a04038e1daeedd66c">More...</a><br /></td></tr>
+<tr class="memdesc:a475f17ae1127d47a04038e1daeedd66c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of vertices of the offsetted polygon Count the number of vertices after polygon refinement.  <a href="#a475f17ae1127d47a04038e1daeedd66c">More...</a><br /></td></tr>
 <tr class="separator:a475f17ae1127d47a04038e1daeedd66c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d704c082ff3159679c5dc7096813c5a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9d704c082ff3159679c5dc7096813c5a">mkernel_refine_mesh_based_on_samples</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, <a class="el" href="structmeshkernelapi_1_1_interpolation_parameters.html">InterpolationParameters</a> &amp;interpolationParameters, <a class="el" href="structmeshkernelapi_1_1_sample_refine_parameters.html">SampleRefineParameters</a> &amp;sampleRefineParameters)</td></tr>
-<tr class="memdesc:a9d704c082ff3159679c5dc7096813c5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a grid based on the samples contained in the geometry list.  <a href="#a9d704c082ff3159679c5dc7096813c5a">More...</a><br /></td></tr>
+<tr class="memdesc:a9d704c082ff3159679c5dc7096813c5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a grid based on the samples contained in the geometry list.  <a href="#a9d704c082ff3159679c5dc7096813c5a">More...</a><br /></td></tr>
 <tr class="separator:a9d704c082ff3159679c5dc7096813c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64d756153b6a87565cfec0347c0592ec"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a64d756153b6a87565cfec0347c0592ec">mkernel_refine_mesh_based_on_polygon</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, <a class="el" href="structmeshkernelapi_1_1_interpolation_parameters.html">InterpolationParameters</a> &amp;interpolationParameters)</td></tr>
-<tr class="memdesc:a64d756153b6a87565cfec0347c0592ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a grid based on polygon.  <a href="#a64d756153b6a87565cfec0347c0592ec">More...</a><br /></td></tr>
+<tr class="memdesc:a64d756153b6a87565cfec0347c0592ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a grid based on polygon.  <a href="#a64d756153b6a87565cfec0347c0592ec">More...</a><br /></td></tr>
 <tr class="separator:a64d756153b6a87565cfec0347c0592ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9adc53c37e32872e40072d3a6347476"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae9adc53c37e32872e40072d3a6347476">mkernel_get_node_index</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, double searchRadius, int &amp;vertexIndex)</td></tr>
 <tr class="memdesc:ae9adc53c37e32872e40072d3a6347476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the vertex index closest to the input point.  <a href="#ae9adc53c37e32872e40072d3a6347476">More...</a><br /></td></tr>
@@ -235,7 +235,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ae161baf894d2550e302db3dbdf80948f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects points in polygons.  <a href="#ae161baf894d2550e302db3dbdf80948f">More...</a><br /></td></tr>
 <tr class="separator:ae161baf894d2550e302db3dbdf80948f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4aee6d46f3ae6c42817a9bf59b414fad"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a4aee6d46f3ae6c42817a9bf59b414fad">mkernel_flip_edges</a> (int meshKernelId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption)</td></tr>
-<tr class="memdesc:a4aee6d46f3ae6c42817a9bf59b414fad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flip the edges.  <a href="#a4aee6d46f3ae6c42817a9bf59b414fad">More...</a><br /></td></tr>
+<tr class="memdesc:a4aee6d46f3ae6c42817a9bf59b414fad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flips the edges.  <a href="#a4aee6d46f3ae6c42817a9bf59b414fad">More...</a><br /></td></tr>
 <tr class="separator:a4aee6d46f3ae6c42817a9bf59b414fad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6771ec2771ca94e4fd7670c4741fcfc5"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a6771ec2771ca94e4fd7670c4741fcfc5">mkernel_curvilinear_mesh_from_splines</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters)</td></tr>
 <tr class="memdesc:a6771ec2771ca94e4fd7670c4741fcfc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates curvilinear grid from splines with transfinite interpolation.  <a href="#a6771ec2771ca94e4fd7670c4741fcfc5">More...</a><br /></td></tr>
@@ -253,7 +253,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a4e44ec2ab4f5c7b8136e4758bd8d16d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the obtuse triangle mass centers (those having one edge longer than the sum of the other two)  <a href="#a4e44ec2ab4f5c7b8136e4758bd8d16d5">More...</a><br /></td></tr>
 <tr class="separator:a4e44ec2ab4f5c7b8136e4758bd8d16d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c27315c89d9575553d4000a39e5650b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8c27315c89d9575553d4000a39e5650b">mkernel_get_small_flow_edge_centers_count</a> (int meshKernelId, double smallFlowEdgesThreshold, int &amp;numSmallFlowEdges)</td></tr>
-<tr class="memdesc:a8c27315c89d9575553d4000a39e5650b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the small flow edges (flow edges are the edges connecting the face circumcenters)  <a href="#a8c27315c89d9575553d4000a39e5650b">More...</a><br /></td></tr>
+<tr class="memdesc:a8c27315c89d9575553d4000a39e5650b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the small flow edges (flow edges are the edges connecting the face circumcenters)  <a href="#a8c27315c89d9575553d4000a39e5650b">More...</a><br /></td></tr>
 <tr class="separator:a8c27315c89d9575553d4000a39e5650b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25a472302104fc82c85acf4ea4feef33"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a25a472302104fc82c85acf4ea4feef33">mkernel_get_small_flow_edge_centers</a> (int meshKernelId, double smallFlowEdgesThreshold, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;result)</td></tr>
 <tr class="memdesc:a25a472302104fc82c85acf4ea4feef33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the small flow edges (flow edges are the edges connecting the face circumcenters)  <a href="#a25a472302104fc82c85acf4ea4feef33">More...</a><br /></td></tr>
@@ -274,7 +274,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a7dc755bc3096816fd56e614c2594e780"><td class="mdescLeft">&#160;</td><td class="mdescRight">AveragingInterpolation interpolation (ec_module)  <a href="#a7dc755bc3096816fd56e614c2594e780">More...</a><br /></td></tr>
 <tr class="separator:a7dc755bc3096816fd56e614c2594e780"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57b809a55fd930f5c266f5d12fdfa816"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a57b809a55fd930f5c266f5d12fdfa816">mkernel_get_error</a> (const char *&amp;error_message)</td></tr>
-<tr class="memdesc:a57b809a55fd930f5c266f5d12fdfa816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get pointer to error message.  <a href="#a57b809a55fd930f5c266f5d12fdfa816">More...</a><br /></td></tr>
+<tr class="memdesc:a57b809a55fd930f5c266f5d12fdfa816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets pointer to error message.  <a href="#a57b809a55fd930f5c266f5d12fdfa816">More...</a><br /></td></tr>
 <tr class="separator:a57b809a55fd930f5c266f5d12fdfa816"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -783,7 +783,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Make curvilinear grid from splines with an advancing front. </p>
+<p>Makes curvilinear grid from splines with an advancing front. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -813,7 +813,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Finalize curvilinear grid from splines algorithm. </p>
+<p>Finalizes curvilinear grid from splines algorithm. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td></td></tr>
@@ -862,7 +862,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Generate a curvilinear grid from splines with the advancing front method. Initialization step (interactive) </p>
+<p>Generates a curvilinear grid from splines with the advancing front method. Initialization step (interactive) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -919,7 +919,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Deallocate mesh state. </p>
+<p>Deallocates mesh state. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the grid state </td></tr>
@@ -1186,7 +1186,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Flip the edges. </p>
+<p>Flips the edges. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -1216,7 +1216,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get pointer to error message. </p>
+<p>Gets pointer to error message. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">error_message</td><td></td></tr>
@@ -1330,7 +1330,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get the coordinates of the closest existing vertex. </p>
+<p>Gets the coordinates of the closest existing vertex. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the grid state </td></tr>
@@ -1607,7 +1607,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Count the small flow edges (flow edges are the edges connecting the face circumcenters) </p>
+<p>Counts the small flow edges (flow edges are the edges connecting the face circumcenters) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -1846,7 +1846,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Make a new mesh. </p>
+<p>Makes a new mesh. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -1885,7 +1885,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Make a triangular grid in a polygon. </p>
+<p>Makes a triangular grid in a polygon. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -1923,7 +1923,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Make a triangular mesh from samples. </p>
+<p>Makes a triangular mesh from samples. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2050,7 +2050,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Function to move a selected node to a new position. </p>
+<p>Moves a selected node to a new position. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2079,7 +2079,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Create a new mesh state and return the generated <code>meshKernelId</code>. </p>
+<p>Creates a new mesh state and returns the generated <code>meshKernelId</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">meshKernelId</td><td>Identifier for the created grid state </td></tr>
@@ -2193,7 +2193,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Offset a polygon. </p>
+<p>Offsets a polygon. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2252,7 +2252,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get the number of vertices of the offsetted polygon Count the number of vertices after polygon refinement. </p>
+<p>Gets the number of vertices of the offsetted polygon Count the number of vertices after polygon refinement. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2356,7 +2356,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Clean up back-end orthogonalization algorithm (interactive mode) </p>
+<p>Cleans up back-end orthogonalization algorithm (interactive mode) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2383,7 +2383,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Finalize orthogonalization outer iteration (interactive mode) </p>
+<p>Finalizes orthogonalization outer iteration (interactive mode) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td></td></tr>
@@ -2483,7 +2483,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Perform inner orthogonalization iteration (interactive mode) </p>
+<p>Performs inner orthogonalization iteration (interactive mode) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2510,7 +2510,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Prepare outer orthogonalization iteration (interactive mode) </p>
+<p>Prepares outer orthogonalization iteration (interactive mode) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2605,7 +2605,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Refine a grid based on polygon. </p>
+<p>Refines a grid based on polygon. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2656,7 +2656,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Refine a grid based on the samples contained in the geometry list. </p>
+<p>Refines a grid based on the samples contained in the geometry list. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2786,7 +2786,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Count the number of vertices after polygon refinement. </p>
+<p>Counts the number of vertices after polygon refinement. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2885,7 +2885,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set the grid state. </p>
+<p>Sets the grid state. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the grid state </td></tr>

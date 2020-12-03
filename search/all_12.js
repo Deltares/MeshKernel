@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['value',['value',['../structmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]],
-  ['vectorproduct',['VectorProduct',['../namespacemeshkernel.html#ac87f81234d2aa31256f2703b2d30fe8c',1,'meshkernel']]]
+  ['uniformgridsize',['UniformGridSize',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a1b7e43d68ffa8821e0a515ffac1c4058',1,'meshkernelapi::SplinesToCurvilinearParameters']]]
 ];

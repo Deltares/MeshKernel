@@ -78,7 +78,6 @@ var searchData=
   ['meshkernelapi',['meshkernelapi',['../namespacemeshkernelapi.html',1,'']]],
   ['meshrefinement',['MeshRefinement',['../classmeshkernel_1_1_mesh_refinement.html',1,'meshkernel::MeshRefinement'],['../classmeshkernel_1_1_mesh_refinement.html#a7ec77ac5cffe8086f0bd3f43e089e516',1,'meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr&lt; Mesh &gt; mesh, std::shared_ptr&lt; AveragingInterpolation &gt; averaging)'],['../classmeshkernel_1_1_mesh_refinement.html#aeef5f0916bb147397b2057018ecdb337',1,'meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr&lt; Mesh &gt; mesh)']]],
   ['method',['Method',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0',1,'meshkernel::AveragingInterpolation']]],
-  ['middlepoint',['MiddlePoint',['../namespacemeshkernel.html#a15509860605a624adea32f2962584988',1,'meshkernel']]],
   ['minimumcellarea',['minimumCellArea',['../namespacemeshkernel.html#adcd460adf42c413b283f7190c5c9ef95',1,'meshkernel']]],
   ['minimumcellsize',['MinimumCellSize',['../structmeshkernelapi_1_1_sample_refine_parameters.html#a60574c314af10fa6b5315c52fb0a9ed8',1,'meshkernelapi::SampleRefineParameters']]],
   ['minimumcosineofcrossingangles',['MinimumCosineOfCrossingAngles',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a280670677a7e54d79e234cf55b8a9279',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
@@ -142,5 +141,6 @@ var searchData=
   ['mkernel_5fremove_5fsmall_5fflow_5fedges',['mkernel_remove_small_flow_edges',['../namespacemeshkernelapi.html#ac44e033066bad9ac5e058eaf313017ee',1,'meshkernelapi']]],
   ['mkernel_5fset_5fstate',['mkernel_set_state',['../namespacemeshkernelapi.html#a9fb610cce246d111d2a8d33ba4c330e3',1,'meshkernelapi']]],
   ['movenode',['MoveNode',['../classmeshkernel_1_1_mesh.html#a11655e4a008cc7b92ac848e293e003eb',1,'meshkernel::Mesh']]],
-  ['mrefinement',['MRefinement',['../structmeshkernelapi_1_1_curvilinear_parameters.html#a51eb7726b7f38edbfabebafa68ac77e2',1,'meshkernelapi::CurvilinearParameters']]]
+  ['mrefinement',['MRefinement',['../structmeshkernelapi_1_1_curvilinear_parameters.html#a51eb7726b7f38edbfabebafa68ac77e2',1,'meshkernelapi::CurvilinearParameters']]],
+  ['spatialtrees',['SpatialTrees',['../namespacemeshkernel_1_1_spatial_trees.html',1,'meshkernel']]]
 ];

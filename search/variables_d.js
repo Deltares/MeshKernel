@@ -1,8 +1,4 @@
 var searchData=
 [
-  ['raddeg_5fhp',['raddeg_hp',['../namespacemeshkernel.html#a64209ad0c58850d197b587a0f42a524a',1,'meshkernel']]],
-  ['refineintersected',['RefineIntersected',['../structmeshkernelapi_1_1_interpolation_parameters.html#a67befa3ce63a4747f4f9303cae351339',1,'meshkernelapi::InterpolationParameters']]],
-  ['refinementtype',['RefinementType',['../structmeshkernelapi_1_1_sample_refine_parameters.html#ab7fa47696223d76552c5ef9f36b3b38e',1,'meshkernelapi::SampleRefineParameters']]],
-  ['relativesearchradius',['RelativeSearchRadius',['../structmeshkernelapi_1_1_interpolation_parameters.html#ae04437a491827725acb579e48d017766',1,'meshkernelapi::InterpolationParameters']]],
-  ['removeskinnytriangles',['RemoveSkinnyTriangles',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#aa79429c210b534ed798c4651d6cbf96c',1,'meshkernelapi::SplinesToCurvilinearParameters']]]
+  ['queryvectorcapacity',['QueryVectorCapacity',['../namespacemeshkernel_1_1_spatial_trees.html#a41a9bf24d97a64117ddd347cc3c0f3cf',1,'meshkernel::SpatialTrees']]]
 ];
