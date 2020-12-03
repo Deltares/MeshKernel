@@ -417,15 +417,13 @@ namespace meshkernel
         return true;
     }
 
+    /// @brief Swap the elements of a vector, such as the last elements becomes the first elements
+    /// @tparam T A type
+    /// @param[in] v The vector
     template <class T>
-    void SwapVectorElements(std::vector<T>& v, int numElements)
+    void SwapVectorElements(std::vector<T>& v)
     {
-        if (numElements > v.size())
-        {
-            return;
-        }
-
-        for (int i = 0; i < numElements / 2; i++)
+        for (auto i = 0; i < v.size() / 2; i++)
         {
             const auto a = v[i];
             v[i] = v[i + 1];
@@ -433,9 +431,17 @@ namespace meshkernel
         }
     }
 
+    /// @brief Computes dimensionless distances of a vector of points such as the first entry has distance 0 and the last entry has distance 1.
+    /// @param[in] v The vector of points
+    /// @param[in] projection The projection to use.
+    /// @param[in,out] result the resulting containing the dimensionless distances.
+    /// @param[in,out] totalDistance The dimensional total distance (used for normalization).
     void ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, Projection projection, std::vector<double>& result, double& totalDistance);
 
-    // get the sign
+    /// @brief Computes the sign of a type
+    /// @tparam T A signed type
+    /// @param[in] val the value to use for computing a sign
+    /// @return  -1 for negatives and  +1 for positives
     template <typename T>
     [[nodiscard]] int sgn(T val)
     {
