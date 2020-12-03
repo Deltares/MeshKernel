@@ -1,7 +1,3 @@
-# Note that headers are optional, and do not affect add_library, but they will
-# not show up in IDEs unless they are listed in add_library.
-file(GLOB HEADER_LIST CONFIGURE_DEPENDS
-     "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.hpp")
 file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
 # Set API variable

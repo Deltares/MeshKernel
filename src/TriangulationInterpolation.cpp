@@ -64,7 +64,7 @@ void meshkernel::TriangulationInterpolation::Compute()
 
     // for each triangle compute the bounding circumcenter, bounding closed polygon, and the values at the nodes of each triangle
     std::vector<Point> trianglesCircumcenters(triangulationWrapper.m_numFaces, {doubleMissingValue, doubleMissingValue});
-    std::vector<std::vector<Point>> triangles(triangulationWrapper.m_numFaces, std::vector<Point>(4, {doubleMissingValue, doubleMissingValue}));
+    std::vector<std::vector<Point>> triangles(triangulationWrapper.m_numFaces, std::vector<Point>(4));
     std::vector<std::vector<double>> values(triangulationWrapper.m_numFaces, std::vector<double>(4, doubleMissingValue));
 
     for (auto f = 0; f < triangulationWrapper.m_numFaces; ++f)
@@ -79,7 +79,7 @@ void meshkernel::TriangulationInterpolation::Compute()
         triangles[f][3] = triangles[f][0];
         values[f][3] = values[f][0];
 
-        trianglesCircumcenters[f] = ComputeAverageCoordinate(triangles[f], 3, m_projection);
+        trianglesCircumcenters[f] = ComputeAverageCoordinate(triangles[f], m_projection);
     }
 
     SpatialTrees::RTree samplesRtree;
@@ -139,16 +139,16 @@ void meshkernel::TriangulationInterpolation::Compute()
                 double crossProduct;
                 double firstRatio;
                 double secondRatio;
-                const auto areCrossing = AreLinesCrossing(trianglesCircumcenters[triangle],
-                                                          m_locations[n],
-                                                          {m_samples[k1].x, m_samples[k1].y},
-                                                          {m_samples[k2].x, m_samples[k2].y},
-                                                          false,
-                                                          intersection,
-                                                          crossProduct,
-                                                          firstRatio,
-                                                          secondRatio,
-                                                          m_projection);
+                const auto areCrossing = AreSegmentsCrossing(trianglesCircumcenters[triangle],
+                                                             m_locations[n],
+                                                             {m_samples[k1].x, m_samples[k1].y},
+                                                             {m_samples[k2].x, m_samples[k2].y},
+                                                             false,
+                                                             m_projection,
+                                                             intersection,
+                                                             crossProduct,
+                                                             firstRatio,
+                                                             secondRatio);
 
                 if (areCrossing)
                 {
