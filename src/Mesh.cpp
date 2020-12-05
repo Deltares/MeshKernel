@@ -1851,8 +1851,6 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
     }
     else if (!edgesNumFaces.empty())
     {
-        Point estimatedCircumCenter = centerOfMass;
-
         int numValidEdges = 0;
         for (auto n = 0; n < numNodes; ++n)
         {
@@ -1877,6 +1875,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
                 normals.emplace_back(NormalVector(polygon[n], polygon[nextNode], middlePoints.back(), m_projection));
             }
 
+            Point estimatedCircumCenter = centerOfMass;
             for (int iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
             {
                 Point previousCircumCenter = estimatedCircumCenter;
@@ -1904,9 +1903,8 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
         polygon[n].y = weightCircumCenter * polygon[n].y + (1.0 - weightCircumCenter) * centerOfMass.y;
     }
     polygon[numNodes] = polygon[0];
-    const auto isCircumcenterInside = IsPointInPolygonNodes(result, polygon, 0, numNodes, m_projection);
 
-    if (isCircumcenterInside)
+    if (IsPointInPolygonNodes(result, polygon, 0, numNodes, m_projection))
     {
         return result;
     }
@@ -1918,7 +1916,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
         double crossProduct;
         double firstRatio;
         double secondRatio;
-        const bool areLineCrossing = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, m_projection, intersection, crossProduct, firstRatio, secondRatio);
+        const auto areLineCrossing = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, m_projection, intersection, crossProduct, firstRatio, secondRatio);
         if (areLineCrossing)
         {
             result = intersection;
