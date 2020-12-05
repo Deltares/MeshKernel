@@ -29,7 +29,7 @@
 
 namespace meshkernelapi
 {
-    /// @brief The struct containing the parameters to generate a curvilinear grid
+    /// @brief A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner
     struct CurvilinearParameters
     {
         /// @brief M-refinement factor for regular grid generation (mfacmax, 2000)

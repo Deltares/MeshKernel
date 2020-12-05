@@ -233,32 +233,32 @@ namespace meshkernel
         [[nodiscard]] int FindCommonNode(int firstEdgeIndex, int secondEdgeIndex) const;
 
         /// @brief Compute the lengths of all edges in one go
-        void ComputeEdgeLengths();
+        void ComputeEdgesLengths();
 
         /// @brief Computes the edges centers  in one go
         void ComputeEdgesCenters();
 
         /// @brief Get the number of valid nodes
         /// @return The number of valid node
-        [[nodiscard]] int GetNumNodes() const { return m_numNodes; }
+        [[nodiscard]] auto GetNumNodes() const { return m_numNodes; }
 
         /// @brief Get the number of valid edges
         /// @return The number of valid edges
-        [[nodiscard]] int GetNumEdges() const { return m_numEdges; }
+        [[nodiscard]] auto GetNumEdges() const { return m_numEdges; }
 
         /// @brief Get the number of valid faces
         /// @return The number of valid faces
-        [[nodiscard]] int GetNumFaces() const { return m_numFaces; }
+        [[nodiscard]] auto GetNumFaces() const { return m_numFaces; }
 
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
         /// @return The number of valid faces
-        [[nodiscard]] int GetNumFaceEdges(int faceIndex) const { return m_numFacesNodes[faceIndex]; }
+        [[nodiscard]] auto GetNumFaceEdges(int faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
         /// @brief Get the number of faces an edges shares
         /// @param[in] edgeIndex The edge index
         /// @return The number of faces an edges shares
-        [[nodiscard]] int GetNumEdgesFaces(int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+        [[nodiscard]] auto GetNumEdgesFaces(int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
         /// @brief Inquire if an edge is on boundary
         /// @param edge The edge index

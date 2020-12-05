@@ -66,7 +66,7 @@ namespace meshkernel
 
         /// @brief
         /// @tparam T A type that contains x and y fields
-        /// @param numPoints The number of input points
+        /// @param inputNodes The number of input points
         /// @param triangulationOption Triangulation option, see \ref TriangulationOptions
         /// @param averageTriangleArea An estimation of the average area of triangles (required for option 2)
         /// @param estimatedNumberOfTriangles An estimation of the average number of triangles (required for option 2)

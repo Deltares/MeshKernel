@@ -53,13 +53,13 @@ namespace meshkernelapi
     extern "C"
     {
 #endif
-        /// @brief Create a new mesh state and return the generated \p meshKernelId
+        /// @brief Creates a new mesh state and returns the generated \p meshKernelId
 
         /// @param[out] meshKernelId Identifier for the created grid state
         /// @returns Error code
         MKERNEL_API int mkernel_new_mesh(int& meshKernelId);
 
-        /// @brief Deallocate mesh state
+        /// @brief Deallocates mesh state
         /// @param[in] meshKernelId Id of the grid state
         /// @returns Error code
         MKERNEL_API int mkernel_deallocate_state(int meshKernelId);
@@ -72,7 +72,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_delete_mesh(int meshKernelId, GeometryList& disposableGeometryList, int deletionOption, bool invertDeletion);
 
-        /// @brief Set the grid state
+        /// @brief Sets the grid state
         /// @param[in] meshKernelId Id of the grid state
         /// @param[in] meshGeometryDimensions Mesh dimensions
         /// @param[in] meshGeometry Mesh data
@@ -128,22 +128,22 @@ namespace meshkernelapi
                                                          GeometryList& geometryListPolygon,
                                                          GeometryList& geometryListLandBoundaries);
 
-        /// @brief Prepare outer orthogonalization iteration (interactive mode)
+        /// @brief Prepares outer orthogonalization iteration (interactive mode)
         /// @param[in] meshKernelId Id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize_prepare_outer_iteration(int meshKernelId);
 
-        /// @brief Perform inner orthogonalization iteration (interactive mode)
+        /// @brief Performs inner orthogonalization iteration (interactive mode)
         /// @param[in] meshKernelId Id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize_inner_iteration(int meshKernelId);
 
-        /// @brief Finalize orthogonalization outer iteration (interactive mode)
+        /// @brief Finalizes orthogonalization outer iteration (interactive mode)
         /// @param[in] meshKernelId
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize_finalize_outer_iteration(int meshKernelId);
 
-        /// @brief Clean up back-end orthogonalization algorithm (interactive mode)
+        /// @brief Cleans up back-end orthogonalization algorithm (interactive mode)
         /// @param[in] meshKernelId Id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize_delete(int meshKernelId);
@@ -167,7 +167,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_splines(const GeometryList& geometryListIn, GeometryList& geometryListOut, int numberOfPointsBetweenVertices);
 
-        /// @brief Get the coordinates of the closest existing vertex
+        /// @brief Gets the coordinates of the closest existing vertex
         /// @param[in] meshKernelId Id of the grid state
         /// @param[in] geometryListIn Vertex coordinates
         /// @param[in] searchRadius the radius where to search for the vertex
@@ -175,7 +175,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_node_coordinate(int meshKernelId, GeometryList& geometryListIn, double searchRadius, GeometryList& geometryListOut);
 
-        /// @brief Make curvilinear grid from splines with an advancing front.
+        /// @brief Makes curvilinear grid from splines with an advancing front.
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryList The input splines corners
         /// @param[in] curvilinearParameters The input parameters to generate the curvilinear grid
@@ -183,7 +183,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho(int meshKernelId, const GeometryList& geometryList, const CurvilinearParameters& curvilinearParameters, const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
-        /// @brief Generate a curvilinear grid from splines with the advancing front method. Initialization step (interactive)
+        /// @brief Generates a curvilinear grid from splines with the advancing front method. Initialization step (interactive)
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryList The input splines corners
         /// @param[in] curvilinearParameters The input parameters to generate the curvilinear grid
@@ -202,25 +202,25 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_refresh_mesh(int meshKernelId);
 
-        /// @brief Finalize curvilinear grid from splines algorithm
+        /// @brief Finalizes curvilinear grid from splines algorithm
         /// @param[in] meshKernelId
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_delete(int meshKernelId);
 
-        /// @brief Make a new mesh
+        /// @brief Makes a new mesh
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList The polygon to account for
         /// @returns Error code
         MKERNEL_API int mkernel_make_mesh(int meshKernelId, const MakeMeshParameters& makeGridParameters, const GeometryList& geometryList);
 
-        /// @brief Make a triangular grid in a polygon
+        /// @brief Makes a triangular grid in a polygon
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryList The polygon where to triangulate
         /// @returns Error code
         MKERNEL_API int mkernel_make_mesh_from_polygon(int meshKernelId, const GeometryList& geometryList);
 
-        /// @brief Make a triangular mesh from samples
+        /// @brief Makes a triangular mesh from samples
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryList The samples where to triangulate
         /// @returns Error code
@@ -248,7 +248,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_refine_polygon(int meshKernelId, const GeometryList& geometryListIn, int firstIndex, int secondIndex, double distance, GeometryList& geometryListOut);
 
-        /// @brief Count the number of vertices after polygon refinement
+        /// @brief Counts the number of vertices after polygon refinement
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input polygon
         /// @param[in] firstIndex The index of the first vertex
@@ -311,7 +311,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_delete_node(int meshKernelId, int nodeIndex);
 
-        /// @brief Function to move a selected node to a new position
+        /// @brief Moves a selected node to a new position
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The new coordinate
         /// @param[in] nodeIndex The node index (to be detailed)
@@ -331,7 +331,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_find_edge(int meshKernelId, GeometryList& geometryListIn, int& edgeIndex);
 
-        /// @brief Offset a polygon
+        /// @brief Offsets a polygon
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The coordinate of the offset point
         /// @param[in] innerPolygon Compute inner/outer polygon
@@ -340,7 +340,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_offsetted_polygon(int meshKernelId, GeometryList& geometryListIn, bool innerPolygon, double distance, GeometryList& geometryListOut);
 
-        /// @brief Get the number of vertices of the offsetted polygon  Count the number of vertices after polygon refinement
+        /// @brief Gets the number of vertices of the offsetted polygon  Count the number of vertices after polygon refinement
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The coordinate of the offset point
         /// @param[in] innerPolygon Compute inner/outer polygon
@@ -349,7 +349,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, GeometryList& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonVertices);
 
-        /// @brief Refine a grid based on the samples contained in the geometry list
+        /// @brief Refines a grid based on the samples contained in the geometry list
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryList The sample set
         /// @param[in] interpolationParameters The interpolation parameters
@@ -357,7 +357,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_refine_mesh_based_on_samples(int meshKernelId, GeometryList& geometryList, InterpolationParameters& interpolationParameters, SampleRefineParameters& sampleRefineParameters);
 
-        /// @brief Refine a grid based on polygon
+        /// @brief Refines a grid based on polygon
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryList The closed polygon where to perform the refinement
         /// @param[in] interpolationParameters The interpolation parameters
@@ -380,7 +380,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_points_in_polygon(int meshKernelId, GeometryList& inputPolygon, GeometryList& inputPoints, GeometryList& selectedPoints);
 
-        /// @brief Flip the edges
+        /// @brief Flips the edges
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] isTriangulationRequired The option to triangulate also non triangular cells (if activated squares becomes triangles)
         /// @param[in] isAccountingForLandBoundariesRequired The option to account for land boundaries
@@ -426,7 +426,7 @@ namespace meshkernelapi
         /// @return Error code (0 Successful)
         MKERNEL_API int mkernel_get_obtuse_triangles(int meshKernelId, GeometryList& result);
 
-        /// @brief Count the small flow edges (flow edges are the edges connecting the face circumcenters)
+        /// @brief Counts the small flow edges (flow edges are the edges connecting the face circumcenters)
         /// @param[in] meshKernelId  Id of the mesh state
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
         /// @param[out] numSmallFlowEdges The number of the small flow edges
@@ -513,7 +513,7 @@ namespace meshkernelapi
                                   const int& spherical,
                                   const int& sphericalAccurate);
 
-        /// @brief Get pointer to error message.
+        /// @brief Gets pointer to error message.
         /// @param[out] error_message
         /// @returns Error code
         MKERNEL_API int mkernel_get_error(const char*& error_message);

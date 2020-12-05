@@ -1353,11 +1353,11 @@ void meshkernel::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
     }
 }
 
-void meshkernel::Mesh::ComputeEdgeLengths()
+void meshkernel::Mesh::ComputeEdgesLengths()
 {
     auto const numEdges = GetNumEdges();
     m_edgeLengths.resize(numEdges, doubleMissingValue);
-    for (int e = 0; e < numEdges; e++)
+    for (auto e = 0; e < numEdges; e++)
     {
         auto const first = m_edges[e].first;
         auto const second = m_edges[e].second;
@@ -1367,12 +1367,12 @@ void meshkernel::Mesh::ComputeEdgeLengths()
 
 void meshkernel::Mesh::ComputeEdgesCenters()
 {
-    m_edgesCenters = ComputeEdgeCenters(GetNumEdges(), m_nodes, m_edges);
+    m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
 }
 
 bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
 {
-    for (int n = 0; n < GetNumFaceEdges(faceIndex); n++)
+    for (auto n = 0; n < GetNumFaceEdges(faceIndex); n++)
     {
         if (m_nodeMask[m_facesNodes[faceIndex][n]] != 1)
         {
@@ -1828,6 +1828,11 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
     const int maximumNumberCircumcenterIterations = 100;
     const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; //111km = 0-e digit.
 
+    Point centerOfMass;
+    double area;
+    bool isCounterClockWise;
+    FaceAreaAndCenterOfMass(polygon, numNodes, m_projection, area, centerOfMass, isCounterClockWise);
+
     double xCenter = 0;
     double yCenter = 0;
     for (int n = 0; n < numNodes; n++)
@@ -1835,20 +1840,21 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
         xCenter += polygon[n].x;
         yCenter += polygon[n].y;
     }
-    const Point centerOfMass{xCenter / numNodes, yCenter / numNodes};
+    centerOfMass.x = xCenter / numNodes;
+    centerOfMass.y = yCenter / numNodes;
 
+    // for triangles, for now assume cartesian kernel
     Point result = centerOfMass;
-    if (numNodes == numNodesInTriangle)
+    if (numNodes == 3)
     {
         result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], m_projection);
     }
-    //return result;
     else if (!edgesNumFaces.empty())
     {
         Point estimatedCircumCenter = centerOfMass;
 
         int numValidEdges = 0;
-        for (int n = 0; n < numNodes; ++n)
+        for (auto n = 0; n < numNodes; ++n)
         {
             if (edgesNumFaces[n] == 2)
             {
@@ -1858,32 +1864,31 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
 
         if (numValidEdges > 0)
         {
-            middlePoints.clear();
-            normals.clear();
             for (auto n = 0; n < numNodes; n++)
             {
-                if (edgesNumFaces[n] != 2)
+                if (edgesNumFaces[n] == 2)
                 {
-                    continue;
+                    int nextNode = n + 1;
+                    if (nextNode == numNodes)
+                        nextNode = 0;
+                    middlePoints[n] = (polygon[n] + polygon[nextNode]) * 0.5;
+                    normals[n] = NormalVector(polygon[n], polygon[nextNode], middlePoints[n], m_projection);
                 }
-                const auto nextNode = NextCircularForwardIndex(n, numNodes);
-                middlePoints.emplace_back((polygon[n] + polygon[nextNode]) * 0.5);
-                normals.emplace_back(NormalVector(polygon[n], polygon[nextNode], middlePoints.back(), m_projection));
             }
 
-            double xf = 1.0 / std::cos(degrad_hp * centerOfMass.y);
-
-            for (auto iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
+            for (int iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
             {
                 Point previousCircumCenter = estimatedCircumCenter;
-                for (auto n = 0; n < middlePoints.size(); n++)
+                for (auto n = 0; n < numNodes; n++)
                 {
-                    const double dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
-                    const double dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);
-                    const double increment = -0.1 * DotProduct(dx, normals[n].x, dy, normals[n].y);
-                    Add(estimatedCircumCenter, normals[n], increment, xf, m_projection);
+                    if (edgesNumFaces[n] == 2)
+                    {
+                        const auto dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
+                        const auto dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);
+                        const auto increment = -0.1 * DotProduct(dx, normals[n].x, dy, normals[n].y);
+                        AddIncrementToPoint(normals[n], increment, centerOfMass, m_projection, estimatedCircumCenter);
+                    }
                 }
-
                 if (iter > 0 &&
                     abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
                     abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
@@ -1895,34 +1900,46 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
         }
     }
 
-    for (auto n = 0; n < numNodes; n++)
+    if (weightCircumCenter <= 1.0 && weightCircumCenter >= 0.0)
     {
-        polygon[n].x = weightCircumCenter * polygon[n].x + (1.0 - weightCircumCenter) * centerOfMass.x;
-        polygon[n].y = weightCircumCenter * polygon[n].y + (1.0 - weightCircumCenter) * centerOfMass.y;
-    }
-    polygon[numNodes] = polygon[0];
-    const auto isCircumcenterInside = IsPointInPolygonNodes(result, polygon, 0, numNodes, m_projection);
-
-    if (isCircumcenterInside)
-    {
-        return result;
-    }
-
-    for (auto n = 0; n < numNodes; n++)
-    {
-        const auto nextNode = NextCircularForwardIndex(n, numNodes);
-        Point intersection;
-        double crossProduct;
-        double firstRatio;
-        double secondRatio;
-        const bool areLineCrossing = AreLinesCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, intersection, crossProduct, firstRatio, secondRatio, m_projection);
-        if (areLineCrossing)
+        double localWeightCircumCenter = 1.0;
+        if (numNodes > 3)
         {
-            result = intersection;
-            break;
+            localWeightCircumCenter = weightCircumCenter;
+        }
+
+        for (int n = 0; n < numNodes; n++)
+        {
+            polygon[n].x = localWeightCircumCenter * polygon[n].x + (1.0 - localWeightCircumCenter) * centerOfMass.x;
+            polygon[n].y = localWeightCircumCenter * polygon[n].y + (1.0 - localWeightCircumCenter) * centerOfMass.y;
+        }
+        polygon[numNodes] = polygon[0];
+
+        const auto isCircumcenterInside = IsPointInPolygonNodes(result, polygon, 0, numNodes - 1, m_projection);
+
+        if (!isCircumcenterInside)
+        {
+            for (int n = 0; n < numNodes; n++)
+            {
+                int nextNode = n + 1;
+                if (nextNode == numNodes)
+                {
+                    nextNode = 0;
+                }
+
+                Point intersection;
+                double crossProduct;
+                double firstRatio;
+                double secondRatio;
+                bool areLineCrossing = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, m_projection, intersection, crossProduct, firstRatio, secondRatio);
+                if (areLineCrossing)
+                {
+                    result = intersection;
+                    break;
+                }
+            }
         }
     }
-
     return result;
 }
 

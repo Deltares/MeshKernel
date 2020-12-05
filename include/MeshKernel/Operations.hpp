@@ -95,7 +95,7 @@ namespace meshkernel
     /// @brief Find all start-end positions in a vector separated by a separator
     /// @param[in] vec The vector with separator
     /// @param[in] start The start of the range to search for
-    /// @param[in] start The end of the range to search for
+    /// @param[in] end The end of the range to search for
     /// @param[in] separator The value of the separator
     /// @returns Indices of elements
     std::vector<std::vector<size_t>> FindIndices(const std::vector<Point>& vec,
@@ -116,7 +116,7 @@ namespace meshkernel
     }
 
     /// @brief Reorder vector accordingly to a specific order
-    /// @param[in] vector The vector to reorder
+    /// @param[in] v The vector to reorder
     /// @param[in] order The order to use
     /// @returns The reordered vector
     template <typename T>
@@ -132,9 +132,9 @@ namespace meshkernel
     }
 
     /// @brief Algorithm performing the zero's search using the golden section algorithm's
-    /// @param func[in] Function to search for a root
-    /// @param min[in] min The minimum value of the interval
-    /// @param max[in] max The maximum value of the interval
+    /// @param[in] func Function to search for a root
+    /// @param[in] min The minimum value of the interval
+    /// @param[in] max The maximum value of the interval
     /// @returns The value where the function is approximately 0
     template <typename F>
     [[nodiscard]] double FindFunctionRootWithGoldenSectionSearch(F func, double min, double max)
@@ -186,33 +186,33 @@ namespace meshkernel
         return f1 < f2 ? x1 : x2;
     }
 
-    /// @brief Get the next forward index
-    /// @param[in] currentIndex The current index
-    /// @param[in] size The size of the vector
-    /// @returns The next forward index
+    /// @brief Get the next forward index.
+    /// @param[in] currentIndex The current index.
+    /// @param[in] size The size of the vector.
+    /// @returns The next forward index.
     [[nodiscard]] int NextCircularForwardIndex(int currentIndex, int size);
 
-    /// @brief Get the next backward index
-    /// @param[in] currentIndex Current The current index
-    /// @param[in] size The size of the vector
-    /// @returns The next backward index
+    /// @brief Get the next backward index.
+    /// @param[in] currentIndex The current index.
+    /// @param[in] size The size of the vector.
+    /// @returns The next backward index.
     [[nodiscard]] int NextCircularBackwardIndex(int currentIndex, int size);
 
-    /// @brief Determines if point is close to the poles (latitude close to 90 degrees)
-    /// @param[in] point Point The current point
-    /// @returns If the point is on the pole
+    /// @brief Determines if a point is close to the poles (latitude close to 90 degrees).
+    /// @param[in] point The current point.
+    /// @returns If the point is on the pole.
     [[nodiscard]] bool IsPointOnPole(const Point& point);
 
-    /// @brief Transforms 2D point in spherical coordinates to 3D cartesian coordinates
-    /// @param[in] sphericalPoint The current spherical point (2 coordinates)
-    /// @param[out] cartesianPoint The converted cartesian 3d point
-    Cartesian3DPoint SphericalToCartesian3D(const Point& sphericalPoint);
+    /// @brief Transforms 2D point in spherical coordinates to 3D cartesian coordinates.
+    /// @param[in] sphericalPoint The current spherical point (2 coordinates).
+    /// @returns The converted cartesian 3d point.
+    [[nodiscard]] Cartesian3DPoint SphericalToCartesian3D(const Point& sphericalPoint);
 
     /// @brief Transforms 3D cartesian coordinates to 2D point in spherical coordinates
-    /// @param[in] cartesianPoint
-    /// @param[in] referenceLongitude
-    /// @param[out] sphericalPoint
-    void Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude, Point& sphericalPoint);
+    /// @param[in] cartesianPoint The 3d cartesian point
+    /// @param[in] referenceLongitude The reference longitude
+    /// @returns The spherical coordinate
+    [[nodiscard]] Point Cartesian3DToSpherical(Cartesian3DPoint cartesianPoint, double referenceLongitude);
 
     /// @brief Tests if a point is Left|On|Right of an infinite line.
     /// @param[in] leftPoint
@@ -225,13 +225,13 @@ namespace meshkernel
     [[nodiscard]] double IsLeft(const Point& leftPoint, const Point& rightPoint, const Point& point);
 
     /// @brief Checks if a point is in polygonNodes using the winding number method
-    /// @param[in] point
-    /// @param[in] polygonNodes A closed polygonNodes consisting of a vector of numberOfPolygonPoints + 1 in counter clockwise order
-    /// @param[in] startNode
-    /// @param[in] endNode
-    /// @param[in] projection
-    /// @param[in] polygonCenter
-    /// @returns If point is in polygon nodes
+    /// @param[in] point The point to check
+    /// @param[in] polygonNodes A series of closed polygons
+    /// @param[in] startNode The start index in polygonNodes
+    /// @param[in] endNode  The end index in polygonNodes
+    /// @param[in] projection The coordinate system projection.
+    /// @param[in] polygonCenter A coordinate needed in case of sphericalAccurate projection
+    /// @returns If point is inside the designed polygon
     [[nodiscard]] bool IsPointInPolygonNodes(Point point,
                                              const std::vector<Point>& polygonNodes,
                                              int startNode,
@@ -240,105 +240,172 @@ namespace meshkernel
                                              Point polygonCenter = {doubleMissingValue, doubleMissingValue});
 
     /// @brief Computes three base components
-    void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);
+    void ComputeThreeBaseComponents(Point point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);
 
     /// @brief Computes two base components
-    void ComputeTwoBaseComponents(const Point& point, double (&elambda)[3], double (&ephi)[3]);
+    void ComputeTwoBaseComponents(Point point, double (&elambda)[3], double (&ephi)[3]);
 
     /// @brief Gets dx for the given projection
     /// @param[in] firstPoint
     /// @param[in] secondPoint
-    /// @param[in] projection
-    [[nodiscard]] double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+    /// @param[in] projection The coordinate system projection.
+    [[nodiscard]] double GetDx(Point firstPoint, Point secondPoint, Projection projection);
 
-    [[nodiscard]] double GetDy(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+    /// @brief Gets dy for the given projection
+    /// @param[in] firstPoint
+    /// @param[in] secondPoint
+    /// @param[in] projection The coordinate system projection.
+    [[nodiscard]] double GetDy(Point firstPoint, Point secondPoint, Projection projection);
 
-    ///dprodout: out product of two segments
+    /// @brief Outer product of two segments (dprodout)
     [[nodiscard]] double OuterProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment,
                                                  const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
-    /// half
-    void MiddlePoint(const Point& firstPoint, const Point& secondPoint, Point& result, const Projection& projection);
 
-    void ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projection& projection, Point& centre);
+    /// @brief Computes the middle point.
+    /// @param[in] firstPoint The first point of the segment.
+    /// @param[in] secondPoint The second point of the segment.
+    /// @param[in] projection  The coordinate system projection.
+    /// @return The middle point.
+    [[nodiscard]] Point ComputeMiddlePoint(Point firstPoint, Point secondPoint, Projection projection);
 
-    ///normalin, Normalized vector in direction 1 -> 2, in the orientation of (xu,yu)
-    Point NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, const Projection& projection);
+    /// @brief Computes the middle point (account for poles, latitudes close to 90 degrees)
+    /// @param[in] firstPoint The first point of the segment.
+    /// @param[in] secondPoint  The second point of the segment.
+    /// @param[in] projection  The coordinate system projection.
+    /// @return The middle point.
+    [[nodiscard]] Point ComputeMiddlePointAccountingForPoles(Point firstPoint, Point secondPoint, Projection projection);
 
-    //spher2locvec, transforms vector with components in global spherical coordinate directions(xglob, yglob)
-    ///to local coordinate directions(xloc, yloc) around reference point(xref, yref)
+    /// @brief Normalized vector of a segment in direction 1 -> 2 with the insidePoint orientation
+    /// @param[in] firstPoint The first point of the segment.
+    /// @param[in] secondPoint The second point of the segment.
+    /// @param[in] insidePoint The inside point of the segment
+    /// @param[in] projection The coordinate system projection.
+    /// @return The Normal vector
+    [[nodiscard]] Point NormalVector(Point firstPoint, Point secondPoint, Point insidePoint, Projection projection);
+
+    /// @brief Transforms vector with components in global spherical coordinate directions(xglob, yglob)
+    ///       to local coordinate directions(xloc, yloc) around reference point(xref, yref)
     void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, Projection projection, Point& localComponents);
 
-    ///normalout
-    void NormalVectorOutside(const Point& firstPoint, const Point& secondPoint, Point& result, const Projection& projection);
+    /// @brief Computes the normal vector outside
+    ///
+    /// \see NormalVectorInside
+    ///
+    Point NormalVectorOutside(Point firstPoint, Point secondPoint, Projection projection);
 
-    ///normaloutchk
-    ///Computes the normal vector to a line 1-2, which is *outward* w.r.t.
-    ///an 'inside' point 3. Similar to normalout, except that the normal
-    ///vector may be flipped based on the 'inside' point.
-    ///TODO:test me
+    /// @brief Computes the normal vector to a line 1-2, which is *outward* w.r.t.
+    ///         an 'inside' point 3.
+    ///
+    /// Similar to NormalVectorOutside, except that the normal vector may be flipped based on the 'inside' point.
     void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, Projection projection);
 
-    void Add(Point& point, const Point& normal, double increment, double xf, const Projection& projection);
+    /// @brief Moves a point by adding an increment vector to it.
+    /// @param[in] normal normal The increment direction.
+    /// @param[in] increment The increment to use.
+    /// @param[in] referencePoint the reference point containing the reference latitude to use.
+    /// @param[in] projection The coordinate system projection.
+    /// @param[in,out] point The point to be incremented.
+    void AddIncrementToPoint(Point normal, double increment, Point referencePoint, Projection projection, Point& point);
 
-    void ReferencePoint(std::vector<Point>& polygon, const int numPoints, double& minX, double& minY, const Projection& projection);
+    /// @brief For a given polygon compute a reference point (the function can also shift the input polygon coordinates)
+    /// @param[in,out] polygon The input polygon.
+    /// @param[in] numPoints The number of points to account for in the input polygon.
+    /// @param[in] projection The coordinate system projection.
+    /// @return The reference point
+    [[nodiscard]] Point ReferencePoint(std::vector<Point>& polygon, int numPoints, Projection projection);
 
-    [[nodiscard]] double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+    /// @brief Computes the squared distance between two points
+    /// @param[in] firstPoint The first point.
+    /// @param[in] secondPoint The second point.
+    /// @param[in] projection The coordinate system projection.
+    /// @return The squared distance
+    [[nodiscard]] double ComputeSquaredDistance(Point firstPoint, Point secondPoint, Projection projection);
 
-    //dbdistance
-    [[nodiscard]] double ComputeDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection);
+    /// @brief Computes the  distance between two points (dbdistance)
+    /// @param[in] firstPoint The first point.
+    /// @param[in] secondPoint The second point.
+    /// @param[in] projection The coordinate system projection.
+    /// @return The  distance
+    [[nodiscard]] double ComputeDistance(Point firstPoint, Point secondPoint, Projection projection);
 
-    // dLINEDIS3
-    // Computes the perpendicular distance from point to a line firstNode - secondNode.
-    // normalPoint: coordinates of the projected point from point onto the line
-    [[nodiscard]] double DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, Point& normalPoint, double& ratio, const Projection& projection);
+    /// @brief Computes the perpendicular distance of a point from a segment firstNode - secondNode (dlinedis3)
+    /// @param[in] point The point to consider in the distance calculation.
+    /// @param[in] firstNode The first point of the segment.
+    /// @param[in] secondNode The second point of the segment.
+    /// @param[in] projection The coordinate system projection.
+    /// @param[in,out] normalPoint The intersection of the normal projection with the segment.
+    /// @param[in,out] ratio The distance from the first node, expressed as a ratio of the segment length.
+    /// @return The normal distance from the segment
+    [[nodiscard]] double DistanceFromLine(Point point, Point firstNode, Point secondNode, Projection projection, Point& normalPoint, double& ratio);
 
-    /// dprodin inner product of two segments
+    /// @brief Inner product of two segments (dprodin)
+    /// @param[in] firstPointFirstSegment The first point of the first segment
+    /// @param[in] secondPointFirstSegment The second point of the first segment
+    /// @param[in] firstPointSecondSegment The first point of the second segment
+    /// @param[in] secondPointSecondSegment The second point of the second segment
+    /// @param[in] projection The coordinate system projection
+    /// @return The resulting inner product
     [[nodiscard]] double InnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection);
 
-    // dcosphi
+    /// @brief The normalized inner product of two segments (dcosphi)
+    /// @param[in] firstPointFirstSegment The first point of the first segment
+    /// @param[in] secondPointFirstSegment The second point of the first segment
+    /// @param[in] firstPointSecondSegment The first point of the second segment
+    /// @param[in] secondPointSecondSegment The second point of the second segment
+    /// @param[in] projection The coordinate system projection
+    /// @return The resulting normalized inner product
     [[nodiscard]] double NormalizedInnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection);
 
-    /// @brief
-    /// @param p1
-    /// @param p2
-    /// @param p3
-    /// @param projection
-    /// @return
-    Point CircumcenterOfTriangle(const Point& p1, const Point& p2, const Point& p3, Projection projection);
+    /// @brief Computes the circumcenter of a triangle
+    /// @param[in] firstVertex The first triangle vertex
+    /// @param[in] secondVertex The second triangle vertex
+    /// @param[in] thirdVertex The third triangle vertex
+    /// @param[in] projection The coordinate system projection
+    /// @return The resulting circumcenter
+    [[nodiscard]] Point CircumcenterOfTriangle(Point firstVertex, Point secondVertex, Point thirdVertex, Projection projection);
 
-    /// @brief (cross, cross3D)
-    /// @param firstSegmentFistPoint
-    /// @param firstSegmentSecondPoint
-    /// @param secondSegmentFistPoint
-    /// @param secondSegmentSecondPoint
-    /// @param adimensionalCrossProduct
-    /// @param intersectionPoint
-    /// @param crossProduct
-    /// @param ratioFirstSegment
-    /// @param ratioSecondSegment
-    /// @param projection
-    /// @return
-    [[nodiscard]] bool AreLinesCrossing(const Point& firstSegmentFistPoint,
-                                        const Point& firstSegmentSecondPoint,
-                                        const Point& secondSegmentFistPoint,
-                                        const Point& secondSegmentSecondPoint,
-                                        bool adimensionalCrossProduct,
-                                        Point& intersectionPoint,
-                                        double& crossProduct,
-                                        double& ratioFirstSegment,
-                                        double& ratioSecondSegment,
-                                        const Projection& projection);
+    /// @brief Determines if two segments are crossing (cross, cross3D)
+    /// @param[in] firstSegmentFistPoint The first point of the first segment
+    /// @param[in] firstSegmentSecondPoint The second point of the first segment
+    /// @param[in] secondSegmentFistPoint The first point of the second segment
+    /// @param[in] secondSegmentSecondPoint The second point of the second segment
+    /// @param[in] adimensionalCrossProduct Compute the dimensionless cross product
+    /// @param[in] projection The coordinate system projection
+    /// @param[in,out] intersectionPoint The intersection point
+    /// @param[in,out] crossProduct The cross product of the intersection
+    /// @param[in,out] ratioFirstSegment The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
+    /// @param[in,out] ratioSecondSegment The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
+    /// @return If the two segments are crossing
+    [[nodiscard]] bool AreSegmentsCrossing(Point firstSegmentFistPoint,
+                                           Point firstSegmentSecondPoint,
+                                           Point secondSegmentFistPoint,
+                                           Point secondSegmentSecondPoint,
+                                           bool adimensionalCrossProduct,
+                                           Projection projection,
+                                           Point& intersectionPoint,
+                                           double& crossProduct,
+                                           double& ratioFirstSegment,
+                                           double& ratioSecondSegment);
+
+    /// @brief Computes the sign of the cross product between two segments (duitpl)
+    /// @param[in] firstSegmentFistPoint The first point of the first segment
+    /// @param[in] firstSegmentSecondPoint The second point of the first segment
+    /// @param[in] secondSegmentFistPoint The first point of the second segment
+    /// @param[in] secondSegmentSecondPoint The second point of the second segment
+    /// @param[in] projection The coordinate system projection
+    /// @return The cross product sign
+    [[nodiscard]] int CrossProductSign(Point firstSegmentFistPoint, Point firstSegmentSecondPoint, Point secondSegmentFistPoint, Point secondSegmentSecondPoint, Projection projection);
 
     /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges
-    /// @param polygon The input vector containing the nodes of the polygon.
-    /// @param numberOfPolygonPoints The number of points to account for in the input vector.
-    /// @param projection The projection to use.
-    /// @param area The resulting area.
-    /// @param centerOfMass The resulting center of mass.
-    /// @param isCounterClockWise The orientation of the edges.
+    /// @param[in] polygon The input vector containing the nodes of the polygon.
+    /// @param[in] numberOfPolygonPoints The number of points to account for in the input vector.
+    /// @param[in] projection The projection to use.
+    /// @param[in,out] area The resulting area.
+    /// @param[in,out] centerOfMass The resulting center of mass.
+    /// @param[in,out] isCounterClockWise The orientation of the edges.
     void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, Projection projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
 
-    /// @brief Interpolate spline points
+    /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point
     /// @param[in] coordinates
     /// @param[in] coordinatesDerivatives
     /// @param[in] pointAdimensionalCoordinate
@@ -375,15 +442,13 @@ namespace meshkernel
         return true;
     }
 
+    /// @brief Swap the elements of a vector, such as the last elements becomes the first elements
+    /// @tparam T A type
+    /// @param[in] v The vector
     template <class T>
-    void SwapVectorElements(std::vector<T>& v, int numElements)
+    void SwapVectorElements(std::vector<T>& v)
     {
-        if (numElements > v.size())
-        {
-            return;
-        }
-
-        for (int i = 0; i < numElements / 2; i++)
+        for (auto i = 0; i < v.size() / 2; i++)
         {
             const auto a = v[i];
             v[i] = v[i + 1];
@@ -391,30 +456,53 @@ namespace meshkernel
         }
     }
 
+    /// @brief Computes dimensionless distances of a vector of points such as the first entry has distance 0 and the last entry has distance 1.
+    /// @param[in] v The vector of points
+    /// @param[in] projection The projection to use.
+    /// @param[in,out] result the resulting containing the dimensionless distances.
+    /// @param[in,out] totalDistance The dimensional total distance (used for normalization).
     void ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, Projection projection, std::vector<double>& result, double& totalDistance);
 
-    // get the sign
+    /// @brief Computes the sign of a type
+    /// @tparam T A signed type
+    /// @param[in] val the value to use for computing a sign
+    /// @return  -1 for negatives and  +1 for positives
     template <typename T>
     [[nodiscard]] int sgn(T val)
     {
         return (T(0) < val ? 1 : 0) - (val < T(0) ? 1 : 0);
     }
 
-    //(DUITPL)
-    [[nodiscard]] int TwoSegmentsSign(const Point& p1, const Point& p2, const Point& p3, const Point& p4, Projection projection);
+    /// @brief Computes the transfinite discretization inside the area defined by 4 sides, each one discretized with a series of points (tranfn2).
+    /// @param[in] sideOne The first side of the area.
+    /// @param[in] sideTwo The second side of the area.
+    /// @param[in] sideThree The third side of the area.
+    /// @param[in] sideFour The fourth side of the area.
+    /// @param[in] projection The projection to use.
+    /// @param[in] numM The number of columns to generate (horizontal direction).
+    /// @param[in] numN  The number of rows to generate (vertical direction).
+    /// @return The resulting dicretization (expressed as number of points).
+    [[nodiscard]] std::vector<std::vector<Point>> DiscretizeTransfinite(const std::vector<Point>& sideOne,
+                                                                        const std::vector<Point>& sideTwo,
+                                                                        const std::vector<Point>& sideThree,
+                                                                        const std::vector<Point>& sideFour,
+                                                                        Projection projection,
+                                                                        int numM,
+                                                                        int numN);
 
-    //(TRANFN2)
-    std::vector<std::vector<Point>> InterpolateTransfinite(const std::vector<Point>& sideOne,
-                                                           const std::vector<Point>& sideTwo,
-                                                           const std::vector<Point>& sideThree,
-                                                           const std::vector<Point>& sideFour,
-                                                           Projection projection,
-                                                           int numM,
-                                                           int numN);
+    /// @brief Computes the edge centers
+    /// @param[in] nodes The vector of edge nodes.
+    /// @param[in] edges The vector of edge indexes.
+    /// @return The vector containing the edge centers.
+    [[nodiscard]] std::vector<Point> ComputeEdgeCenters(const std::vector<Point>& nodes, const std::vector<Edge>& edges);
 
-    [[nodiscard]] std::vector<Point> ComputeEdgeCenters(int numEdges, const std::vector<Point>& nodes, const std::vector<Edge>& edges);
-
-    double LinearInterpolationInTriangle(Point interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, Projection projection);
+    /// @brief Given a triangles with values on each vertex, computes the interpolated value inside the triangle, using linear interpolation.
+    /// @param[in] interpolationPoint The point where to interpolate.
+    /// @param[in] polygon The polygon containing the triangle vertices.
+    /// @param[in] values The values at each vertex.
+    /// @param[in] projection The projection to use.
+    /// @return The interpolated value.
+    [[nodiscard]] double LinearInterpolationInTriangle(Point interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, Projection projection);
 
     /// @brief Given a vector of coordinates, get the lowest upper and right points
     /// @tparam T Requires IsCoordinate<T>
@@ -449,7 +537,7 @@ namespace meshkernel
         upperRight = {maxx, maxy};
     }
 
-    /// @brief Checks if value is in bounding box
+    /// @brief Checks if value is inside a bounding box
     /// @tparam T Requires IsCoordinate<T>
     /// @param[in] point The point to inquire
     /// @param[in] lowerLeft The lower left corner of the bounding box
@@ -463,6 +551,10 @@ namespace meshkernel
                point.y >= lowerLeft.y && point.y <= upperRight.y;
     }
 
-    [[nodiscard]] Point ComputeAverageCoordinate(const std::vector<Point>& points, int numPoints, Projection projection);
+    /// @brief Given a series of point computes the average coordinate
+    /// @param[in] points The point series.
+    /// @param[in] projection The projection to use.
+    /// @return The average coordinate.
+    [[nodiscard]] Point ComputeAverageCoordinate(const std::vector<Point>& points, Projection projection);
 
 } // namespace meshkernel

@@ -713,7 +713,7 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
     sampleRefineParameters.RefinementType = 2;
     meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
 
-    mesh->ComputeEdgeLengths();
+    mesh->ComputeEdgesLengths();
 
     // if the circumcenters are wrongly computed, some edges will be smaller than half cell size
     for (int i = 0; i < mesh->GetNumEdges(); ++i)

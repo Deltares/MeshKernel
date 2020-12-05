@@ -44,7 +44,7 @@ namespace meshkernel
     enum class Projection;
 
     /// <summary>
-    /// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize internal face angles or area).
+    /// Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or area).
     /// </summary>
     class OrthogonalizationAndSmoothing
     {

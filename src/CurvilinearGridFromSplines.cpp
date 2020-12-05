@@ -297,8 +297,7 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
         // construct the cross splines through the edges, along m discretization
         for (int i = m_leftGridLineIndex[s]; i < m_leftGridLineIndex[s] + m_numMSplines[s]; ++i)
         {
-            Point normal{doubleMissingValue, doubleMissingValue};
-            NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], normal, m_splines->m_projection);
+            const auto normal = NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], m_splines->m_projection);
 
             double xMiddle = (m_gridLine[i].x + m_gridLine[i + 1].x) * 0.5;
             double yMiddle = (m_gridLine[i].y + m_gridLine[i + 1].y) * 0.5;
@@ -984,7 +983,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(int l
 
         if (squaredLeftDistance <= m_onTopOfEachOtherSquaredTolerance || squaredRightDistance <= m_onTopOfEachOtherSquaredTolerance)
         {
-            NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][currentLeftIndex], normalVectorLeft, m_splines->m_projection);
+            normalVectorLeft = NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][currentLeftIndex], m_splines->m_projection);
             if (m_splines->m_projection == Projection::spherical)
             {
                 normalVectorLeft.x = normalVectorLeft.x * std::cos(degrad_hp * 0.5 * (m_gridPoints[layerIndex][currentLeftIndex].y + m_gridPoints[layerIndex][currentRightIndex].y));
@@ -993,8 +992,8 @@ void meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(int l
         }
         else
         {
-            NormalVectorOutside(m_gridPoints[layerIndex][m], m_gridPoints[layerIndex][currentLeftIndex], normalVectorLeft, m_splines->m_projection);
-            NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], normalVectorRight, m_splines->m_projection);
+            normalVectorLeft = NormalVectorOutside(m_gridPoints[layerIndex][m], m_gridPoints[layerIndex][currentLeftIndex], m_splines->m_projection);
+            normalVectorRight = NormalVectorOutside(m_gridPoints[layerIndex][currentRightIndex], m_gridPoints[layerIndex][m], m_splines->m_projection);
 
             if (m_splines->m_projection == Projection::spherical)
             {
