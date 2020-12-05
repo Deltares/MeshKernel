@@ -310,15 +310,15 @@ namespace meshkernel
         void ComputeNodeNeighbours();
 
         /// @brief Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters
-        /// @retrun The orthogonality The edge orthogonality, passed to the client
+        /// @return The orthogonality The edge orthogonality, passed to the client
         [[nodiscard]] std::vector<double> GetOrthogonality();
 
         /// @brief Gets the smoothness values, ratios of the face areas
-        /// @retrun The smoothness The smoothness at the edges
+        /// @return The smoothness The smoothness at the edges
         [[nodiscard]] std::vector<double> GetSmoothness();
 
         /// @brief Gets the aspect ratios, the ratio edges to segments connecting the face circumcenters lengths
-        /// @retrun aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
+        /// @param[in] aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
         void ComputeAspectRatios(std::vector<double>& aspectRatios);
 
         ///  @brief Classifies the nodes (makenetnodescoding)
