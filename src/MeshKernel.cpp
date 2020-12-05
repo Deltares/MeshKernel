@@ -550,7 +550,12 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            meshInstances[meshKernelId]->GetOrthogonality(geometryList.zCoordinates);
+            const auto result = meshInstances[meshKernelId]->GetOrthogonality();
+
+            for (auto i = 0; i < geometryList.numberOfCoordinates; ++i)
+            {
+                geometryList.zCoordinates[i] = result[i];
+            }
         }
         catch (const std::exception& e)
         {
@@ -575,7 +580,12 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            meshInstances[meshKernelId]->GetSmoothness(geometryList.zCoordinates);
+            const auto result = meshInstances[meshKernelId]->GetSmoothness();
+
+            for (auto i = 0; i < geometryList.numberOfCoordinates; ++i)
+            {
+                geometryList.zCoordinates[i] = result[i];
+            }
         }
         catch (const std::exception& e)
         {

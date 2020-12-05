@@ -310,16 +310,16 @@ namespace meshkernel
         void ComputeNodeNeighbours();
 
         /// @brief Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters
-        /// @param[out] orthogonality The edge orthogonality, passed to the client
-        void GetOrthogonality(double* orthogonality);
+        /// @retrun The orthogonality The edge orthogonality, passed to the client
+        [[nodiscard]] std::vector<double> GetOrthogonality();
 
         /// @brief Gets the smoothness values, ratios of the face areas
-        /// @param[out] smoothness The smoothness at the edges
-        void GetSmoothness(double* smoothness);
+        /// @retrun The smoothness The smoothness at the edges
+        [[nodiscard]] std::vector<double> GetSmoothness();
 
         /// @brief Gets the aspect ratios, the ratio edges to segments connecting the face circumcenters lengths
-        /// @param aspectRatios The aspect ratios
-        void GetAspectRatios(std::vector<double>& aspectRatios);
+        /// @retrun aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
+        void ComputeAspectRatios(std::vector<double>& aspectRatios);
 
         ///  @brief Classifies the nodes (makenetnodescoding)
         void ClassifyNodes();
@@ -347,7 +347,7 @@ namespace meshkernel
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @return meshBoundaryPolygon The resulting polygon mesh boundary
-        std::vector<Point> MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes);
+        [[nodiscard]] std::vector<Point> MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes);
 
         /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
         /// @param[in] polygonNodes The input mesh

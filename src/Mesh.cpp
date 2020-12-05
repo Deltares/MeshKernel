@@ -2159,38 +2159,43 @@ void meshkernel::Mesh::ComputeNodeNeighbours()
     }
 }
 
-void meshkernel::Mesh::GetOrthogonality(double* orthogonality)
+std::vector<double> meshkernel::Mesh::GetOrthogonality()
 {
+    std::vector<double> result;
+    result.reserve(GetNumEdges());
     for (int e = 0; e < GetNumEdges(); e++)
     {
-        orthogonality[e] = doubleMissingValue;
-        int firstVertex = m_edges[e].first;
-        int secondVertex = m_edges[e].second;
+        auto orthogonality = doubleMissingValue;
+        const auto firstVertex = m_edges[e].first;
+        const auto secondVertex = m_edges[e].second;
 
-        if (firstVertex != 0 && secondVertex != 0 && e < GetNumEdges() && !IsEdgeOnBoundary(e))
+        if (firstVertex != 0 && secondVertex != 0 && !IsEdgeOnBoundary(e))
         {
-            orthogonality[e] = NormalizedInnerProductTwoSegments(m_nodes[firstVertex],
-                                                                 m_nodes[secondVertex],
-                                                                 m_facesCircumcenters[m_edgesFaces[e][0]],
-                                                                 m_facesCircumcenters[m_edgesFaces[e][1]],
-                                                                 m_projection);
-            if (orthogonality[e] != doubleMissingValue)
+            orthogonality = NormalizedInnerProductTwoSegments(m_nodes[firstVertex],
+                                                              m_nodes[secondVertex],
+                                                              m_facesCircumcenters[m_edgesFaces[e][0]],
+                                                              m_facesCircumcenters[m_edgesFaces[e][1]],
+                                                              m_projection);
+            if (!IsEqual(orthogonality, doubleMissingValue))
             {
-                orthogonality[e] = std::abs(orthogonality[e]);
+                orthogonality = std::abs(orthogonality);
             }
         }
+        result.emplace_back(orthogonality);
     }
+    return result;
 }
 
-void meshkernel::Mesh::GetSmoothness(double* smoothness)
+std::vector<double> meshkernel::Mesh::GetSmoothness()
 {
-    for (int e = 0; e < GetNumEdges(); e++)
+    std::vector<double> result;
+    result.reserve(GetNumEdges());
+    for (auto e = 0; e < GetNumEdges(); e++)
     {
-        smoothness[e] = doubleMissingValue;
-        int firstVertex = m_edges[e].first;
-        int secondVertex = m_edges[e].second;
-
-        if (firstVertex != 0 && secondVertex != 0 && e < GetNumEdges() && !IsEdgeOnBoundary(e))
+        const auto firstVertex = m_edges[e].first;
+        const auto secondVertex = m_edges[e].second;
+        auto val = doubleMissingValue;
+        if (firstVertex != 0 && secondVertex != 0 && !IsEdgeOnBoundary(e))
         {
             const auto leftFace = m_edgesFaces[e][0];
             const auto rightFace = m_edgesFaces[e][1];
@@ -2199,17 +2204,19 @@ void meshkernel::Mesh::GetSmoothness(double* smoothness)
 
             if (leftFaceArea < minimumCellArea || rightFaceArea < minimumCellArea)
             {
-                smoothness[e] = rightFaceArea / leftFaceArea;
+                val = rightFaceArea / leftFaceArea;
             }
-            if (smoothness[e] < 1.0)
+            if (val < 1.0)
             {
-                smoothness[e] = 1.0 / smoothness[e];
+                val = 1.0 / val;
             }
         }
+        result.emplace_back(val);
     }
+    return result;
 }
 
-void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
+void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
 {
     std::vector<std::vector<double>> averageEdgesLength(GetNumEdges(), std::vector<double>(2, doubleMissingValue));
     std::vector<double> averageFlowEdgesLength(GetNumEdges(), doubleMissingValue);
