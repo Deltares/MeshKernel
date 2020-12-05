@@ -721,3 +721,34 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
         ASSERT_GT(mesh->m_edgeLengths[i], 0.4);
     }
 }
+
+//TEST(MeshRefinement, RefineEnlongedMeshBasedOnPolygon)
+//{
+//    // Prepare
+//    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/MeshRefinementTests/enlonged_network_net.nc");
+//
+//    meshkernel::MeshRefinement meshRefinement(mesh);
+//
+//    std::vector<meshkernel::Point> point{
+//        {149750.250000, 481492.343750},
+//        {156082.906250, 462827.562500},
+//        {201633.625000, 468493.656250},
+//        {202300.218750, 488491.625000},
+//        {167192.843750, 490047.031250},
+//        {153083.218750, 483492.125000},
+//        {149750.250000, 481492.343750}};
+//
+//    meshkernel::Polygons polygon(point, mesh->m_projection);
+//
+//    meshkernelapi::SampleRefineParameters sampleRefineParameters{};
+//    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.96;
+//    sampleRefineParameters.MinimumCellSize = 3.0;
+//    sampleRefineParameters.AccountForSamplesOutside = false;
+//    sampleRefineParameters.ConnectHangingNodes = 1;
+//
+//    meshkernelapi::InterpolationParameters interpolationParameters{};
+//    interpolationParameters.MaxNumberOfRefinementIterations = 1;
+//    interpolationParameters.RefineIntersected = false;
+//
+//    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
+//}
