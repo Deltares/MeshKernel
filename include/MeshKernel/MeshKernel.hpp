@@ -161,17 +161,17 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_get_smoothness(int meshKernelId, GeometryList& geometryList);
 
         /// @brief Get spline intermediate points
-        /// @param[in] geometryListIn The input corner vertices of the splines
+        /// @param[in] geometryListIn The input corner nodes of the splines
         /// @param[out] geometryListOut The output spline
-        /// @param[out] numberOfPointsBetweenVertices The number of spline vertices between the corners points
+        /// @param[out] numberOfPointsBetweenNodes The number of spline nodes between the corners points
         /// @returns Error code
-        MKERNEL_API int mkernel_get_splines(const GeometryList& geometryListIn, GeometryList& geometryListOut, int numberOfPointsBetweenVertices);
+        MKERNEL_API int mkernel_get_splines(const GeometryList& geometryListIn, GeometryList& geometryListOut, int numberOfPointsBetweenNodes);
 
-        /// @brief Gets the coordinates of the closest existing vertex
+        /// @brief Gets the coordinates of the closest existing node
         /// @param[in] meshKernelId Id of the grid state
-        /// @param[in] geometryListIn Vertex coordinates
-        /// @param[in] searchRadius the radius where to search for the vertex
-        /// @param[out] geometryListOut Mesh vertex coordinates
+        /// @param[in] geometryListIn Node coordinates
+        /// @param[in] searchRadius the radius where to search for the node
+        /// @param[out] geometryListOut Mesh node coordinates
         /// @returns Error code
         MKERNEL_API int mkernel_get_node_coordinate(int meshKernelId, GeometryList& geometryListIn, double searchRadius, GeometryList& geometryListOut);
 
@@ -232,33 +232,33 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon(int meshKernelId, GeometryList& geometryList);
 
-        /// @brief Counts the number of polygon vertices contained in the mesh boundary polygon
+        /// @brief Counts the number of polygon nodes contained in the mesh boundary polygon
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[out] numberOfPolygonVertices The number of polygon points
+        /// @param[out] numberOfPolygonNodes The number of polygon points
         /// @returns Error code
-        MKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon_count_vertices(int meshKernelId, int& numberOfPolygonVertices);
+        MKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon_count_nodes(int meshKernelId, int& numberOfPolygonNodes);
 
         /// @brief Gets the refined polygon
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input polygons
-        /// @param[in] firstIndex The index of the first vertex
-        /// @param[in] secondIndex The index of the second vertex
+        /// @param[in] firstIndex The index of the first node
+        /// @param[in] secondIndex The index of the second node
         /// @param[in] distance The refinement distance
         /// @param[out] geometryListOut
         /// @returns Error code
         MKERNEL_API int mkernel_refine_polygon(int meshKernelId, const GeometryList& geometryListIn, int firstIndex, int secondIndex, double distance, GeometryList& geometryListOut);
 
-        /// @brief Counts the number of vertices after polygon refinement
+        /// @brief Counts the number of nodes after polygon refinement
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input polygon
-        /// @param[in] firstIndex The index of the first vertex
-        /// @param[in] secondIndex The index of the second vertex
+        /// @param[in] firstIndex The index of the first node
+        /// @param[in] secondIndex The index of the second node
         /// @param[in] distance The refinement distance
-        /// @param[out] numberOfPolygonVertices The number of vertices after refinement
+        /// @param[out] numberOfPolygonNodes The number of nodes after refinement
         /// @returns Error code
-        MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryList& geometryListIn, int firstIndex, int secondIndex, double distance, int& numberOfPolygonVertices);
+        MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryList& geometryListIn, int firstIndex, int secondIndex, double distance, int& numberOfPolygonNodes);
 
-        /// @brief Merges vertices within a distance of 0.001 m, effectively removing small edges
+        /// @brief Merges nodes within a distance of 0.001 m, effectively removing small edges
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The polygon where to perform the operation
         /// @returns Error code
@@ -266,8 +266,8 @@ namespace meshkernelapi
 
         /// @brief Merges node \p startNode to \p endNode
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[in] startNode The index of the first vertex to merge
-        /// @param[in] endNode The index of the second vertex to merge
+        /// @param[in] startNode The index of the first node to merge
+        /// @param[in] endNode The index of the second node to merge
         /// @returns Error code
         MKERNEL_API int mkernel_merge_two_nodes(int meshKernelId, int startNode, int endNode);
 
@@ -275,18 +275,18 @@ namespace meshkernelapi
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input polygons
         /// @param[in] inside Count nodes indices inside (1) or outside (0) the polygon
-        /// @param[in] numberOfMeshVertices The number of selected nodes
-        /// @param[out] selectedVertices The selected vertices indexes
+        /// @param[in] numberOfMeshNodes The number of selected nodes
+        /// @param[out] selectedNodes The selected nodes indexes
         /// @returns Error code
-        MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryList& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices);
+        MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryList& geometryListIn, int inside, int numberOfMeshNodes, int** selectedNodes);
 
         /// @brief Counts the number of selected mesh node indexes
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input polygons
         /// @param[in] inside Count nodes inside (1) or outside (0) the polygon
-        /// @param[out] numberOfMeshVertices The number of selected nodes
+        /// @param[out] numberOfMeshNodes The number of selected nodes
         /// @returns Error code
-        MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, GeometryList& geometryListIn, int inside, int& numberOfMeshVertices);
+        MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, GeometryList& geometryListIn, int inside, int& numberOfMeshNodes);
 
         /// @brief Insert a new edge connecting \p startNode and \p endNode
         /// @param[in] meshKernelId Id of the mesh state
@@ -301,9 +301,9 @@ namespace meshkernelapi
         /// @param[in] xCoordinate X-coordinate of the new node
         /// @param[in] yCoordinate y-coordinate of the new node
         /// @param[in] zCoordinate z-coordinate of the new node
-        /// @param[out] vertexIndex The index of the new mesh node
+        /// @param[out] nodeIndex The index of the new mesh node
         /// @returns Error code
-        MKERNEL_API int mkernel_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int& vertexIndex);
+        MKERNEL_API int mkernel_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int& nodeIndex);
 
         /// @brief Deletes a node with specified \p nodeIndex
         /// @param[in] meshKernelId Id of the mesh state
@@ -340,14 +340,14 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_offsetted_polygon(int meshKernelId, GeometryList& geometryListIn, bool innerPolygon, double distance, GeometryList& geometryListOut);
 
-        /// @brief Gets the number of vertices of the offsetted polygon  Count the number of vertices after polygon refinement
+        /// @brief Gets the number of nodes of the offsetted polygon  Count the number of nodes after polygon refinement
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The coordinate of the offset point
         /// @param[in] innerPolygon Compute inner/outer polygon
         /// @param[in] distance The offset distance
-        /// @param[out] numberOfPolygonVertices The number of vertices of the generated polygon
+        /// @param[out] numberOfPolygonNodes The number of nodes of the generated polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, GeometryList& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonVertices);
+        MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, GeometryList& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonNodes);
 
         /// @brief Refines a grid based on the samples contained in the geometry list
         /// @param[in] meshKernelId Id of the mesh state
@@ -364,13 +364,13 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_refine_mesh_based_on_polygon(int meshKernelId, GeometryList& geometryList, InterpolationParameters& interpolationParameters);
 
-        /// @brief Finds the vertex index closest to the input point
+        /// @brief Finds the node index closest to the input point
         /// @param[in] meshKernelId
         /// @param[in] geometryListIn
         /// @param[in] searchRadius
-        /// @param[out] vertexIndex
+        /// @param[out] nodeIndex
         /// @returns Error code
-        MKERNEL_API int mkernel_get_node_index(int meshKernelId, GeometryList& geometryListIn, double searchRadius, int& vertexIndex);
+        MKERNEL_API int mkernel_get_node_index(int meshKernelId, GeometryList& geometryListIn, double searchRadius, int& nodeIndex);
 
         /// @brief Selects points in polygons
         /// @param[in] meshKernelId Id of the mesh state

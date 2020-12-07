@@ -272,7 +272,7 @@ The algorithm operates as follow:
 		\item For face locations, the sample areas correspond to the faces, increased/decreased by the relativeSearchRadius parameter (relativeSearchRadius  > 1 increased, relativeSearchRadius < 1 decreased).
 		\item For Nodes and Edge locations, the dual face around the node is constructed by connecting the mid-points of all edges connected to the node. As above, the resulting polygon can be increased/decreased by the relativeSearchRadius parameter.
 \end{enumerate}
-\item The search radius is computed from the constructed polygon vertices and the locations, the maximum value is taken.
+\item The search radius is computed from the constructed polygon nodes and the locations, the maximum value is taken.
 \item The sample RTree is inquired to retrieve the indices of the samples within the search radius.
 \item The operations described above are executed on the found samples.
 \item For the Edges location, the interpolated values at the node are averaged.
@@ -281,7 +281,7 @@ The algorithm operates as follow:
 %------------------------------------------------------------------------------
 \chapter{The TriangulationInterpolation class}
 
-As for averaging, the triangle interpolation operates at three specific locations: Faces, Nodes, and Edges. The idea is to triangulate the samples and identify for each location the triangle that fully contains it. Only the values at the vertices of the identified triangle are used in the computation of each location.
+As for averaging, the triangle interpolation operates at three specific locations: Faces, Nodes, and Edges. The idea is to triangulate the samples and identify for each location the triangle that fully contains it. Only the values at the nodes of the identified triangle are used in the computation of each location.
 The algorithm operates as follow:
 \begin{itemize}
 	\item The triangulation of the samples is computed
