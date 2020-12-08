@@ -200,22 +200,22 @@ namespace meshkernel
         /// @param[out] polygonNodesCache The node cache array filled with the nodes values
         /// @param[out] localNodeIndicesCache The consecutive node index in polygonNodesCache (0, 1, 2,...)
         /// @param[out] edgeIndicesCache The edge cache array filled with edge indices
-        void FaceOpenedPolygon(int faceIndex,
-                               std::vector<Point>& polygonNodesCache,
-                               std::vector<int>& localNodeIndicesCache,
-                               std::vector<int>& edgeIndicesCache) const;
+        void ComputeFaceOpenedPolygonWithLocalMappings(int faceIndex,
+                                                       std::vector<Point>& polygonNodesCache,
+                                                       std::vector<int>& localNodeIndicesCache,
+                                                       std::vector<int>& edgeIndicesCache) const;
 
         /// @brief For a face, fills the polygonNodesCache with the face nodes, opened polygon
         /// @param[in] faceIndex The face index
         /// @param[out] polygonNodesCache The cache array to be filled
-        void FaceOpenPolygon(int faceIndex,
-                             std::vector<Point>& polygonNodesCache) const;
+        void ComputeFaceOpenedPolygon(int faceIndex,
+                                      std::vector<Point>& polygonNodesCache) const;
 
         /// @brief For a face, fills the polygonNodesCache with the face nodes, closed polygon
         /// @param[in] faceIndex The face index
         /// @param[out] polygonNodesCache The cache array to be filled
-        void FaceClosedPolygon(int faceIndex,
-                               std::vector<Point>& polygonNodesCache) const;
+        void ComputeFaceClosedPolygon(int faceIndex,
+                                      std::vector<Point>& polygonNodesCache) const;
 
         /// @brief Determine if a face is fully contained in polygon or not, based on m_nodeMask
         /// @param[in] faceIndex The face index

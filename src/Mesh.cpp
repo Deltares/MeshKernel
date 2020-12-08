@@ -808,7 +808,7 @@ void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas(bool computeM
     for (auto f = 0; f < GetNumFaces(); f++)
     {
         //need to account for spherical coordinates. Build a polygon around a face
-        FaceOpenPolygon(f, m_polygonNodesCache);
+        ComputeFaceOpenedPolygon(f, m_polygonNodesCache);
 
         if (computeMassCenters)
         {
@@ -1285,7 +1285,7 @@ void meshkernel::Mesh::DeleteEdge(int edgeIndex)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::FaceOpenPolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const
+void meshkernel::Mesh::ComputeFaceOpenedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const
 {
     const auto numFaceNodes = GetNumFaceEdges(faceIndex);
     polygonNodesCache.clear();
@@ -1296,10 +1296,10 @@ void meshkernel::Mesh::FaceOpenPolygon(int faceIndex, std::vector<Point>& polygo
     }
 }
 
-void meshkernel::Mesh::FaceOpenedPolygon(int faceIndex,
-                                         std::vector<Point>& polygonNodesCache,
-                                         std::vector<int>& localNodeIndicesCache,
-                                         std::vector<int>& edgeIndicesCache) const
+void meshkernel::Mesh::ComputeFaceOpenedPolygonWithLocalMappings(int faceIndex,
+                                                                 std::vector<Point>& polygonNodesCache,
+                                                                 std::vector<int>& localNodeIndicesCache,
+                                                                 std::vector<int>& edgeIndicesCache) const
 {
     const auto numFaceNodes = GetNumFaceEdges(faceIndex);
     polygonNodesCache.reserve(numFaceNodes + 1);
@@ -1317,9 +1317,9 @@ void meshkernel::Mesh::FaceOpenedPolygon(int faceIndex,
     }
 }
 
-void meshkernel::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const
+void meshkernel::Mesh::ComputeFaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const
 {
-    FaceOpenPolygon(faceIndex, polygonNodesCache);
+    ComputeFaceOpenedPolygon(faceIndex, polygonNodesCache);
     polygonNodesCache.push_back(polygonNodesCache.front());
 }
 

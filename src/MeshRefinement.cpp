@@ -562,7 +562,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
             }
         }
 
-        m_mesh->FaceOpenedPolygon(f, m_polygonNodesCache, m_localNodeIndicesCache, m_edgeIndicesCache);
+        m_mesh->ComputeFaceOpenedPolygonWithLocalMappings(f, m_polygonNodesCache, m_localNodeIndicesCache, m_edgeIndicesCache);
 
         int numBrotherEdges = 0;
         int numNonHangingNodes = 0;
@@ -899,7 +899,7 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int face,
 
     // compute all lengths
     const auto numEdges = m_mesh->GetNumFaceEdges(face);
-    m_mesh->FaceOpenedPolygon(face, m_polygonNodesCache, m_localNodeIndicesCache, m_edgeIndicesCache);
+    m_mesh->ComputeFaceOpenedPolygonWithLocalMappings(face, m_polygonNodesCache, m_localNodeIndicesCache, m_edgeIndicesCache);
     for (int i = 0; i < numEdges; i++)
     {
         const int edgeIndex = m_edgeIndicesCache[i];
