@@ -1812,9 +1812,9 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
 {
     const size_t maximumNumberCircumcenterIterations = 100;
     const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; //111km = 0-e digit.
-    std::vector<Point> middlePoints(maximumNumberOfNodesPerFace);
+    std::vector<Point> middlePoints;
     middlePoints.reserve(maximumNumberOfNodesPerFace);
-    std::vector<Point> normals(maximumNumberOfNodesPerFace);
+    std::vector<Point> normals;
     normals.reserve(maximumNumberOfNodesPerFace);
     const auto numNodes = polygon.size();
 
