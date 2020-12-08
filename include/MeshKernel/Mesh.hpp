@@ -195,25 +195,27 @@ namespace meshkernel
         /// @brief From the masked edges compute the masked nodes
         void ComputeNodeMaskFromEdgeMask();
 
-        /// @brief For a face, fills the local caches (get_cellpolygon)
+        /// @brief For a face, fills the local caches, opened polygon (get_cellpolygon)
         /// @param[in] faceIndex The face index
         /// @param[out] polygonNodesCache The node cache array filled with the nodes values
         /// @param[out] localNodeIndicesCache The consecutive node index in polygonNodesCache (0, 1, 2,...)
         /// @param[out] edgeIndicesCache The edge cache array filled with edge indices
-        /// @param[out] numClosedPolygonNodes The number of valid values in the array above
-        void FaceClosedPolygon(int faceIndex,
+        void FaceOpenedPolygon(int faceIndex,
                                std::vector<Point>& polygonNodesCache,
                                std::vector<int>& localNodeIndicesCache,
-                               std::vector<int>& edgeIndicesCache,
-                               int& numClosedPolygonNodes) const;
+                               std::vector<int>& edgeIndicesCache) const;
 
-        /// @brief For a face, fills the polygonNodesCache with the face nodes (get_cellpolygon)
+        /// @brief For a face, fills the polygonNodesCache with the face nodes, opened polygon
         /// @param[in] faceIndex The face index
         /// @param[out] polygonNodesCache The cache array to be filled
-        /// @param[out] numClosedPolygonNodes The number of valid face nodes
+        void FaceOpenPolygon(int faceIndex,
+                             std::vector<Point>& polygonNodesCache) const;
+
+        /// @brief For a face, fills the polygonNodesCache with the face nodes, closed polygon
+        /// @param[in] faceIndex The face index
+        /// @param[out] polygonNodesCache The cache array to be filled
         void FaceClosedPolygon(int faceIndex,
-                               std::vector<Point>& polygonNodesCache,
-                               int& numClosedPolygonNodes) const;
+                               std::vector<Point>& polygonNodesCache) const;
 
         /// @brief Determine if a face is fully contained in polygon or not, based on m_nodeMask
         /// @param[in] faceIndex The face index
@@ -270,17 +272,11 @@ namespace meshkernel
         /// @return If the face is on boundary
         [[nodiscard]] bool IsFaceOnBoundary(int face) const;
 
-        /// @brief Circumcenter of a face (getcircumcenter)
+        /// @brief Circumcenter of a face (getcircumcenter), for an open polygon
         /// @param[in,out] polygon Cache storing the face nodes
-        /// @param[in,out] middlePoints Caching array for the edges middle points
-        /// @param[in,out] normals Caching array for normals
-        /// @param[in] numNodes Number of valid nodes in the cache
         /// @param[in] edgesNumFaces For meshes, the number of faces sharing the edges
         /// @returns The computed circumcenter
         [[nodiscard]] Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                   std::vector<Point>& middlePoints,
-                                                   std::vector<Point>& normals,
-                                                   int numNodes,
                                                    const std::vector<int>& edgesNumFaces) const;
 
         /// @brief Gets the mass centers of obtuse triangles

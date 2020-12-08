@@ -585,10 +585,9 @@ namespace meshkernel
                 if (numFaceNodes == 0)
                     continue;
 
-                int numClosedPolygonPoints;
-                m_mesh->FaceClosedPolygon(f, m_polygonNodesCache, numClosedPolygonPoints);
+                m_mesh->FaceClosedPolygon(f, m_polygonNodesCache);
 
-                nodeInFace = IsPointInPolygonNodes(m_nodes[i], m_polygonNodesCache, 0, numClosedPolygonPoints - 1, m_mesh->m_projection);
+                nodeInFace = IsPointInPolygonNodes(m_nodes[i], m_polygonNodesCache, 0, m_polygonNodesCache.size() - 1, m_mesh->m_projection);
                 if (nodeInFace)
                 {
                     crossedFaceIndex = f;

@@ -726,10 +726,11 @@ namespace meshkernel
         }
     }
 
-    Point ReferencePoint(std::vector<Point>& polygon, int numPoints, const Projection& projection)
+    Point ReferencePoint(std::vector<Point>& polygon, const Projection& projection)
     {
         auto minX = std::numeric_limits<double>::max();
         auto minY = std::numeric_limits<double>::max();
+        const auto numPoints = polygon.size();
         for (auto i = 0; i < numPoints; i++)
         {
             minX = std::min(polygon[i].x, minX);
@@ -1155,9 +1156,9 @@ namespace meshkernel
         return sgn(val);
     }
 
-    void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, const Projection& projection, double& area, Point& centerOfMass, bool& isCounterClockWise)
+    void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection, double& area, Point& centerOfMass, bool& isCounterClockWise)
     {
-        if (numberOfPolygonPoints <= 0)
+        if (polygon.empty())
         {
             throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon contains no nodes.");
         }
@@ -1166,7 +1167,8 @@ namespace meshkernel
         double xCenterOfMass = 0.0;
         double yCenterOfMass = 0.0;
         const double minArea = 1e-8;
-        const Point reference = ReferencePoint(polygon, numberOfPolygonPoints, projection);
+        const Point reference = ReferencePoint(polygon, projection);
+        const auto numberOfPolygonPoints = polygon.size();
         for (int n = 0; n < numberOfPolygonPoints; n++)
         {
             const auto nextNode = NextCircularForwardIndex(n, numberOfPolygonPoints);

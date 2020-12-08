@@ -309,10 +309,9 @@ namespace meshkernel
 
     /// @brief For a given polygon compute a reference point (the function can also shift the input polygon coordinates)
     /// @param[in,out] polygon The input polygon.
-    /// @param[in] numPoints The number of points to account for in the input polygon.
     /// @param[in] projection The coordinate system projection.
     /// @return The reference point
-    [[nodiscard]] Point ReferencePoint(std::vector<Point>& polygon, int numPoints, const Projection& projection);
+    [[nodiscard]] Point ReferencePoint(std::vector<Point>& polygon, const Projection& projection);
 
     /// @brief Computes the squared distance between two points
     /// @param[in] firstPoint The first point.
@@ -396,14 +395,13 @@ namespace meshkernel
     /// @return The cross product sign
     [[nodiscard]] int CrossProductSign(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
 
-    /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges
+    /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened
     /// @param[in] polygon The input vector containing the nodes of the polygon.
-    /// @param[in] numberOfPolygonPoints The number of points to account for in the input vector.
     /// @param[in] projection The projection to use.
     /// @param[in,out] area The resulting area.
     /// @param[in,out] centerOfMass The resulting center of mass.
     /// @param[in,out] isCounterClockWise The orientation of the edges.
-    void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, const Projection& projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
+    void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
 
     /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point
     /// @param[in] coordinates
