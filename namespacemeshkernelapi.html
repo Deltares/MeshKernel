@@ -144,11 +144,11 @@ Functions</h2></td></tr>
 <tr class="memitem:aec9022bb53c52e912e9c9b614f54472b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aec9022bb53c52e912e9c9b614f54472b">mkernel_get_smoothness</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
 <tr class="memdesc:aec9022bb53c52e912e9c9b614f54472b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the smoothness.  <a href="#aec9022bb53c52e912e9c9b614f54472b">More...</a><br /></td></tr>
 <tr class="separator:aec9022bb53c52e912e9c9b614f54472b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2abf4729edd92fb3c7c7e0a65b7823c8"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2abf4729edd92fb3c7c7e0a65b7823c8">mkernel_get_splines</a> (const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut, int numberOfPointsBetweenVertices)</td></tr>
-<tr class="memdesc:a2abf4729edd92fb3c7c7e0a65b7823c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get spline intermediate points.  <a href="#a2abf4729edd92fb3c7c7e0a65b7823c8">More...</a><br /></td></tr>
-<tr class="separator:a2abf4729edd92fb3c7c7e0a65b7823c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11d47258f24cf6884bb39bf648356e08"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a11d47258f24cf6884bb39bf648356e08">mkernel_get_splines</a> (const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut, int numberOfPointsBetweenNodes)</td></tr>
+<tr class="memdesc:a11d47258f24cf6884bb39bf648356e08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get spline intermediate points.  <a href="#a11d47258f24cf6884bb39bf648356e08">More...</a><br /></td></tr>
+<tr class="separator:a11d47258f24cf6884bb39bf648356e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a899a6c6bce33cfade1c262ad035b32b0"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a899a6c6bce33cfade1c262ad035b32b0">mkernel_get_node_coordinate</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, double searchRadius, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut)</td></tr>
-<tr class="memdesc:a899a6c6bce33cfade1c262ad035b32b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the coordinates of the closest existing vertex.  <a href="#a899a6c6bce33cfade1c262ad035b32b0">More...</a><br /></td></tr>
+<tr class="memdesc:a899a6c6bce33cfade1c262ad035b32b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the coordinates of the closest existing node.  <a href="#a899a6c6bce33cfade1c262ad035b32b0">More...</a><br /></td></tr>
 <tr class="separator:a899a6c6bce33cfade1c262ad035b32b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4aaa8170f2df2ffb21ad2cc72dadb251"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a4aaa8170f2df2ffb21ad2cc72dadb251">mkernel_curvilinear_mesh_from_splines_ortho</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters)</td></tr>
 <tr class="memdesc:a4aaa8170f2df2ffb21ad2cc72dadb251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes curvilinear grid from splines with an advancing front.  <a href="#a4aaa8170f2df2ffb21ad2cc72dadb251">More...</a><br /></td></tr>
@@ -177,33 +177,33 @@ Functions</h2></td></tr>
 <tr class="memitem:a8891dba28f07e8ed5715a47ba57d144e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8891dba28f07e8ed5715a47ba57d144e">mkernel_copy_mesh_boundaries_to_polygon</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
 <tr class="memdesc:a8891dba28f07e8ed5715a47ba57d144e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the mesh boundary polygon.  <a href="#a8891dba28f07e8ed5715a47ba57d144e">More...</a><br /></td></tr>
 <tr class="separator:a8891dba28f07e8ed5715a47ba57d144e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a7017a50b05e29ab7d25a3ca0411c7a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0a7017a50b05e29ab7d25a3ca0411c7a">mkernel_copy_mesh_boundaries_to_polygon_count_vertices</a> (int meshKernelId, int &amp;numberOfPolygonVertices)</td></tr>
-<tr class="memdesc:a0a7017a50b05e29ab7d25a3ca0411c7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of polygon vertices contained in the mesh boundary polygon.  <a href="#a0a7017a50b05e29ab7d25a3ca0411c7a">More...</a><br /></td></tr>
-<tr class="separator:a0a7017a50b05e29ab7d25a3ca0411c7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92f7bc752c9d2a0369ffd4add0be98de"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a92f7bc752c9d2a0369ffd4add0be98de">mkernel_copy_mesh_boundaries_to_polygon_count_nodes</a> (int meshKernelId, int &amp;numberOfPolygonNodes)</td></tr>
+<tr class="memdesc:a92f7bc752c9d2a0369ffd4add0be98de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of polygon nodes contained in the mesh boundary polygon.  <a href="#a92f7bc752c9d2a0369ffd4add0be98de">More...</a><br /></td></tr>
+<tr class="separator:a92f7bc752c9d2a0369ffd4add0be98de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a757cb24349b7a6c3df27e64a08ece938"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a757cb24349b7a6c3df27e64a08ece938">mkernel_refine_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int firstIndex, int secondIndex, double distance, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut)</td></tr>
 <tr class="memdesc:a757cb24349b7a6c3df27e64a08ece938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the refined polygon.  <a href="#a757cb24349b7a6c3df27e64a08ece938">More...</a><br /></td></tr>
 <tr class="separator:a757cb24349b7a6c3df27e64a08ece938"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa11d24e49178a0daeb78467b6168185"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#afa11d24e49178a0daeb78467b6168185">mkernel_refine_polygon_count</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int firstIndex, int secondIndex, double distance, int &amp;numberOfPolygonVertices)</td></tr>
-<tr class="memdesc:afa11d24e49178a0daeb78467b6168185"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of vertices after polygon refinement.  <a href="#afa11d24e49178a0daeb78467b6168185">More...</a><br /></td></tr>
-<tr class="separator:afa11d24e49178a0daeb78467b6168185"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb4e253c6e745b0cabd395b4d03a226a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#acb4e253c6e745b0cabd395b4d03a226a">mkernel_refine_polygon_count</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int firstIndex, int secondIndex, double distance, int &amp;numberOfPolygonNodes)</td></tr>
+<tr class="memdesc:acb4e253c6e745b0cabd395b4d03a226a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of nodes after polygon refinement.  <a href="#acb4e253c6e745b0cabd395b4d03a226a">More...</a><br /></td></tr>
+<tr class="separator:acb4e253c6e745b0cabd395b4d03a226a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6d7d43f685e9b98be2345a99d32d614"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab6d7d43f685e9b98be2345a99d32d614">mkernel_merge_nodes</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn)</td></tr>
-<tr class="memdesc:ab6d7d43f685e9b98be2345a99d32d614"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges vertices within a distance of 0.001 m, effectively removing small edges.  <a href="#ab6d7d43f685e9b98be2345a99d32d614">More...</a><br /></td></tr>
+<tr class="memdesc:ab6d7d43f685e9b98be2345a99d32d614"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges nodes within a distance of 0.001 m, effectively removing small edges.  <a href="#ab6d7d43f685e9b98be2345a99d32d614">More...</a><br /></td></tr>
 <tr class="separator:ab6d7d43f685e9b98be2345a99d32d614"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71173cc010fe14b33a94678e426e9a82"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a71173cc010fe14b33a94678e426e9a82">mkernel_merge_two_nodes</a> (int meshKernelId, int startNode, int endNode)</td></tr>
 <tr class="memdesc:a71173cc010fe14b33a94678e426e9a82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges node <code>startNode</code> to <code>endNode</code>.  <a href="#a71173cc010fe14b33a94678e426e9a82">More...</a><br /></td></tr>
 <tr class="separator:a71173cc010fe14b33a94678e426e9a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac4535d8d6798062fa561f80a7f4e360c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac4535d8d6798062fa561f80a7f4e360c">mkernel_nodes_in_polygons</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int inside, int numberOfMeshVertices, int **selectedVertices)</td></tr>
-<tr class="memdesc:ac4535d8d6798062fa561f80a7f4e360c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the selected mesh node indexes (see how to pass arrays in <a href="https://www.mono-project.com/docs/advanced/pinvoke/#memory-management">https://www.mono-project.com/docs/advanced/pinvoke/#memory-management</a>)  <a href="#ac4535d8d6798062fa561f80a7f4e360c">More...</a><br /></td></tr>
-<tr class="separator:ac4535d8d6798062fa561f80a7f4e360c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3de7ced52633ef3c61eb146d8e143dc9"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3de7ced52633ef3c61eb146d8e143dc9">mkernel_count_nodes_in_polygons</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int inside, int &amp;numberOfMeshVertices)</td></tr>
-<tr class="memdesc:a3de7ced52633ef3c61eb146d8e143dc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of selected mesh node indexes.  <a href="#a3de7ced52633ef3c61eb146d8e143dc9">More...</a><br /></td></tr>
-<tr class="separator:a3de7ced52633ef3c61eb146d8e143dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51122095f41e4717c2e7d9d74a7e4482"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a51122095f41e4717c2e7d9d74a7e4482">mkernel_nodes_in_polygons</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int inside, int numberOfMeshNodes, int **selectedNodes)</td></tr>
+<tr class="memdesc:a51122095f41e4717c2e7d9d74a7e4482"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the selected mesh node indexes (see how to pass arrays in <a href="https://www.mono-project.com/docs/advanced/pinvoke/#memory-management">https://www.mono-project.com/docs/advanced/pinvoke/#memory-management</a>)  <a href="#a51122095f41e4717c2e7d9d74a7e4482">More...</a><br /></td></tr>
+<tr class="separator:a51122095f41e4717c2e7d9d74a7e4482"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a054dc87ee841b345f9937e22280eba90"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a054dc87ee841b345f9937e22280eba90">mkernel_count_nodes_in_polygons</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int inside, int &amp;numberOfMeshNodes)</td></tr>
+<tr class="memdesc:a054dc87ee841b345f9937e22280eba90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of selected mesh node indexes.  <a href="#a054dc87ee841b345f9937e22280eba90">More...</a><br /></td></tr>
+<tr class="separator:a054dc87ee841b345f9937e22280eba90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7dc9fa49961cfdae295165ef3afa62e9"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a7dc9fa49961cfdae295165ef3afa62e9">mkernel_insert_edge</a> (int meshKernelId, int startNode, int endNode, int &amp;newEdgeIndex)</td></tr>
 <tr class="memdesc:a7dc9fa49961cfdae295165ef3afa62e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a new edge connecting <code>startNode</code> and <code>endNode</code>.  <a href="#a7dc9fa49961cfdae295165ef3afa62e9">More...</a><br /></td></tr>
 <tr class="separator:a7dc9fa49961cfdae295165ef3afa62e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9f5b1d56d156b67205ed723dd134310"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad9f5b1d56d156b67205ed723dd134310">mkernel_insert_node</a> (int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int &amp;vertexIndex)</td></tr>
-<tr class="memdesc:ad9f5b1d56d156b67205ed723dd134310"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a new node.  <a href="#ad9f5b1d56d156b67205ed723dd134310">More...</a><br /></td></tr>
-<tr class="separator:ad9f5b1d56d156b67205ed723dd134310"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ac86cc2b55610590427ca48c1a2f80d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1ac86cc2b55610590427ca48c1a2f80d">mkernel_insert_node</a> (int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int &amp;nodeIndex)</td></tr>
+<tr class="memdesc:a1ac86cc2b55610590427ca48c1a2f80d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a new node.  <a href="#a1ac86cc2b55610590427ca48c1a2f80d">More...</a><br /></td></tr>
+<tr class="separator:a1ac86cc2b55610590427ca48c1a2f80d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87f5acd2993cb7a4f38b25f38c569a90"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a87f5acd2993cb7a4f38b25f38c569a90">mkernel_delete_node</a> (int meshKernelId, int nodeIndex)</td></tr>
 <tr class="memdesc:a87f5acd2993cb7a4f38b25f38c569a90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a node with specified <code>nodeIndex</code>.  <a href="#a87f5acd2993cb7a4f38b25f38c569a90">More...</a><br /></td></tr>
 <tr class="separator:a87f5acd2993cb7a4f38b25f38c569a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -219,18 +219,18 @@ Functions</h2></td></tr>
 <tr class="memitem:aa5c0c3600778e87cd991a1c44ccabfac"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa5c0c3600778e87cd991a1c44ccabfac">mkernel_offsetted_polygon</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, bool innerPolygon, double distance, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut)</td></tr>
 <tr class="memdesc:aa5c0c3600778e87cd991a1c44ccabfac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offsets a polygon.  <a href="#aa5c0c3600778e87cd991a1c44ccabfac">More...</a><br /></td></tr>
 <tr class="separator:aa5c0c3600778e87cd991a1c44ccabfac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a475f17ae1127d47a04038e1daeedd66c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a475f17ae1127d47a04038e1daeedd66c">mkernel_offsetted_polygon_count</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, bool innerPolygon, double distance, int &amp;numberOfPolygonVertices)</td></tr>
-<tr class="memdesc:a475f17ae1127d47a04038e1daeedd66c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of vertices of the offsetted polygon Count the number of vertices after polygon refinement.  <a href="#a475f17ae1127d47a04038e1daeedd66c">More...</a><br /></td></tr>
-<tr class="separator:a475f17ae1127d47a04038e1daeedd66c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1d848710f4889df110134467a3f6a20"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad1d848710f4889df110134467a3f6a20">mkernel_offsetted_polygon_count</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, bool innerPolygon, double distance, int &amp;numberOfPolygonNodes)</td></tr>
+<tr class="memdesc:ad1d848710f4889df110134467a3f6a20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of nodes of the offsetted polygon Count the number of nodes after polygon refinement.  <a href="#ad1d848710f4889df110134467a3f6a20">More...</a><br /></td></tr>
+<tr class="separator:ad1d848710f4889df110134467a3f6a20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d704c082ff3159679c5dc7096813c5a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9d704c082ff3159679c5dc7096813c5a">mkernel_refine_mesh_based_on_samples</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, <a class="el" href="structmeshkernelapi_1_1_interpolation_parameters.html">InterpolationParameters</a> &amp;interpolationParameters, <a class="el" href="structmeshkernelapi_1_1_sample_refine_parameters.html">SampleRefineParameters</a> &amp;sampleRefineParameters)</td></tr>
 <tr class="memdesc:a9d704c082ff3159679c5dc7096813c5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a grid based on the samples contained in the geometry list.  <a href="#a9d704c082ff3159679c5dc7096813c5a">More...</a><br /></td></tr>
 <tr class="separator:a9d704c082ff3159679c5dc7096813c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64d756153b6a87565cfec0347c0592ec"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a64d756153b6a87565cfec0347c0592ec">mkernel_refine_mesh_based_on_polygon</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, <a class="el" href="structmeshkernelapi_1_1_interpolation_parameters.html">InterpolationParameters</a> &amp;interpolationParameters)</td></tr>
 <tr class="memdesc:a64d756153b6a87565cfec0347c0592ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a grid based on polygon.  <a href="#a64d756153b6a87565cfec0347c0592ec">More...</a><br /></td></tr>
 <tr class="separator:a64d756153b6a87565cfec0347c0592ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9adc53c37e32872e40072d3a6347476"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae9adc53c37e32872e40072d3a6347476">mkernel_get_node_index</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, double searchRadius, int &amp;vertexIndex)</td></tr>
-<tr class="memdesc:ae9adc53c37e32872e40072d3a6347476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the vertex index closest to the input point.  <a href="#ae9adc53c37e32872e40072d3a6347476">More...</a><br /></td></tr>
-<tr class="separator:ae9adc53c37e32872e40072d3a6347476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01adb9501c887fce41e12fca4ea6ed6c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a01adb9501c887fce41e12fca4ea6ed6c">mkernel_get_node_index</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, double searchRadius, int &amp;nodeIndex)</td></tr>
+<tr class="memdesc:a01adb9501c887fce41e12fca4ea6ed6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the node index closest to the input point.  <a href="#a01adb9501c887fce41e12fca4ea6ed6c">More...</a><br /></td></tr>
+<tr class="separator:a01adb9501c887fce41e12fca4ea6ed6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae161baf894d2550e302db3dbdf80948f"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae161baf894d2550e302db3dbdf80948f">mkernel_points_in_polygon</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;inputPolygon, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;inputPoints, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectedPoints)</td></tr>
 <tr class="memdesc:ae161baf894d2550e302db3dbdf80948f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects points in polygons.  <a href="#ae161baf894d2550e302db3dbdf80948f">More...</a><br /></td></tr>
 <tr class="separator:ae161baf894d2550e302db3dbdf80948f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -447,14 +447,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0a7017a50b05e29ab7d25a3ca0411c7a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a7017a50b05e29ab7d25a3ca0411c7a">&#9670;&nbsp;</a></span>mkernel_copy_mesh_boundaries_to_polygon_count_vertices()</h2>
+<a id="a92f7bc752c9d2a0369ffd4add0be98de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92f7bc752c9d2a0369ffd4add0be98de">&#9670;&nbsp;</a></span>mkernel_copy_mesh_boundaries_to_polygon_count_nodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_copy_mesh_boundaries_to_polygon_count_vertices </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_copy_mesh_boundaries_to_polygon_count_nodes </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -463,7 +463,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int &amp;&#160;</td>
-          <td class="paramname"><em>numberOfPolygonVertices</em>&#160;</td>
+          <td class="paramname"><em>numberOfPolygonNodes</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -473,11 +473,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Counts the number of polygon vertices contained in the mesh boundary polygon. </p>
+<p>Counts the number of polygon nodes contained in the mesh boundary polygon. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPolygonVertices</td><td>The number of polygon points </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPolygonNodes</td><td>The number of polygon points </td></tr>
   </table>
   </dd>
 </dl>
@@ -485,8 +485,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a3de7ced52633ef3c61eb146d8e143dc9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3de7ced52633ef3c61eb146d8e143dc9">&#9670;&nbsp;</a></span>mkernel_count_nodes_in_polygons()</h2>
+<a id="a054dc87ee841b345f9937e22280eba90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a054dc87ee841b345f9937e22280eba90">&#9670;&nbsp;</a></span>mkernel_count_nodes_in_polygons()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -513,7 +513,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int &amp;&#160;</td>
-          <td class="paramname"><em>numberOfMeshVertices</em>&#160;</td>
+          <td class="paramname"><em>numberOfMeshNodes</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -529,7 +529,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input polygons </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">inside</td><td>Count nodes inside (1) or outside (0) the polygon </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfMeshVertices</td><td>The number of selected nodes </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfMeshNodes</td><td>The number of selected nodes </td></tr>
   </table>
   </dd>
 </dl>
@@ -1323,13 +1323,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the coordinates of the closest existing vertex. </p>
+<p>Gets the coordinates of the closest existing node. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the grid state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>Vertex coordinates </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>the radius where to search for the vertex </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">geometryListOut</td><td>Mesh vertex coordinates </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>Node coordinates </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>the radius where to search for the node </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">geometryListOut</td><td>Mesh node coordinates </td></tr>
   </table>
   </dd>
 </dl>
@@ -1337,8 +1337,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae9adc53c37e32872e40072d3a6347476"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae9adc53c37e32872e40072d3a6347476">&#9670;&nbsp;</a></span>mkernel_get_node_index()</h2>
+<a id="a01adb9501c887fce41e12fca4ea6ed6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01adb9501c887fce41e12fca4ea6ed6c">&#9670;&nbsp;</a></span>mkernel_get_node_index()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1365,7 +1365,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int &amp;&#160;</td>
-          <td class="paramname"><em>vertexIndex</em>&#160;</td>
+          <td class="paramname"><em>nodeIndex</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1375,13 +1375,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Finds the vertex index closest to the input point. </p>
+<p>Finds the node index closest to the input point. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td></td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">vertexIndex</td><td></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">nodeIndex</td><td></td></tr>
   </table>
   </dd>
 </dl>
@@ -1651,8 +1651,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a2abf4729edd92fb3c7c7e0a65b7823c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2abf4729edd92fb3c7c7e0a65b7823c8">&#9670;&nbsp;</a></span>mkernel_get_splines()</h2>
+<a id="a11d47258f24cf6884bb39bf648356e08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11d47258f24cf6884bb39bf648356e08">&#9670;&nbsp;</a></span>mkernel_get_splines()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1673,7 +1673,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>numberOfPointsBetweenVertices</em>&#160;</td>
+          <td class="paramname"><em>numberOfPointsBetweenNodes</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1686,9 +1686,9 @@ Functions</h2></td></tr>
 <p>Get spline intermediate points. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input corner vertices of the splines </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input corner nodes of the splines </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">geometryListOut</td><td>The output spline </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPointsBetweenVertices</td><td>The number of spline vertices between the corners points </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPointsBetweenNodes</td><td>The number of spline nodes between the corners points </td></tr>
   </table>
   </dd>
 </dl>
@@ -1748,8 +1748,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad9f5b1d56d156b67205ed723dd134310"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9f5b1d56d156b67205ed723dd134310">&#9670;&nbsp;</a></span>mkernel_insert_node()</h2>
+<a id="a1ac86cc2b55610590427ca48c1a2f80d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ac86cc2b55610590427ca48c1a2f80d">&#9670;&nbsp;</a></span>mkernel_insert_node()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1782,7 +1782,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int &amp;&#160;</td>
-          <td class="paramname"><em>vertexIndex</em>&#160;</td>
+          <td class="paramname"><em>nodeIndex</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1799,7 +1799,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xCoordinate</td><td>X-coordinate of the new node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yCoordinate</td><td>y-coordinate of the new node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">zCoordinate</td><td>z-coordinate of the new node </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">vertexIndex</td><td>The index of the new mesh node </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">nodeIndex</td><td>The index of the new mesh node </td></tr>
   </table>
   </dd>
 </dl>
@@ -1954,7 +1954,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Merges vertices within a distance of 0.001 m, effectively removing small edges. </p>
+<p>Merges nodes within a distance of 0.001 m, effectively removing small edges. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2002,8 +2002,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">startNode</td><td>The index of the first vertex to merge </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">endNode</td><td>The index of the second vertex to merge </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startNode</td><td>The index of the first node to merge </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">endNode</td><td>The index of the second node to merge </td></tr>
   </table>
   </dd>
 </dl>
@@ -2083,8 +2083,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac4535d8d6798062fa561f80a7f4e360c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac4535d8d6798062fa561f80a7f4e360c">&#9670;&nbsp;</a></span>mkernel_nodes_in_polygons()</h2>
+<a id="a51122095f41e4717c2e7d9d74a7e4482"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51122095f41e4717c2e7d9d74a7e4482">&#9670;&nbsp;</a></span>mkernel_nodes_in_polygons()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2111,13 +2111,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>numberOfMeshVertices</em>, </td>
+          <td class="paramname"><em>numberOfMeshNodes</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int **&#160;</td>
-          <td class="paramname"><em>selectedVertices</em>&#160;</td>
+          <td class="paramname"><em>selectedNodes</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2133,8 +2133,8 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input polygons </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">inside</td><td>Count nodes indices inside (1) or outside (0) the polygon </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">numberOfMeshVertices</td><td>The number of selected nodes </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">selectedVertices</td><td>The selected vertices indexes </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numberOfMeshNodes</td><td>The number of selected nodes </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">selectedNodes</td><td>The selected nodes indexes </td></tr>
   </table>
   </dd>
 </dl>
@@ -2201,8 +2201,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a475f17ae1127d47a04038e1daeedd66c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a475f17ae1127d47a04038e1daeedd66c">&#9670;&nbsp;</a></span>mkernel_offsetted_polygon_count()</h2>
+<a id="ad1d848710f4889df110134467a3f6a20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1d848710f4889df110134467a3f6a20">&#9670;&nbsp;</a></span>mkernel_offsetted_polygon_count()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2235,7 +2235,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int &amp;&#160;</td>
-          <td class="paramname"><em>numberOfPolygonVertices</em>&#160;</td>
+          <td class="paramname"><em>numberOfPolygonNodes</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2245,14 +2245,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the number of vertices of the offsetted polygon Count the number of vertices after polygon refinement. </p>
+<p>Gets the number of nodes of the offsetted polygon Count the number of nodes after polygon refinement. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The coordinate of the offset point </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">innerPolygon</td><td>Compute inner/outer polygon </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">distance</td><td>The offset distance </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPolygonVertices</td><td>The number of vertices of the generated polygon </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPolygonNodes</td><td>The number of nodes of the generated polygon </td></tr>
   </table>
   </dd>
 </dl>
@@ -2704,8 +2704,8 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input polygons </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">firstIndex</td><td>The index of the first vertex </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">secondIndex</td><td>The index of the second vertex </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">firstIndex</td><td>The index of the first node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondIndex</td><td>The index of the second node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">distance</td><td>The refinement distance </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">geometryListOut</td><td></td></tr>
   </table>
@@ -2715,8 +2715,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="afa11d24e49178a0daeb78467b6168185"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa11d24e49178a0daeb78467b6168185">&#9670;&nbsp;</a></span>mkernel_refine_polygon_count()</h2>
+<a id="acb4e253c6e745b0cabd395b4d03a226a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb4e253c6e745b0cabd395b4d03a226a">&#9670;&nbsp;</a></span>mkernel_refine_polygon_count()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2755,7 +2755,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int &amp;&#160;</td>
-          <td class="paramname"><em>numberOfPolygonVertices</em>&#160;</td>
+          <td class="paramname"><em>numberOfPolygonNodes</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2765,15 +2765,15 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Counts the number of vertices after polygon refinement. </p>
+<p>Counts the number of nodes after polygon refinement. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input polygon </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">firstIndex</td><td>The index of the first vertex </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">secondIndex</td><td>The index of the second vertex </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">firstIndex</td><td>The index of the first node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondIndex</td><td>The index of the second node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">distance</td><td>The refinement distance </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPolygonVertices</td><td>The number of vertices after refinement </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPolygonNodes</td><td>The number of nodes after refinement </td></tr>
   </table>
   </dd>
 </dl>
