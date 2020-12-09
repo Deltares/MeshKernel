@@ -146,7 +146,7 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
     // use bisection to find the intersection
     double squaredDistanceBetweenCrossings = std::numeric_limits<double>::max();
     double maxSquaredDistanceBetweenCrossings = 1e-12;
-    double maxDistanceBetweenVertices = 0.0001;
+    double maxDistanceBetweenNodes = 0.0001;
     double firstRatioIterations = 1.0;
     double secondRatioIterations = 1.0;
     double previousFirstCrossing;
@@ -240,8 +240,8 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
                 crossProductIntersection = crossProduct;
             }
 
-            if (std::abs(firstCrossing - previousFirstCrossing) > maxDistanceBetweenVertices ||
-                std::abs(secondCrossing - previousSecondCrossing) > maxDistanceBetweenVertices)
+            if (std::abs(firstCrossing - previousFirstCrossing) > maxDistanceBetweenNodes ||
+                std::abs(secondCrossing - previousSecondCrossing) > maxDistanceBetweenNodes)
             {
                 squaredDistanceBetweenCrossings = ComputeSquaredDistance(oldIntersection, closestIntersection, m_projection);
             }

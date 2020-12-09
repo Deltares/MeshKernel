@@ -1615,7 +1615,7 @@ void meshkernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inv
 
 void meshkernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion)
 {
-    if (deletionOption == AllVerticesInside)
+    if (deletionOption == AllNodesInside)
     {
         for (int n = 0; n < GetNumNodes(); ++n)
         {
@@ -2164,13 +2164,13 @@ void meshkernel::Mesh::GetOrthogonality(double* orthogonality)
     for (int e = 0; e < GetNumEdges(); e++)
     {
         orthogonality[e] = doubleMissingValue;
-        int firstVertex = m_edges[e].first;
-        int secondVertex = m_edges[e].second;
+        int firstNode = m_edges[e].first;
+        int secondNode = m_edges[e].second;
 
-        if (firstVertex != 0 && secondVertex != 0 && e < GetNumEdges() && !IsEdgeOnBoundary(e))
+        if (firstNode != 0 && secondNode != 0 && e < GetNumEdges() && !IsEdgeOnBoundary(e))
         {
-            orthogonality[e] = NormalizedInnerProductTwoSegments(m_nodes[firstVertex],
-                                                                 m_nodes[secondVertex],
+            orthogonality[e] = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
+                                                                 m_nodes[secondNode],
                                                                  m_facesCircumcenters[m_edgesFaces[e][0]],
                                                                  m_facesCircumcenters[m_edgesFaces[e][1]],
                                                                  m_projection);
@@ -2187,10 +2187,10 @@ void meshkernel::Mesh::GetSmoothness(double* smoothness)
     for (int e = 0; e < GetNumEdges(); e++)
     {
         smoothness[e] = doubleMissingValue;
-        int firstVertex = m_edges[e].first;
-        int secondVertex = m_edges[e].second;
+        int firstNode = m_edges[e].first;
+        int secondNode = m_edges[e].second;
 
-        if (firstVertex != 0 && secondVertex != 0 && e < GetNumEdges() && !IsEdgeOnBoundary(e))
+        if (firstNode != 0 && secondNode != 0 && e < GetNumEdges() && !IsEdgeOnBoundary(e))
         {
             const auto leftFace = m_edgesFaces[e][0];
             const auto rightFace = m_edgesFaces[e][1];
