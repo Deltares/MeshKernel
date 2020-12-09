@@ -64,8 +64,7 @@ namespace meshkernel
 
         /// @brief Constructor, refine based on polygon
         /// @param[in] mesh The mesh to be refined
-        /// @param[in] mesh The polygon where to refine
-        /// @param[in] sampleRefineParameters Refinement based on samples parameters
+        /// @param[in] polygon The polygon where to refine
         /// @param[in] interpolationParameters Interpolation parameters
         explicit MeshRefinement(std::shared_ptr<Mesh> mesh,
                                 const Polygons& polygon,
