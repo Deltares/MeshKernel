@@ -469,7 +469,8 @@ void meshkernel::MeshRefinement::ConnectHangingNodes()
 void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRefinement)
 {
     //Add new nodes where required
-    std::vector<int> notHangingFaceNodes(maximumNumberOfNodesPerFace, intMissingValue);
+    std::vector<size_t> notHangingFaceNodes;
+    notHangingFaceNodes.reserve(maximumNumberOfNodesPerFace);
     std::vector<size_t> nonHangingEdges;
     nonHangingEdges.reserve(maximumNumberOfNodesPerFace);
 
@@ -588,12 +589,10 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
                 }
 
                 notHangingFaceNodes.emplace_back(newNode);
-
             }
             else if ((m_brotherEdges[edgeIndex] != firstEdgeIndex || m_brotherEdges[edgeIndex] < 0) && (m_edgeMask[edgeIndex] != 0))
             {
                 notHangingFaceNodes.emplace_back(m_edgeMask[edgeIndex]);
-
             }
 
             if (notHangingFaceNodes.size() >= maximumNumberOfNodesPerFace)
