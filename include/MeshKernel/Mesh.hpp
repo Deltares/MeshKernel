@@ -148,12 +148,12 @@ namespace meshkernel
         /// @brief Connect two existing nodes, forming a new edge (connectdbn)
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
-        /// @retrun The index of the new edge
+        /// @return The index of the new edge
         size_t ConnectNodes(int startNode, int endNode);
 
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
-        /// @retrun The index of the new node
+        /// @return The index of the new node
         size_t InsertNode(const Point& newPoint);
 
         /// @brief Delete a node
