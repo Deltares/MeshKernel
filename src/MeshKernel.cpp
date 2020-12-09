@@ -213,7 +213,7 @@ namespace meshkernelapi
         return 0;
     }
 
-    MKERNEL_API int mkernel_delete_mesh(int meshKernelId, GeometryList& geometryListIn, int deletionOption, bool invertDeletion)
+    MKERNEL_API int mkernel_delete_mesh(int meshKernelId, const GeometryList& geometryListIn, int deletionOption, bool invertDeletion)
     {
         int exitCode = Success;
         try
@@ -315,8 +315,6 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_orthogonalize(int meshKernelId,
-                                          int isTriangulationRequired,
-                                          int isAccountingForLandBoundariesRequired,
                                           int projectToLandBoundaryOption,
                                           const OrthogonalizationParameters& orthogonalizationParameters,
                                           const GeometryList& geometryListPolygon,
@@ -375,12 +373,10 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_orthogonalize_initialize(int meshKernelId,
-                                                     int isTriangulationRequired,
-                                                     int isAccountingForLandBoundariesRequired,
                                                      int projectToLandBoundaryOption,
                                                      OrthogonalizationParameters& orthogonalizationParameters,
-                                                     GeometryList& geometryListPolygon,
-                                                     GeometryList& geometryListLandBoundaries)
+                                                     const GeometryList& geometryListPolygon,
+                                                     const GeometryList& geometryListLandBoundaries)
     {
         int exitCode = Success;
         try
@@ -800,7 +796,12 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryList& geometryListIn, int firstIndex, int secondIndex, double distance, int& numberOfPolygonVertices)
+    MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId,
+                                                 const GeometryList& geometryListIn,
+                                                 int firstIndex,
+                                                 int secondIndex,
+                                                 double distance,
+                                                 int& numberOfPolygonVertices)
     {
         int exitCode = Success;
         try
@@ -827,7 +828,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_merge_nodes(int meshKernelId, GeometryList& geometryListIn)
+    MKERNEL_API int mkernel_merge_nodes(int meshKernelId, const GeometryList& geometryListIn)
     {
         int exitCode = Success;
         try
@@ -870,8 +871,8 @@ namespace meshkernelapi
         }
         return exitCode;
     }
-    // TODO: remove numberOfMeshVertices
-    MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryList& geometryListIn, int inside, int numberOfMeshVertices, int** selectedVertices)
+
+    MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, const GeometryList& geometryListIn, int inside, int** selectedVertices)
     {
         int exitCode = Success;
         try
@@ -907,7 +908,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, GeometryList& geometryListIn, int inside, int& numberOfMeshVertices)
+    MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, const GeometryList& geometryListIn, int inside, int& numberOfMeshVertices)
     {
         int exitCode = Success;
         try
@@ -961,7 +962,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, double zCoordinate, int& nodeIndex)
+    MKERNEL_API int mkernel_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1004,7 +1005,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_move_node(int meshKernelId, GeometryList& geometryListIn, int nodeIndex)
+    MKERNEL_API int mkernel_move_node(int meshKernelId, const GeometryList& geometryListIn, int nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1027,7 +1028,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_edge(int meshKernelId, GeometryList& geometryListIn)
+    MKERNEL_API int mkernel_delete_edge(int meshKernelId, const GeometryList& geometryListIn)
     {
         int exitCode = Success;
         try
@@ -1052,7 +1053,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_find_edge(int meshKernelId, GeometryList& geometryListIn, int& edgeIndex)
+    MKERNEL_API int mkernel_find_edge(int meshKernelId, const GeometryList& geometryListIn, int& edgeIndex)
     {
         int exitCode = Success;
         try
@@ -1075,7 +1076,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_offsetted_polygon(int meshKernelId, GeometryList& geometryListIn, bool innerAndOuter, double distance, GeometryList& geometryListOut)
+    MKERNEL_API int mkernel_offsetted_polygon(int meshKernelId, const GeometryList& geometryListIn, bool innerAndOuter, double distance, GeometryList& geometryListOut)
     {
         int exitCode = Success;
         try
@@ -1102,7 +1103,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, GeometryList& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonVertices)
+    MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, const GeometryList& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonVertices)
     {
         int exitCode = Success;
         try
@@ -1127,7 +1128,10 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_mesh_based_on_samples(int meshKernelId, GeometryList& geometryListIn, InterpolationParameters& interpolationParameters, SampleRefineParameters& sampleRefineParameters)
+    MKERNEL_API int mkernel_refine_mesh_based_on_samples(int meshKernelId,
+                                                         const GeometryList& geometryListIn,
+                                                         const InterpolationParameters& interpolationParameters,
+                                                         const SampleRefineParameters& sampleRefineParameters)
     {
         int exitCode = Success;
         try
@@ -1180,7 +1184,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_mesh_based_on_polygon(int meshKernelId, GeometryList& geometryList, InterpolationParameters& interpolationParameters)
+    MKERNEL_API int mkernel_refine_mesh_based_on_polygon(int meshKernelId, const GeometryList& geometryList, const InterpolationParameters& interpolationParameters)
     {
         int exitCode = Success;
         try
@@ -1213,7 +1217,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_node_index(int meshKernelId, GeometryList& geometryListIn, double searchRadius, int& nodeIndex)
+    MKERNEL_API int mkernel_get_node_index(int meshKernelId, const GeometryList& geometryListIn, double searchRadius, int& nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1240,7 +1244,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_node_coordinate(int meshKernelId, GeometryList& geometryListIn, double searchRadius, GeometryList& geometryListOut)
+    MKERNEL_API int mkernel_get_node_coordinate(int meshKernelId, const GeometryList& geometryListIn, double searchRadius, GeometryList& geometryListOut)
     {
         int exitCode = Success;
         try
@@ -1398,7 +1402,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_points_in_polygon(int meshKernelId, GeometryList& polygon, GeometryList& pointsNative, GeometryList& selectedPointsNative)
+    MKERNEL_API int mkernel_points_in_polygon(int meshKernelId, const GeometryList& polygon, const GeometryList& pointsNative, GeometryList& selectedPointsNative)
     {
         int exitCode = Success;
         try
@@ -1412,11 +1416,11 @@ namespace meshkernelapi
 
             std::vector<meshkernel::Point> points;
             ConvertGeometryListToPointVector(pointsNative, points);
-            meshkernel::Polygons polygon(polygonNodes, meshInstances[meshKernelId]->m_projection);
+            meshkernel::Polygons localPolygon(polygonNodes, meshInstances[meshKernelId]->m_projection);
 
             for (int i = 0; i < points.size(); i++)
             {
-                selectedPointsNative.zCoordinates[i] = polygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
+                selectedPointsNative.zCoordinates[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
             }
         }
         catch (const std::exception& e)
@@ -1429,7 +1433,6 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_flip_edges(int meshKernelId,
                                        int isTriangulationRequired,
-                                       int isAccountingForLandBoundariesRequired,
                                        int projectToLandBoundaryRequired)
     {
         int exitCode = Success;
@@ -1460,7 +1463,9 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_mesh_from_splines(int meshKernelId, GeometryList& geometryListIn, CurvilinearParameters& curvilinearParameters)
+    MKERNEL_API int mkernel_curvilinear_mesh_from_splines(int meshKernelId,
+                                                          const GeometryList& geometryListIn,
+                                                          const CurvilinearParameters& curvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -1493,7 +1498,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_curvilinear_from_polygon(int meshKernelId,
-                                                     GeometryList& polygon,
+                                                     const GeometryList& polygon,
                                                      int firstNode,
                                                      int secondNode,
                                                      int thirdNode,
@@ -1510,10 +1515,10 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(polygon, polygonPoints);
 
-            auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
             meshkernel::CurvilinearGrid curvilinearGrid;
-            meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
+            meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
             curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
 
             // convert to curvilinear grid and add it to the current mesh
@@ -1528,7 +1533,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_curvilinear_from_triangle(int meshKernelId,
-                                                      GeometryList& polygon,
+                                                      const GeometryList& polygon,
                                                       int firstNode,
                                                       int secondNode,
                                                       int thirdNode)
@@ -1544,10 +1549,10 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(polygon, polygonPoints);
 
-            auto polygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
             meshkernel::CurvilinearGrid curvilinearGrid;
-            meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
+            meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
             curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
 
             // convert to curvilinear grid and add it to the current mesh
