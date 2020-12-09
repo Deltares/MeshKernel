@@ -83,7 +83,6 @@ namespace meshkernel
         ///    -# Compute if a face should be split, ComputeIfFaceShouldBeSplit
         ///    -# Compute face by splitting edges, RefineFacesBySplittingEdges
         /// 5. Connect hanging nodes if requested, RemoveIsolatedHangingnodes, ConnectHangingNodes
-        /// @param polygon The polygon where to perform refinement (option 2, refine in polygon)
         void Compute();
 
     private:
