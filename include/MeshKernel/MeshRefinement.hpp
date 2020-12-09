@@ -156,7 +156,7 @@ namespace meshkernel
         std::vector<bool> m_isHangingEdgeCache;   ///< Cache for maintaining if edge is hanging
         std::vector<Point> m_polygonNodesCache;   ///< Cache for maintaining polygon nodes
         std::vector<int> m_localNodeIndicesCache; ///< Cache for maintaining local node indices
-        std::vector<int> m_edgeIndicesCache;      ///< Cache for maintaining edge indices
+        std::vector<int> m_globalEdgeIndicesCache;      ///< Cache for maintaining edge indices
 
         double m_deltaTimeMaxCourant = 0.0;         ///< The maximum courant number for delta time
         double m_minimumFaceSize = 5e4;             ///< Minimum face size

@@ -148,13 +148,13 @@ namespace meshkernel
         /// @brief Connect two existing nodes, forming a new edge (connectdbn)
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
-        /// @param[out] newEdgeIndex The index of the new edge
-        void ConnectNodes(int startNode, int endNode, int& newEdgeIndex);
+        /// @retrun The index of the new edge
+        size_t ConnectNodes(int startNode, int endNode);
 
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
-        /// @param[out] newNodeIndex The index of the new node
-        void InsertNode(const Point& newPoint, int& newNodeIndex);
+        /// @retrun The index of the new node
+        size_t InsertNode(const Point& newPoint);
 
         /// @brief Delete a node
         /// @param[in] nodeIndex The index of the node to delete
@@ -199,11 +199,11 @@ namespace meshkernel
         /// @param[in] faceIndex The face index
         /// @param[out] polygonNodesCache The node cache array filled with the nodes values
         /// @param[out] localNodeIndicesCache The consecutive node index in polygonNodesCache (0, 1, 2,...)
-        /// @param[out] edgeIndicesCache The edge cache array filled with edge indices
+        /// @param[out] globalEdgeIndicesCache The edge cache array filled with edge indices
         void ComputeFaceOpenedPolygonWithLocalMappings(int faceIndex,
                                                        std::vector<Point>& polygonNodesCache,
                                                        std::vector<int>& localNodeIndicesCache,
-                                                       std::vector<int>& edgeIndicesCache) const;
+                                                       std::vector<int>& globalEdgeIndicesCache) const;
 
         /// @brief For a face, fills the polygonNodesCache with the face nodes, opened polygon
         /// @param[in] faceIndex The face index

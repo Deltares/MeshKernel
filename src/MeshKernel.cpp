@@ -961,7 +961,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            meshInstances[meshKernelId]->ConnectNodes(startNode, endNode, new_edge_index);
+            new_edge_index = meshInstances[meshKernelId]->ConnectNodes(startNode, endNode);
         }
         catch (const std::exception& e)
         {
@@ -984,7 +984,7 @@ namespace meshkernelapi
             }
 
             meshkernel::Point newNode{xCoordinate, yCoordinate};
-            meshInstances[meshKernelId]->InsertNode(newNode, nodeIndex);
+            nodeIndex = meshInstances[meshKernelId]->InsertNode(newNode);
         }
         catch (const std::exception& e)
         {

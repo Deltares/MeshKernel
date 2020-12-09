@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <limits>
+
 #ifndef M_PI
 #define M_PI (3.14159265358979323846)
 #endif
@@ -37,6 +39,7 @@ namespace meshkernel
     const double innerOuterSeparator = -998.0; ///< Double value used to separate the inner part of a polygon from its outer part
     const double doubleMissingValue = -999.0;  ///< Double value used as missing value
     const int intMissingValue = -999;          ///< Integer value used as missing value
+    const int sizetMissingValue = std::numeric_limits<size_t>::max();
 
     // often used values
     const double squareRootOfThree = 1.73205080756887729352; ///< The result of sqrt(3)

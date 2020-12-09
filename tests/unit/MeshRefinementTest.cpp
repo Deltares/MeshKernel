@@ -721,3 +721,63 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
         ASSERT_GT(mesh->m_edgeLengths[i], 0.4);
     }
 }
+
+TEST(MeshRefinement, RefineElongatedFaces)
+{
+    // Prepare
+    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/MeshRefinementTests/CurvilinearEnlonged.nc");
+
+    meshkernel::MeshRefinement meshRefinement(mesh);
+
+    std::vector<meshkernel::Point> point{
+        {2018.73356016594, 1165.26385465465},
+        {1694.83823023783, 1131.75744121381},
+        {1708.79923583818, 640.330044081495},
+        {2363.7176353495, 645.640193266722},
+        {2741.91365026406, 648.706647441705},
+        {2722.36824242357, 1173.64045801486},
+        {2038.27896800643, 1165.26385465465},
+        {2018.73356016594, 1165.26385465465}};
+
+    meshkernel::Polygons polygon(point, mesh->m_projection);
+
+    meshkernelapi::SampleRefineParameters sampleRefineParameters;
+    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.32;
+    sampleRefineParameters.MinimumCellSize = 1.0;
+    sampleRefineParameters.AccountForSamplesOutside = false;
+    sampleRefineParameters.ConnectHangingNodes = 1;
+    sampleRefineParameters.RefinementType = 3;
+
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.MaxNumberOfRefinementIterations = 2;
+    interpolationParameters.RefineIntersected = false;
+
+    // Execute
+    meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
+
+    // Assert circumcenters are correctly computed
+    constexpr double tolerance = 1e-6;
+    ASSERT_NEAR(1673.0860169014584, mesh->m_facesCircumcenters[0].x, tolerance);
+    ASSERT_NEAR(1660.6851354957175, mesh->m_facesCircumcenters[1].x, tolerance);
+    ASSERT_NEAR(1660.5667704694627, mesh->m_facesCircumcenters[2].x, tolerance);
+    ASSERT_NEAR(1672.0912775041329, mesh->m_facesCircumcenters[3].x, tolerance);
+    ASSERT_NEAR(1659.9354211078053, mesh->m_facesCircumcenters[4].x, tolerance);
+    ASSERT_NEAR(1659.8248648846848, mesh->m_facesCircumcenters[5].x, tolerance);
+    ASSERT_NEAR(1671.1074693287451, mesh->m_facesCircumcenters[6].x, tolerance);
+    ASSERT_NEAR(1659.1859707978906, mesh->m_facesCircumcenters[7].x, tolerance);
+    ASSERT_NEAR(1659.0828479935451, mesh->m_facesCircumcenters[8].x, tolerance);
+    ASSERT_NEAR(1670.1135380487042, mesh->m_facesCircumcenters[9].x, tolerance);
+    ASSERT_NEAR(1658.4375379474418, mesh->m_facesCircumcenters[10].x, tolerance);
+
+    ASSERT_NEAR(645.10565853980427, mesh->m_facesCircumcenters[0].y, tolerance);
+    ASSERT_NEAR(646.20173898461292, mesh->m_facesCircumcenters[1].y, tolerance);
+    ASSERT_NEAR(654.66978646149676, mesh->m_facesCircumcenters[2].y, tolerance);
+    ASSERT_NEAR(662.96936808193914, mesh->m_facesCircumcenters[3].y, tolerance);
+    ASSERT_NEAR(664.17198930960728, mesh->m_facesCircumcenters[4].y, tolerance);
+    ASSERT_NEAR(672.49588595953537, mesh->m_facesCircumcenters[5].y, tolerance);
+    ASSERT_NEAR(680.82566423059006, mesh->m_facesCircumcenters[6].y, tolerance);
+    ASSERT_NEAR(682.12720924968505, mesh->m_facesCircumcenters[7].y, tolerance);
+    ASSERT_NEAR(690.31918193748425, mesh->m_facesCircumcenters[8].y, tolerance);
+    ASSERT_NEAR(698.66471917887850, mesh->m_facesCircumcenters[9].y, tolerance);
+    ASSERT_NEAR(700.06356972686194, mesh->m_facesCircumcenters[10].y, tolerance);
+}

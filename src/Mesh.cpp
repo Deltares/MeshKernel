@@ -1217,28 +1217,30 @@ void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
+size_t meshkernel::Mesh::ConnectNodes(int startNode, int endNode)
 {
     const auto edgeIndex = FindEdge(startNode, endNode);
 
     // The nodes are already connected
     if (edgeIndex >= 0)
-        return;
+        return sizetMissingValue;
 
     // increment the edges container
-    newEdgeIndex = GetNumEdges();
+    const auto newEdgeIndex = GetNumEdges();
     m_edges.resize(newEdgeIndex + 1);
     m_edges[newEdgeIndex].first = startNode;
     m_edges[newEdgeIndex].second = endNode;
     m_numEdges++;
 
     m_edgesRTreeRequiresUpdate = true;
+
+    return newEdgeIndex;
 }
 
-void meshkernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
+size_t meshkernel::Mesh::InsertNode(const Point& newPoint)
 {
-    int newSize = GetNumNodes() + 1;
-    newNodeIndex = GetNumNodes();
+    const auto newSize = GetNumNodes() + 1;
+    const auto newNodeIndex = GetNumNodes();
 
     m_nodes.resize(newSize);
     m_nodeMask.resize(newSize);
@@ -1252,6 +1254,8 @@ void meshkernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
     m_nodesNumEdges[newNodeIndex] = 0;
 
     m_nodesRTreeRequiresUpdate = true;
+
+    return newNodeIndex;
 }
 
 void meshkernel::Mesh::DeleteNode(int nodeIndex)
@@ -1299,21 +1303,21 @@ void meshkernel::Mesh::ComputeFaceOpenedPolygon(int faceIndex, std::vector<Point
 void meshkernel::Mesh::ComputeFaceOpenedPolygonWithLocalMappings(int faceIndex,
                                                                  std::vector<Point>& polygonNodesCache,
                                                                  std::vector<int>& localNodeIndicesCache,
-                                                                 std::vector<int>& edgeIndicesCache) const
+                                                                 std::vector<int>& globalEdgeIndicesCache) const
 {
     const auto numFaceNodes = GetNumFaceEdges(faceIndex);
     polygonNodesCache.reserve(numFaceNodes + 1);
     polygonNodesCache.clear();
     localNodeIndicesCache.reserve(numFaceNodes + 1);
     localNodeIndicesCache.clear();
-    edgeIndicesCache.reserve(numFaceNodes + 1);
-    edgeIndicesCache.clear();
+    globalEdgeIndicesCache.reserve(numFaceNodes + 1);
+    globalEdgeIndicesCache.clear();
 
     for (int n = 0; n < numFaceNodes; n++)
     {
         polygonNodesCache.emplace_back(m_nodes[m_facesNodes[faceIndex][n]]);
         localNodeIndicesCache.emplace_back(n);
-        edgeIndicesCache.emplace_back(m_facesEdges[faceIndex][n]);
+        globalEdgeIndicesCache.emplace_back(m_facesEdges[faceIndex][n]);
     }
 }
 
@@ -2327,8 +2331,7 @@ void meshkernel::Mesh::TriangulateFaces()
         for (int j = 2; j < NumEdges - 1; j++)
         {
             const auto nodeIndex = m_facesNodes[i][j];
-            int newEdgeIndex;
-            ConnectNodes(indexFirstNode, nodeIndex, newEdgeIndex);
+            ConnectNodes(indexFirstNode, nodeIndex);
         }
     }
 
