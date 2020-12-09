@@ -583,7 +583,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_get_splines(const GeometryList& geometryListIn,
                                         GeometryList& geometryListOut,
-                                        int numberOfPointsBetweenVertices)
+                                        int numberOfPointsBetweenNodes)
     {
         int exitCode = Success;
         try
@@ -613,10 +613,10 @@ namespace meshkernelapi
 
                 for (int n = 0; n < numNodes - 1; n++)
                 {
-                    for (int p = 0; p <= numberOfPointsBetweenVertices; p++)
+                    for (int p = 0; p <= numberOfPointsBetweenNodes; p++)
                     {
 
-                        double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenVertices);
+                        double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenNodes);
                         meshkernel::Point pointCoordinate{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue};
                         bool successful = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
                         if (!successful)
@@ -749,7 +749,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon_count_vertices(int meshKernelId, int& numberOfPolygonVertices)
+    MKERNEL_API int mkernel_copy_mesh_boundaries_to_polygon_count_nodes(int meshKernelId, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -761,7 +761,7 @@ namespace meshkernelapi
 
             std::vector<meshkernel::Point> polygonNodes;
             const auto meshBoundaryPolygon = meshInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
-            numberOfPolygonVertices = static_cast<int>(meshBoundaryPolygon.size() - 1); // last value is a separator
+            numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size() - 1); // last value is a separator
         }
         catch (const std::exception& e)
         {
@@ -796,12 +796,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId,
-                                                 const GeometryList& geometryListIn,
-                                                 int firstIndex,
-                                                 int secondIndex,
-                                                 double distance,
-                                                 int& numberOfPolygonVertices)
+    MKERNEL_API int mkernel_refine_polygon_count(int meshKernelId, GeometryList& geometryListIn, int firstIndex, int secondIndex, double distance, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -818,7 +813,7 @@ namespace meshkernelapi
 
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
-            numberOfPolygonVertices = int(refinedPolygon.size());
+            numberOfPolygonNodes = int(refinedPolygon.size());
         }
         catch (const std::exception& e)
         {
@@ -872,7 +867,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, const GeometryList& geometryListIn, int inside, int** selectedVertices)
+    MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryList& geometryListIn, int inside, int numberOfMeshNodes, int** selectedNodes)
     {
         int exitCode = Success;
         try
@@ -895,7 +890,7 @@ namespace meshkernelapi
             {
                 if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
                 {
-                    (*selectedVertices)[index] = i;
+                    (*selectedNodes)[index] = i;
                     index++;
                 }
             }
@@ -908,7 +903,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, const GeometryList& geometryListIn, int inside, int& numberOfMeshVertices)
+    MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, GeometryList& geometryListIn, int inside, int& numberOfMeshNodes)
     {
         int exitCode = Success;
         try
@@ -925,12 +920,12 @@ namespace meshkernelapi
             bool selectInside = inside == 1 ? true : false;
             meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
 
-            numberOfMeshVertices = 0;
+            numberOfMeshNodes = 0;
             for (auto i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
             {
                 if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
                 {
-                    numberOfMeshVertices++;
+                    numberOfMeshNodes++;
                 }
             }
         }
@@ -1103,7 +1098,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, const GeometryList& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonVertices)
+    MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, GeometryList& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -1118,7 +1113,7 @@ namespace meshkernelapi
             meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
             const auto newPolygon = polygon.OffsetCopy(distance, innerAndOuter);
 
-            numberOfPolygonVertices = newPolygon.GetNumNodes();
+            numberOfPolygonNodes = newPolygon.GetNumNodes();
         }
         catch (const std::exception& e)
         {
