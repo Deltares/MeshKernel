@@ -96,16 +96,12 @@ namespace meshkernelapi
 
         /// @brief Orthogonalization
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[in] isTriangulationRequired The option to triangulate also non triangular cells (if activated squares becomes triangles)
-        /// @param[in] isAccountingForLandBoundariesRequired The option to account for land boundaries
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
         /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters
         /// @param[in] geometryListPolygon The polygon where to perform the orthogonalization
         /// @param[in] geometryListLandBoundaries The land boundaries to account for in the orthogonalization process
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize(int meshKernelId,
-                                              int isTriangulationRequired,
-                                              int isAccountingForLandBoundariesRequired,
                                               int projectToLandBoundaryOption,
                                               const OrthogonalizationParameters& orthogonalizationParameters,
                                               const GeometryList& geometryListPolygon,
@@ -383,10 +379,9 @@ namespace meshkernelapi
         /// @brief Flips the edges
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] isTriangulationRequired The option to triangulate also non triangular cells (if activated squares becomes triangles)
-        /// @param[in] isAccountingForLandBoundariesRequired The option to account for land boundaries
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
         /// @returns Error code
-        MKERNEL_API int mkernel_flip_edges(int meshKernelId, int isTriangulationRequired, int isAccountingForLandBoundariesRequired, int projectToLandBoundaryOption);
+        MKERNEL_API int mkernel_flip_edges(int meshKernelId, int isTriangulationRequired, int projectToLandBoundaryOption);
 
         /// @brief Generates curvilinear grid from splines with transfinite interpolation
         /// @param[in] meshKernelId Id of the mesh state
