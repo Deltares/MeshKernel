@@ -47,7 +47,7 @@ namespace meshkernelapi
         /// @brief Refinement criterion type
         int RefinementType;
 
-        /// @brief Connect hanging nodes at the end of the iteration, 1 yes 0 no
+        /// @brief Connect hanging nodes at the end of the iteration, yes or no
         int ConnectHangingNodes;
 
         /// @brief Maximum time-step in courant grid

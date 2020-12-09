@@ -1175,12 +1175,8 @@ namespace meshkernelapi
                                                                                         refineOutsideFace,
                                                                                         transformSamples);
 
-            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], averaging);
-
-            //TODO: polygon could be passed as api parameter
-            meshkernel::Polygons polygon;
-
-            meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
+            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], averaging, sampleRefineParameters, interpolationParameters);
+            meshRefinement.Compute();
         }
         catch (const std::exception& e)
         {
@@ -1209,11 +1205,8 @@ namespace meshkernelapi
 
             meshkernel::Polygons polygon(points, meshInstances[meshKernelId]->m_projection);
 
-            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId]);
-
-            // polygon could be passed as api parameter
-            SampleRefineParameters sampleRefineParameters;
-            meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
+            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], polygon, interpolationParameters);
+            meshRefinement.Compute();
         }
         catch (const std::exception& e)
         {

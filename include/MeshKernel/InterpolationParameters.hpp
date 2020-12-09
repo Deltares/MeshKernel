@@ -53,7 +53,10 @@ namespace meshkernelapi
         /// Interpolation settings, 1=bathy, 2=zk, 3=s1, 4=Zc (2)
         int InterpolateTo;
 
-        /// Refine faces intersected by polygon
+        /// Compute faces intersected by polygon
         bool RefineIntersected;
+
+        /// Use the mass center when splitting a face in the refinement process
+        bool UseMassCenterWhenRefining;
     };
 } // namespace meshkernelapi

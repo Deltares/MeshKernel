@@ -38,13 +38,24 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 
-meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging) : m_mesh(mesh), m_averaging(averaging){};
+meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh,
+                                           std::shared_ptr<AveragingInterpolation> averaging,
+                                           const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
+                                           const meshkernelapi::InterpolationParameters& interpolationParameters) : m_mesh(mesh),
+                                                                                                                    m_averaging(averaging),
+                                                                                                                    m_sampleRefineParameters(sampleRefineParameters),
+                                                                                                                    m_interpolationParameters(interpolationParameters)
+{
+    m_refinementType = static_cast<RefinementType>(m_sampleRefineParameters.RefinementType);
+};
 
-meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh) : m_mesh(mesh){};
+meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh,
+                                           const Polygons& polygon,
+                                           const meshkernelapi::InterpolationParameters& interpolationParameters) : m_mesh(mesh),
+                                                                                                                    m_polygons(polygon),
+                                                                                                                    m_interpolationParameters(interpolationParameters){};
 
-void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
-                                        const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
-                                        const meshkernelapi::InterpolationParameters& interpolationParameters)
+void meshkernel::MeshRefinement::Compute()
 {
     // administrate mesh once more
     m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -52,39 +63,6 @@ void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
     // all faces and edges refined
     m_faceMask.resize(m_mesh->GetNumFaces(), 1);
     m_edgeMask.resize(m_mesh->GetNumEdges(), -1);
-
-    // default refinement
-    m_refinementType = RefinementType::WaveCourant;
-
-    // check if refinement is based on samples
-    bool isRefinementBasedOnSamples = true;
-    if (m_averaging == nullptr)
-    {
-        isRefinementBasedOnSamples = false;
-    }
-
-    if (isRefinementBasedOnSamples)
-    {
-        m_deltaTimeMaxCourant = sampleRefineParameters.MinimumCellSize / std::sqrt(gravity);
-        m_refineOutsideFace = sampleRefineParameters.AccountForSamplesOutside == 1 ? true : false;
-        m_minimumFaceSize = sampleRefineParameters.MinimumCellSize;
-        m_connectHangingNodes = sampleRefineParameters.ConnectHangingNodes == 1 ? true : false;
-
-        if (sampleRefineParameters.RefinementType == 1)
-        {
-            m_refinementType = RefinementType::RidgeRefinement;
-        }
-        if (sampleRefineParameters.RefinementType == 2)
-        {
-            m_refinementType = RefinementType::WaveCourant;
-        }
-        if (sampleRefineParameters.RefinementType == 3)
-        {
-            m_refinementType = RefinementType::RefinementLevels;
-        }
-    }
-
-    m_maxNumberOfRefinementIterations = interpolationParameters.MaxNumberOfRefinementIterations;
 
     // get bounding box
     Point lowerLeft{doubleMissingValue, doubleMissingValue};
@@ -95,15 +73,15 @@ void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
     }
 
     // select the nodes to refine
-    if (!isRefinementBasedOnSamples && interpolationParameters.RefineIntersected)
+    const auto isRefinementBasedOnSamples = m_averaging == nullptr ? false : true;
+    if (!isRefinementBasedOnSamples && m_interpolationParameters.RefineIntersected)
     {
-        m_refineIntersectedFaces = true;
-        m_mesh->MaskFaceEdgesInPolygon(polygon, false, true);
+        m_mesh->MaskFaceEdgesInPolygon(m_polygons, false, true);
         m_mesh->ComputeNodeMaskFromEdgeMask();
     }
     else
     {
-        m_mesh->MaskNodesInPolygons(polygon, true);
+        m_mesh->MaskNodesInPolygons(m_polygons, true);
     }
 
     FindBrotherEdges();
@@ -112,7 +90,7 @@ void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
     ComputeNodeMaskAtPolygonPerimeter();
 
     auto numFacesAfterRefinement = m_mesh->GetNumFaces();
-    for (int level = 0; level < m_maxNumberOfRefinementIterations; level++)
+    for (int level = 0; level < m_interpolationParameters.MaxNumberOfRefinementIterations; level++)
     {
         if (level > 0)
         {
@@ -210,7 +188,7 @@ void meshkernel::MeshRefinement::Refine(const Polygons& polygon,
     }
 
     //remove isolated hanging nodes and connect if needed
-    if (m_connectHangingNodes)
+    if (m_sampleRefineParameters.ConnectHangingNodes)
     {
         ConnectHangingNodes();
         m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -628,7 +606,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
 
         // quads
         Point splittingNode(m_mesh->m_facesMassCenters[f]);
-        if (localEdgesNumFaces.size() == numNodesQuads)
+        if (localEdgesNumFaces.size() == numNodesQuads && !m_interpolationParameters.UseMassCenterWhenRefining)
         {
 
             splittingNode = m_mesh->ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
@@ -894,8 +872,8 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int face,
         {
             double newEdgeLength = 0.5 * m_mesh->m_edgeLengths[edgeIndex];
             double c = std::sqrt(gravity * std::abs(refinementValue));
-            double waveCourant = c * m_deltaTimeMaxCourant / m_mesh->m_edgeLengths[edgeIndex];
-            doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_minimumFaceSize) < std::abs(m_mesh->m_edgeLengths[edgeIndex] - m_minimumFaceSize);
+            double waveCourant = c * (m_sampleRefineParameters.MinimumCellSize / std::sqrt(gravity)) / m_mesh->m_edgeLengths[edgeIndex];
+            doRefinement = waveCourant < 1.0 && std::abs(newEdgeLength - m_sampleRefineParameters.MinimumCellSize) < std::abs(m_mesh->m_edgeLengths[edgeIndex] - m_sampleRefineParameters.MinimumCellSize);
         }
 
         // based on refinement levels
