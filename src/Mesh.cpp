@@ -803,7 +803,7 @@ void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas(bool computeM
     m_faceArea.resize(GetNumFaces());
     m_facesMassCenters.resize(GetNumFaces());
 
-    std::vector<int> numEdgeFacesCache;
+    std::vector<size_t> numEdgeFacesCache;
     numEdgeFacesCache.reserve(maximumNumberOfEdgesPerFace);
     for (auto f = 0; f < GetNumFaces(); f++)
     {
@@ -1812,7 +1812,7 @@ bool meshkernel::Mesh::IsFaceOnBoundary(int face) const
 }
 
 meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                           const std::vector<int>& edgesNumFaces) const
+                                                           const std::vector<size_t>& edgesNumFaces) const
 {
     const size_t maximumNumberCircumcenterIterations = 100;
     const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; //111km = 0-e digit.

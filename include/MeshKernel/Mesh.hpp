@@ -277,7 +277,7 @@ namespace meshkernel
         /// @param[in] edgesNumFaces For meshes, the number of faces sharing the edges
         /// @returns The computed circumcenter
         [[nodiscard]] Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                   const std::vector<int>& edgesNumFaces) const;
+                                                   const std::vector<size_t>& edgesNumFaces) const;
 
         /// @brief Gets the mass centers of obtuse triangles
         /// @returns The center of obtuse triangles

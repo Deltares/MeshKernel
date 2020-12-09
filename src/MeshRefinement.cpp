@@ -473,12 +473,10 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
     std::vector<size_t> nonHangingEdges;
     nonHangingEdges.reserve(maximumNumberOfNodesPerFace);
 
-    std::vector<int> parentEdge(maximumNumberOfNodesPerFace, -1);
-    std::vector<Point> facePolygonWithoutHangingNodes(maximumNumberOfNodesPerFace);
-    std::vector<Point> middlePointsCache(maximumNumberOfNodesPerFace);
-    std::vector<Point> normalsCache(maximumNumberOfNodesPerFace);
-
-    std::vector<int> localEdgesNumFaces(maximumNumberOfEdgesPerFace);
+    std::vector<Point> facePolygonWithoutHangingNodes;
+    facePolygonWithoutHangingNodes.reserve(maximumNumberOfNodesPerFace);
+    std::vector<size_t> localEdgesNumFaces;
+    localEdgesNumFaces.reserve(maximumNumberOfEdgesPerFace);
 
     for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
     {
@@ -560,7 +558,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
         int numBrotherEdges = 0;
         notHangingFaceNodes.clear();
         nonHangingEdges.clear();
-        parentEdge.clear();
+
         for (auto e = 0; e < numEdges; e++)
         {
             const auto firstEdge = NextCircularBackwardIndex(e, numEdges);
@@ -590,12 +588,12 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
                 }
 
                 notHangingFaceNodes.emplace_back(newNode);
-                parentEdge.emplace_back(edgeIndex);
+
             }
             else if ((m_brotherEdges[edgeIndex] != firstEdgeIndex || m_brotherEdges[edgeIndex] < 0) && (m_edgeMask[edgeIndex] != 0))
             {
                 notHangingFaceNodes.emplace_back(m_edgeMask[edgeIndex]);
-                parentEdge.emplace_back(edgeIndex);
+
             }
 
             if (notHangingFaceNodes.size() >= maximumNumberOfNodesPerFace)
@@ -647,9 +645,8 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
                     maxy = std::max(node.y, maxy);
                 }
 
-                double middlelatitude;
-                middlelatitude = (miny + maxy) / 2.0;
-                double ydiff = maxy - miny;
+                const double middlelatitude = (miny + maxy) / 2.0;
+                const double ydiff = maxy - miny;
                 if (ydiff > 1e-8)
                 {
                     splittingNode.y = miny + 2.0 * (middlelatitude - miny) / ydiff * (splittingNode.y - miny);
