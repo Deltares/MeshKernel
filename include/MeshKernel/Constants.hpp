@@ -36,10 +36,10 @@
 namespace meshkernel
 {
     // missing value
-    const double innerOuterSeparator = -998.0; ///< Double value used to separate the inner part of a polygon from its outer part
-    const double doubleMissingValue = -999.0;  ///< Double value used as missing value
-    const int intMissingValue = -999;          ///< Integer value used as missing value
-    const int sizetMissingValue = std::numeric_limits<size_t>::max();
+    const double innerOuterSeparator = -998.0;                        ///< Double value used to separate the inner part of a polygon from its outer part
+    const double doubleMissingValue = -999.0;                         ///< Double value used as missing value
+    const int intMissingValue = -999;                                 ///< Integer value used as missing value
+    const int sizetMissingValue = std::numeric_limits<size_t>::max(); ///< size_t missing value used for invalid indices
 
     // often used values
     const double squareRootOfThree = 1.73205080756887729352; ///< The result of sqrt(3)
