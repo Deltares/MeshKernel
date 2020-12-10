@@ -713,9 +713,9 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
         // the order of the edges in a new face must be counterclockwise
         // in order to evaluate the clockwise order, the signed face area is computed
         nodalValues.clear();
-        for (auto n = 0; n < nodes.size(); n++)
+        for (const auto& node : nodes)
         {
-            nodalValues.emplace_back(m_nodes[nodes[n]]);
+            nodalValues.emplace_back(m_nodes[node]);
         }
         nodalValues.emplace_back(nodalValues.front());
 
