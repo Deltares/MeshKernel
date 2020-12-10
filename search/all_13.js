@@ -1,5 +1,5 @@
 var searchData=
 [
   ['value',['value',['../structmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]],
-  ['vectorproduct',['VectorProduct',['../namespacemeshkernel.html#ac87f81234d2aa31256f2703b2d30fe8c',1,'meshkernel']]]
+  ['vectorproduct',['VectorProduct',['../namespacemeshkernel.html#a214dc989df380801d32a03bb4350300c',1,'meshkernel']]]
 ];

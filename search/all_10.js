@@ -8,6 +8,7 @@ var searchData=
   ['setflatcopies',['SetFlatCopies',['../classmeshkernel_1_1_mesh.html#ad90337919be6540bb7cc8d34d52d22bc',1,'meshkernel::Mesh']]],
   ['sgn',['sgn',['../namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2',1,'meshkernel']]],
   ['size',['Size',['../classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a13a30b478bc12e3849ec1b675e4aa5cf',1,'meshkernel::SpatialTrees::RTree']]],
+  ['sizetmissingvalue',['sizetMissingValue',['../namespacemeshkernel.html#a86f926037fa4ea742d37ef15beced9a5',1,'meshkernel']]],
   ['smoothangleorsmootharea',['SmoothAngleOrSmoothArea',['../structmeshkernelapi_1_1_orthogonalization_parameters.html#a15a643a2dcbeaa8c91cb114f986adb65',1,'meshkernelapi::OrthogonalizationParameters']]],
   ['smoother',['Smoother',['../classmeshkernel_1_1_smoother.html',1,'meshkernel::Smoother'],['../classmeshkernel_1_1_smoother.html#acc671c33c9ce3ed9ac04c849f2beb848',1,'meshkernel::Smoother::Smoother()']]],
   ['smoothingiterations',['SmoothingIterations',['../structmeshkernelapi_1_1_curvilinear_parameters.html#ae92081554a85f14e5d2d5bbdc991c4c4',1,'meshkernelapi::CurvilinearParameters']]],

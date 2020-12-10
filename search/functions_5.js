@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['faceareaandcenterofmass',['FaceAreaAndCenterOfMass',['../namespacemeshkernel.html#a92726102aab434dafee757ce44ca9b0c',1,'meshkernel']]],
-  ['faceclosedpolygon',['FaceClosedPolygon',['../classmeshkernel_1_1_mesh.html#a434f658320f00f84325f9ed2c9203681',1,'meshkernel::Mesh::FaceClosedPolygon(int faceIndex, std::vector&lt; Point &gt; &amp;polygonNodesCache, std::vector&lt; int &gt; &amp;localNodeIndicesCache, std::vector&lt; int &gt; &amp;edgeIndicesCache, int &amp;numClosedPolygonNodes) const'],['../classmeshkernel_1_1_mesh.html#aa7f9e2b7162adf10b0e1fb071881abd3',1,'meshkernel::Mesh::FaceClosedPolygon(int faceIndex, std::vector&lt; Point &gt; &amp;polygonNodesCache, int &amp;numClosedPolygonNodes) const']]],
+  ['faceareaandcenterofmass',['FaceAreaAndCenterOfMass',['../namespacemeshkernel.html#ae353b37ec8a3310333d27f76109fb183',1,'meshkernel']]],
   ['finalizeouteriteration',['FinalizeOuterIteration',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#a907c05be6ae69d5bc51d22e42afa5ca3',1,'meshkernel::OrthogonalizationAndSmoothing']]],
   ['findcommonnode',['FindCommonNode',['../classmeshkernel_1_1_mesh.html#a67e63dc4f831dbe241bb1d68ec1e4069',1,'meshkernel::Mesh']]],
   ['findedge',['FindEdge',['../classmeshkernel_1_1_mesh.html#ac559dfd56671d0ed297653897e279920',1,'meshkernel::Mesh']]],

@@ -7,9 +7,9 @@ var searchData=
   ['deletenode',['DeleteNode',['../classmeshkernel_1_1_mesh.html#a574488526be84c02ae027ff5c1b2339e',1,'meshkernel::Mesh']]],
   ['dim',['dim',['../structmeshkernelapi_1_1_mesh_geometry_dimensions.html#a24d4d51ddc6316b0ec881bad97ade8c8',1,'meshkernelapi::MeshGeometryDimensions']]],
   ['directionalrefinement',['DirectionalRefinement',['../structmeshkernelapi_1_1_sample_refine_parameters.html#ada69ceefc37d008d02d23bf9e2c4eb2b',1,'meshkernelapi::SampleRefineParameters']]],
-  ['discretizetransfinite',['DiscretizeTransfinite',['../namespacemeshkernel.html#a13c5acd34336030c3c51daf4dbdba168',1,'meshkernel']]],
+  ['discretizetransfinite',['DiscretizeTransfinite',['../namespacemeshkernel.html#a61dd76419081546999e517db13e825b7',1,'meshkernel']]],
   ['displayinterpolationprocess',['DisplayInterpolationProcess',['../structmeshkernelapi_1_1_interpolation_parameters.html#a506a66e67530e75b7cbac988edbb70a4',1,'meshkernelapi::InterpolationParameters']]],
-  ['distancefromline',['DistanceFromLine',['../namespacemeshkernel.html#a1d0f346cb8ca26171955bbc61417fcb8',1,'meshkernel']]],
+  ['distancefromline',['DistanceFromLine',['../namespacemeshkernel.html#af52281da58b6a5018cd723b7c4f4853d',1,'meshkernel']]],
   ['dotproduct',['DotProduct',['../namespacemeshkernel.html#ab7eba48571f6e2e6ec9857d9499d235d',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2)'],['../namespacemeshkernel.html#ac36c4ebc5ddac1360895f5af36574640',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2, Args &amp;... args)']]],
   ['doublemissingvalue',['doubleMissingValue',['../namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671',1,'meshkernel']]]
 ];
