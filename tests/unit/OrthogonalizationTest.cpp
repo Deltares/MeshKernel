@@ -109,7 +109,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
 
     orthogonalization.Compute();
 
-    constexpr double tolerance = 1e-2;
+    constexpr double tolerance = 0.8e-2;
 
     ASSERT_NEAR(325.590101919525, mesh->m_nodes[0].x, tolerance);
     ASSERT_NEAR(229.213730481198, mesh->m_nodes[1].x, tolerance);

@@ -423,8 +423,8 @@ TEST(Mesh, NodeMerging)
 
 TEST(Mesh, MillionQuads)
 {
-    const int n = 11; // x
-    const int m = 11; // y
+    const int n = 4; // x
+    const int m = 4; // y
 
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
@@ -459,10 +459,9 @@ TEST(Mesh, MillionQuads)
         }
     }
 
-    meshkernel::Mesh mesh;
     // now build node-edge mapping
     auto start(std::chrono::steady_clock::now());
-    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
@@ -480,11 +479,10 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
-    int newNodeIndex;
-    mesh->InsertNode(newPoint, newNodeIndex);
 
-    int newEdgeIndex;
-    mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
+    const auto newNodeIndex = mesh->InsertNode(newPoint);
+
+    mesh->ConnectNodes(0, newNodeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -502,8 +500,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 
     meshkernel::Point newPoint{10.0, 10.0};
     mesh->m_nodesRTree.BuildTree(mesh->m_nodes);
-    int newNodeIndex;
-    mesh->InsertNode(newPoint, newNodeIndex);
+    const auto newNodeIndex = mesh->InsertNode(newPoint);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     mesh->DeleteNode(0);
@@ -522,12 +519,11 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->m_edgesRTree.BuildTree(mesh->m_edgesCenters);
 
     meshkernel::Point newPoint{10.0, 10.0};
-    int newNodeIndex;
-    mesh->InsertNode(newPoint, newNodeIndex);
+
+    const auto newNodeIndex = mesh->InsertNode(newPoint);
 
     // connect nodes modifies the number of edges, m_nodesRTreeRequiresUpdate is set to true
-    int newEdgeIndex;
-    mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
+    mesh->ConnectNodes(0, newNodeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);

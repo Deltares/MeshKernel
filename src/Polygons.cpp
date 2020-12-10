@@ -69,7 +69,7 @@ namespace meshkernel
             double localPolygonArea = 0.0;
             Point centerOfMass;
             bool isCounterClockWise;
-            FaceAreaAndCenterOfMass(localPolygon, numLocalPoints - 1, m_projection, localPolygonArea, centerOfMass, isCounterClockWise);
+            FaceAreaAndCenterOfMass(localPolygon, m_projection, localPolygonArea, centerOfMass, isCounterClockWise);
 
             const auto perimeter = PerimeterClosedPolygon(localPolygon);
 

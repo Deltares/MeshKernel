@@ -546,7 +546,12 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            meshInstances[meshKernelId]->GetOrthogonality(geometryList.zCoordinates);
+            const auto result = meshInstances[meshKernelId]->GetOrthogonality();
+
+            for (auto i = 0; i < geometryList.numberOfCoordinates; ++i)
+            {
+                geometryList.zCoordinates[i] = result[i];
+            }
         }
         catch (const std::exception& e)
         {
@@ -571,7 +576,12 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            meshInstances[meshKernelId]->GetSmoothness(geometryList.zCoordinates);
+            const auto result = meshInstances[meshKernelId]->GetSmoothness();
+
+            for (auto i = 0; i < geometryList.numberOfCoordinates; ++i)
+            {
+                geometryList.zCoordinates[i] = result[i];
+            }
         }
         catch (const std::exception& e)
         {
@@ -947,7 +957,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            meshInstances[meshKernelId]->ConnectNodes(startNode, endNode, new_edge_index);
+            new_edge_index = meshInstances[meshKernelId]->ConnectNodes(startNode, endNode);
         }
         catch (const std::exception& e)
         {
@@ -970,7 +980,7 @@ namespace meshkernelapi
             }
 
             meshkernel::Point newNode{xCoordinate, yCoordinate};
-            meshInstances[meshKernelId]->InsertNode(newNode, nodeIndex);
+            nodeIndex = meshInstances[meshKernelId]->InsertNode(newNode);
         }
         catch (const std::exception& e)
         {
@@ -1164,12 +1174,8 @@ namespace meshkernelapi
                                                                                         refineOutsideFace,
                                                                                         transformSamples);
 
-            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], averaging);
-
-            //TODO: polygon could be passed as api parameter
-            meshkernel::Polygons polygon;
-
-            meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
+            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], averaging, sampleRefineParameters, interpolationParameters);
+            meshRefinement.Compute();
         }
         catch (const std::exception& e)
         {
@@ -1198,11 +1204,8 @@ namespace meshkernelapi
 
             meshkernel::Polygons polygon(points, meshInstances[meshKernelId]->m_projection);
 
-            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId]);
-
-            // polygon could be passed as api parameter
-            SampleRefineParameters sampleRefineParameters;
-            meshRefinement.Refine(polygon, sampleRefineParameters, interpolationParameters);
+            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], polygon, interpolationParameters);
+            meshRefinement.Compute();
         }
         catch (const std::exception& e)
         {

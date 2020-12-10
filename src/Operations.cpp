@@ -35,7 +35,7 @@
 
 namespace meshkernel
 {
-    Cartesian3DPoint VectorProduct(Cartesian3DPoint a, Cartesian3DPoint b)
+    Cartesian3DPoint VectorProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b)
     {
         return Cartesian3DPoint{
             a.y * b.z - a.z * b.y,
@@ -43,7 +43,7 @@ namespace meshkernel
             a.x * b.y - a.y * b.x};
     }
 
-    double InnerProduct(Cartesian3DPoint a, Cartesian3DPoint b)
+    double InnerProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b)
     {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
@@ -127,7 +127,7 @@ namespace meshkernel
         return result;
     }
 
-    Point Cartesian3DToSpherical(Cartesian3DPoint cartesianPoint, double referenceLongitude)
+    Point Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude)
     {
         Point sphericalPoint;
         double angle = atan2(cartesianPoint.y, cartesianPoint.x) * raddeg_hp;
@@ -142,11 +142,11 @@ namespace meshkernel
         return left;
     }
 
-    bool IsPointInPolygonNodes(Point point,
+    bool IsPointInPolygonNodes(const Point& point,
                                const std::vector<Point>& polygonNodes,
                                int startNode,
                                int endNode,
-                               Projection projection,
+                               const Projection& projection,
                                Point polygonCenter)
     {
 
@@ -266,7 +266,7 @@ namespace meshkernel
         return isInPolygon;
     }
 
-    void ComputeThreeBaseComponents(Point point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp)
+    void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp)
     {
         double phi0 = point.y * degrad_hp;
         double lambda0 = point.x * degrad_hp;
@@ -284,7 +284,7 @@ namespace meshkernel
         ezzp[2] = cos(phi0);
     };
 
-    void ComputeTwoBaseComponents(Point point, std::array<double, 3>& elambda, std::array<double, 3>& ephi)
+    void ComputeTwoBaseComponents(const Point& point, std::array<double, 3>& elambda, std::array<double, 3>& ephi)
     {
         double phi0 = point.y * degrad_hp;
         double lambda0 = point.x * degrad_hp;
@@ -298,7 +298,7 @@ namespace meshkernel
         ephi[2] = cos(phi0);
     };
 
-    double GetDx(Point firstPoint, Point secondPoint, Projection projection)
+    double GetDx(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
         double delta = secondPoint.x - firstPoint.x;
         if (std::abs(delta) <= nearlyZero)
@@ -340,7 +340,7 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    double GetDy(Point firstPoint, Point secondPoint, Projection projection)
+    double GetDy(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
         double delta = secondPoint.y - firstPoint.y;
         if (std::abs(delta) <= nearlyZero)
@@ -416,7 +416,7 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    Point ComputeMiddlePoint(Point firstPoint, Point secondPoint, Projection projection)
+    Point ComputeMiddlePoint(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
         if (!firstPoint.IsValid() || !secondPoint.IsValid())
         {
@@ -443,7 +443,7 @@ namespace meshkernel
         return {doubleMissingValue, doubleMissingValue};
     }
 
-    Point ComputeMiddlePointAccountingForPoles(Point firstPoint, Point secondPoint, Projection projection)
+    Point ComputeMiddlePointAccountingForPoles(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
         if (!firstPoint.IsValid() || !secondPoint.IsValid())
         {
@@ -485,7 +485,7 @@ namespace meshkernel
         return {doubleMissingValue, doubleMissingValue};
     }
 
-    Point NormalVector(Point firstPoint, Point secondPoint, Point insidePoint, Projection projection)
+    Point NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, const Projection& projection)
     {
         if (!firstPoint.IsValid() || !secondPoint.IsValid())
         {
@@ -538,7 +538,7 @@ namespace meshkernel
         return {doubleMissingValue, doubleMissingValue};
     }
 
-    void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, Projection projection, Point& localComponents)
+    void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, const Projection& projection, Point& localComponents)
     {
         if (projection == Projection::sphericalAccurate)
         {
@@ -598,7 +598,7 @@ namespace meshkernel
         }
     }
 
-    Point NormalVectorOutside(Point firstPoint, Point secondPoint, Projection projection)
+    Point NormalVectorOutside(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
         if (!firstPoint.IsValid() || !secondPoint.IsValid())
         {
@@ -663,7 +663,7 @@ namespace meshkernel
         return {doubleMissingValue, doubleMissingValue};
     }
 
-    void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, Projection projection)
+    void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, const Projection& projection)
     {
         normal = NormalVectorOutside(firstPoint, secondPoint, projection);
         Point thirdPoint;
@@ -710,7 +710,7 @@ namespace meshkernel
         }
     }
 
-    void AddIncrementToPoint(Point normal, double increment, Point referencePoint, Projection projection, Point& point)
+    void AddIncrementToPoint(const Point& normal, double increment, const Point& referencePoint, const Projection& projection, Point& point)
     {
         if (projection == Projection::cartesian)
         {
@@ -726,10 +726,11 @@ namespace meshkernel
         }
     }
 
-    Point ReferencePoint(std::vector<Point>& polygon, int numPoints, Projection projection)
+    Point ReferencePoint(std::vector<Point>& polygon, const Projection& projection)
     {
         auto minX = std::numeric_limits<double>::max();
         auto minY = std::numeric_limits<double>::max();
+        const auto numPoints = polygon.size();
         for (auto i = 0; i < numPoints; i++)
         {
             minX = std::min(polygon[i].x, minX);
@@ -764,7 +765,7 @@ namespace meshkernel
         return Point{minX, minY};
     }
 
-    double ComputeSquaredDistance(Point firstPoint, Point secondPoint, Projection projection)
+    double ComputeSquaredDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
 
         if (!firstPoint.IsValid() || !secondPoint.IsValid())
@@ -798,7 +799,7 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    double ComputeDistance(Point firstPoint, Point secondPoint, Projection projection)
+    double ComputeDistance(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
     {
         double distance = ComputeSquaredDistance(firstPoint, secondPoint, projection);
         if (distance >= 0.0)
@@ -808,7 +809,7 @@ namespace meshkernel
         return distance;
     }
 
-    double DistanceFromLine(Point point, Point firstNode, Point secondNode, Projection projection, Point& normalPoint, double& ratio)
+    double DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, const Projection& projection, Point& normalPoint, double& ratio)
     {
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {
@@ -883,7 +884,7 @@ namespace meshkernel
         return -1.0;
     }
 
-    double InnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection)
+    double InnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection)
     {
         if (projection == Projection::sphericalAccurate)
         {
@@ -918,7 +919,7 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    double NormalizedInnerProductTwoSegments(Point firstPointFirstSegment, Point secondPointFirstSegment, Point firstPointSecondSegment, Point secondPointSecondSegment, Projection projection)
+    double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection)
     {
         if (projection == Projection::sphericalAccurate)
         {
@@ -990,7 +991,7 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    Point CircumcenterOfTriangle(Point firstNode, Point secondNode, Point thirdNode, Projection projection)
+    Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection)
     {
 
         double dx2 = GetDx(firstNode, secondNode, projection);
@@ -1026,12 +1027,12 @@ namespace meshkernel
         return circumcenter;
     }
 
-    bool AreSegmentsCrossing(Point firstSegmentFistPoint,
-                             Point firstSegmentSecondPoint,
-                             Point secondSegmentFistPoint,
-                             Point secondSegmentSecondPoint,
+    bool AreSegmentsCrossing(const Point& firstSegmentFistPoint,
+                             const Point& firstSegmentSecondPoint,
+                             const Point& secondSegmentFistPoint,
+                             const Point& secondSegmentSecondPoint,
                              bool adimensionalCrossProduct,
-                             Projection projection,
+                             const Projection& projection,
                              Point& intersectionPoint,
                              double& crossProduct,
                              double& ratioFirstSegment,
@@ -1144,7 +1145,7 @@ namespace meshkernel
         return isCrossing;
     }
 
-    int CrossProductSign(Point firstSegmentFistPoint, Point firstSegmentSecondPoint, Point secondSegmentFistPoint, Point secondSegmentSecondPoint, Projection projection)
+    int CrossProductSign(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
     {
 
         const auto dx1 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
@@ -1155,21 +1156,27 @@ namespace meshkernel
         return sgn(val);
     }
 
-    void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, size_t numberOfPolygonPoints, Projection projection, double& area, Point& centerOfMass, bool& isCounterClockWise)
+    void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection, double& area, Point& centerOfMass, bool& isCounterClockWise)
     {
-        if (numberOfPolygonPoints <= 0)
+        if (polygon.empty())
         {
             throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon contains no nodes.");
+        }
+
+        if (polygon.size() - 1 < numNodesInTriangle)
+        {
+            throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
         }
 
         area = 0.0;
         double xCenterOfMass = 0.0;
         double yCenterOfMass = 0.0;
         const double minArea = 1e-8;
-        const Point reference = ReferencePoint(polygon, numberOfPolygonPoints, projection);
-        for (int n = 0; n < numberOfPolygonPoints; n++)
+        const Point reference = ReferencePoint(polygon, projection);
+        const auto numberOfPointsOpenedPolygon = polygon.size() - 1;
+        for (int n = 0; n < numberOfPointsOpenedPolygon; n++)
         {
-            const auto nextNode = NextCircularForwardIndex(n, numberOfPolygonPoints);
+            const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
             double dx0 = GetDx(reference, polygon[n], projection);
             double dy0 = GetDy(reference, polygon[n], projection);
             double dx1 = GetDx(reference, polygon[nextNode], projection);
@@ -1209,7 +1216,7 @@ namespace meshkernel
         area = std::abs(area);
     }
 
-    void ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, Projection projection, std::vector<double>& result, double& totalDistance)
+    void ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, const Projection& projection, std::vector<double>& result, double& totalDistance)
     {
         result[0] = 0;
         for (int i = 1; i < v.size(); i++)
@@ -1232,7 +1239,7 @@ namespace meshkernel
                                                           const std::vector<Point>& sideTwo,
                                                           const std::vector<Point>& sideThree,
                                                           const std::vector<Point>& sideFour,
-                                                          Projection projection,
+                                                          const Projection& projection,
                                                           int numM,
                                                           int numN)
     {
@@ -1412,7 +1419,7 @@ namespace meshkernel
         return edgesCenters;
     }
 
-    double LinearInterpolationInTriangle(Point interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, Projection projection)
+    double LinearInterpolationInTriangle(const Point& interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, const Projection& projection)
     {
         double result = doubleMissingValue;
 
@@ -1439,7 +1446,7 @@ namespace meshkernel
         return result;
     }
 
-    Point ComputeAverageCoordinate(const std::vector<Point>& points, Projection projection)
+    Point ComputeAverageCoordinate(const std::vector<Point>& points, const Projection& projection)
     {
         std::vector<Point> validPoints;
         validPoints.reserve(points.size());
