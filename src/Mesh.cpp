@@ -2135,23 +2135,23 @@ std::vector<double> meshkernel::Mesh::GetOrthogonality()
     result.reserve(GetNumEdges());
     for (int e = 0; e < GetNumEdges(); e++)
     {
-        orthogonality[e] = doubleMissingValue;
+        auto val = doubleMissingValue;
         int firstNode = m_edges[e].first;
         int secondNode = m_edges[e].second;
 
         if (firstNode >= 0 && secondNode >= 0 && !IsEdgeOnBoundary(e))
         {
-            orthogonality[e] = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
-                                                                 m_nodes[secondNode],
-                                                                 m_facesCircumcenters[m_edgesFaces[e][0]],
-                                                                 m_facesCircumcenters[m_edgesFaces[e][1]],
-                                                                 m_projection);
-            if (orthogonality[e] != doubleMissingValue)
+            val = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
+                                                    m_nodes[secondNode],
+                                                    m_facesCircumcenters[m_edgesFaces[e][0]],
+                                                    m_facesCircumcenters[m_edgesFaces[e][1]],
+                                                    m_projection);
+            if (val != doubleMissingValue)
             {
-                orthogonality = std::abs(orthogonality);
+                val = std::abs(val);
             }
         }
-        result.emplace_back(orthogonality);
+        result.emplace_back(val);
     }
     return result;
 }
@@ -2162,7 +2162,7 @@ std::vector<double> meshkernel::Mesh::GetSmoothness()
     result.reserve(GetNumEdges());
     for (auto e = 0; e < GetNumEdges(); e++)
     {
-        smoothness[e] = doubleMissingValue;
+        auto val = doubleMissingValue;
         int firstNode = m_edges[e].first;
         int secondNode = m_edges[e].second;
 
