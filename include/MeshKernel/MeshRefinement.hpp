@@ -32,6 +32,7 @@
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/InterpolationParameters.hpp>
+#include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/SampleRefineParameters.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 
@@ -39,29 +40,37 @@ namespace meshkernel
 {
     // Forward declarations
     class Mesh;
-    class Polygons;
 
     /// @brief A class used to refine a Mesh
     class MeshRefinement
     {
         enum class RefinementType
         {
-            RidgeRefinement,
-            WaveCourant,
-            RefinementLevels
+            RidgeRefinement = 1,
+            WaveCourant = 2,
+            RefinementLevels = 3
         };
 
     public:
-        /// @brief Constructor
+        /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] averaging The averaging interpolation to use
-        explicit MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging);
+        /// @param[in] sampleRefineParameters Refinement based on samples parameters
+        /// @param[in] interpolationParameters Interpolation parameters
+        explicit MeshRefinement(std::shared_ptr<Mesh> mesh,
+                                std::shared_ptr<AveragingInterpolation> averaging,
+                                const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
+                                const meshkernelapi::InterpolationParameters& interpolationParameters);
 
-        /// @brief Constructor
+        /// @brief The constructor for refining based on polygons
         /// @param[in] mesh The mesh to be refined
-        explicit MeshRefinement(std::shared_ptr<Mesh> mesh);
+        /// @param[in] polygon The polygon where to refine
+        /// @param[in] interpolationParameters Interpolation parameters
+        explicit MeshRefinement(std::shared_ptr<Mesh> mesh,
+                                const Polygons& polygon,
+                                const meshkernelapi::InterpolationParameters& interpolationParameters);
 
-        /// @brief Refine a mesh (refinecellsandfaces2).
+        /// @brief Compute mesh refinement (refinecellsandfaces2).
         ///
         /// Steps:
         /// 1. Masks the node to be refined (those inside a polygon)
@@ -72,15 +81,9 @@ namespace meshkernel
         ///    -# Compute the edge refinement mask based on samples, ComputeRefinementMasksFromSamples
         ///    -# Compute the edge refinement mask based on polygon, ComputeEdgesRefinementMask
         ///    -# Compute if a face should be split, ComputeIfFaceShouldBeSplit
-        ///    -# Refine face by splitting edges, RefineFacesBySplittingEdges
+        ///    -# Compute face by splitting edges, RefineFacesBySplittingEdges
         /// 5. Connect hanging nodes if requested, RemoveIsolatedHangingnodes, ConnectHangingNodes
-        /// @param polygon The polygon where to perform refinement (option 2, refine in polygon)
-        /// @param sampleRefineParameters Refinement based on samples parameters
-        /// @param interpolationParameters Interpolation parameters
-        void Refine(
-            const Polygons& polygon,
-            const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
-            const meshkernelapi::InterpolationParameters& interpolationParameters);
+        void Compute();
 
     private:
         /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh
@@ -105,7 +108,6 @@ namespace meshkernel
                                                    int& numEdgesToBeRefined);
 
         /// Computes the edge refinement mask (comp_jalink)
-        /// @returns If the method succeeded
         void ComputeEdgesRefinementMask();
 
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)
@@ -148,28 +150,25 @@ namespace meshkernel
         /// The sample node RTree
         SpatialTrees::RTree m_samplesRTree;
 
-        std::vector<int> m_faceMask;     ///< Refine face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
+        std::vector<int> m_faceMask;     ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;     ///< If 0, edge is not split
         std::vector<int> m_brotherEdges; ///< The index of the brother edge for each edge
 
         /// Local caches
-        std::vector<bool> m_isHangingNodeCache;   ///< Cache for maintaining if node is hanging
-        std::vector<bool> m_isHangingEdgeCache;   ///< Cache for maintaining if edge is hanging
-        std::vector<Point> m_polygonNodesCache;   ///< Cache for maintaining polygon nodes
-        std::vector<int> m_localNodeIndicesCache; ///< Cache for maintaining local node indices
-        std::vector<int> m_edgeIndicesCache;      ///< Cache for maintaining edge indices
+        std::vector<bool> m_isHangingNodeCache;    ///< Cache for maintaining if node is hanging
+        std::vector<bool> m_isHangingEdgeCache;    ///< Cache for maintaining if edge is hanging
+        std::vector<Point> m_polygonNodesCache;    ///< Cache for maintaining polygon nodes
+        std::vector<int> m_localNodeIndicesCache;  ///< Cache for maintaining local node indices
+        std::vector<int> m_globalEdgeIndicesCache; ///< Cache for maintaining edge indices
 
-        double m_deltaTimeMaxCourant = 0.0;         ///< The maximum courant number for delta time
-        double m_minimumFaceSize = 5e4;             ///< Minimum face size
-        bool m_directionalRefinement = false;       ///< Whether there is directional refinement
-        bool m_refineOutsideFace = false;           ///< Whether to refine outside the face
-        bool m_connectHangingNodes = true;          ///< Whether to connect hanging nodes
-        bool m_refineIntersectedFaces = false;      ///< Whether to refine intersected faces
-        int m_maxNumberOfRefinementIterations = 10; ///< Maximum number of refinement iterations
-
-        RefinementType m_refinementType; /// The type of refinement to use
+        RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
+        bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
+        bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
 
         std::shared_ptr<Mesh> m_mesh;
         std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;
+        Polygons m_polygons;
+        meshkernelapi::SampleRefineParameters m_sampleRefineParameters;   ///< The sample parameters
+        meshkernelapi::InterpolationParameters m_interpolationParameters; ///< The interpolation parameters
     };
 } // namespace meshkernel

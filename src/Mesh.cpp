@@ -646,6 +646,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
                                           int node,
                                           int index,
                                           int previousEdge,
+                                          size_t numClosingEdges,
                                           std::vector<int>& edges,
                                           std::vector<int>& nodes,
                                           std::vector<int>& sortedEdgesFaces,
@@ -654,7 +655,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
 {
     // The selected edge does not exist.
     // TODO: It would make to throw an exception here, but then the test cases fail
-    if (index >= edges.size())
+    if (index >= numClosingEdges)
         return;
 
     if (m_edges[previousEdge].first < 0 || m_edges[previousEdge].second < 0)
@@ -711,14 +712,17 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
 
         // the order of the edges in a new face must be counterclockwise
         // in order to evaluate the clockwise order, the signed face area is computed
-        for (auto n = 0; n < nodes.size(); n++)
+        nodalValues.clear();
+        for (const auto& node : nodes)
         {
-            nodalValues[n] = m_nodes[nodes[n]];
+            nodalValues.emplace_back(m_nodes[node]);
         }
+        nodalValues.emplace_back(nodalValues.front());
+
         double area;
         Point centerOfMass;
         bool isCounterClockWise;
-        FaceAreaAndCenterOfMass(nodalValues, nodes.size(), m_projection, area, centerOfMass, isCounterClockWise);
+        FaceAreaAndCenterOfMass(nodalValues, m_projection, area, centerOfMass, isCounterClockWise);
         if (!isCounterClockWise)
         {
             return;
@@ -766,7 +770,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
     }
 
     const int edge = m_nodesEdges[otherNode][edgeIndexOtherNode];
-    FindFacesRecursive(startingNode, otherNode, index + 1, edge, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
+    FindFacesRecursive(startingNode, otherNode, index + 1, edge, numClosingEdges, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
 }
 
 void meshkernel::Mesh::FindFaces()
@@ -777,7 +781,8 @@ void meshkernel::Mesh::FindFaces()
         std::vector<int> nodes(numEdgesPerFace);
         std::vector<int> sortedEdgesFaces(numEdgesPerFace);
         std::vector<int> sortedNodes(numEdgesPerFace);
-        std::vector<Point> nodalValues(numEdgesPerFace);
+        std::vector<Point> nodalValues;
+        nodalValues.reserve(maximumNumberOfEdgesPerFace);
         for (auto n = 0; n < GetNumNodes(); n++)
         {
             if (!m_nodes[n].IsValid())
@@ -785,7 +790,7 @@ void meshkernel::Mesh::FindFaces()
 
             for (int e = 0; e < m_nodesNumEdges[n]; e++)
             {
-                FindFacesRecursive(n, n, 0, m_nodesEdges[n][e], edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
+                FindFacesRecursive(n, n, 0, m_nodesEdges[n][e], numEdgesPerFace, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
             }
         }
     }
@@ -803,29 +808,25 @@ void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas(bool computeM
     m_faceArea.resize(GetNumFaces());
     m_facesMassCenters.resize(GetNumFaces());
 
-    std::vector<Point> middlePointsCache(maximumNumberOfNodesPerFace);
-    std::vector<Point> normalsCache(maximumNumberOfNodesPerFace);
-    std::vector<int> numEdgeFacesCache(maximumNumberOfEdgesPerFace);
-    m_polygonNodesCache.resize(maximumNumberOfNodesPerFace + 1);
-    for (int f = 0; f < GetNumFaces(); f++)
+    std::vector<size_t> numEdgeFacesCache;
+    numEdgeFacesCache.reserve(maximumNumberOfEdgesPerFace);
+    for (auto f = 0; f < GetNumFaces(); f++)
     {
         //need to account for spherical coordinates. Build a polygon around a face
-        int numPolygonPoints;
-        FaceClosedPolygon(f, m_polygonNodesCache, numPolygonPoints);
-
-        auto numberOfFaceNodes = GetNumFaceEdges(f);
+        ComputeFaceClosedPolygon(f, m_polygonNodesCache);
 
         if (computeMassCenters)
         {
             double area;
             Point centerOfMass;
             bool isCounterClockWise;
-            FaceAreaAndCenterOfMass(m_polygonNodesCache, numberOfFaceNodes, m_projection, area, centerOfMass, isCounterClockWise);
+            FaceAreaAndCenterOfMass(m_polygonNodesCache, m_projection, area, centerOfMass, isCounterClockWise);
             m_faceArea[f] = area;
             m_facesMassCenters[f] = centerOfMass;
         }
 
-        int numberOfInteriorEdges = 0;
+        size_t numberOfInteriorEdges = 0;
+        auto numberOfFaceNodes = GetNumFaceEdges(f);
         for (int n = 0; n < numberOfFaceNodes; n++)
         {
             if (!IsEdgeOnBoundary(m_facesEdges[f][n]))
@@ -838,16 +839,13 @@ void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas(bool computeM
             m_facesCircumcenters[f] = m_facesMassCenters[f];
             continue;
         }
-
+        numEdgeFacesCache.clear();
         for (int n = 0; n < numberOfFaceNodes; n++)
         {
-            numEdgeFacesCache[n] = m_edgesNumFaces[m_facesEdges[f][n]];
+            numEdgeFacesCache.emplace_back(m_edgesNumFaces[m_facesEdges[f][n]]);
         }
 
         m_facesCircumcenters[f] = ComputeFaceCircumenter(m_polygonNodesCache,
-                                                         middlePointsCache,
-                                                         normalsCache,
-                                                         numberOfFaceNodes,
                                                          numEdgeFacesCache);
     }
 }
@@ -1224,28 +1222,30 @@ void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::ConnectNodes(int startNode, int endNode, int& newEdgeIndex)
+size_t meshkernel::Mesh::ConnectNodes(int startNode, int endNode)
 {
     const auto edgeIndex = FindEdge(startNode, endNode);
 
     // The nodes are already connected
     if (edgeIndex >= 0)
-        return;
+        return sizetMissingValue;
 
     // increment the edges container
-    newEdgeIndex = GetNumEdges();
+    const auto newEdgeIndex = GetNumEdges();
     m_edges.resize(newEdgeIndex + 1);
     m_edges[newEdgeIndex].first = startNode;
     m_edges[newEdgeIndex].second = endNode;
     m_numEdges++;
 
     m_edgesRTreeRequiresUpdate = true;
+
+    return newEdgeIndex;
 }
 
-void meshkernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
+size_t meshkernel::Mesh::InsertNode(const Point& newPoint)
 {
-    int newSize = GetNumNodes() + 1;
-    newNodeIndex = GetNumNodes();
+    const auto newSize = GetNumNodes() + 1;
+    const auto newNodeIndex = GetNumNodes();
 
     m_nodes.resize(newSize);
     m_nodeMask.resize(newSize);
@@ -1259,6 +1259,8 @@ void meshkernel::Mesh::InsertNode(const Point& newPoint, int& newNodeIndex)
     m_nodesNumEdges[newNodeIndex] = 0;
 
     m_nodesRTreeRequiresUpdate = true;
+
+    return newNodeIndex;
 }
 
 void meshkernel::Mesh::DeleteNode(int nodeIndex)
@@ -1292,47 +1294,40 @@ void meshkernel::Mesh::DeleteEdge(int edgeIndex)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::FaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache, int& numClosedPolygonNodes) const
+void meshkernel::Mesh::ComputeFaceClosedPolygonWithLocalMappings(int faceIndex,
+                                                                 std::vector<Point>& polygonNodesCache,
+                                                                 std::vector<int>& localNodeIndicesCache,
+                                                                 std::vector<int>& globalEdgeIndicesCache) const
 {
-    auto numFaceNodes = GetNumFaceEdges(faceIndex);
-    if (polygonNodesCache.size() < numFaceNodes + 1)
-    {
-        polygonNodesCache.resize(numFaceNodes + 1);
-    }
-
-    for (int n = 0; n < numFaceNodes; n++)
-    {
-        polygonNodesCache[n] = m_nodes[m_facesNodes[faceIndex][n]];
-    }
-    polygonNodesCache[numFaceNodes] = polygonNodesCache[0];
-
-    numClosedPolygonNodes = numFaceNodes + 1;
-}
-
-void meshkernel::Mesh::FaceClosedPolygon(int faceIndex,
-                                         std::vector<Point>& polygonNodesCache,
-                                         std::vector<int>& localNodeIndicesCache,
-                                         std::vector<int>& edgeIndicesCache,
-                                         int& numClosedPolygonNodes) const
-{
-    auto numFaceNodes = GetNumFaceEdges(faceIndex);
+    const auto numFaceNodes = GetNumFaceEdges(faceIndex);
     polygonNodesCache.reserve(numFaceNodes + 1);
     polygonNodesCache.clear();
     localNodeIndicesCache.reserve(numFaceNodes + 1);
     localNodeIndicesCache.clear();
-    edgeIndicesCache.reserve(numFaceNodes + 1);
-    edgeIndicesCache.clear();
+    globalEdgeIndicesCache.reserve(numFaceNodes + 1);
+    globalEdgeIndicesCache.clear();
 
     for (int n = 0; n < numFaceNodes; n++)
     {
         polygonNodesCache.emplace_back(m_nodes[m_facesNodes[faceIndex][n]]);
         localNodeIndicesCache.emplace_back(n);
-        edgeIndicesCache.emplace_back(m_facesEdges[faceIndex][n]);
+        globalEdgeIndicesCache.emplace_back(m_facesEdges[faceIndex][n]);
     }
-    polygonNodesCache.emplace_back(polygonNodesCache[0]);
+    polygonNodesCache.emplace_back(polygonNodesCache.front());
     localNodeIndicesCache.emplace_back(0);
-    edgeIndicesCache.emplace_back(m_facesEdges[faceIndex][0]);
-    numClosedPolygonNodes = numFaceNodes + 1;
+    globalEdgeIndicesCache.emplace_back(globalEdgeIndicesCache.front());
+}
+
+void meshkernel::Mesh::ComputeFaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const
+{
+    const auto numFaceNodes = GetNumFaceEdges(faceIndex);
+    polygonNodesCache.clear();
+    polygonNodesCache.reserve(numFaceNodes);
+    for (int n = 0; n < numFaceNodes; n++)
+    {
+        polygonNodesCache.push_back(m_nodes[m_facesNodes[faceIndex][n]]);
+    }
+    polygonNodesCache.push_back(polygonNodesCache.front());
 }
 
 void meshkernel::Mesh::MaskNodesInPolygons(const Polygons& polygon, bool inside)
@@ -1820,39 +1815,31 @@ bool meshkernel::Mesh::IsFaceOnBoundary(int face) const
 }
 
 meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                           std::vector<Point>& middlePoints,
-                                                           std::vector<Point>& normals,
-                                                           int numNodes,
-                                                           const std::vector<int>& edgesNumFaces) const
+                                                           const std::vector<size_t>& edgesNumFaces) const
 {
-    const int maximumNumberCircumcenterIterations = 100;
+    const size_t maximumNumberCircumcenterIterations = 100;
     const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; //111km = 0-e digit.
+    std::vector<Point> middlePoints;
+    middlePoints.reserve(maximumNumberOfNodesPerFace);
+    std::vector<Point> normals;
+    normals.reserve(maximumNumberOfNodesPerFace);
+    const auto numNodes = polygon.size() - 1;
 
-    Point centerOfMass;
-    double area;
-    bool isCounterClockWise;
-    FaceAreaAndCenterOfMass(polygon, numNodes, m_projection, area, centerOfMass, isCounterClockWise);
-
-    double xCenter = 0;
-    double yCenter = 0;
+    Point centerOfMass{0.0, 0.0};
     for (int n = 0; n < numNodes; n++)
     {
-        xCenter += polygon[n].x;
-        yCenter += polygon[n].y;
+        centerOfMass.x += polygon[n].x;
+        centerOfMass.y += polygon[n].y;
     }
-    centerOfMass.x = xCenter / numNodes;
-    centerOfMass.y = yCenter / numNodes;
+    centerOfMass = centerOfMass / numNodes;
 
-    // for triangles, for now assume cartesian kernel
-    Point result = centerOfMass;
-    if (numNodes == 3)
+    auto result = centerOfMass;
+    if (numNodes == numNodesInTriangle)
     {
         result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], m_projection);
     }
     else if (!edgesNumFaces.empty())
     {
-        Point estimatedCircumCenter = centerOfMass;
-
         int numValidEdges = 0;
         for (auto n = 0; n < numNodes; ++n)
         {
@@ -1862,32 +1849,29 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
             }
         }
 
-        if (numValidEdges > 0)
+        if (numValidEdges > 1)
         {
             for (auto n = 0; n < numNodes; n++)
             {
-                if (edgesNumFaces[n] == 2)
+                if (edgesNumFaces[n] != 2)
                 {
-                    int nextNode = n + 1;
-                    if (nextNode == numNodes)
-                        nextNode = 0;
-                    middlePoints[n] = (polygon[n] + polygon[nextNode]) * 0.5;
-                    normals[n] = NormalVector(polygon[n], polygon[nextNode], middlePoints[n], m_projection);
+                    continue;
                 }
+                const auto nextNode = NextCircularForwardIndex(n, numNodes);
+                middlePoints.emplace_back((polygon[n] + polygon[nextNode]) * 0.5);
+                normals.emplace_back(NormalVector(polygon[n], polygon[nextNode], middlePoints.back(), m_projection));
             }
 
+            Point estimatedCircumCenter = centerOfMass;
             for (int iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
             {
                 Point previousCircumCenter = estimatedCircumCenter;
-                for (auto n = 0; n < numNodes; n++)
+                for (auto n = 0; n < middlePoints.size(); n++)
                 {
-                    if (edgesNumFaces[n] == 2)
-                    {
-                        const auto dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
-                        const auto dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);
-                        const auto increment = -0.1 * DotProduct(dx, normals[n].x, dy, normals[n].y);
-                        AddIncrementToPoint(normals[n], increment, centerOfMass, m_projection, estimatedCircumCenter);
-                    }
+                    const auto dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
+                    const auto dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);
+                    const auto increment = -0.1 * DotProduct(dx, normals[n].x, dy, normals[n].y);
+                    AddIncrementToPoint(normals[n], increment, centerOfMass, m_projection, estimatedCircumCenter);
                 }
                 if (iter > 0 &&
                     abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
@@ -1900,46 +1884,32 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
         }
     }
 
-    if (weightCircumCenter <= 1.0 && weightCircumCenter >= 0.0)
+    for (auto n = 0; n < numNodes; n++)
     {
-        double localWeightCircumCenter = 1.0;
-        if (numNodes > 3)
+        polygon[n].x = weightCircumCenter * polygon[n].x + (1.0 - weightCircumCenter) * centerOfMass.x;
+        polygon[n].y = weightCircumCenter * polygon[n].y + (1.0 - weightCircumCenter) * centerOfMass.y;
+    }
+
+    if (IsPointInPolygonNodes(result, polygon, 0, numNodes, m_projection))
+    {
+        return result;
+    }
+
+    for (auto n = 0; n < numNodes; n++)
+    {
+        const auto nextNode = NextCircularForwardIndex(n, numNodes);
+        Point intersection;
+        double crossProduct;
+        double firstRatio;
+        double secondRatio;
+        const auto areLineCrossing = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, m_projection, intersection, crossProduct, firstRatio, secondRatio);
+        if (areLineCrossing)
         {
-            localWeightCircumCenter = weightCircumCenter;
-        }
-
-        for (int n = 0; n < numNodes; n++)
-        {
-            polygon[n].x = localWeightCircumCenter * polygon[n].x + (1.0 - localWeightCircumCenter) * centerOfMass.x;
-            polygon[n].y = localWeightCircumCenter * polygon[n].y + (1.0 - localWeightCircumCenter) * centerOfMass.y;
-        }
-        polygon[numNodes] = polygon[0];
-
-        const auto isCircumcenterInside = IsPointInPolygonNodes(result, polygon, 0, numNodes - 1, m_projection);
-
-        if (!isCircumcenterInside)
-        {
-            for (int n = 0; n < numNodes; n++)
-            {
-                int nextNode = n + 1;
-                if (nextNode == numNodes)
-                {
-                    nextNode = 0;
-                }
-
-                Point intersection;
-                double crossProduct;
-                double firstRatio;
-                double secondRatio;
-                bool areLineCrossing = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, m_projection, intersection, crossProduct, firstRatio, secondRatio);
-                if (areLineCrossing)
-                {
-                    result = intersection;
-                    break;
-                }
-            }
+            result = intersection;
+            break;
         }
     }
+
     return result;
 }
 
@@ -2159,38 +2129,44 @@ void meshkernel::Mesh::ComputeNodeNeighbours()
     }
 }
 
-void meshkernel::Mesh::GetOrthogonality(double* orthogonality)
+std::vector<double> meshkernel::Mesh::GetOrthogonality()
 {
+    std::vector<double> result;
+    result.reserve(GetNumEdges());
     for (int e = 0; e < GetNumEdges(); e++)
     {
-        orthogonality[e] = doubleMissingValue;
+        auto val = doubleMissingValue;
         int firstNode = m_edges[e].first;
         int secondNode = m_edges[e].second;
 
-        if (firstNode != 0 && secondNode != 0 && e < GetNumEdges() && !IsEdgeOnBoundary(e))
+        if (firstNode >= 0 && secondNode >= 0 && !IsEdgeOnBoundary(e))
         {
-            orthogonality[e] = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
-                                                                 m_nodes[secondNode],
-                                                                 m_facesCircumcenters[m_edgesFaces[e][0]],
-                                                                 m_facesCircumcenters[m_edgesFaces[e][1]],
-                                                                 m_projection);
-            if (orthogonality[e] != doubleMissingValue)
+            val = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
+                                                    m_nodes[secondNode],
+                                                    m_facesCircumcenters[m_edgesFaces[e][0]],
+                                                    m_facesCircumcenters[m_edgesFaces[e][1]],
+                                                    m_projection);
+            if (val != doubleMissingValue)
             {
-                orthogonality[e] = std::abs(orthogonality[e]);
+                val = std::abs(val);
             }
         }
+        result.emplace_back(val);
     }
+    return result;
 }
 
-void meshkernel::Mesh::GetSmoothness(double* smoothness)
+std::vector<double> meshkernel::Mesh::GetSmoothness()
 {
-    for (int e = 0; e < GetNumEdges(); e++)
+    std::vector<double> result;
+    result.reserve(GetNumEdges());
+    for (auto e = 0; e < GetNumEdges(); e++)
     {
-        smoothness[e] = doubleMissingValue;
+        auto val = doubleMissingValue;
         int firstNode = m_edges[e].first;
         int secondNode = m_edges[e].second;
 
-        if (firstNode != 0 && secondNode != 0 && e < GetNumEdges() && !IsEdgeOnBoundary(e))
+        if (firstNode >= 0 && secondNode >= 0 && !IsEdgeOnBoundary(e))
         {
             const auto leftFace = m_edgesFaces[e][0];
             const auto rightFace = m_edgesFaces[e][1];
@@ -2199,17 +2175,19 @@ void meshkernel::Mesh::GetSmoothness(double* smoothness)
 
             if (leftFaceArea < minimumCellArea || rightFaceArea < minimumCellArea)
             {
-                smoothness[e] = rightFaceArea / leftFaceArea;
+                val = rightFaceArea / leftFaceArea;
             }
-            if (smoothness[e] < 1.0)
+            if (val < 1.0)
             {
-                smoothness[e] = 1.0 / smoothness[e];
+                val = 1.0 / val;
             }
         }
+        result.emplace_back(val);
     }
+    return result;
 }
 
-void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
+void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
 {
     std::vector<std::vector<double>> averageEdgesLength(GetNumEdges(), std::vector<double>(2, doubleMissingValue));
     std::vector<double> averageFlowEdgesLength(GetNumEdges(), doubleMissingValue);
@@ -2267,7 +2245,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
 
         for (int n = 0; n < numberOfFaceNodes; n++)
         {
-            if (numberOfFaceNodes != 4)
+            if (numberOfFaceNodes != numNodesQuads)
                 curvilinearGridIndicator[m_facesNodes[f][n]] = false;
             auto edgeIndex = m_facesEdges[f][n];
 
@@ -2283,7 +2261,7 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
             }
 
             //quads
-            if (numberOfFaceNodes == 4)
+            if (numberOfFaceNodes == numNodesQuads)
             {
                 int kkp2 = n + 2;
                 if (kkp2 >= numberOfFaceNodes)
@@ -2308,8 +2286,8 @@ void meshkernel::Mesh::GetAspectRatios(std::vector<double>& aspectRatios)
 
     for (auto e = 0; e < GetNumEdges(); e++)
     {
-        auto first = m_edges[e].first;
-        auto second = m_edges[e].second;
+        const auto first = m_edges[e].first;
+        const auto second = m_edges[e].second;
 
         if (first < 0 || second < 0)
             continue;
@@ -2356,8 +2334,7 @@ void meshkernel::Mesh::TriangulateFaces()
         for (int j = 2; j < NumEdges - 1; j++)
         {
             const auto nodeIndex = m_facesNodes[i][j];
-            int newEdgeIndex;
-            ConnectNodes(indexFirstNode, nodeIndex, newEdgeIndex);
+            ConnectNodes(indexFirstNode, nodeIndex);
         }
     }
 
@@ -2413,7 +2390,7 @@ void meshkernel::Mesh::MakeDualFace(int node, double enlargementFactor, std::vec
     double area;
     Point centerOfMass;
     bool isCounterClockWise;
-    FaceAreaAndCenterOfMass(dualFace, dualFace.size() - 1, m_projection, area, centerOfMass, isCounterClockWise);
+    FaceAreaAndCenterOfMass(dualFace, m_projection, area, centerOfMass, isCounterClockWise);
 
     if (m_projection == Projection::spherical)
     {
