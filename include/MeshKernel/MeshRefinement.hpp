@@ -52,7 +52,7 @@ namespace meshkernel
         };
 
     public:
-        /// @brief Constructor, refine based on samples
+        /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] averaging The averaging interpolation to use
         /// @param[in] sampleRefineParameters Refinement based on samples parameters
@@ -62,7 +62,7 @@ namespace meshkernel
                                 const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
                                 const meshkernelapi::InterpolationParameters& interpolationParameters);
 
-        /// @brief Constructor, refine based on polygon
+        /// @brief The constructor for refining based on polygons
         /// @param[in] mesh The mesh to be refined
         /// @param[in] polygon The polygon where to refine
         /// @param[in] interpolationParameters Interpolation parameters

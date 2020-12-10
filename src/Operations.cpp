@@ -1163,15 +1163,20 @@ namespace meshkernel
             throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon contains no nodes.");
         }
 
+        if (polygon.size() - 1 < numNodesInTriangle)
+        {
+            throw std::invalid_argument("FaceAreaAndCenterOfMass: The polygon has less than 3 unique nodes.");
+        }
+
         area = 0.0;
         double xCenterOfMass = 0.0;
         double yCenterOfMass = 0.0;
         const double minArea = 1e-8;
         const Point reference = ReferencePoint(polygon, projection);
-        const auto numberOfPolygonPoints = polygon.size();
-        for (int n = 0; n < numberOfPolygonPoints; n++)
+        const auto numberOfPointsOpenedPolygon = polygon.size() - 1;
+        for (int n = 0; n < numberOfPointsOpenedPolygon; n++)
         {
-            const auto nextNode = NextCircularForwardIndex(n, numberOfPolygonPoints);
+            const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
             double dx0 = GetDx(reference, polygon[n], projection);
             double dy0 = GetDy(reference, polygon[n], projection);
             double dx1 = GetDx(reference, polygon[nextNode], projection);

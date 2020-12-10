@@ -355,8 +355,8 @@ void meshkernel::MeshRefinement::ConnectHangingNodes()
                         continue;
                     }
 
-                    auto ee = NextCircularBackwardIndex(n - 1, numNonHangingNodes);
-                    auto eee = NextCircularForwardIndex(n, numNonHangingNodes);
+                    const auto ee = NextCircularBackwardIndex(n - 1, numNonHangingNodes);
+                    const auto eee = NextCircularForwardIndex(n, numNonHangingNodes);
                     m_mesh->ConnectNodes(edgeEndNodeCache[ee], hangingNodeCache[n]);
                     m_mesh->ConnectNodes(edgeEndNodeCache[eee], hangingNodeCache[n]);
 
@@ -402,7 +402,7 @@ void meshkernel::MeshRefinement::ConnectHangingNodes()
             switch (numHangingNodes)
             {
             case 1: // one hanging node
-                for (int n = 0; n < numNonHangingNodes; ++n)
+                for (auto n = 0; n < numNonHangingNodes; ++n)
                 {
                     if (hangingNodeCache[n] < 0)
                     {
@@ -414,7 +414,7 @@ void meshkernel::MeshRefinement::ConnectHangingNodes()
                 }
                 break;
             case 2: // two hanging node
-                for (int n = 0; n < numNonHangingNodes; ++n)
+                for (auto n = 0; n < numNonHangingNodes; ++n)
                 {
                     if (hangingNodeCache[n] < 0)
                     {
@@ -532,7 +532,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
             }
         }
 
-        m_mesh->ComputeFaceOpenedPolygonWithLocalMappings(f, m_polygonNodesCache, m_localNodeIndicesCache, m_globalEdgeIndicesCache);
+        m_mesh->ComputeFaceClosedPolygonWithLocalMappings(f, m_polygonNodesCache, m_localNodeIndicesCache, m_globalEdgeIndicesCache);
 
         int numBrotherEdges = 0;
         notHangingFaceNodes.clear();
@@ -608,6 +608,9 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
         Point splittingNode(m_mesh->m_facesMassCenters[f]);
         if (localEdgesNumFaces.size() == numNodesQuads && !m_interpolationParameters.UseMassCenterWhenRefining)
         {
+            // close the polygon before computing the face circumcenter
+            facePolygonWithoutHangingNodes.emplace_back(facePolygonWithoutHangingNodes.front());
+            localEdgesNumFaces.emplace_back(localEdgesNumFaces.front());
 
             splittingNode = m_mesh->ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
                                                            localEdgesNumFaces);
@@ -855,7 +858,7 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int face,
 
     // compute all lengths
     const auto numEdges = m_mesh->GetNumFaceEdges(face);
-    m_mesh->ComputeFaceOpenedPolygonWithLocalMappings(face, m_polygonNodesCache, m_localNodeIndicesCache, m_globalEdgeIndicesCache);
+    m_mesh->ComputeFaceClosedPolygonWithLocalMappings(face, m_polygonNodesCache, m_localNodeIndicesCache, m_globalEdgeIndicesCache);
     for (int i = 0; i < numEdges; i++)
     {
         const int edgeIndex = m_globalEdgeIndicesCache[i];

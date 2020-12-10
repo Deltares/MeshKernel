@@ -646,6 +646,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
                                           int node,
                                           int index,
                                           int previousEdge,
+                                          size_t numClosingEdges,
                                           std::vector<int>& edges,
                                           std::vector<int>& nodes,
                                           std::vector<int>& sortedEdgesFaces,
@@ -654,7 +655,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
 {
     // The selected edge does not exist.
     // TODO: It would make to throw an exception here, but then the test cases fail
-    if (index >= edges.size())
+    if (index >= numClosingEdges)
         return;
 
     if (m_edges[previousEdge].first < 0 || m_edges[previousEdge].second < 0)
@@ -711,10 +712,13 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
 
         // the order of the edges in a new face must be counterclockwise
         // in order to evaluate the clockwise order, the signed face area is computed
+        nodalValues.clear();
         for (auto n = 0; n < nodes.size(); n++)
         {
-            nodalValues[n] = m_nodes[nodes[n]];
+            nodalValues.emplace_back(m_nodes[nodes[n]]);
         }
+        nodalValues.emplace_back(nodalValues.front());
+
         double area;
         Point centerOfMass;
         bool isCounterClockWise;
@@ -766,7 +770,7 @@ void meshkernel::Mesh::FindFacesRecursive(int startingNode,
     }
 
     const int edge = m_nodesEdges[otherNode][edgeIndexOtherNode];
-    FindFacesRecursive(startingNode, otherNode, index + 1, edge, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
+    FindFacesRecursive(startingNode, otherNode, index + 1, edge, numClosingEdges, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
 }
 
 void meshkernel::Mesh::FindFaces()
@@ -777,7 +781,8 @@ void meshkernel::Mesh::FindFaces()
         std::vector<int> nodes(numEdgesPerFace);
         std::vector<int> sortedEdgesFaces(numEdgesPerFace);
         std::vector<int> sortedNodes(numEdgesPerFace);
-        std::vector<Point> nodalValues(numEdgesPerFace);
+        std::vector<Point> nodalValues;
+        nodalValues.reserve(maximumNumberOfEdgesPerFace);
         for (auto n = 0; n < GetNumNodes(); n++)
         {
             if (!m_nodes[n].IsValid())
@@ -785,7 +790,7 @@ void meshkernel::Mesh::FindFaces()
 
             for (int e = 0; e < m_nodesNumEdges[n]; e++)
             {
-                FindFacesRecursive(n, n, 0, m_nodesEdges[n][e], edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
+                FindFacesRecursive(n, n, 0, m_nodesEdges[n][e], numEdgesPerFace, edges, nodes, sortedEdgesFaces, sortedNodes, nodalValues);
             }
         }
     }
@@ -808,7 +813,7 @@ void meshkernel::Mesh::ComputeFaceCircumcentersMassCentersAndAreas(bool computeM
     for (auto f = 0; f < GetNumFaces(); f++)
     {
         //need to account for spherical coordinates. Build a polygon around a face
-        ComputeFaceOpenedPolygon(f, m_polygonNodesCache);
+        ComputeFaceClosedPolygon(f, m_polygonNodesCache);
 
         if (computeMassCenters)
         {
@@ -1289,18 +1294,7 @@ void meshkernel::Mesh::DeleteEdge(int edgeIndex)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::ComputeFaceOpenedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const
-{
-    const auto numFaceNodes = GetNumFaceEdges(faceIndex);
-    polygonNodesCache.clear();
-    polygonNodesCache.reserve(numFaceNodes);
-    for (int n = 0; n < numFaceNodes; n++)
-    {
-        polygonNodesCache.push_back(m_nodes[m_facesNodes[faceIndex][n]]);
-    }
-}
-
-void meshkernel::Mesh::ComputeFaceOpenedPolygonWithLocalMappings(int faceIndex,
+void meshkernel::Mesh::ComputeFaceClosedPolygonWithLocalMappings(int faceIndex,
                                                                  std::vector<Point>& polygonNodesCache,
                                                                  std::vector<int>& localNodeIndicesCache,
                                                                  std::vector<int>& globalEdgeIndicesCache) const
@@ -1319,11 +1313,20 @@ void meshkernel::Mesh::ComputeFaceOpenedPolygonWithLocalMappings(int faceIndex,
         localNodeIndicesCache.emplace_back(n);
         globalEdgeIndicesCache.emplace_back(m_facesEdges[faceIndex][n]);
     }
+    polygonNodesCache.emplace_back(polygonNodesCache.front());
+    localNodeIndicesCache.emplace_back(0);
+    globalEdgeIndicesCache.emplace_back(globalEdgeIndicesCache.front());
 }
 
 void meshkernel::Mesh::ComputeFaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const
 {
-    ComputeFaceOpenedPolygon(faceIndex, polygonNodesCache);
+    const auto numFaceNodes = GetNumFaceEdges(faceIndex);
+    polygonNodesCache.clear();
+    polygonNodesCache.reserve(numFaceNodes);
+    for (int n = 0; n < numFaceNodes; n++)
+    {
+        polygonNodesCache.push_back(m_nodes[m_facesNodes[faceIndex][n]]);
+    }
     polygonNodesCache.push_back(polygonNodesCache.front());
 }
 
@@ -1820,7 +1823,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
     middlePoints.reserve(maximumNumberOfNodesPerFace);
     std::vector<Point> normals;
     normals.reserve(maximumNumberOfNodesPerFace);
-    const auto numNodes = polygon.size();
+    const auto numNodes = polygon.size() - 1;
 
     Point centerOfMass{0.0, 0.0};
     for (int n = 0; n < numNodes; n++)
@@ -1886,7 +1889,6 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
         polygon[n].x = weightCircumCenter * polygon[n].x + (1.0 - weightCircumCenter) * centerOfMass.x;
         polygon[n].y = weightCircumCenter * polygon[n].y + (1.0 - weightCircumCenter) * centerOfMass.y;
     }
-    polygon.emplace_back(polygon.front());
 
     if (IsPointInPolygonNodes(result, polygon, 0, numNodes, m_projection))
     {

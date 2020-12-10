@@ -396,7 +396,7 @@ namespace meshkernel
     [[nodiscard]] int CrossProductSign(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
 
     /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened
-    /// @param[in] polygon The input vector containing the nodes of the polygon.
+    /// @param[in] polygon The input vector containing the nodes of the polygon (must be closed)
     /// @param[in] projection The projection to use.
     /// @param[in,out] area The resulting area.
     /// @param[in,out] centerOfMass The resulting center of mass.

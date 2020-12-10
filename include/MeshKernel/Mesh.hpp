@@ -195,27 +195,20 @@ namespace meshkernel
         /// @brief From the masked edges compute the masked nodes
         void ComputeNodeMaskFromEdgeMask();
 
-        /// @brief For a face, fills the local caches, opened polygon (get_cellpolygon)
+        /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
         /// @param[in] faceIndex The face index
         /// @param[out] polygonNodesCache The node cache array filled with the nodes values
         /// @param[out] localNodeIndicesCache The consecutive node index in polygonNodesCache (0, 1, 2,...)
-        /// @param[out] globalEdgeIndicesCache The edge cache array filled with edge indices
-        void ComputeFaceOpenedPolygonWithLocalMappings(int faceIndex,
+        /// @param[out] globalEdgeIndicesCache The edge cache array filled with the global edge indices
+        void ComputeFaceClosedPolygonWithLocalMappings(int faceIndex,
                                                        std::vector<Point>& polygonNodesCache,
                                                        std::vector<int>& localNodeIndicesCache,
                                                        std::vector<int>& globalEdgeIndicesCache) const;
 
-        /// @brief For a face, fills the polygonNodesCache with the face nodes, opened polygon
+        /// @brief For a face create a closed polygon
         /// @param[in] faceIndex The face index
-        /// @param[out] polygonNodesCache The cache array to be filled
-        void ComputeFaceOpenedPolygon(int faceIndex,
-                                      std::vector<Point>& polygonNodesCache) const;
-
-        /// @brief For a face, fills the polygonNodesCache with the face nodes, closed polygon
-        /// @param[in] faceIndex The face index
-        /// @param[out] polygonNodesCache The cache array to be filled
-        void ComputeFaceClosedPolygon(int faceIndex,
-                                      std::vector<Point>& polygonNodesCache) const;
+        /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
+        void ComputeFaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const;
 
         /// @brief Determine if a face is fully contained in polygon or not, based on m_nodeMask
         /// @param[in] faceIndex The face index
@@ -272,7 +265,7 @@ namespace meshkernel
         /// @return If the face is on boundary
         [[nodiscard]] bool IsFaceOnBoundary(int face) const;
 
-        /// @brief Circumcenter of a face (getcircumcenter), for an open polygon
+        /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon Cache storing the face nodes
         /// @param[in] edgesNumFaces For meshes, the number of faces sharing the edges
         /// @returns The computed circumcenter
@@ -306,15 +299,15 @@ namespace meshkernel
         void ComputeNodeNeighbours();
 
         /// @brief Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters
-        /// @return The orthogonality The edge orthogonality, passed to the client
+        /// @return The edge orthogonality
         [[nodiscard]] std::vector<double> GetOrthogonality();
 
         /// @brief Gets the smoothness values, ratios of the face areas
-        /// @return The smoothness The smoothness at the edges
+        /// @return The smoothness at the edges
         [[nodiscard]] std::vector<double> GetSmoothness();
 
-        /// @brief Gets the aspect ratios, the ratio edges to segments connecting the face circumcenters lengths
-        /// @param[in] aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
+        /// @brief Gets the aspect ratios (the ratios edges lengths to flow edges lengths)
+        /// @param[in,out] aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
         void ComputeAspectRatios(std::vector<double>& aspectRatios);
 
         ///  @brief Classifies the nodes (makenetnodescoding)
@@ -342,7 +335,7 @@ namespace meshkernel
         [[nodiscard]] std::vector<int> SortedFacesAroundNode(int node) const;
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
-        /// @return meshBoundaryPolygon The resulting polygon mesh boundary
+        /// @return The resulting polygon mesh boundary
         [[nodiscard]] std::vector<Point> MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes);
 
         /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
@@ -406,6 +399,7 @@ namespace meshkernel
         /// @param node The current node
         /// @param numEdges The number of edges visited so far
         /// @param previousEdge The previously visited edge
+        /// @param numClosingEdges The number of edges closing a face (3 for triangles, 4 for quads, etc)
         /// @param edges The vector storing the current edges forming a face
         /// @param nodes The vector storing the current nodes forming a face
         /// @param sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
@@ -414,6 +408,7 @@ namespace meshkernel
                                 int node,
                                 int numEdges,
                                 int previousEdge,
+                                size_t numClosingEdges,
                                 std::vector<int>& edges,
                                 std::vector<int>& nodes,
                                 std::vector<int>& sortedEdges,
