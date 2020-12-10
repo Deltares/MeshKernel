@@ -2245,7 +2245,7 @@ void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
 
         for (int n = 0; n < numberOfFaceNodes; n++)
         {
-            if (numberOfFaceNodes != 4)
+            if (numberOfFaceNodes != numNodesQuads)
                 curvilinearGridIndicator[m_facesNodes[f][n]] = false;
             auto edgeIndex = m_facesEdges[f][n];
 
@@ -2261,7 +2261,7 @@ void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
             }
 
             //quads
-            if (numberOfFaceNodes == 4)
+            if (numberOfFaceNodes == numNodesQuads)
             {
                 int kkp2 = n + 2;
                 if (kkp2 >= numberOfFaceNodes)
@@ -2286,8 +2286,8 @@ void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
 
     for (auto e = 0; e < GetNumEdges(); e++)
     {
-        auto first = m_edges[e].first;
-        auto second = m_edges[e].second;
+        const auto first = m_edges[e].first;
+        const auto second = m_edges[e].second;
 
         if (first < 0 || second < 0)
             continue;
