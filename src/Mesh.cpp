@@ -1610,7 +1610,7 @@ void meshkernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inv
 
 void meshkernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion)
 {
-    if (deletionOption == AllVerticesInside)
+    if (deletionOption == AllNodesInside)
     {
         for (int n = 0; n < GetNumNodes(); ++n)
         {
@@ -2135,18 +2135,18 @@ std::vector<double> meshkernel::Mesh::GetOrthogonality()
     result.reserve(GetNumEdges());
     for (int e = 0; e < GetNumEdges(); e++)
     {
-        auto orthogonality = doubleMissingValue;
-        const auto firstVertex = m_edges[e].first;
-        const auto secondVertex = m_edges[e].second;
+        orthogonality[e] = doubleMissingValue;
+        int firstNode = m_edges[e].first;
+        int secondNode = m_edges[e].second;
 
-        if (firstVertex != 0 && secondVertex != 0 && !IsEdgeOnBoundary(e))
+        if (firstNode >= 0 && secondNode >= 0 && !IsEdgeOnBoundary(e))
         {
-            orthogonality = NormalizedInnerProductTwoSegments(m_nodes[firstVertex],
-                                                              m_nodes[secondVertex],
-                                                              m_facesCircumcenters[m_edgesFaces[e][0]],
-                                                              m_facesCircumcenters[m_edgesFaces[e][1]],
-                                                              m_projection);
-            if (!IsEqual(orthogonality, doubleMissingValue))
+            orthogonality[e] = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
+                                                                 m_nodes[secondNode],
+                                                                 m_facesCircumcenters[m_edgesFaces[e][0]],
+                                                                 m_facesCircumcenters[m_edgesFaces[e][1]],
+                                                                 m_projection);
+            if (orthogonality[e] != doubleMissingValue)
             {
                 orthogonality = std::abs(orthogonality);
             }
@@ -2162,10 +2162,11 @@ std::vector<double> meshkernel::Mesh::GetSmoothness()
     result.reserve(GetNumEdges());
     for (auto e = 0; e < GetNumEdges(); e++)
     {
-        const auto firstVertex = m_edges[e].first;
-        const auto secondVertex = m_edges[e].second;
-        auto val = doubleMissingValue;
-        if (firstVertex != 0 && secondVertex != 0 && !IsEdgeOnBoundary(e))
+        smoothness[e] = doubleMissingValue;
+        int firstNode = m_edges[e].first;
+        int secondNode = m_edges[e].second;
+
+        if (firstNode >= 0 && secondNode >= 0 && !IsEdgeOnBoundary(e))
         {
             const auto leftFace = m_edgesFaces[e][0];
             const auto rightFace = m_edgesFaces[e][1];

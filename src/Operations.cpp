@@ -991,14 +991,14 @@ namespace meshkernel
         return doubleMissingValue;
     }
 
-    Point CircumcenterOfTriangle(const Point& firstVertex, const Point& secondVertex, const Point& thirdVertex, const Projection& projection)
+    Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection)
     {
 
-        double dx2 = GetDx(firstVertex, secondVertex, projection);
-        double dy2 = GetDy(firstVertex, secondVertex, projection);
+        double dx2 = GetDx(firstNode, secondNode, projection);
+        double dy2 = GetDy(firstNode, secondNode, projection);
 
-        double dx3 = GetDx(firstVertex, thirdVertex, projection);
-        double dy3 = GetDy(firstVertex, thirdVertex, projection);
+        double dx3 = GetDx(firstNode, thirdNode, projection);
+        double dy3 = GetDy(firstNode, thirdNode, projection);
 
         double den = dy2 * dx3 - dy3 * dx2;
         double z = 0.0;
@@ -1010,15 +1010,15 @@ namespace meshkernel
         Point circumcenter;
         if (projection == Projection::cartesian)
         {
-            circumcenter.x = firstVertex.x + 0.5 * (dx3 - z * dy3);
-            circumcenter.y = firstVertex.y + 0.5 * (dy3 + z * dx3);
+            circumcenter.x = firstNode.x + 0.5 * (dx3 - z * dy3);
+            circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3);
         }
         if (projection == Projection::spherical)
         {
-            double phi = (firstVertex.y + secondVertex.y + thirdVertex.y) * oneThird;
+            double phi = (firstNode.y + secondNode.y + thirdNode.y) * oneThird;
             double xf = 1.0 / cos(degrad_hp * phi);
-            circumcenter.x = firstVertex.x + xf * 0.5 * (dx3 - z * dy3) * raddeg_hp / earth_radius;
-            circumcenter.y = firstVertex.y + 0.5 * (dy3 + z * dx3) * raddeg_hp / earth_radius;
+            circumcenter.x = firstNode.x + xf * 0.5 * (dx3 - z * dy3) * raddeg_hp / earth_radius;
+            circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3) * raddeg_hp / earth_radius;
         }
         if (projection == Projection::sphericalAccurate)
         {

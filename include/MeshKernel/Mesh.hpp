@@ -50,7 +50,7 @@ namespace meshkernel
         /// Enumerator describing the different options to delete a mesh
         enum DeleteMeshOptions
         {
-            AllVerticesInside = 0,
+            AllNodesInside = 0,
             FacesWithIncludedCircumcenters = 1,
             FacesCompletelyIncluded = 2
         };
@@ -385,7 +385,7 @@ namespace meshkernel
 
         Projection m_projection; ///< The projection used
 
-        SpatialTrees::RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node vertices
+        SpatialTrees::RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
         SpatialTrees::RTree m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
 
         int m_maxNumNeighbours = 0; ///< Maximum number of neighbors

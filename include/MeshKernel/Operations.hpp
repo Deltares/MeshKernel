@@ -356,12 +356,13 @@ namespace meshkernel
     [[nodiscard]] double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
 
     /// @brief Computes the circumcenter of a triangle
-    /// @param[in] firstVertex The first triangle vertex
-    /// @param[in] secondVertex The second triangle vertex
-    /// @param[in] thirdVertex The third triangle vertex
+    /// @param[in] firstNode The first triangle node
+    /// @param[in] secondNode The second triangle node
+    /// @param[in] thirdNode The third triangle node
     /// @param[in] projection The coordinate system projection
     /// @return The resulting circumcenter
-    [[nodiscard]] Point CircumcenterOfTriangle(const Point& firstVertex, const Point& secondVertex, const Point& thirdVertex, const Projection& projection);
+    [[nodiscard]] Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection);
+
 
     /// @brief Determines if two segments are crossing (cross, cross3D)
     /// @param[in] firstSegmentFistPoint The first point of the first segment
@@ -494,10 +495,10 @@ namespace meshkernel
     /// @return The vector containing the edge centers.
     [[nodiscard]] std::vector<Point> ComputeEdgeCenters(const std::vector<Point>& nodes, const std::vector<Edge>& edges);
 
-    /// @brief Given a triangles with values on each vertex, computes the interpolated value inside the triangle, using linear interpolation.
+    /// @brief Given a triangles with values on each node, computes the interpolated value inside the triangle, using linear interpolation.
     /// @param[in] interpolationPoint The point where to interpolate.
-    /// @param[in] polygon The polygon containing the triangle vertices.
-    /// @param[in] values The values at each vertex.
+    /// @param[in] polygon The polygon containing the triangle nodes.
+    /// @param[in] values The values at each node.
     /// @param[in] projection The projection to use.
     /// @return The interpolated value.
     [[nodiscard]] double LinearInterpolationInTriangle(const Point& interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, const Projection& projection);

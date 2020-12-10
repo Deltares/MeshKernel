@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.14...3.18)
 # Project name and a few useful settings. Other commands can pick up the results
 project(
   MeshKernel
-  VERSION 0.9.0
+  VERSION 0.10.0
   DESCRIPTION "Library for creating and editing meshes."
   LANGUAGES CXX)
 

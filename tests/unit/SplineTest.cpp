@@ -30,16 +30,16 @@ TEST(Splines, CubicSplineInterpolation)
     splineNodes.push_back(meshkernel::Point{529.253906250000, 432.379974365234});
     splineNodes.push_back(meshkernel::Point{930.506469726562, 453.380187988281});
 
-    int pointsBetweenVertices = 20;
+    int pointsBetweenNodes = 20;
     std::vector<meshkernel::Point> coordinatesDerivatives(splineNodes.size());
     meshkernel::Splines::SecondOrderDerivative(splineNodes, int(splineNodes.size()), coordinatesDerivatives);
     std::vector<meshkernel::Point> splineCoordinates;
 
     for (int n = 0; n < splineNodes.size() - 1; n++)
     {
-        for (int p = 0; p <= pointsBetweenVertices; p++)
+        for (int p = 0; p <= pointsBetweenNodes; p++)
         {
-            const double pointAdimensionalCoordinate = n + double(p) / double(pointsBetweenVertices);
+            const double pointAdimensionalCoordinate = n + double(p) / double(pointsBetweenNodes);
             meshkernel::Point pointCoordinate;
             auto successful = InterpolateSplinePoint(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
             ASSERT_TRUE(successful);
