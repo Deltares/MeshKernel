@@ -1081,7 +1081,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_offsetted_polygon(int meshKernelId, const GeometryList& geometryListIn, bool innerAndOuter, double distance, GeometryList& geometryListOut)
+    MKERNEL_API int mkernel_offsetted_polygon(int meshKernelId, const GeometryList& geometryListIn, bool innerPolygon, double distance, GeometryList& geometryListOut)
     {
         int exitCode = Success;
         try
@@ -1096,7 +1096,7 @@ namespace meshkernelapi
 
             meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
-            const auto newPolygon = polygon.OffsetCopy(distance, innerAndOuter);
+            const auto newPolygon = polygon.OffsetCopy(distance, innerPolygon);
 
             ConvertPointVectorToGeometryList(newPolygon.m_nodes, geometryListOut);
         }
@@ -1108,7 +1108,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, GeometryList& geometryListIn, bool innerAndOuter, double distance, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_offsetted_polygon_count(int meshKernelId, const GeometryList& geometryListIn, bool innerPolygon, double distance, int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -1121,7 +1121,7 @@ namespace meshkernelapi
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
             meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-            const auto newPolygon = polygon.OffsetCopy(distance, innerAndOuter);
+            const auto newPolygon = polygon.OffsetCopy(distance, innerPolygon);
 
             numberOfPolygonNodes = newPolygon.GetNumNodes();
         }
