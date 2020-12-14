@@ -355,7 +355,7 @@ namespace meshkernelapi
         /// @param[in] geometryList The closed polygon where to perform the refinement
         /// @param[in] interpolationParameters The interpolation parameters
         /// @returns Error code
-        MKERNEL_API int mkernel_refine_mesh_based_on_polygon(int meshKernelId, const GeometryList& geometryList, InterpolationParameters& interpolationParameters);
+        MKERNEL_API int mkernel_refine_mesh_based_on_polygon(int meshKernelId, const GeometryList& geometryList, const InterpolationParameters& interpolationParameters);
 
         /// @brief Finds the node index closest to the input point
         /// @param[in] meshKernelId
