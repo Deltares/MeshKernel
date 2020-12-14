@@ -60,7 +60,7 @@ var searchData=
   ['mkernel_5forthogonalize_5finner_5fiteration',['mkernel_orthogonalize_inner_iteration',['../namespacemeshkernelapi.html#abbf4048e8388afcbe952eeb94ab68c8d',1,'meshkernelapi']]],
   ['mkernel_5forthogonalize_5fprepare_5fouter_5fiteration',['mkernel_orthogonalize_prepare_outer_iteration',['../namespacemeshkernelapi.html#ae3c21e8ef448dd42d7feb8777f3604e6',1,'meshkernelapi']]],
   ['mkernel_5fpoints_5fin_5fpolygon',['mkernel_points_in_polygon',['../namespacemeshkernelapi.html#a05cbfa62474d0c37c5a132152b07fe49',1,'meshkernelapi']]],
-  ['mkernel_5frefine_5fmesh_5fbased_5fon_5fpolygon',['mkernel_refine_mesh_based_on_polygon',['../namespacemeshkernelapi.html#a02261c6e3a2c99df55b59aa8b957d002',1,'meshkernelapi']]],
+  ['mkernel_5frefine_5fmesh_5fbased_5fon_5fpolygon',['mkernel_refine_mesh_based_on_polygon',['../namespacemeshkernelapi.html#a088e928c8c86af887e51c4fc14568d66',1,'meshkernelapi']]],
   ['mkernel_5frefine_5fmesh_5fbased_5fon_5fsamples',['mkernel_refine_mesh_based_on_samples',['../namespacemeshkernelapi.html#ac03b3052791bdf080e81204bca58f273',1,'meshkernelapi']]],
   ['mkernel_5frefine_5fpolygon',['mkernel_refine_polygon',['../namespacemeshkernelapi.html#a757cb24349b7a6c3df27e64a08ece938',1,'meshkernelapi']]],
   ['mkernel_5frefine_5fpolygon_5fcount',['mkernel_refine_polygon_count',['../namespacemeshkernelapi.html#acb4e253c6e745b0cabd395b4d03a226a',1,'meshkernelapi']]],
