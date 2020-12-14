@@ -9,6 +9,7 @@ var searchData=
   ['getdy',['GetDy',['../namespacemeshkernel.html#a1de81f67a976505204902c219d063c10',1,'meshkernel']]],
   ['getedgescrossingsmallflowedges',['GetEdgesCrossingSmallFlowEdges',['../classmeshkernel_1_1_mesh.html#a20a29651eaa6678725d275a879f84fcb',1,'meshkernel::Mesh']]],
   ['getflowedgescenters',['GetFlowEdgesCenters',['../classmeshkernel_1_1_mesh.html#aaa9dab60e12332199ba3fa6041a7d1ad',1,'meshkernel::Mesh']]],
+  ['gethangingedges',['GetHangingEdges',['../classmeshkernel_1_1_mesh.html#a7355b550fe14fe34ba3aab02e5f63a56',1,'meshkernel::Mesh']]],
   ['getnodeindex',['GetNodeIndex',['../classmeshkernel_1_1_mesh.html#a4e94750343d4739e3d06c190ca74f06f',1,'meshkernel::Mesh']]],
   ['getnumconnectednodes',['GetNumConnectedNodes',['../classmeshkernel_1_1_smoother.html#ab8373d00dd1c5baa8b849cd8cc13befe',1,'meshkernel::Smoother']]],
   ['getnumedges',['GetNumEdges',['../classmeshkernel_1_1_mesh.html#a5150280bdba56884de15211a34e64155',1,'meshkernel::Mesh']]],

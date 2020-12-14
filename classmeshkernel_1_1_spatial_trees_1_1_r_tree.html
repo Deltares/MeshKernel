@@ -88,9 +88,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5a9eef522c789994d5afdf6cc5cf8b2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a5a9eef522c789994d5afdf6cc5cf8b2b">NearestNeighbors</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> node)</td></tr>
 <tr class="memdesc:a5a9eef522c789994d5afdf6cc5cf8b2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines the nearest neighbor.  <a href="#a5a9eef522c789994d5afdf6cc5cf8b2b">More...</a><br /></td></tr>
 <tr class="separator:a5a9eef522c789994d5afdf6cc5cf8b2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c53a97199bb58fa4967cd4b24cd598f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a9c53a97199bb58fa4967cd4b24cd598f">RemoveNode</a> (int position)</td></tr>
-<tr class="memdesc:a9c53a97199bb58fa4967cd4b24cd598f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes node.  <a href="#a9c53a97199bb58fa4967cd4b24cd598f">More...</a><br /></td></tr>
-<tr class="separator:a9c53a97199bb58fa4967cd4b24cd598f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04a6355457db3a09bc8e9711c06042bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a04a6355457db3a09bc8e9711c06042bd">DeleteNode</a> (int position)</td></tr>
+<tr class="memdesc:a04a6355457db3a09bc8e9711c06042bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a node.  <a href="#a04a6355457db3a09bc8e9711c06042bd">More...</a><br /></td></tr>
+<tr class="separator:a04a6355457db3a09bc8e9711c06042bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55afd29dbf597fbb594565d8a08dee9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a55afd29dbf597fbb594565d8a08dee9b">InsertNode</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;node)</td></tr>
 <tr class="memdesc:a55afd29dbf597fbb594565d8a08dee9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a node.  <a href="#a55afd29dbf597fbb594565d8a08dee9b">More...</a><br /></td></tr>
 <tr class="separator:a55afd29dbf597fbb594565d8a08dee9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,6 +145,32 @@ template&lt;typename T &gt; </div>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">T</td><td>Requires IsCoordinate&lt;T&gt; </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a04a6355457db3a09bc8e9711c06042bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04a6355457db3a09bc8e9711c06042bd">&#9670;&nbsp;</a></span>DeleteNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::SpatialTrees::RTree::DeleteNode </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>position</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deletes a node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">position</td><td>Position of the node to remove in m_points </td></tr>
   </table>
   </dd>
 </dl>
@@ -234,32 +260,6 @@ template&lt;typename T &gt; </div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">node</td><td>The node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">searchRadiusSquared</td><td>The squared search radius around the node </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a9c53a97199bb58fa4967cd4b24cd598f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9c53a97199bb58fa4967cd4b24cd598f">&#9670;&nbsp;</a></span>RemoveNode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void meshkernel::SpatialTrees::RTree::RemoveNode </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>position</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Removes node. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">position</td><td>Position of the node to remove in m_points </td></tr>
   </table>
   </dd>
 </dl>

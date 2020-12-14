@@ -120,6 +120,15 @@ Functions</h2></td></tr>
 <tr class="memitem:afaefedc7f2c9d924a49759e58379ba4f"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#afaefedc7f2c9d924a49759e58379ba4f">mkernel_find_faces</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh_geometry_dimensions.html">MeshGeometryDimensions</a> &amp;meshGeometryDimensions, <a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html">MeshGeometry</a> &amp;meshGeometry)</td></tr>
 <tr class="memdesc:afaefedc7f2c9d924a49759e58379ba4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mesh faces.  <a href="#afaefedc7f2c9d924a49759e58379ba4f">More...</a><br /></td></tr>
 <tr class="separator:afaefedc7f2c9d924a49759e58379ba4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd471453f15a8d75c979e2dc1257c985"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#afd471453f15a8d75c979e2dc1257c985">mkernel_count_hanging_edges</a> (int meshKernelId, int &amp;numHangingEdgesIndices)</td></tr>
+<tr class="memdesc:afd471453f15a8d75c979e2dc1257c985"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of hanging edges.  <a href="#afd471453f15a8d75c979e2dc1257c985">More...</a><br /></td></tr>
+<tr class="separator:afd471453f15a8d75c979e2dc1257c985"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8969e04f962dab1a08bcf8970dae17af"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8969e04f962dab1a08bcf8970dae17af">mkernel_get_hanging_edges</a> (int meshKernelId, int **hangingEdgesIndices)</td></tr>
+<tr class="memdesc:a8969e04f962dab1a08bcf8970dae17af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the indices of hanging edges.  <a href="#a8969e04f962dab1a08bcf8970dae17af">More...</a><br /></td></tr>
+<tr class="separator:a8969e04f962dab1a08bcf8970dae17af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e99861f3ef7dd8e0be3c259b1e2510b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9e99861f3ef7dd8e0be3c259b1e2510b">mkernel_delete_hanging_edges</a> (int meshKernelId)</td></tr>
+<tr class="memdesc:a9e99861f3ef7dd8e0be3c259b1e2510b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the hanging edges.  <a href="#a9e99861f3ef7dd8e0be3c259b1e2510b">More...</a><br /></td></tr>
+<tr class="separator:a9e99861f3ef7dd8e0be3c259b1e2510b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bd78c955dd9c7e762614132e36fed73"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9bd78c955dd9c7e762614132e36fed73">mkernel_orthogonalize</a> (int meshKernelId, int projectToLandBoundaryOption, const <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">OrthogonalizationParameters</a> &amp;orthogonalizationParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListLandBoundaries)</td></tr>
 <tr class="memdesc:a9bd78c955dd9c7e762614132e36fed73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orthogonalization.  <a href="#a9bd78c955dd9c7e762614132e36fed73">More...</a><br /></td></tr>
 <tr class="separator:a9bd78c955dd9c7e762614132e36fed73"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -258,9 +267,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a25a472302104fc82c85acf4ea4feef33"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a25a472302104fc82c85acf4ea4feef33">mkernel_get_small_flow_edge_centers</a> (int meshKernelId, double smallFlowEdgesThreshold, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;result)</td></tr>
 <tr class="memdesc:a25a472302104fc82c85acf4ea4feef33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the small flow edges (flow edges are the edges connecting the face circumcenters)  <a href="#a25a472302104fc82c85acf4ea4feef33">More...</a><br /></td></tr>
 <tr class="separator:a25a472302104fc82c85acf4ea4feef33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac44e033066bad9ac5e058eaf313017ee"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac44e033066bad9ac5e058eaf313017ee">mkernel_remove_small_flow_edges</a> (int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)</td></tr>
-<tr class="memdesc:ac44e033066bad9ac5e058eaf313017ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the small flow edges (flow edges are the edges connecting the face circumcenters)  <a href="#ac44e033066bad9ac5e058eaf313017ee">More...</a><br /></td></tr>
-<tr class="separator:ac44e033066bad9ac5e058eaf313017ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a410b50c95a54d45cb72a662389906574"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a410b50c95a54d45cb72a662389906574">mkernel_delete_small_flow_edges</a> (int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)</td></tr>
+<tr class="memdesc:a410b50c95a54d45cb72a662389906574"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the small flow edges (flow edges are the edges connecting the face circumcenters)  <a href="#a410b50c95a54d45cb72a662389906574">More...</a><br /></td></tr>
+<tr class="separator:a410b50c95a54d45cb72a662389906574"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a> ()</td></tr>
 <tr class="memdesc:a0fa4028baafe51cdd5e87fe898b4a426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used in the back-end library as separator and missing value.  <a href="#a0fa4028baafe51cdd5e87fe898b4a426">More...</a><br /></td></tr>
 <tr class="separator:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -478,6 +487,44 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPolygonNodes</td><td>The number of polygon points </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="afd471453f15a8d75c979e2dc1257c985"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd471453f15a8d75c979e2dc1257c985">&#9670;&nbsp;</a></span>mkernel_count_hanging_edges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_count_hanging_edges </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>numHangingEdgesIndices</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count the number of hanging edges. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">numHangingEdgesIndices</td><td></td></tr>
   </table>
   </dd>
 </dl>
@@ -968,6 +1015,33 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a9e99861f3ef7dd8e0be3c259b1e2510b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e99861f3ef7dd8e0be3c259b1e2510b">&#9670;&nbsp;</a></span>mkernel_delete_hanging_edges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_delete_hanging_edges </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deletes the hanging edges. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
 <a id="ab3534c21f56c5538aa9342a30819f867"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab3534c21f56c5538aa9342a30819f867">&#9670;&nbsp;</a></span>mkernel_delete_mesh()</h2>
 
@@ -1055,6 +1129,51 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a410b50c95a54d45cb72a662389906574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a410b50c95a54d45cb72a662389906574">&#9670;&nbsp;</a></span>mkernel_delete_small_flow_edges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_delete_small_flow_edges </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>smallFlowEdgesThreshold</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>minFractionalAreaTriangles</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deletes the small flow edges (flow edges are the edges connecting the face circumcenters) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">smallFlowEdgesThreshold</td><td>The configurable threshold for detecting the small flow edges </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minFractionalAreaTriangles</td><td>The ratio of the face area to the average area of neighboring non triangular faces </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code (0 Successful) </dd></dl>
 
 </div>
 </div>
@@ -1213,6 +1332,44 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">error_message</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a8969e04f962dab1a08bcf8970dae17af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8969e04f962dab1a08bcf8970dae17af">&#9670;&nbsp;</a></span>mkernel_get_hanging_edges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_hanging_edges </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int **&#160;</td>
+          <td class="paramname"><em>hangingEdgesIndices</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the indices of hanging edges. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">hangingEdgesIndices</td><td>Pointer to memory where the hanging edge indices will be stored </td></tr>
   </table>
   </dd>
 </dl>
@@ -2750,51 +2907,6 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
-
-</div>
-</div>
-<a id="ac44e033066bad9ac5e058eaf313017ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac44e033066bad9ac5e058eaf313017ee">&#9670;&nbsp;</a></span>mkernel_remove_small_flow_edges()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_remove_small_flow_edges </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>meshKernelId</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>smallFlowEdgesThreshold</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>minFractionalAreaTriangles</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Removes the small flow edges (flow edges are the edges connecting the face circumcenters) </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">smallFlowEdgesThreshold</td><td>The configurable threshold for detecting the small flow edges </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">minFractionalAreaTriangles</td><td>The ratio of the face area to the average area of neighboring non triangular faces </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Error code (0 Successful) </dd></dl>
 
 </div>
 </div>
