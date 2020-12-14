@@ -314,6 +314,69 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_count_hanging_edges(int meshKernelId, int& numHangingEdges)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            const auto hangingEdges = meshInstances[meshKernelId]->GetHangingEdges();
+            numHangingEdges = hangingEdges.size();
+        }
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_get_hanging_edges(int meshKernelId, int** hangingEdgesIndices)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            const auto hangingEdges = meshInstances[meshKernelId]->GetHangingEdges();
+            for (auto i = 0; i < hangingEdges.size(); ++i)
+            {
+                *(hangingEdgesIndices)[i] = hangingEdges[i];
+            }
+        }
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_delete_hanging_edges(int meshKernelId)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            meshInstances[meshKernelId]->DeleteHangingEdges();
+        }
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= Exception;
+        }
+        return exitCode;
+    }
+
     MKERNEL_API int mkernel_orthogonalize(int meshKernelId,
                                           int projectToLandBoundaryOption,
                                           const OrthogonalizationParameters& orthogonalizationParameters,
@@ -1660,7 +1723,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
+    MKERNEL_API int mkernel_delete_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
     {
         int exitCode = Success;
         try
@@ -1670,8 +1733,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            meshInstances[meshKernelId]->RemoveSmallFlowEdges(smallFlowEdgesThreshold);
-            meshInstances[meshKernelId]->RemoveSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
+            meshInstances[meshKernelId]->DeleteSmallFlowEdges(smallFlowEdgesThreshold);
+            meshInstances[meshKernelId]->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
         }
         catch (const std::exception& e)
         {

@@ -283,8 +283,8 @@ namespace meshkernel
                                            Point& normalVector,
                                            Point& tangentialVector);
 
-        /// @brief Remove skewed cells and cells whose aspect ratio exceeds a prescibed value (postgrid)
-        void RemoveSkinnyTriangles();
+        /// @brief Delete skewed cells and cells whose aspect ratio exceeds a prescibed value (postgrid)
+        void DeleteSkinnyTriangles();
 
         /// @brief Delete a spline
         /// @brief splineIndex The spline index to delete

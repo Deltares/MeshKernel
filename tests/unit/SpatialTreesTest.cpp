@@ -25,7 +25,7 @@ TEST(SpatialTrees, RTreeRemovePoint)
     meshkernel::SpatialTrees::RTree rtree;
     rtree.BuildTree(nodes);
 
-    rtree.RemoveNode(0);
+    rtree.DeleteNode(0);
 
     ASSERT_EQ(rtree.Size(), 15);
 }

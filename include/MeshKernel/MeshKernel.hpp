@@ -94,6 +94,23 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_find_faces(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
 
+        /// @brief Count the number of hanging edges
+        /// @param[in] meshKernelId Id of the mesh state
+        /// @param[out] numHangingEdgesIndices
+        /// @returns Error code
+        MKERNEL_API int mkernel_count_hanging_edges(int meshKernelId, int& numHangingEdgesIndices);
+
+        /// @brief Gets the indices of hanging edges
+        /// @param[in] meshKernelId Id of the mesh state
+        /// @param[in,out] hangingEdgesIndices Pointer to memory where the hanging edge indices will be stored
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_hanging_edges(int meshKernelId, int** hangingEdgesIndices);
+
+        /// @brief Deletes the hanging edges
+        /// @param[in] meshKernelId Id of the mesh state
+        /// @returns Error code
+        MKERNEL_API int mkernel_delete_hanging_edges(int meshKernelId);
+
         /// @brief Orthogonalization
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
@@ -435,12 +452,12 @@ namespace meshkernelapi
         /// @return Error code (0 Successful)
         MKERNEL_API int mkernel_get_small_flow_edge_centers(int meshKernelId, double smallFlowEdgesThreshold, GeometryList& result);
 
-        /// @brief Removes the small flow edges (flow edges are the edges connecting the face circumcenters)
+        /// @brief Deletes the small flow edges (flow edges are the edges connecting the face circumcenters)
         /// @param[in] meshKernelId  Id of the mesh state
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
         /// @param[in] minFractionalAreaTriangles The ratio of the face area to the average area of neighboring non triangular faces
         /// @return Error code (0 Successful)
-        MKERNEL_API int mkernel_remove_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles);
+        MKERNEL_API int mkernel_delete_small_flow_edges(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles);
 
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel

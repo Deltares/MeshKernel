@@ -106,7 +106,6 @@ namespace meshkernel
         void SetFlatCopies(AdministrationOptions administrationOption);
 
         /// @brief Perform mesh administration
-        /// @param administrationOption Type of administration to perform
         void Administrate(AdministrationOptions administrationOption);
 
         /// @brief Compute face circumcenters
@@ -286,14 +285,14 @@ namespace meshkernel
         /// @returns The centers of the flow edges
         [[nodiscard]] std::vector<Point> GetFlowEdgesCenters(const std::vector<int>& edges) const;
 
-        /// @brief Remove small flow edges (removesmallflowlinks, part 1)
+        /// @brief Deletes small flow edges (removesmallflowlinks, part 1)
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
-        void RemoveSmallFlowEdges(double smallFlowEdgesThreshold);
+        void DeleteSmallFlowEdges(double smallFlowEdgesThreshold);
 
-        /// @brief Remove small triangles at the boundaries (removesmallflowlinks, part 2)
+        /// @brief Deletes small triangles at the boundaries (removesmallflowlinks, part 2)
         /// @param[in] minFractionalAreaTriangles Small triangles at the boundaries will be eliminated.
         /// This threshold is the ration of the face area to the average area of neighboring faces.
-        void RemoveSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);
+        void DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);
 
         /// @brief Computes m_nodesNodes, see class members
         void ComputeNodeNeighbours();
@@ -317,8 +316,8 @@ namespace meshkernel
         /// @param[in] nodeIndex The node index for which sorting should take place
         void SortEdgesInCounterClockWiseOrder(int nodeIndex);
 
-        /// @brief Remove coinciding triangles
-        void RemoveDegeneratedTriangles();
+        /// @brief Deletes coinciding triangles
+        void DeleteDegeneratedTriangles();
 
         /// @brief Transform non-triangular faces in triangular faces
         void TriangulateFaces();
@@ -347,6 +346,13 @@ namespace meshkernel
                                   std::vector<bool>& isVisited,
                                   int& currentNode,
                                   std::vector<Point>& meshBoundaryPolygon) const;
+
+        /// @brief Gets the hanging edges
+        /// @return A vector with the indices of the hanging edges
+        std::vector<size_t> GetHangingEdges() const;
+
+        /// @brief Deletes the hanging edges
+        void DeleteHangingEdges();
 
         // nodes
         std::vector<Point> m_nodes;                 ///< The mesh nodes (xk, yk)
@@ -422,7 +428,7 @@ namespace meshkernel
         [[nodiscard]] bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const;
 
         /// @brief Removes all invalid nodes and edges
-        void RemoveInvalidNodesAndEdges();
+        void DeleteInvalidNodesAndEdges();
 
         int m_numFaces = 0;               ///< Number of valid faces (nump)
         int m_numNodes = 0;               ///< Number of valid nodes in m_nodes

@@ -648,7 +648,7 @@ TEST(Mesh, RemoveSmallFlowEdge)
     ASSERT_EQ(8, mesh->GetNumFaces());
 
     // After merging the number of faces is reduced
-    mesh->RemoveSmallFlowEdges(1.0);
+    mesh->DeleteSmallFlowEdges(1.0);
 
     ASSERT_EQ(3, mesh->GetNumFaces());
 }
@@ -661,7 +661,7 @@ TEST(Mesh, RemoveSmallTrianglesAtBoundaries)
     ASSERT_EQ(2, mesh->GetNumFaces());
 
     // After merging
-    mesh->RemoveSmallTrianglesAtBoundaries(0.6);
+    mesh->DeleteSmallTrianglesAtBoundaries(0.6);
 
     ASSERT_EQ(1, mesh->GetNumFaces());
 
