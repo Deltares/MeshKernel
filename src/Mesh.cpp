@@ -2585,10 +2585,11 @@ std::vector<size_t> meshkernel::Mesh::GetHangingEdges() const
         if (firstNode >= 0 && secondNode >= 0)
         {
             // if one of the nodes has no other attached edges, the current edge is an hanging edge
-            if (!m_nodesNumEdges[firstNode] > 1 || !m_nodesNumEdges[secondNode] > 1)
+            if (m_nodesNumEdges[firstNode] > 1 && m_nodesNumEdges[secondNode] > 1)
             {
-                result.emplace_back(e);
+                continue;
             }
+            result.emplace_back(e);
         }
     }
 
