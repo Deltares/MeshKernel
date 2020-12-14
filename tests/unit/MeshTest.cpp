@@ -640,7 +640,7 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
     ASSERT_EQ(0, numSmallFlowEdgeSecondQuery);
 }
 
-TEST(Mesh, RemoveSmallFlowEdge)
+TEST(Mesh, DeleteSmallFlowEdge)
 {
     // Setup a mesh with eight triangles
     auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_net.nc");
@@ -648,12 +648,12 @@ TEST(Mesh, RemoveSmallFlowEdge)
     ASSERT_EQ(8, mesh->GetNumFaces());
 
     // After merging the number of faces is reduced
-    mesh->RemoveSmallFlowEdges(1.0);
+    mesh->DeleteSmallFlowEdges(1.0);
 
     ASSERT_EQ(3, mesh->GetNumFaces());
 }
 
-TEST(Mesh, RemoveSmallTrianglesAtBoundaries)
+TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
 {
     // Setup a mesh with two triangles
     auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_quad_net.nc");
@@ -661,7 +661,7 @@ TEST(Mesh, RemoveSmallTrianglesAtBoundaries)
     ASSERT_EQ(2, mesh->GetNumFaces());
 
     // After merging
-    mesh->RemoveSmallTrianglesAtBoundaries(0.6);
+    mesh->DeleteSmallTrianglesAtBoundaries(0.6);
 
     ASSERT_EQ(1, mesh->GetNumFaces());
 
@@ -675,4 +675,41 @@ TEST(Mesh, RemoveSmallTrianglesAtBoundaries)
     ASSERT_NEAR(300.48181152343750, mesh->m_nodes[1].y, tolerance);
     ASSERT_NEAR(295.33038330078125, mesh->m_nodes[2].y, tolerance);
     ASSERT_NEAR(398.59295654296875, mesh->m_nodes[3].y, tolerance);
+}
+
+TEST(Mesh, DeleteHangingEdge)
+{
+    //1 Setup
+    std::vector<meshkernel::Point> nodes;
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({5.0, 0.0});
+    nodes.push_back({3.0, 2.0});
+    nodes.push_back({3.0, 4.0});
+
+    std::vector<meshkernel::Edge> edges;
+    edges.push_back({0, 1});
+    edges.push_back({1, 3});
+    edges.push_back({3, 0});
+    edges.push_back({2, 1});
+
+    // Execute
+    meshkernel::Mesh mesh;
+    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+
+    // Assert
+    ASSERT_EQ(1, mesh.GetNumFaces());
+    ASSERT_EQ(4, mesh.GetNumEdges());
+
+    // Execute
+    auto hangingEdges = mesh.GetHangingEdges();
+
+    // Assert
+    ASSERT_EQ(1, hangingEdges.size());
+
+    // Execute
+    mesh.DeleteHangingEdges();
+    hangingEdges = mesh.GetHangingEdges();
+
+    // Assert
+    ASSERT_EQ(0, hangingEdges.size());
 }

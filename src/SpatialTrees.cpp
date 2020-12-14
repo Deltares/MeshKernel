@@ -64,12 +64,12 @@ void meshkernel::SpatialTrees::RTree::NearestNeighbors(Point node)
     }
 }
 
-void meshkernel::SpatialTrees::RTree::RemoveNode(int position)
+void meshkernel::SpatialTrees::RTree::DeleteNode(int position)
 {
     const auto numberRemoved = m_rtree2D.remove(m_points[position]);
     if (numberRemoved != 1)
     {
-        throw std::invalid_argument("SpatialTrees::RemoveNode: Could not remove node at given position.");
+        throw std::invalid_argument("SpatialTrees::DeleteNode: Could not remove node at given position.");
     }
     m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
 }

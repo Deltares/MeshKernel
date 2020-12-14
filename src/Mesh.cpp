@@ -57,7 +57,7 @@ meshkernel::Mesh::Mesh(const std::vector<Edge>& edges,
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 };
 
-void meshkernel::Mesh::RemoveInvalidNodesAndEdges()
+void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
 {
 
     // Mask nodes connected to valid edges
@@ -81,7 +81,7 @@ void meshkernel::Mesh::RemoveInvalidNodesAndEdges()
 
     // Count all invalid nodes (note: there might be nodes that are not connected to an edge)
     int numInvalidNodes = 0;
-    for (int n = 0; n < m_nodes.size(); ++n)
+    for (auto n = 0; n < m_nodes.size(); ++n)
     {
         // invalidate nodes that are not connected
         if (!connectedNodes[n])
@@ -98,8 +98,8 @@ void meshkernel::Mesh::RemoveInvalidNodesAndEdges()
     // If nothing to invalidate return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
     {
-        m_numNodes = int(m_nodes.size());
-        m_numEdges = int(m_edges.size());
+        m_numNodes = m_nodes.size();
+        m_numEdges = m_edges.size();
         return;
     }
 
@@ -107,7 +107,7 @@ void meshkernel::Mesh::RemoveInvalidNodesAndEdges()
     std::vector<int> validNodesIndices(m_nodes.size());
     std::fill(validNodesIndices.begin(), validNodesIndices.end(), -1);
     int validIndex = 0;
-    for (int n = 0; n < m_nodes.size(); ++n)
+    for (auto n = 0; n < m_nodes.size(); ++n)
     {
         if (m_nodes[n].IsValid())
         {
@@ -133,20 +133,20 @@ void meshkernel::Mesh::RemoveInvalidNodesAndEdges()
         edge.second = -1;
     }
 
-    // Remove invalid nodes
-    auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) { return !n.IsValid(); });
-    m_numNodes = int(endNodeVector - m_nodes.begin());
-    std::fill(endNodeVector, m_nodes.end(), Point{doubleMissingValue, doubleMissingValue});
+    // Remove invalid nodes, without reducing capacity
+    const auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) { return !n.IsValid(); });
+    m_nodes.erase(endNodeVector, m_nodes.end());
+    m_numNodes = m_nodes.size();
 
-    // Remove invalid edges
-    auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) { return e.first < 0 || e.second < 0; });
-    m_numEdges = int(endEdgeVector - m_edges.begin());
-    std::fill(endEdgeVector, m_edges.end(), std::make_pair<int, int>(-1, -1));
+    // Remove invalid edges, without reducing capacity
+    const auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) { return e.first < 0 || e.second < 0; });
+    m_edges.erase(endEdgeVector, m_edges.end());
+    m_numEdges = m_edges.size();
 }
 
 void meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
 {
-    RemoveInvalidNodesAndEdges();
+    DeleteInvalidNodesAndEdges();
 
     if (m_nodesRTreeRequiresUpdate && !m_nodesRTree.Empty())
     {
@@ -579,7 +579,7 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
     }
 }
 
-void meshkernel::Mesh::RemoveDegeneratedTriangles()
+void meshkernel::Mesh::DeleteDegeneratedTriangles()
 {
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
@@ -1132,7 +1132,7 @@ void meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
                 if (nodeIndexInFilteredNodes != i)
                 {
                     MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]);
-                    nodesRtree.RemoveNode(i);
+                    nodesRtree.DeleteNode(i);
                 }
             }
         }
@@ -1980,9 +1980,9 @@ std::vector<meshkernel::Point> meshkernel::Mesh::GetFlowEdgesCenters(const std::
     return result;
 }
 
-void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
+void meshkernel::Mesh::DeleteSmallFlowEdges(double smallFlowEdgesThreshold)
 {
-    RemoveDegeneratedTriangles();
+    DeleteDegeneratedTriangles();
 
     auto edges = GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
     if (!edges.empty())
@@ -1996,7 +1996,7 @@ void meshkernel::Mesh::RemoveSmallFlowEdges(double smallFlowEdgesThreshold)
     }
 }
 
-void meshkernel::Mesh::RemoveSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
+void meshkernel::Mesh::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
 {
     // On the second part, the small triangles at the boundaries are checked
     const double minCosPhi = 0.2;
@@ -2571,5 +2571,36 @@ void meshkernel::Mesh::WalkBoundaryFromNode(const std::vector<Point>& polygonNod
 
         meshBoundaryPolygon.emplace_back(m_nodes[currentNode]);
         isVisited[currentEdge] = true;
+    }
+}
+
+std::vector<size_t> meshkernel::Mesh::GetHangingEdges() const
+{
+    std::vector<size_t> result;
+    for (auto e = 0; e < GetNumEdges(); e++)
+    {
+        const auto firstNode = m_edges[e].first;
+        const auto secondNode = m_edges[e].second;
+
+        if (firstNode >= 0 && secondNode >= 0)
+        {
+            // if one of the nodes has no other attached edges, the current edge is an hanging edge
+            if (m_nodesNumEdges[firstNode] > 1 && m_nodesNumEdges[secondNode] > 1)
+            {
+                continue;
+            }
+            result.emplace_back(e);
+        }
+    }
+
+    return result;
+}
+
+void meshkernel::Mesh::DeleteHangingEdges()
+{
+    const auto hangingEdges = GetHangingEdges();
+    for (const auto& hangingEdge : hangingEdges)
+    {
+        DeleteEdge(hangingEdge);
     }
 }

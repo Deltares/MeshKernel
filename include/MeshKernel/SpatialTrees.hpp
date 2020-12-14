@@ -99,9 +99,9 @@ namespace meshkernel
             /// @param[in] node The node
             void NearestNeighbors(Point node);
 
-            /// @brief Removes node
+            /// @brief Deletes a node
             /// @param[in] position Position of the node to remove in m_points
-            void RemoveNode(int position);
+            void DeleteNode(int position);
 
             /// @brief Inserts a node
             /// @param[in] node Node to insert in m_points
