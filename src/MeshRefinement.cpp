@@ -195,7 +195,7 @@ void meshkernel::MeshRefinement::Compute()
     }
 }
 
-int meshkernel::MeshRefinement::RemoveIsolatedHangingnodes()
+int meshkernel::MeshRefinement::DeleteIsolatedHangingnodes()
 {
 
     int numRemovedIsolatedHangingNodes = 0;
@@ -222,7 +222,7 @@ int meshkernel::MeshRefinement::RemoveIsolatedHangingnodes()
                 if (faceIndex != m_mesh->m_edgesFaces[brotherEdgeIndex][0] &&
                     faceIndex != m_mesh->m_edgesFaces[brotherEdgeIndex][std::min(m_mesh->m_edgesNumFaces[brotherEdgeIndex], 1)])
                 {
-                    throw AlgorithmError("MeshRefinement::RemoveIsolatedHangingnodes: Algorithm error.");
+                    throw AlgorithmError("MeshRefinement::DeleteIsolatedHangingnodes: Algorithm error.");
                 }
 
                 int ee = 0;
@@ -248,7 +248,7 @@ int meshkernel::MeshRefinement::RemoveIsolatedHangingnodes()
 
                 if (m_mesh->m_numFacesNodes[faceIndex] != ee || m_mesh->m_numFacesNodes[faceIndex] != nn)
                 {
-                    throw AlgorithmError("MeshRefinement::RemoveIsolatedHangingnodes: Algorithm error.");
+                    throw AlgorithmError("MeshRefinement::DeleteIsolatedHangingnodes: Algorithm error.");
                 }
             }
 

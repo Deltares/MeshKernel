@@ -62,7 +62,7 @@ namespace meshkernelapi
         /// @brief Uniform grid size, netboundary to grid only (0.0)
         double UniformGridSize;
 
-        /// @brief Remove skinny triangles (1)
-        int RemoveSkinnyTriangles;
+        /// @brief Deletes skinny triangles (1)
+        int DeleteSkinnyTriangles;
     };
 } // namespace meshkernelapi

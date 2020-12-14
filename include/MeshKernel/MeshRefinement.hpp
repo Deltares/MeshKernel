@@ -82,7 +82,7 @@ namespace meshkernel
         ///    -# Compute the edge refinement mask based on polygon, ComputeEdgesRefinementMask
         ///    -# Compute if a face should be split, ComputeIfFaceShouldBeSplit
         ///    -# Compute face by splitting edges, RefineFacesBySplittingEdges
-        /// 5. Connect hanging nodes if requested, RemoveIsolatedHangingnodes, ConnectHangingNodes
+        /// 5. Connect hanging nodes if requested, DeleteIsolatedHangingnodes, ConnectHangingNodes
         void Compute();
 
     private:
@@ -120,9 +120,9 @@ namespace meshkernel
                               int& numHangingNodes,
                               int& numEdgesToRefine);
 
-        /// Remove isolated hanging nodes(remove_isolated_hanging_nodes)
-        /// @returns Number of removed isolated hanging nodes
-        [[nodiscard]] int RemoveIsolatedHangingnodes();
+        /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
+        /// @returns Number of deleted isolated hanging nodes
+        [[nodiscard]] int DeleteIsolatedHangingnodes();
 
         /// @brief Connect the hanging nodes with triangles (connect_hanging_nodes)
         void ConnectHangingNodes();

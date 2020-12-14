@@ -126,16 +126,16 @@ void meshkernel::CurvilinearGridFromSplines::Compute(CurvilinearGrid& curvilinea
         Iterate(layer);
     }
 
-    bool removeSkinnyTriangles = m_splinesToCurvilinearParameters.RemoveSkinnyTriangles == 1 ? true : false;
-    if (removeSkinnyTriangles)
+    const auto deleteSkinnyTriangles = m_splinesToCurvilinearParameters.DeleteSkinnyTriangles == 1 ? true : false;
+    if (deleteSkinnyTriangles)
     {
-        RemoveSkinnyTriangles();
+        DeleteSkinnyTriangles();
     }
 
     ComputeCurvilinearGrid(curvilinearGrid);
 }
 
-void meshkernel::CurvilinearGridFromSplines::RemoveSkinnyTriangles()
+void meshkernel::CurvilinearGridFromSplines::DeleteSkinnyTriangles()
 {
     int numMaxIterations = 10;
     auto numN = m_gridPoints.size() - 2;
