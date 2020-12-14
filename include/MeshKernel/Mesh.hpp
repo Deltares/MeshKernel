@@ -106,6 +106,7 @@ namespace meshkernel
         void SetFlatCopies(AdministrationOptions administrationOption);
 
         /// @brief Perform mesh administration
+        /// @param administrationOption Type of administration to perform
         void Administrate(AdministrationOptions administrationOption);
 
         /// @brief Compute face circumcenters
