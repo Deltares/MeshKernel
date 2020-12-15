@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <MeshKernel/GeometryList.hpp>
+#include <MeshKernel/MakeMeshParameters.hpp>
 #include <MeshKernel/MeshGeometry.hpp>
 #include <MeshKernel/MeshGeometryDimensions.hpp>
 #include <MeshKernel/MeshKernel.hpp>
@@ -9,12 +10,18 @@
 class ApiTest : public ::testing::Test
 {
 public:
+    void AllocateNewMesh(int& meshKernelId) const
+    {
+        // Allocate new mesh
+        meshkernelapi::mkernel_new_mesh(meshKernelId);
+        ASSERT_EQ(0, meshKernelId);
+    }
+
     void MakeMesh(int n = 3, int m = 3, double delta = 1.0) const
     {
         // Allocate new mesh
         int meshKernelId;
-        meshkernelapi::mkernel_new_mesh(meshKernelId);
-        ASSERT_EQ(0, meshKernelId);
+        AllocateNewMesh(meshKernelId);
 
         // Set-up new mesh
         auto mesh = MakeRectangularMeshForApiTesting(n, m, delta);
@@ -171,4 +178,39 @@ TEST_F(ApiTest, OrthogonalizationThroughApi)
     ASSERT_EQ(0, errorCode);
     ASSERT_EQ(9, meshGeometryDimensions.numnode);
     ASSERT_EQ(12, meshGeometryDimensions.numedge);
+}
+
+TEST_F(ApiTest, MakeGridThroughApi)
+{
+    // Allocate a new mesh entry
+    int meshKernelId;
+    AllocateNewMesh(meshKernelId);
+
+    // Execute
+    meshkernelapi::MakeMeshParameters makeMeshParameters{};
+    meshkernelapi::GeometryList geometryList{};
+
+    makeMeshParameters.GridType = 0;
+    makeMeshParameters.NumberOfColumns = 3;
+    makeMeshParameters.NumberOfRows = 3;
+    makeMeshParameters.GridAngle = 0.0;
+    makeMeshParameters.GridBlockSize = 0.0;
+    makeMeshParameters.OriginXCoordinate = 0.0;
+    makeMeshParameters.OriginYCoordinate = 0.0;
+    makeMeshParameters.OriginZCoordinate = 0.0;
+    makeMeshParameters.XGridBlockSize = 0.0;
+    makeMeshParameters.YGridBlockSize = 0.0;
+
+    auto errorCode = mkernel_make_mesh(0, makeMeshParameters, geometryList);
+    ASSERT_EQ(0, errorCode);
+
+    // Get the new state
+    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
+    meshkernelapi::MeshGeometry meshGeometry{};
+    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+
+    // Assert (nothing is done, we just check that the api communication works)
+    ASSERT_EQ(0, errorCode);
+    ASSERT_EQ(16, meshGeometryDimensions.numnode);
+    ASSERT_EQ(24, meshGeometryDimensions.numedge);
 }
