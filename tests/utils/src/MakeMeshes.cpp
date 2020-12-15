@@ -7,10 +7,11 @@
 #include <Windows.h>
 #endif
 
-#include <stdexcept>
+#include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
+
 #include <MeshKernel/Mesh.hpp>
 #include <TestUtils/MakeMeshes.hpp>
-#include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
+#include <stdexcept>
 
 std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
 {
@@ -194,6 +195,65 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
 
     const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
     return mesh;
+}
+
+std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> MakeRectangularMeshForApiTesting(int n, int m, double delta)
+{
+    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
+    meshkernelapi::MeshGeometry meshgeometry{};
+    meshkernelapi::MeshGeometryDimensions meshgeometryDimensions{};
+
+    meshgeometry.nodex = new double[n * m];
+    meshgeometry.nodey = new double[n * m];
+    int nodeIndex = 0;
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < m; ++j)
+        {
+
+            meshgeometry.nodex[nodeIndex] = i * delta;
+            meshgeometry.nodey[nodeIndex] = j * delta;
+            indexesValues[i][j] = i * m + j;
+            nodeIndex++;
+        }
+    }
+
+    meshgeometry.edge_nodes = new int[((n - 1) * m + (m - 1) * n) * 2];
+    int edgeIndex = 0;
+    for (int i = 0; i < n - 1; ++i)
+    {
+        for (int j = 0; j < m; ++j)
+        {
+            meshgeometry.edge_nodes[edgeIndex] = indexesValues[i][j];
+            edgeIndex++;
+            meshgeometry.edge_nodes[edgeIndex] = indexesValues[i + 1][j];
+            edgeIndex++;
+        }
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < m - 1; ++j)
+        {
+            meshgeometry.edge_nodes[edgeIndex] = indexesValues[i][j + 1];
+            edgeIndex++;
+            meshgeometry.edge_nodes[edgeIndex] = indexesValues[i][j];
+            edgeIndex++;
+        }
+    }
+
+    meshgeometryDimensions.numnode = nodeIndex;
+    meshgeometryDimensions.numedge = edgeIndex / 2;
+
+    auto result = std::make_tuple(meshgeometry, meshgeometryDimensions);
+    return result;
+}
+
+void DeleteRectangularMeshForApiTesting(const meshkernelapi::MeshGeometry& meshgeometry)
+{
+    delete[] meshgeometry.nodex;
+    delete[] meshgeometry.nodey;
+    delete[] meshgeometry.edge_nodes;
 }
 
 std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
