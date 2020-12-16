@@ -249,7 +249,7 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     delete[] geometryListOut.zCoordinates;
 }
 
-TEST_F(ApiTests, GenerateCurvilinearGridThroughApi)
+TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
 {
     // Allocate a new mesh entry
     int meshKernelId;
@@ -296,4 +296,81 @@ TEST_F(ApiTests, GenerateCurvilinearGridThroughApi)
     ASSERT_EQ(0, errorCode);
     ASSERT_EQ(121, meshGeometryDimensions.numnode);
     ASSERT_EQ(220, meshGeometryDimensions.numedge);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+}
+
+TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
+{
+    // Allocate a new mesh entry
+    int meshKernelId;
+    AllocateNewMesh(meshKernelId);
+
+    // Execute
+    meshkernelapi::GeometryList geometryListIn;
+
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+
+    geometryListIn.xCoordinates = new double[]{1.175014E+02, 3.755030E+02, 7.730054E+02, meshkernel::doubleMissingValue,
+                                               4.100089E+01, 3.410027E+02};
+
+    geometryListIn.yCoordinates = new double[]{2.437587E+01, 3.266289E+02, 4.563802E+02, meshkernel::doubleMissingValue,
+                                               2.388780E+02, 2.137584E+01};
+
+    geometryListIn.zCoordinates = new double[]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
+                                               0.0, 0.0, meshkernel::doubleMissingValue};
+    geometryListIn.numberOfCoordinates = 6;
+
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    curvilinearParameters.MRefinement = 40;
+    curvilinearParameters.NRefinement = 10;
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    splinesToCurvilinearParameters.AspectRatio = 0.1;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
+    splinesToCurvilinearParameters.AverageWidth = 500.0;
+    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = 1;
+    splinesToCurvilinearParameters.GrowGridOutside = 1;
+    splinesToCurvilinearParameters.MaximumNumberOfGridCellsInTheUniformPart = 5;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 0.0001;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = 0;
+    splinesToCurvilinearParameters.UniformGridSize = 0.0;
+    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 1;
+    splinesToCurvilinearParameters.GrowGridOutside = 0;
+
+    auto errorCode = mkernel_curvilinear_mesh_from_splines_ortho_initialize(0, geometryListIn, curvilinearParameters, splinesToCurvilinearParameters);
+    ASSERT_EQ(0, errorCode);
+
+    // Grow grid, from the second layer
+    for (auto layer = 1; layer <= curvilinearParameters.NRefinement; ++layer)
+    {
+        errorCode = meshkernelapi::mkernel_curvilinear_mesh_from_splines_ortho_iteration(0, layer);
+        ASSERT_EQ(0, errorCode);
+    }
+
+    // Puts the computed curvilinear mesh into the mesh state (unstructured mesh)
+    errorCode = meshkernelapi::mkernel_curvilinear_mesh_from_splines_ortho_refresh_mesh(0);
+    ASSERT_EQ(0, errorCode);
+
+    // Delete the mesh curvilinearGridFromSplinesInstances vector entry
+    errorCode = meshkernelapi::mkernel_curvilinear_mesh_from_splines_ortho_delete(0);
+    ASSERT_EQ(0, errorCode);
+
+    // Get the new state
+    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
+    meshkernelapi::MeshGeometry meshGeometry{};
+    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+
+    // Assert (nothing is done, we just check that the api communication works)
+    ASSERT_EQ(0, errorCode);
+    ASSERT_EQ(21, meshGeometryDimensions.numnode);
+    ASSERT_EQ(32, meshGeometryDimensions.numedge);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
 }

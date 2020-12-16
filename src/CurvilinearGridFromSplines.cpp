@@ -1682,7 +1682,7 @@ void meshkernel::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
     numM = std::min(numM, m_curvilinearParameters.MRefinement);
 
     double endSplineAdimensionalCoordinate = static_cast<double>(m_splines->m_splineNodes[splineIndex].size()) - 1;
-    double splineLength = m_splines->GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, m_splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing, m_maximumGridHeights[splineIndex]);
+    double splineLength = m_splines->GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, m_splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing, m_maximumGridHeights[splineIndex]);
 
     gridLine[startingIndex] = m_splines->m_splineNodes[splineIndex][0];
 
@@ -1700,7 +1700,7 @@ void meshkernel::CurvilinearGridFromSplines::MakeGridLine(int splineIndex,
 
         m_splines->InterpolatePointsOnSpline(splineIndex,
                                              m_maximumGridHeights[splineIndex],
-                                             m_splinesToCurvilinearParameters.CurvatureAdapetedGridSpacing,
+                                             m_splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing,
                                              distances,
                                              points,
                                              adimensionalDistances);

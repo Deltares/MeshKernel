@@ -204,7 +204,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] layer The layer index
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_mesh_from_splines_iteration(int meshKernelId, int layer);
+        MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_iteration(int meshKernelId, int layer);
 
         /// @brief Converts curvilinear grid to mesh and refreshes the state (interactive)
         /// @param[in] meshKernelId
