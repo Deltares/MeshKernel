@@ -190,11 +190,11 @@ namespace meshkernelapi
         return locations;
     }
 
-    int HandleExceptions()
+    int HandleExceptions(const std::exception_ptr eptr)
     {
         try
         {
-            throw;
+            std::rethrow_exception(eptr);
         }
         catch (const meshkernel::MeshGeometryError& e)
         {
@@ -248,7 +248,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -278,7 +278,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -299,7 +299,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -319,7 +319,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -339,7 +339,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -361,7 +361,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -379,7 +379,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -436,7 +436,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -494,7 +494,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -518,7 +518,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -542,7 +542,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -566,7 +566,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -590,7 +590,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -619,7 +619,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -648,7 +648,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -713,7 +713,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -739,7 +739,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -766,7 +766,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -789,7 +789,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -811,7 +811,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -832,7 +832,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -856,7 +856,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -882,7 +882,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -906,7 +906,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -924,7 +924,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -959,7 +959,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -992,7 +992,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1011,7 +1011,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1033,7 +1033,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1052,7 +1052,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1074,7 +1074,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1098,7 +1098,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1120,7 +1120,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1146,7 +1146,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1170,7 +1170,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1221,7 +1221,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1250,7 +1250,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1276,7 +1276,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1313,7 +1313,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1343,7 +1343,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1369,7 +1369,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1388,7 +1388,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1410,7 +1410,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1428,7 +1428,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1456,7 +1456,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1487,7 +1487,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1520,7 +1520,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1554,7 +1554,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1587,7 +1587,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1608,7 +1608,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1630,7 +1630,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1664,7 +1664,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1685,7 +1685,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1705,7 +1705,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1783,7 +1783,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
@@ -1835,7 +1835,7 @@ namespace meshkernelapi
         }
         catch (...)
         {
-            exitCode = HandleExceptions();
+            exitCode = HandleExceptions(std::current_exception());
         }
         return exitCode;
     }
