@@ -37,6 +37,7 @@
 #include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
 #include <MeshKernel/CurvilinearParameters.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh.hpp>
@@ -60,14 +61,8 @@ namespace meshkernelapi
     static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
     static std::map<int, std::shared_ptr<meshkernel::CurvilinearGridFromSplines>> curvilinearGridFromSplinesInstances;
 
-    enum error
-    {
-        Success = 0,         // 0b0000
-        Exception = 1,       // 0b0001
-        InvalidGeometry = 2, // 0b0010
-    };
-
     static char exceptionMessage[512] = "";
+    static meshkernel::MeshGeometryError meshGeometryError = meshkernel::MeshGeometryError();
 
     // TODO: Return result instead of relying on second input parameter
     static void ConvertGeometryListToPointVector(const GeometryList& geometryListIn, std::vector<meshkernel::Point>& result)
@@ -174,20 +169,20 @@ namespace meshkernelapi
         return true;
     }
 
-    static std::vector<meshkernel::Point> ComputeLocations(const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, meshkernel::InterpolationLocation interpolationLocation)
+    static std::vector<meshkernel::Point> ComputeLocations(const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, meshkernel::MeshLocations interpolationLocation)
     {
         std::vector<meshkernel::Point> locations;
-        if (interpolationLocation == meshkernel::InterpolationLocation::Nodes)
+        if (interpolationLocation == meshkernel::MeshLocations::Nodes)
         {
             locations = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
         }
-        if (interpolationLocation == meshkernel::InterpolationLocation::Edges)
+        if (interpolationLocation == meshkernel::MeshLocations::Edges)
         {
             const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
             const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
             locations = ComputeEdgeCenters(nodes, edges);
         }
-        if (interpolationLocation == meshkernel::InterpolationLocation::Faces)
+        if (interpolationLocation == meshkernel::MeshLocations::Faces)
         {
             locations = meshkernel::ConvertToFaceCentersVector(meshGeometryDimensions.numface, meshGeometry.facex, meshGeometry.facey);
         }
@@ -486,6 +481,12 @@ namespace meshkernelapi
 
             orthogonalizationInstances.insert({meshKernelId, orthogonalizationInstance});
         }
+        catch (const meshkernel::MeshGeometryError& e)
+        {
+            meshGeometryError = e;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= InvalidGeometry;
+        }
         catch (const std::exception& e)
         {
             strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
@@ -511,6 +512,12 @@ namespace meshkernelapi
 
             orthogonalizationInstances[meshKernelId]->PrepareOuterIteration();
         }
+        catch (const meshkernel::MeshGeometryError& e)
+        {
+            meshGeometryError = e;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= InvalidGeometry;
+        }
         catch (const std::exception& e)
         {
             strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
@@ -535,6 +542,12 @@ namespace meshkernelapi
             }
 
             orthogonalizationInstances[meshKernelId]->InnerIteration();
+        }
+        catch (const meshkernel::MeshGeometryError& e)
+        {
+            meshGeometryError = e;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            exitCode |= InvalidGeometry;
         }
         catch (const std::exception& e)
         {
@@ -1232,7 +1245,7 @@ namespace meshkernelapi
             const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshInstances[meshKernelId],
                                                                                         samples,
                                                                                         averagingMethod,
-                                                                                        meshkernel::InterpolationLocation::Faces,
+                                                                                        meshkernel::MeshLocations::Faces,
                                                                                         1.0,
                                                                                         refineOutsideFace,
                                                                                         transformSamples);
@@ -1674,9 +1687,15 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_get_error(const char*& error_message)
     {
-        int exitCode = Success;
         error_message = exceptionMessage;
-        return exitCode;
+        return Success;
+    }
+
+    MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type)
+    {
+        invalidIndex = meshGeometryError.m_invalidIndex;
+        type = static_cast<int>(meshGeometryError.m_location);
+        return Success;
     }
 
     MKERNEL_API int mkernel_get_obtuse_triangles_count(int meshKernelId, int& numObtuseTriangles)
@@ -1802,7 +1821,7 @@ namespace meshkernelapi
             meshkernel::AveragingInterpolation averaging(mesh,
                                                          samples,
                                                          static_cast<meshkernel::AveragingInterpolation::Method>(averagingMethod),
-                                                         static_cast<meshkernel::InterpolationLocation>(locationType),
+                                                         static_cast<meshkernel::MeshLocations>(locationType),
                                                          relativeSearchSize,
                                                          false,
                                                          false);
@@ -1848,7 +1867,7 @@ namespace meshkernelapi
         }
 
         // Locations
-        const auto location = static_cast<meshkernel::InterpolationLocation>(locationType);
+        const auto location = static_cast<meshkernel::MeshLocations>(locationType);
         const auto locations = ComputeLocations(meshGeometryDimensions, meshGeometry, location);
 
         // Build the samples

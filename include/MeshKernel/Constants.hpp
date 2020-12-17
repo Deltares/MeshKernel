@@ -89,11 +89,12 @@ namespace meshkernel
     };
 
     /// @brief Interpolation locations
-    enum class InterpolationLocation
+    enum class MeshLocations
     {
         Faces = 0,
         Nodes = 1,
-        Edges = 2
+        Edges = 2,
+        None
     };
 
 } // namespace meshkernel

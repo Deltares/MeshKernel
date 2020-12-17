@@ -36,7 +36,7 @@
 meshkernel::AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh> mesh,
                                                            std::vector<Sample>& samples,
                                                            Method method,
-                                                           InterpolationLocation locationType,
+                                                           MeshLocations locationType,
                                                            double relativeSearchRadius,
                                                            bool useClosestSampleIfNoneAvailable,
                                                            bool transformSamples) : m_mesh(mesh),
@@ -63,7 +63,7 @@ void meshkernel::AveragingInterpolation::Compute()
     auto interpolatedResults = ComputeOnLocations();
 
     //for edges, an average of the nodal interpolated value is made
-    if (m_interpolationLocation == InterpolationLocation::Edges)
+    if (m_interpolationLocation == MeshLocations::Edges)
     {
         m_results.resize(m_mesh->GetNumEdges(), doubleMissingValue);
         for (int e = 0; e < m_mesh->GetNumEdges(); ++e)
@@ -101,7 +101,7 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
 {
     switch (m_interpolationLocation)
     {
-    case InterpolationLocation::Faces:
+    case MeshLocations::Faces:
     {
         std::vector<double> interpolatedResults(m_mesh->GetNumFaces(), doubleMissingValue);
         std::vector<Point> polygonNodesCache(maximumNumberOfNodesPerFace + 1);
@@ -139,8 +139,8 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
         }
         return interpolatedResults;
     }
-    case InterpolationLocation::Nodes:
-    case InterpolationLocation::Edges:
+    case MeshLocations::Nodes:
+    case MeshLocations::Edges:
     {
         std::vector<Point> dualFacePolygon;
         std::vector<double> interpolatedResults(m_mesh->GetNumNodes(), doubleMissingValue);

@@ -62,7 +62,7 @@ namespace meshkernel
         explicit AveragingInterpolation(std::shared_ptr<Mesh> mesh,
                                         std::vector<Sample>& samples,
                                         Method method,
-                                        InterpolationLocation locationType,
+                                        MeshLocations locationType,
                                         double relativeSearchRadius,
                                         bool useClosestSampleIfNoneAvailable,
                                         bool subtractSampleValues);
@@ -93,7 +93,7 @@ namespace meshkernel
         const std::shared_ptr<Mesh> m_mesh;
         std::vector<Sample>& m_samples;
         Method m_method;
-        InterpolationLocation m_interpolationLocation;
+        MeshLocations m_interpolationLocation;
         double m_relativeSearchRadius;
         bool m_useClosestSampleIfNoneAvailable = false;
         bool m_transformSamples = false;

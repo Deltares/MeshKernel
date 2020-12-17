@@ -49,6 +49,13 @@
 /// @brief Contains all structs and functions exposed at the API level
 namespace meshkernelapi
 {
+    enum MeshKernelApiErrors
+    {
+        Success = 0,         // 0b0000
+        Exception = 1,       // 0b0001
+        InvalidGeometry = 2, // 0b0010
+    };
+
 #ifdef __cplusplus
     extern "C"
     {
@@ -509,7 +516,7 @@ namespace meshkernelapi
         /// @param[in] samplesValue The sample values
         /// @param[in] numSamples The number of samples
         /// @param[out] results The interpolation results
-        /// @param[in] locationType The location type (see InterpolationLocation enum)
+        /// @param[in] locationType The location type (see MeshLocations enum)
         /// @param[in] Wu1Duni A setting for 1d meshes (not used)
         /// @param[in] averagingMethod The averaging method (see Method enum)
         /// @param[in] minNumberOfSamples The minimum amount of samples (not used)
@@ -537,6 +544,12 @@ namespace meshkernelapi
         /// @param[out] error_message
         /// @returns Error code
         MKERNEL_API int mkernel_get_error(const char*& error_message);
+
+        /// @brief Gets the index of the erroneous entity.
+        /// @param[out] invalidIndex The index of the erroneous entity
+        /// @param[out] type The entity type (node, edge or face, see MeshLocations)
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type);
 
 #ifdef __cplusplus
     }
