@@ -142,48 +142,6 @@ std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, m
     return mesh;
 }
 
-std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile()
-{
-    // Prepare
-    std::vector<meshkernel::Point> nodes;
-
-    nodes.push_back({322.252624511719, 454.880187988281});
-    nodes.push_back({227.002044677734, 360.379241943359});
-    nodes.push_back({259.252227783203, 241.878051757813});
-    nodes.push_back({428.003295898438, 210.377746582031});
-    nodes.push_back({536.003967285156, 310.878753662109});
-    nodes.push_back({503.753784179688, 432.379974365234});
-    nodes.push_back({350.752807617188, 458.630249023438});
-    nodes.push_back({343.15053976393, 406.232256102912});
-    nodes.push_back({310.300984548069, 319.41005739802});
-    nodes.push_back({423.569603308318, 326.17986967523});
-
-    std::vector<meshkernel::Edge> edges;
-    edges.push_back({2, 8});
-    edges.push_back({1, 8});
-    edges.push_back({1, 2});
-    edges.push_back({2, 3});
-    edges.push_back({3, 8});
-    edges.push_back({1, 7});
-    edges.push_back({0, 7});
-    edges.push_back({0, 1});
-    edges.push_back({7, 8});
-    edges.push_back({6, 7});
-    edges.push_back({0, 6});
-    edges.push_back({8, 9});
-    edges.push_back({7, 9});
-    edges.push_back({3, 4});
-    edges.push_back({4, 9});
-    edges.push_back({3, 9});
-    edges.push_back({5, 7});
-    edges.push_back({5, 6});
-    edges.push_back({5, 9});
-    edges.push_back({4, 5});
-
-    const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
-    return mesh;
-}
-
 std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin)
 {
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
@@ -281,6 +239,48 @@ void DeleteRectangularMeshForApiTesting(const meshkernelapi::MeshGeometry& meshg
     delete[] meshgeometry.nodex;
     delete[] meshgeometry.nodey;
     delete[] meshgeometry.edge_nodes;
+}
+
+std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile()
+{
+    // Prepare
+    std::vector<meshkernel::Point> nodes;
+
+    nodes.push_back({322.252624511719, 454.880187988281});
+    nodes.push_back({227.002044677734, 360.379241943359});
+    nodes.push_back({259.252227783203, 241.878051757813});
+    nodes.push_back({428.003295898438, 210.377746582031});
+    nodes.push_back({536.003967285156, 310.878753662109});
+    nodes.push_back({503.753784179688, 432.379974365234});
+    nodes.push_back({350.752807617188, 458.630249023438});
+    nodes.push_back({343.15053976393, 406.232256102912});
+    nodes.push_back({310.300984548069, 319.41005739802});
+    nodes.push_back({423.569603308318, 326.17986967523});
+
+    std::vector<meshkernel::Edge> edges;
+    edges.push_back({2, 8});
+    edges.push_back({1, 8});
+    edges.push_back({1, 2});
+    edges.push_back({2, 3});
+    edges.push_back({3, 8});
+    edges.push_back({1, 7});
+    edges.push_back({0, 7});
+    edges.push_back({0, 1});
+    edges.push_back({7, 8});
+    edges.push_back({6, 7});
+    edges.push_back({0, 6});
+    edges.push_back({8, 9});
+    edges.push_back({7, 9});
+    edges.push_back({3, 4});
+    edges.push_back({4, 9});
+    edges.push_back({3, 9});
+    edges.push_back({5, 7});
+    edges.push_back({5, 6});
+    edges.push_back({5, 9});
+    edges.push_back({4, 5});
+
+    const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
+    return mesh;
 }
 
 std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
