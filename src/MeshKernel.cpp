@@ -190,6 +190,25 @@ namespace meshkernelapi
         return locations;
     }
 
+    int HandleExceptions()
+    {
+        try
+        {
+            throw;
+        }
+        catch (const meshkernel::MeshGeometryError& e)
+        {
+            meshGeometryError = e;
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            return InvalidGeometry;
+        }
+        catch (const std::exception& e)
+        {
+            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            return Exception;
+        }
+    }
+
     MKERNEL_API int mkernel_new_mesh(int& meshKernelId)
     {
         meshKernelId = int(meshInstances.size());
@@ -227,10 +246,9 @@ namespace meshkernelapi
             meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
             meshInstances[meshKernelId]->DeleteMesh(polygon, deletionOption, invertDeletion);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -258,10 +276,9 @@ namespace meshkernelapi
                 meshInstances[meshKernelId] = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
             }
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -280,10 +297,9 @@ namespace meshkernelapi
 
             SetMeshGeometry(meshKernelId, meshGeometryDimensions, meshGeometry);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -301,10 +317,9 @@ namespace meshkernelapi
 
             SetMeshGeometry(meshKernelId, meshGeometryDimensions, meshGeometry);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -322,10 +337,9 @@ namespace meshkernelapi
             const auto hangingEdges = meshInstances[meshKernelId]->GetHangingEdges();
             numHangingEdges = hangingEdges.size();
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -345,10 +359,9 @@ namespace meshkernelapi
                 *(hangingEdgesIndices)[i] = hangingEdges[i];
             }
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -364,10 +377,9 @@ namespace meshkernelapi
             }
             meshInstances[meshKernelId]->DeleteHangingEdges();
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -422,10 +434,9 @@ namespace meshkernelapi
             ortogonalization.Initialize();
             ortogonalization.Compute();
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -481,16 +492,9 @@ namespace meshkernelapi
 
             orthogonalizationInstances.insert({meshKernelId, orthogonalizationInstance});
         }
-        catch (const meshkernel::MeshGeometryError& e)
+        catch (...)
         {
-            meshGeometryError = e;
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= InvalidGeometry;
-        }
-        catch (const std::exception& e)
-        {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -512,16 +516,9 @@ namespace meshkernelapi
 
             orthogonalizationInstances[meshKernelId]->PrepareOuterIteration();
         }
-        catch (const meshkernel::MeshGeometryError& e)
+        catch (...)
         {
-            meshGeometryError = e;
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= InvalidGeometry;
-        }
-        catch (const std::exception& e)
-        {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -543,16 +540,9 @@ namespace meshkernelapi
 
             orthogonalizationInstances[meshKernelId]->InnerIteration();
         }
-        catch (const meshkernel::MeshGeometryError& e)
+        catch (...)
         {
-            meshGeometryError = e;
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= InvalidGeometry;
-        }
-        catch (const std::exception& e)
-        {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -574,10 +564,9 @@ namespace meshkernelapi
 
             orthogonalizationInstances[meshKernelId]->FinalizeOuterIteration();
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -599,10 +588,9 @@ namespace meshkernelapi
 
             orthogonalizationInstances.erase(meshKernelId);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -629,10 +617,9 @@ namespace meshkernelapi
                 geometryList.zCoordinates[i] = result[i];
             }
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -659,10 +646,9 @@ namespace meshkernelapi
                 geometryList.zCoordinates[i] = result[i];
             }
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -725,10 +711,9 @@ namespace meshkernelapi
 
             geometryListOut.numberOfCoordinates = index - 1;
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -752,10 +737,9 @@ namespace meshkernelapi
 
             *meshInstances[meshKernelId] += mesh;
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -780,10 +764,9 @@ namespace meshkernelapi
             meshkernel::Mesh mesh(generatedPoints[0], polygon, meshInstances[meshKernelId]->m_projection);
             *meshInstances[meshKernelId] += mesh;
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -804,10 +787,9 @@ namespace meshkernelapi
             meshkernel::Mesh mesh(samplePoints, polygon, meshInstances[meshKernelId]->m_projection);
             *meshInstances[meshKernelId] += mesh;
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -827,10 +809,9 @@ namespace meshkernelapi
 
             ConvertPointVectorToGeometryList(meshBoundaryPolygon, geometryList);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -849,10 +830,9 @@ namespace meshkernelapi
             const auto meshBoundaryPolygon = meshInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
             numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size() - 1); // last value is a separator
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -874,10 +854,9 @@ namespace meshkernelapi
 
             ConvertPointVectorToGeometryList(refinedPolygon, geometryListOut);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -901,10 +880,9 @@ namespace meshkernelapi
 
             numberOfPolygonNodes = int(refinedPolygon.size());
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -926,10 +904,9 @@ namespace meshkernelapi
 
             meshInstances[meshKernelId]->MergeNodesInPolygon(polygon);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -945,10 +922,9 @@ namespace meshkernelapi
             }
             meshInstances[meshKernelId]->MergeTwoNodes(startNode, endNode);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -981,10 +957,9 @@ namespace meshkernelapi
                 }
             }
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1015,10 +990,9 @@ namespace meshkernelapi
                 }
             }
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1035,10 +1009,9 @@ namespace meshkernelapi
 
             new_edge_index = meshInstances[meshKernelId]->ConnectNodes(startNode, endNode);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1058,10 +1031,9 @@ namespace meshkernelapi
             meshkernel::Point newNode{xCoordinate, yCoordinate};
             nodeIndex = meshInstances[meshKernelId]->InsertNode(newNode);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1078,10 +1050,9 @@ namespace meshkernelapi
 
             meshInstances[meshKernelId]->DeleteNode(nodeIndex);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1101,10 +1072,9 @@ namespace meshkernelapi
 
             meshInstances[meshKernelId]->MoveNode(newPoint[0], nodeIndex);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1126,10 +1096,9 @@ namespace meshkernelapi
 
             meshInstances[meshKernelId]->DeleteEdge(edgeIndex);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1149,10 +1118,9 @@ namespace meshkernelapi
 
             edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1176,10 +1144,9 @@ namespace meshkernelapi
 
             ConvertPointVectorToGeometryList(newPolygon.m_nodes, geometryListOut);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1201,10 +1168,9 @@ namespace meshkernelapi
 
             numberOfPolygonNodes = newPolygon.GetNumNodes();
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1253,10 +1219,9 @@ namespace meshkernelapi
             meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], averaging, sampleRefineParameters, interpolationParameters);
             meshRefinement.Compute();
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1283,10 +1248,9 @@ namespace meshkernelapi
             meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], polygon, interpolationParameters);
             meshRefinement.Compute();
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1310,10 +1274,9 @@ namespace meshkernelapi
 
             nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1348,10 +1311,9 @@ namespace meshkernelapi
             pointVector.emplace_back(node);
             ConvertPointVectorToGeometryList(pointVector, geometryListOut);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1379,10 +1341,9 @@ namespace meshkernelapi
             curvilinearGridFromSplines.Compute(curvilinearGrid);
             *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1406,10 +1367,9 @@ namespace meshkernelapi
 
             curvilinearGridFromSplinesInstances[meshKernelId]->Initialize();
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1426,10 +1386,9 @@ namespace meshkernelapi
 
             curvilinearGridFromSplinesInstances[meshKernelId]->Iterate(layer);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1449,10 +1408,9 @@ namespace meshkernelapi
 
             *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1468,10 +1426,9 @@ namespace meshkernelapi
             }
             curvilinearGridFromSplinesInstances.erase(meshKernelId);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1497,10 +1454,9 @@ namespace meshkernelapi
                 selectedPointsNative.zCoordinates[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
             }
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1529,10 +1485,9 @@ namespace meshkernelapi
 
             flipEdges.Compute();
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1563,10 +1518,9 @@ namespace meshkernelapi
             // Transform and set mesh pointer
             *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1598,10 +1552,9 @@ namespace meshkernelapi
             // convert to curvilinear grid and add it to the current mesh
             *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1632,10 +1585,9 @@ namespace meshkernelapi
             // convert to curvilinear grid and add it to the current mesh
             *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1654,10 +1606,9 @@ namespace meshkernelapi
 
             numSmallFlowEdges = static_cast<int>(smallFlowEdgeCenters.size());
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1677,10 +1628,9 @@ namespace meshkernelapi
 
             ConvertPointVectorToGeometryList(smallFlowEdgeCenters, result);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1712,10 +1662,9 @@ namespace meshkernelapi
 
             numObtuseTriangles = static_cast<int>(obtuseTriangles.size());
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1734,10 +1683,9 @@ namespace meshkernelapi
 
             ConvertPointVectorToGeometryList(obtuseTriangles, result);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1755,10 +1703,9 @@ namespace meshkernelapi
             meshInstances[meshKernelId]->DeleteSmallFlowEdges(smallFlowEdgesThreshold);
             meshInstances[meshKernelId]->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1834,10 +1781,9 @@ namespace meshkernelapi
                 (*results)[i] = interpolationResults[i];
             }
         }
-        catch (const std::exception& e)
+        catch (...)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
-            exitCode |= Exception;
+            exitCode = HandleExceptions();
         }
         return exitCode;
     }
@@ -1855,36 +1801,43 @@ namespace meshkernelapi
                                   int& spherical,
                                   int& sphericalAccurate)
     {
-        // Projection
-        auto projection = meshkernel::Projection::cartesian;
-        if (spherical == 1)
+        int exitCode = Success;
+        try
         {
-            projection = meshkernel::Projection::spherical;
+            // Projection
+            auto projection = meshkernel::Projection::cartesian;
+            if (spherical == 1)
+            {
+                projection = meshkernel::Projection::spherical;
+            }
+            if (sphericalAccurate == 1)
+            {
+                projection = meshkernel::Projection::sphericalAccurate;
+            }
+
+            // Locations
+            const auto location = static_cast<meshkernel::MeshLocations>(locationType);
+            const auto locations = ComputeLocations(meshGeometryDimensions, meshGeometry, location);
+
+            // Build the samples
+            const auto samples = meshkernel::Sample::ConvertToSamples(numSamples, samplesXCoordinate, samplesYCoordinate, samplesValue);
+
+            // Execute triangulation
+            meshkernel::TriangulationInterpolation triangulationInterpolation(locations, samples, projection);
+            triangulationInterpolation.Compute();
+
+            // Get the results and copy them back to the results vector
+            auto interpolationResults = triangulationInterpolation.GetResults();
+            for (auto i = 0; i < interpolationResults.size(); ++i)
+            {
+                (*results)[i] = interpolationResults[i];
+            }
         }
-        if (sphericalAccurate == 1)
+        catch (...)
         {
-            projection = meshkernel::Projection::sphericalAccurate;
+            exitCode = HandleExceptions();
         }
-
-        // Locations
-        const auto location = static_cast<meshkernel::MeshLocations>(locationType);
-        const auto locations = ComputeLocations(meshGeometryDimensions, meshGeometry, location);
-
-        // Build the samples
-        const auto samples = meshkernel::Sample::ConvertToSamples(numSamples, samplesXCoordinate, samplesYCoordinate, samplesValue);
-
-        // Execute triangulation
-        meshkernel::TriangulationInterpolation triangulationInterpolation(locations, samples, projection);
-        triangulationInterpolation.Compute();
-
-        // Get the results and copy them back to the results vector
-        auto interpolationResults = triangulationInterpolation.GetResults();
-        for (auto i = 0; i < interpolationResults.size(); ++i)
-        {
-            (*results)[i] = interpolationResults[i];
-        }
-
-        return 0;
+        return exitCode;
     }
 
 } // namespace meshkernelapi

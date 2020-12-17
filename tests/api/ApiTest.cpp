@@ -383,7 +383,7 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     delete[] geometryListIn.zCoordinates;
 }
 
-TEST_F(ApiTests, GenerateTriangularGridThroughA)
+TEST_F(ApiTests, GenerateTriangularGridThroughApi)
 {
     // Allocate a new mesh entry
     int meshKernelId;
@@ -394,60 +394,76 @@ TEST_F(ApiTests, GenerateTriangularGridThroughA)
 
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
 
-    geometryListIn.xCoordinates = new double[]{1.175014E+02, 3.755030E+02, 7.730054E+02, meshkernel::doubleMissingValue,
-                                               4.100089E+01, 3.410027E+02};
+    geometryListIn.xCoordinates = new double[]{
+        415.319672,
+        390.271973,
+        382.330048,
+        392.715668,
+        418.374268,
+        453.807556,
+        495.960968,
+        532.005188,
+        565.605774,
+        590.653442,
+        598.595398,
+        593.708008,
+        564.994812,
+        514.899475,
+        461.138611,
+        422.039764,
+        415.319672};
 
-    geometryListIn.yCoordinates = new double[]{2.437587E+01, 3.266289E+02, 4.563802E+02, meshkernel::doubleMissingValue,
-                                               2.388780E+02, 2.137584E+01};
+    geometryListIn.yCoordinates = new double[]{
+        490.293762,
+        464.024139,
+        438.365448,
+        411.484894,
+        386.437103,
+        366.276703,
+        363.222107,
+        370.553162,
+        386.437103,
+        412.095825,
+        445.085571,
+        481.129944,
+        497.624817,
+        504.955872,
+        501.290344,
+        493.348358,
+        490.293762};
 
-    geometryListIn.zCoordinates = new double[]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
-                                               0.0, 0.0, meshkernel::doubleMissingValue};
-    geometryListIn.numberOfCoordinates = 6;
+    geometryListIn.zCoordinates = new double[]{
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0};
 
-    meshkernelapi::CurvilinearParameters curvilinearParameters;
-    curvilinearParameters.MRefinement = 40;
-    curvilinearParameters.NRefinement = 10;
-    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
-    splinesToCurvilinearParameters.AspectRatio = 0.1;
-    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.1;
-    splinesToCurvilinearParameters.AverageWidth = 500.0;
-    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = 1;
-    splinesToCurvilinearParameters.GrowGridOutside = 1;
-    splinesToCurvilinearParameters.MaximumNumberOfGridCellsInTheUniformPart = 5;
-    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 0.0001;
-    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
-    splinesToCurvilinearParameters.CheckFrontCollisions = 0;
-    splinesToCurvilinearParameters.UniformGridSize = 0.0;
-    splinesToCurvilinearParameters.DeleteSkinnyTriangles = 1;
-    splinesToCurvilinearParameters.GrowGridOutside = 0;
+    geometryListIn.numberOfCoordinates = 17;
 
-    auto errorCode = mkernel_curvilinear_mesh_from_splines_ortho_initialize(0, geometryListIn, curvilinearParameters, splinesToCurvilinearParameters);
+    auto errorCode = mkernel_make_mesh_from_polygon(0, geometryListIn);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-
-    // Grow grid, from the second layer
-    for (auto layer = 1; layer <= curvilinearParameters.NRefinement; ++layer)
-    {
-        errorCode = meshkernelapi::mkernel_curvilinear_mesh_from_splines_ortho_iteration(0, layer);
-        ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    }
-
-    // Puts the computed curvilinear mesh into the mesh state (unstructured mesh)
-    errorCode = meshkernelapi::mkernel_curvilinear_mesh_from_splines_ortho_refresh_mesh(0);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-
-    // Delete the mesh curvilinearGridFromSplinesInstances vector entry
-    errorCode = meshkernelapi::mkernel_curvilinear_mesh_from_splines_ortho_delete(0);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert (nothing is done, we just check that the api communication works)
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(21, meshGeometryDimensions.numnode);
-    ASSERT_EQ(32, meshGeometryDimensions.numedge);
+    ASSERT_EQ(38, meshGeometryDimensions.numnode);
+    ASSERT_EQ(95, meshGeometryDimensions.numedge);
 
     // Delete dynamically allocated memory with operator new
     delete[] geometryListIn.xCoordinates;

@@ -103,8 +103,7 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
         meshgeometry.edge_nodes[i] -= 1;
     }
 
-    auto result = std::make_tuple(meshgeometry, meshgeometryDimensions);
-    return result;
+    return std::make_tuple(meshgeometry, meshgeometryDimensions);
 }
 
 std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
@@ -134,7 +133,7 @@ std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, m
         index++;
     }
 
-    const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
+    auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
 
     // clean up c memory
     DeleteRectangularMeshForApiTesting(meshgeometry);
@@ -178,8 +177,7 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
         }
     }
 
-    const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
-    return mesh;
+    return std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
 }
 
 std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> MakeRectangularMeshForApiTesting(int n, int m, double delta)
@@ -230,8 +228,7 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> M
     meshgeometryDimensions.numnode = nodeIndex;
     meshgeometryDimensions.numedge = edgeIndex / 2;
 
-    auto result = std::make_tuple(meshgeometry, meshgeometryDimensions);
-    return result;
+    return std::make_tuple(meshgeometry, meshgeometryDimensions);
 }
 
 void DeleteRectangularMeshForApiTesting(const meshkernelapi::MeshGeometry& meshgeometry)
@@ -279,8 +276,7 @@ std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile(
     edges.push_back({5, 9});
     edges.push_back({4, 5});
 
-    const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
-    return mesh;
+    return std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
 }
 
 std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
@@ -468,7 +464,5 @@ std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
         edges[i].first -= 1;
         edges[i].second -= 1;
     }
-
-    const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
-    return mesh;
+    return std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
 }
