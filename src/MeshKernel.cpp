@@ -124,9 +124,9 @@ namespace meshkernelapi
         std::vector<meshkernel::Point> splineCornerPoints;
         ConvertGeometryListToPointVector(geometryListIn, splineCornerPoints);
 
-        const auto indexes = FindIndices(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue);
+        const auto indices = FindIndices(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue);
 
-        for (const auto& index : indexes)
+        for (const auto& index : indices)
         {
             const auto size = index[1] - index[0] + 1;
             if (size > 0)
@@ -673,15 +673,15 @@ namespace meshkernelapi
                 splines[i].y = geometryListIn.yCoordinates[i];
             }
 
-            const auto indexes = FindIndices(splines, 0, splines.size(), meshkernel::doubleMissingValue);
-            const auto numSplines = indexes.size();
+            const auto indices = FindIndices(splines, 0, splines.size(), meshkernel::doubleMissingValue);
+            const auto numSplines = indices.size();
             std::vector<meshkernel::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
 
             int index = 0;
             for (int s = 0; s < numSplines; s++)
             {
-                std::vector<meshkernel::Point> coordinates(splines.begin() + indexes[s][0], splines.begin() + int(indexes[s][1]) + 1);
-                int numNodes = int(indexes[s][1]) - int(indexes[s][0]) + 1;
+                std::vector<meshkernel::Point> coordinates(splines.begin() + indices[s][0], splines.begin() + int(indices[s][1]) + 1);
+                int numNodes = int(indices[s][1]) - int(indices[s][0]) + 1;
                 meshkernel::Splines::SecondOrderDerivative(coordinates, numNodes, coordinatesDerivatives);
 
                 for (int n = 0; n < numNodes - 1; n++)

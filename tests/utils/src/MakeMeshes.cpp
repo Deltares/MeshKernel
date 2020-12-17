@@ -158,14 +158,14 @@ std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile(
 
 std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin)
 {
-    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
+    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int i = 0; i < n; ++i)
     {
         for (int j = 0; j < m; ++j)
         {
-            indexesValues[i][j] = i * m + j;
+            indicesValues[i][j] = i * m + j;
             nodes[nodeIndex] = {origin.x + i * delta, origin.y + j * delta};
             nodeIndex++;
         }
@@ -178,7 +178,7 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
     {
         for (int j = 0; j < m; ++j)
         {
-            edges[edgeIndex] = {indexesValues[i][j], indexesValues[i + 1][j]};
+            edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
@@ -187,7 +187,7 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
     {
         for (int j = 0; j < m - 1; ++j)
         {
-            edges[edgeIndex] = {indexesValues[i][j + 1], indexesValues[i][j]};
+            edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
         }
     }

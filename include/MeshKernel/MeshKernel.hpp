@@ -280,15 +280,16 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_merge_two_nodes(int meshKernelId, int startNode, int endNode);
 
-        /// @brief Gets the selected mesh node indexes  (see how to pass arrays in https://www.mono-project.com/docs/advanced/pinvoke/#memory-management)
+        /// @brief Gets the selected mesh node indices
+        ///        \see how to pass arrays in https://www.mono-project.com/docs/advanced/pinvoke/#memory-management
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input polygons
         /// @param[in] inside Count nodes indices inside (1) or outside (0) the polygon
-        /// @param[out] selectedNodes The selected nodes indexes
+        /// @param[out] selectedNodes The selected nodes indices
         /// @returns Error code
         MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, const GeometryList& geometryListIn, int inside, int** selectedNodes);
 
-        /// @brief Counts the number of selected mesh node indexes
+        /// @brief Counts the number of selected mesh node indices
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] geometryListIn The input polygons
         /// @param[in] inside Count nodes inside (1) or outside (0) the polygon
