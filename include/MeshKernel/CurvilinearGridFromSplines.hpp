@@ -218,7 +218,7 @@ namespace meshkernel
         /// @param[in] numHeightsLeft
         /// @param[in] edgesCenterPoints
         /// @param[in] crossSplineLeftHeights
-        /// @param[in] localValidSplineIndexes
+        /// @param[in] localValidSplineIndices
         /// @param[out] localSplineDerivatives
         /// @param[out] crossingSplinesDimensionalCoordinates
         /// @param[out] heights
@@ -227,7 +227,7 @@ namespace meshkernel
                                      const std::vector<int>& numHeightsLeft,
                                      const std::vector<double>& edgesCenterPoints,
                                      const std::vector<std::vector<double>>& crossSplineLeftHeights,
-                                     std::vector<int>& localValidSplineIndexes,
+                                     std::vector<int>& localValidSplineIndices,
                                      std::vector<double>& localSplineDerivatives,
                                      std::vector<double>& crossingSplinesDimensionalCoordinates,
                                      std::vector<std::vector<double>>& heights);

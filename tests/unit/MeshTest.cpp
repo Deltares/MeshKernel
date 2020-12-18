@@ -340,14 +340,14 @@ TEST(Mesh, NodeMerging)
     const int n = 10; // x
     const int m = 10; // y
 
-    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
+    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
         for (int i = 0; i < n; ++i)
         {
-            indexesValues[i][j] = i + j * n;
+            indicesValues[i][j] = i + j * n;
             nodes[nodeIndex] = {(double)i, (double)j};
             nodeIndex++;
         }
@@ -359,7 +359,7 @@ TEST(Mesh, NodeMerging)
     {
         for (int i = 0; i < n - 1; ++i)
         {
-            edges[edgeIndex] = {indexesValues[i][j], indexesValues[i + 1][j]};
+            edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
@@ -368,7 +368,7 @@ TEST(Mesh, NodeMerging)
     {
         for (int i = 0; i < n; ++i)
         {
-            edges[edgeIndex] = {indexesValues[i][j + 1], indexesValues[i][j]};
+            edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
         }
     }
@@ -426,14 +426,14 @@ TEST(Mesh, MillionQuads)
     const int n = 4; // x
     const int m = 4; // y
 
-    std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
+    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (int j = 0; j < m; ++j)
     {
         for (int i = 0; i < n; ++i)
         {
-            indexesValues[i][j] = i + j * n;
+            indicesValues[i][j] = i + j * n;
             nodes[nodeIndex] = {(double)i, (double)j};
             nodeIndex++;
         }
@@ -445,7 +445,7 @@ TEST(Mesh, MillionQuads)
     {
         for (int i = 0; i < n - 1; ++i)
         {
-            edges[edgeIndex] = {indexesValues[i][j], indexesValues[i + 1][j]};
+            edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
@@ -454,7 +454,7 @@ TEST(Mesh, MillionQuads)
     {
         for (int i = 0; i < n; ++i)
         {
-            edges[edgeIndex] = {indexesValues[i][j + 1], indexesValues[i][j]};
+            edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
         }
     }
