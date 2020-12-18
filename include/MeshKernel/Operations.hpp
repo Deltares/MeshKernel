@@ -491,7 +491,7 @@ namespace meshkernel
 
     /// @brief Computes the edge centers
     /// @param[in] nodes The vector of edge nodes.
-    /// @param[in] edges The vector of edge indexes.
+    /// @param[in] edges The vector of edge indices.
     /// @return The vector containing the edge centers.
     [[nodiscard]] std::vector<Point> ComputeEdgeCenters(const std::vector<Point>& nodes, const std::vector<Edge>& edges);
 

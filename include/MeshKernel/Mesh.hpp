@@ -278,11 +278,11 @@ namespace meshkernel
 
         /// @brief Gets the edges crossing the small flow edges
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
-        /// @returns The indexes of the edges crossing small flow edges
+        /// @returns The indices of the edges crossing small flow edges
         [[nodiscard]] std::vector<int> GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Gets the flow edges centers from the crossing edges
-        /// @param[in] edges The crossing edges indexes
+        /// @param[in] edges The crossing edges indices
         /// @returns The centers of the flow edges
         [[nodiscard]] std::vector<Point> GetFlowEdgesCenters(const std::vector<int>& edges) const;
 

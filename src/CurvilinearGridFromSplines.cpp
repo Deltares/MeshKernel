@@ -1371,7 +1371,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGridHeights()
     std::vector<int> numHeightsLeft(numSplines, 0);
     std::vector<int> numHeightsRight(numSplines, 0);
     std::vector<double> localSplineDerivatives(numSplines, 0.0);
-    std::vector<int> localValidSplineIndexes(numSplines, 0);
+    std::vector<int> localValidSplineIndices(numSplines, 0);
 
     for (auto s = 0; s < numSplines; s++)
     {
@@ -1439,7 +1439,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGridHeights()
                                         numHeightsLeft,
                                         edgesCenterPoints,
                                         m_crossSplineLeftHeights[s],
-                                        localValidSplineIndexes,
+                                        localValidSplineIndices,
                                         localSplineDerivatives,
                                         crossingSplinesDimensionalCoordinates,
                                         heightsLeft);
@@ -1448,7 +1448,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGridHeights()
                                         numHeightsRight,
                                         edgesCenterPoints,
                                         m_crossSplineRightHeights[s],
-                                        localValidSplineIndexes,
+                                        localValidSplineIndices,
                                         localSplineDerivatives,
                                         crossingSplinesDimensionalCoordinates,
                                         heightsRight);
@@ -1472,13 +1472,13 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
                                                                      const std::vector<int>& numHeightsLeft,
                                                                      const std::vector<double>& edgesCenterPoints,
                                                                      const std::vector<std::vector<double>>& crossSplineLeftHeights,
-                                                                     std::vector<int>& localValidSplineIndexes,
+                                                                     std::vector<int>& localValidSplineIndices,
                                                                      std::vector<double>& localSplineDerivatives,
                                                                      std::vector<double>& crossingSplinesDimensionalCoordinates,
                                                                      std::vector<std::vector<double>>& heights)
 {
     size_t numValid;
-    GetValidSplineIndices(m_numCrossingSplines[s], numHeightsLeft, localValidSplineIndexes, numValid);
+    GetValidSplineIndices(m_numCrossingSplines[s], numHeightsLeft, localValidSplineIndices, numValid);
 
     // no sub-heights to compute
     if (numValid == 0)
@@ -1492,7 +1492,7 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
     // TODO: strided memory access
     for (int i = 0; i < numValid; ++i)
     {
-        int index = localValidSplineIndexes[i];
+        int index = localValidSplineIndices[i];
         localCornerPoints[i] = crossSplineLeftHeights[index][j];
     }
 
@@ -1502,16 +1502,16 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
     for (int i = 0; i < numM; ++i)
     {
         int leftIndex = 0;
-        double leftCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndexes[leftIndex]];
+        double leftCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndices[leftIndex]];
         int rightIndex = std::min(size_t(1), numValid - 1);
-        double rightCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndexes[rightIndex]];
+        double rightCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndices[rightIndex]];
         // Find two nearest cross splines
         while (rightCoordinate < edgesCenterPoints[i] && rightIndex < numValid)
         {
             leftIndex = rightIndex;
             leftCoordinate = rightCoordinate;
             rightIndex++;
-            rightCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndexes[rightIndex]];
+            rightCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndices[rightIndex]];
             if (rightIndex == numValid - 1)
             {
                 break;

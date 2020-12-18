@@ -90,14 +90,14 @@ void meshkernel::OrthogonalizationAndSmoothing::Initialize()
             PrepareOuterIteration();
         }
 
-        m_localCoordinatesIndexes.resize(m_mesh->GetNumNodes() + 1);
-        m_localCoordinatesIndexes[0] = 1;
+        m_localCoordinatesIndices.resize(m_mesh->GetNumNodes() + 1);
+        m_localCoordinatesIndices[0] = 1;
         for (int n = 0; n < m_mesh->GetNumNodes(); ++n)
         {
-            m_localCoordinatesIndexes[n + 1] = m_localCoordinatesIndexes[n] + std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
+            m_localCoordinatesIndices[n + 1] = m_localCoordinatesIndices[n] + std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
         }
 
-        m_localCoordinates.resize(m_localCoordinatesIndexes.back() - 1, {doubleMissingValue, doubleMissingValue});
+        m_localCoordinates.resize(m_localCoordinatesIndices.back() - 1, {doubleMissingValue, doubleMissingValue});
     }
 }
 
@@ -428,8 +428,8 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeI
             const double wwxTransformed = wwx * earth_radius * degrad_hp;
             const double wwyTransformed = wwy * earth_radius * degrad_hp;
 
-            dx0 = dx0 + wwxTransformed * m_localCoordinates[m_localCoordinatesIndexes[nodeIndex] + currentNode - 1].x;
-            dy0 = dy0 + wwyTransformed * m_localCoordinates[m_localCoordinatesIndexes[nodeIndex] + currentNode - 1].y;
+            dx0 = dx0 + wwxTransformed * m_localCoordinates[m_localCoordinatesIndices[nodeIndex] + currentNode - 1].x;
+            dy0 = dy0 + wwyTransformed * m_localCoordinates[m_localCoordinatesIndices[nodeIndex] + currentNode - 1].y;
             weightsSum[0] += wwxTransformed;
             weightsSum[1] += wwyTransformed;
         }

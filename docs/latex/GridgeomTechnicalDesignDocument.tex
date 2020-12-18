@@ -23,44 +23,11 @@ The MeshKernel library is a \cpp dynamic library that performs generation and ma
 \item Simplify the connection with C like languages, such \csharp.
 \cpp and \csharp have the same array memory layout and pointers can be passed seamlessly, without the need for pointer conversion.
 \end{itemize}
-This document describes the development strategies (section 2), the MeshKernel design (section 2), and the responsibilities of the main classes (section 4 and ahead).
-%------------------------------------------------------------------------------
-\chapter{MeshKernel development strategies}
-
-The following strategies were adopted when developing the MeshKernel in \cpp.
-Note that the following strategies are not immutable and can be revised.
-Performance:
-\begin{itemize}
-\item Avoid abstractions of low-level components: when iterating over millions of nodes, edges or faces polymorphic calls are expensive. Compile-time static polymorphism could be used as an alternative to run-time polymorphism but has not been applied yet.
-\item to achieve the same level of performance as the Fortran code, contiguous arrays are extensively used (std::vectors).
-\item Computed quantities are often cached in private class members.
-\end{itemize}
-Coding:
-\begin{itemize}
-\item Internal class members are prefixed with m\_ to distinguish them from non-class members.
-\item Classes and class methods start with capital letters.
-\item Input parameters in methods or functions come first, output parameters come second.
-\item Pass by reference non-primitive types, to avoid deep copies.
-\item Use the const qualifier whenever possible.
-\item Avoid overloading copy constructors and assignment operators because the compiler can generate them automatically.
-\end{itemize}
-Re-usability:
-\begin{itemize}
-\item Promote re-usability by separating code logic in separate functions or classes.
-\item Promote re-usability by using templates (the same logic can be used for different types).
-\end{itemize}
-Resource management:
-\begin{itemize}
-\item Avoid the use of new or malloc to allocate heap memory. Use containers instead, such as std::vectors that auto-destroy when out of scope.
-\item Use resource acquisition is initialization (RAII).
-\end{itemize}
-Usage of external libraries:
-\begin{itemize}
-\item Promote the use of libraries when possible in this order: standard template library (stl algorithms operating on containers), boost, and then others.
-\end{itemize}
+This document describes the MeshKernel design (chapter~\ref{chap:design}), and then the responsibilities of the main classes.
 
 %------------------------------------------------------------------------------
 \chapter{MeshKernel design}
+\label{chap:design}
 
 The design of a geometrical library is influenced by the choices made for the representation of the mesh entities. In MeshKernel an unstructured mesh is uniquely defined by two entities:
 \begin{itemize}
@@ -97,7 +64,7 @@ In the current implementation, several geometrical methods acting on arrays or s
 \begin{itemize}
 \item Vector dot product.
 \item Resize and filling a vector with a default value.
-\item Find the indexes in a vector equal to a certain value.
+\item Find the indices in a vector equal to a certain value.
 \item Sort a vector returning its permutation array.
 \item Root finding using the golden section search algorithm.
 \item Performing coordinate transformations.

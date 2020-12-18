@@ -320,7 +320,7 @@ namespace meshkernel
 
         bool inPolygon = false;
 
-        for (const auto& indexes : m_indices)
+        for (const auto& indices : m_indices)
         {
             // Calculate the bounding box
             double XMin = std::numeric_limits<double>::max();
@@ -328,7 +328,7 @@ namespace meshkernel
             double YMin = std::numeric_limits<double>::max();
             double YMax = std::numeric_limits<double>::lowest();
 
-            for (int n = indexes[0]; n <= indexes[1]; n++)
+            for (int n = indices[0]; n <= indices[1]; n++)
             {
                 XMin = std::min(XMin, m_nodes[n].x);
                 XMax = std::max(XMax, m_nodes[n].x);
@@ -338,7 +338,7 @@ namespace meshkernel
 
             if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
             {
-                inPolygon = IsPointInPolygonNodes(point, m_nodes, indexes[0], indexes[1], m_projection);
+                inPolygon = IsPointInPolygonNodes(point, m_nodes, indices[0], indices[1], m_projection);
             }
 
             if (inPolygon)

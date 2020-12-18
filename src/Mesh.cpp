@@ -568,14 +568,14 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
     }
 
     // Performing sorting
-    std::vector<std::size_t> indexes(m_nodesNumEdges[node]);
+    std::vector<std::size_t> indices(m_nodesNumEdges[node]);
     std::vector<int> edgeNodeCopy{m_nodesEdges[node]};
-    iota(indexes.begin(), indexes.end(), 0);
-    sort(indexes.begin(), indexes.end(), [&, this](std::size_t i1, std::size_t i2) { return m_edgeAngles[i1] < m_edgeAngles[i2]; });
+    iota(indices.begin(), indices.end(), 0);
+    sort(indices.begin(), indices.end(), [&, this](std::size_t i1, std::size_t i2) { return m_edgeAngles[i1] < m_edgeAngles[i2]; });
 
     for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
     {
-        m_nodesEdges[node][edgeIndex] = edgeNodeCopy[indexes[edgeIndex]];
+        m_nodesEdges[node][edgeIndex] = edgeNodeCopy[indices[edgeIndex]];
     }
 }
 

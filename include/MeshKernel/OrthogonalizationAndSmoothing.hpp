@@ -116,7 +116,7 @@ namespace meshkernel
         LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; // The project to land boundary option
         meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters;  // The orthogonalization parameters
 
-        std::vector<int> m_localCoordinatesIndexes; // Used in sphericalAccurate projection (iloc)
+        std::vector<int> m_localCoordinatesIndices; // Used in sphericalAccurate projection (iloc)
         std::vector<Point> m_localCoordinates;      // Used in sphericalAccurate projection (xloc,yloc)
         std::vector<Point> m_orthogonalCoordinates; // A copy of the mesh node, orthogonalized
         std::vector<Point> m_originalNodes;         // The original mesh
