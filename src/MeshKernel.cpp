@@ -190,11 +190,11 @@ namespace meshkernelapi
         return locations;
     }
 
-    int HandleExceptions(const std::exception_ptr eptr)
+    int HandleExceptions(const std::exception_ptr exceptionPtr)
     {
         try
         {
-            std::rethrow_exception(eptr);
+            std::rethrow_exception(exceptionPtr);
         }
         catch (const meshkernel::MeshGeometryError& e)
         {

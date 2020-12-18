@@ -471,6 +471,143 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
     delete[] geometryListIn.zCoordinates;
 }
 
+TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)
+{
+    // Prepare
+    int meshKernelId;
+    AllocateNewMesh(meshKernelId);
+
+    meshkernelapi::GeometryList geometryListIn;
+
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+
+    geometryListIn.xCoordinates = new double[]{
+        0.0,
+        10.0,
+        10.0,
+        0.0,
+        0.0};
+
+    geometryListIn.yCoordinates = new double[]{
+        0.0,
+        0.0,
+        10.0,
+        10.0,
+        0.0};
+
+    geometryListIn.zCoordinates = new double[]{
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0};
+
+    geometryListIn.numberOfCoordinates = 5;
+
+    // Execute
+    auto errorCode = mkernel_make_mesh_from_samples(0, geometryListIn);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
+    meshkernelapi::MeshGeometry meshGeometry{};
+    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert (nothing is done, we just check that the api communication works)
+    ASSERT_EQ(4, meshGeometryDimensions.numnode);
+    ASSERT_EQ(5, meshGeometryDimensions.numedge);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+}
+
+TEST_F(ApiTests, GetMeshBoundariesThroughApi)
+{
+    // Prepare
+    MakeMesh();
+    int numberOfPolygonVertices;
+    auto errorCode = meshkernelapi::mkernel_copy_mesh_boundaries_to_polygon_count_nodes(0, numberOfPolygonVertices);
+    ASSERT_EQ(9, numberOfPolygonVertices);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    geometryListIn.numberOfCoordinates = numberOfPolygonVertices;
+    geometryListIn.xCoordinates = new double[numberOfPolygonVertices];
+    geometryListIn.yCoordinates = new double[numberOfPolygonVertices];
+    geometryListIn.zCoordinates = new double[numberOfPolygonVertices];
+
+    // Execute
+    errorCode = mkernel_copy_mesh_boundaries_to_polygon(0, geometryListIn);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(0.0, geometryListIn.xCoordinates[0], tolerance);
+    ASSERT_NEAR(0.0, geometryListIn.yCoordinates[0], tolerance);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+}
+
+TEST_F(ApiTests, OffsetAPolygonThroughApi)
+{
+    // Prepare
+    MakeMesh();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    geometryListIn.numberOfCoordinates = 4;
+    geometryListIn.xCoordinates = new double[]{
+        0.0,
+        1.0,
+        1.0,
+        0.0};
+
+    geometryListIn.yCoordinates = new double[]{
+        0.0,
+        0.0,
+        1.0,
+        1.0};
+
+    geometryListIn.zCoordinates = new double[]{
+        0.0,
+        0.0,
+        0.0,
+        0.0};
+
+    // Execute
+    int numberOfPolygonVertices;
+    auto errorCode = mkernel_offsetted_polygon_count(0, geometryListIn, false, 0.5, numberOfPolygonVertices);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(4, numberOfPolygonVertices);
+
+    meshkernelapi::GeometryList geometryListOut;
+
+    geometryListOut.numberOfCoordinates = numberOfPolygonVertices;
+    geometryListOut.geometrySeparator = meshkernel::doubleMissingValue;
+    geometryListOut.xCoordinates = new double[numberOfPolygonVertices];
+    geometryListOut.yCoordinates = new double[numberOfPolygonVertices];
+    geometryListOut.zCoordinates = new double[numberOfPolygonVertices];
+    errorCode = mkernel_offsetted_polygon(0, geometryListIn, false, 10.0, geometryListOut);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(0.0, geometryListOut.xCoordinates[0], tolerance);
+    ASSERT_NEAR(-10.0, geometryListOut.yCoordinates[0], tolerance);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+
+    delete[] geometryListOut.xCoordinates;
+    delete[] geometryListOut.yCoordinates;
+    delete[] geometryListOut.zCoordinates;
+}
+
 // Invalid mesh
 TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldProduceAMeshGeometryError)
 {
