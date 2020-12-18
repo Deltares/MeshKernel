@@ -608,8 +608,360 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
     delete[] geometryListOut.zCoordinates;
 }
 
-// Invalid mesh
-TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldProduceAMeshGeometryError)
+TEST_F(ApiTests, RefineAPolygonThroughApi)
+{
+    // Prepare
+    MakeMesh();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    geometryListIn.numberOfCoordinates = 3;
+    geometryListIn.xCoordinates = new double[]{
+        76.251099,
+        498.503723,
+        505.253784};
+
+    geometryListIn.yCoordinates = new double[]{
+        92.626556,
+        91.126541,
+        490.130554};
+
+    geometryListIn.zCoordinates = new double[]{
+        0.0,
+        0.0,
+        0.0};
+
+    // Execute
+    int numberOfPolygonVertices;
+    auto errorCode = mkernel_refine_polygon_count(0, geometryListIn, 0, 2, 40, numberOfPolygonVertices);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(22, numberOfPolygonVertices);
+
+    meshkernelapi::GeometryList geometryListOut;
+    geometryListOut.numberOfCoordinates = numberOfPolygonVertices;
+    geometryListOut.geometrySeparator = meshkernel::doubleMissingValue;
+    geometryListOut.xCoordinates = new double[numberOfPolygonVertices];
+    geometryListOut.yCoordinates = new double[numberOfPolygonVertices];
+    geometryListOut.zCoordinates = new double[numberOfPolygonVertices];
+    errorCode = mkernel_refine_polygon(0, geometryListIn, false, 0, 2, geometryListOut);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(76.251099, geometryListOut.xCoordinates[0], tolerance);
+    ASSERT_NEAR(92.626556, geometryListOut.yCoordinates[0], tolerance);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+
+    delete[] geometryListOut.xCoordinates;
+    delete[] geometryListOut.yCoordinates;
+    delete[] geometryListOut.zCoordinates;
+}
+
+TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
+{
+    // Prepare
+    MakeMesh();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+
+    geometryListIn.xCoordinates = new double[]{
+        50.0,
+        150.0,
+        250.0,
+        50.0,
+        150.0,
+        250.0,
+        50.0,
+        150.0,
+        250.0};
+
+    geometryListIn.yCoordinates = new double[]{
+        50.0,
+        50.0,
+        50.0,
+        150.0,
+        150.0,
+        150.0,
+        250.0,
+        250.0,
+        250.0};
+
+    geometryListIn.zCoordinates = new double[]{
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        4.0,
+        4.0,
+        4.0};
+
+    geometryListIn.numberOfCoordinates = 9;
+
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.InterpolationType = 1;
+    interpolationParameters.DisplayInterpolationProcess = 0;
+    interpolationParameters.MaxNumberOfRefinementIterations = 2;
+    interpolationParameters.AveragingMethod = 1;
+    interpolationParameters.MinimumNumberOfPoints = 1;
+    interpolationParameters.RelativeSearchRadius = 1.01;
+    interpolationParameters.InterpolateTo = 3;
+    interpolationParameters.RefineIntersected = false;
+
+    meshkernelapi::SampleRefineParameters samplesRefineParameters;
+    samplesRefineParameters.SampleVectorDimension = 1;
+    samplesRefineParameters.MinimumCellSize = 0.5;
+    samplesRefineParameters.DirectionalRefinement = 0;
+    samplesRefineParameters.RefinementType = 3;
+    samplesRefineParameters.ConnectHangingNodes = 1;
+    samplesRefineParameters.MaximumTimeStepInCourantGrid = 0.0;
+    samplesRefineParameters.AccountForSamplesOutside = 0;
+
+    // Execute
+    auto errorCode = mkernel_refine_mesh_based_on_samples(0, geometryListIn, interpolationParameters, samplesRefineParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
+    meshkernelapi::MeshGeometry meshGeometry{};
+    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(9, meshGeometryDimensions.numnode);
+    ASSERT_EQ(12, meshGeometryDimensions.numedge);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+}
+
+TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
+{
+    // Prepare
+    MakeMesh();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    geometryListIn.xCoordinates = new double[]{
+        50.0,
+        150.0,
+        250.0,
+        50.0,
+        150.0,
+        250.0,
+        50.0,
+        150.0,
+        250.0};
+
+    geometryListIn.yCoordinates = new double[]{
+        50.0,
+        50.0,
+        50.0,
+        150.0,
+        150.0,
+        150.0,
+        250.0,
+        250.0,
+        250.0};
+
+    geometryListIn.zCoordinates = new double[]{
+        2.0,
+        2.0,
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        4.0,
+        4.0,
+        4.0};
+
+    geometryListIn.numberOfCoordinates = 9;
+
+    meshkernelapi::InterpolationParameters interpolationParameters;
+    interpolationParameters.InterpolationType = 1;
+    interpolationParameters.DisplayInterpolationProcess = 0;
+    interpolationParameters.MaxNumberOfRefinementIterations = 2;
+    interpolationParameters.AveragingMethod = 1;
+    interpolationParameters.MinimumNumberOfPoints = 1;
+    interpolationParameters.RelativeSearchRadius = 1.01;
+    interpolationParameters.InterpolateTo = 3;
+    interpolationParameters.RefineIntersected = false;
+
+    auto errorCode = mkernel_refine_mesh_based_on_polygon(0, geometryListIn, interpolationParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
+    meshkernelapi::MeshGeometry meshGeometry{};
+    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(9, meshGeometryDimensions.numnode);
+    ASSERT_EQ(12, meshGeometryDimensions.numedge);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+}
+
+TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
+{
+    // Prepare
+    MakeMesh();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    geometryListIn.xCoordinates = new double[]{
+        273.502319,
+        274.252319,
+        275.002350,
+        458.003479,
+        719.005127,
+        741.505249,
+        710.755066,
+        507.503784,
+        305.002533};
+
+    geometryListIn.yCoordinates = new double[]{
+        478.880432,
+        325.128906,
+        172.127350,
+        157.127213,
+        157.127213,
+        328.128937,
+        490.880554,
+        494.630615,
+        493.130615};
+
+    geometryListIn.zCoordinates = new double[]{
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0};
+    geometryListIn.numberOfCoordinates = 9;
+
+    auto errorCode = meshkernelapi::mkernel_curvilinear_from_polygon(0, geometryListIn, 0, 2, 4, true);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
+    meshkernelapi::MeshGeometry meshGeometry{};
+    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(18, meshGeometryDimensions.numnode);
+    ASSERT_EQ(24, meshGeometryDimensions.numedge);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+}
+
+TEST_F(ApiTests, GetClosestMeshCoordinateThroughApi)
+{
+    // Prepare
+    MakeMesh();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    geometryListIn.xCoordinates = new double[]{-5.0};
+    geometryListIn.yCoordinates = new double[]{5.0};
+    geometryListIn.zCoordinates = new double[]{0.0};
+    geometryListIn.numberOfCoordinates = 1;
+
+    meshkernelapi::GeometryList geometryListOut;
+    geometryListOut.geometrySeparator = meshkernel::doubleMissingValue;
+    geometryListOut.xCoordinates = new double[]{meshkernel::doubleMissingValue};
+    geometryListOut.yCoordinates = new double[]{meshkernel::doubleMissingValue};
+    geometryListOut.zCoordinates = new double[]{meshkernel::doubleMissingValue};
+    geometryListOut.numberOfCoordinates = 1;
+
+    auto errorCode = mkernel_get_node_coordinate(0, geometryListIn, 10.0, geometryListOut);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(0.0, geometryListOut.xCoordinates[0]);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+
+    delete[] geometryListOut.xCoordinates;
+    delete[] geometryListOut.yCoordinates;
+    delete[] geometryListOut.zCoordinates;
+}
+
+TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
+{
+    // Prepare
+    MakeMesh();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    geometryListIn.xCoordinates = new double[]{
+        444.504791,
+        427.731781,
+        405.640503,
+        381.094666,
+        451.050354,
+        528.778931,
+        593.416260,
+        558.643005,
+        526.733398,
+        444.095703};
+
+    geometryListIn.yCoordinates = new double[]{
+        437.155945,
+        382.745758,
+        317.699005,
+        262.470612,
+        262.879700,
+        263.288788,
+        266.561584,
+        324.653687,
+        377.836578,
+        436.746857};
+
+    geometryListIn.zCoordinates = new double[]{
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0};
+
+    geometryListIn.numberOfCoordinates = 10;
+
+    auto errorCode = mkernel_curvilinear_from_triangle(0, geometryListIn, 0, 3, 6);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
+    meshkernelapi::MeshGeometry meshGeometry{};
+    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(25, meshGeometryDimensions.numnode);
+    ASSERT_EQ(35, meshGeometryDimensions.numedge);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+}
+
+TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError)
 {
     int meshKernelId;
     meshkernelapi::mkernel_new_mesh(meshKernelId);
@@ -658,4 +1010,22 @@ TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldProduceAMeshGeometryErr
     errorCode = meshkernelapi::mkernel_get_geometry_error(invalidIndex, type);
     ASSERT_EQ(static_cast<int>(meshkernel::MeshLocations::Nodes), type);
     ASSERT_EQ(478, invalidIndex);
+}
+
+TEST_F(ApiTests, InvalidRefinementShoulThrowAnException)
+{
+    // Prepare
+    MakeMesh();
+
+    meshkernelapi::GeometryList geometryListIn;
+    meshkernelapi::InterpolationParameters interpolationParameters;
+
+    // Mesh refinement is invalid when parameters are not assigned (trash values are used)
+    auto errorCode = mkernel_refine_mesh_based_on_polygon(0, geometryListIn, interpolationParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Exception, errorCode);
+
+    // Get the message
+    const char* exceptionMessage;
+    errorCode = meshkernelapi::mkernel_get_error(exceptionMessage);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 }
