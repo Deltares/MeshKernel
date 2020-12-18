@@ -1022,20 +1022,3 @@ TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError
     ASSERT_EQ(static_cast<int>(meshkernel::MeshLocations::Nodes), type);
     ASSERT_EQ(478, invalidIndex);
 }
-TEST_F(ApiTests, InvalidRefinementShoulThrowAnException)
-{
-    // Prepare
-    MakeMesh();
-
-    meshkernelapi::GeometryList geometryListIn;
-    meshkernelapi::InterpolationParameters interpolationParameters;
-
-    // Execute, Mesh refinement is invalid when parameters are not assigned (trash values are used)
-    auto errorCode = mkernel_refine_mesh_based_on_polygon(0, geometryListIn, interpolationParameters);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Exception, errorCode);
-
-    // Get the last message
-    const char* exceptionMessage;
-    errorCode = meshkernelapi::mkernel_get_error(exceptionMessage);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-}
