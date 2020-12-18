@@ -43,14 +43,13 @@ protected:
 
 TEST_F(ApiTests, DeleteNodeThroughApi)
 {
-    // Set a new mesh in Mesh Kernel
+    // Prepare
     MakeMesh();
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_delete_node(0, 0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
@@ -63,14 +62,13 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
 
 TEST_F(ApiTests, FlipEdgesThroughApi)
 {
-    // Set a new mesh in Mesh Kernel
+    // Prepare
     MakeMesh();
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_flip_edges(0, 1, 1);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
@@ -83,7 +81,7 @@ TEST_F(ApiTests, FlipEdgesThroughApi)
 
 TEST_F(ApiTests, InsertEdgeThroughApi)
 {
-    // Set a new mesh in Mesh Kernel
+    // Prepare
     MakeMesh();
 
     // Execute
@@ -92,7 +90,6 @@ TEST_F(ApiTests, InsertEdgeThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(12, newEdgeIndex);
 
-    // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
@@ -105,14 +102,13 @@ TEST_F(ApiTests, InsertEdgeThroughApi)
 
 TEST_F(ApiTests, MergeTwoNodesThroughApi)
 {
-    // Set a new mesh in Mesh Kernel
+    // Prepare
     MakeMesh();
 
     // Execute
     auto errorCode = meshkernelapi::mkernel_merge_two_nodes(0, 0, 4);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
@@ -133,12 +129,11 @@ TEST_F(ApiTests, MergeNodesThroughApi)
     auto errorCode = mkernel_merge_nodes(0, geometry_list);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
 
-    // Assert (nothing is done, we just check that the api communication works)
+    // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(9, meshGeometryDimensions.numnode);
     ASSERT_EQ(12, meshGeometryDimensions.numedge);
@@ -165,6 +160,8 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
                                                       orthogonalizationParameters,
                                                       landBoundaries,
                                                       geometryList);
+
+    // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_orthogonalize_prepare_outer_iteration(0);
@@ -179,12 +176,10 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
     errorCode = meshkernelapi::mkernel_orthogonalize_delete(0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
 
-    // Assert (nothing is done, we just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(9, meshGeometryDimensions.numnode);
     ASSERT_EQ(12, meshGeometryDimensions.numedge);
@@ -192,11 +187,10 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
 
 TEST_F(ApiTests, MakeGridThroughApi)
 {
-    // Allocate a new mesh entry
+    // Prepare
     int meshKernelId;
     AllocateNewMesh(meshKernelId);
 
-    // Prepare
     meshkernelapi::MakeMeshParameters makeMeshParameters{};
     meshkernelapi::GeometryList geometryList{};
 
@@ -215,55 +209,21 @@ TEST_F(ApiTests, MakeGridThroughApi)
     auto errorCode = mkernel_make_mesh(0, makeMeshParameters, geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
 
-    // Assert (nothing is done, we just check that the api communication works)
+    // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(16, meshGeometryDimensions.numnode);
     ASSERT_EQ(24, meshGeometryDimensions.numedge);
 }
-
-TEST(ApiStatelessTests, GetSplinesThroughApi)
-{
-    // Prepare
-    meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.xCoordinates = new double[]{10.0, 20.0, 30.0};
-    geometryListIn.yCoordinates = new double[]{-5.0, 5.0, -5.0};
-    geometryListIn.zCoordinates = new double[]{0.0, 0.0, 0.0};
-    geometryListIn.numberOfCoordinates = 3;
-    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
-
-    meshkernelapi::GeometryList geometryListOut;
-    int numberOfPointsBetweenNodes = 20;
-    geometryListOut.xCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
-    geometryListOut.yCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
-    geometryListOut.zCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
-
-    // Execute
-    auto errorCode = mkernel_get_splines(geometryListIn, geometryListOut, numberOfPointsBetweenNodes);
-    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ((numberOfPointsBetweenNodes + 1) * 2, geometryListOut.numberOfCoordinates);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
-
-    delete[] geometryListOut.xCoordinates;
-    delete[] geometryListOut.yCoordinates;
-    delete[] geometryListOut.zCoordinates;
-}
-
 TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
 {
-    // Allocate a new mesh entry
+    // Prepare
     int meshKernelId;
     AllocateNewMesh(meshKernelId);
 
-    // Execute
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
 
@@ -292,10 +252,10 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     curvilinearParameters.SmoothingParameter = 0.5;
     curvilinearParameters.AttractionParameter = 0.0;
 
+    // Execute
     auto errorCode = mkernel_curvilinear_mesh_from_splines(0, geometryListIn, curvilinearParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
@@ -313,11 +273,10 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
 
 TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
 {
-    // Allocate a new mesh entry
+    // Prepare
     int meshKernelId;
     AllocateNewMesh(meshKernelId);
 
-    // Execute
     meshkernelapi::GeometryList geometryListIn;
 
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
@@ -349,6 +308,7 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 1;
     splinesToCurvilinearParameters.GrowGridOutside = 0;
 
+    // Execute
     auto errorCode = mkernel_curvilinear_mesh_from_splines_ortho_initialize(0, geometryListIn, curvilinearParameters, splinesToCurvilinearParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -385,15 +345,12 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
 
 TEST_F(ApiTests, GenerateTriangularGridThroughApi)
 {
-    // Allocate a new mesh entry
+    // Prepare
     int meshKernelId;
     AllocateNewMesh(meshKernelId);
 
-    // Execute
     meshkernelapi::GeometryList geometryListIn;
-
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
-
     geometryListIn.xCoordinates = new double[]{
         415.319672,
         390.271973,
@@ -453,6 +410,7 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
 
     geometryListIn.numberOfCoordinates = 17;
 
+    // Execute
     auto errorCode = mkernel_make_mesh_from_polygon(0, geometryListIn);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     // Get the new state
@@ -543,6 +501,8 @@ TEST_F(ApiTests, GetMeshBoundariesThroughApi)
     // Execute
     errorCode = mkernel_copy_mesh_boundaries_to_polygon(0, geometryListIn);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
     const double tolerance = 1e-6;
     ASSERT_NEAR(0.0, geometryListIn.xCoordinates[0], tolerance);
     ASSERT_NEAR(0.0, geometryListIn.yCoordinates[0], tolerance);
@@ -594,6 +554,8 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
     geometryListOut.zCoordinates = new double[numberOfPolygonVertices];
     errorCode = mkernel_offsetted_polygon(0, geometryListIn, false, 10.0, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
     const double tolerance = 1e-6;
     ASSERT_NEAR(0.0, geometryListOut.xCoordinates[0], tolerance);
     ASSERT_NEAR(-10.0, geometryListOut.yCoordinates[0], tolerance);
@@ -645,6 +607,8 @@ TEST_F(ApiTests, RefineAPolygonThroughApi)
     geometryListOut.zCoordinates = new double[numberOfPolygonVertices];
     errorCode = mkernel_refine_polygon(0, geometryListIn, false, 0, 2, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
     const double tolerance = 1e-6;
     ASSERT_NEAR(76.251099, geometryListOut.xCoordinates[0], tolerance);
     ASSERT_NEAR(92.626556, geometryListOut.yCoordinates[0], tolerance);
@@ -730,6 +694,8 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
     ASSERT_EQ(9, meshGeometryDimensions.numnode);
     ASSERT_EQ(12, meshGeometryDimensions.numedge);
 
@@ -791,6 +757,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
     interpolationParameters.InterpolateTo = 3;
     interpolationParameters.RefineIntersected = false;
 
+    // Execute
     auto errorCode = mkernel_refine_mesh_based_on_polygon(0, geometryListIn, interpolationParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -799,6 +766,8 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
     ASSERT_EQ(9, meshGeometryDimensions.numnode);
     ASSERT_EQ(12, meshGeometryDimensions.numedge);
 
@@ -849,6 +818,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
         0.0};
     geometryListIn.numberOfCoordinates = 9;
 
+    // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_from_polygon(0, geometryListIn, 0, 2, 4, true);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -857,6 +827,8 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
     ASSERT_EQ(18, meshGeometryDimensions.numnode);
     ASSERT_EQ(24, meshGeometryDimensions.numedge);
 
@@ -885,8 +857,11 @@ TEST_F(ApiTests, GetClosestMeshCoordinateThroughApi)
     geometryListOut.zCoordinates = new double[]{meshkernel::doubleMissingValue};
     geometryListOut.numberOfCoordinates = 1;
 
+    // Execute
     auto errorCode = mkernel_get_node_coordinate(0, geometryListIn, 10.0, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
     ASSERT_EQ(0.0, geometryListOut.xCoordinates[0]);
 
     // Delete dynamically allocated memory with operator new
@@ -944,6 +919,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
 
     geometryListIn.numberOfCoordinates = 10;
 
+    // Execute
     auto errorCode = mkernel_curvilinear_from_triangle(0, geometryListIn, 0, 3, 6);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -952,6 +928,8 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     meshkernelapi::MeshGeometry meshGeometry{};
     errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
     ASSERT_EQ(25, meshGeometryDimensions.numnode);
     ASSERT_EQ(35, meshGeometryDimensions.numedge);
 
@@ -961,18 +939,50 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     delete[] geometryListIn.zCoordinates;
 }
 
+TEST(ApiStatelessTests, GetSplinesThroughApi)
+{
+    // Prepare
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.xCoordinates = new double[]{10.0, 20.0, 30.0};
+    geometryListIn.yCoordinates = new double[]{-5.0, 5.0, -5.0};
+    geometryListIn.zCoordinates = new double[]{0.0, 0.0, 0.0};
+    geometryListIn.numberOfCoordinates = 3;
+    geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+
+    meshkernelapi::GeometryList geometryListOut;
+    int numberOfPointsBetweenNodes = 20;
+    geometryListOut.xCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
+    geometryListOut.yCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
+    geometryListOut.zCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
+
+    // Execute
+    auto errorCode = mkernel_get_splines(geometryListIn, geometryListOut, numberOfPointsBetweenNodes);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ((numberOfPointsBetweenNodes + 1) * 2, geometryListOut.numberOfCoordinates);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] geometryListIn.xCoordinates;
+    delete[] geometryListIn.yCoordinates;
+    delete[] geometryListIn.zCoordinates;
+
+    delete[] geometryListOut.xCoordinates;
+    delete[] geometryListOut.yCoordinates;
+    delete[] geometryListOut.zCoordinates;
+}
+
 TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError)
 {
+    // Prepare
     int meshKernelId;
     meshkernelapi::mkernel_new_mesh(meshKernelId);
 
-    // Prepare
     auto meshData = ReadLegacyMeshFromFileForApiTesting("../../../../tests/data/InvalidMeshes/invalid_orthogonalization_net.nc");
     auto errorCode = mkernel_set_state(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
     DeleteRectangularMeshForApiTesting(std::get<0>(meshData));
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Prepare
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
     orthogonalizationParameters.OuterIterations = 1;
     orthogonalizationParameters.BoundaryIterations = 25;
@@ -989,6 +999,7 @@ TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError
                                                  landBoundaries,
                                                  geometryList);
 
+    // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert there is a geometry error
@@ -1011,7 +1022,6 @@ TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError
     ASSERT_EQ(static_cast<int>(meshkernel::MeshLocations::Nodes), type);
     ASSERT_EQ(478, invalidIndex);
 }
-
 TEST_F(ApiTests, InvalidRefinementShoulThrowAnException)
 {
     // Prepare
@@ -1020,11 +1030,11 @@ TEST_F(ApiTests, InvalidRefinementShoulThrowAnException)
     meshkernelapi::GeometryList geometryListIn;
     meshkernelapi::InterpolationParameters interpolationParameters;
 
-    // Mesh refinement is invalid when parameters are not assigned (trash values are used)
+    // Execute, Mesh refinement is invalid when parameters are not assigned (trash values are used)
     auto errorCode = mkernel_refine_mesh_based_on_polygon(0, geometryListIn, interpolationParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Exception, errorCode);
 
-    // Get the message
+    // Get the last message
     const char* exceptionMessage;
     errorCode = meshkernelapi::mkernel_get_error(exceptionMessage);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
