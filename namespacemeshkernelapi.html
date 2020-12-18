@@ -202,10 +202,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a71173cc010fe14b33a94678e426e9a82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merges node <code>startNode</code> to <code>endNode</code>.  <a href="#a71173cc010fe14b33a94678e426e9a82">More...</a><br /></td></tr>
 <tr class="separator:a71173cc010fe14b33a94678e426e9a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2184e533a33b2589014cc100ba8028f6"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2184e533a33b2589014cc100ba8028f6">mkernel_nodes_in_polygons</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int inside, int **selectedNodes)</td></tr>
-<tr class="memdesc:a2184e533a33b2589014cc100ba8028f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the selected mesh node indexes (see how to pass arrays in <a href="https://www.mono-project.com/docs/advanced/pinvoke/#memory-management">https://www.mono-project.com/docs/advanced/pinvoke/#memory-management</a>)  <a href="#a2184e533a33b2589014cc100ba8028f6">More...</a><br /></td></tr>
+<tr class="memdesc:a2184e533a33b2589014cc100ba8028f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the selected mesh node indices.  <a href="#a2184e533a33b2589014cc100ba8028f6">More...</a><br /></td></tr>
 <tr class="separator:a2184e533a33b2589014cc100ba8028f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91c314fd2768dfbd8398594b5ccf0dfb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a91c314fd2768dfbd8398594b5ccf0dfb">mkernel_count_nodes_in_polygons</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, int inside, int &amp;numberOfMeshNodes)</td></tr>
-<tr class="memdesc:a91c314fd2768dfbd8398594b5ccf0dfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of selected mesh node indexes.  <a href="#a91c314fd2768dfbd8398594b5ccf0dfb">More...</a><br /></td></tr>
+<tr class="memdesc:a91c314fd2768dfbd8398594b5ccf0dfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of selected mesh node indices.  <a href="#a91c314fd2768dfbd8398594b5ccf0dfb">More...</a><br /></td></tr>
 <tr class="separator:a91c314fd2768dfbd8398594b5ccf0dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7dc9fa49961cfdae295165ef3afa62e9"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a7dc9fa49961cfdae295165ef3afa62e9">mkernel_insert_edge</a> (int meshKernelId, int startNode, int endNode, int &amp;newEdgeIndex)</td></tr>
 <tr class="memdesc:a7dc9fa49961cfdae295165ef3afa62e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a new edge connecting <code>startNode</code> and <code>endNode</code>.  <a href="#a7dc9fa49961cfdae295165ef3afa62e9">More...</a><br /></td></tr>
@@ -570,7 +570,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Counts the number of selected mesh node indexes. </p>
+<p>Counts the number of selected mesh node indices. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
@@ -2271,13 +2271,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the selected mesh node indexes (see how to pass arrays in <a href="https://www.mono-project.com/docs/advanced/pinvoke/#memory-management">https://www.mono-project.com/docs/advanced/pinvoke/#memory-management</a>) </p>
+<p>Gets the selected mesh node indices. </p>
+<dl class="section see"><dt>See also</dt><dd>how to pass arrays in <a href="https://www.mono-project.com/docs/advanced/pinvoke/#memory-management">https://www.mono-project.com/docs/advanced/pinvoke/#memory-management</a> </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input polygons </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">inside</td><td>Count nodes indices inside (1) or outside (0) the polygon </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">selectedNodes</td><td>The selected nodes indexes </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">selectedNodes</td><td>The selected nodes indices </td></tr>
   </table>
   </dd>
 </dl>
