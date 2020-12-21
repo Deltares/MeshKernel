@@ -75,7 +75,7 @@ namespace meshkernel
         /// @return the number of nodes
         int GetNumNodes() const { return static_cast<int>(m_nodes.size()); };
 
-        std::vector<int> m_meshNodesLandBoundarySegments; ///< lanseg_map, mesh nodes to land boundary mapping
+        std::vector<size_t> m_meshNodesLandBoundarySegments; ///< lanseg_map, mesh nodes to land boundary mapping
 
     private:
         /// @brief Build an additional boundary for not assigned nodes (connect_boundary_paths)
@@ -205,10 +205,10 @@ namespace meshkernel
         /// @brief meshBoundOnly
         /// @brief connectedNodes
         /// @returns
-        void ShortestPath(int landBoundarySegment,
-                          int startLandBoundaryIndex,
-                          int endLandBoundaryIndex,
-                          int startMeshNode,
+        void ShortestPath(size_t landBoundarySegment,
+                          size_t startLandBoundaryIndex,
+                          size_t endLandBoundaryIndex,
+                          size_t startMeshNode,
                           bool meshBoundOnly,
                           std::vector<size_t>& connectedNodes);
 
@@ -223,11 +223,11 @@ namespace meshkernel
         /// @param edgeRatio
         void NearestLandBoundaryNode(const Projection& projection,
                                      const Point& node,
-                                     int startLandBoundaryIndex,
-                                     int endLandBoundaryIndex,
+                                     size_t startLandBoundaryIndex,
+                                     size_t endLandBoundaryIndex,
                                      double& minimumDistance,
                                      Point& pointOnLandBoundary,
-                                     int& nearestLandBoundaryNodeIndex,
+                                     size_t& nearestLandBoundaryNodeIndex,
                                      double& edgeRatio);
 
         /// @brief (cellcrossedbyland)
@@ -256,7 +256,6 @@ namespace meshkernel
 
         // caches
         std::vector<double> m_nodesMinDistances;
-        const size_t m_allocationSize = 10000; // allocation size for allocateVector
 
         // Parameters
         const double m_closeToLandBoundaryFactor = 5.0; // close - to - landboundary tolerance, measured in number of meshwidths

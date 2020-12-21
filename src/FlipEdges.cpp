@@ -350,7 +350,7 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(size_t edge,
 
     if (m_projectToLandBoundary && m_landBoundaries->GetNumNodes() > 0)
     {
-        if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] >= 0 && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] >= 0)
+        if (m_landBoundaries->m_meshNodesLandBoundarySegments[firstNode] != sizetMissingValue && m_landBoundaries->m_meshNodesLandBoundarySegments[secondNode] != sizetMissingValue)
         {
             //edge is associated with a land boundary, keep the edge
             return largeTopologyFunctionalValue;
@@ -385,9 +385,9 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(size_t edge,
 
 int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t secondNode) const
 {
-    if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] < 0)
+    if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] == sizetMissingValue)
     {
-        return m_mesh->m_nodesNumEdges[nodeIndex] - OptimalNumberOfConnectedNodes(nodeIndex);
+        return static_cast<int>(m_mesh->m_nodesNumEdges[nodeIndex]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeIndex));
     }
 
     // connected edges needs to be counterclockwise
@@ -443,7 +443,7 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
     auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
 
     size_t num = 1;
-    while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] < 0 &&
+    while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == sizetMissingValue &&
            !m_mesh->IsEdgeOnBoundary(edgeIndex) &&
            currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
     {
@@ -454,7 +454,7 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
     }
 
     size_t firstEdgeInPathIndex = sizetMissingValue;
-    if (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] >= 0 ||
+    if (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != sizetMissingValue ||
         m_mesh->IsEdgeOnBoundary(edgeIndex))
     {
         firstEdgeInPathIndex = edgeIndex;
@@ -468,7 +468,7 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
         edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
         otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
         num = num + 1;
-        while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] < 0 &&
+        while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] == sizetMissingValue &&
                !m_mesh->IsEdgeOnBoundary(edgeIndex) &&
                currentEdgeIndexInNodeEdges != edgeIndexConnectingFirstNode &&
                edgeIndex != firstEdgeInPathIndex)
@@ -483,7 +483,7 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
             }
         }
 
-        if ((m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] >= 0 ||
+        if ((m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] != sizetMissingValue ||
              m_mesh->IsEdgeOnBoundary(edgeIndex)) &&
             edgeIndex != firstEdgeInPathIndex)
         {
