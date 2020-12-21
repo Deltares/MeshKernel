@@ -200,7 +200,7 @@ namespace meshkernel
         /// @param[out] polygonNodesCache The node cache array filled with the nodes values
         /// @param[out] localNodeIndicesCache The consecutive node index in polygonNodesCache (0, 1, 2,...)
         /// @param[out] globalEdgeIndicesCache The edge cache array filled with the global edge indices
-        void ComputeFaceClosedPolygonWithLocalMappings(int faceIndex,
+        void ComputeFaceClosedPolygonWithLocalMappings(size_t faceIndex,
                                                        std::vector<Point>& polygonNodesCache,
                                                        std::vector<size_t>& localNodeIndicesCache,
                                                        std::vector<size_t>& globalEdgeIndicesCache) const;
@@ -208,12 +208,12 @@ namespace meshkernel
         /// @brief For a face create a closed polygon
         /// @param[in] faceIndex The face index
         /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
-        void ComputeFaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const;
+        void ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& polygonNodesCache) const;
 
         /// @brief Determine if a face is fully contained in polygon or not, based on m_nodeMask
         /// @param[in] faceIndex The face index
         /// @returns If the face is fully contained in the polygon or not
-        [[nodiscard]] bool IsFullFaceNotInPolygon(int faceIndex) const;
+        [[nodiscard]] bool IsFullFaceNotInPolygon(size_t faceIndex) const;
 
         /// @brief Mask all nodes in a polygon
         /// @param[in] polygons The input polygon
@@ -225,7 +225,7 @@ namespace meshkernel
         /// @param[in] firstEdgeIndex The index of the first edge
         /// @param[in] secondEdgeIndex The index of the second edge
         /// @return The shared node (-1 if no node is found)
-        [[nodiscard]] size_t FindCommonNode(int firstEdgeIndex, int secondEdgeIndex) const;
+        [[nodiscard]] size_t FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const;
 
         /// @brief Compute the lengths of all edges in one go
         void ComputeEdgesLengths();
@@ -314,8 +314,8 @@ namespace meshkernel
         void ClassifyNodes();
 
         /// @brief Sort edges in conterclockwise orther (Sort_links_ccw)
-        /// @param[in] nodeIndex The node index for which sorting should take place
-        void SortEdgesInCounterClockWiseOrder(int nodeIndex);
+        /// @param[in] node The node index for which sorting should take place
+        void SortEdgesInCounterClockWiseOrder(size_t node);
 
         /// @brief Deletes coinciding triangles
         void DeleteDegeneratedTriangles();
@@ -327,12 +327,12 @@ namespace meshkernel
         /// @param[in] node The node index
         /// @param[in] enlargementFactor The factor by which the dual face is enlarged
         /// @param[out] dualFace The dual face to be calculated
-        void MakeDualFace(int node, double enlargementFactor, std::vector<Point>& dualFace);
+        void MakeDualFace(size_t node, double enlargementFactor, std::vector<Point>& dualFace);
 
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
         /// @param[in] node The node index
         /// @return The face indexses
-        [[nodiscard]] std::vector<int> SortedFacesAroundNode(int node) const;
+        [[nodiscard]] std::vector<int> SortedFacesAroundNode(size_t node) const;
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @return The resulting polygon mesh boundary

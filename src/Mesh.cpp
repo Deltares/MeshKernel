@@ -510,7 +510,7 @@ void meshkernel::Mesh::NodeAdministration()
     }
 };
 
-void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
+void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(size_t node)
 {
     if (!m_nodes[node].IsValid())
     {
@@ -1294,7 +1294,7 @@ void meshkernel::Mesh::DeleteEdge(size_t edgeIndex)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::ComputeFaceClosedPolygonWithLocalMappings(int faceIndex,
+void meshkernel::Mesh::ComputeFaceClosedPolygonWithLocalMappings(size_t faceIndex,
                                                                  std::vector<Point>& polygonNodesCache,
                                                                  std::vector<size_t>& localNodeIndicesCache,
                                                                  std::vector<size_t>& globalEdgeIndicesCache) const
@@ -1318,7 +1318,7 @@ void meshkernel::Mesh::ComputeFaceClosedPolygonWithLocalMappings(int faceIndex,
     globalEdgeIndicesCache.emplace_back(globalEdgeIndicesCache.front());
 }
 
-void meshkernel::Mesh::ComputeFaceClosedPolygon(int faceIndex, std::vector<Point>& polygonNodesCache) const
+void meshkernel::Mesh::ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& polygonNodesCache) const
 {
     const auto numFaceNodes = GetNumFaceEdges(faceIndex);
     polygonNodesCache.clear();
@@ -1365,7 +1365,7 @@ void meshkernel::Mesh::ComputeEdgesCenters()
     m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
 }
 
-bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
+bool meshkernel::Mesh::IsFullFaceNotInPolygon(size_t faceIndex) const
 {
     for (auto n = 0; n < GetNumFaceEdges(faceIndex); n++)
     {
@@ -1377,7 +1377,7 @@ bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
     return false;
 }
 
-size_t meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex) const
+size_t meshkernel::Mesh::FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const
 {
     const auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
     auto firstEdgeEdgeSecondNode = m_edges[firstEdgeIndex].second;
@@ -2341,7 +2341,7 @@ void meshkernel::Mesh::TriangulateFaces()
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::MakeDualFace(int node, double enlargementFactor, std::vector<Point>& dualFace)
+void meshkernel::Mesh::MakeDualFace(size_t node, double enlargementFactor, std::vector<Point>& dualFace)
 {
     const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
@@ -2410,7 +2410,7 @@ void meshkernel::Mesh::MakeDualFace(int node, double enlargementFactor, std::vec
     }
 }
 
-std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(int node) const
+std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(size_t node) const
 {
 
     const auto numEdges = m_nodesNumEdges[node];
