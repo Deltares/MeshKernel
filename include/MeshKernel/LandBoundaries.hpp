@@ -135,7 +135,7 @@ namespace meshkernel
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
         void MaskFaces(bool meshBoundOnly,
-                       std::vector<int>& landBoundaryFaces,
+                       std::vector<size_t>& landBoundaryFaces,
                        int startNodeLandBoundaryIndex,
                        int endNodeLandBoundaryindex,
                        int& leftIndex,
@@ -210,7 +210,7 @@ namespace meshkernel
                           int endLandBoundaryIndex,
                           int startMeshNode,
                           bool meshBoundOnly,
-                          std::vector<int>& connectedNodes);
+                          std::vector<size_t>& connectedNodes);
 
         /// @brief Compute the nearest node on the land boundary (toland)
         /// @param projection

@@ -360,16 +360,16 @@ namespace meshkernel
         std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<size_t> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
         std::vector<int> m_nodeMask;                   ///< The node mask (kc)
-        std::vector<std::vector<int>> m_nodesNodes;    ///< For each node, its neighbours
+        std::vector<std::vector<size_t>> m_nodesNodes; ///< For each node, its neighbours
         std::vector<int> m_nodesTypes;                 ///< The node types (nb)
 
         // edges
-        std::vector<Edge> m_edges;                  ///< The edges, defined as first and second node(kn)
-        std::vector<std::vector<int>> m_edgesFaces; ///< For each edge, the shared face index (lne)
-        std::vector<int> m_edgesNumFaces;           ///< For each edge, the number of shared faces(lnn)
-        std::vector<double> m_edgeLengths;          ///< The edge lengths
-        std::vector<int> m_edgeMask;                ///< The edge mask (lc)
-        std::vector<Point> m_edgesCenters;          ///< The edges centers
+        std::vector<Edge> m_edges;                     ///< The edges, defined as first and second node(kn)
+        std::vector<std::vector<size_t>> m_edgesFaces; ///< For each edge, the shared face index (lne)
+        std::vector<int> m_edgesNumFaces;              ///< For each edge, the number of shared faces(lnn)
+        std::vector<double> m_edgeLengths;             ///< The edge lengths
+        std::vector<int> m_edgeMask;                   ///< The edge mask (lc)
+        std::vector<Point> m_edgesCenters;             ///< The edges centers
 
         // faces
         std::vector<std::vector<size_t>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)

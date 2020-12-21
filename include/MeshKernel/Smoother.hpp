@@ -168,7 +168,7 @@ namespace meshkernel
         std::vector<std::vector<double>> m_ww2;               // weights
 
         // Smoother local caches
-        std::vector<int> m_sharedFacesCache;
+        std::vector<size_t> m_sharedFacesCache;
         std::vector<size_t> m_connectedNodesCache;
         std::vector<std::vector<size_t>> m_faceNodeMappingCache;
         std::vector<double> m_xiCache;
@@ -188,7 +188,7 @@ namespace meshkernel
         std::vector<int> m_numTopologyFaces;
         std::vector<std::vector<double>> m_topologyXi;
         std::vector<std::vector<double>> m_topologyEta;
-        std::vector<std::vector<int>> m_topologySharedFaces;
+        std::vector<std::vector<size_t>> m_topologySharedFaces;
         std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping;
         std::vector<std::vector<size_t>> m_topologyConnectedNodes;
 

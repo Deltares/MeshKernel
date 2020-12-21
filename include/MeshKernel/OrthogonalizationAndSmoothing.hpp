@@ -128,7 +128,7 @@ namespace meshkernel
         std::vector<double> m_compressedWeightX;     // The computed weights X
         std::vector<double> m_compressedWeightY;     // The computed weights Y
         std::vector<double> m_compressedRhs;         // The right hand side
-        std::vector<int> m_compressedNodesNodes;     // The indices of the neighbouring nodes
+        std::vector<size_t> m_compressedNodesNodes;  // The indices of the neighbouring nodes
         std::vector<int> m_nodeErrorCode;            // nodes with errors
 
         // run-time parameters

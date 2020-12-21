@@ -61,8 +61,8 @@ void meshkernel::Smoother::ComputeTopologies()
         size_t numSharedFaces = 0;
         size_t numConnectedNodes = 0;
 
-        std::fill(m_sharedFacesCache.begin(), m_sharedFacesCache.end(), -1);
-        std::fill(m_connectedNodesCache.begin(), m_connectedNodesCache.end(), 0);
+        std::fill(m_sharedFacesCache.begin(), m_sharedFacesCache.end(), sizetMissingValue);
+        std::fill(m_connectedNodesCache.begin(), m_connectedNodesCache.end(), sizetMissingValue);
         NodeAdministration(n, numSharedFaces, numConnectedNodes);
 
         std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);
@@ -258,7 +258,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
 
     for (auto f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
-        if (m_topologySharedFaces[currentTopology][f] < 0 || m_mesh->m_nodesTypes[currentNode] == 3)
+        if (m_topologySharedFaces[currentTopology][f] == sizetMissingValue || m_mesh->m_nodesTypes[currentNode] == 3)
         {
             continue;
         }
@@ -325,7 +325,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
         auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], currentNode);
 
-        int leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
+        auto leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
         faceLeftIndex = FindIndex(m_topologySharedFaces[currentTopology], leftFace);
 
         if (m_topologySharedFaces[currentTopology][faceLeftIndex] != leftFace)
@@ -547,8 +547,8 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
     {
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
         auto nextNode = m_connectedNodesCache[f + 1]; // the first entry is always the stencil node
-        int faceLeft = m_mesh->m_edgesFaces[edgeIndex][0];
-        int faceRight = faceLeft;
+        auto faceLeft = m_mesh->m_edgesFaces[edgeIndex][0];
+        auto faceRight = faceLeft;
 
         if (!m_mesh->IsEdgeOnBoundary(edgeIndex))
         {
@@ -575,7 +575,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
         }
 
         //Compute optimal angle thetaSquare based on the node type
-        int leftFaceIndex = f - 1;
+        auto leftFaceIndex = f - 1;
         if (leftFaceIndex < 0)
         {
             leftFaceIndex = leftFaceIndex + numSharedFaces;
@@ -601,11 +601,11 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
                 thetaSquare[f + 1] = 0.5 * M_PI;
             }
 
-            if (m_sharedFacesCache[f] > 1 && m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]) == 4)
+            if (m_sharedFacesCache[f] != sizetMissingValue && m_sharedFacesCache[f] > 1 && m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]) == 4)
             {
                 numNonStencilQuad += 1;
             }
-            if (m_sharedFacesCache[leftFaceIndex] > 1 && m_mesh->GetNumFaceEdges(m_sharedFacesCache[leftFaceIndex]) == 4)
+            if (m_sharedFacesCache[leftFaceIndex] != sizetMissingValue && m_sharedFacesCache[leftFaceIndex] > 1 && m_mesh->GetNumFaceEdges(m_sharedFacesCache[leftFaceIndex]) == 4)
             {
                 numNonStencilQuad += 1;
             }
@@ -622,7 +622,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
     for (auto f = 0; f < numSharedFaces; f++)
     {
         // boundary face
-        if (m_sharedFacesCache[f] < 0)
+        if (m_sharedFacesCache[f] == sizetMissingValue)
             continue;
 
         // non boundary face
@@ -650,7 +650,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
     for (auto f = 0; f < numSharedFaces; f++)
     {
         // boundary face
-        if (m_sharedFacesCache[f] < 0)
+        if (m_sharedFacesCache[f] == sizetMissingValue)
         {
             continue;
         }
@@ -730,7 +730,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
     for (auto f = 0; f < numSharedFaces; f++)
     {
         phi0 = phi0 + 0.5 * dPhi;
-        if (m_sharedFacesCache[f] < 0)
+        if (m_sharedFacesCache[f] == sizetMissingValue)
         {
             if (m_mesh->m_nodesTypes[currentNode] == 2)
             {
@@ -824,7 +824,7 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
     }
 
     // For the currentNode, find the shared faces
-    int newFaceIndex = intMissingValue;
+    size_t newFaceIndex = sizetMissingValue;
     for (auto e = 0; e < m_mesh->m_nodesNumEdges[currentNode]; e++)
     {
         const auto firstEdge = m_mesh->m_nodesEdges[currentNode][e];
@@ -859,13 +859,13 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
         }
         else
         {
-            newFaceIndex = intMissingValue;
+            newFaceIndex = sizetMissingValue;
         }
 
         //corner face (already found in the first iteration)
         if (m_mesh->m_nodesNumEdges[currentNode] == 2 && e == 1 && m_mesh->m_nodesTypes[currentNode] == 3 && m_sharedFacesCache[0] == newFaceIndex)
         {
-            newFaceIndex = intMissingValue;
+            newFaceIndex = sizetMissingValue;
         }
         m_sharedFacesCache[numSharedFaces] = newFaceIndex;
         numSharedFaces += 1;
@@ -877,7 +877,7 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
         return;
     }
 
-    int connectedNodesIndex = 0;
+    size_t connectedNodesIndex = 0;
     m_connectedNodesCache[connectedNodesIndex] = currentNode;
 
     // edge connected nodes
@@ -902,7 +902,7 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
     for (auto f = 0; f < numSharedFaces; f++)
     {
         const auto faceIndex = m_sharedFacesCache[f];
-        if (faceIndex < 0)
+        if (faceIndex == sizetMissingValue)
         {
             continue;
         }
@@ -996,11 +996,11 @@ void meshkernel::Smoother::Initialize()
     m_connectedNodes.resize(m_mesh->GetNumNodes());
     std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
 
-    m_sharedFacesCache.resize(maximumNumberOfEdgesPerNode, -1);
-    std::fill(m_sharedFacesCache.begin(), m_sharedFacesCache.end(), -1);
+    m_sharedFacesCache.resize(maximumNumberOfEdgesPerNode, sizetMissingValue);
+    std::fill(m_sharedFacesCache.begin(), m_sharedFacesCache.end(), sizetMissingValue);
 
-    m_connectedNodesCache.resize(maximumNumberOfConnectedNodes, 0);
-    std::fill(m_connectedNodesCache.begin(), m_connectedNodesCache.end(), 0);
+    m_connectedNodesCache.resize(maximumNumberOfConnectedNodes, sizetMissingValue);
+    std::fill(m_connectedNodesCache.begin(), m_connectedNodesCache.end(), sizetMissingValue);
 
     m_faceNodeMappingCache.resize(maximumNumberOfConnectedNodes);
     std::fill(m_faceNodeMappingCache.begin(), m_faceNodeMappingCache.end(), std::vector<size_t>(maximumNumberOfNodesPerFace, 0));
@@ -1030,7 +1030,7 @@ void meshkernel::Smoother::Initialize()
     std::fill(m_topologyEta.begin(), m_topologyEta.end(), std::vector<double>(maximumNumberOfConnectedNodes, 0.0));
 
     m_topologySharedFaces.resize(m_topologyInitialSize);
-    std::fill(m_topologySharedFaces.begin(), m_topologySharedFaces.end(), std::vector<int>(maximumNumberOfConnectedNodes, -1));
+    std::fill(m_topologySharedFaces.begin(), m_topologySharedFaces.end(), std::vector<size_t>(maximumNumberOfConnectedNodes, sizetMissingValue));
 
     m_topologyConnectedNodes.resize(m_topologyInitialSize);
     std::fill(m_topologyConnectedNodes.begin(), m_topologyConnectedNodes.end(), std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
@@ -1112,7 +1112,7 @@ void meshkernel::Smoother::SaveNodeTopologyIfNeeded(size_t currentNode,
             m_topologyXi.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
             m_topologyEta.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
 
-            m_topologySharedFaces.resize(int(m_numTopologies * 1.5), std::vector<int>(maximumNumberOfEdgesPerNode, -1));
+            m_topologySharedFaces.resize(int(m_numTopologies * 1.5), std::vector<size_t>(maximumNumberOfEdgesPerNode, -1));
             m_topologyConnectedNodes.resize(int(m_numTopologies * 1.5), std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
             m_topologyFaceNodeMapping.resize(int(m_numTopologies * 1.5), std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, 0)));
         }

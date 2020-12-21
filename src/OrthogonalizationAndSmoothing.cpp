@@ -213,7 +213,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             }
             else
             {
-                m_compressedNodesNodes[cacheIndex] = int(m_smoother->GetConnectedNodeIndex(n, nn));
+                m_compressedNodesNodes[cacheIndex] = m_smoother->GetConnectedNodeIndex(n, nn);
             }
 
             m_compressedWeightX[cacheIndex] = wwx;
@@ -269,8 +269,8 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
             int numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
             int numNodes = 0;
-            int leftNode = -1;
-            int rightNode = -1;
+            size_t leftNode = sizetMissingValue;
+            size_t rightNode = sizetMissingValue;
             Point secondPoint{doubleMissingValue, doubleMissingValue};
             Point thirdPoint{doubleMissingValue, doubleMissingValue};
             for (auto nn = 0; nn < numEdges; nn++)
@@ -282,7 +282,7 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                     if (numNodes == 1)
                     {
                         leftNode = m_mesh->m_nodesNodes[n][nn];
-                        if (leftNode == intMissingValue)
+                        if (leftNode == sizetMissingValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The left node is invalid.");
                         }
@@ -291,7 +291,7 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                     else if (numNodes == 2)
                     {
                         rightNode = m_mesh->m_nodesNodes[n][nn];
-                        if (rightNode == intMissingValue)
+                        if (rightNode == sizetMissingValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The right node is invalid.");
                         }

@@ -60,7 +60,7 @@ void meshkernel::FlipEdges::Compute() const
     }
 
     const int MaxIter = 10;
-    const int numEdges = m_mesh->GetNumEdges();
+    const auto numEdges = m_mesh->GetNumEdges();
     int numFlippedEdges = intMissingValue;
 
     for (auto iter = 0; iter < MaxIter; iter++)

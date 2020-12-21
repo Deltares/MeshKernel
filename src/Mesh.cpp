@@ -192,7 +192,7 @@ void meshkernel::Mesh::Administrate(AdministrationOptions administrationOption)
     std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
 
     m_edgesFaces.resize(m_edges.size());
-    std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<int>(2, -1));
+    std::fill(m_edgesFaces.begin(), m_edgesFaces.end(), std::vector<size_t>(2, sizetMissingValue));
 
     m_facesMassCenters.clear();
     m_faceArea.clear();
@@ -1493,7 +1493,7 @@ int meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
 
 int meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
 {
-    if (GetNumEdges() <= 0)
+    if (GetNumEdges() == 0)
     {
         throw std::invalid_argument("Mesh::GetNodeIndex: There are no valid edges.");
     }
@@ -1636,8 +1636,8 @@ void meshkernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, 
 
             for (auto f = 0; f < GetNumEdgesFaces(e); ++f)
             {
-                auto faceIndex = m_edgesFaces[e][f];
-                if (faceIndex < 0)
+                const auto faceIndex = m_edgesFaces[e][f];
+                if (faceIndex == sizetMissingValue)
                 {
                     continue;
                 }
@@ -1751,7 +1751,7 @@ meshkernel::Mesh& meshkernel::Mesh::operator+=(Mesh const& rhs)
     //copy mesh edges
     for (auto e = GetNumEdges(); e < GetNumEdges() + rhsNumEdges; ++e)
     {
-        const int index = e - GetNumEdges();
+        const auto index = e - GetNumEdges();
         m_edges[e].first = rhs.m_edges[index].first + GetNumNodes();
         m_edges[e].second = rhs.m_edges[index].second + GetNumNodes();
     }
@@ -1952,7 +1952,7 @@ std::vector<int> meshkernel::Mesh::GetEdgesCrossingSmallFlowEdges(double smallFl
         const auto firstFace = m_edgesFaces[e][0];
         const auto secondFace = m_edgesFaces[e][1];
 
-        if (firstFace >= 0 && secondFace >= 0)
+        if (firstFace != sizetMissingValue && secondFace != sizetMissingValue)
         {
             const auto flowEdgeLength = ComputeDistance(m_facesCircumcenters[firstFace], m_facesCircumcenters[secondFace], m_projection);
             const double cutOffDistance = smallFlowEdgesThreshold * 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
@@ -2019,7 +2019,7 @@ void meshkernel::Mesh::DeleteSmallTrianglesAtBoundaries(double minFractionalArea
             {
                 continue;
             }
-            const auto otherFace = m_edgesFaces[edge][0] + m_edgesFaces[edge][1] - face;
+            const auto otherFace = face == m_edgesFaces[edge][0] ? m_edgesFaces[edge][1] : m_edgesFaces[edge][0];
             if (m_numFacesNodes[otherFace] > numNodesInTriangle)
             {
                 averageOtherFacesArea += m_faceArea[otherFace];
@@ -2117,7 +2117,7 @@ void meshkernel::Mesh::ComputeNodeNeighbours()
     m_maxNumNeighbours = *(std::max_element(m_nodesNumEdges.begin(), m_nodesNumEdges.end()));
     m_maxNumNeighbours += 1;
 
-    m_nodesNodes.resize(GetNumNodes(), std::vector<int>(m_maxNumNeighbours, intMissingValue));
+    m_nodesNodes.resize(GetNumNodes(), std::vector<size_t>(m_maxNumNeighbours, sizetMissingValue));
     //for each node, determine the neighbouring nodes
     for (auto n = 0; n < GetNumNodes(); n++)
     {

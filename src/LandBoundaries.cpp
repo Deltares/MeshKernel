@@ -447,7 +447,7 @@ namespace meshkernel
             throw AlgorithmError("LandBoundaries::MakePath: Cannot not find valid mesh nodes.");
         }
 
-        std::vector<int> connectedNodes;
+        std::vector<size_t> connectedNodes;
         ShortestPath(landBoundarySegment, int(startLandBoundaryIndex), int(endLandBoundaryIndex), startMeshNode, meshBoundOnly, connectedNodes);
 
         int lastSegment = m_meshNodesLandBoundarySegments[endMeshNode];
@@ -537,7 +537,7 @@ namespace meshkernel
                 break;
             }
 
-            int nextEdgeIndex = connectedNodes[currentNode];
+            const auto nextEdgeIndex = connectedNodes[currentNode];
             if (nextEdgeIndex < 0 || nextEdgeIndex >= m_mesh->GetNumEdges())
             {
                 break;
@@ -575,7 +575,7 @@ namespace meshkernel
 
         // check if any of the land boundary node is inside a m_mesh face
         bool nodeInFace = false;
-        int crossedFaceIndex = -1;
+        size_t crossedFaceIndex = sizetMissingValue;
         for (auto i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
         {
             for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
@@ -602,15 +602,15 @@ namespace meshkernel
         // try to find a boundary cell that is crossed by the land boundary segment
         if (!nodeInFace)
         {
-            crossedFaceIndex = -1;
+            crossedFaceIndex = sizetMissingValue;
             for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
             {
                 if (!m_mesh->IsEdgeOnBoundary(e))
                     continue;
 
-                bool isCellCrossed = IsFaceCrossedByLandBoundaries(m_mesh->m_edgesFaces[e][0],
-                                                                   startLandBoundaryIndex,
-                                                                   endLandBoundaryIndex);
+                const bool isCellCrossed = IsFaceCrossedByLandBoundaries(m_mesh->m_edgesFaces[e][0],
+                                                                         startLandBoundaryIndex,
+                                                                         endLandBoundaryIndex);
 
                 if (isCellCrossed)
                 {
@@ -625,15 +625,15 @@ namespace meshkernel
             std::fill(m_faceMask.begin(), m_faceMask.end(), intMissingValue);
             std::fill(m_edgeMask.begin(), m_edgeMask.end(), intMissingValue);
             //m_faceMask assumes crossedFace has already been done.
-            if (crossedFaceIndex >= 0 && crossedFaceIndex < m_mesh->GetNumFaces())
+            if (crossedFaceIndex != sizetMissingValue && crossedFaceIndex < m_mesh->GetNumFaces())
             {
                 m_faceMask[crossedFaceIndex] = 1;
             }
 
             m_numFacesMasked = 0;
             m_maskDepth = 0;
-            std::vector<int> landBoundaryFaces{crossedFaceIndex};
 
+            std::vector<size_t> landBoundaryFaces{crossedFaceIndex};
             MaskFaces(meshBoundOnly,
                       landBoundaryFaces,
                       startLandBoundaryIndex,
@@ -675,7 +675,7 @@ namespace meshkernel
     }
 
     void LandBoundaries::MaskFaces(bool meshBoundOnly,
-                                   std::vector<int>& landBoundaryFaces,
+                                   std::vector<size_t>& landBoundaryFaces,
                                    int startNodeLandBoundaryIndex,
                                    int endNodeLandBoundaryindex,
                                    int& leftIndex,
@@ -689,12 +689,12 @@ namespace meshkernel
         }
 
         int numNextFaces = 0;
-        std::vector<int> nextFaces(landBoundaryFaces.size(), intMissingValue);
+        std::vector<size_t> nextFaces(landBoundaryFaces.size(), sizetMissingValue);
         for (const auto& face : landBoundaryFaces)
         {
             // no face was crossed by the land boundary: mask boundary faces only
             // these are the faces that are close (up to a certain tolerance) by a land boundary
-            if (face < 0)
+            if (face == sizetMissingValue)
             {
                 for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
                 {
@@ -703,7 +703,7 @@ namespace meshkernel
 
                     bool isClose = false;
                     int landBoundaryNode = 0;
-                    int otherFace = m_mesh->m_edgesFaces[e][0];
+                    const auto otherFace = m_mesh->m_edgesFaces[e][0];
                     for (const auto& edge : m_mesh->m_facesEdges[otherFace])
                     {
                         isClose = IsMeshEdgeCloseToLandBoundaries(edge,
@@ -1061,7 +1061,7 @@ namespace meshkernel
                                       int endLandBoundaryIndex,
                                       int startMeshNode,
                                       bool meshBoundOnly,
-                                      std::vector<int>& connectedNodes)
+                                      std::vector<size_t>& connectedNodes)
     {
         if (m_nodes.empty())
         {
@@ -1069,7 +1069,7 @@ namespace meshkernel
         }
 
         connectedNodes.resize(m_mesh->GetNumNodes(), -1);
-        std::fill(connectedNodes.begin(), connectedNodes.end(), -1);
+        std::fill(connectedNodes.begin(), connectedNodes.end(), sizetMissingValue);
 
         // infinite distance for all nodes
         std::vector<double> nodeDistances(m_mesh->GetNumNodes(), std::numeric_limits<double>::max());
@@ -1174,8 +1174,7 @@ namespace meshkernel
                 }
             }
 
-            if (currentNodeIndex < 0 ||
-                currentNodeIndex >= m_mesh->GetNumNodes() ||
+            if (currentNodeIndex >= m_mesh->GetNumNodes() ||
                 nodeDistances[currentNodeIndex] == std::numeric_limits<double>::max() ||
                 isVisited[currentNodeIndex])
             {
