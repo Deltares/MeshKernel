@@ -543,7 +543,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
             const auto firstEdge = NextCircularBackwardIndex(e, numEdges);
             const auto secondEdge = NextCircularForwardIndex(e, numEdges);
 
-            int mappedEdge = m_localNodeIndicesCache[e];
+            auto mappedEdge = m_localNodeIndicesCache[e];
             auto edgeIndex = m_mesh->m_facesEdges[f][mappedEdge];
 
             mappedEdge = m_localNodeIndicesCache[firstEdge];
@@ -592,9 +592,9 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeR
         {
             facePolygonWithoutHangingNodes.emplace_back(m_polygonNodesCache[edge]);
 
-            auto mappedEdge = m_localNodeIndicesCache[edge];
-            auto edgeIndex = m_mesh->m_facesEdges[f][mappedEdge];
-            if (edgeIndex >= 0)
+            const auto mappedEdge = m_localNodeIndicesCache[edge];
+            const auto edgeIndex = m_mesh->m_facesEdges[f][mappedEdge];
+            if (edgeIndex != sizetMissingValue)
             {
                 localEdgesNumFaces.emplace_back(m_mesh->m_edgesNumFaces[edgeIndex]);
             }
@@ -718,8 +718,8 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
     std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
     std::fill(m_faceMask.begin(), m_faceMask.end(), 0);
     m_polygonNodesCache.resize(maximumNumberOfNodesPerFace + 1);
-    m_localNodeIndicesCache.resize(maximumNumberOfNodesPerFace + 1, intMissingValue);
-    m_globalEdgeIndicesCache.resize(maximumNumberOfEdgesPerFace + 1, intMissingValue);
+    m_localNodeIndicesCache.resize(maximumNumberOfNodesPerFace + 1, sizetMissingValue);
+    m_globalEdgeIndicesCache.resize(maximumNumberOfEdgesPerFace + 1, sizetMissingValue);
     std::vector<int> refineEdgeCache(maximumNumberOfEdgesPerFace);
 
     // Compute all interpolated values

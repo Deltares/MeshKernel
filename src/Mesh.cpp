@@ -69,7 +69,7 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
         auto const firstNode = edge.first;
         auto const secondNode = edge.second;
 
-        if (firstNode < 0 || secondNode < 0)
+        if (firstNode == sizetMissingValue || secondNode == sizetMissingValue)
         {
             numInvalidEdges++;
             continue;
@@ -106,7 +106,7 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     // Flag invalid nodes
     std::vector<int> validNodesIndices(m_nodes.size());
     std::fill(validNodesIndices.begin(), validNodesIndices.end(), -1);
-    int validIndex = 0;
+    size_t validIndex = 0;
     for (auto n = 0; n < m_nodes.size(); ++n)
     {
         if (m_nodes[n].IsValid())
@@ -122,7 +122,7 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
         auto const firstNode = edge.first;
         auto const secondNode = edge.second;
 
-        if (firstNode >= 0 && secondNode >= 0 && validNodesIndices[firstNode] >= 0 && validNodesIndices[secondNode] >= 0)
+        if (firstNode != sizetMissingValue && secondNode != sizetMissingValue && validNodesIndices[firstNode] >= 0 && validNodesIndices[secondNode] >= 0)
         {
             edge.first = validNodesIndices[firstNode];
             edge.second = validNodesIndices[secondNode];
@@ -139,7 +139,7 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     m_numNodes = m_nodes.size();
 
     // Remove invalid edges, without reducing capacity
-    const auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) { return e.first < 0 || e.second < 0; });
+    const auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) { return e.first == sizetMissingValue || e.second == sizetMissingValue; });
     m_edges.erase(endEdgeVector, m_edges.end());
     m_numEdges = m_edges.size();
 }
@@ -389,9 +389,9 @@ void meshkernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
     m_edgeNodes.resize(GetNumEdges() * 2);
     for (auto e = 0; e < GetNumEdges(); e++)
     {
-        m_edgeNodes[edgeIndex] = m_edges[e].first;
+        m_edgeNodes[edgeIndex] = static_cast<int>(m_edges[e].first);
         edgeIndex++;
-        m_edgeNodes[edgeIndex] = m_edges[e].second;
+        m_edgeNodes[edgeIndex] = static_cast<int>(m_edges[e].second);
         edgeIndex++;
     }
 
@@ -406,7 +406,7 @@ void meshkernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
         {
             if (n < m_facesNodes[f].size())
             {
-                m_faceNodes[faceIndex] = m_facesNodes[f][n];
+                m_faceNodes[faceIndex] = static_cast<int>(m_facesNodes[f][n]);
             }
             faceIndex++;
         }
@@ -526,7 +526,7 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
 
         auto firstNode = m_edges[m_nodesEdges[node][edgeIndex]].first;
         auto secondNode = m_edges[m_nodesEdges[node][edgeIndex]].second;
-        if (firstNode < 0 || secondNode < 0)
+        if (firstNode == sizetMissingValue || secondNode == sizetMissingValue)
         {
             continue;
         }
@@ -537,8 +537,8 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(int node)
             firstNode = node;
         }
 
-        double deltaX = GetDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
-        double deltaY = GetDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
+        const auto deltaX = GetDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
+        const auto deltaY = GetDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
         if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
         {
             if (deltaY < 0.0)
@@ -620,7 +620,7 @@ void meshkernel::Mesh::DeleteDegeneratedTriangles()
             for (auto e = 0; e < numNodesInTriangle; ++e)
             {
                 const auto edge = m_facesEdges[f][e];
-                m_edges[edge] = {-1, -1};
+                m_edges[edge] = {sizetMissingValue, sizetMissingValue};
             }
             // save degenerated face index
             degeneratedTriangles.emplace_back(f);
@@ -630,9 +630,9 @@ void meshkernel::Mesh::DeleteDegeneratedTriangles()
     // collapse secondNode and thirdNode into firstNode, change coordinate of the firstNode to triangle center of mass
     for (auto const& face : degeneratedTriangles)
     {
-        auto firstNode = m_facesNodes[face][0];
-        auto secondNode = m_facesNodes[face][1];
-        auto thirdNode = m_facesNodes[face][2];
+        const auto firstNode = m_facesNodes[face][0];
+        const auto secondNode = m_facesNodes[face][1];
+        const auto thirdNode = m_facesNodes[face][2];
 
         m_nodes[thirdNode] = m_facesMassCenters[face];
         MergeTwoNodes(secondNode, firstNode);
@@ -647,10 +647,10 @@ void meshkernel::Mesh::FindFacesRecursive(size_t startingNode,
                                           size_t index,
                                           size_t previousEdge,
                                           size_t numClosingEdges,
-                                          std::vector<int>& edges,
-                                          std::vector<int>& nodes,
-                                          std::vector<int>& sortedEdgesFaces,
-                                          std::vector<int>& sortedNodes,
+                                          std::vector<size_t>& edges,
+                                          std::vector<size_t>& nodes,
+                                          std::vector<size_t>& sortedEdgesFaces,
+                                          std::vector<size_t>& sortedNodes,
                                           std::vector<Point>& nodalValues)
 {
     // The selected edge does not exist.
@@ -658,7 +658,7 @@ void meshkernel::Mesh::FindFacesRecursive(size_t startingNode,
     if (index >= numClosingEdges)
         return;
 
-    if (m_edges[previousEdge].first < 0 || m_edges[previousEdge].second < 0)
+    if (m_edges[previousEdge].first == sizetMissingValue || m_edges[previousEdge].second == sizetMissingValue)
         throw std::invalid_argument("Mesh::FindFacesRecursive: The selected edge is invalid. This should not happen since all invalid edges should have been cleaned up.");
 
     // Check if the faces are already found
@@ -777,10 +777,10 @@ void meshkernel::Mesh::FindFaces()
 {
     for (auto numEdgesPerFace = 3; numEdgesPerFace <= maximumNumberOfEdgesPerFace; numEdgesPerFace++)
     {
-        std::vector<int> edges(numEdgesPerFace);
-        std::vector<int> nodes(numEdgesPerFace);
-        std::vector<int> sortedEdgesFaces(numEdgesPerFace);
-        std::vector<int> sortedNodes(numEdgesPerFace);
+        std::vector<size_t> edges(numEdgesPerFace);
+        std::vector<size_t> nodes(numEdgesPerFace);
+        std::vector<size_t> sortedEdgesFaces(numEdgesPerFace);
+        std::vector<size_t> sortedNodes(numEdgesPerFace);
         std::vector<Point> nodalValues;
         nodalValues.reserve(maximumNumberOfEdgesPerFace);
         for (auto n = 0; n < GetNumNodes(); n++)
@@ -860,7 +860,7 @@ void meshkernel::Mesh::ClassifyNodes()
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
 
-        if (firstNode < 0 || secondNode < 0)
+        if (firstNode == sizetMissingValue || secondNode == sizetMissingValue)
         {
             continue;
         }
@@ -893,8 +893,8 @@ void meshkernel::Mesh::ClassifyNodes()
             }
             else
             {
-                int firstNode = 0;
-                int secondNode = 0;
+                size_t firstNode = sizetMissingValue;
+                size_t secondNode = sizetMissingValue;
                 for (auto i = 0; i < m_nodesNumEdges[n]; i++)
                 {
                     const auto edgeIndex = m_nodesEdges[n][i];
@@ -915,7 +915,7 @@ void meshkernel::Mesh::ClassifyNodes()
 
                 // point at the border
                 m_nodesTypes[n] = 2;
-                if (firstNode >= 0 && secondNode >= 0)
+                if (firstNode != sizetMissingValue && secondNode != sizetMissingValue)
                 {
                     double cosPhi = NormalizedInnerProductTwoSegments(m_nodes[n], m_nodes[firstNode], m_nodes[n], m_nodes[secondNode], m_projection);
 
@@ -1141,7 +1141,7 @@ void meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     Administrate(AdministrationOptions::AdministrateMeshEdges);
 }
 
-void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
+void meshkernel::Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
 {
     if (firstNodeIndex >= GetNumNodes() || secondNodeIndex >= GetNumNodes())
     {
@@ -1149,10 +1149,10 @@ void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     }
 
     auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);
-    if (edgeIndex >= 0)
+    if (edgeIndex != sizetMissingValue)
     {
-        m_edges[edgeIndex].first = -1;
-        m_edges[edgeIndex].second = -1;
+        m_edges[edgeIndex].first = sizetMissingValue;
+        m_edges[edgeIndex].second = sizetMissingValue;
     }
 
     // check if there is another edge starting at firstEdgeOtherNode and ending at secondNode
@@ -1160,8 +1160,8 @@ void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     {
         const auto firstEdgeIndex = m_nodesEdges[firstNodeIndex][n];
         const auto firstEdge = m_edges[firstEdgeIndex];
-        const auto firstEdgeOtherNode = firstEdge.first + firstEdge.second - firstNodeIndex;
-        if (firstEdgeOtherNode >= 0 && firstEdgeOtherNode != secondNodeIndex)
+        const auto firstEdgeOtherNode = firstNodeIndex == firstEdge.first ? firstEdge.second : firstEdge.first;
+        if (firstEdgeOtherNode != sizetMissingValue && firstEdgeOtherNode != secondNodeIndex)
         {
             for (auto nn = 0; nn < m_nodesNumEdges[firstEdgeOtherNode]; nn++)
             {
@@ -1170,20 +1170,20 @@ void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
                 auto secondNodeSecondEdge = secondEdge.first + secondEdge.second - firstEdgeOtherNode;
                 if (secondNodeSecondEdge == secondNodeIndex)
                 {
-                    m_edges[secondEdgeIndex].first = -1;
-                    m_edges[secondEdgeIndex].second = -1;
+                    m_edges[secondEdgeIndex].first = sizetMissingValue;
+                    m_edges[secondEdgeIndex].second = sizetMissingValue;
                 }
             }
         }
     }
 
     // add all valid edges starting at secondNode
-    std::vector<int> secondNodeEdges(maximumNumberOfEdgesPerNode, -1);
+    std::vector<size_t> secondNodeEdges(maximumNumberOfEdgesPerNode, sizetMissingValue);
     size_t numSecondNodeEdges = 0;
     for (auto n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
         edgeIndex = m_nodesEdges[secondNodeIndex][n];
-        if (m_edges[edgeIndex].first >= 0)
+        if (m_edges[edgeIndex].first != sizetMissingValue)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
             numSecondNodeEdges++;
@@ -1194,7 +1194,7 @@ void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         edgeIndex = m_nodesEdges[firstNodeIndex][n];
-        if (m_edges[edgeIndex].first >= 0)
+        if (m_edges[edgeIndex].first != sizetMissingValue)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
             if (m_edges[edgeIndex].first == firstNodeIndex)
@@ -1222,12 +1222,12 @@ void meshkernel::Mesh::MergeTwoNodes(int firstNodeIndex, int secondNodeIndex)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-size_t meshkernel::Mesh::ConnectNodes(int startNode, int endNode)
+size_t meshkernel::Mesh::ConnectNodes(size_t startNode, size_t endNode)
 {
     const auto edgeIndex = FindEdge(startNode, endNode);
 
     // The nodes are already connected
-    if (edgeIndex >= 0)
+    if (edgeIndex != sizetMissingValue)
         return sizetMissingValue;
 
     // increment the edges container
@@ -1281,23 +1281,23 @@ void meshkernel::Mesh::DeleteNode(int nodeIndex)
     m_nodesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::DeleteEdge(int edgeIndex)
+void meshkernel::Mesh::DeleteEdge(size_t edgeIndex)
 {
-    if (edgeIndex < 0)
+    if (edgeIndex == sizetMissingValue)
     {
         throw std::invalid_argument("Mesh::DeleteEdge: The index of the edge to be deleted does not exist.");
     }
 
-    m_edges[edgeIndex].first = intMissingValue;
-    m_edges[edgeIndex].second = intMissingValue;
+    m_edges[edgeIndex].first = sizetMissingValue;
+    m_edges[edgeIndex].second = sizetMissingValue;
 
     m_edgesRTreeRequiresUpdate = true;
 }
 
 void meshkernel::Mesh::ComputeFaceClosedPolygonWithLocalMappings(int faceIndex,
                                                                  std::vector<Point>& polygonNodesCache,
-                                                                 std::vector<int>& localNodeIndicesCache,
-                                                                 std::vector<int>& globalEdgeIndicesCache) const
+                                                                 std::vector<size_t>& localNodeIndicesCache,
+                                                                 std::vector<size_t>& globalEdgeIndicesCache) const
 {
     const auto numFaceNodes = GetNumFaceEdges(faceIndex);
     polygonNodesCache.reserve(numFaceNodes + 1);
@@ -1377,7 +1377,7 @@ bool meshkernel::Mesh::IsFullFaceNotInPolygon(int faceIndex) const
     return false;
 }
 
-int meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex) const
+size_t meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex) const
 {
     const auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
     auto firstEdgeEdgeSecondNode = m_edges[firstEdgeIndex].second;
@@ -1385,7 +1385,7 @@ int meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex) co
     const auto secondEdgeFirstNode = m_edges[secondEdgeIndex].first;
     const auto secondEdgeSecondNode = m_edges[secondEdgeIndex].second;
 
-    if (firstEdgeFirstNode < 0 || firstEdgeEdgeSecondNode < 0 || secondEdgeFirstNode < 0 || secondEdgeSecondNode < 0)
+    if (firstEdgeFirstNode == sizetMissingValue || firstEdgeEdgeSecondNode == sizetMissingValue || secondEdgeFirstNode == sizetMissingValue || secondEdgeSecondNode == sizetMissingValue)
     {
         throw std::invalid_argument("Mesh::FindCommonNode: At least one of the given edges is invalid.");
     }
@@ -1401,18 +1401,18 @@ int meshkernel::Mesh::FindCommonNode(int firstEdgeIndex, int secondEdgeIndex) co
     return -1;
 }
 
-int meshkernel::Mesh::FindEdge(int firstNodeIndex, int secondNodeIndex) const
+size_t meshkernel::Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const
 {
-    if (firstNodeIndex < 0 || secondNodeIndex < 0)
+    if (firstNodeIndex == sizetMissingValue || secondNodeIndex == sizetMissingValue)
     {
         throw std::invalid_argument("Mesh::FindEdge: Invalid node index.");
     }
 
-    int edgeIndex = -1;
+    size_t edgeIndex = sizetMissingValue;
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
-        int localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
-        auto firstEdgeOtherNode = m_edges[localEdgeIndex].first + m_edges[localEdgeIndex].second - firstNodeIndex;
+        const auto localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
+        const auto firstEdgeOtherNode = m_edges[localEdgeIndex].first + m_edges[localEdgeIndex].second - firstNodeIndex;
         if (firstEdgeOtherNode == secondNodeIndex)
         {
             edgeIndex = localEdgeIndex;
@@ -1535,21 +1535,21 @@ void meshkernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inv
     std::vector<int> edgeMask(m_edges.size(), 0);
     for (auto e = 0; e < GetNumEdges(); ++e)
     {
-        auto firstNodeIndex = m_edges[e].first;
-        auto secondNodeIndex = m_edges[e].second;
+        const auto firstNodeIndex = m_edges[e].first;
+        const auto secondNodeIndex = m_edges[e].second;
 
         int isEdgeIncluded;
         if (includeIntersected)
         {
-            isEdgeIncluded = (firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 ||
-                              secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1)
+            isEdgeIncluded = (firstNodeIndex != sizetMissingValue && m_nodeMask[firstNodeIndex] == 1 ||
+                              secondNodeIndex != sizetMissingValue && m_nodeMask[secondNodeIndex] == 1)
                                  ? 1
                                  : 0;
         }
         else
         {
-            isEdgeIncluded = (firstNodeIndex >= 0 && m_nodeMask[firstNodeIndex] == 1 &&
-                              secondNodeIndex >= 0 && m_nodeMask[secondNodeIndex] == 1)
+            isEdgeIncluded = (firstNodeIndex != sizetMissingValue && m_nodeMask[firstNodeIndex] == 1 &&
+                              secondNodeIndex != sizetMissingValue && m_nodeMask[secondNodeIndex] == 1)
                                  ? 1
                                  : 0;
         }
@@ -1658,10 +1658,10 @@ void meshkernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, 
             // 2D edge without surrounding faces.
             if (GetNumEdgesFaces(e) == 0)
             {
-                auto firstNodeIndex = m_edges[e].first;
-                auto secondNodeIndex = m_edges[e].second;
+                const auto firstNodeIndex = m_edges[e].first;
+                const auto secondNodeIndex = m_edges[e].second;
 
-                if (firstNodeIndex < 0 || secondNodeIndex < 0)
+                if (firstNodeIndex == sizetMissingValue || secondNodeIndex == sizetMissingValue)
                 {
                     continue;
                 }
@@ -1677,8 +1677,8 @@ void meshkernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, 
 
             if (allFaceCircumcentersInPolygon)
             {
-                m_edges[e].first = -1;
-                m_edges[e].second = -1;
+                m_edges[e].first = sizetMissingValue;
+                m_edges[e].second = sizetMissingValue;
             }
         }
     }
@@ -1692,8 +1692,8 @@ void meshkernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, 
         {
             if (m_edgeMask[e] == 1)
             {
-                m_edges[e].first = -1;
-                m_edges[e].second = -1;
+                m_edges[e].first = sizetMissingValue;
+                m_edges[e].second = sizetMissingValue;
             }
         }
     }
@@ -1784,14 +1784,14 @@ void meshkernel::Mesh::ComputeNodeMaskFromEdgeMask()
         if (m_edgeMask[e] != 1)
             continue;
 
-        int firstNodeIndex = m_edges[e].first;
-        int secondNodeIndex = m_edges[e].second;
+        const auto firstNodeIndex = m_edges[e].first;
+        const auto secondNodeIndex = m_edges[e].second;
 
-        if (firstNodeIndex > 0)
+        if (firstNodeIndex != sizetMissingValue)
         {
             m_nodeMask[firstNodeIndex] = 1;
         }
-        if (secondNodeIndex > 0)
+        if (secondNodeIndex != sizetMissingValue)
         {
             m_nodeMask[secondNodeIndex] = 1;
         }
@@ -1990,7 +1990,7 @@ void meshkernel::Mesh::DeleteSmallFlowEdges(double smallFlowEdgesThreshold)
         // invalidate the edges
         for (const auto& e : edges)
         {
-            m_edges[e] = {-1, -1};
+            m_edges[e] = {sizetMissingValue, sizetMissingValue};
         }
         Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
@@ -2136,10 +2136,10 @@ std::vector<double> meshkernel::Mesh::GetOrthogonality()
     for (auto e = 0; e < GetNumEdges(); e++)
     {
         auto val = doubleMissingValue;
-        int firstNode = m_edges[e].first;
-        int secondNode = m_edges[e].second;
+        const auto firstNode = m_edges[e].first;
+        const auto secondNode = m_edges[e].second;
 
-        if (firstNode >= 0 && secondNode >= 0 && !IsEdgeOnBoundary(e))
+        if (firstNode != sizetMissingValue && secondNode != sizetMissingValue && !IsEdgeOnBoundary(e))
         {
             val = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
                                                     m_nodes[secondNode],
@@ -2163,10 +2163,10 @@ std::vector<double> meshkernel::Mesh::GetSmoothness()
     for (auto e = 0; e < GetNumEdges(); e++)
     {
         auto val = doubleMissingValue;
-        int firstNode = m_edges[e].first;
-        int secondNode = m_edges[e].second;
+        const auto firstNode = m_edges[e].first;
+        const auto secondNode = m_edges[e].second;
 
-        if (firstNode >= 0 && secondNode >= 0 && !IsEdgeOnBoundary(e))
+        if (firstNode != sizetMissingValue && secondNode != sizetMissingValue && !IsEdgeOnBoundary(e))
         {
             const auto leftFace = m_edgesFaces[e][0];
             const auto rightFace = m_edgesFaces[e][1];
@@ -2197,8 +2197,8 @@ void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
 
     for (auto e = 0; e < GetNumEdges(); e++)
     {
-        auto first = m_edges[e].first;
-        auto second = m_edges[e].second;
+        const auto first = m_edges[e].first;
+        const auto second = m_edges[e].second;
 
         if (first == second)
             continue;
@@ -2247,7 +2247,7 @@ void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
         {
             if (numberOfFaceNodes != numNodesQuads)
                 curvilinearGridIndicator[m_facesNodes[f][n]] = false;
-            auto edgeIndex = m_facesEdges[f][n];
+            const auto edgeIndex = m_facesEdges[f][n];
 
             if (m_edgesNumFaces[edgeIndex] < 1)
             {
@@ -2330,7 +2330,7 @@ void meshkernel::Mesh::TriangulateFaces()
             continue;
         }
 
-        int indexFirstNode = m_facesNodes[i][0];
+        const auto indexFirstNode = m_facesNodes[i][0];
         for (auto j = 2; j < NumEdges - 1; j++)
         {
             const auto nodeIndex = m_facesNodes[i][j];
@@ -2538,7 +2538,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh::MeshBoundaryToPolygon(const std
 
 void meshkernel::Mesh::WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
                                             std::vector<bool>& isVisited,
-                                            int& currentNode,
+                                            size_t& currentNode,
                                             std::vector<Point>& meshBoundaryPolygon) const
 {
     int e = 0;
@@ -2582,7 +2582,7 @@ std::vector<size_t> meshkernel::Mesh::GetHangingEdges() const
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
 
-        if (firstNode >= 0 && secondNode >= 0)
+        if (firstNode != sizetMissingValue && secondNode != sizetMissingValue)
         {
             // if one of the nodes has no other attached edges, the current edge is an hanging edge
             if (m_nodesNumEdges[firstNode] > 1 && m_nodesNumEdges[secondNode] > 1)

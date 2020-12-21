@@ -182,7 +182,7 @@ namespace meshkernel
     };
 
     /// @brief Describes an edge with two indices
-    typedef std::pair<int, int> Edge;
+    typedef std::pair<size_t, size_t> Edge;
 
     /// @brief A struct describing the three coordinates in a cartesian projection.
     struct Cartesian3DPoint

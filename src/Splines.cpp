@@ -388,8 +388,8 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline
         u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
     }
 
+      // TODO: C++ 20 for(auto& i :  views::reverse(vec))
     coordinatesDerivatives.back() = {0.0, 0.0};
-
     for (auto i = numNodes - 2; i < numNodes; --i)
     {
         coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
@@ -411,6 +411,7 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coord
         u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
     }
 
+    // TODO: C++ 20 for(auto& i :  views::reverse(vec))
     coordinatesDerivatives.back() = 0.0;
     for (auto i = numNodes - 2; i < numNodes; --i)
     {

@@ -251,7 +251,7 @@ void meshkernel::Smoother::ComputeWeights()
     }
 }
 
-void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
+void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
 {
     // the current topology index
     const int currentTopology = m_nodeTopologyMapping[currentNode];
@@ -323,7 +323,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
     for (auto f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
-        int otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - currentNode;
+        auto otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - currentNode;
         int leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
         faceLeftIndex = FindIndex(m_topologySharedFaces[currentTopology], leftFace);
 
@@ -530,9 +530,9 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
     }
 }
 
-void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
-                                            int numSharedFaces,
-                                            int numConnectedNodes)
+void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
+                                            size_t numSharedFaces,
+                                            size_t numConnectedNodes)
 {
     // the angles for the squared nodes connected to the stencil nodes, first the ones directly connected, then the others
     std::vector<double> thetaSquare(numConnectedNodes, doubleMissingValue);
@@ -1069,9 +1069,9 @@ void meshkernel::Smoother::AllocateNodeOperators(int topologyIndex)
     std::fill(m_ww2[topologyIndex].begin(), m_ww2[topologyIndex].end(), 0.0);
 }
 
-void meshkernel::Smoother::SaveNodeTopologyIfNeeded(int currentNode,
-                                                    int numSharedFaces,
-                                                    int numConnectedNodes)
+void meshkernel::Smoother::SaveNodeTopologyIfNeeded(size_t currentNode,
+                                                    size_t numSharedFaces,
+                                                    size_t numConnectedNodes)
 {
     bool isNewTopology = true;
     for (auto topo = 0; topo < m_numTopologies; topo++)

@@ -132,7 +132,7 @@ namespace meshkernel
         /// @brief Merges two mesh nodes
         /// @param[in] startNode The index of the first node to be merged
         /// @param[in] endNode The second of the second node to be merged
-        void MergeTwoNodes(int startNode, int endNode);
+        void MergeTwoNodes(size_t startNode, size_t endNode);
 
         /// @brief Make a new rectangular mesh, composed of quads (makenet)
         /// @param[in] MakeMeshParameters The structure containing the make grid parameters
@@ -149,7 +149,7 @@ namespace meshkernel
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
         /// @return The index of the new edge
-        size_t ConnectNodes(int startNode, int endNode);
+        size_t ConnectNodes(size_t startNode, size_t endNode);
 
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
@@ -164,7 +164,7 @@ namespace meshkernel
         /// @param[in] firstNodeIndex The index of the first node
         /// @param[in] secondNodeIndex The index of the second node
         /// @return The edge index
-        int FindEdge(int firstNodeIndex, int secondNodeIndex) const;
+        size_t FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const;
 
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location
@@ -179,7 +179,7 @@ namespace meshkernel
 
         /// @brief Deletes an edge
         /// @param[in] edgeIndex The edge index
-        void DeleteEdge(int edgeIndex);
+        void DeleteEdge(size_t edgeIndex);
 
         /// Finds the closest edge close to a point
         /// @param[in] point The starting point from where to start the search
@@ -202,8 +202,8 @@ namespace meshkernel
         /// @param[out] globalEdgeIndicesCache The edge cache array filled with the global edge indices
         void ComputeFaceClosedPolygonWithLocalMappings(int faceIndex,
                                                        std::vector<Point>& polygonNodesCache,
-                                                       std::vector<int>& localNodeIndicesCache,
-                                                       std::vector<int>& globalEdgeIndicesCache) const;
+                                                       std::vector<size_t>& localNodeIndicesCache,
+                                                       std::vector<size_t>& globalEdgeIndicesCache) const;
 
         /// @brief For a face create a closed polygon
         /// @param[in] faceIndex The face index
@@ -225,7 +225,7 @@ namespace meshkernel
         /// @param[in] firstEdgeIndex The index of the first edge
         /// @param[in] secondEdgeIndex The index of the second edge
         /// @return The shared node (-1 if no node is found)
-        [[nodiscard]] int FindCommonNode(int firstEdgeIndex, int secondEdgeIndex) const;
+        [[nodiscard]] size_t FindCommonNode(int firstEdgeIndex, int secondEdgeIndex) const;
 
         /// @brief Compute the lengths of all edges in one go
         void ComputeEdgesLengths();
@@ -345,7 +345,7 @@ namespace meshkernel
         /// @param[out] meshBoundaryPolygon The resulting polygon points
         void WalkBoundaryFromNode(const std::vector<Point>& polygonNodes,
                                   std::vector<bool>& isVisited,
-                                  int& currentNode,
+                                  size_t& currentNode,
                                   std::vector<Point>& meshBoundaryPolygon) const;
 
         /// @brief Gets the hanging edges
@@ -372,13 +372,13 @@ namespace meshkernel
         std::vector<Point> m_edgesCenters;          ///< The edges centers
 
         // faces
-        std::vector<std::vector<int>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
-        std::vector<int> m_numFacesNodes;           ///< The number of nodes composing the face (netcell%N)
-        std::vector<std::vector<int>> m_facesEdges; ///< The edge indices composing the face (netcell%lin)
-        std::vector<Point> m_facesCircumcenters;    ///< The face circumcenters the face circumcenter (xz, yz)
-        std::vector<Point> m_facesMassCenters;      ///< The faces centers of mass (xzw, yzw)
-        std::vector<double> m_faceArea;             ///< The face area
-        std::vector<Point> m_polygonNodesCache;     ///< Cache to store the face nodes
+        std::vector<std::vector<size_t>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
+        std::vector<int> m_numFacesNodes;              ///< The number of nodes composing the face (netcell%N)
+        std::vector<std::vector<size_t>> m_facesEdges; ///< The edge indices composing the face (netcell%lin)
+        std::vector<Point> m_facesCircumcenters;       ///< The face circumcenters the face circumcenter (xz, yz)
+        std::vector<Point> m_facesMassCenters;         ///< The faces centers of mass (xzw, yzw)
+        std::vector<double> m_faceArea;                ///< The face area
+        std::vector<Point> m_polygonNodesCache;        ///< Cache to store the face nodes
 
         // vectors for communicating with the client
         std::vector<double> m_nodex;               ///< The nodes x-coordinate
@@ -416,10 +416,10 @@ namespace meshkernel
                                 size_t numEdges,
                                 size_t previousEdge,
                                 size_t numClosingEdges,
-                                std::vector<int>& edges,
-                                std::vector<int>& nodes,
-                                std::vector<int>& sortedEdges,
-                                std::vector<int>& sortedNodes,
+                                std::vector<size_t>& edges,
+                                std::vector<size_t>& nodes,
+                                std::vector<size_t>& sortedEdges,
+                                std::vector<size_t>& sortedNodes,
                                 std::vector<Point>& nodalValues);
 
         /// @brief Checks if a triangle has an acute angle (checktriangle)
@@ -431,9 +431,9 @@ namespace meshkernel
         /// @brief Removes all invalid nodes and edges
         void DeleteInvalidNodesAndEdges();
 
-        int m_numFaces = 0;               ///< Number of valid faces (nump)
-        int m_numNodes = 0;               ///< Number of valid nodes in m_nodes
-        int m_numEdges = 0;               ///< Number of valid edges in m_edges
+        size_t m_numFaces = 0;            ///< Number of valid faces (nump)
+        size_t m_numNodes = 0;            ///< Number of valid nodes in m_nodes
+        size_t m_numEdges = 0;            ///< Number of valid edges in m_edges
         std::vector<double> m_edgeAngles; ///< Internal cache for sorting the edges around nodes
 
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update

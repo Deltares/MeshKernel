@@ -155,11 +155,11 @@ namespace meshkernel
         std::vector<int> m_brotherEdges; ///< The index of the brother edge for each edge
 
         /// Local caches
-        std::vector<bool> m_isHangingNodeCache;    ///< Cache for maintaining if node is hanging
-        std::vector<bool> m_isHangingEdgeCache;    ///< Cache for maintaining if edge is hanging
-        std::vector<Point> m_polygonNodesCache;    ///< Cache for maintaining polygon nodes
-        std::vector<int> m_localNodeIndicesCache;  ///< Cache for maintaining local node indices
-        std::vector<int> m_globalEdgeIndicesCache; ///< Cache for maintaining edge indices
+        std::vector<bool> m_isHangingNodeCache;       ///< Cache for maintaining if node is hanging
+        std::vector<bool> m_isHangingEdgeCache;       ///< Cache for maintaining if edge is hanging
+        std::vector<Point> m_polygonNodesCache;       ///< Cache for maintaining polygon nodes
+        std::vector<size_t> m_localNodeIndicesCache;  ///< Cache for maintaining local node indices
+        std::vector<size_t> m_globalEdgeIndicesCache; ///< Cache for maintaining edge indices
 
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement

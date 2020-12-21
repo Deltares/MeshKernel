@@ -189,8 +189,7 @@ namespace meshkernel
         // connect the m_mesh nodes
         if (findOnlyOuterMeshBoundary)
         {
-            std::vector<int> connectedNodes;
-            int numConnectedNodes = 0;
+            std::vector<size_t> connectedNodes;
             for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
             {
                 if (!m_mesh->IsEdgeOnBoundary(e))
@@ -198,28 +197,28 @@ namespace meshkernel
                     continue;
                 }
 
-                AssignSegmentsToMeshNodes(e, true, connectedNodes, numConnectedNodes);
+                AssignSegmentsToMeshNodes(e, true, connectedNodes, 0);
             }
         }
     };
 
-    void LandBoundaries::AssignSegmentsToMeshNodes(int edgeIndex, bool initialize, std::vector<int>& nodes, int numNodes)
+    void LandBoundaries::AssignSegmentsToMeshNodes(size_t edgeIndex, bool initialize, std::vector<size_t>& nodes, size_t numNodes)
     {
         if (m_nodes.empty())
         {
             return;
         }
 
-        std::vector<int> nodesLoc;
-        int numNodesLoc;
+        std::vector<size_t> nodesLoc;
+        size_t numNodesLoc;
 
         if (initialize)
         {
-            if (!m_mesh->IsEdgeOnBoundary(edgeIndex) || m_mesh->m_edges[edgeIndex].first < 0 || m_mesh->m_edges[edgeIndex].second < 0)
+            if (!m_mesh->IsEdgeOnBoundary(edgeIndex) || m_mesh->m_edges[edgeIndex].first == sizetMissingValue || m_mesh->m_edges[edgeIndex].second == sizetMissingValue)
                 throw std::invalid_argument("LandBoundaries::AssignSegmentsToMeshNodes: Cannot not assign segment to mesh nodes.");
 
-            int firstMeshNode = m_mesh->m_edges[edgeIndex].first;
-            int secondMeshNode = m_mesh->m_edges[edgeIndex].second;
+            const auto firstMeshNode = m_mesh->m_edges[edgeIndex].first;
+            const auto secondMeshNode = m_mesh->m_edges[edgeIndex].second;
 
             if (m_meshNodesLandBoundarySegments[firstMeshNode] >= 0 &&
                 m_meshNodesLandBoundarySegments[secondMeshNode] < 0 &&
@@ -260,7 +259,7 @@ namespace meshkernel
             return;
         }
 
-        int lastVisitedNode = nodesLoc[numNodesLoc - 1];
+        const auto lastVisitedNode = nodesLoc[numNodesLoc - 1];
 
         for (auto e = 0; e < m_mesh->m_nodesNumEdges[lastVisitedNode]; e++)
         {
@@ -275,8 +274,9 @@ namespace meshkernel
             if (m_nodeMask[otherNode] < 0)
                 break;
 
+            // TODO: C++ 20 for(auto& i :  views::reverse(vec))
             bool otherNodeAlreadyVisited = false;
-            for (auto n = numNodesLoc - 1; n >= 0; n--)
+            for (auto n = numNodesLoc - 1; n < numNodesLoc; --n)
             {
                 if (otherNode == nodesLoc[n])
                 {
@@ -341,7 +341,7 @@ namespace meshkernel
         }
     }
 
-    void LandBoundaries::AddLandBoundary(const std::vector<int>& nodesLoc, int numNodesLoc, int nodeIndex)
+    void LandBoundaries::AddLandBoundary(const std::vector<size_t>& nodesLoc, int numNodesLoc, int nodeIndex)
     {
         if (m_nodes.empty())
         {

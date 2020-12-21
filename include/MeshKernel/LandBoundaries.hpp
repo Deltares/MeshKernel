@@ -83,16 +83,16 @@ namespace meshkernel
         /// @param[in] initialize
         /// @param[in] nodes
         /// @param[in] numNodes
-        void AssignSegmentsToMeshNodes(int edgeIndex,
+        void AssignSegmentsToMeshNodes(size_t edgeIndex,
                                        bool initialize,
-                                       std::vector<int>& nodes,
-                                       int numNodes);
+                                       std::vector<size_t>& nodes,
+                                       size_t numNodes);
 
         /// @brief Add new land boundary segment that connects two others (add_land)
         /// @param[in] nodesLoc
         /// @param[in] numNodesLoc
         /// @param[in] nodeIndex
-        void AddLandBoundary(const std::vector<int>& nodesLoc,
+        void AddLandBoundary(const std::vector<size_t>& nodesLoc,
                              int numNodesLoc,
                              int nodeIndex);
 

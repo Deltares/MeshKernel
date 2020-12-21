@@ -60,19 +60,19 @@ namespace meshkernel
         /// @param[out] nodeLeft The node at the left side of the edge
         /// @param[out] nodeRight The node at the left side of the edge
         /// @return topologyFunctional The computed functional
-        int ComputeTopologyFunctional(int edge,
-                                      int& nodeLeft,
-                                      int& nodeRight) const;
+        int ComputeTopologyFunctional(size_t edge,
+                                      size_t& nodeLeft,
+                                      size_t& nodeRight) const;
 
         /// @brief Determine the optimal number of connected nodes for each node (nmk_opt)
         /// @param nodeIndex
         /// @returns Optimal number of connected nodes
-        [[nodiscard]] int OptimalNumberOfConnectedNodes(int nodeIndex) const;
+        [[nodiscard]] size_t OptimalNumberOfConnectedNodes(size_t nodeIndex) const;
 
         /// @brief Compute the difference with the optimal number of edges by counting the numbers of edges that
         ///        connect nodes firstNode and secondNode, and are on the land boundary path (comp_nnow)
         /// @returns Difference form optimum
-        [[nodiscard]] int DifferenceFromOptimum(int nodeIndex, int firstNode, int secondNode) const;
+        [[nodiscard]] size_t DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t secondNode) const;
 
         /// @brief Remove a connected edge from a node
         /// @param[in] edgeIndex The index of the edge to remove
