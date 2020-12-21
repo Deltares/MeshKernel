@@ -1409,7 +1409,7 @@ namespace meshkernel
         {
             auto const first = edge.first;
             auto const second = edge.second;
-            if (first < 0 || second < 0)
+            if (first == sizetMissingValue || second == sizetMissingValue)
             {
                 continue;
             }

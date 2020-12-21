@@ -252,7 +252,7 @@ int meshkernel::MeshRefinement::DeleteIsolatedHangingnodes()
                 }
             }
 
-            const auto otherNodeIndex = m_mesh->m_edges[brotherEdgeIndex].first + m_mesh->m_edges[brotherEdgeIndex].second - commonNode;
+            const auto otherNodeIndex = OtherNodeOfEdge(m_mesh->m_edges[brotherEdgeIndex], commonNode);
 
             //update lin admin
             if (m_mesh->m_edges[e].first == commonNode)
@@ -1200,8 +1200,8 @@ void meshkernel::MeshRefinement::FindBrotherEdges()
             }
 
             //check if node k is in the middle
-            const auto firstEdgeOtherNode = m_mesh->m_edges[firstEdgeIndex].first + m_mesh->m_edges[firstEdgeIndex].second - n;
-            const auto secondEdgeOtherNode = m_mesh->m_edges[secondEdgeIndex].first + m_mesh->m_edges[secondEdgeIndex].second - n;
+            const auto firstEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[firstEdgeIndex], n); //
+            const auto secondEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[secondEdgeIndex], n);
 
             //compute tolerance
             const auto firstEdgeSquaredLength = ComputeSquaredDistance(m_mesh->m_nodes[firstEdgeOtherNode], m_mesh->m_nodes[n], m_mesh->m_projection);

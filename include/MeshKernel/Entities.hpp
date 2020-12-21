@@ -184,6 +184,11 @@ namespace meshkernel
     /// @brief Describes an edge with two indices
     typedef std::pair<size_t, size_t> Edge;
 
+    size_t static OtherNodeOfEdge(const Edge& edge, size_t node)
+    {
+        return node == edge.first ? edge.second : edge.first;
+    }
+
     /// @brief A struct describing the three coordinates in a cartesian projection.
     struct Cartesian3DPoint
     {

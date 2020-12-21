@@ -268,7 +268,7 @@ namespace meshkernel
             if (!m_mesh->IsEdgeOnBoundary(edge))
                 continue;
 
-            const auto otherNode = m_mesh->m_edges[edge].first + m_mesh->m_edges[edge].second - lastVisitedNode;
+            const auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edge], lastVisitedNode);
 
             // path stopped
             if (m_nodeMask[otherNode] < 0)
@@ -543,7 +543,7 @@ namespace meshkernel
                 break;
             }
 
-            currentNode = m_mesh->m_edges[nextEdgeIndex].first + m_mesh->m_edges[nextEdgeIndex].second - currentNode;
+            currentNode = OtherNodeOfEdge(m_mesh->m_edges[nextEdgeIndex], currentNode);
 
             if (currentNode < 0 || currentNode >= m_mesh->GetNumNodes())
             {
@@ -698,7 +698,7 @@ namespace meshkernel
             {
                 for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
                 {
-                    if (!m_mesh->IsEdgeOnBoundary(e) || m_mesh->m_edges[e].first < 0 || m_mesh->m_edges[e].second < 0)
+                    if (!m_mesh->IsEdgeOnBoundary(e) || m_mesh->m_edges[e].first == sizetMissingValue || m_mesh->m_edges[e].second == sizetMissingValue)
                         continue;
 
                     bool isClose = false;
@@ -738,7 +738,7 @@ namespace meshkernel
                     if (m_mesh->IsEdgeOnBoundary(currentEdge))
                         continue;
 
-                    int otherFace = m_mesh->m_edgesFaces[currentEdge][0] + m_mesh->m_edgesFaces[currentEdge][1] - face;
+                    const auto otherFace = face == m_mesh->m_edgesFaces[currentEdge][0] ? m_mesh->m_edgesFaces[currentEdge][1] : m_mesh->m_edgesFaces[currentEdge][0];
 
                     // already masked
                     if (m_faceMask[otherFace] != intMissingValue)
@@ -833,7 +833,7 @@ namespace meshkernel
 
         const int startNode = std::max(std::min(landBoundaryNode, endNodeLandBoundaryIndex - 1), startNodeLandBoundaryIndex);
 
-        if (m_mesh->m_edges[edgeIndex].first < 0 || m_mesh->m_edges[edgeIndex].second < 0)
+        if (m_mesh->m_edges[edgeIndex].first == sizetMissingValue || m_mesh->m_edges[edgeIndex].second == sizetMissingValue)
             return false;
 
         const auto firstMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edgeIndex].first];
@@ -987,7 +987,7 @@ namespace meshkernel
 
         for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
         {
-            if (m_mesh->m_edges[e].first < 0 || m_mesh->m_edges[e].second < 0)
+            if (m_mesh->m_edges[e].first == sizetMissingValue || m_mesh->m_edges[e].second == sizetMissingValue)
                 continue;
 
             if (m_nodeMask[m_mesh->m_edges[e].first] < 0 || m_nodeMask[m_mesh->m_edges[e].second] < 0)
@@ -1027,8 +1027,8 @@ namespace meshkernel
             return;
         }
 
-        int firstMeshNodeIndex = m_mesh->m_edges[startEdge].first;
-        int secondMeshNodeIndex = m_mesh->m_edges[startEdge].second;
+        auto firstMeshNodeIndex = m_mesh->m_edges[startEdge].first;
+        auto secondMeshNodeIndex = m_mesh->m_edges[startEdge].second;
         double firstDistance = ComputeSquaredDistance(m_mesh->m_nodes[firstMeshNodeIndex], startPoint, m_mesh->m_projection);
         double secondDistance = ComputeSquaredDistance(m_mesh->m_nodes[secondMeshNodeIndex], startPoint, m_mesh->m_projection);
 
@@ -1093,19 +1093,19 @@ namespace meshkernel
 
             for (const auto& edgeIndex : m_mesh->m_nodesEdges[currentNodeIndex])
             {
-                if (m_mesh->m_edges[edgeIndex].first < 0 || m_mesh->m_edges[edgeIndex].second < 0)
+                if (m_mesh->m_edges[edgeIndex].first == sizetMissingValue || m_mesh->m_edges[edgeIndex].second == sizetMissingValue)
                 {
                     continue;
                 }
 
-                int neighbouringNodeIndex = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - currentNodeIndex;
+                const auto neighbouringNodeIndex = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], currentNodeIndex);
 
                 if (isVisited[neighbouringNodeIndex])
                 {
                     continue;
                 }
 
-                Point neighbouringNode = m_mesh->m_nodes[neighbouringNodeIndex];
+                const auto neighbouringNode = m_mesh->m_nodes[neighbouringNodeIndex];
 
                 Point neighbouringNodeOnLandBoundary;
                 int neighbouringNodeLandBoundaryNodeIndex;

@@ -323,7 +323,8 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
     for (auto f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
-        auto otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - currentNode;
+        auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], currentNode);
+
         int leftFace = m_mesh->m_edgesFaces[edgeIndex][0];
         faceLeftIndex = FindIndex(m_topologySharedFaces[currentTopology], leftFace);
 
@@ -883,7 +884,7 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
     for (auto e = 0; e < m_mesh->m_nodesNumEdges[currentNode]; e++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[currentNode][e];
-        const auto node = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - currentNode;
+        const auto node = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], currentNode);
         connectedNodesIndex++;
         m_connectedNodesCache[connectedNodesIndex] = node;
         if (int(m_connectedNodes[currentNode].size()) < connectedNodesIndex + 1)

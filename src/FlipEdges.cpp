@@ -132,10 +132,10 @@ void meshkernel::FlipEdges::Compute() const
             numFlippedEdges++;
 
             // Find the other edges
-            int firstEdgeLeftFace;
-            int firstEdgeRightFace;
-            int secondEdgeLeftFace;
-            int secondEdgeRightFace;
+            size_t firstEdgeLeftFace;
+            size_t firstEdgeRightFace;
+            size_t secondEdgeLeftFace;
+            size_t secondEdgeRightFace;
             for (auto i = 0; i < NumEdgesLeftFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[leftFace][i];
@@ -440,7 +440,8 @@ size_t meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t fir
     // that are not in a land or mesh boundary path
     auto currentEdgeIndexInNodeEdges = edgeIndexConnectingFirstNode;
     auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
-    auto otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
+    auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
+
     size_t num = 1;
     while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] < 0 &&
            !m_mesh->IsEdgeOnBoundary(edgeIndex) &&
@@ -448,7 +449,7 @@ size_t meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t fir
     {
         currentEdgeIndexInNodeEdges = NextCircularBackwardIndex(currentEdgeIndexInNodeEdges, m_mesh->m_nodesNumEdges[nodeIndex]);
         edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
-        otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
+        otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
         num++;
     }
 
@@ -465,7 +466,7 @@ size_t meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t fir
     {
         currentEdgeIndexInNodeEdges = edgeIndexConnectingSecondNode;
         edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
-        otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
+        otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
         num = num + 1;
         while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] < 0 &&
                !m_mesh->IsEdgeOnBoundary(edgeIndex) &&
@@ -474,7 +475,7 @@ size_t meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t fir
         {
             currentEdgeIndexInNodeEdges = NextCircularForwardIndex(currentEdgeIndexInNodeEdges, m_mesh->m_nodesNumEdges[nodeIndex]);
             edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
-            otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
+            otherNode = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], nodeIndex);
 
             if (currentEdgeIndexInNodeEdges != edgeIndexConnectingFirstNode && edgeIndex != firstEdgeInPathIndex)
             {

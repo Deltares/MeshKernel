@@ -62,7 +62,7 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
 
     // Mask nodes connected to valid edges
     std::vector<bool> connectedNodes(m_nodes.size(), false);
-    int numInvalidEdges = 0;
+    size_t numInvalidEdges = 0;
 
     for (const auto& edge : m_edges)
     {
@@ -104,8 +104,8 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     }
 
     // Flag invalid nodes
-    std::vector<int> validNodesIndices(m_nodes.size());
-    std::fill(validNodesIndices.begin(), validNodesIndices.end(), -1);
+    std::vector<size_t> validNodesIndices(m_nodes.size());
+    std::fill(validNodesIndices.begin(), validNodesIndices.end(), sizetMissingValue);
     size_t validIndex = 0;
     for (auto n = 0; n < m_nodes.size(); ++n)
     {
@@ -122,15 +122,15 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
         auto const firstNode = edge.first;
         auto const secondNode = edge.second;
 
-        if (firstNode != sizetMissingValue && secondNode != sizetMissingValue && validNodesIndices[firstNode] >= 0 && validNodesIndices[secondNode] >= 0)
+        if (firstNode != sizetMissingValue && secondNode != sizetMissingValue && validNodesIndices[firstNode] != sizetMissingValue && validNodesIndices[secondNode] != sizetMissingValue)
         {
             edge.first = validNodesIndices[firstNode];
             edge.second = validNodesIndices[secondNode];
             continue;
         }
 
-        edge.first = -1;
-        edge.second = -1;
+        edge.first = sizetMissingValue;
+        edge.second = sizetMissingValue;
     }
 
     // Remove invalid nodes, without reducing capacity
@@ -225,7 +225,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projection projec
 
     std::vector<Point> nodes(curvilinearGrid.m_grid.size() * curvilinearGrid.m_grid[0].size());
     std::vector<Edge> edges(curvilinearGrid.m_grid.size() * (curvilinearGrid.m_grid[0].size() - 1) + (curvilinearGrid.m_grid.size() - 1) * curvilinearGrid.m_grid[0].size());
-    std::vector<std::vector<int>> indices(curvilinearGrid.m_grid.size(), std::vector<int>(curvilinearGrid.m_grid[0].size(), intMissingValue));
+    std::vector<std::vector<size_t>> indices(curvilinearGrid.m_grid.size(), std::vector<size_t>(curvilinearGrid.m_grid[0].size(), sizetMissingValue));
 
     int ind = 0;
     for (auto m = 0; m < curvilinearGrid.m_grid.size(); m++)
@@ -247,7 +247,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projection projec
     {
         for (auto n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
         {
-            if (indices[m][n] != intMissingValue && indices[m + 1][n] != intMissingValue)
+            if (indices[m][n] != sizetMissingValue && indices[m + 1][n] != sizetMissingValue)
             {
                 edges[ind].first = indices[m][n];
                 edges[ind].second = indices[m + 1][n];
@@ -260,7 +260,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projection projec
     {
         for (auto n = 0; n < curvilinearGrid.m_grid[0].size() - 1; n++)
         {
-            if (indices[m][n] != intMissingValue && indices[m][n + 1] != intMissingValue)
+            if (indices[m][n] != sizetMissingValue && indices[m][n + 1] != sizetMissingValue)
             {
                 edges[ind].first = indices[m][n];
                 edges[ind].second = indices[m][n + 1];
@@ -458,7 +458,7 @@ void meshkernel::Mesh::NodeAdministration()
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
 
-        if (firstNode < 0 || secondNode < 0)
+        if (firstNode == sizetMissingValue || secondNode == sizetMissingValue)
         {
             continue;
         }
@@ -667,7 +667,7 @@ void meshkernel::Mesh::FindFacesRecursive(size_t startingNode,
 
     edges[index] = previousEdge;
     nodes[index] = node;
-    const auto otherNode = m_edges[previousEdge].first + m_edges[previousEdge].second - node;
+    const auto otherNode = OtherNodeOfEdge(m_edges[previousEdge], node);
 
     // enclosure found
     if (otherNode == startingNode && index == edges.size() - 1)
@@ -746,7 +746,7 @@ void meshkernel::Mesh::FindFacesRecursive(size_t startingNode,
         return;
     }
 
-    int edgeIndexOtherNode = 0;
+    size_t edgeIndexOtherNode = 0;
     for (auto e = 0; e < m_nodesNumEdges[otherNode]; e++)
     {
         if (m_nodesEdges[otherNode][e] == previousEdge)
@@ -904,11 +904,11 @@ void meshkernel::Mesh::ClassifyNodes()
                     }
                     if (firstNode == 0)
                     {
-                        firstNode = m_edges[edgeIndex].first + m_edges[edgeIndex].second - n;
+                        firstNode = OtherNodeOfEdge(m_edges[edgeIndex], n);
                     }
                     else
                     {
-                        secondNode = m_edges[edgeIndex].first + m_edges[edgeIndex].second - n;
+                        secondNode = OtherNodeOfEdge(m_edges[edgeIndex], n);
                         break;
                     }
                 }
@@ -1160,14 +1160,14 @@ void meshkernel::Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeInd
     {
         const auto firstEdgeIndex = m_nodesEdges[firstNodeIndex][n];
         const auto firstEdge = m_edges[firstEdgeIndex];
-        const auto firstEdgeOtherNode = firstNodeIndex == firstEdge.first ? firstEdge.second : firstEdge.first;
+        const auto firstEdgeOtherNode = OtherNodeOfEdge(firstEdge, firstNodeIndex);
         if (firstEdgeOtherNode != sizetMissingValue && firstEdgeOtherNode != secondNodeIndex)
         {
             for (auto nn = 0; nn < m_nodesNumEdges[firstEdgeOtherNode]; nn++)
             {
                 auto secondEdgeIndex = m_nodesEdges[firstEdgeOtherNode][nn];
                 auto secondEdge = m_edges[secondEdgeIndex];
-                auto secondNodeSecondEdge = secondEdge.first + secondEdge.second - firstEdgeOtherNode;
+                auto secondNodeSecondEdge = OtherNodeOfEdge(secondEdge, firstEdgeOtherNode);
                 if (secondNodeSecondEdge == secondNodeIndex)
                 {
                     m_edges[secondEdgeIndex].first = sizetMissingValue;
@@ -1412,7 +1412,7 @@ size_t meshkernel::Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex)
     for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         const auto localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
-        const auto firstEdgeOtherNode = m_edges[localEdgeIndex].first + m_edges[localEdgeIndex].second - firstNodeIndex;
+        const auto firstEdgeOtherNode = OtherNodeOfEdge(m_edges[localEdgeIndex], firstNodeIndex);
         if (firstEdgeOtherNode == secondNodeIndex)
         {
             edgeIndex = localEdgeIndex;
@@ -2124,7 +2124,7 @@ void meshkernel::Mesh::ComputeNodeNeighbours()
         for (auto nn = 0; nn < m_nodesNumEdges[n]; nn++)
         {
             const auto edge = m_edges[m_nodesEdges[n][nn]];
-            m_nodesNodes[n][nn] = edge.first + edge.second - n;
+            m_nodesNodes[n][nn] = OtherNodeOfEdge(edge, n);
         }
     }
 }
@@ -2289,7 +2289,7 @@ void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
         const auto first = m_edges[e].first;
         const auto second = m_edges[e].second;
 
-        if (first < 0 || second < 0)
+        if (first == sizetMissingValue || second == sizetMissingValue)
             continue;
         if (m_edgesNumFaces[e] < 1)
             continue;
@@ -2358,7 +2358,7 @@ void meshkernel::Mesh::MakeDualFace(int node, double enlargementFactor, std::vec
             const auto firstNodeIndex = m_edges[edgeIndex].first;
             const auto secondNodeIndex = m_edges[edgeIndex].second;
 
-            if (firstNodeIndex >= 0 && secondNodeIndex >= 0)
+            if (firstNodeIndex != sizetMissingValue && secondNodeIndex != sizetMissingValue)
             {
                 const auto diff = m_nodes[firstNodeIndex].x - m_nodes[secondNodeIndex].x;
 
@@ -2562,10 +2562,7 @@ void meshkernel::Mesh::WalkBoundaryFromNode(const std::vector<Point>& polygonNod
             continue;
         }
 
-        const auto firstNode = m_edges[currentEdge].first;
-        const auto secondNode = m_edges[currentEdge].second;
-
-        currentNode = secondNode == currentNode ? firstNode : secondNode;
+        currentNode = OtherNodeOfEdge(m_edges[currentEdge], currentNode);
         e = 0;
         currentNodeInPolygon = false;
 
