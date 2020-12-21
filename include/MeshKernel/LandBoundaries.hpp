@@ -93,8 +93,8 @@ namespace meshkernel
         /// @param[in] numNodesLoc
         /// @param[in] nodeIndex
         void AddLandBoundary(const std::vector<size_t>& nodesLoc,
-                             int numNodesLoc,
-                             int nodeIndex);
+                             size_t numNodesLoc,
+                             size_t nodeIndex);
 
         /// @brief Assigns to each mesh node a land boundary segment index ()
         /// @param[in] landBoundarySegment
@@ -116,12 +116,12 @@ namespace meshkernel
         /// @param[out] rightIndex
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
-        void ComputeMask(int segmentIndex,
+        void ComputeMask(size_t segmentIndex,
                          bool meshBoundOnly,
-                         int startLandBoundaryIndex,
-                         int endLandBoundaryIndex,
-                         int& leftIndex,
-                         int& rightIndex,
+                         size_t startLandBoundaryIndex,
+                         size_t endLandBoundaryIndex,
+                         size_t& leftIndex,
+                         size_t& rightIndex,
                          double& leftEdgeRatio,
                          double& rightEdgeRatio);
 
@@ -136,10 +136,10 @@ namespace meshkernel
         /// @param[out] rightEdgeRatio
         void MaskFaces(bool meshBoundOnly,
                        std::vector<size_t>& landBoundaryFaces,
-                       int startNodeLandBoundaryIndex,
-                       int endNodeLandBoundaryindex,
-                       int& leftIndex,
-                       int& rightIndex,
+                       size_t startNodeLandBoundaryIndex,
+                       size_t endNodeLandBoundaryindex,
+                       size_t& leftIndex,
+                       size_t& rightIndex,
                        double& leftEdgeRatio,
                        double& rightEdgeRatio);
 
@@ -153,15 +153,15 @@ namespace meshkernel
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
         /// @param[out] landBoundaryNode
-        [[nodiscard]] bool IsMeshEdgeCloseToLandBoundaries(int edgeIndex,
-                                                           int startNodeLandBoundaryIndex,
-                                                           int endNodeLandBoundaryIndex,
+        [[nodiscard]] bool IsMeshEdgeCloseToLandBoundaries(size_t edgeIndex,
+                                                           size_t startNodeLandBoundaryIndex,
+                                                           size_t endNodeLandBoundaryIndex,
                                                            bool meshBoundOnly,
-                                                           int& leftIndex,
-                                                           int& rightIndex,
+                                                           size_t& leftIndex,
+                                                           size_t& rightIndex,
                                                            double& leftEdgeRatio,
                                                            double& rightEdgeRatio,
-                                                           int& landBoundaryNode);
+                                                           size_t& landBoundaryNode);
 
         /// @brief Finds the start and end mesh node.
         /// These are the nodes that are on a edge close to the land boundary segment (get_kstartend2)
@@ -172,13 +172,13 @@ namespace meshkernel
         /// @param[in] rightEdgeRatio
         /// @param[out] startMeshNode
         /// @param[out] endMeshNode
-        void FindStartEndMeshNodes(int endLandBoundaryIndex,
-                                   int leftIndex,
-                                   int rightIndex,
+        void FindStartEndMeshNodes(size_t endLandBoundaryIndex,
+                                   size_t leftIndex,
+                                   size_t rightIndex,
                                    double leftEdgeRatio,
                                    double rightEdgeRatio,
-                                   int& startMeshNode,
-                                   int& endMeshNode);
+                                   size_t& startMeshNode,
+                                   size_t& endMeshNode);
 
         /// @brief Finds the start and end mesh node from given edges.
         /// @param[in] startEdge
@@ -187,12 +187,12 @@ namespace meshkernel
         /// @param[in] endPoint
         /// @param[out] startMeshNode
         /// @param[out] endMeshNode
-        void FindStartEndMeshNodesFromEdges(int startEdge,
-                                            int endEdge,
+        void FindStartEndMeshNodesFromEdges(size_t startEdge,
+                                            size_t endEdge,
                                             Point startPoint,
                                             Point endPoint,
-                                            int& startMeshNode,
-                                            int& endMeshNode) const;
+                                            size_t& startMeshNode,
+                                            size_t& endMeshNode) const;
 
         /// @brief Connect mesh nodes starting from startMeshNode, using Dijkstra's shortest path algorithm.
         /// The distance of each edge is the edge length multiplied by the distance from the land boundary

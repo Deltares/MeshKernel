@@ -395,13 +395,13 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
     bool isClockWise = sign < 0 ? true : false;
     if (isClockWise)
     {
-        int firstNodeTemp = firstNode;
+        const auto firstNodeTemp = firstNode;
         firstNode = secondNode;
         secondNode = firstNodeTemp;
     }
 
     // find the first edge connecting firstNode
-    int edgeIndexConnectingFirstNode = -1;
+    size_t edgeIndexConnectingFirstNode = sizetMissingValue;
     for (auto i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
@@ -413,13 +413,13 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
         }
     }
 
-    if (edgeIndexConnectingFirstNode == -1)
+    if (edgeIndexConnectingFirstNode == sizetMissingValue)
     {
         return 0;
     }
 
     // find the first edge connecting secondNode
-    int edgeIndexConnectingSecondNode = -1;
+    size_t edgeIndexConnectingSecondNode = sizetMissingValue;
     for (auto i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
@@ -431,7 +431,7 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
         }
     }
 
-    if (edgeIndexConnectingSecondNode == -1)
+    if (edgeIndexConnectingSecondNode == sizetMissingValue)
     {
         return 0;
     }
@@ -461,7 +461,7 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
     }
 
     // If not all edges are visited, count counterclockwise from the one connecting indexSecondNode
-    int secondEdgeInPathIndex = -1;
+    size_t secondEdgeInPathIndex = sizetMissingValue;
     if (currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
     {
         currentEdgeIndexInNodeEdges = edgeIndexConnectingSecondNode;
@@ -497,14 +497,13 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
         return 0;
     }
 
-    int numopt = 6;
-    if (firstEdgeInPathIndex >= 0 && secondEdgeInPathIndex >= 0)
+    if (firstEdgeInPathIndex != sizetMissingValue && secondEdgeInPathIndex != sizetMissingValue)
     {
         // internal boundary
-        numopt = 4;
+        return 4;
     }
 
-    return numopt;
+    return 6;
 };
 
 size_t meshkernel::FlipEdges::OptimalNumberOfConnectedNodes(size_t index) const
