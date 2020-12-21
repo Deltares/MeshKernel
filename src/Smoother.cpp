@@ -89,7 +89,7 @@ void meshkernel::Smoother::ComputeOperators()
     m_ww2.resize(m_numTopologies);
 
     // allocate caches
-    m_boundaryEdgesCache.resize(2, -1);
+    m_boundaryEdgesCache.resize(2, sizetMissingValue);
     m_leftXFaceCenterCache.resize(maximumNumberOfEdgesPerNode, 0.0);
     m_leftYFaceCenterCache.resize(maximumNumberOfEdgesPerNode, 0.0);
     m_rightXFaceCenterCache.resize(maximumNumberOfEdgesPerNode, 0.0);
@@ -107,7 +107,7 @@ void meshkernel::Smoother::ComputeOperators()
         }
 
         // for each node, the associated topology
-        int currentTopology = m_nodeTopologyMapping[n];
+        const auto currentTopology = m_nodeTopologyMapping[n];
 
         if (isNewTopology[currentTopology])
         {
@@ -254,7 +254,7 @@ void meshkernel::Smoother::ComputeWeights()
 void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
 {
     // the current topology index
-    const int currentTopology = m_nodeTopologyMapping[currentNode];
+    const auto currentTopology = m_nodeTopologyMapping[currentNode];
 
     for (auto f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
@@ -263,8 +263,8 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
             continue;
         }
 
-        int edgeLeft = f + 1;
-        int edgeRight = edgeLeft + 1;
+        size_t edgeLeft = f + 1;
+        size_t edgeRight = edgeLeft + 1;
         if (edgeRight > m_numTopologyFaces[currentTopology])
         {
             edgeRight -= m_numTopologyFaces[currentTopology];
@@ -307,7 +307,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
     }
 
     // Initialize caches
-    std::fill(m_boundaryEdgesCache.begin(), m_boundaryEdgesCache.end(), -1);
+    std::fill(m_boundaryEdgesCache.begin(), m_boundaryEdgesCache.end(), sizetMissingValue);
     std::fill(m_leftXFaceCenterCache.begin(), m_leftXFaceCenterCache.end(), 0.0);
     std::fill(m_leftYFaceCenterCache.begin(), m_leftYFaceCenterCache.end(), 0.0);
     std::fill(m_rightXFaceCenterCache.begin(), m_rightXFaceCenterCache.end(), 0.0);
@@ -346,7 +346,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
         if (m_mesh->IsEdgeOnBoundary(edgeIndex))
         {
             // Boundary face
-            if (m_boundaryEdgesCache[0] < 0)
+            if (m_boundaryEdgesCache[0] == sizetMissingValue)
             {
                 m_boundaryEdgesCache[0] = f;
             }
@@ -1015,13 +1015,13 @@ void meshkernel::Smoother::Initialize()
     m_numTopologies = 0;
 
     m_nodeTopologyMapping.resize(m_mesh->GetNumNodes());
-    std::fill(m_nodeTopologyMapping.begin(), m_nodeTopologyMapping.end(), -1);
+    std::fill(m_nodeTopologyMapping.begin(), m_nodeTopologyMapping.end(), sizetMissingValue);
 
     m_numTopologyNodes.resize(m_topologyInitialSize);
-    std::fill(m_numTopologyNodes.begin(), m_numTopologyNodes.end(), -1);
+    std::fill(m_numTopologyNodes.begin(), m_numTopologyNodes.end(), sizetMissingValue);
 
     m_numTopologyFaces.resize(m_topologyInitialSize);
-    std::fill(m_numTopologyFaces.begin(), m_numTopologyFaces.end(), -1);
+    std::fill(m_numTopologyFaces.begin(), m_numTopologyFaces.end(), sizetMissingValue);
 
     m_topologyXi.resize(m_topologyInitialSize);
     std::fill(m_topologyXi.begin(), m_topologyXi.end(), std::vector<double>(maximumNumberOfConnectedNodes, 0.0));
@@ -1107,17 +1107,18 @@ void meshkernel::Smoother::SaveNodeTopologyIfNeeded(size_t currentNode,
 
         if (m_numTopologies > m_numTopologyNodes.size())
         {
-            m_numTopologyNodes.resize(int(m_numTopologies * 1.5), 0);
-            m_numTopologyFaces.resize(int(m_numTopologies * 1.5), 0);
-            m_topologyXi.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
-            m_topologyEta.resize(int(m_numTopologies * 1.5), std::vector<double>(maximumNumberOfConnectedNodes, 0));
+            const size_t estimatedSize = m_numTopologies * 1.5;
+            m_numTopologyNodes.resize(estimatedSize, 0);
+            m_numTopologyFaces.resize(estimatedSize, 0);
+            m_topologyXi.resize(estimatedSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
+            m_topologyEta.resize(estimatedSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
 
-            m_topologySharedFaces.resize(int(m_numTopologies * 1.5), std::vector<size_t>(maximumNumberOfEdgesPerNode, -1));
-            m_topologyConnectedNodes.resize(int(m_numTopologies * 1.5), std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
-            m_topologyFaceNodeMapping.resize(int(m_numTopologies * 1.5), std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, 0)));
+            m_topologySharedFaces.resize(estimatedSize, std::vector<size_t>(maximumNumberOfEdgesPerNode, -1));
+            m_topologyConnectedNodes.resize(estimatedSize, std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
+            m_topologyFaceNodeMapping.resize(estimatedSize, std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, 0)));
         }
 
-        int topologyIndex = m_numTopologies - 1;
+        const auto topologyIndex = m_numTopologies - 1;
         m_numTopologyNodes[topologyIndex] = numConnectedNodes;
         m_topologyConnectedNodes[topologyIndex] = m_connectedNodesCache;
         m_numTopologyFaces[topologyIndex] = numSharedFaces;

@@ -395,7 +395,7 @@ namespace meshkernel
         SpatialTrees::RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
         SpatialTrees::RTree m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
 
-        int m_maxNumNeighbours = 0; ///< Maximum number of neighbors
+        size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbors
 
     private:
         /// @brief Node administration (setnodadmin)

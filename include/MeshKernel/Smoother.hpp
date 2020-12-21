@@ -173,7 +173,7 @@ namespace meshkernel
         std::vector<std::vector<size_t>> m_faceNodeMappingCache;
         std::vector<double> m_xiCache;
         std::vector<double> m_etaCache;
-        std::vector<int> m_boundaryEdgesCache;
+        std::vector<size_t> m_boundaryEdgesCache;
         std::vector<double> m_leftXFaceCenterCache;
         std::vector<double> m_leftYFaceCenterCache;
         std::vector<double> m_rightXFaceCenterCache;
@@ -182,10 +182,10 @@ namespace meshkernel
         std::vector<double> m_etasCache;
 
         // Smoother topologies
-        int m_numTopologies = 0;
-        std::vector<int> m_nodeTopologyMapping;
-        std::vector<int> m_numTopologyNodes;
-        std::vector<int> m_numTopologyFaces;
+        size_t m_numTopologies = 0;
+        std::vector<size_t> m_nodeTopologyMapping;
+        std::vector<size_t> m_numTopologyNodes;
+        std::vector<size_t> m_numTopologyFaces;
         std::vector<std::vector<double>> m_topologyXi;
         std::vector<std::vector<double>> m_topologyEta;
         std::vector<std::vector<size_t>> m_topologySharedFaces;

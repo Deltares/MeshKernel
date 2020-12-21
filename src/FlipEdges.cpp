@@ -343,10 +343,10 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(size_t edge,
     }
 
     //  compute the change in functional
-    auto n1 = m_mesh->m_nodesNumEdges[firstNode] - OptimalNumberOfConnectedNodes(firstNode);
-    auto n2 = m_mesh->m_nodesNumEdges[secondNode] - OptimalNumberOfConnectedNodes(secondNode);
-    auto nL = m_mesh->m_nodesNumEdges[nodeLeft] - OptimalNumberOfConnectedNodes(nodeLeft);
-    auto nR = m_mesh->m_nodesNumEdges[nodeRight] - OptimalNumberOfConnectedNodes(nodeRight);
+    auto n1 = static_cast<int>(m_mesh->m_nodesNumEdges[firstNode]) - static_cast<int>(OptimalNumberOfConnectedNodes(firstNode));
+    auto n2 = static_cast<int>(m_mesh->m_nodesNumEdges[secondNode]) - static_cast<int>(OptimalNumberOfConnectedNodes(secondNode));
+    auto nL = static_cast<int>(m_mesh->m_nodesNumEdges[nodeLeft]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeLeft));
+    auto nR = static_cast<int>(m_mesh->m_nodesNumEdges[nodeRight]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeRight));
 
     if (m_projectToLandBoundary && m_landBoundaries->GetNumNodes() > 0)
     {
@@ -365,25 +365,25 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(size_t edge,
         nL = DifferenceFromOptimum(nodeLeft, firstNode, secondNode);
         nR = DifferenceFromOptimum(nodeRight, firstNode, secondNode);
 
-        const int topologyFunctional = (n1L - 1) * (n1L - 1) +
-                                       (n1R - 1) * (n1R - 1) +
-                                       (n2L - 1) * (n2L - 1) +
-                                       (n2R - 1) * (n2R - 1) +
-                                       2 * ((nL + 1) * (nL + 1) + (nR + 1) * (nR + 1)) -
-                                       (n1L * n1L + n1R * n1R + n2L * n2L + n2R * n2R + 2 * (nL * nL + nR * nR));
+        const auto topologyFunctional = (n1L - 1) * (n1L - 1) +
+                                        (n1R - 1) * (n1R - 1) +
+                                        (n2L - 1) * (n2L - 1) +
+                                        (n2R - 1) * (n2R - 1) +
+                                        2 * ((nL + 1) * (nL + 1) + (nR + 1) * (nR + 1)) -
+                                        (n1L * n1L + n1R * n1R + n2L * n2L + n2R * n2R + 2 * (nL * nL + nR * nR));
         return topologyFunctional;
     }
 
-    const int topologyFunctional = (n1 - 1) * (n1 - 1) +
-                                   (n2 - 1) * (n2 - 1) +
-                                   (nL + 1) * (nL + 1) +
-                                   (nR + 1) * (nR + 1) -
-                                   (n1 * n1 + n2 * n2 + nL * nL + nR * nR);
+    const auto topologyFunctional = (n1 - 1) * (n1 - 1) +
+                                    (n2 - 1) * (n2 - 1) +
+                                    (nL + 1) * (nL + 1) +
+                                    (nR + 1) * (nR + 1) -
+                                    (n1 * n1 + n2 * n2 + nL * nL + nR * nR);
 
     return topologyFunctional;
 }
 
-size_t meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t secondNode) const
+int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t secondNode) const
 {
     if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] < 0)
     {
@@ -453,7 +453,7 @@ size_t meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t fir
         num++;
     }
 
-    int firstEdgeInPathIndex = -1;
+    size_t firstEdgeInPathIndex = sizetMissingValue;
     if (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] >= 0 ||
         m_mesh->IsEdgeOnBoundary(edgeIndex))
     {
@@ -497,7 +497,7 @@ size_t meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t fir
         return 0;
     }
 
-    size_t numopt = 6;
+    int numopt = 6;
     if (firstEdgeInPathIndex >= 0 && secondEdgeInPathIndex >= 0)
     {
         // internal boundary
