@@ -13,9 +13,9 @@ TEST(SpatialTrees, RTreeRemovePoint)
 
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
-    for (int j = 0; j < m; ++j)
+    for (auto j = 0; j < m; ++j)
     {
-        for (int i = 0; i < n; ++i)
+        for (auto i = 0; i < n; ++i)
         {
             nodes[nodeIndex] = {(double)i, (double)j};
             nodeIndex++;
@@ -36,9 +36,9 @@ TEST(SpatialTrees, PerformanceTestBuildAndSearchRTree)
     const int m = 10; // y
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
-    for (int j = 0; j < m; ++j)
+    for (auto j = 0; j < m; ++j)
     {
-        for (int i = 0; i < n; ++i)
+        for (auto i = 0; i < n; ++i)
         {
             nodes[nodeIndex] = {(double)i, (double)j};
             nodeIndex++;
@@ -53,7 +53,7 @@ TEST(SpatialTrees, PerformanceTestBuildAndSearchRTree)
     std::cout << "Elapsed time build " << nodes.size() << " mesh nodes RTree: " << elapsedTime << " s " << std::endl;
 
     start = std::chrono::steady_clock::now();
-    for (int i = 0; i < nodes.size(); ++i)
+    for (auto i = 0; i < nodes.size(); ++i)
     {
         rtree.NearestNeighborsOnSquaredDistance(nodes[i], 1e-8);
         ASSERT_EQ(rtree.GetQueryResultSize(), 1);
@@ -70,9 +70,9 @@ TEST(SpatialTrees, FindNodesInSquare)
 
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
-    for (int j = 0; j < m; ++j)
+    for (auto j = 0; j < m; ++j)
     {
-        for (int i = 0; i < n; ++i)
+        for (auto i = 0; i < n; ++i)
         {
             nodes[nodeIndex] = {(double)i, (double)j};
             nodeIndex++;

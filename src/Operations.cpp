@@ -170,7 +170,7 @@ namespace meshkernel
         {
 
             int windingNumber = 0;
-            for (int n = startNode; n < endNode; n++)
+            for (auto n = startNode; n < endNode; n++)
             {
                 const auto leftDifference = IsLeft(polygonNodes[n], polygonNodes[n + 1], point);
                 if (IsEqual(leftDifference, 0.0))
@@ -213,7 +213,7 @@ namespace meshkernel
             // enlarge around polygon
             const double enlargementFactor = 1.000001;
             const Cartesian3DPoint polygonCenterCartesian3D{SphericalToCartesian3D(polygonCenter)};
-            for (int i = 0; i < currentPolygonSize; i++)
+            for (auto i = 0; i < currentPolygonSize; i++)
             {
                 cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargementFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
                 cartesian3DPoints[i].y = polygonCenterCartesian3D.y + enlargementFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
@@ -229,7 +229,7 @@ namespace meshkernel
             int inside = 0;
 
             // loop over the polygon nodes
-            for (int i = 0; i < currentPolygonSize - 1; i++)
+            for (auto i = 0; i < currentPolygonSize - 1; i++)
             {
                 const auto nextNode = NextCircularForwardIndex(i, currentPolygonSize);
                 const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
@@ -751,7 +751,7 @@ namespace meshkernel
             if (maxX - minX > 180.0)
             {
                 double deltaX = maxX - 180.0;
-                for (int i = 0; i < numPoints; i++)
+                for (auto i = 0; i < numPoints; i++)
                 {
                     if (polygon[i].x < deltaX)
                     {
@@ -1174,7 +1174,7 @@ namespace meshkernel
         const double minArea = 1e-8;
         const Point reference = ReferencePoint(polygon, projection);
         const auto numberOfPointsOpenedPolygon = polygon.size() - 1;
-        for (int n = 0; n < numberOfPointsOpenedPolygon; n++)
+        for (auto n = 0; n < numberOfPointsOpenedPolygon; n++)
         {
             const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
             double dx0 = GetDx(reference, polygon[n], projection);
@@ -1219,7 +1219,7 @@ namespace meshkernel
     void ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, const Projection& projection, std::vector<double>& result, double& totalDistance)
     {
         result[0] = 0;
-        for (int i = 1; i < v.size(); i++)
+        for (auto i = 1; i < v.size(); i++)
         {
             result[i] = result[i - 1] + ComputeDistance(v[i - 1], v[i], projection);
         }
@@ -1229,7 +1229,7 @@ namespace meshkernel
             return;
         }
         const double inverseTotalDistance = 1.0 / totalDistance;
-        for (int i = 1; i < v.size(); i++)
+        for (auto i = 1; i < v.size(); i++)
         {
             result[i] = result[i] * inverseTotalDistance;
         }
@@ -1265,9 +1265,9 @@ namespace meshkernel
 
         std::vector<std::vector<double>> iWeightFactor(numMPoints, std::vector<double>(numNPoints));
         std::vector<std::vector<double>> jWeightFactor(numMPoints, std::vector<double>(numNPoints));
-        for (int i = 0; i < numMPoints; i++)
+        for (auto i = 0; i < numMPoints; i++)
         {
-            for (int j = 0; j < numNPoints; j++)
+            for (auto j = 0; j < numNPoints; j++)
             {
                 const double mWeight = double(i) / double(numM);
                 const double nWeight = double(j) / double(numN);
@@ -1281,9 +1281,9 @@ namespace meshkernel
         std::vector<std::vector<double>> weightTwo(numMPoints, std::vector<double>(numNPoints));
         std::vector<std::vector<double>> weightThree(numMPoints, std::vector<double>(numNPoints));
         std::vector<std::vector<double>> weightFour(numMPoints, std::vector<double>(numNPoints));
-        for (int i = 0; i < numMPoints; i++)
+        for (auto i = 0; i < numMPoints; i++)
         {
-            for (int j = 0; j < numNPoints; j++)
+            for (auto j = 0; j < numNPoints; j++)
             {
 
                 weightOne[i][j] = (1.0 - jWeightFactor[i][j]) * totalLengthThree + jWeightFactor[i][j] * totalLengthFour;
@@ -1298,21 +1298,21 @@ namespace meshkernel
 
         //border points
         std::vector<std::vector<Point>> result(numMPoints, std::vector<Point>(numNPoints));
-        for (int i = 0; i < numMPoints; i++)
+        for (auto i = 0; i < numMPoints; i++)
         {
             result[i][0] = sideThree[i];
             result[i][numN] = sideFour[i];
         }
-        for (int i = 0; i < numNPoints; i++)
+        for (auto i = 0; i < numNPoints; i++)
         {
             result[0][i] = sideOne[i];
             result[numM][i] = sideTwo[i];
         }
 
         // first interpolation
-        for (int i = 1; i < numM; i++)
+        for (auto i = 1; i < numM; i++)
         {
-            for (int j = 1; j < numN; j++)
+            for (auto j = 1; j < numN; j++)
             {
 
                 result[i][j].x = (sideOne[j].x * (1.0 - iWeightFactor[i][j]) + sideTwo[j].x * iWeightFactor[i][j]) * weightOne[i][j] +
@@ -1324,9 +1324,9 @@ namespace meshkernel
         }
 
         // update weights
-        for (int i = 0; i < numMPoints; i++)
+        for (auto i = 0; i < numMPoints; i++)
         {
-            for (int j = 0; j < numNPoints; j++)
+            for (auto j = 0; j < numNPoints; j++)
             {
                 weightOne[i][j] = (1.0 - jWeightFactor[i][j]) * sideThreeAdimensional[i] * totalLengthThree +
                                   jWeightFactor[i][j] * sideFourAdimensional[i] * totalLengthFour;
@@ -1335,33 +1335,33 @@ namespace meshkernel
             }
         }
 
-        for (int i = 1; i < numMPoints; i++)
+        for (auto i = 1; i < numMPoints; i++)
         {
-            for (int j = 0; j < numNPoints; j++)
+            for (auto j = 0; j < numNPoints; j++)
             {
                 weightThree[i][j] = weightOne[i][j] - weightOne[i - 1][j];
             }
         }
 
-        for (int i = 0; i < numMPoints; i++)
+        for (auto i = 0; i < numMPoints; i++)
         {
-            for (int j = 1; j < numNPoints; j++)
+            for (auto j = 1; j < numNPoints; j++)
             {
                 weightFour[i][j] = weightTwo[i][j] - weightTwo[i][j - 1];
             }
         }
 
-        for (int i = 1; i < numMPoints; i++)
+        for (auto i = 1; i < numMPoints; i++)
         {
-            for (int j = 1; j < numNPoints - 1; j++)
+            for (auto j = 1; j < numNPoints - 1; j++)
             {
                 weightOne[i][j] = 0.25 * (weightFour[i][j] + weightFour[i][j + 1] + weightFour[i - 1][j] + weightFour[i - 1][j + 1]) / weightThree[i][j];
             }
         }
 
-        for (int i = 1; i < numMPoints - 1; i++)
+        for (auto i = 1; i < numMPoints - 1; i++)
         {
-            for (int j = 1; j < numNPoints; j++)
+            for (auto j = 1; j < numNPoints; j++)
             {
                 weightTwo[i][j] = 0.25 * (weightThree[i][j] + weightThree[i][j - 1] + weightThree[i + 1][j] + weightThree[i + 1][j - 1]) / weightFour[i][j];
             }
@@ -1369,21 +1369,21 @@ namespace meshkernel
 
         // Iterate several times over
         const int numIterations = 25;
-        for (int iter = 0; iter < numIterations; iter++)
+        for (auto iter = 0; iter < numIterations; iter++)
         {
             // re-assign the weights
-            for (int i = 0; i < numMPoints; i++)
+            for (auto i = 0; i < numMPoints; i++)
             {
-                for (int j = 0; j < numNPoints; j++)
+                for (auto j = 0; j < numNPoints; j++)
                 {
                     weightThree[i][j] = result[i][j].x;
                     weightFour[i][j] = result[i][j].y;
                 }
             }
 
-            for (int i = 1; i < numM; i++)
+            for (auto i = 1; i < numM; i++)
             {
-                for (int j = 1; j < numN; j++)
+                for (auto j = 1; j < numN; j++)
                 {
 
                     const double wa = 1.0 / (weightOne[i][j] + weightOne[i + 1][j] + weightTwo[i][j] + weightTwo[i][j + 1]);

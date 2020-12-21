@@ -147,7 +147,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
     // Fill boundary coordinates
     auto assignPolygonPointsToSegment = [this, start, end, &numPolygonNodes](int nodeIndex, int numPointsSide, int dir, std::vector<Point>& sideToFill) {
-        for (int i = 0; i < numPointsSide; i++)
+        for (auto i = 0; i < numPointsSide; i++)
         {
             sideToFill[i] = m_polygon->m_nodes[nodeIndex];
             nodeIndex = nodeIndex + dir;
@@ -169,7 +169,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     else
     {
         // Interpolate fourth side
-        for (int i = 0; i < numNNodes; i++)
+        for (auto i = 0; i < numNNodes; i++)
         {
             const double fac = double(i) / double(numNNodes - 1);
             sideOne[i] = m_polygon->m_nodes[firstNode] * (1.0 - fac) +
@@ -185,9 +185,9 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
     // Assign the points to the curvilinear grid
     curvilinearGrid = {numMNodes, numNNodes};
-    for (int i = 0; i < numMNodes; i++)
+    for (auto i = 0; i < numMNodes; i++)
     {
-        for (int j = 0; j < numNNodes; j++)
+        for (auto j = 0; j < numNNodes; j++)
         {
             curvilinearGrid.m_grid[i][j] = result[i][j];
         }
@@ -298,7 +298,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
         // backward
         int cornerIndex = cornerPoints[t];
-        for (int i = 0; i < numN[t] + 1; ++i)
+        for (auto i = 0; i < numN[t] + 1; ++i)
         {
             sideOne[i] = m_polygon->m_nodes[cornerIndex];
             cornerIndex -= 1;
@@ -314,7 +314,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
 
         // forward
         cornerIndex = cornerPoints[t];
-        for (int i = 0; i < numM[t] + 1; ++i)
+        for (auto i = 0; i < numM[t] + 1; ++i)
         {
             sideThree[i] = m_polygon->m_nodes[cornerIndex];
             cornerIndex += 1;
@@ -329,14 +329,14 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
         }
 
         // fill side four
-        for (int i = 0; i < numM[t] + 1; ++i)
+        for (auto i = 0; i < numM[t] + 1; ++i)
         {
             double localXia = double(i) / double(numM[t]);
             sideFour[i] = m_polygon->m_nodes[iLeft[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
         // fill side two
-        for (int i = 0; i < numN[t] + 1; ++i)
+        for (auto i = 0; i < numN[t] + 1; ++i)
         {
             double localXia = double(i) / double(numN[t]);
             sideTwo[i] = m_polygon->m_nodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
@@ -353,9 +353,9 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
         // add to grid
         if (t == 0)
         {
-            for (int i = 0; i < result.size(); ++i)
+            for (auto i = 0; i < result.size(); ++i)
             {
-                for (int j = 0; j < result[0].size(); ++j)
+                for (auto j = 0; j < result[0].size(); ++j)
                 {
                     curvilinearGrid.m_grid[i][j] = result[i][j];
                 }
@@ -363,9 +363,9 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
         }
         if (t == 1)
         {
-            for (int i = 0; i < result.size(); ++i)
+            for (auto i = 0; i < result.size(); ++i)
             {
-                for (int j = 0; j < result[0].size(); ++j)
+                for (auto j = 0; j < result[0].size(); ++j)
                 {
                     int iIndex = n1 + n3 - i;
                     int jIndex = n2 + n3 - j;
@@ -375,9 +375,9 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
         }
         if (t == 2)
         {
-            for (int i = 0; i < result[0].size(); ++i)
+            for (auto i = 0; i < result[0].size(); ++i)
             {
-                for (int j = 0; j < result.size(); ++j)
+                for (auto j = 0; j < result.size(); ++j)
                 {
                     int jIndex = n2 + n3 - j;
                     curvilinearGrid.m_grid[i][jIndex] = result[j][i];

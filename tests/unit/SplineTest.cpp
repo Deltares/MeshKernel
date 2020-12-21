@@ -35,9 +35,9 @@ TEST(Splines, CubicSplineInterpolation)
     meshkernel::Splines::SecondOrderDerivative(splineNodes, int(splineNodes.size()), coordinatesDerivatives);
     std::vector<meshkernel::Point> splineCoordinates;
 
-    for (int n = 0; n < splineNodes.size() - 1; n++)
+    for (auto n = 0; n < splineNodes.size() - 1; n++)
     {
-        for (int p = 0; p <= pointsBetweenNodes; p++)
+        for (auto p = 0; p <= pointsBetweenNodes; p++)
         {
             const double pointAdimensionalCoordinate = n + double(p) / double(pointsBetweenNodes);
             meshkernel::Point pointCoordinate;

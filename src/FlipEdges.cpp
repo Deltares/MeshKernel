@@ -136,7 +136,7 @@ void meshkernel::FlipEdges::Compute() const
             int firstEdgeRightFace;
             int secondEdgeLeftFace;
             int secondEdgeRightFace;
-            for (int i = 0; i < NumEdgesLeftFace; i++)
+            for (auto i = 0; i < NumEdgesLeftFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[leftFace][i];
                 if (edgeIndex == e)
@@ -156,7 +156,7 @@ void meshkernel::FlipEdges::Compute() const
                 }
             }
 
-            for (int i = 0; i < NumEdgesRightFace; i++)
+            for (auto i = 0; i < NumEdgesRightFace; i++)
             {
                 const auto edgeIndex = m_mesh->m_facesEdges[rightFace][i];
                 if (edgeIndex == e)
@@ -258,7 +258,7 @@ void meshkernel::FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) co
     }
 
     int count = 0;
-    for (int i = 0; i < m_mesh->m_nodesNumEdges[firstNode] + 1; i++)
+    for (auto i = 0; i < m_mesh->m_nodesNumEdges[firstNode] + 1; i++)
     {
         if (i <= kk - 1 || i > kk)
         {
@@ -296,7 +296,7 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
     // find the nodes that are connected to both k1 and k
     int sumIndicesLeftFace = 0;
     int sumIndicesRightFace = 0;
-    for (int i = 0; i < 3; i++)
+    for (auto i = 0; i < 3; i++)
     {
         sumIndicesLeftFace += m_mesh->m_facesNodes[faceL][i];
         sumIndicesRightFace += m_mesh->m_facesNodes[faceR][i];
@@ -312,7 +312,7 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
 
     // check that kl is part of faceL
     bool nodeFound = false;
-    for (int i = 0; i < NumEdgesLeftFace; i++)
+    for (auto i = 0; i < NumEdgesLeftFace; i++)
     {
         if (m_mesh->m_facesNodes[faceL][i] == nodeLeft)
         {
@@ -328,7 +328,7 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(int edge,
 
     // check that kr is part of faceR
     nodeFound = false;
-    for (int i = 0; i < NumEdgesRightFace; i++)
+    for (auto i = 0; i < NumEdgesRightFace; i++)
     {
         if (m_mesh->m_facesNodes[faceR][i] == nodeRight)
         {

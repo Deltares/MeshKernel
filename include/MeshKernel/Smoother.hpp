@@ -102,9 +102,9 @@ namespace meshkernel
         /// @param[in] currentNode
         /// @param[out] numSharedFaces
         /// @param[out] numConnectedNodes
-        void NodeAdministration(int currentNode,
-                                int& numSharedFaces,
-                                int& numConnectedNodes);
+        void NodeAdministration(size_t currentNode,
+                                size_t& numSharedFaces,
+                                size_t& numConnectedNodes);
 
         /// @brief Compute compute current node xi and eta (orthonet_assign_xieta)
         /// @param[in] currentNode
@@ -192,12 +192,12 @@ namespace meshkernel
         std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping;
         std::vector<std::vector<size_t>> m_topologyConnectedNodes;
 
-        std::vector<int> m_numConnectedNodes;              // (nmk2)
+        std::vector<size_t> m_numConnectedNodes;           // (nmk2)
         std::vector<std::vector<size_t>> m_connectedNodes; // (kk2)
 
         // Class variables
-        int m_maximumNumConnectedNodes = 0;
-        int m_maximumNumSharedFaces = 0;
+        size_t m_maximumNumConnectedNodes = 0;
+        size_t m_maximumNumSharedFaces = 0;
 
         // nodes with errors
         std::vector<double> m_nodeXErrors;

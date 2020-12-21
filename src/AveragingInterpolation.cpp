@@ -66,7 +66,7 @@ void meshkernel::AveragingInterpolation::Compute()
     if (m_interpolationLocation == InterpolationLocation::Edges)
     {
         m_results.resize(m_mesh->GetNumEdges(), doubleMissingValue);
-        for (int e = 0; e < m_mesh->GetNumEdges(); ++e)
+        for (auto e = 0; e < m_mesh->GetNumEdges(); ++e)
         {
             const auto first = m_mesh->m_edges[e].first;
             const auto second = m_mesh->m_edges[e].second;
@@ -106,12 +106,12 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
         std::vector<double> interpolatedResults(m_mesh->GetNumFaces(), doubleMissingValue);
         std::vector<Point> polygonNodesCache(maximumNumberOfNodesPerFace + 1);
         std::fill(m_visitedSamples.begin(), m_visitedSamples.end(), false);
-        for (int f = 0; f < m_mesh->GetNumFaces(); ++f)
+        for (auto f = 0; f < m_mesh->GetNumFaces(); ++f)
         {
             polygonNodesCache.clear();
             const auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
 
-            for (int n = 0; n < numFaceNodes; ++n)
+            for (auto n = 0; n < numFaceNodes; ++n)
             {
                 polygonNodesCache.emplace_back(m_mesh->m_facesMassCenters[f] + (m_mesh->m_nodes[m_mesh->m_facesNodes[f][n]] - m_mesh->m_facesMassCenters[f]) * m_relativeSearchRadius);
             }
@@ -126,7 +126,7 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
             {
                 // for certain algorithms we want to decrease the values of the samples (e.g. refinement)
                 // it is difficult to do it otherwise without sharing or caching the query result
-                for (int i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
+                for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
                 {
                     const auto sample = m_samplesRtree.GetQuerySampleIndex(i);
                     if (!m_visitedSamples[sample])
@@ -146,7 +146,7 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
         std::vector<double> interpolatedResults(m_mesh->GetNumNodes(), doubleMissingValue);
         // make sure edge centers are computed
         m_mesh->ComputeEdgesCenters();
-        for (int n = 0; n < m_mesh->GetNumNodes(); ++n)
+        for (auto n = 0; n < m_mesh->GetNumNodes(); ++n)
         {
             m_mesh->MakeDualFace(n, m_relativeSearchRadius, dualFacePolygon);
 
@@ -154,7 +154,7 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnLocations()
             ComputeOnPolygon(dualFacePolygon, m_mesh->m_nodes[n], result);
 
             // flag the visited samples
-            for (int i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
+            for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
             {
                 const auto sample = m_samplesRtree.GetQuerySampleIndex(i);
                 m_visitedSamples[sample] = true;
@@ -245,7 +245,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
     bool firstValidSampleFound = false;
     double closestSquaredDistance = std::numeric_limits<double>::max();
 
-    for (int i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
+    for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
     {
         //do stuff based on the averaging method
         const auto sampleIndex = m_samplesRtree.GetQuerySampleIndex(i);

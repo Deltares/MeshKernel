@@ -80,7 +80,7 @@ namespace meshkernel
 
             std::vector<double> xLocalPolygon(inputNodes.size());
             std::vector<double> yLocalPolygon(inputNodes.size());
-            for (int i = 0; i < inputNodes.size(); ++i)
+            for (auto i = 0; i < inputNodes.size(); ++i)
             {
                 xLocalPolygon[i] = inputNodes[i].x;
                 yLocalPolygon[i] = inputNodes[i].y;

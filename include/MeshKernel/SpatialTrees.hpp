@@ -78,7 +78,7 @@ namespace meshkernel
                 m_points.clear();
                 m_rtree2D.clear();
 
-                for (int n = 0; n < nodes.size(); ++n)
+                for (auto n = 0; n < nodes.size(); ++n)
                 {
                     if (nodes[n].x != doubleMissingValue && nodes[n].y != doubleMissingValue)
                     {

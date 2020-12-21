@@ -234,9 +234,9 @@ namespace meshkernel
         /// @param face
         /// @param startLandBoundaryIndex
         /// @param endLandBoundaryIndex
-        [[nodiscard]] bool IsFaceCrossedByLandBoundaries(int face,
-                                                         int startLandBoundaryIndex,
-                                                         int endLandBoundaryIndex);
+        [[nodiscard]] bool IsFaceCrossedByLandBoundaries(size_t face,
+                                                         size_t startLandBoundaryIndex,
+                                                         size_t endLandBoundaryIndex);
 
         std::shared_ptr<Mesh> m_mesh;                      // A pointer to mesh
         std::shared_ptr<Polygons> m_polygons;              // A pointer to polygons

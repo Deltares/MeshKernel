@@ -224,7 +224,7 @@ namespace meshkernel
         std::vector<Edge> edges(numEdges);
 
         int ei = 0;
-        for (int e = 0; e < numEdges; e++)
+        for (auto e = 0; e < numEdges; e++)
         {
             edges[e].first = edge_nodes[ei];
             ei++;
@@ -238,7 +238,7 @@ namespace meshkernel
     static std::vector<Point> ConvertToNodesVector(int numNodes, const double* nodex, const double* nodey)
     {
         std::vector<Point> nodes(numNodes);
-        for (int n = 0; n < numNodes; n++)
+        for (auto n = 0; n < numNodes; n++)
         {
             nodes[n].x = nodex[n];
             nodes[n].y = nodey[n];
@@ -250,7 +250,7 @@ namespace meshkernel
     static std::vector<Point> ConvertToFaceCentersVector(int numFaces, const double* facex, const double* facey)
     {
         std::vector<Point> faceCenters(numFaces);
-        for (int n = 0; n < numFaces; n++)
+        for (auto n = 0; n < numFaces; n++)
         {
             faceCenters[n].x = facex[n];
             faceCenters[n].y = facey[n];

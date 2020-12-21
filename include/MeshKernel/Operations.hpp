@@ -81,7 +81,7 @@ namespace meshkernel
     [[nodiscard]] int FindIndex(const std::vector<T>& vec, T el)
     {
         int index = 0;
-        for (int n = 0; n < vec.size(); n++)
+        for (auto n = 0; n < vec.size(); n++)
         {
             if (vec[n] == el)
             {
@@ -516,7 +516,7 @@ namespace meshkernel
         double maxx = std::numeric_limits<double>::lowest();
         double miny = std::numeric_limits<double>::max();
         double maxy = std::numeric_limits<double>::lowest();
-        for (int n = 0; n < values.size(); n++)
+        for (auto n = 0; n < values.size(); n++)
         {
             bool isInvalid = IsEqual(values[n].x, doubleMissingValue) ||
                              IsEqual(values[n].y, doubleMissingValue);

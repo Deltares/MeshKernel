@@ -78,7 +78,7 @@ namespace meshkernelapi
         }
         result.resize(geometryListIn.numberOfCoordinates);
 
-        for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
+        for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
             result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i]};
         }
@@ -93,7 +93,7 @@ namespace meshkernelapi
         }
         result.resize(geometryListIn.numberOfCoordinates);
 
-        for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
+        for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
             result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i], geometryListIn.zCoordinates[i]};
         }
@@ -107,7 +107,7 @@ namespace meshkernelapi
             throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates.");
         }
 
-        for (int i = 0; i < result.numberOfCoordinates; i++)
+        for (auto i = 0; i < result.numberOfCoordinates; i++)
         {
             result.xCoordinates[i] = pointVector[i].x;
             result.yCoordinates[i] = pointVector[i].y;
@@ -397,7 +397,7 @@ namespace meshkernelapi
 
             // build enclosing polygon
             std::vector<meshkernel::Point> nodes(geometryListPolygon.numberOfCoordinates);
-            for (int i = 0; i < geometryListPolygon.numberOfCoordinates; i++)
+            for (auto i = 0; i < geometryListPolygon.numberOfCoordinates; i++)
             {
                 nodes[i].x = geometryListPolygon.xCoordinates[i];
                 nodes[i].y = geometryListPolygon.yCoordinates[i];
@@ -407,7 +407,7 @@ namespace meshkernelapi
 
             // build land boundary
             std::vector<meshkernel::Point> landBoundaries(geometryListLandBoundaries.numberOfCoordinates);
-            for (int i = 0; i < geometryListLandBoundaries.numberOfCoordinates; i++)
+            for (auto i = 0; i < geometryListLandBoundaries.numberOfCoordinates; i++)
             {
                 landBoundaries[i].x = geometryListLandBoundaries.xCoordinates[i];
                 landBoundaries[i].y = geometryListLandBoundaries.yCoordinates[i];
@@ -456,7 +456,7 @@ namespace meshkernelapi
 
             // build enclosing polygon
             std::vector<meshkernel::Point> nodes(geometryListPolygon.numberOfCoordinates);
-            for (int i = 0; i < geometryListPolygon.numberOfCoordinates; i++)
+            for (auto i = 0; i < geometryListPolygon.numberOfCoordinates; i++)
             {
                 nodes[i].x = geometryListPolygon.xCoordinates[i];
                 nodes[i].y = geometryListPolygon.yCoordinates[i];
@@ -464,7 +464,7 @@ namespace meshkernelapi
 
             // build land boundary
             std::vector<meshkernel::Point> landBoundaries(geometryListLandBoundaries.numberOfCoordinates);
-            for (int i = 0; i < geometryListLandBoundaries.numberOfCoordinates; i++)
+            for (auto i = 0; i < geometryListLandBoundaries.numberOfCoordinates; i++)
             {
                 landBoundaries[i].x = geometryListLandBoundaries.xCoordinates[i];
                 landBoundaries[i].y = geometryListLandBoundaries.yCoordinates[i];
@@ -667,7 +667,7 @@ namespace meshkernelapi
             }
 
             std::vector<meshkernel::Point> splines(geometryListIn.numberOfCoordinates);
-            for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
+            for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
             {
                 splines[i].x = geometryListIn.xCoordinates[i];
                 splines[i].y = geometryListIn.yCoordinates[i];
@@ -678,15 +678,15 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
 
             int index = 0;
-            for (int s = 0; s < numSplines; s++)
+            for (auto s = 0; s < numSplines; s++)
             {
                 std::vector<meshkernel::Point> coordinates(splines.begin() + indices[s][0], splines.begin() + int(indices[s][1]) + 1);
                 int numNodes = int(indices[s][1]) - int(indices[s][0]) + 1;
                 meshkernel::Splines::SecondOrderDerivative(coordinates, numNodes, coordinatesDerivatives);
 
-                for (int n = 0; n < numNodes - 1; n++)
+                for (auto n = 0; n < numNodes - 1; n++)
                 {
-                    for (int p = 0; p <= numberOfPointsBetweenNodes; p++)
+                    for (auto p = 0; p <= numberOfPointsBetweenNodes; p++)
                     {
 
                         double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenNodes);
@@ -959,7 +959,7 @@ namespace meshkernelapi
             meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
 
             int index = 0;
-            for (int i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
+            for (auto i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
             {
                 if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
                 {
@@ -1479,7 +1479,7 @@ namespace meshkernelapi
             ConvertGeometryListToPointVector(pointsNative, points);
             meshkernel::Polygons localPolygon(polygonNodes, meshInstances[meshKernelId]->m_projection);
 
-            for (int i = 0; i < points.size(); i++)
+            for (auto i = 0; i < points.size(); i++)
             {
                 selectedPointsNative.zCoordinates[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
             }

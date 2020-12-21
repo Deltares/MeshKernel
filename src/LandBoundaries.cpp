@@ -61,7 +61,7 @@ namespace meshkernel
 
         // do not consider the landboundary nodes outside the polygon
         std::vector<bool> nodeMask(m_nodes.size() - 1, false);
-        for (int n = 0; n < m_nodes.size() - 1; n++)
+        for (auto n = 0; n < m_nodes.size() - 1; n++)
         {
             if (!m_nodes[n].IsValid() || !m_nodes[n + 1].IsValid())
             {
@@ -174,7 +174,7 @@ namespace meshkernel
         m_nodesMinDistances.resize(m_mesh->GetNumNodes(), doubleMissingValue);
 
         // loop over the segments of the land boundary and make assign each node to the land boundary segment index
-        for (int landBoundarySegment = 0; landBoundarySegment < m_segmentIndices.size(); landBoundarySegment++)
+        for (auto landBoundarySegment = 0; landBoundarySegment < m_segmentIndices.size(); landBoundarySegment++)
         {
             int numPaths = 0;
             int numRejectedPaths = 0;
@@ -191,7 +191,7 @@ namespace meshkernel
         {
             std::vector<int> connectedNodes;
             int numConnectedNodes = 0;
-            for (int e = 0; e < m_mesh->GetNumEdges(); e++)
+            for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
             {
                 if (!m_mesh->IsEdgeOnBoundary(e))
                 {
@@ -276,7 +276,7 @@ namespace meshkernel
                 break;
 
             bool otherNodeAlreadyVisited = false;
-            for (int n = numNodesLoc - 1; n >= 0; n--)
+            for (auto n = numNodesLoc - 1; n >= 0; n--)
             {
                 if (otherNode == nodesLoc[n])
                 {
@@ -293,7 +293,7 @@ namespace meshkernel
             if (m_meshNodesLandBoundarySegments[otherNode] >= 0)
             {
                 // Now check landboundary for otherNode
-                for (int n = 1; n < numNodesLoc; n++)
+                for (auto n = 1; n < numNodesLoc; n++)
                 {
                     int meshNode = nodesLoc[n];
 
@@ -576,9 +576,9 @@ namespace meshkernel
         // check if any of the land boundary node is inside a m_mesh face
         bool nodeInFace = false;
         int crossedFaceIndex = -1;
-        for (int i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
+        for (auto i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
         {
-            for (int f = 0; f < m_mesh->GetNumFaces(); f++)
+            for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
             {
                 auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
 
@@ -603,7 +603,7 @@ namespace meshkernel
         if (!nodeInFace)
         {
             crossedFaceIndex = -1;
-            for (int e = 0; e < m_mesh->GetNumEdges(); e++)
+            for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
             {
                 if (!m_mesh->IsEdgeOnBoundary(e))
                     continue;
@@ -644,11 +644,11 @@ namespace meshkernel
                       rightEdgeRatio);
 
             // Mask all nodes of the masked faces
-            for (int f = 0; f < m_mesh->GetNumFaces(); f++)
+            for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
             {
                 if (m_faceMask[f] == 1)
                 {
-                    for (int n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
+                    for (auto n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
                     {
                         m_nodeMask[m_mesh->m_facesNodes[f][n]] = segmentIndex;
                     }
@@ -661,7 +661,7 @@ namespace meshkernel
                 e = segmentIndex;
         }
 
-        for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+        for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
         {
             if (m_nodeMask[n] >= 0)
             {
@@ -696,7 +696,7 @@ namespace meshkernel
             // these are the faces that are close (up to a certain tolerance) by a land boundary
             if (face < 0)
             {
-                for (int e = 0; e < m_mesh->GetNumEdges(); e++)
+                for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
                 {
                     if (!m_mesh->IsEdgeOnBoundary(e) || m_mesh->m_edges[e].first < 0 || m_mesh->m_edges[e].second < 0)
                         continue;
@@ -985,7 +985,7 @@ namespace meshkernel
         int startEdge = -1;
         int endEdge = -1;
 
-        for (int e = 0; e < m_mesh->GetNumEdges(); e++)
+        for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
         {
             if (m_mesh->m_edges[e].first < 0 || m_mesh->m_edges[e].second < 0)
                 continue;
@@ -1129,7 +1129,7 @@ namespace meshkernel
 
                 if (currentNodeLandBoundaryNodeIndex < neighbouringNodeLandBoundaryNodeIndex)
                 {
-                    for (int n = currentNodeLandBoundaryNodeIndex + 1; n < neighbouringNodeLandBoundaryNodeIndex; ++n)
+                    for (auto n = currentNodeLandBoundaryNodeIndex + 1; n < neighbouringNodeLandBoundaryNodeIndex; ++n)
                     {
                         double ratio;
                         middlePointDistance = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, m_mesh->m_projection, middlePointOnLandBoundary, ratio);
@@ -1139,7 +1139,7 @@ namespace meshkernel
                 }
                 else if (currentNodeLandBoundaryNodeIndex > neighbouringNodeLandBoundaryNodeIndex)
                 {
-                    for (int n = neighbouringNodeLandBoundaryNodeIndex + 1; n < currentNodeLandBoundaryNodeIndex; ++n)
+                    for (auto n = neighbouringNodeLandBoundaryNodeIndex + 1; n < currentNodeLandBoundaryNodeIndex; ++n)
                     {
                         double ratio;
                         middlePointDistance = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, m_mesh->m_projection, middlePointOnLandBoundary, ratio);
@@ -1165,7 +1165,7 @@ namespace meshkernel
             // linear search with masking
             currentNodeIndex = 0;
             double minValue = std::numeric_limits<double>::max();
-            for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+            for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
             {
                 if (m_nodeMask[n] == landBoundarySegment && !isVisited[n] && nodeDistances[n] < minValue)
                 {
@@ -1202,7 +1202,7 @@ namespace meshkernel
         nearestLandBoundaryNodeIndex = -1;
         edgeRatio = -1.0;
         pointOnLandBoundary = node;
-        for (int n = startLandBoundaryIndex; n < endLandBoundaryIndex; n++)
+        for (auto n = startLandBoundaryIndex; n < endLandBoundaryIndex; n++)
         {
             if (!m_nodes[n].IsValid() || !m_nodes[n + 1].IsValid())
             {
@@ -1224,7 +1224,7 @@ namespace meshkernel
     }
 
     /// TODO: it could be moved to generic operations
-    bool LandBoundaries::IsFaceCrossedByLandBoundaries(int face, int startLandBoundaryIndex, int endLandBoundaryIndex)
+    bool LandBoundaries::IsFaceCrossedByLandBoundaries(size_t face, size_t startLandBoundaryIndex, size_t endLandBoundaryIndex)
     {
         if (m_nodes.empty())
         {
@@ -1233,14 +1233,14 @@ namespace meshkernel
 
         for (const auto& edge : m_mesh->m_facesEdges[face])
         {
-            for (int i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
+            for (auto i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
             {
-                auto firstMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edge].first];
-                auto secondMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edge].second];
+                const auto firstMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edge].first];
+                const auto secondMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edge].second];
 
-                auto firstNode = m_nodes[i];
-                auto secondNode = m_nodes[i + 1];
-                bool adimensional = false;
+                const auto firstNode = m_nodes[i];
+                const auto secondNode = m_nodes[i + 1];
+                const bool adimensional = false;
                 Point intersection;
                 double crossProduct;
                 double firstRatio;
@@ -1264,7 +1264,7 @@ namespace meshkernel
         }
 
         const int numNodes = m_mesh->GetNumNodes();
-        for (int n = 0; n < numNodes; ++n)
+        for (auto n = 0; n < numNodes; ++n)
         {
             if (m_mesh->m_nodesTypes[n] == 1 || m_mesh->m_nodesTypes[n] == 2 || m_mesh->m_nodesTypes[n] == 3)
             {

@@ -91,7 +91,7 @@ void meshkernel::TriangulationInterpolation::Compute()
     GetBoundingBox(m_samples, lowerLeft, upperRight);
 
     // loop over locations
-    for (int n = 0; n < m_locations.size(); ++n)
+    for (auto n = 0; n < m_locations.size(); ++n)
     {
         if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
             !IsEqual(m_results[n], doubleMissingValue))
@@ -123,7 +123,7 @@ void meshkernel::TriangulationInterpolation::Compute()
 
             // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the point location
             numFacesSearched++;
-            for (int i = 0; i < numNodesInTriangle; ++i)
+            for (auto i = 0; i < numNodesInTriangle; ++i)
             {
                 const auto edge = triangulationWrapper.m_faceEdges[triangle][i];
                 if (triangulationWrapper.m_edgesFaces[edge][1] == 0)

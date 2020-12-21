@@ -86,9 +86,9 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
     const auto numNodesSecondSpline = static_cast<int>(m_splineNodes[second].size());
 
     // First find a valid crossing, the closest to spline central point
-    for (int n = 0; n < numNodesFirstSpline - 1; n++)
+    for (auto n = 0; n < numNodesFirstSpline - 1; n++)
     {
-        for (int nn = 0; nn < numNodesSecondSpline - 1; nn++)
+        for (auto nn = 0; nn < numNodesSecondSpline - 1; nn++)
         {
             Point intersection;
             double crossProduct;
@@ -293,7 +293,7 @@ double meshkernel::Splines::GetSplineLength(int index,
 
     double rightPointCoordinateOnSpline = startIndex;
     double leftPointCoordinateOnSpline;
-    for (int p = 0; p < numPoints; ++p)
+    for (auto p = 0; p < numPoints; ++p)
     {
         leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
         rightPointCoordinateOnSpline += delta;
@@ -376,9 +376,9 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline
     std::vector<Point> u(numNodes);
     u[0] = {0.0, 0.0};
     coordinatesDerivatives.resize(spline.size(), {0.0, 0.0});
-    coordinatesDerivatives[0] = {0.0, 0.0};
+    coordinatesDerivatives.front() = {0.0, 0.0};
 
-    for (int i = 1; i < numNodes - 1; i++)
+    for (auto i = 1; i < numNodes - 1; i++)
     {
         const Point p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
         coordinatesDerivatives[i].x = -0.5 / p.x;
@@ -388,8 +388,9 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline
         u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
     }
 
-    coordinatesDerivatives[numNodes - 1] = {0.0, 0.0};
-    for (int i = numNodes - 2; i >= 0; i--)
+    coordinatesDerivatives.back() = {0.0, 0.0};
+
+    for (auto i = numNodes - 2; i < numNodes; --i)
     {
         coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
     }
@@ -399,9 +400,9 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coord
 {
     std::vector<double> u(numNodes);
     u[0] = 0.0;
-    coordinatesDerivatives[0] = 0.0;
+    coordinatesDerivatives.front() = 0.0;
 
-    for (int i = 1; i < numNodes - 1; i++)
+    for (auto i = 1; i < numNodes - 1; i++)
     {
         const double p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
         coordinatesDerivatives[i] = -0.5 / p;
@@ -410,8 +411,8 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coord
         u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
     }
 
-    coordinatesDerivatives[numNodes - 1] = 0.0;
-    for (int i = numNodes - 2; i >= 0; i--)
+    coordinatesDerivatives.back() = 0.0;
+    for (auto i = numNodes - 2; i < numNodes; --i)
     {
         coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
     }

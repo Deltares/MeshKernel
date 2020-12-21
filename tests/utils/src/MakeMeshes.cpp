@@ -94,14 +94,14 @@ std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, m
     std::vector<meshkernel::Edge> edges(num_edges);
     std::vector<meshkernel::Point> nodes(num_nodes);
 
-    for (int i = 0; i < nodeX.size(); i++)
+    for (auto i = 0; i < nodeX.size(); i++)
     {
         nodes[i].x = nodeX[i];
         nodes[i].y = nodeY[i];
     }
 
     int index = 0;
-    for (int i = 0; i < edges.size(); i++)
+    for (auto i = 0; i < edges.size(); i++)
     {
         edges[i].first = edge_nodes[index] - 1;
         index++;
@@ -161,9 +161,9 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
     std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
-    for (int i = 0; i < n; ++i)
+    for (auto i = 0; i < n; ++i)
     {
-        for (int j = 0; j < m; ++j)
+        for (auto j = 0; j < m; ++j)
         {
             indicesValues[i][j] = i * m + j;
             nodes[nodeIndex] = {origin.x + i * delta, origin.y + j * delta};
@@ -174,18 +174,18 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
 
-    for (int i = 0; i < n - 1; ++i)
+    for (auto i = 0; i < n - 1; ++i)
     {
-        for (int j = 0; j < m; ++j)
+        for (auto j = 0; j < m; ++j)
         {
             edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
 
-    for (int i = 0; i < n; ++i)
+    for (auto i = 0; i < n; ++i)
     {
-        for (int j = 0; j < m - 1; ++j)
+        for (auto j = 0; j < m - 1; ++j)
         {
             edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
@@ -370,13 +370,13 @@ std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
 
     std::vector<meshkernel::Point> nodes(xCoordinates.size());
 
-    for (int i = 0; i < nodes.size(); i++)
+    for (auto i = 0; i < nodes.size(); i++)
     {
         nodes[i].x = xCoordinates[i];
         nodes[i].y = yCoordinates[i];
     }
 
-    for (int i = 0; i < edges.size(); i++)
+    for (auto i = 0; i < edges.size(); i++)
     {
         edges[i].first -= 1;
         edges[i].second -= 1;

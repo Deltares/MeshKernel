@@ -92,7 +92,7 @@ void meshkernel::OrthogonalizationAndSmoothing::Initialize()
 
         m_localCoordinatesIndices.resize(m_mesh->GetNumNodes() + 1);
         m_localCoordinatesIndices[0] = 1;
-        for (int n = 0; n < m_mesh->GetNumNodes(); ++n)
+        for (auto n = 0; n < m_mesh->GetNumNodes(); ++n)
         {
             m_localCoordinatesIndices[n + 1] = m_localCoordinatesIndices[n] + std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
         }
@@ -149,7 +149,7 @@ void meshkernel::OrthogonalizationAndSmoothing::AllocateLinearSystem()
         m_compressedStartNodeIndex.resize(m_mesh->GetNumNodes());
         std::fill(m_compressedStartNodeIndex.begin(), m_compressedStartNodeIndex.end(), 0.0);
 
-        for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+        for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
         {
             m_compressedEndNodeIndex[n] = m_nodeCacheSize;
             m_nodeCacheSize += std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
@@ -177,7 +177,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
     const double max_aptf = std::max(m_orthogonalizationParameters.OrthogonalizationToSmoothingFactorBoundary, m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor);
 #pragma omp parallel for
-    for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
         if ((m_mesh->m_nodesTypes[n] != 1 && m_mesh->m_nodesTypes[n] != 2) || m_mesh->m_nodesNumEdges[n] < 2)
         {
@@ -229,7 +229,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 void meshkernel::OrthogonalizationAndSmoothing::InnerIteration()
 {
 #pragma omp parallel for
-    for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
         UpdateNodeCoordinates(n);
     }
@@ -395,7 +395,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeI
 {
     int numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
     auto cacheIndex = m_compressedEndNodeIndex[nodeIndex];
-    for (int nn = 1; nn < numConnectedNodes; nn++)
+    for (auto nn = 1; nn < numConnectedNodes; nn++)
     {
         const auto wwx = m_compressedWeightX[cacheIndex];
         const auto wwy = m_compressedWeightY[cacheIndex];
