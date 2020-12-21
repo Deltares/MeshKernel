@@ -220,7 +220,7 @@ int meshkernel::MeshRefinement::DeleteIsolatedHangingnodes()
                 const auto faceIndex = m_mesh->m_edgesFaces[e][f];
 
                 if (faceIndex != m_mesh->m_edgesFaces[brotherEdgeIndex][0] &&
-                    faceIndex != m_mesh->m_edgesFaces[brotherEdgeIndex][std::min(m_mesh->m_edgesNumFaces[brotherEdgeIndex], 1)])
+                    faceIndex != m_mesh->m_edgesFaces[brotherEdgeIndex][std::min(m_mesh->m_edgesNumFaces[brotherEdgeIndex], static_cast<size_t>(1))])
                 {
                     throw AlgorithmError("MeshRefinement::DeleteIsolatedHangingnodes: Algorithm error.");
                 }

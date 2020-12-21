@@ -540,7 +540,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
     // for each shared face, a boolean indicating if it is squared or not
     std::vector<bool> isSquareFace(numSharedFaces, false);
 
-    int numNonStencilQuad = 0;
+    size_t numNonStencilQuad = 0;
 
     //loop over the connected edges
     for (auto f = 0; f < numSharedFaces; f++)
@@ -836,14 +836,14 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
         }
 
         const auto secondEdge = m_mesh->m_nodesEdges[currentNode][secondEdgeIndex];
-        if (m_mesh->m_edgesNumFaces[firstEdge] < 1 || m_mesh->m_edgesNumFaces[secondEdge] < 1)
+        if (m_mesh->m_edgesNumFaces[firstEdge] == 0 || m_mesh->m_edgesNumFaces[secondEdge] == 0)
         {
             continue;
         }
 
         // find the face shared by the two edges
-        const int firstFace = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], int(2)), int(1)) - 1;
-        const int secondFace = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], int(2)), int(1)) - 1;
+        const auto firstFace = std::max(std::min(m_mesh->m_edgesNumFaces[firstEdge], size_t(2)), size_t(1)) - 1;
+        const auto secondFace = std::max(std::min(m_mesh->m_edgesNumFaces[secondEdge], size_t(2)), size_t(1)) - 1;
 
         if (m_mesh->m_edgesFaces[firstEdge][0] != newFaceIndex &&
             (m_mesh->m_edgesFaces[firstEdge][0] == m_mesh->m_edgesFaces[secondEdge][0] ||

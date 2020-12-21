@@ -2249,7 +2249,7 @@ void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
                 curvilinearGridIndicator[m_facesNodes[f][n]] = false;
             const auto edgeIndex = m_facesEdges[f][n];
 
-            if (m_edgesNumFaces[edgeIndex] < 1)
+            if (m_edgesNumFaces[edgeIndex] == 0)
             {
                 continue;
             }
@@ -2291,7 +2291,7 @@ void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
 
         if (first == sizetMissingValue || second == sizetMissingValue)
             continue;
-        if (m_edgesNumFaces[e] < 1)
+        if (m_edgesNumFaces[e] == 0)
             continue;
         // Consider only quads
         if (!curvilinearGridIndicator[first] || !curvilinearGridIndicator[second])
@@ -2420,7 +2420,7 @@ std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(int node) const
         const auto firstEdge = m_nodesEdges[node][e];
 
         // no faces for this edge
-        if (m_edgesNumFaces[firstEdge] <= 0)
+        if (m_edgesNumFaces[firstEdge] == 0)
         {
             continue;
         }
