@@ -77,7 +77,7 @@ namespace meshkernel
         /// @brief Remove a connected edge from a node
         /// @param[in] edgeIndex The index of the edge to remove
         /// @param[in] nodeIndex The index of the node to process
-        void DeleteEdgeFromNode(int edgeIndex, int nodeIndex) const;
+        void DeleteEdgeFromNode(size_t edgeIndex, size_t nodeIndex) const;
 
         std::shared_ptr<Mesh> m_mesh;                     // A pointer to mesh
         std::shared_ptr<LandBoundaries> m_landBoundaries; // A pointer to land boundaries

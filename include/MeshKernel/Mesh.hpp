@@ -248,22 +248,22 @@ namespace meshkernel
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
         /// @return The number of valid faces
-        [[nodiscard]] auto GetNumFaceEdges(int faceIndex) const { return m_numFacesNodes[faceIndex]; }
+        [[nodiscard]] auto GetNumFaceEdges(size_t faceIndex) const { return m_numFacesNodes[faceIndex]; }
 
         /// @brief Get the number of faces an edges shares
         /// @param[in] edgeIndex The edge index
         /// @return The number of faces an edges shares
-        [[nodiscard]] auto GetNumEdgesFaces(int edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+        [[nodiscard]] auto GetNumEdgesFaces(size_t edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
         /// @brief Inquire if an edge is on boundary
         /// @param edge The edge index
         /// @return If the edge is on boundary
-        [[nodiscard]] bool IsEdgeOnBoundary(int edge) const { return m_edgesNumFaces[edge] == 1; }
+        [[nodiscard]] bool IsEdgeOnBoundary(size_t edge) const { return m_edgesNumFaces[edge] == 1; }
 
         /// @brief Inquire if a face is on boundary
         /// @param face The face index
         /// @return If the face is on boundary
-        [[nodiscard]] bool IsFaceOnBoundary(int face) const;
+        [[nodiscard]] bool IsFaceOnBoundary(size_t face) const;
 
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon Cache storing the face nodes
@@ -356,12 +356,12 @@ namespace meshkernel
         void DeleteHangingEdges();
 
         // nodes
-        std::vector<Point> m_nodes;                 ///< The mesh nodes (xk, yk)
-        std::vector<std::vector<int>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
-        std::vector<int> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
-        std::vector<int> m_nodeMask;                ///< The node mask (kc)
-        std::vector<std::vector<int>> m_nodesNodes; ///< For each node, its neighbours
-        std::vector<int> m_nodesTypes;              ///< The node types (nb)
+        std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
+        std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
+        std::vector<int> m_nodesNumEdges;              ///< For each node, the number of connected edges (nmk)
+        std::vector<int> m_nodeMask;                   ///< The node mask (kc)
+        std::vector<std::vector<int>> m_nodesNodes;    ///< For each node, its neighbours
+        std::vector<int> m_nodesTypes;                 ///< The node types (nb)
 
         // edges
         std::vector<Edge> m_edges;                  ///< The edges, defined as first and second node(kn)
@@ -414,7 +414,7 @@ namespace meshkernel
         void FindFacesRecursive(int startingNode,
                                 int node,
                                 int numEdges,
-                                int previousEdge,
+                                size_t previousEdge,
                                 size_t numClosingEdges,
                                 std::vector<int>& edges,
                                 std::vector<int>& nodes,

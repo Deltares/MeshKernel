@@ -63,7 +63,7 @@ void meshkernel::FlipEdges::Compute() const
     const int numEdges = m_mesh->GetNumEdges();
     int numFlippedEdges = intMissingValue;
 
-    for (int iter = 0; iter < MaxIter; iter++)
+    for (auto iter = 0; iter < MaxIter; iter++)
     {
         if (numFlippedEdges == 0)
         {
@@ -71,7 +71,7 @@ void meshkernel::FlipEdges::Compute() const
         }
         numFlippedEdges = 0;
 
-        for (int e = 0; e < numEdges; e++)
+        for (auto e = 0; e < numEdges; e++)
         {
 
             if (m_mesh->IsEdgeOnBoundary(e))
@@ -243,7 +243,7 @@ void meshkernel::FlipEdges::Compute() const
     m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 }
 
-void meshkernel::FlipEdges::DeleteEdgeFromNode(int edge, int firstNode) const
+void meshkernel::FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const
 {
     // Update nod, delete edge from m_mesh->m_nodesEdges[firstNode]
     int kk = 0;
@@ -402,7 +402,7 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, i
 
     // find the first edge connecting firstNode
     int edgeIndexConnectingFirstNode = -1;
-    for (int i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
+    for (auto i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
 
@@ -420,7 +420,7 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, i
 
     // find the first edge connecting secondNode
     int edgeIndexConnectingSecondNode = -1;
-    for (int i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
+    for (auto i = 0; i < m_mesh->m_nodesNumEdges[nodeIndex]; i++)
     {
         const auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][i];
 
@@ -438,9 +438,9 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(int nodeIndex, int firstNode, i
 
     // count the numbers of edges clockwise from the one connecting indexFirstNode
     // that are not in a land or mesh boundary path
-    int currentEdgeIndexInNodeEdges = edgeIndexConnectingFirstNode;
-    int edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
-    int otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
+    auto currentEdgeIndexInNodeEdges = edgeIndexConnectingFirstNode;
+    auto edgeIndex = m_mesh->m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
+    auto otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - nodeIndex;
     int num = 1;
     while (m_landBoundaries->m_meshNodesLandBoundarySegments[otherNode] < 0 &&
            !m_mesh->IsEdgeOnBoundary(edgeIndex) &&

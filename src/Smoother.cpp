@@ -320,7 +320,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
     double xiBoundary = 0.0;
     double etaBoundary = 0.0;
 
-    for (int f = 0; f < m_numTopologyFaces[currentTopology]; f++)
+    for (auto f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
         auto edgeIndex = m_mesh->m_nodesEdges[currentNode][f];
         int otherNode = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - currentNode;
@@ -487,14 +487,14 @@ void meshkernel::Smoother::ComputeOperatorsNode(int currentNode)
         volxi = 1.0;
     }
 
-    for (int i = 0; i < m_mesh->m_nodesNumEdges[currentNode]; i++)
+    for (auto i = 0; i < m_mesh->m_nodesNumEdges[currentNode]; i++)
     {
         m_Divxi[currentTopology][i] = m_Divxi[currentTopology][i] / volxi;
         m_Diveta[currentTopology][i] = m_Diveta[currentTopology][i] / volxi;
     }
 
     //compute the node-to-node gradients
-    for (int f = 0; f < m_numTopologyFaces[currentTopology]; f++)
+    for (auto f = 0; f < m_numTopologyFaces[currentTopology]; f++)
     {
         // internal edge
         if (!m_mesh->IsEdgeOnBoundary(m_mesh->m_nodesEdges[currentNode][f]))

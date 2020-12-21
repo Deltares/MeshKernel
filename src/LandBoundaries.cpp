@@ -262,14 +262,14 @@ namespace meshkernel
 
         int lastVisitedNode = nodesLoc[numNodesLoc - 1];
 
-        for (int e = 0; e < m_mesh->m_nodesNumEdges[lastVisitedNode]; e++)
+        for (auto e = 0; e < m_mesh->m_nodesNumEdges[lastVisitedNode]; e++)
         {
-            int edge = m_mesh->m_nodesEdges[lastVisitedNode][e];
+            const auto edge = m_mesh->m_nodesEdges[lastVisitedNode][e];
 
             if (!m_mesh->IsEdgeOnBoundary(edge))
                 continue;
 
-            int otherNode = m_mesh->m_edges[edge].first + m_mesh->m_edges[edge].second - lastVisitedNode;
+            const auto otherNode = m_mesh->m_edges[edge].first + m_mesh->m_edges[edge].second - lastVisitedNode;
 
             // path stopped
             if (m_nodeMask[otherNode] < 0)
