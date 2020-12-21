@@ -40,11 +40,11 @@ namespace meshkernel
     class FlipEdges
     {
     public:
-        /// @brief Ctor
-        /// @brief mesh The input mesh
-        /// @brief landBoundary The land boundary
-        /// @brief triangulateFaces Option to triangulate all faces or not
-        /// @brief projectToLandBoundary Option to project to land boundaries or not
+        /// @brief Constructor
+        /// @param[in] mesh The input mesh
+        /// @param[in] landBoundary The land boundary
+        /// @param[in] triangulateFaces Option to triangulate all faces or not
+        /// @param[in] projectToLandBoundary Option to project to land boundaries or not
         /// @returns If the method succeeded
         FlipEdges(std::shared_ptr<Mesh> mesh,
                   std::shared_ptr<LandBoundaries> landBoundary,
