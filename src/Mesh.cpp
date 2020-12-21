@@ -642,9 +642,9 @@ void meshkernel::Mesh::DeleteDegeneratedTriangles()
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 }
 
-void meshkernel::Mesh::FindFacesRecursive(int startingNode,
-                                          int node,
-                                          int index,
+void meshkernel::Mesh::FindFacesRecursive(size_t startingNode,
+                                          size_t node,
+                                          size_t index,
                                           size_t previousEdge,
                                           size_t numClosingEdges,
                                           std::vector<int>& edges,

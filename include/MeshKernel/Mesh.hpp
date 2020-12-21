@@ -411,9 +411,9 @@ namespace meshkernel
         /// @param nodes The vector storing the current nodes forming a face
         /// @param sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
         /// @param sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
-        void FindFacesRecursive(int startingNode,
-                                int node,
-                                int numEdges,
+        void FindFacesRecursive(size_t startingNode,
+                                size_t node,
+                                size_t numEdges,
                                 size_t previousEdge,
                                 size_t numClosingEdges,
                                 std::vector<int>& edges,
