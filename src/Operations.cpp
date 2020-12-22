@@ -143,17 +143,28 @@ namespace meshkernel
 
     bool IsPointInPolygonNodes(const Point& point,
                                const std::vector<Point>& polygonNodes,
-                               int startNode,
-                               int endNode,
                                const Projection& projection,
-                               Point polygonCenter)
+                               Point polygonCenter,
+                               size_t startNode,
+                               size_t endNode)
     {
+        if (polygonNodes.empty())
+        {
+            return true;
+        }
+
+        if (startNode == sizetMissingValue && endNode == sizetMissingValue)
+        {
+            startNode = 0;
+            endNode = polygonNodes.size() - 1; //closed polygon
+        }
 
         if (endNode <= startNode)
         {
             return true;
         }
-        const int currentPolygonSize = endNode - startNode + 1;
+
+        const auto currentPolygonSize = endNode - startNode + 1;
         if (currentPolygonSize < numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
         {
             return false;
@@ -1239,8 +1250,8 @@ namespace meshkernel
                                                           const std::vector<Point>& sideThree,
                                                           const std::vector<Point>& sideFour,
                                                           const Projection& projection,
-                                                          int numM,
-                                                          int numN)
+                                                          size_t numM,
+                                                          size_t numN)
     {
         double totalLengthOne;
         std::vector<double> sideOneAdimensional(sideOne.size());

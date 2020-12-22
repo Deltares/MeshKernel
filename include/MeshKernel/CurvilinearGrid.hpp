@@ -45,7 +45,7 @@ namespace meshkernel
         /// @brief Create a new curvilinear grid
         /// @param[in] m Number of columns (horizontal direction)
         /// @param[in] n Number of rows (vertical direction)
-        CurvilinearGrid(int m, int n)
+        CurvilinearGrid(size_t m, size_t n)
         {
             m_grid.resize(m + 1, std::vector<Point>(n + 1, {doubleMissingValue, doubleMissingValue}));
         }

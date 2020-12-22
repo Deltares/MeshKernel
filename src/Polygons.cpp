@@ -293,7 +293,7 @@ namespace meshkernel
         return newPolygon;
     }
 
-    bool Polygons::IsPointInPolygon(Point point, int polygonIndex) const
+    bool Polygons::IsPointInPolygon(Point point, size_t polygonIndex) const
     {
         // empty polygon means everything is included
         if (m_indices.empty())
@@ -306,7 +306,7 @@ namespace meshkernel
             throw std::invalid_argument("Polygons::IsPointInPolygon: Invalid polygon index.");
         }
 
-        bool inPolygon = IsPointInPolygonNodes(point, m_nodes, m_indices[polygonIndex][0], m_indices[polygonIndex][1], m_projection);
+        const auto inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), m_indices[polygonIndex][0], m_indices[polygonIndex][1]);
         return inPolygon;
     }
 
@@ -338,7 +338,7 @@ namespace meshkernel
 
             if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
             {
-                inPolygon = IsPointInPolygonNodes(point, m_nodes, indices[0], indices[1], m_projection);
+                inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), indices[0], indices[1]);
             }
 
             if (inPolygon)

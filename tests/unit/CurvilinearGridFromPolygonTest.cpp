@@ -22,9 +22,9 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithFourthSide)
 
     meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
 
-    int firstNode = 0;
-    int secondNode = 2;
-    int thirdNode = 4;
+    size_t firstNode = 0;
+    size_t secondNode = 2;
+    size_t thirdNode = 4;
     bool useFourthSide = true;
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
@@ -65,9 +65,9 @@ TEST(CurvilinearGridFromPolygon, ComputeGridInPolygonWithoutFourthSide)
 
     meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
 
-    int firstNode = 0;
-    int secondNode = 2;
-    int thirdNode = 4;
+    size_t firstNode = 0;
+    size_t secondNode = 2;
+    size_t thirdNode = 4;
     bool useFourthSide = false;
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);

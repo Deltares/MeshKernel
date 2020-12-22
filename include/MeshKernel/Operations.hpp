@@ -234,10 +234,10 @@ namespace meshkernel
     /// @returns If point is inside the designed polygon
     [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
                                              const std::vector<Point>& polygonNodes,
-                                             int startNode,
-                                             int endNode,
                                              const Projection& projection,
-                                             Point polygonCenter = {doubleMissingValue, doubleMissingValue});
+                                             Point polygonCenter = {doubleMissingValue, doubleMissingValue},
+                                             size_t startNode = sizetMissingValue,
+                                             size_t endNode = sizetMissingValue);
 
     /// @brief Computes three base components
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);
@@ -485,8 +485,8 @@ namespace meshkernel
                                                                         const std::vector<Point>& sideThree,
                                                                         const std::vector<Point>& sideFour,
                                                                         const Projection& projection,
-                                                                        int numM,
-                                                                        int numN);
+                                                                        size_t numM,
+                                                                        size_t numN);
 
     /// @brief Computes the edge centers
     /// @param[in] nodes The vector of edge nodes.

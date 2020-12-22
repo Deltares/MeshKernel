@@ -257,7 +257,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
 
         Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
         // assume here polygon has a size equal to numPolygonNodes + 1
-        bool isInPolygon = IsPointInPolygonNodes(samplePoint, searchPolygon, 0, int(searchPolygon.size() - 1), m_mesh->m_projection);
+        const auto isInPolygon = IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh->m_projection);
         if (isInPolygon)
         {
             if (m_method == Method::SimpleAveraging)

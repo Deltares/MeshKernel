@@ -113,7 +113,7 @@ void meshkernel::TriangulationInterpolation::Compute()
         while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces && triangle >= 0 && triangle < triangulationWrapper.m_numFaces)
         {
 
-            isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], 0, 3, m_projection, trianglesCircumcenters[triangle]);
+            isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], m_projection, trianglesCircumcenters[triangle]);
 
             // valid triangle found, no need to search further
             if (isInTriangle)

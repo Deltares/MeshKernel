@@ -67,7 +67,7 @@ namespace meshkernel
         /// @param[in] point The point to check
         /// @param[in] polygonIndex The index of the polygon to account for
         /// @return True if it is included, false otherwise
-        bool IsPointInPolygon(Point point, int polygonIndex) const;
+        bool IsPointInPolygon(Point point, size_t polygonIndex) const;
 
         /// @brief Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)
         /// @param[in] point The point to check

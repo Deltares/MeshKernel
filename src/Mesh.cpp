@@ -293,7 +293,7 @@ meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& pol
     std::vector<bool> edgeNodesFlag(triangulationWrapper.m_numEdges, false);
     for (auto i = 0; i < triangulationWrapper.m_numFaces; ++i)
     {
-        bool goodTriangle = CheckTriangle(triangulationWrapper.m_faceNodes[i], inputNodes);
+        const auto goodTriangle = CheckTriangle(triangulationWrapper.m_faceNodes[i], inputNodes);
 
         if (!goodTriangle)
         {
@@ -301,7 +301,7 @@ meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& pol
         }
         Point approximateCenter = (inputNodes[triangulationWrapper.m_faceNodes[i][0]] + inputNodes[triangulationWrapper.m_faceNodes[i][1]] + inputNodes[triangulationWrapper.m_faceNodes[i][2]]) * oneThird;
 
-        bool isTriangleInPolygon = polygons.IsPointInPolygon(approximateCenter, 0);
+        const auto isTriangleInPolygon = polygons.IsPointInPolygon(approximateCenter, 0);
         if (!isTriangleInPolygon)
         {
             continue;
@@ -956,8 +956,8 @@ void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeMes
     if (MakeMeshParameters.GridType == 0)
     {
         // regular grid
-        int numM = MakeMeshParameters.NumberOfColumns + 1;
-        int numN = MakeMeshParameters.NumberOfRows + 1;
+        auto numM = static_cast<size_t>(MakeMeshParameters.NumberOfColumns + 1);
+        auto numN = static_cast<size_t>(MakeMeshParameters.NumberOfRows + 1);
         double XGridBlockSize = MakeMeshParameters.XGridBlockSize;
         double YGridBlockSize = MakeMeshParameters.YGridBlockSize;
         double cosineAngle = std::cos(MakeMeshParameters.GridAngle * degrad_hp);
@@ -1010,8 +1010,8 @@ void meshkernel::Mesh::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeMes
 
             OriginXCoordinate = referencePoint.x + xShift;
             OriginYCoordinate = referencePoint.y + yShift;
-            numN = int(std::ceil((etamax - etamin) / XGridBlockSize) + 1);
-            numM = int(std::ceil((xmax - xmin) / YGridBlockSize) + 1);
+            numN = static_cast<size_t>(std::ceil((etamax - etamin) / XGridBlockSize) + 1);
+            numM = static_cast<size_t>(std::ceil((xmax - xmin) / YGridBlockSize) + 1);
         }
 
         CurvilinearGrid = {numN, numM};
@@ -1892,7 +1892,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
         polygon[n].y = weightCircumCenter * polygon[n].y + (1.0 - weightCircumCenter) * centerOfMass.y;
     }
 
-    if (IsPointInPolygonNodes(result, polygon, 0, numNodes, m_projection))
+    if (IsPointInPolygonNodes(result, polygon, m_projection))
     {
         return result;
     }
@@ -2485,8 +2485,8 @@ std::vector<meshkernel::Point> meshkernel::Mesh::MeshBoundaryToPolygon(const std
         const auto firstNode = m_nodes[firstNodeIndex];
         const auto secondNode = m_nodes[secondNodeIndex];
 
-        const auto firstNodeInPolygon = IsPointInPolygonNodes(m_nodes[firstNodeIndex], polygonNodes, 0, polygonNodes.size() - 1, m_projection);
-        const auto secondNodeInPolygon = IsPointInPolygonNodes(m_nodes[secondNodeIndex], polygonNodes, 0, polygonNodes.size() - 1, m_projection);
+        const auto firstNodeInPolygon = IsPointInPolygonNodes(m_nodes[firstNodeIndex], polygonNodes, m_projection);
+        const auto secondNodeInPolygon = IsPointInPolygonNodes(m_nodes[secondNodeIndex], polygonNodes, m_projection);
 
         if (!firstNodeInPolygon && !secondNodeInPolygon)
         {
@@ -2549,7 +2549,7 @@ void meshkernel::Mesh::WalkBoundaryFromNode(const std::vector<Point>& polygonNod
     {
         if (!currentNodeInPolygon)
         {
-            currentNodeInPolygon = IsPointInPolygonNodes(m_nodes[currentNode], polygonNodes, 0, polygonNodes.size() - 1, m_projection);
+            currentNodeInPolygon = IsPointInPolygonNodes(m_nodes[currentNode], polygonNodes, m_projection);
         }
 
         if (!currentNodeInPolygon)

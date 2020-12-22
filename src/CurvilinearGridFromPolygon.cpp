@@ -37,9 +37,9 @@
 
 meshkernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon){};
 
-void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
-                                                     int secondNode,
-                                                     int thirdNode,
+void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
+                                                     size_t secondNode,
+                                                     size_t thirdNode,
                                                      bool useFourthSide,
                                                      CurvilinearGrid& curvilinearGrid) const
 {
@@ -57,25 +57,39 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     }
 
     // for the current polygon find the number of nodes
-    const auto start = static_cast<int>(m_polygon->m_indices[0][0]);
-    const auto end = static_cast<int>(m_polygon->m_indices[0][1]);
+    const auto start = m_polygon->m_indices[0][0];
+    const auto end = m_polygon->m_indices[0][1];
+
+    if (end <= start)
+    {
+        throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon: Not enough points in polygon.");
+    }
+
     const size_t numPolygonNodes = end - start + 1;
 
     // get rid of size and orientation first part
-    int diffForward = secondNode - firstNode;
-    if (diffForward < 0)
+    size_t diffForward;
+    if (firstNode > secondNode)
     {
-        diffForward = diffForward + numPolygonNodes;
+        diffForward = secondNode + numPolygonNodes - firstNode;
+    }
+    else
+    {
+        diffForward = secondNode - firstNode;
     }
 
-    int diffBackward = firstNode - secondNode;
-    if (diffBackward < 0)
+    size_t diffBackward;
+    if (secondNode > firstNode)
     {
-        diffBackward = diffBackward + numPolygonNodes;
+        diffBackward = firstNode + numPolygonNodes - secondNode;
+    }
+    else
+    {
+        diffBackward = firstNode - secondNode;
     }
 
     int direction;
-    int numMNodes;
+    size_t numMNodes;
     if (diffForward <= diffBackward)
     {
         direction = 1;
@@ -89,20 +103,25 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     }
 
     // get rid of size and orientation second part
-
-    diffForward = thirdNode - secondNode;
-    if (diffForward < 0)
+    if (secondNode > thirdNode)
     {
-        diffForward = diffForward + numPolygonNodes;
+        diffForward = thirdNode + numPolygonNodes - secondNode;
+    }
+    else
+    {
+        diffForward = thirdNode - secondNode;
     }
 
-    diffBackward = secondNode - thirdNode;
-    if (diffBackward < 0)
+    if (thirdNode > secondNode)
     {
-        diffBackward = diffBackward + numPolygonNodes;
+        diffBackward = secondNode + numPolygonNodes - thirdNode;
+    }
+    else
+    {
+        diffBackward = secondNode - thirdNode;
     }
 
-    int numNNodes;
+    size_t numNNodes;
     if (direction == 1)
     {
         numNNodes = diffForward + 1;
@@ -113,8 +132,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     }
 
     // get the fourth node
-    int fourthNode;
-    fourthNode = thirdNode + direction * (numMNodes - 1);
+    auto fourthNode = thirdNode + direction * (numMNodes - 1);
     if (fourthNode < start)
     {
         fourthNode += numPolygonNodes;
@@ -124,7 +142,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
         fourthNode -= numPolygonNodes;
     }
 
-    int numRequiredPoints = 0;
+    size_t numRequiredPoints;
     if (useFourthSide)
     {
         numRequiredPoints = 2 * (numMNodes - 1) + 2 * (numNNodes - 1);
@@ -139,25 +157,29 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
         throw std::invalid_argument("CurvilinearGridFromPolygon::CurvilinearGridFromPolygon: The polygon does not contain enough nodes to compute the curvilinear grid.");
     }
 
-    int maximumNumberOfNodes = std::max(numNNodes, numMNodes);
+    const auto maximumNumberOfNodes = std::max(numNNodes, numMNodes);
     std::vector<Point> sideOne(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
     std::vector<Point> sideTwo(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
     std::vector<Point> sideThree(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
     std::vector<Point> sideFour(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
 
     // Fill boundary coordinates
-    auto assignPolygonPointsToSegment = [this, start, end, &numPolygonNodes](int nodeIndex, int numPointsSide, int dir, std::vector<Point>& sideToFill) {
+    auto assignPolygonPointsToSegment = [this, start, end, &numPolygonNodes](size_t nodeIndex, size_t numPointsSide, int dir, std::vector<Point>& sideToFill) {
         for (auto i = 0; i < numPointsSide; i++)
         {
             sideToFill[i] = m_polygon->m_nodes[nodeIndex];
-            nodeIndex = nodeIndex + dir;
-            if (nodeIndex < start)
+
+            if ((nodeIndex == 0 && dir == -1) || nodeIndex + dir < start)
             {
-                nodeIndex += numPolygonNodes;
+                nodeIndex = nodeIndex + numPolygonNodes + dir;
             }
-            if (nodeIndex > end)
+            else if (nodeIndex + dir > end)
             {
-                nodeIndex -= numPolygonNodes;
+                nodeIndex = nodeIndex + dir - numPolygonNodes;
+            }
+            else
+            {
+                nodeIndex = nodeIndex + dir;
             }
         }
     };
@@ -194,9 +216,9 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     }
 }
 
-void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
-                                                     int secondNode,
-                                                     int thirdNode,
+void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
+                                                     size_t secondNode,
+                                                     size_t thirdNode,
                                                      CurvilinearGrid& curvilinearGrid) const
 {
     if (m_polygon->IsEmpty())
@@ -214,61 +236,75 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
     }
 
     // for the current polygon find the number of nodes
-    const auto start = static_cast<int>(m_polygon->m_indices[0][0]);
-    const auto end = static_cast<int>(m_polygon->m_indices[0][1]);
-    const int numPolygonNodes = end - start + 1;
+    const auto start = m_polygon->m_indices[0][0];
+    const auto end = m_polygon->m_indices[0][1];
+
+    if (end <= start)
+    {
+        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute: Not enough points in polygon.");
+    }
+
+    const auto numPolygonNodes = end - start + 1;
 
     // get rid of size and orientation first part
-    int numPointsFirstSide = secondNode - firstNode;
-    if (numPointsFirstSide < 0)
+    size_t numPointsFirstSide;
+    if (firstNode > secondNode)
     {
-        numPointsFirstSide = numPointsFirstSide + numPolygonNodes;
+        numPointsFirstSide = secondNode + numPolygonNodes - firstNode;
+    }
+    else
+    {
+        numPointsFirstSide = secondNode - firstNode;
     }
 
-    int numPointsSecondSide = thirdNode - secondNode;
-    if (numPointsSecondSide < 0)
+    size_t numPointsSecondSide;
+    if (secondNode > thirdNode)
     {
-        numPointsSecondSide = numPointsSecondSide + numPolygonNodes;
+        numPointsSecondSide = thirdNode + numPolygonNodes - secondNode;
+    }
+    else
+    {
+        numPointsSecondSide = thirdNode - secondNode;
     }
 
-    int numPointsThirdSide = numPolygonNodes - (numPointsFirstSide + numPointsSecondSide);
-    int blockSize = (numPointsFirstSide + numPointsSecondSide + numPointsThirdSide) / 2;
+    const auto numPointsThirdSide = numPolygonNodes - (numPointsFirstSide + numPointsSecondSide);
+    const auto blockSize = static_cast<size_t>((numPointsFirstSide + numPointsSecondSide + numPointsThirdSide) * 0.5);
 
-    int n1 = blockSize - numPointsThirdSide;
-    int n2 = blockSize - numPointsSecondSide;
-    int n3 = blockSize - numPointsFirstSide;
-
-    if (n1 < 1 || n2 < 1 || n3 < 1)
+    if (numPointsThirdSide >= blockSize || numPointsSecondSide >= blockSize || numPointsFirstSide >= blockSize)
     {
         throw std::invalid_argument("CurvilinearGridFromPolygon::Compute: The block size is less than the number of points.");
     }
 
+    const auto n1 = blockSize - numPointsThirdSide;
+    const auto n2 = blockSize - numPointsSecondSide;
+    const auto n3 = blockSize - numPointsFirstSide;
+
     // compute the midpoint
 
-    int firstSideMiddlePoint = firstNode + n1;
+    size_t firstSideMiddlePoint = firstNode + n1;
     if (firstSideMiddlePoint >= numPolygonNodes)
     {
         firstSideMiddlePoint = firstSideMiddlePoint - numPolygonNodes;
     }
-    int secondSideMiddlePoint = secondNode + n3;
+    size_t secondSideMiddlePoint = secondNode + n3;
     if (secondSideMiddlePoint >= numPolygonNodes)
     {
         secondSideMiddlePoint = secondSideMiddlePoint - numPolygonNodes;
     }
-    int thirdSideMiddlePoint = thirdNode + n2;
+    size_t thirdSideMiddlePoint = thirdNode + n2;
     if (thirdSideMiddlePoint >= numPolygonNodes)
     {
         thirdSideMiddlePoint = thirdSideMiddlePoint - numPolygonNodes;
     }
 
     // set dimensions of blocks
-    std::vector<int> numM{n1, n3, n2};
-    std::vector<int> numN{n3, n2, n1};
+    std::vector<size_t> numM{n1, n3, n2};
+    std::vector<size_t> numN{n3, n2, n1};
 
     // set pointers of block corners
-    std::vector<int> cornerPoints{firstNode, secondNode, thirdNode};
-    std::vector<int> iLeft{thirdSideMiddlePoint, firstSideMiddlePoint, secondSideMiddlePoint};
-    std::vector<int> iRight{firstSideMiddlePoint, secondSideMiddlePoint, thirdSideMiddlePoint};
+    std::vector<size_t> cornerPoints{firstNode, secondNode, thirdNode};
+    std::vector<size_t> iLeft{thirdSideMiddlePoint, firstSideMiddlePoint, secondSideMiddlePoint};
+    std::vector<size_t> iRight{firstSideMiddlePoint, secondSideMiddlePoint, thirdSideMiddlePoint};
 
     // compute triangle middle point
     const auto xia = double(n1) / double(numPointsFirstSide);
@@ -297,18 +333,21 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(int firstNode,
         std::fill(sideFour.begin(), sideFour.end(), Point{doubleMissingValue, doubleMissingValue});
 
         // backward
-        int cornerIndex = cornerPoints[t];
+        auto cornerIndex = cornerPoints[t];
         for (auto i = 0; i < numN[t] + 1; ++i)
         {
             sideOne[i] = m_polygon->m_nodes[cornerIndex];
-            cornerIndex -= 1;
-            if (cornerIndex < start)
+            if (cornerIndex == 0 || cornerIndex < start)
             {
-                cornerIndex = cornerIndex + numPolygonNodes;
+                cornerIndex = cornerIndex + numPolygonNodes - 1;
             }
-            if (cornerIndex > end)
+            else if (cornerIndex > end)
             {
-                cornerIndex = cornerIndex - numPolygonNodes;
+                cornerIndex = cornerIndex - numPolygonNodes - 1;
+            }
+            else
+            {
+                cornerIndex -= 1;
             }
         }
 
