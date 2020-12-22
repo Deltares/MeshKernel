@@ -577,10 +577,14 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
         }
 
         //Compute optimal angle thetaSquare based on the node type
-        auto leftFaceIndex = f - 1;
-        if (leftFaceIndex < 0)
+        size_t leftFaceIndex;
+        if (f == 0)
         {
-            leftFaceIndex = leftFaceIndex + numSharedFaces;
+            leftFaceIndex = f + numSharedFaces - static_cast<size_t>(1);
+        }
+        else
+        {
+            leftFaceIndex = f - static_cast<size_t>(1);
         }
 
         if (isSquare)
@@ -662,7 +666,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
 
         if (isSquareFace[f] || numFaceNodes == 4)
         {
-            int nextNode = f + 2;
+            auto nextNode = f + size_t(2);
             if (nextNode > numSharedFaces)
             {
                 nextNode = nextNode - numSharedFaces;

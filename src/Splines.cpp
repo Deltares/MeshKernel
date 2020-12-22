@@ -282,7 +282,7 @@ double meshkernel::Splines::GetSplineLength(size_t index,
     size_t numPoints = static_cast<size_t>(endIndex / delta) + 1;
     if (delta < 0.0)
     {
-        delta = 1.0 / numSamples;
+        delta = 1.0 / static_cast<double>(numSamples);
         // TODO: Refactor or at least document the calculation of "numPoints"
         numPoints = size_t(std::max(std::floor(0.9999 + (endIndex - startIndex) / delta), 10.0));
         delta = (endIndex - startIndex) / static_cast<double>(numPoints);
@@ -333,12 +333,17 @@ void meshkernel::Splines::ComputeCurvatureOnSplinePoint(size_t splineIndex,
                                                         Point& normalVector,
                                                         Point& tangentialVector)
 {
-    const auto numNodesFirstSpline = m_splineNodes[splineIndex].size();
-    auto const leftCornerPoint = std::max(std::min(static_cast<double>(std::floor(adimensionalPointCoordinate)), static_cast<double>(numNodesFirstSpline) - 1.0), 0.0);
-    auto const rightCornerPoint = std::max(leftCornerPoint + 1.0, 0.0);
+    if (m_splineNodes[splineIndex].empty())
+    {
+        return;
+    }
 
-    const auto leftSegment = rightCornerPoint - adimensionalPointCoordinate;
-    const auto rightSegment = adimensionalPointCoordinate - leftCornerPoint;
+    const auto numNodesFirstSpline = m_splineNodes[splineIndex].size();
+    auto const leftCornerPoint = std::max(std::min(static_cast<size_t>(std::floor(adimensionalPointCoordinate)), numNodesFirstSpline - 1), static_cast<size_t>(0));
+    auto const rightCornerPoint = std::max(leftCornerPoint + 1, static_cast<size_t>(0));
+
+    const auto leftSegment = static_cast<double>(rightCornerPoint) - adimensionalPointCoordinate;
+    const auto rightSegment = adimensionalPointCoordinate - static_cast<double>(leftCornerPoint);
 
     Point pointCoordinate;
     const auto successful = InterpolateSplinePoint(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate, pointCoordinate);
@@ -364,12 +369,12 @@ void meshkernel::Splines::ComputeCurvatureOnSplinePoint(size_t splineIndex,
 
     curvatureFactor = std::abs(pp.x * p.y - pp.y * p.x) / std::pow((p.x * p.x + p.y * p.y + 1e-8), 1.5);
 
-    Point incrementedPointCoordinate = pointCoordinate + p * 1e-4;
+    const auto incrementedPointCoordinate = pointCoordinate + p * 1e-4;
     normalVector = NormalVectorOutside(pointCoordinate, incrementedPointCoordinate, m_projection);
 
-    double distance = ComputeDistance(pointCoordinate, incrementedPointCoordinate, m_projection);
-    double dx = GetDx(pointCoordinate, incrementedPointCoordinate, m_projection);
-    double dy = GetDy(pointCoordinate, incrementedPointCoordinate, m_projection);
+    const auto distance = ComputeDistance(pointCoordinate, incrementedPointCoordinate, m_projection);
+    const auto dx = GetDx(pointCoordinate, incrementedPointCoordinate, m_projection);
+    const auto dy = GetDy(pointCoordinate, incrementedPointCoordinate, m_projection);
 
     tangentialVector.x = dx / distance;
     tangentialVector.y = dy / distance;

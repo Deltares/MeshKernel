@@ -253,7 +253,7 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
     Point normalThirdPoint{doubleMissingValue, doubleMissingValue};
 
     // in this case the nearest point is the point itself
-    std::vector<int> nearestPoints(m_mesh->GetNumNodes(), 0);
+    std::vector<size_t> nearestPoints(m_mesh->GetNumNodes(), 0);
     std::iota(nearestPoints.begin(), nearestPoints.end(), 0);
 
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
@@ -267,8 +267,8 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                 continue;
             }
 
-            int numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
-            int numNodes = 0;
+            const auto numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
+            size_t numNodes = 0;
             size_t leftNode = sizetMissingValue;
             size_t rightNode = sizetMissingValue;
             Point secondPoint{doubleMissingValue, doubleMissingValue};
