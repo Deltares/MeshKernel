@@ -315,8 +315,8 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
     std::fill(m_xisCache.begin(), m_xisCache.end(), 0.0);
     std::fill(m_etasCache.begin(), m_etasCache.end(), 0.0);
 
-    int faceRightIndex = 0;
-    int faceLeftIndex = 0;
+    size_t faceRightIndex = 0;
+    size_t faceLeftIndex = 0;
     double xiBoundary = 0.0;
     double etaBoundary = 0.0;
 
@@ -447,8 +447,8 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
             facetaL = 2.0 * facetaL;
         }
 
-        int node1 = f + 1;
-        int node0 = 0;
+        size_t node1 = f + 1;
+        size_t node0 = 0;
         for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
         {
             m_Gxi[currentTopology][f][i] = facxiL * m_Az[currentTopology][faceLeftIndex][i];

@@ -167,17 +167,17 @@ namespace meshkernel
 
         Administrate();
 
-        m_nodeMask.resize(m_mesh->GetNumNodes(), intMissingValue);
-        m_faceMask.resize(m_mesh->GetNumFaces(), intMissingValue);
-        m_edgeMask.resize(m_mesh->GetNumEdges(), intMissingValue);
+        m_nodeMask.resize(m_mesh->GetNumNodes(), sizetMissingValue);
+        m_faceMask.resize(m_mesh->GetNumFaces(), sizetMissingValue);
+        m_edgeMask.resize(m_mesh->GetNumEdges(), sizetMissingValue);
         m_meshNodesLandBoundarySegments.resize(m_mesh->GetNumNodes(), sizetMissingValue);
         m_nodesMinDistances.resize(m_mesh->GetNumNodes(), doubleMissingValue);
 
         // loop over the segments of the land boundary and make assign each node to the land boundary segment index
         for (auto landBoundarySegment = 0; landBoundarySegment < m_segmentIndices.size(); landBoundarySegment++)
         {
-            int numPaths = 0;
-            int numRejectedPaths = 0;
+            size_t numPaths = 0;
+            size_t numRejectedPaths = 0;
             MakePath(landBoundarySegment, findOnlyOuterMeshBoundary, numPaths, numRejectedPaths);
 
             if (numRejectedPaths > 0 && projectToLandBoundaryOption == ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary)
@@ -222,8 +222,8 @@ namespace meshkernel
 
             if (m_meshNodesLandBoundarySegments[firstMeshNode] != sizetMissingValue &&
                 m_meshNodesLandBoundarySegments[secondMeshNode] == sizetMissingValue &&
-                m_nodeMask[firstMeshNode] > 0 &&
-                m_nodeMask[secondMeshNode] > 0)
+                m_nodeMask[firstMeshNode] != sizetMissingValue &&
+                m_nodeMask[secondMeshNode] != sizetMissingValue)
             {
                 nodesLoc.resize(3);
                 nodesLoc[0] = firstMeshNode;
@@ -232,8 +232,8 @@ namespace meshkernel
             }
             else if (m_meshNodesLandBoundarySegments[firstMeshNode] == sizetMissingValue &&
                      m_meshNodesLandBoundarySegments[secondMeshNode] != sizetMissingValue &&
-                     m_nodeMask[firstMeshNode] > 0 &&
-                     m_nodeMask[secondMeshNode] > 0)
+                     m_nodeMask[firstMeshNode] != sizetMissingValue &&
+                     m_nodeMask[secondMeshNode] != sizetMissingValue)
             {
                 nodesLoc.resize(3);
                 nodesLoc[0] = secondMeshNode;
@@ -271,7 +271,7 @@ namespace meshkernel
             const auto otherNode = OtherNodeOfEdge(m_mesh->m_edges[edge], lastVisitedNode);
 
             // path stopped
-            if (m_nodeMask[otherNode] < 0)
+            if (m_nodeMask[otherNode] == sizetMissingValue)
                 break;
 
             // TODO: C++ 20 for(auto& i :  views::reverse(vec))
@@ -401,10 +401,10 @@ namespace meshkernel
         m_segmentIndices.push_back(std::initializer_list<size_t>{m_nodes.size() - 3, m_nodes.size() - 2});
     }
 
-    void LandBoundaries::MakePath(int landBoundarySegment,
+    void LandBoundaries::MakePath(size_t landBoundarySegment,
                                   bool meshBoundOnly,
-                                  int& numNodesInPath,
-                                  int& numRejectedNodesInPath)
+                                  size_t& numNodesInPath,
+                                  size_t& numRejectedNodesInPath)
     {
         if (m_nodes.empty())
         {
@@ -425,8 +425,8 @@ namespace meshkernel
 
         ComputeMask(landBoundarySegment,
                     meshBoundOnly,
-                    int(startLandBoundaryIndex),
-                    int(endLandBoundaryIndex),
+                    startLandBoundaryIndex,
+                    endLandBoundaryIndex,
                     leftIndex,
                     rightIndex,
                     leftEdgeRatio,
@@ -434,7 +434,7 @@ namespace meshkernel
 
         size_t startMeshNode = sizetMissingValue;
         size_t endMeshNode = sizetMissingValue;
-        FindStartEndMeshNodes(int(endLandBoundaryIndex),
+        FindStartEndMeshNodes(endLandBoundaryIndex,
                               leftIndex,
                               rightIndex,
                               leftEdgeRatio,
@@ -442,7 +442,7 @@ namespace meshkernel
                               startMeshNode,
                               endMeshNode);
 
-        if (startMeshNode < 0 || endMeshNode < 0 || startMeshNode == endMeshNode)
+        if (startMeshNode == sizetMissingValue || endMeshNode == sizetMissingValue || startMeshNode == endMeshNode)
         {
             throw AlgorithmError("LandBoundaries::MakePath: Cannot not find valid mesh nodes.");
         }
@@ -571,7 +571,7 @@ namespace meshkernel
             return;
         }
 
-        std::fill(m_nodeMask.begin(), m_nodeMask.end(), intMissingValue);
+        std::fill(m_nodeMask.begin(), m_nodeMask.end(), sizetMissingValue);
 
         // check if any of the land boundary node is inside a m_mesh face
         bool nodeInFace = false;
@@ -622,8 +622,8 @@ namespace meshkernel
 
         if (m_landMask)
         {
-            std::fill(m_faceMask.begin(), m_faceMask.end(), intMissingValue);
-            std::fill(m_edgeMask.begin(), m_edgeMask.end(), intMissingValue);
+            std::fill(m_faceMask.begin(), m_faceMask.end(), sizetMissingValue);
+            std::fill(m_edgeMask.begin(), m_edgeMask.end(), sizetMissingValue);
             //m_faceMask assumes crossedFace has already been done.
             if (crossedFaceIndex != sizetMissingValue && crossedFaceIndex < m_mesh->GetNumFaces())
             {
@@ -663,12 +663,12 @@ namespace meshkernel
 
         for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
         {
-            if (m_nodeMask[n] >= 0)
+            if (m_nodeMask[n] != sizetMissingValue)
             {
                 bool inPolygon = m_polygons->IsPointInPolygon(m_mesh->m_nodes[n], 0);
                 if (!inPolygon)
                 {
-                    m_nodeMask[n] = intMissingValue;
+                    m_nodeMask[n] = sizetMissingValue;
                 }
             }
         }
@@ -688,7 +688,7 @@ namespace meshkernel
             return;
         }
 
-        int numNextFaces = 0;
+        size_t numNextFaces = 0;
         std::vector<size_t> nextFaces(landBoundaryFaces.size(), sizetMissingValue);
         for (const auto& face : landBoundaryFaces)
         {
@@ -717,11 +717,15 @@ namespace meshkernel
                                                                   landBoundaryNode);
 
                         if (isClose)
+                        {
                             break;
+                        }
                     }
 
                     if (isClose)
+                    {
                         m_faceMask[otherFace] = 1;
+                    }
                 }
             }
             else
@@ -730,7 +734,7 @@ namespace meshkernel
                 if (m_mesh->GetNumFaces() < numNodesInTriangle)
                     continue;
 
-                int isFaceFound = 0;
+                size_t isFaceFound = 0;
 
                 for (const auto& currentEdge : m_mesh->m_facesEdges[face])
                 {
@@ -741,7 +745,7 @@ namespace meshkernel
                     const auto otherFace = face == m_mesh->m_edgesFaces[currentEdge][0] ? m_mesh->m_edgesFaces[currentEdge][1] : m_mesh->m_edgesFaces[currentEdge][0];
 
                     // already masked
-                    if (m_faceMask[otherFace] != intMissingValue)
+                    if (m_faceMask[otherFace] != sizetMissingValue)
                         continue;
 
                     for (const auto& edgeOtherFace : m_mesh->m_facesEdges[otherFace])
@@ -787,7 +791,7 @@ namespace meshkernel
                         numNextFaces += 1;
                         if (numNextFaces >= nextFaces.size())
                         {
-                            nextFaces.resize(std::max(int(numNextFaces * 1.2), 10));
+                            nextFaces.resize(std::max(static_cast<size_t>(numNextFaces * 1.2), static_cast<size_t>(10)));
                         }
                         nextFaces[numNextFaces - 1] = otherFace;
                     }
@@ -988,10 +992,14 @@ namespace meshkernel
         for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
         {
             if (m_mesh->m_edges[e].first == sizetMissingValue || m_mesh->m_edges[e].second == sizetMissingValue)
+            {
                 continue;
+            }
 
-            if (m_nodeMask[m_mesh->m_edges[e].first] < 0 || m_nodeMask[m_mesh->m_edges[e].second] < 0)
+            if (m_nodeMask[m_mesh->m_edges[e].first] == sizetMissingValue || m_nodeMask[m_mesh->m_edges[e].second] == sizetMissingValue)
+            {
                 continue;
+            }
 
             const double distanceFromFirstMeshNode = DistanceFromLine(startPoint, m_mesh->m_nodes[m_mesh->m_edges[e].first], m_mesh->m_nodes[m_mesh->m_edges[e].second], m_mesh->m_projection, normalPoint, ratio);
             const double distanceFromSecondMeshNode = DistanceFromLine(endPoint, m_mesh->m_nodes[m_mesh->m_edges[e].first], m_mesh->m_nodes[m_mesh->m_edges[e].second], m_mesh->m_projection, normalPoint, ratio);

@@ -101,10 +101,10 @@ namespace meshkernel
         /// @param[in] meshBoundOnly
         /// @param[out] numNodesInPath
         /// @param[out] numRejectedNodesInPath
-        void MakePath(int landBoundarySegment,
+        void MakePath(size_t landBoundarySegment,
                       bool meshBoundOnly,
-                      int& numNodesInPath,
-                      int& numRejectedNodesInPath);
+                      size_t& numNodesInPath,
+                      size_t& numRejectedNodesInPath);
 
         /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current segmentIndex.
         /// Is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
@@ -245,9 +245,9 @@ namespace meshkernel
         std::vector<std::vector<size_t>> m_segmentIndices; // lanseg_startend
         std::vector<std::vector<double>> m_nodesLand;      // node to land boundary segment mapping
 
-        std::vector<int> m_nodeMask; // nodemask, masking the net nodes
-        std::vector<int> m_faceMask; // masking faces
-        std::vector<int> m_edgeMask; // masking edges
+        std::vector<size_t> m_nodeMask; // nodemask, masking the net nodes
+        std::vector<size_t> m_faceMask; // masking faces
+        std::vector<size_t> m_edgeMask; // masking edges
 
         bool m_landMask = true;
         bool m_addLandboundaries = true;

@@ -1568,8 +1568,8 @@ void meshkernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inv
             bool isOneEdgeNotIncluded = false;
             for (auto n = 0; n < GetNumFaceEdges(f); ++n)
             {
-                auto edgeIndex = m_facesEdges[f][n];
-                if (edgeIndex >= 0 && edgeMask[edgeIndex] == 0)
+                const auto edgeIndex = m_facesEdges[f][n];
+                if (edgeIndex != sizetMissingValue && edgeMask[edgeIndex] == 0)
                 {
                     isOneEdgeNotIncluded = true;
                     break;
@@ -1580,8 +1580,8 @@ void meshkernel::Mesh::MaskFaceEdgesInPolygon(const Polygons& polygons, bool inv
             {
                 for (auto n = 0; n < GetNumFaceEdges(f); ++n)
                 {
-                    auto edgeIndex = m_facesEdges[f][n];
-                    if (edgeIndex >= 0)
+                    const auto edgeIndex = m_facesEdges[f][n];
+                    if (edgeIndex != sizetMissingValue)
                     {
                         secondEdgeMask[edgeIndex] = 0;
                     }
@@ -2526,7 +2526,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh::MeshBoundaryToPolygon(const std
             for (auto n = start; n < numNodesFirstTail; n++)
             {
                 const auto backupPoint = meshBoundaryPolygon[n];
-                const int replaceIndex = numNodesFirstTail - n + static_cast<size_t>(firstNodeIndex);
+                const auto replaceIndex = numNodesFirstTail - n + firstNodeIndex;
                 meshBoundaryPolygon[n] = meshBoundaryPolygon[replaceIndex];
                 meshBoundaryPolygon[replaceIndex] = backupPoint;
             }
@@ -2543,7 +2543,7 @@ void meshkernel::Mesh::WalkBoundaryFromNode(const std::vector<Point>& polygonNod
                                             size_t& currentNode,
                                             std::vector<Point>& meshBoundaryPolygon) const
 {
-    int e = 0;
+    size_t e = 0;
     bool currentNodeInPolygon = false;
     while (e < m_nodesNumEdges[currentNode])
     {
