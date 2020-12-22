@@ -753,7 +753,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
             continue;
         }
 
-        int numFaceNodes = m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]);
+        const auto numFaceNodes = m_mesh->GetNumFaceEdges(m_sharedFacesCache[f]);
         if (numFaceNodes > maximumNumberOfEdgesPerNode)
         {
             throw AlgorithmError("Smoother::ComputeNodeXiEta: The number of face nodes is greater than the maximum number of edges per node.");
@@ -786,14 +786,14 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
         const auto nodeIndex = FindIndex(m_mesh->m_facesNodes[m_sharedFacesCache[f]], currentNode);
 
         // optimal angle
-        dTheta = 2.0 * M_PI / double(numFaceNodes);
+        dTheta = 2.0 * M_PI / static_cast<double>(numFaceNodes);
 
         // orientation of the face (necessary for folded cells)
-        int previousNode = NextCircularForwardIndex(nodeIndex, numFaceNodes);
-        int nextNode = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
+        const auto previousNode = NextCircularForwardIndex(nodeIndex, numFaceNodes);
+        const auto nextNode = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
 
-        if ((m_faceNodeMappingCache[f][nextNode] - m_faceNodeMappingCache[f][previousNode]) == -1 ||
-            (m_faceNodeMappingCache[f][nextNode] - m_faceNodeMappingCache[f][previousNode]) == m_mesh->m_nodesNumEdges[currentNode])
+        if (m_faceNodeMappingCache[f][nextNode] + 1 == m_faceNodeMappingCache[f][previousNode] ||
+            m_faceNodeMappingCache[f][nextNode] - m_faceNodeMappingCache[f][previousNode] == m_mesh->m_nodesNumEdges[currentNode])
         {
             dTheta = -dTheta;
         }
@@ -966,9 +966,9 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
     m_numConnectedNodes[currentNode] = numConnectedNodes;
 }
 
-double meshkernel::Smoother::OptimalEdgeAngle(int numFaceNodes, double theta1, double theta2, bool isBoundaryEdge) const
+double meshkernel::Smoother::OptimalEdgeAngle(size_t numFaceNodes, double theta1, double theta2, bool isBoundaryEdge) const
 {
-    double angle = M_PI * (1.0 - 2.0 / double(numFaceNodes));
+    double angle = M_PI * (1.0 - 2.0 / static_cast<double>(numFaceNodes));
 
     if (std::abs(theta1 + 1.0) > std::numeric_limits<double>::epsilon() &&
         std::abs(theta2 + 1.0) > std::numeric_limits<double>::epsilon() &&
@@ -1109,7 +1109,7 @@ void meshkernel::Smoother::SaveNodeTopologyIfNeeded(size_t currentNode,
 
         if (m_numTopologies > m_numTopologyNodes.size())
         {
-            const size_t estimatedSize = m_numTopologies * 1.5;
+            const auto estimatedSize = static_cast<size_t>(static_cast<double>(m_numTopologies) * 1.5);
             m_numTopologyNodes.resize(estimatedSize, 0);
             m_numTopologyFaces.resize(estimatedSize, 0);
             m_topologyXi.resize(estimatedSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));

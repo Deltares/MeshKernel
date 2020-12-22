@@ -2431,7 +2431,7 @@ std::vector<size_t> meshkernel::Mesh::SortedFacesAroundNode(size_t node) const
         const auto secondEdge = m_nodesEdges[node][ee];
         const auto firstFace = m_edgesFaces[firstEdge][0];
 
-        int secondFace = sizetMissingValue;
+        size_t secondFace = sizetMissingValue;
         if (m_edgesNumFaces[firstEdge] > 1)
         {
             secondFace = m_edgesFaces[firstEdge][1];

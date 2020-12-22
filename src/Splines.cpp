@@ -39,6 +39,11 @@ meshkernel::Splines::Splines(Projection projection) : m_projection(projection){}
 /// add a new spline, return the index
 void meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t start, size_t size)
 {
+    if (size == 0)
+    {
+        return;
+    }
+
     m_splineNodes.emplace_back();
     for (auto n = start; n < start + size; ++n)
     {
@@ -48,7 +53,7 @@ void meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t st
     // compute basic properties
     m_splineDerivatives.emplace_back();
     SecondOrderDerivative(m_splineNodes.back(), size, m_splineDerivatives.back());
-    m_splinesLength.emplace_back(GetSplineLength(GetNumSplines() - 1, 0, size - 1));
+    m_splinesLength.emplace_back(GetSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
 }
 
 void meshkernel::Splines::DeleteSpline(int splineIndex)
@@ -264,23 +269,23 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
     return false;
 }
 
-double meshkernel::Splines::GetSplineLength(int index,
+double meshkernel::Splines::GetSplineLength(size_t index,
                                             double startIndex,
                                             double endIndex,
-                                            int numSamples,
+                                            size_t numSamples,
                                             bool accountForCurvature,
                                             double height,
                                             double assignedDelta)
 {
     double splineLength = 0.0;
     double delta = assignedDelta;
-    int numPoints = int(endIndex / delta) + 1;
+    size_t numPoints = static_cast<size_t>(endIndex / delta) + 1;
     if (delta < 0.0)
     {
         delta = 1.0 / numSamples;
         // TODO: Refactor or at least document the calculation of "numPoints"
-        numPoints = int(std::max(std::floor(0.9999 + (endIndex - startIndex) / delta), 10.0));
-        delta = (endIndex - startIndex) / numPoints;
+        numPoints = size_t(std::max(std::floor(0.9999 + (endIndex - startIndex) / delta), 10.0));
+        delta = (endIndex - startIndex) / static_cast<double>(numPoints);
     }
 
     // first point
@@ -291,11 +296,10 @@ double meshkernel::Splines::GetSplineLength(int index,
         throw AlgorithmError("Splines::GetSplineLength: Could not interpolate spline points.");
     }
 
-    double rightPointCoordinateOnSpline = startIndex;
-    double leftPointCoordinateOnSpline;
+    auto rightPointCoordinateOnSpline = static_cast<double>(startIndex);
     for (auto p = 0; p < numPoints; ++p)
     {
-        leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
+        double leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
         rightPointCoordinateOnSpline += delta;
         if (rightPointCoordinateOnSpline > endIndex)
         {
@@ -323,21 +327,21 @@ double meshkernel::Splines::GetSplineLength(int index,
     return splineLength;
 }
 
-void meshkernel::Splines::ComputeCurvatureOnSplinePoint(int splineIndex,
+void meshkernel::Splines::ComputeCurvatureOnSplinePoint(size_t splineIndex,
                                                         double adimensionalPointCoordinate,
                                                         double& curvatureFactor,
                                                         Point& normalVector,
                                                         Point& tangentialVector)
 {
-    const auto numNodesFirstSpline = static_cast<int>(m_splineNodes[splineIndex].size());
-    auto const leftCornerPoint = int(std::max(std::min(double(std::floor(adimensionalPointCoordinate)), static_cast<double>(numNodesFirstSpline - 1)), 0.0));
-    auto const rightCornerPoint = int(std::max(double(leftCornerPoint + 1.0), 0.0));
+    const auto numNodesFirstSpline = m_splineNodes[splineIndex].size();
+    auto const leftCornerPoint = std::max(std::min(static_cast<double>(std::floor(adimensionalPointCoordinate)), static_cast<double>(numNodesFirstSpline) - 1.0), 0.0);
+    auto const rightCornerPoint = std::max(leftCornerPoint + 1.0, 0.0);
 
-    double leftSegment = rightCornerPoint - adimensionalPointCoordinate;
-    double rightSegment = adimensionalPointCoordinate - leftCornerPoint;
+    const auto leftSegment = rightCornerPoint - adimensionalPointCoordinate;
+    const auto rightSegment = adimensionalPointCoordinate - leftCornerPoint;
 
     Point pointCoordinate;
-    bool successful = InterpolateSplinePoint(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate, pointCoordinate);
+    const auto successful = InterpolateSplinePoint(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate, pointCoordinate);
     if (!successful)
     {
         curvatureFactor = 0.0;

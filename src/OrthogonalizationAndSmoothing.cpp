@@ -144,10 +144,10 @@ void meshkernel::OrthogonalizationAndSmoothing::AllocateLinearSystem()
         std::fill(m_compressedRhs.begin(), m_compressedRhs.end(), 0.0);
 
         m_compressedEndNodeIndex.resize(m_mesh->GetNumNodes());
-        std::fill(m_compressedEndNodeIndex.begin(), m_compressedEndNodeIndex.end(), 0.0);
+        std::fill(m_compressedEndNodeIndex.begin(), m_compressedEndNodeIndex.end(), 0);
 
         m_compressedStartNodeIndex.resize(m_mesh->GetNumNodes());
-        std::fill(m_compressedStartNodeIndex.begin(), m_compressedStartNodeIndex.end(), 0.0);
+        std::fill(m_compressedStartNodeIndex.begin(), m_compressedStartNodeIndex.end(), 0);
 
         for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
         {
@@ -190,7 +190,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 
         const double atpfLoc = m_mesh->m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor;
         const double atpf1Loc = 1.0 - atpfLoc;
-        int maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
+        const auto maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
         auto cacheIndex = m_compressedEndNodeIndex[n];
         for (auto nn = 1; nn < maxnn; nn++)
         {
@@ -393,7 +393,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
 
 void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeIndex, double& dx0, double& dy0, std::array<double, 2>& weightsSum)
 {
-    int numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
+    const auto numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
     auto cacheIndex = m_compressedEndNodeIndex[nodeIndex];
     for (auto nn = 1; nn < numConnectedNodes; nn++)
     {

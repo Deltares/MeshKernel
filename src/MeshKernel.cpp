@@ -1134,7 +1134,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> newPoint;
             ConvertGeometryListToPointVector(geometryListIn, newPoint);
 
-            edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
+            edgeIndex = static_cast<int>(meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]));
         }
         catch (const std::exception& e)
         {
@@ -1295,7 +1295,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
+            nodeIndex = static_cast<int>(meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius));
         }
         catch (const std::exception& e)
         {

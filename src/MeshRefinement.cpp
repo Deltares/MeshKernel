@@ -778,8 +778,7 @@ void meshkernel::MeshRefinement::FindHangingNodes(int face,
     std::fill(m_isHangingNodeCache.begin(), m_isHangingNodeCache.end(), false);
     std::fill(m_isHangingEdgeCache.begin(), m_isHangingEdgeCache.end(), false);
 
-    int kknod = -1;
-
+    auto kknod = numFaceNodes;
     for (auto n = 0; n < numFaceNodes; n++)
     {
         auto edgeIndex = m_mesh->m_facesEdges[face][n];
@@ -951,7 +950,7 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMask()
             auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
 
             // non-quads
-            int numNodesEffective = numFaceNodes - numHangingNodes;
+            const auto numNodesEffective = numFaceNodes - numHangingNodes;
             if (numNodesEffective != numNodesQuads)
             {
                 for (auto n = 0; n < numFaceNodes; n++)
@@ -1118,7 +1117,7 @@ void meshkernel::MeshRefinement::ComputeIfFaceShouldBeSplit()
             }
 
             //compute the effective face type
-            int numNodesEffective = numFaceNodes - numHangingEdges / 2;
+            const auto numNodesEffective = numFaceNodes - static_cast<size_t>(static_cast<double>(numHangingEdges) / 2.0);
             if (2 * (numFaceNodes - numNodesEffective) != numHangingEdges)
             {
                 //uneven number of brotherlinks

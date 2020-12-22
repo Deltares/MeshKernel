@@ -231,10 +231,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
             if (m_samplesRtree.GetQueryResultSize() > 0)
             {
                 const auto sampleIndex = m_samplesRtree.GetQuerySampleIndex(0);
-                if (sampleIndex >= 0)
-                {
-                    result = m_samples[sampleIndex].value;
-                }
+                result = m_samples[sampleIndex].value;
             }
         }
         return;

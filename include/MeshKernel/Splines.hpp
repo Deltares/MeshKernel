@@ -95,10 +95,10 @@ namespace meshkernel
         /// @brief height When accounting for curvature, the height to use
         /// @brief assignedDelta When larger than zero, the number of intervals the spline is divided when computing the length
         /// @returns The computed length
-        [[nodiscard]] double GetSplineLength(int index,
+        [[nodiscard]] double GetSplineLength(size_t index,
                                              double startIndex,
                                              double endIndex,
-                                             int numSamples = 100,
+                                             size_t numSamples = 100,
                                              bool accountForCurvature = false,
                                              double height = 1.0,
                                              double assignedDelta = -1);
@@ -138,7 +138,7 @@ namespace meshkernel
         /// @param[out] curvatureFactor The computed curvature factor
         /// @param[out] normalVector The computed normal vector
         /// @param[out] tangentialVector The computed tangential vector
-        void ComputeCurvatureOnSplinePoint(int splineIndex,
+        void ComputeCurvatureOnSplinePoint(size_t splineIndex,
                                            double adimensionalPointCoordinate,
                                            double& curvatureFactor,
                                            Point& normalVector,
@@ -177,7 +177,7 @@ namespace meshkernel
         /// @brief This is the function we want to find the root of
         double operator()(double adimensionalDistanceReferencePoint)
         {
-            double distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
+            double distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0.0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
             distanceFromReferencePoint = std::abs(distanceFromReferencePoint - m_DimensionalDistance);
             return distanceFromReferencePoint;
         }

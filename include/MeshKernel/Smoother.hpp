@@ -120,7 +120,7 @@ namespace meshkernel
         /// @brief theta2
         /// @brief isBoundaryEdge
         /// @returns
-        [[nodiscard]] double OptimalEdgeAngle(int numFaceNodes,
+        [[nodiscard]] double OptimalEdgeAngle(size_t numFaceNodes,
                                               double theta1 = -1.0,
                                               double theta2 = -1.0,
                                               bool isBoundaryEdge = false) const;

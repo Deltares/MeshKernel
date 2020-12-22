@@ -1270,8 +1270,8 @@ namespace meshkernel
         ComputeAdimensionalDistancesFromPointSerie(sideFour, projection, sideFourAdimensional, totalLengthFour);
 
         // now compute the adimensional distance of each point to be filled
-        const int numMPoints = numM + 1;
-        const int numNPoints = numN + 1;
+        const auto numMPoints = numM + 1;
+        const auto numNPoints = numN + 1;
 
         std::vector<std::vector<double>> iWeightFactor(numMPoints, std::vector<double>(numNPoints));
         std::vector<std::vector<double>> jWeightFactor(numMPoints, std::vector<double>(numNPoints));
