@@ -391,7 +391,6 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline
         const Point delta = spline[i + 1] - spline[i] - (spline[i] - spline[i - 1]);
         u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
     }
-
     // TODO: C++ 20 for(auto& i :  views::reverse(vec))
     coordinatesDerivatives.back() = {0.0, 0.0};
     for (auto i = numNodes - 2; i < numNodes; --i)
