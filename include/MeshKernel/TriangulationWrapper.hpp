@@ -161,7 +161,7 @@ namespace meshkernel
             }
 
             // Create edges
-            if (m_numEdges <= 0)
+            if (m_numEdges == 0)
             {
                 return;
             }
