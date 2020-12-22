@@ -341,7 +341,7 @@ namespace meshkernelapi
 
         /// @brief Offsets a polygon
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[in] geometryListIn The coordinate of the offset point
+        /// @param[in] geometryListIn The polygon to be offsetted
         /// @param[in] innerPolygon Compute inner (true) or outer (false) polygon
         /// @param[in] distance The offset distance
         /// @param[out] geometryListOut The offsetted polygon
@@ -350,7 +350,7 @@ namespace meshkernelapi
 
         /// @brief Gets the number of nodes of the offsetted polygon  Count the number of nodes after polygon refinement
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[in] geometryListIn The coordinate of the offset point
+        /// @param[in] geometryListIn The polygon to be offsetted
         /// @param[in] innerPolygon Compute inner (true) or outer (false) polygon
         /// @param[in] distance The offset distance
         /// @param[out] numberOfPolygonNodes The number of nodes of the generated polygon
