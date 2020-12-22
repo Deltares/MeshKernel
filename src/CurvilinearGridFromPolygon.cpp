@@ -268,7 +268,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
     }
 
     const auto numPointsThirdSide = numPolygonNodes - (numPointsFirstSide + numPointsSecondSide);
-    const auto blockSize = static_cast<size_t>((numPointsFirstSide + numPointsSecondSide + numPointsThirdSide) * 0.5);
+    const auto blockSize = static_cast<size_t>(static_cast<double>(numPointsFirstSide + numPointsSecondSide + numPointsThirdSide) * 0.5);
 
     if (numPointsThirdSide >= blockSize || numPointsSecondSide >= blockSize || numPointsFirstSide >= blockSize)
     {

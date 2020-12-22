@@ -64,7 +64,7 @@ void meshkernel::SpatialTrees::RTree::NearestNeighbors(Point node)
     }
 }
 
-void meshkernel::SpatialTrees::RTree::DeleteNode(int position)
+void meshkernel::SpatialTrees::RTree::DeleteNode(size_t position)
 {
     const auto numberRemoved = m_rtree2D.remove(m_points[position]);
     if (numberRemoved != 1)
@@ -95,7 +95,7 @@ size_t meshkernel::SpatialTrees::RTree::GetQueryResultSize() const
     return m_queryCache.size();
 }
 
-int meshkernel::SpatialTrees::RTree::GetQuerySampleIndex(int index) const
+size_t meshkernel::SpatialTrees::RTree::GetQuerySampleIndex(size_t index) const
 {
     return m_queryIndices[index];
 }

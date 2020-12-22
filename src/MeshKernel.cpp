@@ -151,7 +151,7 @@ namespace meshkernelapi
         meshGeometry.edge_nodes = &(meshInstances[meshKernelId]->m_edgeNodes[0]);
 
         meshGeometryDimensions.maxnumfacenodes = meshkernel::maximumNumberOfNodesPerFace;
-        meshGeometryDimensions.numface = meshInstances[meshKernelId]->GetNumFaces();
+        meshGeometryDimensions.numface = static_cast<int>(meshInstances[meshKernelId]->GetNumFaces());
         if (meshGeometryDimensions.numface > 0)
         {
             meshGeometry.face_nodes = &(meshInstances[meshKernelId]->m_faceNodes[0]);
@@ -167,8 +167,8 @@ namespace meshkernelapi
         }
         else
         {
-            meshGeometryDimensions.numnode = meshInstances[meshKernelId]->GetNumNodes();
-            meshGeometryDimensions.numedge = meshInstances[meshKernelId]->GetNumEdges();
+            meshGeometryDimensions.numnode = static_cast<int>(meshInstances[meshKernelId]->GetNumNodes());
+            meshGeometryDimensions.numedge = static_cast<int>(meshInstances[meshKernelId]->GetNumEdges());
         }
 
         return true;
@@ -1109,7 +1109,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> newPoint;
             ConvertGeometryListToPointVector(geometryListIn, newPoint);
 
-            int edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
+            const auto edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
 
             meshInstances[meshKernelId]->DeleteEdge(edgeIndex);
         }
@@ -1327,10 +1327,10 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            int nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
+            const auto nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
 
             // Set the node coordinate
-            auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];
+            const auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];
             std::vector<meshkernel::Point> pointVector;
             pointVector.emplace_back(node);
             ConvertPointVectorToGeometryList(pointVector, geometryListOut);

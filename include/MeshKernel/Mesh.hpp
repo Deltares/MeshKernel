@@ -158,7 +158,7 @@ namespace meshkernel
 
         /// @brief Delete a node
         /// @param[in] nodeIndex The index of the node to delete
-        void DeleteNode(int nodeIndex);
+        void DeleteNode(size_t nodeIndex);
 
         /// @brief Find the edge sharing two nodes
         /// @param[in] firstNodeIndex The index of the first node
@@ -175,7 +175,7 @@ namespace meshkernel
         /// @param[in] point The starting point from where to start the search
         /// @param[in] searchRadius The search radius
         /// @returns The index of the closest node
-        [[nodiscard]] int GetNodeIndex(Point point, double searchRadius);
+        [[nodiscard]] size_t GetNodeIndex(Point point, double searchRadius);
 
         /// @brief Deletes an edge
         /// @param[in] edgeIndex The edge index
@@ -184,7 +184,7 @@ namespace meshkernel
         /// Finds the closest edge close to a point
         /// @param[in] point The starting point from where to start the search
         /// @returns The index of the closest edge
-        [[nodiscard]] int FindEdgeCloseToAPoint(Point point);
+        [[nodiscard]] size_t FindEdgeCloseToAPoint(Point point);
 
         /// @brief Masks the edges of all faces included in a polygon
         /// @param polygons The selection polygon

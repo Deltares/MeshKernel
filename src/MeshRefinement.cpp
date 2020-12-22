@@ -445,7 +445,7 @@ void meshkernel::MeshRefinement::ConnectHangingNodes()
     }
 }
 
-void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(int numEdgesBeforeRefinement)
+void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement)
 {
     //Add new nodes where required
     std::vector<size_t> notHangingFaceNodes;
@@ -690,8 +690,7 @@ void meshkernel::MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
         const auto numnodes = m_mesh->GetNumFaceEdges(f);
         for (auto n = 0; n < numnodes; n++)
         {
-            int nodeIndex = m_mesh->m_facesNodes[f][n];
-
+            const auto nodeIndex = m_mesh->m_facesNodes[f][n];
             if (m_mesh->m_nodeMask[nodeIndex] == 0)
             {
                 crossing = true;
@@ -704,7 +703,7 @@ void meshkernel::MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
             m_faceMask[f] = 0;
             for (auto n = 0; n < numnodes; n++)
             {
-                int nodeIndex = m_mesh->m_facesNodes[f][n];
+                const auto nodeIndex = m_mesh->m_facesNodes[f][n];
                 if (m_mesh->m_nodeMask[nodeIndex] == 1)
                 {
                     m_mesh->m_nodeMask[nodeIndex] = -2;
@@ -747,7 +746,7 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
             {
                 if (refineEdgeCache[n] == 1)
                 {
-                    int edgeIndex = m_mesh->m_facesEdges[f][n];
+                    const auto edgeIndex = m_mesh->m_facesEdges[f][n];
                     if (edgeIndex >= 0)
                     {
                         m_edgeMask[edgeIndex] = 1;
@@ -862,7 +861,7 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int face,
     m_mesh->ComputeFaceClosedPolygonWithLocalMappings(face, m_polygonNodesCache, m_localNodeIndicesCache, m_globalEdgeIndicesCache);
     for (auto i = 0; i < numEdges; i++)
     {
-        const int edgeIndex = m_globalEdgeIndicesCache[i];
+        const auto edgeIndex = m_globalEdgeIndicesCache[i];
         if (m_mesh->m_edgeLengths[edgeIndex] < mergingDistance)
         {
             numEdgesToBeRefined++;
@@ -1111,7 +1110,7 @@ void meshkernel::MeshRefinement::ComputeIfFaceShouldBeSplit()
 
             for (auto n = 0; n < numFaceNodes; n++)
             {
-                int edgeIndex = m_mesh->m_facesEdges[f][n];
+                const auto edgeIndex = m_mesh->m_facesEdges[f][n];
                 if (m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] > 0)
                 {
                     isSplittingRequired = true;
@@ -1146,7 +1145,7 @@ void meshkernel::MeshRefinement::ComputeIfFaceShouldBeSplit()
 
                 for (auto n = 0; n < numFaceNodes; n++)
                 {
-                    int edgeIndex = m_mesh->m_facesEdges[f][n];
+                    const auto edgeIndex = m_mesh->m_facesEdges[f][n];
                     if (!m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] == 0)
                     {
                         m_edgeMask[edgeIndex] = 1;

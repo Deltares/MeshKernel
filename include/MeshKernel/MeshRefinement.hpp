@@ -135,7 +135,7 @@ namespace meshkernel
 
         /// @brief The refinement operation by splitting the face (refine_cells)
         /// @param[in] numEdgesBeforeRefinemet Number of edges before the refinement
-        void RefineFacesBySplittingEdges(int numEdgesBeforeRefinement);
+        void RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement);
 
         /// Compute the refinement value at the face center of mass
         /// @param[in] numPolygonNodes The number of polygon nodes

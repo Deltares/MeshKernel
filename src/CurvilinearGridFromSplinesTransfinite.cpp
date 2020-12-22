@@ -573,7 +573,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std
 }
 
 template <typename T>
-void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn) const
+void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<std::vector<T>>& v, size_t firstColumn, size_t secondColumn) const
 {
     for (size_t i = 0; i < m_splines->GetNumSplines(); i++)
     {

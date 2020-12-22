@@ -385,7 +385,7 @@ void meshkernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
         m_nodez[n] = 0.0;
     }
 
-    int edgeIndex = 0;
+    size_t edgeIndex = 0;
     m_edgeNodes.resize(GetNumEdges() * 2);
     for (auto e = 0; e < GetNumEdges(); e++)
     {
@@ -1265,7 +1265,7 @@ size_t meshkernel::Mesh::InsertNode(const Point& newPoint)
     return newNodeIndex;
 }
 
-void meshkernel::Mesh::DeleteNode(int nodeIndex)
+void meshkernel::Mesh::DeleteNode(size_t nodeIndex)
 {
     if (nodeIndex >= GetNumNodes())
     {
@@ -1464,7 +1464,7 @@ void meshkernel::Mesh::OffsetSphericalCoordinates(double minx, double maxx)
     }
 }
 
-int meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
+size_t meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
 {
     if (GetNumNodes() <= 0)
     {
@@ -1480,20 +1480,17 @@ int meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
 
     double const searchRadiusSquared = searchRadius * searchRadius;
     m_nodesRTree.NearestNeighborsOnSquaredDistance(point, searchRadiusSquared);
-    auto resultSize = m_nodesRTree.GetQueryResultSize();
+    const auto resultSize = m_nodesRTree.GetQueryResultSize();
 
-    if (resultSize >= 1)
+    if (resultSize > 0)
     {
-        int nodeIndex = m_nodesRTree.GetQuerySampleIndex(0);
-        return nodeIndex;
+        return m_nodesRTree.GetQuerySampleIndex(0);
     }
-    else
-    {
-        throw AlgorithmError("Mesh::GetNodeIndex: Could not find the node index close to a point.");
-    }
+
+    throw AlgorithmError("Mesh::GetNodeIndex: Could not find the node index close to a point.");
 }
 
-int meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
+size_t meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
 {
     if (GetNumEdges() == 0)
     {
@@ -1511,7 +1508,7 @@ int meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
     auto const resultSize = m_edgesRTree.GetQueryResultSize();
     if (resultSize >= 1)
     {
-        int edgeIndex = m_edgesRTree.GetQuerySampleIndex(0);
+        const auto edgeIndex = m_edgesRTree.GetQuerySampleIndex(0);
         return edgeIndex;
     }
 
@@ -2039,7 +2036,7 @@ void meshkernel::Mesh::DeleteSmallTrianglesAtBoundaries(double minFractionalArea
         size_t nodeToPreserve = sizetMissingValue;
         size_t firstNodeToMerge;
         size_t secondNodeToMerge;
-        int thirdEdgeSmallTriangle = sizetMissingValue;
+        size_t thirdEdgeSmallTriangle = sizetMissingValue;
         for (auto e = 0; e < numNodesInTriangle; ++e)
         {
             const auto previousEdge = NextCircularBackwardIndex(e, numNodesInTriangle);

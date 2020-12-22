@@ -83,7 +83,7 @@ namespace meshkernel
         /// @param firstColumn The first column
         /// @param secondColumn The second column
         template <typename T>
-        void SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn) const;
+        void SwapColumns(std::vector<std::vector<T>>& v, size_t firstColumn, size_t secondColumn) const;
 
         /// Compute the distances following an exponential increase
         /// @param[in] factor
