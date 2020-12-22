@@ -195,10 +195,10 @@ void meshkernel::MeshRefinement::Compute()
     }
 }
 
-int meshkernel::MeshRefinement::DeleteIsolatedHangingnodes()
+size_t meshkernel::MeshRefinement::DeleteIsolatedHangingnodes()
 {
 
-    int numRemovedIsolatedHangingNodes = 0;
+    size_t numRemovedIsolatedHangingNodes = 0;
     for (auto e = 0; e < m_mesh->GetNumEdges(); ++e)
     {
         const auto brotherEdgeIndex = m_brotherEdges[e];
@@ -728,9 +728,9 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
     for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
     {
 
-        int numHangingEdges;
-        int numHangingNodes;
-        int numEdgesToRefine;
+        size_t numHangingEdges;
+        size_t numHangingNodes;
+        size_t numEdgesToRefine;
         FindHangingNodes(f, numHangingEdges, numHangingNodes, numEdgesToRefine);
 
         std::fill(refineEdgeCache.begin(), refineEdgeCache.end(), 0);
@@ -757,10 +757,10 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
     }
 };
 
-void meshkernel::MeshRefinement::FindHangingNodes(int face,
-                                                  int& numHangingEdges,
-                                                  int& numHangingNodes,
-                                                  int& numEdgesToRefine)
+void meshkernel::MeshRefinement::FindHangingNodes(size_t face,
+                                                  size_t& numHangingEdges,
+                                                  size_t& numHangingNodes,
+                                                  size_t& numEdgesToRefine)
 {
 
     numEdgesToRefine = 0;
@@ -833,7 +833,7 @@ void meshkernel::MeshRefinement::FindHangingNodes(int face,
     }
 }
 
-void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(int face,
+void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
                                                                        std::vector<int>& refineEdgeCache,
                                                                        int& numEdgesToBeRefined)
 {
@@ -942,9 +942,9 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMask()
                 continue;
             }
 
-            int numHangingEdges;
-            int numHangingNodes;
-            int numEdgesToRefine;
+            size_t numHangingEdges;
+            size_t numHangingNodes;
+            size_t numEdgesToRefine;
             FindHangingNodes(f, numHangingEdges, numHangingNodes, numEdgesToRefine);
 
             auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
@@ -1091,16 +1091,16 @@ void meshkernel::MeshRefinement::ComputeIfFaceShouldBeSplit()
             {
                 continue;
             }
-            int numHangingEdges;
-            int numHangingNodes;
-            int numEdgesToRefine;
 
+            size_t numHangingEdges;
+            size_t numHangingNodes;
+            size_t numEdgesToRefine;
             FindHangingNodes(f, numHangingEdges, numHangingNodes, numEdgesToRefine);
 
             bool isSplittingRequired = false;
 
             // check if the edge has a brother edge and needs to be refined
-            auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
+            const auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
 
             if (numFaceNodes > maximumNumberOfEdgesPerFace)
             {

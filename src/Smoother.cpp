@@ -642,8 +642,8 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
     }
 
     // Compute internal angle
-    int numSquaredTriangles = 0;
-    int numTriangles = 0;
+    size_t numSquaredTriangles = 0;
+    size_t numTriangles = 0;
     double phiSquaredTriangles = 0.0;
     double phiQuads = 0.0;
     double phiTriangles = 0.0;
@@ -710,7 +710,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
     }
     else if (numSquaredTriangles > 0)
     {
-        muSquaredTriangles = std::max(factor * 2.0 * M_PI - (phiTot - phiSquaredTriangles), double(numSquaredTriangles) * minPhi) / phiSquaredTriangles;
+        muSquaredTriangles = std::max(factor * 2.0 * M_PI - (phiTot - phiSquaredTriangles), static_cast<double>(numSquaredTriangles) * minPhi) / phiSquaredTriangles;
     }
 
     if (phiTot > 1e-18)
@@ -719,9 +719,6 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
     }
     else if (numSharedFaces > 0)
     {
-        //TODO: add cirr(xk(k0), yk(k0), ncolhl)
-        m_nodeXErrors.emplace_back(m_mesh->m_nodes[currentNode].x);
-        m_nodeXErrors.emplace_back(m_mesh->m_nodes[currentNode].y);
         throw AlgorithmError("Smoother::ComputeNodeXiEta: Fatal error (phiTot=0).");
     }
 
@@ -744,9 +741,6 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
             }
             else
             {
-                //TODO: add cirr(xk(k0), yk(k0), ncolhl)
-                m_nodeXErrors.emplace_back(m_mesh->m_nodes[currentNode].x);
-                m_nodeXErrors.emplace_back(m_mesh->m_nodes[currentNode].y);
                 throw AlgorithmError("Smoother::ComputeNodeXiEta: Inappropriate fictitious boundary cell.");
             }
             phi0 = phi0 + 0.5 * dPhi;
@@ -1041,7 +1035,7 @@ void meshkernel::Smoother::Initialize()
     std::fill(m_topologyFaceNodeMapping.begin(), m_topologyFaceNodeMapping.end(), std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, 0)));
 }
 
-void meshkernel::Smoother::AllocateNodeOperators(int topologyIndex)
+void meshkernel::Smoother::AllocateNodeOperators(size_t topologyIndex)
 {
     const auto numSharedFaces = m_numTopologyFaces[topologyIndex];
     const auto numConnectedNodes = m_numTopologyNodes[topologyIndex];
@@ -1132,7 +1126,7 @@ void meshkernel::Smoother::SaveNodeTopologyIfNeeded(size_t currentNode,
     }
 }
 
-void meshkernel::Smoother::ComputeJacobian(int currentNode, std::vector<double>& J) const
+void meshkernel::Smoother::ComputeJacobian(size_t currentNode, std::vector<double>& J) const
 {
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
     const auto numNodes = m_numTopologyNodes[currentTopology];
@@ -1152,7 +1146,7 @@ void meshkernel::Smoother::ComputeJacobian(int currentNode, std::vector<double>&
     }
     if (m_mesh->m_projection == Projection::spherical || m_mesh->m_projection == Projection::sphericalAccurate)
     {
-        double cosFactor = std::cos(m_mesh->m_nodes[currentNode].y * degrad_hp);
+        const auto cosFactor = std::cos(m_mesh->m_nodes[currentNode].y * degrad_hp);
         J[0] = 0.0;
         J[1] = 0.0;
         J[2] = 0.0;

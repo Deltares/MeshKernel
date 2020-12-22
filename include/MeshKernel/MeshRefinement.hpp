@@ -103,7 +103,7 @@ namespace meshkernel
         /// @param samples The samples to use for refinement
         /// @param refineEdgeCache 1 if the edge should be refined, 0 otherwise
         /// @param numEdgesToBeRefined The computed number of edges to refined
-        void ComputeEdgesRefinementMaskFromSamples(int face,
+        void ComputeEdgesRefinementMaskFromSamples(size_t face,
                                                    std::vector<int>& refineEdgeCache,
                                                    int& numEdgesToBeRefined);
 
@@ -115,14 +115,14 @@ namespace meshkernel
         /// @param numHangingEdges
         /// @param numHangingNodes
         /// @param numEdgesToRefine
-        void FindHangingNodes(int face,
-                              int& numHangingEdges,
-                              int& numHangingNodes,
-                              int& numEdgesToRefine);
+        void FindHangingNodes(size_t face,
+                              size_t& numHangingEdges,
+                              size_t& numHangingNodes,
+                              size_t& numEdgesToRefine);
 
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
         /// @returns Number of deleted isolated hanging nodes
-        [[nodiscard]] int DeleteIsolatedHangingnodes();
+        [[nodiscard]] size_t DeleteIsolatedHangingnodes();
 
         /// @brief Connect the hanging nodes with triangles (connect_hanging_nodes)
         void ConnectHangingNodes();
@@ -137,16 +137,6 @@ namespace meshkernel
         /// @param[in] numEdgesBeforeRefinemet Number of edges before the refinement
         void RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement);
 
-        /// Compute the refinement value at the face center of mass
-        /// @param[in] numPolygonNodes The number of polygon nodes
-        /// @param[in] samples The number of samples
-        /// @param[in] averagingMethod The averaging method to used
-        /// @param[in] centerOfMass The face center of mass
-        /// @returns The refinement value at the face center of mass
-        [[nodiscard]] double ComputeFaceRefinementFromSamples(int numPolygonNodes,
-                                                              const std::vector<Sample>& samples,
-                                                              AveragingInterpolation::Method averagingMethod,
-                                                              Point centerOfMass);
         /// The sample node RTree
         SpatialTrees::RTree m_samplesRTree;
 

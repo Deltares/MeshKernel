@@ -53,7 +53,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns
-        [[nodiscard]] auto GetWeight(int node, int connectedNode)
+        [[nodiscard]] auto GetWeight(size_t node, int connectedNode)
         {
             return m_weights[node][connectedNode];
         }
@@ -62,7 +62,7 @@ namespace meshkernel
         /// @brief node
         /// @brief connectedNode
         /// @returns
-        [[nodiscard]] auto GetConnectedNodeIndex(int node, int connectedNode)
+        [[nodiscard]] auto GetConnectedNodeIndex(size_t node, int connectedNode)
         {
             return m_connectedNodes[node][connectedNode];
         }
@@ -70,7 +70,7 @@ namespace meshkernel
         /// @brief Get number of connected nodes
         /// @brief node
         /// @returns
-        [[nodiscard]] auto GetNumConnectedNodes(int node)
+        [[nodiscard]] auto GetNumConnectedNodes(size_t node)
         {
             return m_numConnectedNodes[node];
         }
@@ -127,7 +127,7 @@ namespace meshkernel
 
         /// @brief Allocate smoother operators
         /// @param[in] topologyIndex
-        void AllocateNodeOperators(int topologyIndex);
+        void AllocateNodeOperators(size_t topologyIndex);
 
         /// @brief If it is a new topology, save it
         /// @param[in] currentNode
@@ -140,7 +140,7 @@ namespace meshkernel
         /// @brief Computes local coordinates jacobian from the mapped jacobians m_Jxi and m_Jeta
         /// @param[in] currentNode
         /// @param[out] J
-        void ComputeJacobian(int currentNode, std::vector<double>& J) const;
+        void ComputeJacobian(size_t currentNode, std::vector<double>& J) const;
 
         /// @brief Compute the matrix norm
         /// @brief x
@@ -198,11 +198,6 @@ namespace meshkernel
         // Class variables
         size_t m_maximumNumConnectedNodes = 0;
         size_t m_maximumNumSharedFaces = 0;
-
-        // nodes with errors
-        std::vector<double> m_nodeXErrors;
-        std::vector<double> m_nodeYErrors;
-        std::vector<int> m_nodeErrorCode;
 
         static constexpr int m_topologyInitialSize = 10;
         static constexpr double m_thetaTolerance = 1e-4;
