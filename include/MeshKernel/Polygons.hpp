@@ -59,9 +59,9 @@ namespace meshkernel
 
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
-        /// @param[in] Inner Offset inwards or outward
+        /// @param[in] innerAndOuter Offset inwards or outward
         /// @return The new offset polygon
-        Polygons OffsetCopy(double distance, bool Inner) const;
+        Polygons OffsetCopy(double distance, bool innerAndOuter) const;
 
         /// @brief Checks if a point is included in a given polygon
         /// @param[in] point The point to check
