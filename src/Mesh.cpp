@@ -786,7 +786,9 @@ void meshkernel::Mesh::FindFaces()
         for (auto n = 0; n < GetNumNodes(); n++)
         {
             if (!m_nodes[n].IsValid())
+            {
                 continue;
+            }
 
             for (auto e = 0; e < m_nodesNumEdges[n]; e++)
             {
@@ -798,7 +800,7 @@ void meshkernel::Mesh::FindFaces()
     m_numFacesNodes.resize(m_numFaces);
     for (auto f = 0; f < m_numFaces; ++f)
     {
-        m_numFacesNodes[f] = int(m_facesNodes[f].size());
+        m_numFacesNodes[f] = m_facesNodes[f].size();
     }
 }
 

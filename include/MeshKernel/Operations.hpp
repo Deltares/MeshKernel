@@ -190,13 +190,13 @@ namespace meshkernel
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next forward index.
-    [[nodiscard]] int NextCircularForwardIndex(int currentIndex, int size);
+    [[nodiscard]] size_t NextCircularForwardIndex(size_t currentIndex, size_t size);
 
     /// @brief Get the next backward index.
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next backward index.
-    [[nodiscard]] int NextCircularBackwardIndex(int currentIndex, int size);
+    [[nodiscard]] size_t NextCircularBackwardIndex(size_t currentIndex, size_t size);
 
     /// @brief Determines if a point is close to the poles (latitude close to 90 degrees).
     /// @param[in] point The current point.
@@ -362,7 +362,6 @@ namespace meshkernel
     /// @param[in] projection The coordinate system projection
     /// @return The resulting circumcenter
     [[nodiscard]] Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection);
-
 
     /// @brief Determines if two segments are crossing (cross, cross3D)
     /// @param[in] firstSegmentFistPoint The first point of the first segment

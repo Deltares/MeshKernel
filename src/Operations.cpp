@@ -92,9 +92,9 @@ namespace meshkernel
         return result;
     }
 
-    int NextCircularForwardIndex(int currentIndex, int size)
+    size_t NextCircularForwardIndex(size_t currentIndex, size_t size)
     {
-        int index = currentIndex + 1;
+        size_t index = currentIndex + 1;
         if (index >= size)
         {
             index = index - size;
@@ -102,14 +102,13 @@ namespace meshkernel
         return index;
     }
 
-    int NextCircularBackwardIndex(int currentIndex, int size)
+    size_t NextCircularBackwardIndex(size_t currentIndex, size_t size)
     {
-        int index = currentIndex - 1;
-        if (index < 0)
+        if (currentIndex == 0)
         {
-            index = index + size;
+            return currentIndex + size - 1;
         }
-        return index;
+        return currentIndex - 1;
     }
 
     bool IsPointOnPole(const Point& point)
