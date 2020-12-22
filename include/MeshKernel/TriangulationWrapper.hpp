@@ -54,11 +54,11 @@ namespace meshkernel
             TriangulatePointsAndGenerateFaces = 3 ///< generate Delaunay triangulation from input nodes with m_faceEdges and m_edgeNodes
         };
 
-        std::vector<Point> m_nodes;                 ///< Nodes
-        std::vector<std::vector<int>> m_faceNodes;  ///< Face nodes
-        std::vector<std::vector<int>> m_faceEdges;  ///< Face edges
-        std::vector<std::vector<int>> m_edgeNodes;  ///< Edge nodes
-        std::vector<std::vector<int>> m_edgesFaces; ///< Edge faces
+        std::vector<Point> m_nodes;                    ///< Nodes
+        std::vector<std::vector<size_t>> m_faceNodes;  ///< Face nodes
+        std::vector<std::vector<size_t>> m_faceEdges;  ///< Face edges
+        std::vector<std::vector<size_t>> m_edgeNodes;  ///< Edge nodes
+        std::vector<std::vector<size_t>> m_edgesFaces; ///< Edge faces
 
         size_t m_numEdges; ///< Number of edges
         size_t m_numNodes; ///< Number of nodes
@@ -144,19 +144,19 @@ namespace meshkernel
             }
 
             // Create m_faceNodes
-            m_faceNodes.resize(m_numFaces, std::vector<int>(3, intMissingValue));
-            m_faceEdges.resize(m_numFaces, std::vector<int>(3, intMissingValue));
-            int faceCounter = 0;
+            m_faceNodes.resize(m_numFaces, std::vector<size_t>(3, sizetMissingValue));
+            m_faceEdges.resize(m_numFaces, std::vector<size_t>(3, sizetMissingValue));
+            size_t faceCounter = 0;
             for (auto f = 0; f < m_numFaces; ++f)
             {
-                m_faceNodes[f][0] = faceNodesFlat[faceCounter] - 1;
-                m_faceEdges[f][0] = faceEdgesFlat[faceCounter] - 1;
+                m_faceNodes[f][0] = static_cast<size_t>(faceNodesFlat[faceCounter] - 1);
+                m_faceEdges[f][0] = static_cast<size_t>(faceEdgesFlat[faceCounter] - 1);
                 faceCounter++;
-                m_faceNodes[f][1] = faceNodesFlat[faceCounter] - 1;
-                m_faceEdges[f][1] = faceEdgesFlat[faceCounter] - 1;
+                m_faceNodes[f][1] = static_cast<size_t>(faceNodesFlat[faceCounter] - 1);
+                m_faceEdges[f][1] = static_cast<size_t>(faceEdgesFlat[faceCounter] - 1);
                 faceCounter++;
-                m_faceNodes[f][2] = faceNodesFlat[faceCounter] - 1;
-                m_faceEdges[f][2] = faceEdgesFlat[faceCounter] - 1;
+                m_faceNodes[f][2] = static_cast<size_t>(faceNodesFlat[faceCounter] - 1);
+                m_faceEdges[f][2] = static_cast<size_t>(faceEdgesFlat[faceCounter] - 1);
                 faceCounter++;
             }
 
@@ -166,27 +166,27 @@ namespace meshkernel
                 return;
             }
 
-            m_edgeNodes.resize(m_numEdges, std::vector<int>(2, intMissingValue));
-            int edgeCounter = 0;
+            m_edgeNodes.resize(m_numEdges, std::vector<size_t>(2, sizetMissingValue));
+            size_t edgeCounter = 0;
             for (auto e = 0; e < m_numEdges; ++e)
             {
-                m_edgeNodes[e][0] = edgeNodesFlat[edgeCounter] - 1;
+                m_edgeNodes[e][0] = static_cast<size_t>(edgeNodesFlat[edgeCounter] - 1);
                 edgeCounter++;
-                m_edgeNodes[e][1] = edgeNodesFlat[edgeCounter] - 1;
+                m_edgeNodes[e][1] = static_cast<size_t>(edgeNodesFlat[edgeCounter] - 1);
                 edgeCounter++;
             }
 
-            m_edgesFaces.resize(m_numEdges, std::vector<int>(2, intMissingValue));
+            m_edgesFaces.resize(m_numEdges, std::vector<size_t>(2, sizetMissingValue));
             edgeCounter = 0;
             for (auto f = 0; f < m_numFaces; ++f)
             {
 
                 for (auto n = 0; n < numNodesInTriangle; ++n)
                 {
-                    auto const edge = faceEdgesFlat[edgeCounter] - 1;
+                    auto const edge = static_cast<size_t>(faceEdgesFlat[edgeCounter] - 1);
                     edgeCounter++;
                     // For each edge, the shared face index
-                    if (m_edgesFaces[edge][0] == intMissingValue)
+                    if (m_edgesFaces[edge][0] == sizetMissingValue)
                     {
                         m_edgesFaces[edge][0] = f;
                     }

@@ -426,7 +426,7 @@ namespace meshkernel
         /// @param[in] faceNodes
         /// @param[in] nodes
         /// @returns If triangle is okay
-        [[nodiscard]] bool CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const;
+        [[nodiscard]] bool CheckTriangle(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
 
         /// @brief Removes all invalid nodes and edges
         void DeleteInvalidNodesAndEdges();

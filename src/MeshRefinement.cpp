@@ -747,7 +747,7 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
                 if (refineEdgeCache[n] == 1)
                 {
                     const auto edgeIndex = m_mesh->m_facesEdges[f][n];
-                    if (edgeIndex >= 0)
+                    if (edgeIndex != sizetMissingValue)
                     {
                         m_edgeMask[edgeIndex] = 1;
                     }

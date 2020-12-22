@@ -110,7 +110,7 @@ void meshkernel::TriangulationInterpolation::Compute()
         // search for the triangle where the location is included
         bool isInTriangle = false;
         int numFacesSearched = 0;
-        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces && triangle >= 0 && triangle < triangulationWrapper.m_numFaces)
+        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces && triangle != sizetMissingValue && triangle < triangulationWrapper.m_numFaces)
         {
 
             isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], m_projection, trianglesCircumcenters[triangle]);
@@ -132,7 +132,7 @@ void meshkernel::TriangulationInterpolation::Compute()
                 }
 
                 // there is no valid other triangle
-                const auto otherTriangle = triangulationWrapper.m_edgesFaces[edge][0] + triangulationWrapper.m_edgesFaces[edge][1] - triangle;
+                const auto otherTriangle = triangle == triangulationWrapper.m_edgesFaces[edge][0] ? triangulationWrapper.m_edgesFaces[edge][1] : triangulationWrapper.m_edgesFaces[edge][0];
                 const auto k1 = triangulationWrapper.m_edgeNodes[edge][0];
                 const auto k2 = triangulationWrapper.m_edgeNodes[edge][1];
                 Point intersection;
@@ -158,7 +158,7 @@ void meshkernel::TriangulationInterpolation::Compute()
             }
         }
 
-        if (isInTriangle && triangle >= 0 && triangle < triangulationWrapper.m_numFaces)
+        if (isInTriangle && triangle != sizetMissingValue && triangle < triangulationWrapper.m_numFaces)
         {
             // Perform linear interpolation
             m_results[n] = LinearInterpolationInTriangle(m_locations[n], triangles[triangle], values[triangle], m_projection);

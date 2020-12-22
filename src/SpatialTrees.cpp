@@ -29,7 +29,7 @@
 
 void meshkernel::SpatialTrees::RTree::NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)
 {
-    double searchRadius = std::sqrt(searchRadiusSquared);
+    const auto searchRadius = std::sqrt(searchRadiusSquared);
 
     Box2D box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
     Point2D nodeSought = Point2D(node.x, node.y);

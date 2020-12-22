@@ -331,7 +331,7 @@ meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& pol
         if (!edgeNodesFlag[i])
             continue;
 
-        edges[validEdgesCount].first = std::abs(triangulationWrapper.m_edgeNodes[i][0]);
+        edges[validEdgesCount].first = triangulationWrapper.m_edgeNodes[i][0];
         edges[validEdgesCount].second = triangulationWrapper.m_edgeNodes[i][1];
         validEdgesCount++;
     }
@@ -342,7 +342,7 @@ meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& pol
     *this = Mesh(edges, inputNodes, projection, AdministrationOptions::AdministrateMeshEdges);
 }
 
-bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const std::vector<Point>& nodes) const
+bool meshkernel::Mesh::CheckTriangle(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const
 {
     // Used for triangular grids
     constexpr double triangleMinimumAngle = 5.0;
@@ -351,7 +351,7 @@ bool meshkernel::Mesh::CheckTriangle(const std::vector<int>& faceNodes, const st
     double phiMin = 1e3;
     double phiMax = 0.0;
 
-    static std::array<std::array<int, 3>, 3> nodePermutations{{{2, 0, 1}, {0, 1, 2}, {1, 2, 0}}};
+    static std::array<std::array<size_t, 3>, 3> nodePermutations{{{2, 0, 1}, {0, 1, 2}, {1, 2, 0}}};
 
     for (auto i = 0; i < faceNodes.size(); ++i)
     {
@@ -2059,7 +2059,7 @@ void meshkernel::Mesh::DeleteSmallTrianglesAtBoundaries(double minFractionalArea
             }
         }
 
-        if (minCosPhiSmallTriangle < minCosPhi && thirdEdgeSmallTriangle >= 0 && IsEdgeOnBoundary(thirdEdgeSmallTriangle))
+        if (minCosPhiSmallTriangle < minCosPhi && thirdEdgeSmallTriangle != sizetMissingValue && IsEdgeOnBoundary(thirdEdgeSmallTriangle))
         {
             smallTrianglesNodes.emplace_back(std::initializer_list<size_t>{nodeToPreserve, firstNodeToMerge, secondNodeToMerge});
         }
