@@ -1257,7 +1257,7 @@ size_t meshkernel::Mesh::InsertNode(const Point& newPoint)
     m_numNodes++;
 
     m_nodes[newNodeIndex] = newPoint;
-    m_nodeMask[newNodeIndex] = newNodeIndex;
+    m_nodeMask[newNodeIndex] = static_cast<int>(newNodeIndex);
     m_nodesNumEdges[newNodeIndex] = 0;
 
     m_nodesRTreeRequiresUpdate = true;
@@ -1746,7 +1746,7 @@ meshkernel::Mesh& meshkernel::Mesh::operator+=(Mesh const& rhs)
     //copy mesh nodes
     for (auto n = GetNumNodes(); n < GetNumNodes() + rhsNumNodes; ++n)
     {
-        const int index = n - GetNumNodes();
+        const auto index = n - GetNumNodes();
         m_nodes[n] = rhs.m_nodes[index];
     }
 
@@ -2002,7 +2002,7 @@ void meshkernel::Mesh::DeleteSmallTrianglesAtBoundaries(double minFractionalArea
 {
     // On the second part, the small triangles at the boundaries are checked
     const double minCosPhi = 0.2;
-    std::vector<std::vector<int>> smallTrianglesNodes;
+    std::vector<std::vector<size_t>> smallTrianglesNodes;
     for (auto face = 0; face < GetNumFaces(); ++face)
     {
         if (m_numFacesNodes[face] != numNodesInTriangle || m_faceArea[face] <= 0.0 || !IsFaceOnBoundary(face))
@@ -2036,10 +2036,10 @@ void meshkernel::Mesh::DeleteSmallTrianglesAtBoundaries(double minFractionalArea
         }
 
         double minCosPhiSmallTriangle = 1.0;
-        int nodeToPreserve = intMissingValue;
-        int firstNodeToMerge;
-        int secondNodeToMerge;
-        int thirdEdgeSmallTriangle = intMissingValue;
+        size_t nodeToPreserve = sizetMissingValue;
+        size_t firstNodeToMerge;
+        size_t secondNodeToMerge;
+        int thirdEdgeSmallTriangle = sizetMissingValue;
         for (auto e = 0; e < numNodesInTriangle; ++e)
         {
             const auto previousEdge = NextCircularBackwardIndex(e, numNodesInTriangle);
@@ -2064,7 +2064,7 @@ void meshkernel::Mesh::DeleteSmallTrianglesAtBoundaries(double minFractionalArea
 
         if (minCosPhiSmallTriangle < minCosPhi && thirdEdgeSmallTriangle >= 0 && IsEdgeOnBoundary(thirdEdgeSmallTriangle))
         {
-            smallTrianglesNodes.emplace_back(std::initializer_list<int>{nodeToPreserve, firstNodeToMerge, secondNodeToMerge});
+            smallTrianglesNodes.emplace_back(std::initializer_list<size_t>{nodeToPreserve, firstNodeToMerge, secondNodeToMerge});
         }
     }
 
@@ -2265,9 +2265,12 @@ void meshkernel::Mesh::ComputeAspectRatios(std::vector<double>& aspectRatios)
             //quads
             if (numberOfFaceNodes == numNodesQuads)
             {
-                int kkp2 = n + 2;
+                size_t kkp2 = n + 2;
                 if (kkp2 >= numberOfFaceNodes)
+                {
                     kkp2 = kkp2 - numberOfFaceNodes;
+                }
+
                 auto klinkp2 = m_facesEdges[f][kkp2];
                 edgeLength = 0.5 * (edgesLength[edgeIndex] + edgesLength[klinkp2]);
             }
@@ -2377,7 +2380,7 @@ void meshkernel::Mesh::MakeDualFace(size_t node, double enlargementFactor, std::
         dualFace.emplace_back(edgeCenter);
 
         const auto faceIndex = sortedFacesIndices[e];
-        if (faceIndex >= 0)
+        if (faceIndex != sizetMissingValue)
         {
             dualFace.emplace_back(m_facesMassCenters[faceIndex]);
         }
@@ -2412,11 +2415,11 @@ void meshkernel::Mesh::MakeDualFace(size_t node, double enlargementFactor, std::
     }
 }
 
-std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(size_t node) const
+std::vector<size_t> meshkernel::Mesh::SortedFacesAroundNode(size_t node) const
 {
 
     const auto numEdges = m_nodesNumEdges[node];
-    std::vector<int> result;
+    std::vector<size_t> result;
     for (auto e = 0; e < numEdges; ++e)
     {
         const auto firstEdge = m_nodesEdges[node][e];
@@ -2431,7 +2434,7 @@ std::vector<int> meshkernel::Mesh::SortedFacesAroundNode(size_t node) const
         const auto secondEdge = m_nodesEdges[node][ee];
         const auto firstFace = m_edgesFaces[firstEdge][0];
 
-        int secondFace = -1;
+        int secondFace = sizetMissingValue;
         if (m_edgesNumFaces[firstEdge] > 1)
         {
             secondFace = m_edgesFaces[firstEdge][1];

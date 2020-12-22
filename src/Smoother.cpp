@@ -390,11 +390,13 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
             faceLeftIndex = f;
             faceRightIndex = NextCircularBackwardIndex(faceLeftIndex, m_numTopologyFaces[currentTopology]);
 
-            if (faceRightIndex < 0)
+            if (faceRightIndex == sizetMissingValue)
+            {
                 continue;
+            }
 
-            auto faceLeft = m_topologySharedFaces[currentTopology][faceLeftIndex];
-            auto faceRight = m_topologySharedFaces[currentTopology][faceRightIndex];
+            const auto faceLeft = m_topologySharedFaces[currentTopology][faceLeftIndex];
+            const auto faceRight = m_topologySharedFaces[currentTopology][faceRightIndex];
 
             if ((faceLeft != m_mesh->m_edgesFaces[edgeIndex][0] && faceLeft != m_mesh->m_edgesFaces[edgeIndex][1]) ||
                 (faceRight != m_mesh->m_edgesFaces[edgeIndex][0] && faceRight != m_mesh->m_edgesFaces[edgeIndex][1]))

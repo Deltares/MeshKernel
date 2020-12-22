@@ -332,7 +332,7 @@ namespace meshkernel
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
         /// @param[in] node The node index
         /// @return The face indexses
-        [[nodiscard]] std::vector<int> SortedFacesAroundNode(size_t node) const;
+        [[nodiscard]] std::vector<size_t> SortedFacesAroundNode(size_t node) const;
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @return The resulting polygon mesh boundary

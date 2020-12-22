@@ -406,8 +406,8 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
             {
                 for (auto j = 0; j < result[0].size(); ++j)
                 {
-                    int iIndex = n1 + n3 - i;
-                    int jIndex = n2 + n3 - j;
+                    const auto iIndex = n1 + n3 - i;
+                    const auto jIndex = n2 + n3 - j;
                     curvilinearGrid.m_grid[iIndex][jIndex] = result[i][j];
                 }
             }
@@ -418,7 +418,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
             {
                 for (auto j = 0; j < result.size(); ++j)
                 {
-                    int jIndex = n2 + n3 - j;
+                    const auto jIndex = n2 + n3 - j;
                     curvilinearGrid.m_grid[i][jIndex] = result[j][i];
                 }
             }

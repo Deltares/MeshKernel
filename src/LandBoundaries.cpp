@@ -791,7 +791,7 @@ namespace meshkernel
                         numNextFaces += 1;
                         if (numNextFaces >= nextFaces.size())
                         {
-                            nextFaces.resize(std::max(static_cast<size_t>(numNextFaces * 1.2), static_cast<size_t>(10)));
+                            nextFaces.resize(std::max(static_cast<size_t>(static_cast<double>(numNextFaces) * 1.2), static_cast<size_t>(10)));
                         }
                         nextFaces[numNextFaces - 1] = otherFace;
                     }
@@ -954,13 +954,13 @@ namespace meshkernel
         }
 
         // compute the start and end point of the land boundary respectively
-        int nextLeftIndex = std::min(leftIndex + 1, endLandBoundaryIndex);
+        const auto nextLeftIndex = std::min(leftIndex + 1, endLandBoundaryIndex);
         Point startPoint =
             {
                 m_nodes[leftIndex].x + leftEdgeRatio * (m_nodes[nextLeftIndex].x - m_nodes[leftIndex].x),
                 m_nodes[leftIndex].y + leftEdgeRatio * (m_nodes[nextLeftIndex].y - m_nodes[leftIndex].y)};
 
-        int nextRightIndex = std::min(rightIndex + 1, endLandBoundaryIndex);
+        const auto nextRightIndex = std::min(rightIndex + 1, endLandBoundaryIndex);
         Point endPoint =
             {
                 m_nodes[rightIndex].x + rightEdgeRatio * (m_nodes[nextRightIndex].x - m_nodes[rightIndex].x),
@@ -1083,7 +1083,7 @@ namespace meshkernel
         std::vector<double> nodeDistances(m_mesh->GetNumNodes(), std::numeric_limits<double>::max());
         std::vector<bool> isVisited(m_mesh->GetNumNodes(), false);
 
-        int currentNodeIndex = startMeshNode;
+        auto currentNodeIndex = startMeshNode;
         nodeDistances[startMeshNode] = 0.0;
         while (true)
         {

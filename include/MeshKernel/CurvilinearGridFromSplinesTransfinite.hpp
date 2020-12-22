@@ -75,7 +75,7 @@ namespace meshkernel
         /// @param firstRow The first row
         /// @param secondRow The second row
         template <typename T>
-        void SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow) const;
+        void SwapRows(std::vector<std::vector<T>>& v, size_t firstRow, size_t secondRow) const;
 
         /// @brief Swap the columns of a two dimensional vector (MAKESR)
         /// @tparam T The input vector
