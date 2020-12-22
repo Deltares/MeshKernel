@@ -296,7 +296,7 @@ double meshkernel::Splines::GetSplineLength(size_t index,
         throw AlgorithmError("Splines::GetSplineLength: Could not interpolate spline points.");
     }
 
-    auto rightPointCoordinateOnSpline = static_cast<double>(startIndex);
+    auto rightPointCoordinateOnSpline = startIndex;
     for (auto p = 0; p < numPoints; ++p)
     {
         double leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;

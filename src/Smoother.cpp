@@ -666,7 +666,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
 
         if (isSquareFace[f] || numFaceNodes == 4)
         {
-            auto nextNode = f + size_t(2);
+            auto nextNode = f + static_cast<size_t>(2);
             if (nextNode > numSharedFaces)
             {
                 nextNode = nextNode - numSharedFaces;
@@ -760,7 +760,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
         dPhi0 = OptimalEdgeAngle(numFaceNodes);
         if (isSquareFace[f])
         {
-            int nextNode = f + 2;
+            auto nextNode = f + static_cast<size_t>(2);
             if (nextNode > numSharedFaces)
             {
                 nextNode = nextNode - numSharedFaces;
