@@ -82,8 +82,8 @@ bool meshkernel::Splines::GetSplinesIntersection(size_t first,
     double minimumCrossingDistance = std::numeric_limits<double>::max();
     double crossingDistance;
     size_t numCrossing = 0;
-    double firstCrossingRatio;
-    double secondCrossingRatio;
+    double firstCrossingRatio = -1.0;
+    double secondCrossingRatio = -1.0;
     size_t firstCrossingIndex = 0;
     size_t secondCrossingIndex = 0;
     Point closestIntersection;
@@ -145,8 +145,8 @@ bool meshkernel::Splines::GetSplinesIntersection(size_t first,
         return false;
     }
 
-    double firstCrossing = firstCrossingRatio == -1 ? 0 : firstCrossingIndex + firstCrossingRatio;
-    double secondCrossing = secondCrossingRatio == -1 ? 0 : secondCrossingIndex + secondCrossingRatio;
+    double firstCrossing = IsEqual(firstCrossingRatio, -1.0) ? 0.0 : static_cast<double>(firstCrossingIndex) + firstCrossingRatio;
+    double secondCrossing = IsEqual(secondCrossingRatio, -1.0) ? 0.0 : static_cast<double>(secondCrossingIndex) + secondCrossingRatio;
 
     // use bisection to find the intersection
     double squaredDistanceBetweenCrossings = std::numeric_limits<double>::max();
@@ -154,8 +154,6 @@ bool meshkernel::Splines::GetSplinesIntersection(size_t first,
     double maxDistanceBetweenNodes = 0.0001;
     double firstRatioIterations = 1.0;
     double secondRatioIterations = 1.0;
-    double previousFirstCrossing;
-    double previousSecondCrossing;
     size_t numIterations = 0;
     while (squaredDistanceBetweenCrossings > maxSquaredDistanceBetweenCrossings && numIterations < 20)
     {
@@ -174,11 +172,11 @@ bool meshkernel::Splines::GetSplinesIntersection(size_t first,
         firstCrossing = std::max(0.0, std::min(firstCrossing, double(numNodesFirstSpline)));
         secondCrossing = std::max(0.0, std::min(secondCrossing, double(numNodesSecondSpline)));
 
-        double firstLeft = std::max(0.0, std::min(double(numNodesFirstSpline - 1), firstCrossing - firstRatioIterations / 2.0));
-        double firstRight = std::max(0.0, std::min(double(numNodesFirstSpline - 1), firstCrossing + firstRatioIterations / 2.0));
+        const double firstLeft = std::max(0.0, std::min(double(numNodesFirstSpline - 1), firstCrossing - firstRatioIterations / 2.0));
+        const double firstRight = std::max(0.0, std::min(double(numNodesFirstSpline - 1), firstCrossing + firstRatioIterations / 2.0));
 
-        double secondLeft = std::max(0.0, std::min(double(numNodesSecondSpline - 1), secondCrossing - secondRatioIterations / 2.0));
-        double secondRight = std::max(0.0, std::min(double(numNodesSecondSpline - 1), secondCrossing + secondRatioIterations / 2.0));
+        const double secondLeft = std::max(0.0, std::min(double(numNodesSecondSpline - 1), secondCrossing - secondRatioIterations / 2.0));
+        const double secondRight = std::max(0.0, std::min(double(numNodesSecondSpline - 1), secondCrossing + secondRatioIterations / 2.0));
 
         firstRatioIterations = firstRight - firstLeft;
         secondRatioIterations = secondRight - secondLeft;
@@ -216,28 +214,28 @@ bool meshkernel::Splines::GetSplinesIntersection(size_t first,
         double crossProduct;
         double firstRatio = doubleMissingValue;
         double secondRatio = doubleMissingValue;
-        bool areCrossing = AreSegmentsCrossing(firstLeftSplinePoint,
-                                               firstRightSplinePoint,
-                                               secondLeftSplinePoint,
-                                               secondRightSplinePoint,
-                                               true,
-                                               m_projection,
-                                               closestIntersection,
-                                               crossProduct,
-                                               firstRatio,
-                                               secondRatio);
+        const bool areCrossing = AreSegmentsCrossing(firstLeftSplinePoint,
+                                                     firstRightSplinePoint,
+                                                     secondLeftSplinePoint,
+                                                     secondRightSplinePoint,
+                                                     true,
+                                                     m_projection,
+                                                     closestIntersection,
+                                                     crossProduct,
+                                                     firstRatio,
+                                                     secondRatio);
 
         // search close by
         if (firstRatio > -2.0 && firstRatio < 3.0 && secondRatio > -2.0 && secondRatio < 3.0)
         {
-            previousFirstCrossing = firstCrossing;
-            previousSecondCrossing = secondCrossing;
+            const double previousFirstCrossing = firstCrossing;
+            const double previousSecondCrossing = secondCrossing;
 
             firstCrossing = firstLeft + firstRatio * (firstRight - firstLeft);
             secondCrossing = secondLeft + secondRatio * (secondRight - secondLeft);
 
-            firstCrossing = std::max(0.0, std::min(numNodesFirstSpline - 1.0, firstCrossing));
-            secondCrossing = std::max(0.0, std::min(numNodesSecondSpline - 1.0, secondCrossing));
+            firstCrossing = std::max(0.0, std::min(static_cast<double>(numNodesFirstSpline) - 1.0, firstCrossing));
+            secondCrossing = std::max(0.0, std::min(static_cast<double>(numNodesSecondSpline) - 1.0, secondCrossing));
 
             if (areCrossing)
             {
@@ -441,10 +439,10 @@ void meshkernel::Splines::InterpolatePointsOnSpline(size_t index,
 {
     FuncAdimensionalToDimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
     const auto numNodes = m_splineNodes[index].size();
-    for (auto i = static_cast<size_t>(0), size = distances.size(); i < size; ++i)
+    for (size_t i = 0, size = distances.size(); i < size; ++i)
     {
         func.SetDimensionalDistance(distances[i]);
-        adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, numNodes - 1);
+        adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, static_cast<double>(numNodes) - 1.0);
         const auto successful = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i], points[i]);
         if (!successful)
         {

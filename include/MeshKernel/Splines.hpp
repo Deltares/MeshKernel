@@ -101,7 +101,7 @@ namespace meshkernel
                                              size_t numSamples = 100,
                                              bool accountForCurvature = false,
                                              double height = 1.0,
-                                             double assignedDelta = -1);
+                                             double assignedDelta = -1.0);
 
         /// @brief Compute the points on a spline lying at certain distance
         /// @param[in] index The spline index
