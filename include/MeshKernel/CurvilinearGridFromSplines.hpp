@@ -222,8 +222,8 @@ namespace meshkernel
         /// @param[out] localSplineDerivatives
         /// @param[out] crossingSplinesDimensionalCoordinates
         /// @param[out] heights
-        void FindNearestCrossSplines(int s,
-                                     int j,
+        void FindNearestCrossSplines(size_t s,
+                                     size_t j,
                                      const std::vector<int>& numHeightsLeft,
                                      const std::vector<double>& edgesCenterPoints,
                                      const std::vector<std::vector<double>>& crossSplineLeftHeights,
@@ -237,10 +237,10 @@ namespace meshkernel
         /// @param[in] v
         /// @param[out] validIndices
         /// @param[out] numValid
-        void GetValidSplineIndices(size_t numValues,
+        void GetValidSplineIndices(int numValues,
                                    const std::vector<int>& v,
                                    std::vector<int>& validIndices,
-                                   size_t& numValid) const;
+                                   int& numValid) const;
 
         /// @brief Computes the intersection of two splines, one must have only two nodes (get_crosssplines)
         /// @brief index

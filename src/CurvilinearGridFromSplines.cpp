@@ -129,8 +129,8 @@ void meshkernel::CurvilinearGridFromSplines::Compute(CurvilinearGrid& curvilinea
 
 void meshkernel::CurvilinearGridFromSplines::DeleteSkinnyTriangles()
 {
-    int numMaxIterations = 10;
-    auto numN = m_gridPoints.size() - 2;
+    size_t numMaxIterations = 10;
+    const auto numN = m_gridPoints.size() - 2;
     const double squaredDistanceTolerance = 1e-4;
     const double cosineTolerance = 1e-2;
     const double maxCosine = 0.93969;
@@ -166,7 +166,7 @@ void meshkernel::CurvilinearGridFromSplines::DeleteSkinnyTriangles()
 
                 GetNeighbours(m_gridPoints[j], i, firstLeftIndex, firstRightIndex);
 
-                double squaredRightDistance = ComputeSquaredDistance(m_gridPoints[j][i], m_gridPoints[j][firstRightIndex], m_splines->m_projection);
+                const auto squaredRightDistance = ComputeSquaredDistance(m_gridPoints[j][i], m_gridPoints[j][firstRightIndex], m_splines->m_projection);
 
                 if (squaredRightDistance < squaredDistanceTolerance)
                 {
@@ -187,8 +187,8 @@ void meshkernel::CurvilinearGridFromSplines::DeleteSkinnyTriangles()
 
                 if (m_gridPoints[j + 1][firstRightIndex].IsValid())
                 {
-                    double squaredCurrentDistance = ComputeSquaredDistance(m_gridPoints[j + 1][i], m_gridPoints[j + 1][firstRightIndex], m_splines->m_projection);
-                    double currentCosPhi = NormalizedInnerProductTwoSegments(
+                    const auto squaredCurrentDistance = ComputeSquaredDistance(m_gridPoints[j + 1][i], m_gridPoints[j + 1][firstRightIndex], m_splines->m_projection);
+                    const auto currentCosPhi = NormalizedInnerProductTwoSegments(
                         m_gridPoints[j + 1][i],
                         m_gridPoints[j][i],
                         m_gridPoints[j + 1][i],
@@ -198,14 +198,14 @@ void meshkernel::CurvilinearGridFromSplines::DeleteSkinnyTriangles()
                     {
 
                         //determine persistent node
-                        double leftCosPhi = NormalizedInnerProductTwoSegments(
+                        const auto leftCosPhi = NormalizedInnerProductTwoSegments(
                             m_gridPoints[j - 1][i],
                             m_gridPoints[j][i],
                             m_gridPoints[j][i],
                             m_gridPoints[j + 1][i],
                             m_splines->m_projection);
 
-                        double rightCosPhi = NormalizedInnerProductTwoSegments(
+                        const auto rightCosPhi = NormalizedInnerProductTwoSegments(
                             m_gridPoints[j - 1][firstRightIndex],
                             m_gridPoints[j][firstRightIndex],
                             m_gridPoints[j][firstRightIndex],
@@ -1430,7 +1430,8 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGridHeights()
                 std::for_each(numHeightsLeft.begin(), numHeightsLeft.end(), [](auto& n) { n += -1; });
                 std::for_each(numHeightsRight.begin(), numHeightsRight.end(), [](auto& n) { n += -1; });
 
-                FindNearestCrossSplines(s, j,
+                FindNearestCrossSplines(s,
+                                        j,
                                         numHeightsLeft,
                                         edgesCenterPoints,
                                         m_crossSplineLeftHeights[s],
@@ -1439,7 +1440,8 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGridHeights()
                                         crossingSplinesDimensionalCoordinates,
                                         heightsLeft);
 
-                FindNearestCrossSplines(s, j,
+                FindNearestCrossSplines(s,
+                                        j,
                                         numHeightsRight,
                                         edgesCenterPoints,
                                         m_crossSplineRightHeights[s],
@@ -1462,8 +1464,8 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGridHeights()
     }
 }
 
-void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s,
-                                                                     const int j,
+void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(size_t s,
+                                                                     size_t j,
                                                                      const std::vector<int>& numHeightsLeft,
                                                                      const std::vector<double>& edgesCenterPoints,
                                                                      const std::vector<std::vector<double>>& crossSplineLeftHeights,
@@ -1472,7 +1474,7 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
                                                                      std::vector<double>& crossingSplinesDimensionalCoordinates,
                                                                      std::vector<std::vector<double>>& heights)
 {
-    size_t numValid;
+    int numValid;
     GetValidSplineIndices(m_numCrossingSplines[s], numHeightsLeft, localValidSplineIndices, numValid);
 
     // no sub-heights to compute
@@ -1498,7 +1500,7 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
     {
         int leftIndex = 0;
         double leftCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndices[leftIndex]];
-        int rightIndex = std::min(size_t(1), numValid - 1);
+        int rightIndex = std::min(1, numValid - 1);
         double rightCoordinate = crossingSplinesDimensionalCoordinates[localValidSplineIndices[rightIndex]];
         // Find two nearest cross splines
         while (rightCoordinate < edgesCenterPoints[i] && rightIndex < numValid)
@@ -1529,7 +1531,7 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(const int s
     }
 }
 
-void meshkernel::CurvilinearGridFromSplines::GetValidSplineIndices(size_t numValues, const std::vector<int>& v, std::vector<int>& validIndices, size_t& numValid) const
+void meshkernel::CurvilinearGridFromSplines::GetValidSplineIndices(int numValues, const std::vector<int>& v, std::vector<int>& validIndices, int& numValid) const
 {
     numValid = 0;
     for (auto i = 0; i < numValues; ++i)
