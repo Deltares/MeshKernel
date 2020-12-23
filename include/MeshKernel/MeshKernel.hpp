@@ -84,7 +84,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId Id of the grid state
         /// @param[in] meshGeometryDimensions Mesh dimensions
         /// @param[in] meshGeometry Mesh data
-        /// @param[in] isGeographic Cartesian or spherical mesh
+        /// @param[in] isGeographic Cartesian (false) or spherical (true) mesh
         /// @returns Error code
         MKERNEL_API int mkernel_set_state(int meshKernelId, const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, bool isGeographic);
 
