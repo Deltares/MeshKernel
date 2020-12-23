@@ -369,7 +369,7 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
     ComputeEdgeVelocities(m_edgeVelocities, m_growFactorOnSubintervalAndEdge, m_numPerpendicularFacesOnSubintervalAndEdge);
 
     // Increase curvilinear grid
-    const int numGridLayers = m_curvilinearParameters.NRefinement + 1;
+    const auto numGridLayers = m_curvilinearParameters.NRefinement + 1;
     // The layer by coordinate to grow
     m_gridPoints.resize(numGridLayers + 1, std::vector<Point>(m_numM + 1, {doubleMissingValue, doubleMissingValue}));
     m_validFrontNodes.resize(m_numM, 1);
@@ -1860,7 +1860,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeSubHeights(size_t centerSpli
         {
             break;
         }
-        if (m_centralSplineIndex[m_crossingSplinesIndices[crossingSplineIndex][s + 1]] != -centerSplineIndex)
+        if (m_centralSplineIndex[m_crossingSplinesIndices[crossingSplineIndex][s + 1]] != -static_cast<int>(centerSplineIndex))
         {
             continue;
         }
@@ -1888,7 +1888,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeSubHeights(size_t centerSpli
         {
             break;
         }
-        if (m_centralSplineIndex[m_crossingSplinesIndices[crossingSplineIndex][s - 1]] != -centerSplineIndex)
+        if (m_centralSplineIndex[m_crossingSplinesIndices[crossingSplineIndex][s - 1]] != -static_cast<int>(centerSplineIndex))
         {
             continue;
         }

@@ -56,14 +56,14 @@ void meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t st
     m_splinesLength.emplace_back(GetSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
 }
 
-void meshkernel::Splines::DeleteSpline(int splineIndex)
+void meshkernel::Splines::DeleteSpline(size_t splineIndex)
 {
     m_splineNodes.erase(m_splineNodes.begin() + splineIndex);
     m_splineDerivatives.erase(m_splineDerivatives.begin() + splineIndex);
     m_splinesLength.erase(m_splinesLength.begin() + splineIndex);
 }
 
-void meshkernel::Splines::AddPointInExistingSpline(int splineIndex, const Point& point)
+void meshkernel::Splines::AddPointInExistingSpline(size_t splineIndex, const Point& point)
 {
     if (splineIndex > GetNumSplines())
     {
@@ -72,8 +72,8 @@ void meshkernel::Splines::AddPointInExistingSpline(int splineIndex, const Point&
     m_splineNodes[splineIndex].emplace_back(point);
 }
 
-bool meshkernel::Splines::GetSplinesIntersection(int first,
-                                                 int second,
+bool meshkernel::Splines::GetSplinesIntersection(size_t first,
+                                                 size_t second,
                                                  double& crossProductIntersection,
                                                  Point& intersectionPoint,
                                                  double& firstSplineRatio,
@@ -81,14 +81,14 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
 {
     double minimumCrossingDistance = std::numeric_limits<double>::max();
     double crossingDistance;
-    int numCrossing = 0;
+    size_t numCrossing = 0;
     double firstCrossingRatio;
     double secondCrossingRatio;
-    int firstCrossingIndex = 0;
-    int secondCrossingIndex = 0;
+    size_t firstCrossingIndex = 0;
+    size_t secondCrossingIndex = 0;
     Point closestIntersection;
-    const auto numNodesFirstSpline = static_cast<int>(m_splineNodes[first].size());
-    const auto numNodesSecondSpline = static_cast<int>(m_splineNodes[second].size());
+    const auto numNodesFirstSpline = m_splineNodes[first].size();
+    const auto numNodesSecondSpline = m_splineNodes[second].size();
 
     // First find a valid crossing, the closest to spline central point
     for (auto n = 0; n < numNodesFirstSpline - 1; n++)
@@ -156,7 +156,7 @@ bool meshkernel::Splines::GetSplinesIntersection(int first,
     double secondRatioIterations = 1.0;
     double previousFirstCrossing;
     double previousSecondCrossing;
-    int numIterations = 0;
+    size_t numIterations = 0;
     while (squaredDistanceBetweenCrossings > maxSquaredDistanceBetweenCrossings && numIterations < 20)
     {
         // increment counter
@@ -289,7 +289,7 @@ double meshkernel::Splines::GetSplineLength(size_t index,
     {
         delta = 1.0 / static_cast<double>(numSamples);
         // TODO: Refactor or at least document the calculation of "numPoints"
-        numPoints = size_t(std::max(std::floor(0.9999 + (endIndex - startIndex) / delta), 10.0));
+        numPoints = static_cast<size_t>(std::max(std::floor(0.9999 + (endIndex - startIndex) / delta), 10.0));
         delta = (endIndex - startIndex) / static_cast<double>(numPoints);
     }
 
@@ -432,7 +432,7 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coord
     }
 }
 
-void meshkernel::Splines::InterpolatePointsOnSpline(int index,
+void meshkernel::Splines::InterpolatePointsOnSpline(size_t index,
                                                     double maximumGridHeight,
                                                     bool isSpacingCurvatureAdapted,
                                                     const std::vector<double>& distances,
@@ -440,7 +440,7 @@ void meshkernel::Splines::InterpolatePointsOnSpline(int index,
                                                     std::vector<double>& adimensionalDistances)
 {
     FuncAdimensionalToDimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
-    const auto numNodes = static_cast<int>(m_splineNodes[index].size());
+    const auto numNodes = m_splineNodes[index].size();
     for (auto i = static_cast<size_t>(0), size = distances.size(); i < size; ++i)
     {
         func.SetDimensionalDistance(distances[i]);

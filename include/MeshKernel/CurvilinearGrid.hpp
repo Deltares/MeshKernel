@@ -54,7 +54,7 @@ namespace meshkernel
         /// @param[in] grid Input grid points
         CurvilinearGrid(const std::vector<std::vector<Point>>& grid)
         {
-            CurvilinearGrid(int(grid.size()), int(grid[0].size()));
+            CurvilinearGrid(grid.size(), grid[0].size());
             m_grid = grid;
         }
 

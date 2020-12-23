@@ -59,9 +59,9 @@ void meshkernel::FlipEdges::Compute() const
         m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 
-    const int MaxIter = 10;
+    const size_t MaxIter = 10;
     const auto numEdges = m_mesh->GetNumEdges();
-    int numFlippedEdges = intMissingValue;
+    size_t numFlippedEdges = sizetMissingValue;
 
     for (auto iter = 0; iter < MaxIter; iter++)
     {
@@ -246,9 +246,8 @@ void meshkernel::FlipEdges::Compute() const
 void meshkernel::FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const
 {
     // Update nod, delete edge from m_mesh->m_nodesEdges[firstNode]
-    int kk = 0;
-    while (m_mesh->m_nodesEdges[firstNode][kk] != edge &&
-           kk < m_mesh->m_nodesNumEdges[firstNode])
+    size_t kk = 0;
+    while (m_mesh->m_nodesEdges[firstNode][kk] != edge && kk < m_mesh->m_nodesNumEdges[firstNode])
     {
         kk = kk + 1;
     }
@@ -257,10 +256,10 @@ void meshkernel::FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) co
         throw std::invalid_argument("FlipEdges::DeleteEdgeFromNode: The edge does not match the given node.");
     }
 
-    int count = 0;
+    size_t count = 0;
     for (auto i = 0; i < m_mesh->m_nodesNumEdges[firstNode] + 1; i++)
     {
-        if (i <= kk - 1 || i > kk)
+        if (i + 1 <= kk || i > kk)
         {
             m_mesh->m_nodesEdges[firstNode][count] = m_mesh->m_nodesEdges[firstNode][i];
             count++;
@@ -294,8 +293,8 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(size_t edge,
     }
 
     // find the nodes that are connected to both k1 and k
-    int sumIndicesLeftFace = 0;
-    int sumIndicesRightFace = 0;
+    size_t sumIndicesLeftFace = 0;
+    size_t sumIndicesRightFace = 0;
     for (auto i = 0; i < 3; i++)
     {
         sumIndicesLeftFace += m_mesh->m_facesNodes[faceL][i];
@@ -391,8 +390,8 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
     }
 
     // connected edges needs to be counterclockwise
-    int sign = CrossProductSign(m_mesh->m_nodes[nodeIndex], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[secondNode], m_mesh->m_projection);
-    bool isClockWise = sign < 0 ? true : false;
+    const auto sign = CrossProductSign(m_mesh->m_nodes[nodeIndex], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[firstNode], m_mesh->m_nodes[secondNode], m_mesh->m_projection);
+    const auto isClockWise = sign < 0 ? true : false;
     if (isClockWise)
     {
         const auto firstNodeTemp = firstNode;

@@ -1378,7 +1378,7 @@ namespace meshkernel
         }
 
         // Iterate several times over
-        const int numIterations = 25;
+        const size_t numIterations = 25;
         for (auto iter = 0; iter < numIterations; iter++)
         {
             // re-assign the weights
