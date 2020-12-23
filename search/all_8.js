@@ -11,7 +11,6 @@ var searchData=
   ['interpolatepointsonspline',['InterpolatePointsOnSpline',['../classmeshkernel_1_1_splines.html#abb8d74b7d25edcd43894aedea913dc34',1,'meshkernel::Splines']]],
   ['interpolatesplinepoint',['InterpolateSplinePoint',['../namespacemeshkernel.html#af8d65ed377e7d797ad5fc860a59325f0',1,'meshkernel']]],
   ['interpolateto',['InterpolateTo',['../structmeshkernelapi_1_1_interpolation_parameters.html#ae5664de967e4e8a7458c92439fc31131',1,'meshkernelapi::InterpolationParameters']]],
-  ['interpolationlocation',['InterpolationLocation',['../namespacemeshkernel.html#a5196efa96f2b471cbdd681d495d8902e',1,'meshkernel']]],
   ['interpolationparameters',['InterpolationParameters',['../structmeshkernelapi_1_1_interpolation_parameters.html',1,'meshkernelapi']]],
   ['interpolationtype',['InterpolationType',['../structmeshkernelapi_1_1_interpolation_parameters.html#a3a18f8bf6bf5f03fbcb7fe93942a9011',1,'meshkernelapi::InterpolationParameters']]],
   ['intmissingvalue',['intMissingValue',['../namespacemeshkernel.html#a0af5c04a2ceb3077471ebdca70bfe4a8',1,'meshkernel']]],

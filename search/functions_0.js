@@ -6,5 +6,5 @@ var searchData=
   ['algorithmerror',['AlgorithmError',['../classmeshkernel_1_1_algorithm_error.html#af87252531c363685fb0157f5560de503',1,'meshkernel::AlgorithmError::AlgorithmError(const std::string &amp;msg)'],['../classmeshkernel_1_1_algorithm_error.html#aa4dd70ac0169e30b28339e8db0420e58',1,'meshkernel::AlgorithmError::AlgorithmError(const char *msg)']]],
   ['aresegmentscrossing',['AreSegmentsCrossing',['../namespacemeshkernel.html#ab7b705af5da11ad2e60ed04c738c87f5',1,'meshkernel']]],
   ['averaging',['averaging',['../namespacemeshkernelapi.html#a7dc755bc3096816fd56e614c2594e780',1,'meshkernelapi']]],
-  ['averaginginterpolation',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html#a30579d99538d020e85c27672f9e6603e',1,'meshkernel::AveragingInterpolation']]]
+  ['averaginginterpolation',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html#aa99d64ec3239ceb894e086210e63550d',1,'meshkernel::AveragingInterpolation']]]
 ];

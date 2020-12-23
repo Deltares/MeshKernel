@@ -17,6 +17,6 @@ var searchData=
   ['attractionparameter',['AttractionParameter',['../structmeshkernelapi_1_1_curvilinear_parameters.html#ac5baa30f6e8e41bf8ecbd413395c7809',1,'meshkernelapi::CurvilinearParameters']]],
   ['averagewidth',['AverageWidth',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a715892e7faac472cb263ab72e1a74d42',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
   ['averaging',['averaging',['../namespacemeshkernelapi.html#a7dc755bc3096816fd56e614c2594e780',1,'meshkernelapi']]],
-  ['averaginginterpolation',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html',1,'meshkernel::AveragingInterpolation'],['../classmeshkernel_1_1_averaging_interpolation.html#a30579d99538d020e85c27672f9e6603e',1,'meshkernel::AveragingInterpolation::AveragingInterpolation()']]],
+  ['averaginginterpolation',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html',1,'meshkernel::AveragingInterpolation'],['../classmeshkernel_1_1_averaging_interpolation.html#aa99d64ec3239ceb894e086210e63550d',1,'meshkernel::AveragingInterpolation::AveragingInterpolation()']]],
   ['averagingmethod',['AveragingMethod',['../structmeshkernelapi_1_1_interpolation_parameters.html#ac44ed6dfdb17792e3bdcd0129542fefe',1,'meshkernelapi::InterpolationParameters::AveragingMethod()'],['../namespacemeshkernel.html#abeb40e907577646f05f65363ae79ccc4',1,'meshkernel::AveragingMethod()']]]
 ];

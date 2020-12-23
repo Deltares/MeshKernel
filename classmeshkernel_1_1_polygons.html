@@ -92,9 +92,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aaaa088c102e487b57c76f08b6b8eb139"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#aaaa088c102e487b57c76f08b6b8eb139">RefineFirstPolygon</a> (int startIndex, int endIndex, double refinementDistance) const</td></tr>
 <tr class="memdesc:aaaa088c102e487b57c76f08b6b8eb139"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines the polygon edges with additional nodes, from the start to the end index (refinepolygonpart)  <a href="#aaaa088c102e487b57c76f08b6b8eb139">More...</a><br /></td></tr>
 <tr class="separator:aaaa088c102e487b57c76f08b6b8eb139"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad964491c6d7eaef6ba004dedcbb3a5be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#ad964491c6d7eaef6ba004dedcbb3a5be">OffsetCopy</a> (double distance, bool Inner) const</td></tr>
-<tr class="memdesc:ad964491c6d7eaef6ba004dedcbb3a5be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new polygon from an existing one, by offsetting it by a distance (copypol)  <a href="#ad964491c6d7eaef6ba004dedcbb3a5be">More...</a><br /></td></tr>
-<tr class="separator:ad964491c6d7eaef6ba004dedcbb3a5be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18b31cd6a49f8212bba9184547e36369"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369">OffsetCopy</a> (double distance, bool innerAndOuter) const</td></tr>
+<tr class="memdesc:a18b31cd6a49f8212bba9184547e36369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new polygon from an existing one, by offsetting it by a distance (copypol)  <a href="#a18b31cd6a49f8212bba9184547e36369">More...</a><br /></td></tr>
+<tr class="separator:a18b31cd6a49f8212bba9184547e36369"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac80459678dabe6570aeb3de2ea7b9df2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#ac80459678dabe6570aeb3de2ea7b9df2">IsPointInPolygon</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, int polygonIndex) const</td></tr>
 <tr class="memdesc:ac80459678dabe6570aeb3de2ea7b9df2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in a given polygon.  <a href="#ac80459678dabe6570aeb3de2ea7b9df2">More...</a><br /></td></tr>
 <tr class="separator:ac80459678dabe6570aeb3de2ea7b9df2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -277,8 +277,8 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
 
 </div>
 </div>
-<a id="ad964491c6d7eaef6ba004dedcbb3a5be"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad964491c6d7eaef6ba004dedcbb3a5be">&#9670;&nbsp;</a></span>OffsetCopy()</h2>
+<a id="a18b31cd6a49f8212bba9184547e36369"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18b31cd6a49f8212bba9184547e36369">&#9670;&nbsp;</a></span>OffsetCopy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -293,7 +293,7 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>Inner</em>&#160;</td>
+          <td class="paramname"><em>innerAndOuter</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -307,7 +307,7 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">distance</td><td>The offset distance </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">Inner</td><td>Offset inwards or outward </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">innerAndOuter</td><td>Offset inwards or outward </td></tr>
   </table>
   </dd>
 </dl>

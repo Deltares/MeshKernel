@@ -115,6 +115,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class describing an unstructured mesh.  <a href="classmeshkernel_1_1_mesh.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_geometry_error.html">MeshGeometryError</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom exception to describe an error caused by an invalid mesh at a specific location.  <a href="classmeshkernel_1_1_mesh_geometry_error.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh_refinement.html">MeshRefinement</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class used to refine a <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. ">Mesh</a>.  <a href="classmeshkernel_1_1_mesh_refinement.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,12 +171,13 @@ Enumerations</h2></td></tr>
  }<tr class="memdesc:abeb40e907577646f05f65363ae79ccc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operations averaging methods. <br /></td></tr>
 </td></tr>
 <tr class="separator:abeb40e907577646f05f65363ae79ccc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5196efa96f2b471cbdd681d495d8902e"><td class="memItemLeft" align="right" valign="top"><a id="a5196efa96f2b471cbdd681d495d8902e"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5196efa96f2b471cbdd681d495d8902e">InterpolationLocation</a> { <b>Faces</b> = 0, 
+<tr class="memitem:acb97240557899a7564683794daab5016"><td class="memItemLeft" align="right" valign="top"><a id="acb97240557899a7564683794daab5016"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> { <b>Faces</b> = 0, 
 <b>Nodes</b> = 1, 
-<b>Edges</b> = 2
- }<tr class="memdesc:a5196efa96f2b471cbdd681d495d8902e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolation locations. <br /></td></tr>
+<b>Edges</b> = 2, 
+<b>None</b>
+ }<tr class="memdesc:acb97240557899a7564683794daab5016"><td class="mdescLeft">&#160;</td><td class="mdescRight">MeshLocations locations. <br /></td></tr>
 </td></tr>
-<tr class="separator:a5196efa96f2b471cbdd681d495d8902e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:acb97240557899a7564683794daab5016"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22d09b6f79c4d1aa55aafadb84908716"><td class="memItemLeft" align="right" valign="top"><a id="a22d09b6f79c4d1aa55aafadb84908716"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> { <b>cartesian</b>, 
 <b>spherical</b>, 
 <b>sphericalAccurate</b>
