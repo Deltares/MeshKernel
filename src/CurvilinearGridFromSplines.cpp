@@ -1746,7 +1746,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeSplineProperties(const bool 
         auto crossingSplineIndex = m_crossingSplinesIndices[s][middleCrossingSpline];
 
         // if m_numIntersectingSplines[s] is even, check if the middle spline has already been assigned as a bounding spline
-        if (m_type[crossingSplineIndex] != SplineTypes::central && static_cast<size_t>(static_cast<size_t>(2) * crossingSplineIndex) == m_numCrossingSplines[s])
+        if (m_type[crossingSplineIndex] != SplineTypes::central && 2 * crossingSplineIndex == m_numCrossingSplines[s])
         {
             middleCrossingSpline = std::min(middleCrossingSpline + 1, m_numCrossingSplines[s] - 1);
             crossingSplineIndex = m_crossingSplinesIndices[s][middleCrossingSpline];
