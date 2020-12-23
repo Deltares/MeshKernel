@@ -95,13 +95,13 @@ namespace meshkernel
         /// @param[in] layer The current layer
         /// @param[out] gridLayer The next grid layer
         /// @param[out] subLayerIndex The transversal sub-layer index
-        void GetSubIntervalAndGridLayer(int layer,
-                                        int& gridLayer,
-                                        int& subLayerIndex);
+        void ComputeGridLayerAndSubLayer(size_t layer,
+                                         size_t& gridLayer,
+                                         size_t& subLayerIndex);
 
         /// @brief Grow layer at layer index
         /// @param layerIndex The layer index to grow
-        void GrowLayer(int layerIndex);
+        void GrowLayer(size_t layerIndex);
 
         /// @brief Compute the maximum allowable grid layer growth time self crossings (comp_tmax_self)
         /// @param coordinates The coordinates to grow
@@ -119,10 +119,10 @@ namespace meshkernel
         /// @brief frontGridPoints
         /// @brief velocities
         /// @returns
-        void CopyVelocitiesToFront(const int layerIndex,
+        void CopyVelocitiesToFront(size_t layerIndex,
                                    const std::vector<Point>& previousVelocities,
-                                   int& numFrontPoints,
-                                   std::vector<std::vector<int>>& gridPointsIndices,
+                                   size_t& numFrontPoints,
+                                   std::vector<std::vector<size_t>>& gridPointsIndices,
                                    std::vector<Point>& frontGridPoints,
                                    std::vector<Point>& velocities);
 
@@ -131,9 +131,9 @@ namespace meshkernel
         /// @brief frontGridPoints
         /// @brief numFrontPoints
         /// @returns
-        void FindFront(std::vector<std::vector<int>>& gridPointsIndices,
+        void FindFront(std::vector<std::vector<size_t>>& gridPointsIndices,
                        std::vector<Point>& frontGridPoints,
-                       int& numFrontPoints);
+                       size_t& numFrontPoints);
 
         /// @brief Compute growth velocity vectors at grid points (comp_vel)
         /// @param layerIndex
@@ -338,7 +338,7 @@ namespace meshkernel
         std::vector<int> m_validFrontNodes;
         std::vector<std::vector<Point>> m_gridPoints;
         double m_timeStep = 1.0;
-        std::vector<int> m_subLayerGridPoints;
+        std::vector<size_t> m_subLayerGridPoints;
         std::vector<std::vector<size_t>> m_numPerpendicularFacesOnSubintervalAndEdge;
         std::vector<std::vector<double>> m_growFactorOnSubintervalAndEdge;
     };
