@@ -1113,7 +1113,7 @@ void meshkernel::Smoother::SaveNodeTopologyIfNeeded(size_t currentNode,
             m_topologyXi.resize(estimatedSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
             m_topologyEta.resize(estimatedSize, std::vector<double>(maximumNumberOfConnectedNodes, 0));
 
-            m_topologySharedFaces.resize(estimatedSize, std::vector<size_t>(maximumNumberOfEdgesPerNode, -1));
+            m_topologySharedFaces.resize(estimatedSize, std::vector<size_t>(maximumNumberOfEdgesPerNode, sizetMissingValue));
             m_topologyConnectedNodes.resize(estimatedSize, std::vector<size_t>(maximumNumberOfConnectedNodes, 0));
             m_topologyFaceNodeMapping.resize(estimatedSize, std::vector<std::vector<size_t>>(maximumNumberOfConnectedNodes, std::vector<size_t>(maximumNumberOfConnectedNodes, 0)));
         }

@@ -97,8 +97,8 @@ namespace meshkernel
         return generatedPoints;
     }
 
-    std::vector<Point> Polygons::RefineFirstPolygon(int startIndex,
-                                                    int endIndex,
+    std::vector<Point> Polygons::RefineFirstPolygon(size_t startIndex,
+                                                    size_t endIndex,
                                                     double refinementDistance) const
     {
         if (m_indices.empty())
@@ -118,7 +118,7 @@ namespace meshkernel
         }
 
         bool areIndicesValid = false;
-        int polygonIndex;
+        size_t polygonIndex;
         for (auto i = 0; i < m_indices.size(); ++i)
         {
             if (startIndex >= m_indices[i][0] && endIndex <= m_indices[i][1])
@@ -142,9 +142,9 @@ namespace meshkernel
             nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
         }
 
-        auto numNodesRefinedPart = int(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex));
-        int numNodesNotRefinedPart = startIndex - m_indices[polygonIndex][0] + m_indices[polygonIndex][1] - endIndex;
-        int totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
+        const auto numNodesRefinedPart = int(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (endIndex - startIndex));
+        const auto numNodesNotRefinedPart = startIndex - m_indices[polygonIndex][0] + m_indices[polygonIndex][1] - endIndex;
+        const auto totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
         std::vector<Point> refinedPolygon;
         refinedPolygon.reserve(totalNumNodes);
 
@@ -155,8 +155,8 @@ namespace meshkernel
         }
 
         // refined part
-        int nodeIndex = startIndex;
-        int nextNodeIndex = nodeIndex + 1;
+        auto nodeIndex = startIndex;
+        auto nextNodeIndex = nodeIndex + 1;
         Point p0 = m_nodes[nodeIndex];
         Point p1 = m_nodes[nextNodeIndex];
         double pointLengthCoordinate = nodeLengthCoordinate[startIndex];
@@ -221,7 +221,7 @@ namespace meshkernel
 
     Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
     {
-        int sizenewPolygon = GetNumNodes();
+        auto sizenewPolygon = GetNumNodes();
         if (innerAndOuter)
         {
             sizenewPolygon += GetNumNodes() + 1;

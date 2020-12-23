@@ -169,7 +169,7 @@ namespace meshkernel
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location
         /// @param[in] nodeindex The index of the node to move
-        void MoveNode(Point newPoint, int nodeindex);
+        void MoveNode(Point newPoint, size_t nodeindex);
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
@@ -279,12 +279,12 @@ namespace meshkernel
         /// @brief Gets the edges crossing the small flow edges
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
         /// @returns The indices of the edges crossing small flow edges
-        [[nodiscard]] std::vector<int> GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold);
+        [[nodiscard]] std::vector<size_t> GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Gets the flow edges centers from the crossing edges
         /// @param[in] edges The crossing edges indices
         /// @returns The centers of the flow edges
-        [[nodiscard]] std::vector<Point> GetFlowEdgesCenters(const std::vector<int>& edges) const;
+        [[nodiscard]] std::vector<Point> GetFlowEdgesCenters(const std::vector<size_t>& edges) const;
 
         /// @brief Deletes small flow edges (removesmallflowlinks, part 1)
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges

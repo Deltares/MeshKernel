@@ -1703,21 +1703,21 @@ void meshkernel::Mesh::DeleteMesh(const Polygons& polygons, int deletionOption, 
     Administrate(AdministrationOptions::AdministrateMeshEdges);
 }
 
-void meshkernel::Mesh::MoveNode(Point newPoint, int nodeindex)
+void meshkernel::Mesh::MoveNode(Point newPoint, size_t nodeindex)
 {
     Point nodeToMove = m_nodes[nodeindex];
 
-    auto dx = GetDx(nodeToMove, newPoint, m_projection);
-    auto dy = GetDy(nodeToMove, newPoint, m_projection);
+    const auto dx = GetDx(nodeToMove, newPoint, m_projection);
+    const auto dy = GetDy(nodeToMove, newPoint, m_projection);
 
-    double distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
+    const auto distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
     for (auto n = 0; n < GetNumNodes(); ++n)
     {
-        auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
-        auto nodeDy = GetDy(m_nodes[n], nodeToMove, m_projection);
-        double distanceCurrentNodeFromNewPoint = std::sqrt(nodeDx * nodeDx + nodeDy * nodeDy);
+        const auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
+        const auto nodeDy = GetDy(m_nodes[n], nodeToMove, m_projection);
+        const double distanceCurrentNodeFromNewPoint = std::sqrt(nodeDx * nodeDx + nodeDy * nodeDy);
 
-        double factor = 0.5 * (1.0 + std::cos(std::min(distanceCurrentNodeFromNewPoint / distanceNodeToMoveFromNewPoint, 1.0) * M_PI));
+        const auto factor = 0.5 * (1.0 + std::cos(std::min(distanceCurrentNodeFromNewPoint / distanceNodeToMoveFromNewPoint, 1.0) * M_PI));
 
         m_nodes[n].x += dx * factor;
         m_nodes[n].y += dy * factor;
@@ -1941,10 +1941,10 @@ std::vector<meshkernel::Point> meshkernel::Mesh::GetObtuseTrianglesCenters()
     return result;
 }
 
-std::vector<int> meshkernel::Mesh::GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold)
+std::vector<size_t> meshkernel::Mesh::GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold)
 {
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
-    std::vector<int> result;
+    std::vector<size_t> result;
     result.reserve(GetNumEdges());
     for (auto e = 0; e < GetNumEdges(); ++e)
     {
@@ -1965,7 +1965,7 @@ std::vector<int> meshkernel::Mesh::GetEdgesCrossingSmallFlowEdges(double smallFl
     return result;
 }
 
-std::vector<meshkernel::Point> meshkernel::Mesh::GetFlowEdgesCenters(const std::vector<int>& edges) const
+std::vector<meshkernel::Point> meshkernel::Mesh::GetFlowEdgesCenters(const std::vector<size_t>& edges) const
 {
     std::vector<Point> result;
     result.reserve(GetNumEdges());

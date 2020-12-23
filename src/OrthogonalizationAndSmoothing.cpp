@@ -342,7 +342,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIndex)
+void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
 {
 
     double dx0 = 0.0;
@@ -355,7 +355,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
         return;
     }
 
-    int firstCacheIndex = nodeIndex * 2;
+    const auto firstCacheIndex = nodeIndex * 2;
     dx0 = (dx0 + m_compressedRhs[firstCacheIndex]) / increments[0];
     dy0 = (dy0 + m_compressedRhs[firstCacheIndex + 1]) / increments[1];
     constexpr double relaxationFactor = 0.75;
@@ -391,7 +391,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeIndex, double& dx0, double& dy0, std::array<double, 2>& weightsSum)
+void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, double& dx0, double& dy0, std::array<double, 2>& weightsSum)
 {
     const auto numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
     auto cacheIndex = m_compressedEndNodeIndex[nodeIndex];

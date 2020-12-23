@@ -93,14 +93,14 @@ namespace meshkernel
         /// @param[out] dx0 The computed x increment
         /// @param[out] dy0 The computed y increment
         /// @param[out] weightsSum The sum of the weights in x and y
-        void ComputeLocalIncrements(int nodeIndex,
+        void ComputeLocalIncrements(size_t nodeIndex,
                                     double& dx0,
                                     double& dy0,
                                     std::array<double, 2>& weightsSum);
 
         /// @brief Update the nodal coordinates based on the increments
         /// @param[in] nodeIndex
-        void UpdateNodeCoordinates(int nodeIndex);
+        void UpdateNodeCoordinates(size_t nodeIndex);
 
         /// @brief Allocate linear system vectors
         void AllocateLinearSystem();

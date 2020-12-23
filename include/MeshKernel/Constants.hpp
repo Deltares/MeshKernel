@@ -54,15 +54,15 @@ namespace meshkernel
     const double nearlyZero = 1e-16;                         ///< Used to determine if a length is zero
 
     // mesh constants
-    const double minimumDeltaCoordinate = 1e-14;                               ///< Minimum delta coordinate
-    const int maximumNumberOfEdgesPerNode = 12;                                ///< Maximum number of edges per node
-    const int maximumNumberOfEdgesPerFace = 6;                                 ///< Maximum number of edges per face
-    const int maximumNumberOfNodesPerFace = 8;                                 ///< Maximum number of nodes per face
-    const int maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
-    const double minimumCellArea = 1e-12;                                      ///< Minimum cell area
-    const double weightCircumCenter = 1.0;                                     ///< Weight circum center
-    const size_t numNodesQuads = 4;                                            ///< Number of nodes in a quadrilateral
-    const size_t numNodesInTriangle = 3;                                       ///< Number of nodes in a triangle
+    const double minimumDeltaCoordinate = 1e-14;                                  ///< Minimum delta coordinate
+    const size_t maximumNumberOfEdgesPerNode = 12;                                ///< Maximum number of edges per node
+    const size_t maximumNumberOfEdgesPerFace = 6;                                 ///< Maximum number of edges per face
+    const size_t maximumNumberOfNodesPerFace = 8;                                 ///< Maximum number of nodes per face
+    const size_t maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
+    const double minimumCellArea = 1e-12;                                         ///< Minimum cell area
+    const double weightCircumCenter = 1.0;                                        ///< Weight circum center
+    const size_t numNodesQuads = 4;                                               ///< Number of nodes in a quadrilateral
+    const size_t numNodesInTriangle = 3;                                          ///< Number of nodes in a triangle
 
     // orthogonalization
     const double minimumEdgeLength = 1e-4;                   ///< Minimum edge length

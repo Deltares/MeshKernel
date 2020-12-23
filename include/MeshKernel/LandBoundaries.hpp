@@ -73,7 +73,7 @@ namespace meshkernel
 
         /// @brief Gets the number of nodes
         /// @return the number of nodes
-        int GetNumNodes() const { return static_cast<int>(m_nodes.size()); };
+        auto GetNumNodes() const { return m_nodes.size(); }
 
         std::vector<size_t> m_meshNodesLandBoundarySegments; ///< lanseg_map, mesh nodes to land boundary mapping
 
@@ -251,8 +251,8 @@ namespace meshkernel
 
         bool m_landMask = true;
         bool m_addLandboundaries = true;
-        int m_numFacesMasked = 0;
-        int m_maskDepth = 0;
+        size_t m_numFacesMasked = 0;
+        size_t m_maskDepth = 0;
 
         // caches
         std::vector<double> m_nodesMinDistances;

@@ -55,7 +55,7 @@ namespace meshkernel
         /// @param[in] endIndex The end index
         /// @param[in] refinementDistance The chosen refinement distance
         /// @return refinedPolygon The computed polygon
-        std::vector<Point> RefineFirstPolygon(int startIndex, int endIndex, double refinementDistance) const;
+        std::vector<Point> RefineFirstPolygon(size_t startIndex, size_t endIndex, double refinementDistance) const;
 
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance

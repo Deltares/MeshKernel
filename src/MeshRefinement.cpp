@@ -720,7 +720,7 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
     m_polygonNodesCache.resize(maximumNumberOfNodesPerFace + 1);
     m_localNodeIndicesCache.resize(maximumNumberOfNodesPerFace + 1, sizetMissingValue);
     m_globalEdgeIndicesCache.resize(maximumNumberOfEdgesPerFace + 1, sizetMissingValue);
-    std::vector<int> refineEdgeCache(maximumNumberOfEdgesPerFace);
+    std::vector<size_t> refineEdgeCache(maximumNumberOfEdgesPerFace);
 
     // Compute all interpolated values
     m_averaging->Compute();
@@ -834,7 +834,7 @@ void meshkernel::MeshRefinement::FindHangingNodes(size_t face,
 }
 
 void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
-                                                                       std::vector<int>& refineEdgeCache,
+                                                                       std::vector<size_t>& refineEdgeCache,
                                                                        int& numEdgesToBeRefined)
 {
     numEdgesToBeRefined = 0;
