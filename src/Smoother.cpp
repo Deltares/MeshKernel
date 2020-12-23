@@ -284,7 +284,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
         if (numFaceNodes == 3)
         {
             // for triangular faces
-            int nodeIndex = FindIndex(m_mesh->m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
+            const auto nodeIndex = FindIndex(m_mesh->m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
             const auto nodeLeft = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
             const auto nodeRight = NextCircularForwardIndex(nodeIndex, numFaceNodes);
 
@@ -502,11 +502,16 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
         // internal edge
         if (!m_mesh->IsEdgeOnBoundary(m_mesh->m_nodesEdges[currentNode][f]))
         {
-            int rightNode = f - 1;
-            if (rightNode < 0)
+            size_t rightNode;
+            if (f == 0)
             {
-                rightNode += m_mesh->m_nodesNumEdges[currentNode];
+                rightNode = f + m_mesh->m_nodesNumEdges[currentNode] - 1;
             }
+            else
+            {
+                rightNode = f - 1;
+            }
+
             for (auto i = 0; i < m_numTopologyNodes[currentTopology]; i++)
             {
                 m_Jxi[currentTopology][i] += m_Divxi[currentTopology][f] * 0.5 * (m_Az[currentTopology][f][i] + m_Az[currentTopology][rightNode][i]);
@@ -801,7 +806,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
 
         for (auto n = 0; n < numFaceNodes; n++)
         {
-            double theta = dTheta * (n - nodeIndex);
+            double theta = dTheta * (n - static_cast<int>(nodeIndex));
             double xip = radius - radius * std::cos(theta);
             double ethap = -radius * std::sin(theta);
 
@@ -829,7 +834,7 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
     {
         const auto firstEdge = m_mesh->m_nodesEdges[currentNode][e];
 
-        int secondEdgeIndex = e + 1;
+        size_t secondEdgeIndex = e + 1;
         if (secondEdgeIndex >= m_mesh->m_nodesNumEdges[currentNode])
         {
             secondEdgeIndex = 0;
@@ -887,7 +892,7 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
         const auto node = OtherNodeOfEdge(m_mesh->m_edges[edgeIndex], currentNode);
         connectedNodesIndex++;
         m_connectedNodesCache[connectedNodesIndex] = node;
-        if (int(m_connectedNodes[currentNode].size()) < connectedNodesIndex + 1)
+        if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
         {
             m_connectedNodes[currentNode].resize(connectedNodesIndex);
         }
@@ -908,7 +913,7 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
         }
 
         // find the stencil node position  in the current face
-        int faceNodeIndex = 0;
+        size_t faceNodeIndex = 0;
         const auto numFaceNodes = m_mesh->GetNumFaceEdges(faceIndex);
         for (auto n = 0; n < numFaceNodes; n++)
         {
@@ -945,7 +950,7 @@ void meshkernel::Smoother::NodeAdministration(size_t currentNode,
                 connectedNodesIndex++;
                 m_connectedNodesCache[connectedNodesIndex] = node;
                 m_faceNodeMappingCache[f][faceNodeIndex] = connectedNodesIndex;
-                if (int(m_connectedNodes[currentNode].size()) < connectedNodesIndex + 1)
+                if (m_connectedNodes[currentNode].size() < connectedNodesIndex + 1)
                 {
                     m_connectedNodes[currentNode].resize(connectedNodesIndex);
                 }

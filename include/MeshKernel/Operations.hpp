@@ -78,18 +78,17 @@ namespace meshkernel
     /// @param[in] el The element to search for
     /// @returns The index of element
     template <typename T>
-    [[nodiscard]] int FindIndex(const std::vector<T>& vec, T el)
+    [[nodiscard]] size_t FindIndex(const std::vector<T>& vec, T el)
     {
-        int index = 0;
         for (auto n = 0; n < vec.size(); n++)
         {
             if (vec[n] == el)
             {
-                index = n;
-                break;
+                return n;
             }
         }
-        return index;
+
+        return 0;
     }
 
     /// @brief Find all start-end positions in a vector separated by a separator
