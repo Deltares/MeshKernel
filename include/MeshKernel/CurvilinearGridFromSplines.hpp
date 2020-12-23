@@ -147,9 +147,9 @@ namespace meshkernel
         /// @brief currentRightIndex
         /// @returns
         void GetNeighbours(const std::vector<Point>& gridPoints,
-                           int index,
-                           int& currentLeftIndex,
-                           int& currentRightIndex) const;
+                           size_t index,
+                           size_t& currentLeftIndex,
+                           size_t& currentRightIndex) const;
 
         /// @brief Compute the edge grow velocities (comp_edgevel)
         /// TODO: can this be split in compute heights and computeGrowFactors
@@ -168,7 +168,7 @@ namespace meshkernel
         /// @param[out] result
         void ComputeGrowFactor(double totalGridHeight,
                                double firstGridLayerHeight,
-                               int numberOfGridLayers,
+                               size_t numberOfGridLayers,
                                double& result) const;
 
         /// @brief Computes the exponential grid height
@@ -178,7 +178,7 @@ namespace meshkernel
         /// @returns
         [[nodiscard]] double ComputeTotalExponentialHeight(double aspectRatioGrowFactor,
                                                            double firstGridLayerHeights,
-                                                           int numberOfGridLayers) const;
+                                                           size_t numberOfGridLayers) const;
 
         /// @brief Compute the number of grid layers for a given grow factor, first grid layer height and total grid height (comp_nfac)
         /// @brief hhMaxRatio
@@ -235,7 +235,7 @@ namespace meshkernel
         /// @brief Computes the intersection of two splines, one must have only two nodes (get_crosssplines)
         /// @brief index
         /// @returns
-        void GetSplineIntersections(int index);
+        void GetSplineIntersections(size_t index);
 
         /// @brief Generate a gridline on a spline with a prescribed maximum mesh width (make_gridline)
         /// @param[in] splineIndex
@@ -254,28 +254,10 @@ namespace meshkernel
         ///
         /// @param centerSplineIndex
         /// @param crossingSplineLocalIndex
-        void ComputeSubHeights(int centerSplineIndex, int crossingSplineLocalIndex);
-
-        /// @brief Computes curvature in a point on a spline (comp_curv)
-        /// @brief splineIndex
-        /// @brief adimensionalPointCoordinate
-        /// @brief curvatureFactor
-        /// @brief normalVector
-        /// @brief tangentialVector
-        /// @returns
-        bool ComputeCurvatureOnSplinePoint(int splineIndex,
-                                           double adimensionalPointCoordinate,
-                                           double& curvatureFactor,
-                                           Point& normalVector,
-                                           Point& tangentialVector);
+        void ComputeSubHeights(size_t centerSplineIndex, size_t crossingSplineLocalIndex);
 
         /// @brief Delete skewed cells and cells whose aspect ratio exceeds a prescibed value (postgrid)
         void DeleteSkinnyTriangles();
-
-        /// @brief Delete a spline
-        /// @brief splineIndex The spline index to delete
-        /// @returns
-        bool DeleteSpline(int splineIndex);
 
         /// @brief Allocate spline properties arrays
         void AllocateSplinesProperties();
