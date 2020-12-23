@@ -738,7 +738,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(int currentNode,
             }
             else
             {
-                throw MeshGeometryError("Smoother::ComputeNodeXiEta: Inappropriate fictitious boundary Face", currentNode, MeshLocations::Nodes);
+                throw MeshGeometryError("Smoother::ComputeNodeXiEta: Inappropriate fictitious boundary face", currentNode, MeshLocations::Nodes);
             }
             phi0 = phi0 + 0.5 * dPhi;
             continue;
