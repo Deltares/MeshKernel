@@ -5,17 +5,17 @@ import argparse
 
 
 def configure_doxyfile(
-    doxyfile_in_path: Path,
+    doxyfile_in: Path,
     doxyfile_path: Path,
     doxygen_log_path: Path,
-    input_dir: Path,
+    doxygen_input_list: str,
     output_dir: Path,
     docs_dir: Path,
 ):
-    with open(doxyfile_in_path, "r") as file:
+    with open(doxyfile_in, "r") as file:
         doxyfile_data = file.read()
 
-    doxyfile_data = doxyfile_data.replace("@DOXYGEN_INPUT_DIR@", str(input_dir))
+    doxyfile_data = doxyfile_data.replace("@DOXYGEN_INPUT_LIST@", doxygen_input_list)
     doxyfile_data = doxyfile_data.replace("@DOXYGEN_OUTPUT_DIR@", str(output_dir))
     doxyfile_data = doxyfile_data.replace("@CMAKE_CURRENT_SOURCE_DIR@", str(docs_dir))
 
@@ -36,14 +36,18 @@ def print_file(file: Path):
         print(f.read())
 
 
-# Set paths
+# Set dirs
 root_dir = Path(__file__).parent.parent
 input_dir = root_dir / "include" / "MeshKernel"
 output_dir = root_dir / "build" / "docs"
 docs_dir = root_dir / "docs"
+
+# Set paths
+main_page_path = docs_dir / "main_page.md"
 doxyfile_in_path = docs_dir / "Doxyfile.in"
 doxyfile_path = output_dir / "Doxyfile"
 doxygen_log_path = output_dir / "Doxygen_log.txt"
+doxygen_input_list = f"{input_dir} {main_page_path}"
 
 # The dir tree is not created automatically
 output_dir.parent.mkdir(exist_ok=True)
@@ -51,7 +55,12 @@ output_dir.mkdir(exist_ok=True)
 
 
 configure_doxyfile(
-    doxyfile_in_path, doxyfile_path, doxygen_log_path, input_dir, output_dir, docs_dir
+    doxyfile_in_path,
+    doxyfile_path,
+    doxygen_log_path,
+    doxygen_input_list,
+    output_dir,
+    docs_dir,
 )
 
 # Call doxygen
