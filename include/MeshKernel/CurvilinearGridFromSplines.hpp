@@ -74,7 +74,7 @@ namespace meshkernel
 
         /// @brief Performs one iteration for generating another layer on the advancing fronts
         /// @param layer The index of the layer to be generated
-        void Iterate(int layer);
+        void Iterate(size_t layer);
 
         /// @brief Get the curvilinear grid
         /// @param curvilinearGrid
@@ -138,7 +138,7 @@ namespace meshkernel
         /// @brief Compute growth velocity vectors at grid points (comp_vel)
         /// @param layerIndex
         /// @param velocityVector
-        void ComputeVelocitiesAtGridPoints(int layerIndex, std::vector<Point>& velocityVector);
+        void ComputeVelocitiesAtGridPoints(size_t layerIndex, std::vector<Point>& velocityVector);
 
         /// @brief Get left and right points at given layer for a given index (get_LR)
         /// @brief gridPoints The layer
@@ -183,7 +183,7 @@ namespace meshkernel
         /// @brief Compute the number of grid layers for a given grow factor, first grid layer height and total grid height (comp_nfac)
         /// @brief hhMaxRatio
         /// @returns
-        [[nodiscard]] int ComputeNumberExponentialIntervals(double hhMaxRatio) const;
+        [[nodiscard]] size_t ComputeNumberExponentialIntervals(double hhMaxRatio) const;
 
         /// @brief Computes the sub-interval velocities (left and right)
         /// @param[in] s
@@ -301,13 +301,13 @@ namespace meshkernel
 
         std::vector<size_t> m_leftGridLineIndexOriginal;
         std::vector<size_t> m_rightGridLineIndexOriginal;
-        std::vector<int> m_mfacOriginal;
+        std::vector<size_t> m_mfacOriginal;
         std::vector<double> m_maximumGridHeightsOriginal;
         std::vector<SplineTypes> m_originalTypes;
 
         //cache variables during iterations
         std::vector<double> m_edgeVelocities;
-        std::vector<int> m_validFrontNodes;
+        std::vector<size_t> m_validFrontNodes;
         std::vector<std::vector<Point>> m_gridPoints;
         double m_timeStep = 1.0;
         std::vector<size_t> m_subLayerGridPoints;

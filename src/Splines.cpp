@@ -277,6 +277,11 @@ double meshkernel::Splines::GetSplineLength(size_t index,
                                             double height,
                                             double assignedDelta)
 {
+    if (m_splineNodes[index].empty())
+    {
+        return 0.0;
+    }
+
     double splineLength = 0.0;
     double delta = assignedDelta;
     size_t numPoints = static_cast<size_t>(endIndex / delta) + 1;
