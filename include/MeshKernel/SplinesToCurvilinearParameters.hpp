@@ -42,7 +42,7 @@ namespace meshkernelapi
         double AverageWidth;
 
         /// @brief Curvature adapted grid spacing, 1 or not 0 (1)
-        int CurvatureAdapetedGridSpacing;
+        int CurvatureAdaptedGridSpacing;
 
         /// @brief Grow the grid outside the prescribed grid height (1)
         int GrowGridOutside;

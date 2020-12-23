@@ -7,3 +7,4 @@ FetchContent_MakeAvailable(googletest)
 
 add_subdirectory(utils)
 add_subdirectory(unit)
+add_subdirectory(api)

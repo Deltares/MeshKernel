@@ -199,11 +199,6 @@ namespace meshkernel
         int m_maximumNumConnectedNodes = 0;
         int m_maximumNumSharedFaces = 0;
 
-        // nodes with errors
-        std::vector<double> m_nodeXErrors;
-        std::vector<double> m_nodeYErrors;
-        std::vector<int> m_nodeErrorCode;
-
         static constexpr int m_topologyInitialSize = 10;
         static constexpr double m_thetaTolerance = 1e-4;
     };
