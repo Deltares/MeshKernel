@@ -258,7 +258,7 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
-        int nearestPointIndex = nearestPoints[n];
+        const auto nearestPointIndex = nearestPoints[n];
         if (m_mesh->m_nodesTypes[n] == 2 && m_mesh->m_nodesNumEdges[n] > 0 && m_mesh->m_nodesNumEdges[nearestPointIndex] > 0)
         {
             Point firstPoint = m_mesh->m_nodes[n];

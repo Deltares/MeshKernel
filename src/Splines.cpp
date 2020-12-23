@@ -436,11 +436,11 @@ void meshkernel::Splines::InterpolatePointsOnSpline(int index,
 {
     FuncAdimensionalToDimensionalDistance func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
     const auto numNodes = static_cast<int>(m_splineNodes[index].size());
-    for (size_t i = 0, size = distances.size(); i < size; ++i)
+    for (auto i = static_cast<size_t>(0), size = distances.size(); i < size; ++i)
     {
         func.SetDimensionalDistance(distances[i]);
         adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, numNodes - 1);
-        auto successful = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i], points[i]);
+        const auto successful = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i], points[i]);
         if (!successful)
         {
             throw AlgorithmError("Splines::InterpolatePointsOnSpline: Could not interpolate spline points.");

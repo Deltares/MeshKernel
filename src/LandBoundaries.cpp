@@ -136,7 +136,7 @@ namespace meshkernel
 
         // Generate two segments for closed land boundaries
         const auto numSegmentIndicesBeforeSplitting = m_segmentIndices.size();
-        for (size_t i = 0; i < numSegmentIndicesBeforeSplitting; i++)
+        for (auto i = 0; i < numSegmentIndicesBeforeSplitting; i++)
         {
             const auto startSegmentIndex = m_segmentIndices[i][0];
             const auto endSegmentIndex = m_segmentIndices[i][1];
@@ -305,7 +305,7 @@ namespace meshkernel
 
                     // find the segment index of the found point
                     size_t landboundarySegmentIndex = std::numeric_limits<size_t>::max();
-                    for (size_t s = 0; s < m_segmentIndices.size(); s++)
+                    for (auto s = 0; s < m_segmentIndices.size(); s++)
                     {
                         if (nearestLandBoundaryNodeIndex >= m_segmentIndices[s][0] && nearestLandBoundaryNodeIndex < m_segmentIndices[s][1])
                         {

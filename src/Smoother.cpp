@@ -666,7 +666,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
 
         if (isSquareFace[f] || numFaceNodes == 4)
         {
-            auto nextNode = f + static_cast<size_t>(2);
+            size_t nextNode = static_cast<size_t>(f) + static_cast<size_t>(2);
             if (nextNode > numSharedFaces)
             {
                 nextNode = nextNode - numSharedFaces;
