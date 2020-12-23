@@ -1485,10 +1485,9 @@ int meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
         int nodeIndex = m_nodesRTree.GetQuerySampleIndex(0);
         return nodeIndex;
     }
-    else
-    {
-        throw AlgorithmError("Mesh::GetNodeIndex: Could not find the node index close to a point.");
-    }
+
+    //TODO to substitute with invalid size_t type
+    return -1;
 }
 
 int meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)

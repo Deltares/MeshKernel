@@ -8,12 +8,8 @@ set(API_SOURCE "${PROJECT_SOURCE_DIR}/src/MeshKernel.cpp")
 list(REMOVE_ITEM HEADER_LIST API_HEADER)
 list(REMOVE_ITEM SOURCE_LIST API_SOURCE)
 
-# TODO: Get rid of this "bonus" list
-file(GLOB BONUS_LIST CONFIGURE_DEPENDS
-     "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.cpp")
-
 # Create the static lib
-add_library(MeshKernelStatic STATIC ${SOURCE_LIST} ${HEADER_LIST} ${BONUS_LIST})
+add_library(MeshKernelStatic STATIC ${SOURCE_LIST} ${HEADER_LIST})
 
 # Expose the interface of the static lib
 target_include_directories(MeshKernelStatic PUBLIC ../include)

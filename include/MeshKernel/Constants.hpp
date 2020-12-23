@@ -88,12 +88,13 @@ namespace meshkernel
         KdTree = 7
     };
 
-    /// @brief Interpolation locations
-    enum class InterpolationLocation
+    /// @brief MeshLocations locations
+    enum class MeshLocations
     {
         Faces = 0,
         Nodes = 1,
-        Edges = 2
+        Edges = 2,
+        None
     };
 
 } // namespace meshkernel
