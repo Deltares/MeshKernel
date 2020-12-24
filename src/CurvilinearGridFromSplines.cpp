@@ -628,7 +628,7 @@ void meshkernel::CurvilinearGridFromSplines::GrowLayer(size_t layerIndex)
 
         for (auto i = 0; i < m_validFrontNodes.size(); ++i)
         {
-            if (m_validFrontNodes[i] <= 0)
+            if (m_validFrontNodes[i] == sizetMissingValue)
             {
                 activeLayerPoints[i] = {doubleMissingValue, doubleMissingValue};
             }
