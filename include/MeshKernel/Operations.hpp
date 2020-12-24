@@ -106,9 +106,9 @@ namespace meshkernel
     /// @param[in] v The vector to sort
     /// @returns The indices of elements
     template <typename T>
-    [[nodiscard]] std::vector<int> SortedIndices(const std::vector<T>& v)
+    [[nodiscard]] std::vector<size_t> SortedIndices(const std::vector<T>& v)
     {
-        std::vector<int> indices(v.size());
+        std::vector<size_t> indices(v.size());
         iota(indices.begin(), indices.end(), 0);
         std::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2) { return v[i1] < v[i2]; });
         return indices;
@@ -119,7 +119,7 @@ namespace meshkernel
     /// @param[in] order The order to use
     /// @returns The reordered vector
     template <typename T>
-    auto ReorderVector(const std::vector<T>& v, const std::vector<int>& order)
+    auto ReorderVector(const std::vector<T>& v, const std::vector<size_t>& order)
     {
         std::vector<T> ordered;
         ordered.reserve(v.size());
@@ -421,15 +421,15 @@ namespace meshkernel
 
         const double eps = 1e-5;
         const double splFac = 1.0;
-        const auto intCoordinate = int(std::floor(pointAdimensionalCoordinate));
+        const auto intCoordinate = static_cast<size_t>(std::floor(pointAdimensionalCoordinate));
         if (pointAdimensionalCoordinate - intCoordinate < eps)
         {
             pointCoordinate = coordinates[intCoordinate];
             return true;
         }
 
-        int low = intCoordinate;
-        int high = low + 1;
+        size_t low = intCoordinate;
+        size_t high = low + 1;
         double a = high - pointAdimensionalCoordinate;
         double b = pointAdimensionalCoordinate - low;
 

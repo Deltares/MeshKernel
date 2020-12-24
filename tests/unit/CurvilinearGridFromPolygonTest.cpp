@@ -109,9 +109,9 @@ TEST(CurvilinearGridFromPolygon, ComputeGridTriangle)
 
     meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(polygon);
 
-    int firstNode = 0;
-    int secondNode = 3;
-    int thirdNode = 6;
+    size_t firstNode = 0;
+    size_t secondNode = 3;
+    size_t thirdNode = 6;
     meshkernel::CurvilinearGrid curvilinearGrid;
     curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
 

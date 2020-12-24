@@ -448,7 +448,7 @@ namespace meshkernel
         }
 
         std::vector<size_t> connectedNodes;
-        ShortestPath(landBoundarySegment, int(startLandBoundaryIndex), int(endLandBoundaryIndex), startMeshNode, meshBoundOnly, connectedNodes);
+        ShortestPath(landBoundarySegment, startLandBoundaryIndex, endLandBoundaryIndex, startMeshNode, meshBoundOnly, connectedNodes);
 
         auto lastSegment = m_meshNodesLandBoundarySegments[endMeshNode];
         size_t lastNode = sizetMissingValue;
@@ -459,7 +459,7 @@ namespace meshkernel
         size_t currentNodeLandBoundaryNodeIndex;
         double currentNodeEdgeRatio;
         bool stopPathSearch; //the path has been temporarily stopped(true) or not (false)
-        int numConnectedNodes = 0;
+        size_t numConnectedNodes = 0;
         numRejectedNodesInPath = 0;
         numNodesInPath = 0;
 
@@ -475,13 +475,13 @@ namespace meshkernel
                 const auto previousEndMeshNode = m_segmentIndices[previousLandBoundarySegment][1];
                 double previousMinDistance;
 
-                NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], int(previousStartMeshNode), int(previousEndMeshNode),
+                NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], previousStartMeshNode, previousEndMeshNode,
                                         previousMinDistance, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
 
-                NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], int(startLandBoundaryIndex), int(endLandBoundaryIndex),
+                NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], startLandBoundaryIndex, endLandBoundaryIndex,
                                         distanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
 
-                const double minDinstanceFromLandBoundaryCurrentNode = m_nodesMinDistances[currentNode];
+                const auto minDinstanceFromLandBoundaryCurrentNode = m_nodesMinDistances[currentNode];
 
                 if (distanceFromLandBoundary <= previousMinDistance &&
                     distanceFromLandBoundary < m_minDistanceFromLandFactor * minDinstanceFromLandBoundaryCurrentNode)
@@ -493,7 +493,7 @@ namespace meshkernel
             {
                 if (IsEqual(m_nodesMinDistances[currentNode], doubleMissingValue))
                 {
-                    NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], 0, int(m_nodes.size()),
+                    NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], 0, m_nodes.size(),
                                             minDinstanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
                     m_nodesMinDistances[currentNode] = minDinstanceFromLandBoundary;
                 }
@@ -502,7 +502,7 @@ namespace meshkernel
                     minDinstanceFromLandBoundary = m_nodesMinDistances[currentNode];
                 }
 
-                NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], int(startLandBoundaryIndex), int(endLandBoundaryIndex),
+                NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], startLandBoundaryIndex, endLandBoundaryIndex,
                                         distanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
 
                 if (distanceFromLandBoundary < m_minDistanceFromLandFactor * minDinstanceFromLandBoundary &&
@@ -514,7 +514,7 @@ namespace meshkernel
 
             if (stopPathSearch)
             {
-                if (numConnectedNodes == 1 && lastSegment != -1)
+                if (numConnectedNodes == 1 && lastSegment != sizetMissingValue)
                 {
                     m_meshNodesLandBoundarySegments[lastNode] = lastSegment;
                 }
@@ -853,7 +853,7 @@ namespace meshkernel
         Point normalPoint;
 
         auto currentNode = startNode;
-        int searchIter = 0;
+        size_t searchIter = 0;
         int stepNode = 0;
         while (searchIter < 3)
         {
@@ -1287,8 +1287,8 @@ namespace meshkernel
 
                 NearestLandBoundaryNode(m_mesh->m_projection,
                                         m_mesh->m_nodes[n],
-                                        static_cast<int>(m_segmentIndices[meshNodeToLandBoundarySegment][0]),
-                                        static_cast<int>(m_segmentIndices[meshNodeToLandBoundarySegment][1]),
+                                        m_segmentIndices[meshNodeToLandBoundarySegment][0],
+                                        m_segmentIndices[meshNodeToLandBoundarySegment][1],
                                         minimumDistance,
                                         pointOnLandBoundary,
                                         nearestLandBoundaryNodeIndex,

@@ -80,7 +80,7 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     }
 
     // Count all invalid nodes (note: there might be nodes that are not connected to an edge)
-    int numInvalidNodes = 0;
+    size_t numInvalidNodes = 0;
     for (auto n = 0; n < m_nodes.size(); ++n)
     {
         // invalidate nodes that are not connected
@@ -227,7 +227,7 @@ meshkernel::Mesh::Mesh(const CurvilinearGrid& curvilinearGrid, Projection projec
     std::vector<Edge> edges(curvilinearGrid.m_grid.size() * (curvilinearGrid.m_grid[0].size() - 1) + (curvilinearGrid.m_grid.size() - 1) * curvilinearGrid.m_grid[0].size());
     std::vector<std::vector<size_t>> indices(curvilinearGrid.m_grid.size(), std::vector<size_t>(curvilinearGrid.m_grid[0].size(), sizetMissingValue));
 
-    int ind = 0;
+    size_t ind = 0;
     for (auto m = 0; m < curvilinearGrid.m_grid.size(); m++)
     {
         for (auto n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
@@ -316,7 +316,7 @@ meshkernel::Mesh::Mesh(const std::vector<Point>& inputNodes, const Polygons& pol
 
     // now add all points and all valid edges
     m_nodes = inputNodes;
-    int validEdgesCount = 0;
+    size_t validEdgesCount = 0;
     for (auto i = 0; i < triangulationWrapper.m_numEdges; ++i)
     {
         if (!edgeNodesFlag[i])
@@ -395,11 +395,11 @@ void meshkernel::Mesh::SetFlatCopies(AdministrationOptions administrationOption)
         edgeIndex++;
     }
 
-    int faceIndex = 0;
     m_faceNodes.resize(GetNumFaces() * maximumNumberOfNodesPerFace, intMissingValue);
     m_facesCircumcentersx.resize(GetNumFaces());
     m_facesCircumcentersy.resize(GetNumFaces());
     m_facesCircumcentersz.resize(GetNumFaces());
+    size_t faceIndex = 0;
     for (auto f = 0; f < GetNumFaces(); f++)
     {
         for (auto n = 0; n < maximumNumberOfNodesPerFace; ++n)
@@ -584,7 +584,7 @@ void meshkernel::Mesh::DeleteDegeneratedTriangles()
     Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     // assume the max amount of degenerated triangles is 10% of the actual faces
-    std::vector<int> degeneratedTriangles;
+    std::vector<size_t> degeneratedTriangles;
     degeneratedTriangles.reserve(static_cast<size_t>(static_cast<double>(GetNumFaces()) * 0.1));
     for (auto f = 0; f < GetNumFaces(); ++f)
     {
@@ -1102,8 +1102,8 @@ void meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 {
     // first filter the nodes in polygon
     std::vector<Point> filteredNodes(GetNumNodes());
-    std::vector<int> originalNodeIndices(GetNumNodes(), -1);
-    int index = 0;
+    std::vector<size_t> originalNodeIndices(GetNumNodes(), -1);
+    size_t index = 0;
     for (auto i = 0; i < GetNumNodes(); i++)
     {
         bool inPolygon = polygon.IsPointInPolygon(m_nodes[i], 0);
@@ -1839,7 +1839,7 @@ meshkernel::Point meshkernel::Mesh::ComputeFaceCircumenter(std::vector<Point>& p
     }
     else if (!edgesNumFaces.empty())
     {
-        int numValidEdges = 0;
+        size_t numValidEdges = 0;
         for (auto n = 0; n < numNodes; ++n)
         {
             if (edgesNumFaces[n] == 2)
@@ -2009,7 +2009,7 @@ void meshkernel::Mesh::DeleteSmallTrianglesAtBoundaries(double minFractionalArea
 
         // compute the average area of neighboring faces
         double averageOtherFacesArea = 0.0;
-        int numNonBoundaryFaces = 0;
+        size_t numNonBoundaryFaces = 0;
         for (auto e = 0; e < numNodesInTriangle; ++e)
         {
             // the edge must not be at the boundary, otherwise there is no "other" face
@@ -2073,7 +2073,7 @@ void meshkernel::Mesh::DeleteSmallTrianglesAtBoundaries(double minFractionalArea
         const auto secondNodeToMerge = triangleNodes[2];
 
         // only
-        int numInternalEdges = 0;
+        size_t numInternalEdges = 0;
         for (auto e = 0; e < m_nodesNumEdges[firstNodeToMerge]; ++e)
         {
             if (!IsEdgeOnBoundary(m_nodesEdges[firstNodeToMerge][e]))
@@ -2438,7 +2438,7 @@ std::vector<size_t> meshkernel::Mesh::SortedFacesAroundNode(size_t node) const
         }
 
         // check if the first face contains the first edge
-        int firstEdgeIndexInFirstFace = 0;
+        size_t firstEdgeIndexInFirstFace = 0;
         for (auto n = 0; n < m_numFacesNodes[firstFace]; ++n)
         {
             if (m_facesEdges[firstFace][n] == firstEdge)

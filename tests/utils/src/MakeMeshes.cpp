@@ -7,10 +7,10 @@
 #include <Windows.h>
 #endif
 
-#include <stdexcept>
+#include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
 #include <MeshKernel/Mesh.hpp>
 #include <TestUtils/MakeMeshes.hpp>
-#include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
+#include <stdexcept>
 
 std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
 {
@@ -100,13 +100,13 @@ std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, m
         nodes[i].y = nodeY[i];
     }
 
-    int index = 0;
+    size_t index = 0;
     for (auto i = 0; i < edges.size(); i++)
     {
-        edges[i].first = edge_nodes[index] - 1;
+        edges[i].first = static_cast<size_t>(edge_nodes[index]) - 1;
         index++;
 
-        edges[i].second = edge_nodes[index] - 1;
+        edges[i].second = static_cast<size_t>(edge_nodes[index]) - 1;
         index++;
     }
 
@@ -158,7 +158,7 @@ std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile(
 
 std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin)
 {
-    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
+    std::vector<std::vector<size_t>> indicesValues(n, std::vector<size_t>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (auto i = 0; i < n; ++i)

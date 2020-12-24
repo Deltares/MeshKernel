@@ -389,11 +389,11 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
     m_numMSplines = FindIndex(m_splineType, -1);
     m_numNSplines = numSplines - m_numMSplines;
 
-    int maxExternalIterations = 10;
+    const size_t maxExternalIterations = 10;
     for (auto i = 0; i < maxExternalIterations; i++)
     {
         // sort along m
-        int maxInternalIterations = 100;
+        const size_t maxInternalIterations = 100;
         for (auto j = 0; j < maxInternalIterations; j++)
         {
             const auto successful = OrderSplines(0, m_numMSplines, m_numMSplines, numSplines);
