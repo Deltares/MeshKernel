@@ -37,7 +37,7 @@
 namespace meshkernel
 {
     // Forward declarations
-    class Mesh;
+    class Mesh2D;
     class Polygons;
 
     class MeshRefinement
@@ -53,9 +53,9 @@ namespace meshkernel
         /// @brief Constructor, pass a mesh reference
         /// @brief mesh The mesh to be refined
         /// @returns
-        explicit MeshRefinement(std::shared_ptr<Mesh> mesh, std::shared_ptr<AveragingInterpolation> averaging);
+        explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh, std::shared_ptr<AveragingInterpolation> averaging);
 
-        explicit MeshRefinement(std::shared_ptr<Mesh> mesh);
+        explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh);
 
         /// @brief Refine a mesh (refinecellsandfaces2).
         ///
@@ -79,10 +79,10 @@ namespace meshkernel
             const meshkernelapi::InterpolationParameters& interpolationParameters);
 
     private:
-        /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh
+        /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh2D
         void FindBrotherEdges();
 
-        /// @brief Modifies m_mesh.m_nodeMask, all nodes of the faces intersecting the polygon perimeter will get value of -2 (set_initial_mask)
+        /// @brief Modifies m_mesh2d.m_nodeMask, all nodes of the faces intersecting the polygon perimeter will get value of -2 (set_initial_mask)
         ///        The mask value of the other nodes will not be modified.
         void ComputeNodeMaskAtPolygonPerimeter();
 
@@ -91,7 +91,7 @@ namespace meshkernel
         void ComputeRefinementMasksFromSamples();
 
         /// @brief Computes the number of edges that should be refined in a face (compute_jarefine_poly)
-        ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh.FaceClosedPolygon method
+        ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh2D.FaceClosedPolygon method
         /// @param numPolygonNodes The number of face nodes
         /// @param samples The samples to use for refinement
         /// @param refineEdgeCache 1 if the edge should be refined, 0 otherwise
@@ -168,7 +168,7 @@ namespace meshkernel
 
         RefinementType m_refinementType; /// The type of refinement to use
 
-        std::shared_ptr<Mesh> m_mesh;
+        std::shared_ptr<Mesh2D> m_mesh2d;
         std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;
     };
 } // namespace meshkernel

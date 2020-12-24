@@ -1,5 +1,5 @@
 #include <MeshKernel/MeshRefinement.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/SampleRefineParameters.hpp>
 #include <MeshKernel/InterpolationParameters.hpp>

@@ -1,4 +1,4 @@
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
@@ -40,7 +40,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
     orthogonalizationParameters.SmoothAngleOrSmoothArea = 1.0;
 
     // Execute
-    auto mesh = std::make_shared<meshkernel::Mesh>();
+    auto mesh = std::make_shared<meshkernel::Mesh2D>();
     mesh->Set(edges, nodes, meshkernel::Projection::cartesian);
 
     auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh);
@@ -511,7 +511,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
                                         {2, 1},
                                         {0, 2}};
 
-    auto mesh = std::make_shared<meshkernel::Mesh>();
+    auto mesh = std::make_shared<meshkernel::Mesh2D>();
     mesh->Set(edges, nodes, meshkernel::Projection::spherical);
 
     const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;

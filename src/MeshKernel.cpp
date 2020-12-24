@@ -39,7 +39,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.cpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
@@ -59,7 +59,7 @@
 namespace meshkernelapi
 {
     // The vector containing the mesh instances
-    static std::vector<std::shared_ptr<meshkernel::Mesh>> meshInstances;
+    static std::vector<std::shared_ptr<meshkernel::Mesh2D>> meshInstances;
     static std::vector<std::shared_ptr<meshkernel::Mesh1D>> mesh1dInstances;
     static std::vector<std::shared_ptr<meshkernel::Contacts>> contactsInstances;
 
@@ -205,7 +205,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_new_mesh(int& meshKernelId)
     {
         meshKernelId = int(meshInstances.size());
-        meshInstances.emplace_back(std::make_shared<meshkernel::Mesh>());
+        meshInstances.emplace_back(std::make_shared<meshkernel::Mesh2D>());
         return 0;
     };
 
@@ -288,7 +288,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdges);
+            meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
 
             SetMeshGeometry(meshKernelId, meshGeometryDimensions, meshGeometry);
         }
@@ -309,7 +309,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+            meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
             SetMeshGeometry(meshKernelId, meshGeometryDimensions, meshGeometry);
         }
@@ -672,7 +672,7 @@ namespace meshkernelapi
 
             meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
 
-            meshkernel::Mesh mesh;
+            meshkernel::Mesh2D mesh;
             mesh.MakeMesh(makeGridParameters, polygon);
 
             *meshInstances[meshKernelId] += mesh;
@@ -702,7 +702,7 @@ namespace meshkernelapi
             // generate samples in all polygons
             const auto generatedPoints = polygon.ComputePointsInPolygons();
 
-            meshkernel::Mesh mesh(generatedPoints[0], polygon, meshInstances[meshKernelId]->m_projection);
+            meshkernel::Mesh2D mesh(generatedPoints[0], polygon, meshInstances[meshKernelId]->m_projection);
             *meshInstances[meshKernelId] += mesh;
         }
         catch (const std::exception& e)
@@ -726,7 +726,7 @@ namespace meshkernelapi
             ConvertGeometryListToPointVector(geometryList, samplePoints);
 
             meshkernel::Polygons polygon;
-            meshkernel::Mesh mesh(samplePoints, polygon, meshInstances[meshKernelId]->m_projection);
+            meshkernel::Mesh2D mesh(samplePoints, polygon, meshInstances[meshKernelId]->m_projection);
             *meshInstances[meshKernelId] += mesh;
         }
         catch (const std::exception& e)
@@ -976,7 +976,7 @@ namespace meshkernelapi
             if (meshKernelId >= meshInstances.size())
             {
                 //create a valid instance, by default cartesian
-                *meshInstances[meshKernelId] = meshkernel::Mesh();
+                *meshInstances[meshKernelId] = meshkernel::Mesh2D();
                 meshInstances[meshKernelId]->m_projection = meshkernel::Projection::cartesian;
             }
 
@@ -1306,7 +1306,7 @@ namespace meshkernelapi
 
             meshkernel::CurvilinearGrid curvilinearGrid;
             curvilinearGridFromSplines.Compute(curvilinearGrid);
-            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+            *meshInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
         catch (const std::exception& e)
         {
@@ -1376,7 +1376,7 @@ namespace meshkernelapi
             meshkernel::CurvilinearGrid curvilinearGrid;
             curvilinearGridFromSplinesInstances[meshKernelId]->ComputeCurvilinearGrid(curvilinearGrid);
 
-            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+            *meshInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
         catch (const std::exception& e)
         {
@@ -1489,7 +1489,7 @@ namespace meshkernelapi
             curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
 
             // Transform and set mesh pointer
-            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+            *meshInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
         catch (const std::exception& e)
         {
@@ -1524,7 +1524,7 @@ namespace meshkernelapi
             curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
 
             // convert to curvilinear grid and add it to the current mesh
-            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+            *meshInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
         catch (const std::exception& e)
         {
@@ -1558,7 +1558,7 @@ namespace meshkernelapi
             curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
 
             // convert to curvilinear grid and add it to the current mesh
-            *meshInstances[meshKernelId] += meshkernel::Mesh(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+            *meshInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
         }
         catch (const std::exception& e)
         {
@@ -1728,7 +1728,7 @@ namespace meshkernelapi
             // Set the mesh
             const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
             const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
-            const auto mesh = std::make_shared<meshkernel::Mesh>();
+            const auto mesh = std::make_shared<meshkernel::Mesh2D>();
             mesh->Set(edges, nodes, projection);
 
             // Build the samples

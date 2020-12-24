@@ -1,4 +1,4 @@
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include "Meshkernel/Entities.hpp"
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <TestUtils/SampleFileReader.hpp>

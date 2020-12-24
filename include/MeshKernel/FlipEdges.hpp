@@ -30,7 +30,7 @@
 namespace meshkernel
 {
     // Forward declarations
-    class Mesh;
+    class Mesh2D;
     class LandBoundaries;
 
     class FlipEdges
@@ -42,7 +42,7 @@ namespace meshkernel
         /// @brief triangulateFaces Option to triangulate all faces or not
         /// @brief projectToLandBoundary Option to project to land boundaries or not
         /// @returns If the method succeeded
-        FlipEdges(std::shared_ptr<Mesh> mesh,
+        FlipEdges(std::shared_ptr<Mesh2D> mesh,
                   std::shared_ptr<LandBoundaries> landBoundary,
                   bool triangulateFaces,
                   bool projectToLandBoundary);
@@ -75,7 +75,7 @@ namespace meshkernel
         /// @param[in] nodeIndex The index of the node to process
         void DeleteEdgeFromNode(int edgeIndex, int nodeIndex) const;
 
-        std::shared_ptr<Mesh> m_mesh;                     // A pointer to mesh
+        std::shared_ptr<Mesh2D> m_mesh2d;                     // A pointer to mesh
         std::shared_ptr<LandBoundaries> m_landBoundaries; // A pointer to land boundaries
 
         bool m_triangulateFaces = false;

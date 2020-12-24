@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 
 namespace meshkernel
@@ -18,7 +18,7 @@ namespace meshkernel
         /// @param mesh1d
         /// @param mesh
         /// @param projection
-        Contacts(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh> mesh) : m_mesh1d(mesh1d), m_mesh(mesh)
+        Contacts(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh2D> mesh) : m_mesh1d(mesh1d), m_mesh2d(mesh)
         {
             // assert mesh1d and mesh have the same projection!
         }
@@ -53,7 +53,7 @@ namespace meshkernel
         void ComputeBoundaryConnections(){};
 
     private:
-        std::shared_ptr<Mesh> m_mesh;
+        std::shared_ptr<Mesh2D> m_mesh2d;
         std::shared_ptr<Mesh1D> m_mesh1d;
         // nodes
         std::vector<int> m_meshIndices;

@@ -29,7 +29,7 @@
 
 #include <vector>
 #include <stdexcept>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Operations.cpp>
@@ -40,8 +40,8 @@
 namespace meshkernel
 {
     LandBoundaries::LandBoundaries(const std::vector<Point>& landBoundary,
-                                   std::shared_ptr<Mesh> mesh,
-                                   std::shared_ptr<Polygons> polygons) : m_mesh(mesh),
+                                   std::shared_ptr<Mesh2D> mesh,
+                                   std::shared_ptr<Polygons> polygons) : m_mesh2d(mesh),
                                                                          m_polygons(polygons)
     {
         if (!landBoundary.empty())
@@ -80,7 +80,7 @@ namespace meshkernel
 
         // mesh boundary to polygon
         std::vector<Point> polygonNodes;
-        const auto meshBoundaryPolygon = m_mesh->MeshBoundaryToPolygon(polygonNodes);
+        const auto meshBoundaryPolygon = m_mesh2d->MeshBoundaryToPolygon(polygonNodes);
 
         // mask all landboundary nodes close to the mesh boundary (distanceFromMeshNode < minDistance)
         for (auto n = 0; n < m_nodes.size() - 1; n++)
@@ -104,12 +104,12 @@ namespace meshkernel
                     continue;
                 }
 
-                const double edgeLength = ComputeDistance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh->m_projection);
+                const double edgeLength = ComputeDistance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh2d->m_projection);
                 const double minDistance = m_closeFactor * edgeLength;
 
                 Point normalPoint;
                 double rlout;
-                const double distanceFromMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh->m_projection);
+                const double distanceFromMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, normalPoint, rlout, m_mesh2d->m_projection);
 
                 if (distanceFromMeshNode <= minDistance)
                 {
@@ -168,11 +168,11 @@ namespace meshkernel
 
         Administrate();
 
-        m_nodeMask.resize(m_mesh->GetNumNodes(), intMissingValue);
-        m_faceMask.resize(m_mesh->GetNumFaces(), intMissingValue);
-        m_edgeMask.resize(m_mesh->GetNumEdges(), intMissingValue);
-        m_meshNodesLandBoundarySegments.resize(m_mesh->GetNumNodes(), -1);
-        m_nodesMinDistances.resize(m_mesh->GetNumNodes(), doubleMissingValue);
+        m_nodeMask.resize(m_mesh2d->GetNumNodes(), intMissingValue);
+        m_faceMask.resize(m_mesh2d->GetNumFaces(), intMissingValue);
+        m_edgeMask.resize(m_mesh2d->GetNumEdges(), intMissingValue);
+        m_meshNodesLandBoundarySegments.resize(m_mesh2d->GetNumNodes(), -1);
+        m_nodesMinDistances.resize(m_mesh2d->GetNumNodes(), doubleMissingValue);
 
         // loop over the segments of the land boundary and make assign each node to the land boundary segment index
         for (int landBoundarySegment = 0; landBoundarySegment < m_segmentIndices.size(); landBoundarySegment++)
@@ -187,14 +187,14 @@ namespace meshkernel
             }
         }
 
-        // connect the m_mesh nodes
+        // connect the m_mesh2d nodes
         if (findOnlyOuterMeshBoundary)
         {
             std::vector<int> connectedNodes;
             int numConnectedNodes = 0;
-            for (int e = 0; e < m_mesh->GetNumEdges(); e++)
+            for (int e = 0; e < m_mesh2d->GetNumEdges(); e++)
             {
-                if (!m_mesh->IsEdgeOnBoundary(e))
+                if (!m_mesh2d->IsEdgeOnBoundary(e))
                 {
                     continue;
                 }
@@ -216,11 +216,11 @@ namespace meshkernel
 
         if (initialize)
         {
-            if (!m_mesh->IsEdgeOnBoundary(edgeIndex) || m_mesh->m_edges[edgeIndex].first < 0 || m_mesh->m_edges[edgeIndex].second < 0)
+            if (!m_mesh2d->IsEdgeOnBoundary(edgeIndex) || m_mesh2d->m_edges[edgeIndex].first < 0 || m_mesh2d->m_edges[edgeIndex].second < 0)
                 throw std::invalid_argument("LandBoundaries::AssignSegmentsToMeshNodes: Cannot not assign segment to mesh nodes.");
 
-            int firstMeshNode = m_mesh->m_edges[edgeIndex].first;
-            int secondMeshNode = m_mesh->m_edges[edgeIndex].second;
+            int firstMeshNode = m_mesh2d->m_edges[edgeIndex].first;
+            int secondMeshNode = m_mesh2d->m_edges[edgeIndex].second;
 
             if (m_meshNodesLandBoundarySegments[firstMeshNode] >= 0 &&
                 m_meshNodesLandBoundarySegments[secondMeshNode] < 0 &&
@@ -263,14 +263,14 @@ namespace meshkernel
 
         int lastVisitedNode = nodesLoc[numNodesLoc - 1];
 
-        for (int e = 0; e < m_mesh->m_nodesNumEdges[lastVisitedNode]; e++)
+        for (int e = 0; e < m_mesh2d->m_nodesNumEdges[lastVisitedNode]; e++)
         {
-            int edge = m_mesh->m_nodesEdges[lastVisitedNode][e];
+            int edge = m_mesh2d->m_nodesEdges[lastVisitedNode][e];
 
-            if (!m_mesh->IsEdgeOnBoundary(edge))
+            if (!m_mesh2d->IsEdgeOnBoundary(edge))
                 continue;
 
-            int otherNode = m_mesh->m_edges[edge].first + m_mesh->m_edges[edge].second - lastVisitedNode;
+            int otherNode = m_mesh2d->m_edges[edge].first + m_mesh2d->m_edges[edge].second - lastVisitedNode;
 
             // path stopped
             if (m_nodeMask[otherNode] < 0)
@@ -302,7 +302,7 @@ namespace meshkernel
                     Point pointOnLandBoundary;
                     int nearestLandBoundaryNodeIndex = -1;
                     double edgeRatio;
-                    NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[meshNode], 0, int(m_nodes.size()), minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio);
+                    NearestLandBoundaryNode(m_mesh2d->m_projection, m_mesh2d->m_nodes[meshNode], 0, int(m_nodes.size()), minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio);
 
                     // find the segment index of the found point
                     size_t landboundarySegmentIndex = std::numeric_limits<size_t>::max();
@@ -363,7 +363,7 @@ namespace meshkernel
         auto endNode = m_segmentIndices[startSegmentIndex][1];
 
         Point newNodeLeft;
-        if (ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[startNode], m_mesh->m_projection) <= ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[endNode], m_mesh->m_projection))
+        if (ComputeSquaredDistance(m_mesh2d->m_nodes[nodeIndex], m_nodes[startNode], m_mesh2d->m_projection) <= ComputeSquaredDistance(m_mesh2d->m_nodes[nodeIndex], m_nodes[endNode], m_mesh2d->m_projection))
         {
             newNodeLeft = m_nodes[startNode];
         }
@@ -382,7 +382,7 @@ namespace meshkernel
             // find start/end
             startNode = m_segmentIndices[endSegmentIndex][0];
             endNode = m_segmentIndices[endSegmentIndex][1];
-            if (ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[startNode], m_mesh->m_projection) <= ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[endNode], m_mesh->m_projection))
+            if (ComputeSquaredDistance(m_mesh2d->m_nodes[nodeIndex], m_nodes[startNode], m_mesh2d->m_projection) <= ComputeSquaredDistance(m_mesh2d->m_nodes[nodeIndex], m_nodes[endNode], m_mesh2d->m_projection))
             {
                 newNodeRight = m_nodes[startNode];
             }
@@ -476,10 +476,10 @@ namespace meshkernel
                 auto previousEndMeshNode = m_segmentIndices[previousLandBoundarySegment][1];
                 double previousMinDistance;
 
-                NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], int(previousStartMeshNode), int(previousEndMeshNode),
+                NearestLandBoundaryNode(m_mesh2d->m_projection, m_mesh2d->m_nodes[currentNode], int(previousStartMeshNode), int(previousEndMeshNode),
                                         previousMinDistance, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
 
-                NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], int(startLandBoundaryIndex), int(endLandBoundaryIndex),
+                NearestLandBoundaryNode(m_mesh2d->m_projection, m_mesh2d->m_nodes[currentNode], int(startLandBoundaryIndex), int(endLandBoundaryIndex),
                                         distanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
 
                 const double minDinstanceFromLandBoundaryCurrentNode = m_nodesMinDistances[currentNode];
@@ -494,7 +494,7 @@ namespace meshkernel
             {
                 if (IsEqual(m_nodesMinDistances[currentNode], doubleMissingValue))
                 {
-                    NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], 0, int(m_nodes.size()),
+                    NearestLandBoundaryNode(m_mesh2d->m_projection, m_mesh2d->m_nodes[currentNode], 0, int(m_nodes.size()),
                                             minDinstanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
                     m_nodesMinDistances[currentNode] = minDinstanceFromLandBoundary;
                 }
@@ -503,11 +503,11 @@ namespace meshkernel
                     minDinstanceFromLandBoundary = m_nodesMinDistances[currentNode];
                 }
 
-                NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], int(startLandBoundaryIndex), int(endLandBoundaryIndex),
+                NearestLandBoundaryNode(m_mesh2d->m_projection, m_mesh2d->m_nodes[currentNode], int(startLandBoundaryIndex), int(endLandBoundaryIndex),
                                         distanceFromLandBoundary, nodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
 
                 if (distanceFromLandBoundary < m_minDistanceFromLandFactor * minDinstanceFromLandBoundary &&
-                    (meshBoundOnly == false || m_mesh->m_nodesTypes[currentNode] == 2 || m_mesh->m_nodesTypes[currentNode] == 3))
+                    (meshBoundOnly == false || m_mesh2d->m_nodesTypes[currentNode] == 2 || m_mesh2d->m_nodesTypes[currentNode] == 3))
                 {
                     stopPathSearch = false;
                 }
@@ -539,14 +539,14 @@ namespace meshkernel
             }
 
             int nextEdgeIndex = connectedNodes[currentNode];
-            if (nextEdgeIndex < 0 || nextEdgeIndex >= m_mesh->GetNumEdges())
+            if (nextEdgeIndex < 0 || nextEdgeIndex >= m_mesh2d->GetNumEdges())
             {
                 break;
             }
 
-            currentNode = m_mesh->m_edges[nextEdgeIndex].first + m_mesh->m_edges[nextEdgeIndex].second - currentNode;
+            currentNode = m_mesh2d->m_edges[nextEdgeIndex].first + m_mesh2d->m_edges[nextEdgeIndex].second - currentNode;
 
-            if (currentNode < 0 || currentNode >= m_mesh->GetNumNodes())
+            if (currentNode < 0 || currentNode >= m_mesh2d->GetNumNodes())
             {
                 break;
             }
@@ -574,22 +574,22 @@ namespace meshkernel
 
         std::fill(m_nodeMask.begin(), m_nodeMask.end(), intMissingValue);
 
-        // check if any of the land boundary node is inside a m_mesh face
+        // check if any of the land boundary node is inside a m_mesh2d face
         bool nodeInFace = false;
         int crossedFaceIndex = -1;
         for (int i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
         {
-            for (int f = 0; f < m_mesh->GetNumFaces(); f++)
+            for (int f = 0; f < m_mesh2d->GetNumFaces(); f++)
             {
-                auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
+                auto numFaceNodes = m_mesh2d->GetNumFaceEdges(f);
 
                 if (numFaceNodes == 0)
                     continue;
 
                 int numClosedPolygonPoints;
-                m_mesh->FaceClosedPolygon(f, m_polygonNodesCache, numClosedPolygonPoints);
+                m_mesh2d->FaceClosedPolygon(f, m_polygonNodesCache, numClosedPolygonPoints);
 
-                nodeInFace = IsPointInPolygonNodes(m_nodes[i], m_polygonNodesCache, 0, numClosedPolygonPoints - 1, m_mesh->m_projection);
+                nodeInFace = IsPointInPolygonNodes(m_nodes[i], m_polygonNodesCache, 0, numClosedPolygonPoints - 1, m_mesh2d->m_projection);
                 if (nodeInFace)
                 {
                     crossedFaceIndex = f;
@@ -605,18 +605,18 @@ namespace meshkernel
         if (!nodeInFace)
         {
             crossedFaceIndex = -1;
-            for (int e = 0; e < m_mesh->GetNumEdges(); e++)
+            for (int e = 0; e < m_mesh2d->GetNumEdges(); e++)
             {
-                if (!m_mesh->IsEdgeOnBoundary(e))
+                if (!m_mesh2d->IsEdgeOnBoundary(e))
                     continue;
 
-                bool isCellCrossed = IsFaceCrossedByLandBoundaries(m_mesh->m_edgesFaces[e][0],
+                bool isCellCrossed = IsFaceCrossedByLandBoundaries(m_mesh2d->m_edgesFaces[e][0],
                                                                    startLandBoundaryIndex,
                                                                    endLandBoundaryIndex);
 
                 if (isCellCrossed)
                 {
-                    crossedFaceIndex = m_mesh->m_edgesFaces[e][0];
+                    crossedFaceIndex = m_mesh2d->m_edgesFaces[e][0];
                     break;
                 }
             }
@@ -627,7 +627,7 @@ namespace meshkernel
             std::fill(m_faceMask.begin(), m_faceMask.end(), intMissingValue);
             std::fill(m_edgeMask.begin(), m_edgeMask.end(), intMissingValue);
             //m_faceMask assumes crossedFace has already been done.
-            if (crossedFaceIndex >= 0 && crossedFaceIndex < m_mesh->GetNumFaces())
+            if (crossedFaceIndex >= 0 && crossedFaceIndex < m_mesh2d->GetNumFaces())
             {
                 m_faceMask[crossedFaceIndex] = 1;
             }
@@ -646,13 +646,13 @@ namespace meshkernel
                       rightEdgeRatio);
 
             // Mask all nodes of the masked faces
-            for (int f = 0; f < m_mesh->GetNumFaces(); f++)
+            for (int f = 0; f < m_mesh2d->GetNumFaces(); f++)
             {
                 if (m_faceMask[f] == 1)
                 {
-                    for (int n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
+                    for (int n = 0; n < m_mesh2d->GetNumFaceEdges(f); n++)
                     {
-                        m_nodeMask[m_mesh->m_facesNodes[f][n]] = segmentIndex;
+                        m_nodeMask[m_mesh2d->m_facesNodes[f][n]] = segmentIndex;
                     }
                 }
             }
@@ -663,11 +663,11 @@ namespace meshkernel
                 e = segmentIndex;
         }
 
-        for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+        for (int n = 0; n < m_mesh2d->GetNumNodes(); n++)
         {
             if (m_nodeMask[n] >= 0)
             {
-                bool inPolygon = m_polygons->IsPointInPolygon(m_mesh->m_nodes[n], 0);
+                bool inPolygon = m_polygons->IsPointInPolygon(m_mesh2d->m_nodes[n], 0);
                 if (!inPolygon)
                 {
                     m_nodeMask[n] = intMissingValue;
@@ -698,15 +698,15 @@ namespace meshkernel
             // these are the faces that are close (up to a certain tolerance) by a land boundary
             if (face < 0)
             {
-                for (int e = 0; e < m_mesh->GetNumEdges(); e++)
+                for (int e = 0; e < m_mesh2d->GetNumEdges(); e++)
                 {
-                    if (!m_mesh->IsEdgeOnBoundary(e) || m_mesh->m_edges[e].first < 0 || m_mesh->m_edges[e].second < 0)
+                    if (!m_mesh2d->IsEdgeOnBoundary(e) || m_mesh2d->m_edges[e].first < 0 || m_mesh2d->m_edges[e].second < 0)
                         continue;
 
                     bool isClose = false;
                     int landBoundaryNode = 0;
-                    int otherFace = m_mesh->m_edgesFaces[e][0];
-                    for (const auto& edge : m_mesh->m_facesEdges[otherFace])
+                    int otherFace = m_mesh2d->m_edgesFaces[e][0];
+                    for (const auto& edge : m_mesh2d->m_facesEdges[otherFace])
                     {
                         isClose = IsMeshEdgeCloseToLandBoundaries(edge,
                                                                   startNodeLandBoundaryIndex,
@@ -729,24 +729,24 @@ namespace meshkernel
             else
             {
                 // face is crossed
-                if (m_mesh->GetNumFaces() < numNodesInTriangle)
+                if (m_mesh2d->GetNumFaces() < numNodesInTriangle)
                     continue;
 
                 int isFaceFound = 0;
 
-                for (const auto& currentEdge : m_mesh->m_facesEdges[face])
+                for (const auto& currentEdge : m_mesh2d->m_facesEdges[face])
                 {
                     // is a boundary edge, continue
-                    if (m_mesh->IsEdgeOnBoundary(currentEdge))
+                    if (m_mesh2d->IsEdgeOnBoundary(currentEdge))
                         continue;
 
-                    int otherFace = m_mesh->m_edgesFaces[currentEdge][0] + m_mesh->m_edgesFaces[currentEdge][1] - face;
+                    int otherFace = m_mesh2d->m_edgesFaces[currentEdge][0] + m_mesh2d->m_edgesFaces[currentEdge][1] - face;
 
                     // already masked
                     if (m_faceMask[otherFace] != intMissingValue)
                         continue;
 
-                    for (const auto& edgeOtherFace : m_mesh->m_facesEdges[otherFace])
+                    for (const auto& edgeOtherFace : m_mesh2d->m_facesEdges[otherFace])
                     {
                         if (m_edgeMask[edgeOtherFace] == 1)
                         {
@@ -835,13 +835,13 @@ namespace meshkernel
 
         const int startNode = std::max(std::min(landBoundaryNode, endNodeLandBoundaryIndex - 1), startNodeLandBoundaryIndex);
 
-        if (m_mesh->m_edges[edgeIndex].first < 0 || m_mesh->m_edges[edgeIndex].second < 0)
+        if (m_mesh2d->m_edges[edgeIndex].first < 0 || m_mesh2d->m_edges[edgeIndex].second < 0)
             return false;
 
-        const auto firstMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edgeIndex].first];
-        const auto secondMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edgeIndex].second];
+        const auto firstMeshNode = m_mesh2d->m_nodes[m_mesh2d->m_edges[edgeIndex].first];
+        const auto secondMeshNode = m_mesh2d->m_nodes[m_mesh2d->m_edges[edgeIndex].second];
 
-        const double meshEdgeLength = ComputeDistance(firstMeshNode, secondMeshNode, m_mesh->m_projection);
+        const double meshEdgeLength = ComputeDistance(firstMeshNode, secondMeshNode, m_mesh2d->m_projection);
 
         const double distanceFactor = meshBoundOnly ? m_closeToLandBoundaryFactor : m_closeWholeMeshFactor;
         const double closeDistance = meshEdgeLength * distanceFactor;
@@ -855,14 +855,14 @@ namespace meshkernel
         int stepNode = 0;
         while (searchIter < 3)
         {
-            const double landBoundaryLength = ComputeSquaredDistance(m_nodes[currentNode], m_nodes[currentNode + 1], m_mesh->m_projection);
+            const double landBoundaryLength = ComputeSquaredDistance(m_nodes[currentNode], m_nodes[currentNode + 1], m_mesh2d->m_projection);
 
             if (landBoundaryLength > 0)
             {
                 ratioFirstMeshNode = 0.0;
                 ratioSecondMeshNode = 1.0;
 
-                const double distanceFromLandBoundaryFirstMeshNode = DistanceFromLine(firstMeshNode, m_nodes[currentNode], m_nodes[currentNode + 1], normalPoint, ratioFirstMeshNode, m_mesh->m_projection);
+                const double distanceFromLandBoundaryFirstMeshNode = DistanceFromLine(firstMeshNode, m_nodes[currentNode], m_nodes[currentNode + 1], normalPoint, ratioFirstMeshNode, m_mesh2d->m_projection);
 
                 if (distanceFromLandBoundaryFirstMeshNode < closeDistance)
                 {
@@ -877,7 +877,7 @@ namespace meshkernel
                 else
                 {
                     // check the second point
-                    double distanceFromLandBoundarySecondMeshNode = DistanceFromLine(secondMeshNode, m_nodes[currentNode], m_nodes[currentNode + 1], normalPoint, ratioSecondMeshNode, m_mesh->m_projection);
+                    double distanceFromLandBoundarySecondMeshNode = DistanceFromLine(secondMeshNode, m_nodes[currentNode], m_nodes[currentNode + 1], normalPoint, ratioSecondMeshNode, m_mesh2d->m_projection);
 
                     if (distanceFromLandBoundarySecondMeshNode < closeDistance)
                     {
@@ -987,16 +987,16 @@ namespace meshkernel
         int startEdge = -1;
         int endEdge = -1;
 
-        for (int e = 0; e < m_mesh->GetNumEdges(); e++)
+        for (int e = 0; e < m_mesh2d->GetNumEdges(); e++)
         {
-            if (m_mesh->m_edges[e].first < 0 || m_mesh->m_edges[e].second < 0)
+            if (m_mesh2d->m_edges[e].first < 0 || m_mesh2d->m_edges[e].second < 0)
                 continue;
 
-            if (m_nodeMask[m_mesh->m_edges[e].first] < 0 || m_nodeMask[m_mesh->m_edges[e].second] < 0)
+            if (m_nodeMask[m_mesh2d->m_edges[e].first] < 0 || m_nodeMask[m_mesh2d->m_edges[e].second] < 0)
                 continue;
 
-            const double distanceFromFirstMeshNode = DistanceFromLine(startPoint, m_mesh->m_nodes[m_mesh->m_edges[e].first], m_mesh->m_nodes[m_mesh->m_edges[e].second], normalPoint, ratio, m_mesh->m_projection);
-            const double distanceFromSecondMeshNode = DistanceFromLine(endPoint, m_mesh->m_nodes[m_mesh->m_edges[e].first], m_mesh->m_nodes[m_mesh->m_edges[e].second], normalPoint, ratio, m_mesh->m_projection);
+            const double distanceFromFirstMeshNode = DistanceFromLine(startPoint, m_mesh2d->m_nodes[m_mesh2d->m_edges[e].first], m_mesh2d->m_nodes[m_mesh2d->m_edges[e].second], normalPoint, ratio, m_mesh2d->m_projection);
+            const double distanceFromSecondMeshNode = DistanceFromLine(endPoint, m_mesh2d->m_nodes[m_mesh2d->m_edges[e].first], m_mesh2d->m_nodes[m_mesh2d->m_edges[e].second], normalPoint, ratio, m_mesh2d->m_projection);
 
             if (distanceFromFirstMeshNode < minDistStart)
             {
@@ -1029,10 +1029,10 @@ namespace meshkernel
             return;
         }
 
-        int firstMeshNodeIndex = m_mesh->m_edges[startEdge].first;
-        int secondMeshNodeIndex = m_mesh->m_edges[startEdge].second;
-        double firstDistance = ComputeSquaredDistance(m_mesh->m_nodes[firstMeshNodeIndex], startPoint, m_mesh->m_projection);
-        double secondDistance = ComputeSquaredDistance(m_mesh->m_nodes[secondMeshNodeIndex], startPoint, m_mesh->m_projection);
+        int firstMeshNodeIndex = m_mesh2d->m_edges[startEdge].first;
+        int secondMeshNodeIndex = m_mesh2d->m_edges[startEdge].second;
+        double firstDistance = ComputeSquaredDistance(m_mesh2d->m_nodes[firstMeshNodeIndex], startPoint, m_mesh2d->m_projection);
+        double secondDistance = ComputeSquaredDistance(m_mesh2d->m_nodes[secondMeshNodeIndex], startPoint, m_mesh2d->m_projection);
 
         if (firstDistance <= secondDistance)
         {
@@ -1043,10 +1043,10 @@ namespace meshkernel
             startMeshNode = secondMeshNodeIndex;
         }
 
-        firstMeshNodeIndex = m_mesh->m_edges[endEdge].first;
-        secondMeshNodeIndex = m_mesh->m_edges[endEdge].second;
-        firstDistance = ComputeSquaredDistance(m_mesh->m_nodes[firstMeshNodeIndex], endPoint, m_mesh->m_projection);
-        secondDistance = ComputeSquaredDistance(m_mesh->m_nodes[secondMeshNodeIndex], endPoint, m_mesh->m_projection);
+        firstMeshNodeIndex = m_mesh2d->m_edges[endEdge].first;
+        secondMeshNodeIndex = m_mesh2d->m_edges[endEdge].second;
+        firstDistance = ComputeSquaredDistance(m_mesh2d->m_nodes[firstMeshNodeIndex], endPoint, m_mesh2d->m_projection);
+        secondDistance = ComputeSquaredDistance(m_mesh2d->m_nodes[secondMeshNodeIndex], endPoint, m_mesh2d->m_projection);
 
         if (firstDistance <= secondDistance)
         {
@@ -1070,50 +1070,50 @@ namespace meshkernel
             return;
         }
 
-        connectedNodes.resize(m_mesh->GetNumNodes(), -1);
+        connectedNodes.resize(m_mesh2d->GetNumNodes(), -1);
         std::fill(connectedNodes.begin(), connectedNodes.end(), -1);
 
         // infinite distance for all nodes
-        std::vector<double> nodeDistances(m_mesh->GetNumNodes(), std::numeric_limits<double>::max());
-        std::vector<bool> isVisited(m_mesh->GetNumNodes(), false);
+        std::vector<double> nodeDistances(m_mesh2d->GetNumNodes(), std::numeric_limits<double>::max());
+        std::vector<bool> isVisited(m_mesh2d->GetNumNodes(), false);
 
         int currentNodeIndex = startMeshNode;
         nodeDistances[startMeshNode] = 0.0;
         while (true)
         {
             isVisited[currentNodeIndex] = true;
-            Point currentNode = m_mesh->m_nodes[currentNodeIndex];
+            Point currentNode = m_mesh2d->m_nodes[currentNodeIndex];
             Point currentNodeOnLandBoundary;
             int currentNodeLandBoundaryNodeIndex;
             double currentNodeEdgeRatio;
             double currentNodeDistance;
-            NearestLandBoundaryNode(m_mesh->m_projection, currentNode, startLandBoundaryIndex, endLandBoundaryIndex,
+            NearestLandBoundaryNode(m_mesh2d->m_projection, currentNode, startLandBoundaryIndex, endLandBoundaryIndex,
                                     currentNodeDistance, currentNodeOnLandBoundary, currentNodeLandBoundaryNodeIndex, currentNodeEdgeRatio);
 
             if (currentNodeLandBoundaryNodeIndex < 0)
                 throw AlgorithmError("LandBoundaries::ShortestPath: Cannot compute the nearest node on the land boundary.");
 
-            for (const auto& edgeIndex : m_mesh->m_nodesEdges[currentNodeIndex])
+            for (const auto& edgeIndex : m_mesh2d->m_nodesEdges[currentNodeIndex])
             {
-                if (m_mesh->m_edges[edgeIndex].first < 0 || m_mesh->m_edges[edgeIndex].second < 0)
+                if (m_mesh2d->m_edges[edgeIndex].first < 0 || m_mesh2d->m_edges[edgeIndex].second < 0)
                 {
                     continue;
                 }
 
-                int neighbouringNodeIndex = m_mesh->m_edges[edgeIndex].first + m_mesh->m_edges[edgeIndex].second - currentNodeIndex;
+                int neighbouringNodeIndex = m_mesh2d->m_edges[edgeIndex].first + m_mesh2d->m_edges[edgeIndex].second - currentNodeIndex;
 
                 if (isVisited[neighbouringNodeIndex])
                 {
                     continue;
                 }
 
-                Point neighbouringNode = m_mesh->m_nodes[neighbouringNodeIndex];
+                Point neighbouringNode = m_mesh2d->m_nodes[neighbouringNodeIndex];
 
                 Point neighbouringNodeOnLandBoundary;
                 int neighbouringNodeLandBoundaryNodeIndex;
                 double neighbouringNodeEdgeRatio;
                 double neighbouringNodeDistance;
-                NearestLandBoundaryNode(m_mesh->m_projection, neighbouringNode, startLandBoundaryIndex, endLandBoundaryIndex,
+                NearestLandBoundaryNode(m_mesh2d->m_projection, neighbouringNode, startLandBoundaryIndex, endLandBoundaryIndex,
                                         neighbouringNodeDistance, neighbouringNodeOnLandBoundary, neighbouringNodeLandBoundaryNodeIndex, neighbouringNodeEdgeRatio);
 
                 Point middlePoint{
@@ -1124,7 +1124,7 @@ namespace meshkernel
                 int middlePointLandBoundaryNodeIndex;
                 double middlePointEdgeRatio;
                 double middlePointDistance;
-                NearestLandBoundaryNode(m_mesh->m_projection, middlePoint, startLandBoundaryIndex, endLandBoundaryIndex,
+                NearestLandBoundaryNode(m_mesh2d->m_projection, middlePoint, startLandBoundaryIndex, endLandBoundaryIndex,
                                         middlePointDistance, middlePointOnLandBoundary, middlePointLandBoundaryNodeIndex, middlePointEdgeRatio);
 
                 double maximumDistance = std::max(currentNodeDistance, neighbouringNodeDistance);
@@ -1134,7 +1134,7 @@ namespace meshkernel
                     for (int n = currentNodeLandBoundaryNodeIndex + 1; n < neighbouringNodeLandBoundaryNodeIndex; ++n)
                     {
                         double ratio;
-                        middlePointDistance = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, middlePointOnLandBoundary, ratio, m_mesh->m_projection);
+                        middlePointDistance = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, middlePointOnLandBoundary, ratio, m_mesh2d->m_projection);
                         if (middlePointDistance > maximumDistance)
                             maximumDistance = middlePointDistance;
                     }
@@ -1144,17 +1144,17 @@ namespace meshkernel
                     for (int n = neighbouringNodeLandBoundaryNodeIndex + 1; n < currentNodeLandBoundaryNodeIndex; ++n)
                     {
                         double ratio;
-                        middlePointDistance = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, middlePointOnLandBoundary, ratio, m_mesh->m_projection);
+                        middlePointDistance = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, middlePointOnLandBoundary, ratio, m_mesh2d->m_projection);
                         if (middlePointDistance > maximumDistance)
                             maximumDistance = middlePointDistance;
                     }
                 }
 
                 // In case of netboundaries only: set penalty when edge is not on the boundary
-                if (meshBoundOnly && !m_mesh->IsEdgeOnBoundary(edgeIndex))
+                if (meshBoundOnly && !m_mesh2d->IsEdgeOnBoundary(edgeIndex))
                     maximumDistance = 1e6 * maximumDistance;
 
-                double edgeLength = ComputeDistance(currentNode, neighbouringNode, m_mesh->m_projection);
+                double edgeLength = ComputeDistance(currentNode, neighbouringNode, m_mesh2d->m_projection);
                 double correctedDistance = nodeDistances[currentNodeIndex] + edgeLength * maximumDistance;
 
                 if (correctedDistance < nodeDistances[neighbouringNodeIndex])
@@ -1167,7 +1167,7 @@ namespace meshkernel
             // linear search with masking
             currentNodeIndex = 0;
             double minValue = std::numeric_limits<double>::max();
-            for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+            for (int n = 0; n < m_mesh2d->GetNumNodes(); n++)
             {
                 if (m_nodeMask[n] == landBoundarySegment && !isVisited[n] && nodeDistances[n] < minValue)
                 {
@@ -1177,7 +1177,7 @@ namespace meshkernel
             }
 
             if (currentNodeIndex < 0 ||
-                currentNodeIndex >= m_mesh->GetNumNodes() ||
+                currentNodeIndex >= m_mesh2d->GetNumNodes() ||
                 nodeDistances[currentNodeIndex] == std::numeric_limits<double>::max() ||
                 isVisited[currentNodeIndex])
             {
@@ -1233,12 +1233,12 @@ namespace meshkernel
             return false;
         }
 
-        for (const auto& edge : m_mesh->m_facesEdges[face])
+        for (const auto& edge : m_mesh2d->m_facesEdges[face])
         {
             for (int i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
             {
-                auto firstMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edge].first];
-                auto secondMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edge].second];
+                auto firstMeshNode = m_mesh2d->m_nodes[m_mesh2d->m_edges[edge].first];
+                auto secondMeshNode = m_mesh2d->m_nodes[m_mesh2d->m_edges[edge].second];
 
                 auto firstNode = m_nodes[i];
                 auto secondNode = m_nodes[i + 1];
@@ -1247,7 +1247,7 @@ namespace meshkernel
                 double crossProduct;
                 double firstRatio;
                 double secondRatio;
-                bool areCrossing = AreLinesCrossing(firstMeshNode, secondMeshNode, firstNode, secondNode, adimensional, intersection, crossProduct, firstRatio, secondRatio, m_mesh->m_projection);
+                bool areCrossing = AreLinesCrossing(firstMeshNode, secondMeshNode, firstNode, secondNode, adimensional, intersection, crossProduct, firstRatio, secondRatio, m_mesh2d->m_projection);
 
                 if (areCrossing)
                 {
@@ -1265,10 +1265,10 @@ namespace meshkernel
             return;
         }
 
-        const int numNodes = m_mesh->GetNumNodes();
+        const int numNodes = m_mesh2d->GetNumNodes();
         for (int n = 0; n < numNodes; ++n)
         {
-            if (m_mesh->m_nodesTypes[n] == 1 || m_mesh->m_nodesTypes[n] == 2 || m_mesh->m_nodesTypes[n] == 3)
+            if (m_mesh2d->m_nodesTypes[n] == 1 || m_mesh2d->m_nodesTypes[n] == 2 || m_mesh2d->m_nodesTypes[n] == 3)
             {
                 const auto meshNodeToLandBoundarySegment = m_meshNodesLandBoundarySegments[n];
                 if (meshNodeToLandBoundarySegment < 0)
@@ -1281,8 +1281,8 @@ namespace meshkernel
                 int nearestLandBoundaryNodeIndex;
                 double edgeRatio;
 
-                NearestLandBoundaryNode(m_mesh->m_projection,
-                                        m_mesh->m_nodes[n],
+                NearestLandBoundaryNode(m_mesh2d->m_projection,
+                                        m_mesh2d->m_nodes[n],
                                         static_cast<int>(m_segmentIndices[meshNodeToLandBoundarySegment][0]),
                                         static_cast<int>(m_segmentIndices[meshNodeToLandBoundarySegment][1]),
                                         minimumDistance,
@@ -1290,7 +1290,7 @@ namespace meshkernel
                                         nearestLandBoundaryNodeIndex,
                                         edgeRatio);
 
-                m_mesh->m_nodes[n] = pointOnLandBoundary;
+                m_mesh2d->m_nodes[n] = pointOnLandBoundary;
             }
         }
     }

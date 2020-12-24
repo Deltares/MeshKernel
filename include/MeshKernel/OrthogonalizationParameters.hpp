@@ -52,10 +52,10 @@ namespace meshkernelapi
         /// @brief Factor between smoother 1d0 and area-homogenizer 0d0 (1.0)
         double SmoothAngleOrSmoothArea;
 
-        /// @brief Mesh-adaptation method; 0: Winslow, 1: arc-length, 2: harmonic map (1)
+        /// @brief Mesh2D-adaptation method; 0: Winslow, 1: arc-length, 2: harmonic map (1)
         int AdaptMethod;
 
-        /// @brief Mesh-refinement factor; between 0d0 and 1d0 (0.0)
+        /// @brief Mesh2D-refinement factor; between 0d0 and 1d0 (0.0)
         double AdaptBeta;
 
         /// @brief Number of smoothing iterations of `solution` u in adaptation (0)

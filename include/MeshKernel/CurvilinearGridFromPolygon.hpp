@@ -32,7 +32,7 @@
 namespace meshkernel
 {
     // Forward declarations
-    class Mesh;
+    class Mesh2D;
     class Polygons;
     class CurvilinearGrid;
 

@@ -1,4 +1,4 @@
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Constants.hpp>
@@ -21,7 +21,7 @@ TEST(Mesh, OneQuadTestConstructor)
     edges.push_back({0, 1});
     edges.push_back({2, 3});
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
 
     // 2 Execution
     mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
@@ -89,7 +89,7 @@ TEST(Mesh, MakeMeshInPolygon)
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     meshkernelapi::MakeMeshParameters MakeMeshParameters;
     MakeMeshParameters.GridType = 0;
     MakeMeshParameters.GridAngle = 0.0;
@@ -121,7 +121,7 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::spherical);
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     meshkernelapi::MakeMeshParameters MakeMeshParameters;
     MakeMeshParameters.GridType = 0;
     MakeMeshParameters.GridAngle = 0.0;
@@ -145,7 +145,7 @@ TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
     std::vector<meshkernel::Point> nodes;
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::spherical);
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     meshkernelapi::MakeMeshParameters MakeMeshParameters;
     MakeMeshParameters.GridType = 0;
     MakeMeshParameters.GridAngle = 0.0;
@@ -212,7 +212,7 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     // Execute
     const auto generatedPoints = polygons.ComputePointsInPolygons();
 
-    meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
 
     //// Assert
     constexpr double tolerance = 1e-5;
@@ -255,7 +255,7 @@ TEST(Mesh, TriangulateSamples)
     // Execute
     const auto generatedPoints = polygons.ComputePointsInPolygons();
 
-    meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
 }
 
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
@@ -273,7 +273,7 @@ TEST(Mesh, TwoTrianglesDuplicatedEdges)
     edges.push_back({0, 1});
     edges.push_back({2, 1});
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     // 2 Execution
     mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
@@ -296,7 +296,7 @@ TEST(Mesh, MeshBoundaryToPolygon)
     edges.push_back({0, 1});
     edges.push_back({2, 1});
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
@@ -331,7 +331,7 @@ TEST(Mesh, HangingEdge)
     edges.push_back({3, 0});
     edges.push_back({2, 1});
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     ASSERT_EQ(1, mesh.GetNumFaces());
@@ -376,7 +376,7 @@ TEST(Mesh, NodeMerging)
         }
     }
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     // Add overlapping nodes
@@ -462,7 +462,7 @@ TEST(Mesh, MillionQuads)
         }
     }
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     // now build node-edge mapping
     auto start(std::chrono::steady_clock::now());
     mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
@@ -490,7 +490,7 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
-    mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     ASSERT_EQ(5, mesh->m_nodesRTree.Size());
 
@@ -512,7 +512,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->DeleteNode(0);
 
     // when m_nodesRTreeRequiresUpdate = true and m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
-    mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     ASSERT_EQ(3, mesh->m_nodesRTree.Size());
 }
@@ -533,7 +533,7 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->ConnectNodes(0, newNodeIndex, newEdgeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
-    mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
@@ -552,7 +552,7 @@ TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->DeleteEdge(0);
 
     // when m_edgesRTreeRequiresUpdate = true the mesh.m_edgesRTree is re-build with one less edge
-    mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     ASSERT_EQ(3, mesh->m_edgesRTree.Size());
 }
@@ -606,7 +606,7 @@ TEST(Mesh, GetObtuseTriangles)
         {0, 3},
         {3, 1}};
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, only one obtuse triangle should be found
@@ -633,7 +633,7 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
         {2, 0},
     };
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     mesh.Set(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, by setting the smallFlowEdgesThreshold high, a small flow edge will be found

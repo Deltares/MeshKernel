@@ -33,7 +33,7 @@
 namespace meshkernel
 {
     class Polygons;
-    class Mesh;
+    class Mesh2D;
 
     class LandBoundaries
     {
@@ -54,7 +54,7 @@ namespace meshkernel
         /// @brief polygons
         /// @returns
         LandBoundaries(const std::vector<Point>& landBoundary,
-                       std::shared_ptr<Mesh> mesh,
+                       std::shared_ptr<Mesh2D> mesh,
                        std::shared_ptr<Polygons> polygons);
 
         /// @brief The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary (admin_landboundary_segments)
@@ -235,7 +235,7 @@ namespace meshkernel
                                                          int startLandBoundaryIndex,
                                                          int endLandBoundaryIndex);
 
-        std::shared_ptr<Mesh> m_mesh;                      // A pointer to mesh
+        std::shared_ptr<Mesh2D> m_mesh2d;                      // A pointer to mesh
         std::shared_ptr<Polygons> m_polygons;              // A pointer to polygons
         std::vector<Point> m_nodes;                        // XLAN, YLAN, ZLAN
         std::vector<Point> m_polygonNodesCache;            // array of points (e.g. points of a face)

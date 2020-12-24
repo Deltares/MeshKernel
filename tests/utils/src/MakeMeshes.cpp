@@ -8,13 +8,13 @@
 #endif
 
 #include <stdexcept>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
 
-std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
+std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
 {
-    auto mesh = std::make_shared<meshkernel::Mesh>();
+    auto mesh = std::make_shared<meshkernel::Mesh2D>();
 
     auto netcdf = LoadLibrary("netcdf.dll");
 
@@ -116,7 +116,7 @@ std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, m
     return mesh;
 }
 
-std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile()
+std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile()
 {
     // Prepare
     std::vector<meshkernel::Point> nodes;
@@ -154,13 +154,13 @@ std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile(
     edges.push_back({5, 9});
     edges.push_back({4, 5});
 
-    auto mesh = std::make_shared<meshkernel::Mesh>();
+    auto mesh = std::make_shared<meshkernel::Mesh2D>();
     mesh->Set(edges, nodes, meshkernel::Projection::cartesian);
 
     return mesh;
 }
 
-std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin)
+std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin)
 {
     std::vector<std::vector<int>> indexesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
@@ -196,13 +196,13 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
         }
     }
 
-    auto mesh = std::make_shared<meshkernel::Mesh>();
+    auto mesh = std::make_shared<meshkernel::Mesh2D>();
     mesh->Set(edges, nodes, projection);
 
     return mesh;
 }
 
-std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
+std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
 {
 
     std::vector<double> xCoordinates{777.2400642395231,
@@ -388,7 +388,7 @@ std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
         edges[i].second -= 1;
     }
 
-    auto mesh = std::make_shared<meshkernel::Mesh>();
+    auto mesh = std::make_shared<meshkernel::Mesh2D>();
     mesh->Set(edges, nodes, meshkernel::Projection::cartesian);
 
     return mesh;

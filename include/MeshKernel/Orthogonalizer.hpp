@@ -30,7 +30,7 @@
 
 namespace meshkernel
 {
-    class Mesh;
+    class Mesh2D;
 
     /// <summary>
     /// Orthogonalizion (optimize the aspect ratios) and and mesh smoothing (optimize internal face angles or area).
@@ -41,7 +41,7 @@ namespace meshkernel
     public:
         /// @brief Ctor
         /// @returns
-        explicit Orthogonalizer(std::shared_ptr<Mesh> mesh);
+        explicit Orthogonalizer(std::shared_ptr<Mesh2D> mesh);
 
         /// @brief Computes the smoother weights and the right hans side
         void Compute();
@@ -68,9 +68,9 @@ namespace meshkernel
         /// @brief Computes the aspect ratio of each edge (orthonet_compute_aspect)
         /// @brief mesh
         /// @returns If the method succeeded
-        bool AspectRatio(const Mesh& mesh);
+        bool AspectRatio(const Mesh2D& mesh);
 
-        std::shared_ptr<Mesh> m_mesh;
+        std::shared_ptr<Mesh2D> m_mesh2d;
         std::vector<double> m_aspectRatios;
         std::vector<std::vector<double>> m_weights;
         std::vector<std::vector<double>> m_rhs;

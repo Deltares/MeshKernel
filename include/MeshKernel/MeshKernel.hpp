@@ -73,15 +73,15 @@ namespace meshkernelapi
 
         /// @brief Set the grid state
         /// @param[in] meshKernelId Id of the grid state
-        /// @param[in] meshGeometryDimensions Mesh dimensions
-        /// @param[in] meshGeometry Mesh data
+        /// @param[in] meshGeometryDimensions Mesh2D dimensions
+        /// @param[in] meshGeometry Mesh2D data
         /// @param[in] isGeographic Cartesian or spherical mesh
         /// @returns Error code
         MKERNEL_API int mkernel_set_state(int meshKernelId, const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, bool isGeographic);
 
         /// @brief Gets the mesh state as a <see cref="MeshGeometry"/> structure
         /// @param[in] meshKernelId Id of the grid state
-        /// @param[out] meshGeometryDimensions Mesh dimensions
+        /// @param[out] meshGeometryDimensions Mesh2D dimensions
         /// @param[out] meshGeometry Grid data
         /// @returns Error code
         MKERNEL_API int mkernel_get_mesh(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
@@ -89,7 +89,7 @@ namespace meshkernelapi
         /// @brief Gets the mesh faces
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[out] meshGeometryDimensions Grid dimensions
-        /// @param[out] meshGeometry Mesh data (including face information)
+        /// @param[out] meshGeometry Mesh2D data (including face information)
         /// @returns Error code
         MKERNEL_API int mkernel_find_faces(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
 
@@ -170,7 +170,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId Id of the grid state
         /// @param[in] geometryListIn Vertex coordinates
         /// @param[in] searchRadius the radius where to search for the vertex
-        /// @param[out] geometryListOut Mesh vertex coordinates
+        /// @param[out] geometryListOut Mesh2D vertex coordinates
         /// @returns Error code
         MKERNEL_API int mkernel_get_node_coordinate(int meshKernelId, GeometryList& geometryListIn, double searchRadius, GeometryList& geometryListOut);
 
@@ -455,8 +455,8 @@ namespace meshkernelapi
         MKERNEL_API double mkernel_get_inner_outer_separator();
 
         /// @brief Triangle interpolation (ec_module)
-        /// @param[in] meshGeometryDimensions Mesh dimensions
-        /// @param[in] meshGeometry Mesh data
+        /// @param[in] meshGeometryDimensions Mesh2D dimensions
+        /// @param[in] meshGeometry Mesh2D data
         /// @param[in] startIndex start index (not used)
         /// @param[in] samplesXCoordinate The sample x coordinates
         /// @param[in] samplesYCoordinate The sample y coordinates
@@ -480,9 +480,9 @@ namespace meshkernelapi
                                       int& sphericalAccurate);
 
         /// @brief AveragingInterpolation interpolation (ec_module)
-        /// @param[in] meshGeometryDimensions Mesh dimensions
-        /// @param[in] meshGeometry Mesh data
-        /// @param[in] startIndex Mesh data start index (not used)
+        /// @param[in] meshGeometryDimensions Mesh2D dimensions
+        /// @param[in] meshGeometry Mesh2D data
+        /// @param[in] startIndex Mesh2D data start index (not used)
         /// @param[in] samplesXCoordinate The sample x coordinates
         /// @param[in] samplesYCoordinate The sample y coordinates
         /// @param[in] samplesValue The sample values

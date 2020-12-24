@@ -35,18 +35,18 @@
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Exceptions.hpp>
 
-meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mesh> mesh,
+meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mesh2D> mesh,
                                                                          std::shared_ptr<Smoother> smoother,
                                                                          std::shared_ptr<Orthogonalizer> orthogonalizer,
                                                                          std::shared_ptr<Polygons> polygon,
                                                                          std::shared_ptr<LandBoundaries> landBoundaries,
                                                                          LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
-                                                                         const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters) : m_mesh(mesh),
+                                                                         const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters) : m_mesh2d(mesh),
                                                                                                                                                           m_smoother(smoother),
                                                                                                                                                           m_orthogonalizer(orthogonalizer),
                                                                                                                                                           m_polygons(polygon),
@@ -59,15 +59,15 @@ meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::sh
 void meshkernel::OrthogonalizationAndSmoothing::Initialize()
 {
     // Sets the node mask
-    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-    m_mesh->MaskNodesInPolygons(*m_polygons, true);
+    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh2d->MaskNodesInPolygons(*m_polygons, true);
 
     // Flag nodes outside the polygon as corner points
-    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (auto n = 0; n < m_mesh2d->GetNumNodes(); n++)
     {
-        if (m_mesh->m_nodeMask[n] == 0)
+        if (m_mesh2d->m_nodeMask[n] == 0)
         {
-            m_mesh->m_nodesTypes[n] = 3;
+            m_mesh2d->m_nodesTypes[n] = 3;
         }
     }
 
@@ -76,25 +76,25 @@ void meshkernel::OrthogonalizationAndSmoothing::Initialize()
     m_mu = std::min(1e-2, m_mumax);
 
     // back-up original nodes, for projection on original mesh boundary
-    m_originalNodes = m_mesh->m_nodes;
-    m_orthogonalCoordinates = m_mesh->m_nodes;
+    m_originalNodes = m_mesh2d->m_nodes;
+    m_orthogonalCoordinates = m_mesh2d->m_nodes;
 
     // account for enclosing polygon
     m_landBoundaries->FindNearestMeshBoundary(m_projectToLandBoundaryOption);
 
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops)
-    if (m_mesh->m_projection == Projection::sphericalAccurate)
+    if (m_mesh2d->m_projection == Projection::sphericalAccurate)
     {
         if (m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor < 1.0)
         {
             PrepareOuterIteration();
         }
 
-        m_localCoordinatesIndexes.resize(m_mesh->GetNumNodes() + 1);
+        m_localCoordinatesIndexes.resize(m_mesh2d->GetNumNodes() + 1);
         m_localCoordinatesIndexes[0] = 1;
-        for (int n = 0; n < m_mesh->GetNumNodes(); ++n)
+        for (int n = 0; n < m_mesh2d->GetNumNodes(); ++n)
         {
-            m_localCoordinatesIndexes[n + 1] = m_localCoordinatesIndexes[n] + std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
+            m_localCoordinatesIndexes[n + 1] = m_localCoordinatesIndexes[n] + std::max(m_mesh2d->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
         }
 
         m_localCoordinates.resize(m_localCoordinatesIndexes.back() - 1, {doubleMissingValue, doubleMissingValue});
@@ -140,19 +140,19 @@ void meshkernel::OrthogonalizationAndSmoothing::AllocateLinearSystem()
     // reallocate caches
     if (m_nodeCacheSize == 0)
     {
-        m_compressedRhs.resize(m_mesh->GetNumNodes() * 2);
+        m_compressedRhs.resize(m_mesh2d->GetNumNodes() * 2);
         std::fill(m_compressedRhs.begin(), m_compressedRhs.end(), 0.0);
 
-        m_compressedEndNodeIndex.resize(m_mesh->GetNumNodes());
+        m_compressedEndNodeIndex.resize(m_mesh2d->GetNumNodes());
         std::fill(m_compressedEndNodeIndex.begin(), m_compressedEndNodeIndex.end(), 0.0);
 
-        m_compressedStartNodeIndex.resize(m_mesh->GetNumNodes());
+        m_compressedStartNodeIndex.resize(m_mesh2d->GetNumNodes());
         std::fill(m_compressedStartNodeIndex.begin(), m_compressedStartNodeIndex.end(), 0.0);
 
-        for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+        for (int n = 0; n < m_mesh2d->GetNumNodes(); n++)
         {
             m_compressedEndNodeIndex[n] = m_nodeCacheSize;
-            m_nodeCacheSize += std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
+            m_nodeCacheSize += std::max(m_mesh2d->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
             m_compressedStartNodeIndex[n] = m_nodeCacheSize;
         }
 
@@ -169,7 +169,7 @@ void meshkernel::OrthogonalizationAndSmoothing::FinalizeOuterIteration()
     //compute new faces circumcenters
     if (!m_keepCircumcentersAndMassCenters)
     {
-        m_mesh->ComputeFaceCircumcentersMassCentersAndAreas(true);
+        m_mesh2d->ComputeFaceCircumcentersMassCentersAndAreas(true);
     }
 }
 
@@ -177,18 +177,18 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
     const double max_aptf = std::max(m_orthogonalizationParameters.OrthogonalizationToSmoothingFactorBoundary, m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor);
 #pragma omp parallel for
-    for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (int n = 0; n < m_mesh2d->GetNumNodes(); n++)
     {
-        if ((m_mesh->m_nodesTypes[n] != 1 && m_mesh->m_nodesTypes[n] != 2) || m_mesh->m_nodesNumEdges[n] < 2)
+        if ((m_mesh2d->m_nodesTypes[n] != 1 && m_mesh2d->m_nodesTypes[n] != 2) || m_mesh2d->m_nodesNumEdges[n] < 2)
         {
             continue;
         }
-        if (m_keepCircumcentersAndMassCenters != false && (m_mesh->m_nodesNumEdges[n] != numNodesInTriangle || m_mesh->m_nodesNumEdges[n] != 1))
+        if (m_keepCircumcentersAndMassCenters != false && (m_mesh2d->m_nodesNumEdges[n] != numNodesInTriangle || m_mesh2d->m_nodesNumEdges[n] != 1))
         {
             continue;
         }
 
-        const double atpfLoc = m_mesh->m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor;
+        const double atpfLoc = m_mesh2d->m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor;
         const double atpf1Loc = 1.0 - atpfLoc;
         int maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
         auto cacheIndex = m_compressedEndNodeIndex[n];
@@ -198,18 +198,18 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             double wwy = 0.0;
 
             // Smoother
-            if (atpf1Loc > 0.0 && m_mesh->m_nodesTypes[n] == 1)
+            if (atpf1Loc > 0.0 && m_mesh2d->m_nodesTypes[n] == 1)
             {
                 wwx = atpf1Loc * m_smoother->GetWeight(n, nn);
                 wwy = atpf1Loc * m_smoother->GetWeight(n, nn);
             }
 
             // Orthogonalizer
-            if (nn < m_mesh->m_nodesNumEdges[n] + 1)
+            if (nn < m_mesh2d->m_nodesNumEdges[n] + 1)
             {
                 wwx += atpfLoc * m_orthogonalizer->GetWeight(n, nn - 1);
                 wwy += atpfLoc * m_orthogonalizer->GetWeight(n, nn - 1);
-                m_compressedNodesNodes[cacheIndex] = m_mesh->m_nodesNodes[n][nn - 1];
+                m_compressedNodesNodes[cacheIndex] = m_mesh2d->m_nodesNodes[n][nn - 1];
             }
             else
             {
@@ -229,13 +229,13 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 void meshkernel::OrthogonalizationAndSmoothing::InnerIteration()
 {
 #pragma omp parallel for
-    for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (int n = 0; n < m_mesh2d->GetNumNodes(); n++)
     {
         UpdateNodeCoordinates(n);
     }
 
     // update mesh node coordinates
-    m_mesh->m_nodes = m_orthogonalCoordinates;
+    m_mesh2d->m_nodes = m_orthogonalCoordinates;
 
     // project on the original net boundary
     SnapMeshToOriginalMeshBoundary();
@@ -254,21 +254,21 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
     Point normalThirdPoint{doubleMissingValue, doubleMissingValue};
 
     // in this case the nearest point is the point itself
-    std::vector<int> nearestPoints(m_mesh->GetNumNodes(), 0);
+    std::vector<int> nearestPoints(m_mesh2d->GetNumNodes(), 0);
     std::iota(nearestPoints.begin(), nearestPoints.end(), 0);
 
-    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (auto n = 0; n < m_mesh2d->GetNumNodes(); n++)
     {
         int nearestPointIndex = nearestPoints[n];
-        if (m_mesh->m_nodesTypes[n] == 2 && m_mesh->m_nodesNumEdges[n] > 0 && m_mesh->m_nodesNumEdges[nearestPointIndex] > 0)
+        if (m_mesh2d->m_nodesTypes[n] == 2 && m_mesh2d->m_nodesNumEdges[n] > 0 && m_mesh2d->m_nodesNumEdges[nearestPointIndex] > 0)
         {
-            Point firstPoint = m_mesh->m_nodes[n];
+            Point firstPoint = m_mesh2d->m_nodes[n];
             if (!firstPoint.IsValid())
             {
                 continue;
             }
 
-            int numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
+            int numEdges = m_mesh2d->m_nodesNumEdges[nearestPointIndex];
             int numNodes = 0;
             int leftNode = -1;
             int rightNode = -1;
@@ -276,13 +276,13 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             Point thirdPoint{doubleMissingValue, doubleMissingValue};
             for (auto nn = 0; nn < numEdges; nn++)
             {
-                auto edgeIndex = m_mesh->m_nodesEdges[nearestPointIndex][nn];
-                if (m_mesh->IsEdgeOnBoundary(edgeIndex))
+                auto edgeIndex = m_mesh2d->m_nodesEdges[nearestPointIndex][nn];
+                if (m_mesh2d->IsEdgeOnBoundary(edgeIndex))
                 {
                     numNodes++;
                     if (numNodes == 1)
                     {
-                        leftNode = m_mesh->m_nodesNodes[n][nn];
+                        leftNode = m_mesh2d->m_nodesNodes[n][nn];
                         if (leftNode == intMissingValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The left node is invalid.");
@@ -291,7 +291,7 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                     }
                     else if (numNodes == 2)
                     {
-                        rightNode = m_mesh->m_nodesNodes[n][nn];
+                        rightNode = m_mesh2d->m_nodesNodes[n][nn];
                         if (rightNode == intMissingValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The right node is invalid.");
@@ -308,23 +308,23 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
             //Project the moved boundary point back onto the closest original edge (either between 0 and 2 or 0 and 3)
             double rl2 = 0.0;
-            const auto dis2 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2, m_mesh->m_projection);
+            const auto dis2 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, normalSecondPoint, rl2, m_mesh2d->m_projection);
 
             double rl3 = 0.0;
-            const auto dis3 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3, m_mesh->m_projection);
+            const auto dis3 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, normalThirdPoint, rl3, m_mesh2d->m_projection);
 
             if (dis2 < dis3)
             {
-                m_mesh->m_nodes[n] = normalSecondPoint;
-                if (rl2 > 0.5 && m_mesh->m_nodesTypes[n] != 3)
+                m_mesh2d->m_nodes[n] = normalSecondPoint;
+                if (rl2 > 0.5 && m_mesh2d->m_nodesTypes[n] != 3)
                 {
                     nearestPoints[n] = leftNode;
                 }
             }
             else
             {
-                m_mesh->m_nodes[n] = normalThirdPoint;
-                if (rl3 > 0.5 && m_mesh->m_nodesTypes[n] != 3)
+                m_mesh2d->m_nodes[n] = normalThirdPoint;
+                if (rl3 > 0.5 && m_mesh2d->m_nodesTypes[n] != 3)
                 {
                     nearestPoints[n] = rightNode;
                 }
@@ -337,7 +337,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
 {
     throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
 
-    if (m_mesh->m_projection == Projection::sphericalAccurate)
+    if (m_mesh2d->m_projection == Projection::sphericalAccurate)
     {
         //TODO : missing implementation
     }
@@ -360,23 +360,23 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
     dx0 = (dx0 + m_compressedRhs[firstCacheIndex]) / increments[0];
     dy0 = (dy0 + m_compressedRhs[firstCacheIndex + 1]) / increments[1];
     constexpr double relaxationFactor = 0.75;
-    if (m_mesh->m_projection == Projection::cartesian || m_mesh->m_projection == Projection::spherical)
+    if (m_mesh2d->m_projection == Projection::cartesian || m_mesh2d->m_projection == Projection::spherical)
     {
-        double x0 = m_mesh->m_nodes[nodeIndex].x + dx0;
-        double y0 = m_mesh->m_nodes[nodeIndex].y + dy0;
+        double x0 = m_mesh2d->m_nodes[nodeIndex].x + dx0;
+        double y0 = m_mesh2d->m_nodes[nodeIndex].y + dy0;
         static constexpr double relaxationFactorCoordinates = 1.0 - relaxationFactor;
 
-        m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh->m_nodes[nodeIndex].x;
-        m_orthogonalCoordinates[nodeIndex].y = relaxationFactor * y0 + relaxationFactorCoordinates * m_mesh->m_nodes[nodeIndex].y;
+        m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh2d->m_nodes[nodeIndex].x;
+        m_orthogonalCoordinates[nodeIndex].y = relaxationFactor * y0 + relaxationFactorCoordinates * m_mesh2d->m_nodes[nodeIndex].y;
     }
-    if (m_mesh->m_projection == Projection::sphericalAccurate)
+    if (m_mesh2d->m_projection == Projection::sphericalAccurate)
     {
         Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};
 
         std::array<double, 3> exxp{0.0, 0.0, 0.0};
         std::array<double, 3> eyyp{0.0, 0.0, 0.0};
         std::array<double, 3> ezzp{0.0, 0.0, 0.0};
-        ComputeThreeBaseComponents(m_mesh->m_nodes[nodeIndex], exxp, eyyp, ezzp);
+        ComputeThreeBaseComponents(m_mesh2d->m_nodes[nodeIndex], exxp, eyyp, ezzp);
 
         //get 3D-coordinates in rotated frame
         Cartesian3DPoint cartesianLocalPoint;
@@ -389,7 +389,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
         transformedCartesianLocalPoint.z = exxp[2] * cartesianLocalPoint.x + eyyp[2] * cartesianLocalPoint.y + ezzp[2] * cartesianLocalPoint.z;
 
         //transform to spherical coordinates
-        Cartesian3DToSpherical(transformedCartesianLocalPoint, m_mesh->m_nodes[nodeIndex].x, m_orthogonalCoordinates[nodeIndex]);
+        Cartesian3DToSpherical(transformedCartesianLocalPoint, m_mesh2d->m_nodes[nodeIndex].x, m_orthogonalCoordinates[nodeIndex]);
     }
 }
 
@@ -404,28 +404,28 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeI
         const auto currentNode = m_compressedNodesNodes[cacheIndex];
         cacheIndex++;
 
-        if (m_mesh->m_projection == Projection::cartesian)
+        if (m_mesh2d->m_projection == Projection::cartesian)
         {
             const double wwxTransformed = wwx;
             const double wwyTransformed = wwy;
-            dx0 = dx0 + wwxTransformed * (m_mesh->m_nodes[currentNode].x - m_mesh->m_nodes[nodeIndex].x);
-            dy0 = dy0 + wwyTransformed * (m_mesh->m_nodes[currentNode].y - m_mesh->m_nodes[nodeIndex].y);
+            dx0 = dx0 + wwxTransformed * (m_mesh2d->m_nodes[currentNode].x - m_mesh2d->m_nodes[nodeIndex].x);
+            dy0 = dy0 + wwyTransformed * (m_mesh2d->m_nodes[currentNode].y - m_mesh2d->m_nodes[nodeIndex].y);
             weightsSum[0] += wwxTransformed;
             weightsSum[1] += wwyTransformed;
         }
 
-        if (m_mesh->m_projection == Projection::spherical)
+        if (m_mesh2d->m_projection == Projection::spherical)
         {
             const double wwxTransformed = wwx * earth_radius * degrad_hp *
-                                          std::cos(0.5 * (m_mesh->m_nodes[nodeIndex].y + m_mesh->m_nodes[currentNode].y) * degrad_hp);
+                                          std::cos(0.5 * (m_mesh2d->m_nodes[nodeIndex].y + m_mesh2d->m_nodes[currentNode].y) * degrad_hp);
             const double wwyTransformed = wwy * earth_radius * degrad_hp;
 
-            dx0 = dx0 + wwxTransformed * (m_mesh->m_nodes[currentNode].x - m_mesh->m_nodes[nodeIndex].x);
-            dy0 = dy0 + wwyTransformed * (m_mesh->m_nodes[currentNode].y - m_mesh->m_nodes[nodeIndex].y);
+            dx0 = dx0 + wwxTransformed * (m_mesh2d->m_nodes[currentNode].x - m_mesh2d->m_nodes[nodeIndex].x);
+            dy0 = dy0 + wwyTransformed * (m_mesh2d->m_nodes[currentNode].y - m_mesh2d->m_nodes[nodeIndex].y);
             weightsSum[0] += wwxTransformed;
             weightsSum[1] += wwyTransformed;
         }
-        if (m_mesh->m_projection == Projection::sphericalAccurate)
+        if (m_mesh2d->m_projection == Projection::sphericalAccurate)
         {
             const double wwxTransformed = wwx * earth_radius * degrad_hp;
             const double wwyTransformed = wwy * earth_radius * degrad_hp;
