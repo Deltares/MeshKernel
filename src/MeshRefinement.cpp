@@ -322,7 +322,7 @@ void meshkernel::MeshRefinement::ConnectHangingNodes()
             }
 
             edgeEndNodeCache[numNonHangingNodes] = m_mesh->FindCommonNode(edgeIndex, secondEdgeIndex);
-            if (edgeEndNodeCache[numNonHangingNodes] == -1)
+            if (edgeEndNodeCache[numNonHangingNodes] == sizetMissingValue)
             {
                 throw AlgorithmError("MeshRefinement::ConnectHangingNodes: Could not find common node.");
             }

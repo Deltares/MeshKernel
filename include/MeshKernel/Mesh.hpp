@@ -224,7 +224,7 @@ namespace meshkernel
         /// This method uses return parameters since the success is evaluated in a hot loop
         /// @param[in] firstEdgeIndex The index of the first edge
         /// @param[in] secondEdgeIndex The index of the second edge
-        /// @return The shared node (-1 if no node is found)
+        /// @return The shared node (sizetMissingValue if no node is found)
         [[nodiscard]] size_t FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const;
 
         /// @brief Compute the lengths of all edges in one go

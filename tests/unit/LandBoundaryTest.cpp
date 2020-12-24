@@ -33,9 +33,9 @@ TEST(LandBoundaries, OneLandBoundary)
     EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[4]);
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[5]);
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }
 
 TEST(LandBoundaries, TwoLandBoundaries)
@@ -70,9 +70,9 @@ TEST(LandBoundaries, TwoLandBoundaries)
     EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[4]);
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[5]);
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }
 
 TEST(LandBoundaries, OneCrossingLandBoundary)
@@ -102,9 +102,9 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[4]);
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[5]);
     EXPECT_EQ(1, landboundaries->m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }
 
 TEST(LandBoundaries, TwoCrossingLandBoundary)
@@ -138,7 +138,7 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
     EXPECT_EQ(3, landboundaries->m_meshNodesLandBoundarySegments[4]);
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[5]);
     EXPECT_EQ(2, landboundaries->m_meshNodesLandBoundarySegments[6]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[7]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[8]);
-    EXPECT_EQ(-1, landboundaries->m_meshNodesLandBoundarySegments[9]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[7]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(meshkernel::sizetMissingValue, landboundaries->m_meshNodesLandBoundarySegments[9]);
 }

@@ -1102,7 +1102,7 @@ void meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
 {
     // first filter the nodes in polygon
     std::vector<Point> filteredNodes(GetNumNodes());
-    std::vector<size_t> originalNodeIndices(GetNumNodes(), -1);
+    std::vector<size_t> originalNodeIndices(GetNumNodes(), sizetMissingValue);
     size_t index = 0;
     for (auto i = 0; i < GetNumNodes(); i++)
     {
@@ -1400,7 +1400,7 @@ size_t meshkernel::Mesh::FindCommonNode(size_t firstEdgeIndex, size_t secondEdge
     {
         return firstEdgeEdgeSecondNode;
     }
-    return -1;
+    return sizetMissingValue;
 }
 
 size_t meshkernel::Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const

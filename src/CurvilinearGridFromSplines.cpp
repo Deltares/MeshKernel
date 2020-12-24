@@ -445,7 +445,7 @@ void meshkernel::CurvilinearGridFromSplines::Iterate(size_t layer)
 
         if (subLayerLeftIndex == sizetMissingValue && subLayerRightIndex == sizetMissingValue)
         {
-            m_validFrontNodes[i] = -1;
+            m_validFrontNodes[i] = sizetMissingValue;
         }
     }
 
@@ -803,11 +803,11 @@ void meshkernel::CurvilinearGridFromSplines::CopyVelocitiesToFront(size_t layerI
             // Check corner nodes
             bool ll = previousIndices[0] == gridPointsIndices[p][0] - 1 &&
                       previousIndices[1] == gridPointsIndices[p][1] &&
-                      m_validFrontNodes[previousIndices[0]] == -1;
+                      m_validFrontNodes[previousIndices[0]] == sizetMissingValue;
 
             bool lr = nextIndices[0] == gridPointsIndices[p][0] + 1 &&
                       nextIndices[1] == gridPointsIndices[p][1] &&
-                      m_validFrontNodes[nextIndices[0]] == -1;
+                      m_validFrontNodes[nextIndices[0]] == sizetMissingValue;
 
             ll = ll || previousIndices[0] == gridPointsIndices[p][0] && previousIndices[1] < gridPointsIndices[p][1];
             lr = lr || nextIndices[0] == gridPointsIndices[p][0] && nextIndices[1] < gridPointsIndices[p][1];
@@ -927,7 +927,7 @@ void meshkernel::CurvilinearGridFromSplines::FindFront(std::vector<std::vector<s
 
             frontGridPoints[numFrontPoints] = {doubleMissingValue, doubleMissingValue};
             gridPointsIndices[numFrontPoints][0] = m;
-            gridPointsIndices[numFrontPoints][1] = -1;
+            gridPointsIndices[numFrontPoints][1] = sizetMissingValue;
             numFrontPoints++;
         }
 
