@@ -220,7 +220,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             m_compressedWeightY[cacheIndex] = wwy;
             cacheIndex++;
         }
-        size_t firstCacheIndex = n * 2;
+        const size_t firstCacheIndex = n * 2;
         m_compressedRhs[firstCacheIndex] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 0);
         m_compressedRhs[firstCacheIndex + 1] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 1);
     }
@@ -275,7 +275,7 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             Point thirdPoint{doubleMissingValue, doubleMissingValue};
             for (auto nn = 0; nn < numEdges; nn++)
             {
-                auto edgeIndex = m_mesh->m_nodesEdges[nearestPointIndex][nn];
+                const auto edgeIndex = m_mesh->m_nodesEdges[nearestPointIndex][nn];
                 if (m_mesh->IsEdgeOnBoundary(edgeIndex))
                 {
                     numNodes++;
@@ -361,8 +361,8 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nod
     constexpr double relaxationFactor = 0.75;
     if (m_mesh->m_projection == Projection::cartesian || m_mesh->m_projection == Projection::spherical)
     {
-        double x0 = m_mesh->m_nodes[nodeIndex].x + dx0;
-        double y0 = m_mesh->m_nodes[nodeIndex].y + dy0;
+        const double x0 = m_mesh->m_nodes[nodeIndex].x + dx0;
+        const double y0 = m_mesh->m_nodes[nodeIndex].y + dy0;
         static constexpr double relaxationFactorCoordinates = 1.0 - relaxationFactor;
 
         m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh->m_nodes[nodeIndex].x;
@@ -370,7 +370,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nod
     }
     if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
-        Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};
+        const Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};
 
         std::array<double, 3> exxp{0.0, 0.0, 0.0};
         std::array<double, 3> eyyp{0.0, 0.0, 0.0};

@@ -31,7 +31,7 @@ void meshkernel::SpatialTrees::RTree::NearestNeighborsOnSquaredDistance(Point no
 {
     const auto searchRadius = std::sqrt(searchRadiusSquared);
 
-    Box2D box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
+    const Box2D box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
     Point2D nodeSought = Point2D(node.x, node.y);
 
     m_queryCache.reserve(QueryVectorCapacity);
@@ -54,7 +54,7 @@ void meshkernel::SpatialTrees::RTree::NearestNeighbors(Point node)
 
     m_queryCache.reserve(QueryVectorCapacity);
     m_queryCache.clear();
-    Point2D nodeSought = Point2D(node.x, node.y);
+    const Point2D nodeSought = Point2D(node.x, node.y);
     m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
 
     if (!m_queryCache.empty())

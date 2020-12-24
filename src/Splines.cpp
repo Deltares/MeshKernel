@@ -99,16 +99,16 @@ bool meshkernel::Splines::GetSplinesIntersection(size_t first,
             double crossProduct;
             double firstRatio;
             double secondRatio;
-            bool areCrossing = AreSegmentsCrossing(m_splineNodes[first][n],
-                                                   m_splineNodes[first][n + 1],
-                                                   m_splineNodes[second][nn],
-                                                   m_splineNodes[second][nn + 1],
-                                                   false,
-                                                   m_projection,
-                                                   intersection,
-                                                   crossProduct,
-                                                   firstRatio,
-                                                   secondRatio);
+            const bool areCrossing = AreSegmentsCrossing(m_splineNodes[first][n],
+                                                         m_splineNodes[first][n + 1],
+                                                         m_splineNodes[second][nn],
+                                                         m_splineNodes[second][nn + 1],
+                                                         false,
+                                                         m_projection,
+                                                         intersection,
+                                                         crossProduct,
+                                                         firstRatio,
+                                                         secondRatio);
 
             if (areCrossing)
             {
@@ -150,8 +150,8 @@ bool meshkernel::Splines::GetSplinesIntersection(size_t first,
 
     // use bisection to find the intersection
     double squaredDistanceBetweenCrossings = std::numeric_limits<double>::max();
-    double maxSquaredDistanceBetweenCrossings = 1e-12;
-    double maxDistanceBetweenNodes = 0.0001;
+    const double maxSquaredDistanceBetweenCrossings = 1e-12;
+    const double maxDistanceBetweenNodes = 0.0001;
     double firstRatioIterations = 1.0;
     double secondRatioIterations = 1.0;
     size_t numIterations = 0;
@@ -302,7 +302,7 @@ double meshkernel::Splines::GetSplineLength(size_t index,
     auto rightPointCoordinateOnSpline = startIndex;
     for (auto p = 0; p < numPoints; ++p)
     {
-        double leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
+        const double leftPointCoordinateOnSpline = rightPointCoordinateOnSpline;
         rightPointCoordinateOnSpline += delta;
         if (rightPointCoordinateOnSpline > endIndex)
         {

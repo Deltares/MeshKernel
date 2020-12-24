@@ -1090,8 +1090,8 @@ void meshkernel::Smoother::SaveNodeTopologyIfNeeded(size_t currentNode,
         isNewTopology = false;
         for (auto n = 1; n < numConnectedNodes; n++)
         {
-            double thetaLoc = std::atan2(m_etaCache[n], m_xiCache[n]);
-            double thetaTopology = std::atan2(m_topologyEta[topo][n], m_topologyXi[topo][n]);
+            const double thetaLoc = std::atan2(m_etaCache[n], m_xiCache[n]);
+            const double thetaTopology = std::atan2(m_topologyEta[topo][n], m_topologyXi[topo][n]);
             if (std::abs(thetaLoc - thetaTopology) > m_thetaTolerance)
             {
                 isNewTopology = true;

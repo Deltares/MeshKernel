@@ -342,8 +342,8 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(size_t edge,
     }
 
     //  compute the change in functional
-    auto n1 = static_cast<int>(m_mesh->m_nodesNumEdges[firstNode]) - static_cast<int>(OptimalNumberOfConnectedNodes(firstNode));
-    auto n2 = static_cast<int>(m_mesh->m_nodesNumEdges[secondNode]) - static_cast<int>(OptimalNumberOfConnectedNodes(secondNode));
+    const auto n1 = static_cast<int>(m_mesh->m_nodesNumEdges[firstNode]) - static_cast<int>(OptimalNumberOfConnectedNodes(firstNode));
+    const auto n2 = static_cast<int>(m_mesh->m_nodesNumEdges[secondNode]) - static_cast<int>(OptimalNumberOfConnectedNodes(secondNode));
     auto nL = static_cast<int>(m_mesh->m_nodesNumEdges[nodeLeft]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeLeft));
     auto nR = static_cast<int>(m_mesh->m_nodesNumEdges[nodeRight]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeRight));
 

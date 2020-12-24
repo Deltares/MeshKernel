@@ -196,7 +196,7 @@ namespace meshkernel
                 snappedToLastPoint = false;
             }
             double distanceFromLastNode = pointLengthCoordinate - nodeLengthCoordinate[nodeIndex];
-            double factor = distanceFromLastNode / edgeLengths[nodeIndex];
+            const double factor = distanceFromLastNode / edgeLengths[nodeIndex];
             Point p;
             if (IsEqual(factor, 1.0))
             {
@@ -236,8 +236,8 @@ namespace meshkernel
         {
             if (n < GetNumNodes() - 1)
             {
-                auto dx = GetDx(m_nodes[n], m_nodes[n + 1], m_projection);
-                auto dy = GetDy(m_nodes[n], m_nodes[n + 1], m_projection);
+                const auto dx = GetDx(m_nodes[n], m_nodes[n + 1], m_projection);
+                const auto dy = GetDy(m_nodes[n], m_nodes[n + 1], m_projection);
                 const auto nodeDistance = std::sqrt(dx * dx + dy * dy);
                 dxNormal = -dy / nodeDistance;
                 dyNormal = dx / nodeDistance;
@@ -254,7 +254,7 @@ namespace meshkernel
                 dyNormalPreviousEdge = dyNormal;
             }
 
-            double factor = 1.0 / (1.0 + dxNormalPreviousEdge * dxNormal + dyNormalPreviousEdge * dyNormal);
+            const double factor = 1.0 / (1.0 + dxNormalPreviousEdge * dxNormal + dyNormalPreviousEdge * dyNormal);
             normalVectors[n].x = factor * (dxNormalPreviousEdge + dxNormal);
             normalVectors[n].y = factor * (dyNormalPreviousEdge + dyNormal);
 
@@ -273,7 +273,7 @@ namespace meshkernel
         for (auto i = 0; i < GetNumNodes(); i++)
         {
             auto dx = normalVectors[i].x * distance;
-            auto dy = normalVectors[i].y * distance;
+            const auto dy = normalVectors[i].y * distance;
             if (m_projection == Projection::spherical)
             {
                 dx = dx / std::cos((m_nodes[i].y + 0.5 * dy) * degrad_hp);

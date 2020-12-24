@@ -68,8 +68,8 @@ namespace meshkernel
                 continue;
             }
 
-            bool firstPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n], 0);
-            bool secondPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n + 1], 0);
+            const bool firstPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n], 0);
+            const bool secondPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n + 1], 0);
 
             if (firstPointInPolygon || secondPointInPolygon)
             {
@@ -78,7 +78,7 @@ namespace meshkernel
         }
 
         // mesh boundary to polygon
-        std::vector<Point> polygonNodes;
+        const std::vector<Point> polygonNodes;
         const auto meshBoundaryPolygon = m_mesh->MeshBoundaryToPolygon(polygonNodes);
 
         // mask all landboundary nodes close to the mesh boundary (distanceFromMeshNode < minDistance)
@@ -142,7 +142,7 @@ namespace meshkernel
             const auto endSegmentIndex = m_segmentIndices[i][1];
             if (endSegmentIndex - startSegmentIndex > 1)
             {
-                auto split = size_t(startSegmentIndex + (endSegmentIndex - startSegmentIndex) / 2);
+                const auto split = size_t(startSegmentIndex + (endSegmentIndex - startSegmentIndex) / 2);
                 m_segmentIndices[i][1] = split;
                 m_segmentIndices.emplace_back(std::initializer_list<size_t>{split, endSegmentIndex});
             }
@@ -411,8 +411,8 @@ namespace meshkernel
             return;
         }
 
-        auto startLandBoundaryIndex = m_segmentIndices[landBoundarySegment][0];
-        auto endLandBoundaryIndex = m_segmentIndices[landBoundarySegment][1];
+        const auto startLandBoundaryIndex = m_segmentIndices[landBoundarySegment][0];
+        const auto endLandBoundaryIndex = m_segmentIndices[landBoundarySegment][1];
 
         if (startLandBoundaryIndex >= m_nodes.size() || startLandBoundaryIndex >= endLandBoundaryIndex)
             throw std::invalid_argument("LandBoundaries::MakePath: Invalid boundary index.");
@@ -580,7 +580,7 @@ namespace meshkernel
         {
             for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
             {
-                auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
+                const auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
 
                 if (numFaceNodes == 0)
                     continue;
@@ -665,7 +665,7 @@ namespace meshkernel
         {
             if (m_nodeMask[n] != sizetMissingValue)
             {
-                bool inPolygon = m_polygons->IsPointInPolygon(m_mesh->m_nodes[n], 0);
+                const bool inPolygon = m_polygons->IsPointInPolygon(m_mesh->m_nodes[n], 0);
                 if (!inPolygon)
                 {
                     m_nodeMask[n] = sizetMissingValue;
@@ -765,15 +765,15 @@ namespace meshkernel
                             // visited edge
                             m_edgeMask[edgeOtherFace] = 0;
                             size_t landBoundaryNode = 0;
-                            bool isClose = IsMeshEdgeCloseToLandBoundaries(edgeOtherFace,
-                                                                           startNodeLandBoundaryIndex,
-                                                                           endNodeLandBoundaryindex,
-                                                                           meshBoundOnly,
-                                                                           leftIndex,
-                                                                           rightIndex,
-                                                                           leftEdgeRatio,
-                                                                           rightEdgeRatio,
-                                                                           landBoundaryNode);
+                            const bool isClose = IsMeshEdgeCloseToLandBoundaries(edgeOtherFace,
+                                                                                 startNodeLandBoundaryIndex,
+                                                                                 endNodeLandBoundaryindex,
+                                                                                 meshBoundOnly,
+                                                                                 leftIndex,
+                                                                                 rightIndex,
+                                                                                 leftEdgeRatio,
+                                                                                 rightEdgeRatio,
+                                                                                 landBoundaryNode);
 
                             if (isClose)
                             {
@@ -966,8 +966,8 @@ namespace meshkernel
                 m_nodes[rightIndex].x + rightEdgeRatio * (m_nodes[nextRightIndex].x - m_nodes[rightIndex].x),
                 m_nodes[rightIndex].y + rightEdgeRatio * (m_nodes[nextRightIndex].y - m_nodes[rightIndex].y)};
 
-        bool isStartPointInsideAPolygon = m_polygons->IsPointInPolygon(startPoint, 0);
-        bool isEndPointInsideAPolygon = m_polygons->IsPointInPolygon(endPoint, 0);
+        const bool isStartPointInsideAPolygon = m_polygons->IsPointInPolygon(startPoint, 0);
+        const bool isEndPointInsideAPolygon = m_polygons->IsPointInPolygon(endPoint, 0);
 
         if (!isStartPointInsideAPolygon)
         {
@@ -1159,8 +1159,8 @@ namespace meshkernel
                 if (meshBoundOnly && !m_mesh->IsEdgeOnBoundary(edgeIndex))
                     maximumDistance = 1e6 * maximumDistance;
 
-                double edgeLength = ComputeDistance(currentNode, neighbouringNode, m_mesh->m_projection);
-                double correctedDistance = nodeDistances[currentNodeIndex] + edgeLength * maximumDistance;
+                const double edgeLength = ComputeDistance(currentNode, neighbouringNode, m_mesh->m_projection);
+                const double correctedDistance = nodeDistances[currentNodeIndex] + edgeLength * maximumDistance;
 
                 if (correctedDistance < nodeDistances[neighbouringNodeIndex])
                 {
