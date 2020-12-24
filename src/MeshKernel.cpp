@@ -52,11 +52,8 @@
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Contacts.hpp>
-#include <MeshKernel/Mesh1DGeometry.hpp>
-#include <MeshKernel/Mesh1DDimensions.hpp>
-#include <MeshKernel/Network1DGeometry.hpp>
-#include <MeshKernel/Network1DDimensions.hpp>
-#include <MeshKernel/ContactsGeometry.hpp>
+#include <MeshKernel/Mesh1D_api.hpp>
+#include <MeshKernel/Contacts_api.hpp>
 #include <MeshKernel/ContactsDimensions.hpp>
 
 namespace meshkernelapi
@@ -1853,10 +1850,7 @@ namespace meshkernelapi
     // (ggeo_convert_1d_arrays_dll )
 
     MKERNEL_API int mkernel_set_1d_state(int meshKernelId,
-                                         const Mesh1DGeometry& networkUgrid,
-                                         const Mesh1DDimensions& mesh1dUgrid,
-                                         const Network1DGeometry& network1DGeometry,
-                                         const Network1DDimensions& network1DDimensions,
+                                         const Mesh1D_api& mesh1d,
                                          std::vector<int> nodemask,
                                          bool isGeographic)
     {
@@ -1867,7 +1861,10 @@ namespace meshkernelapi
 
         // spherical or cartesian
 
-        mesh1dInstances[meshKernelId] = std::make_shared<meshkernel::Mesh1D>(networkUgrid, mesh1dUgrid, network1DGeometry, network1DDimensions, nodemask, static_cast<meshkernel::Projection>(isGeographic));
+        const auto edges = meshkernel::ConvertToEdgeNodesVector(mesh1d.numedge, mesh1d.edge_nodes);
+        const auto nodes = meshkernel::ConvertToNodesVector(mesh1d.numnode, mesh1d.nodex, mesh1d.nodey);
+
+        mesh1dInstances[meshKernelId] = std::make_shared<meshkernel::Mesh1D>(edges, nodes, nodemask, static_cast<meshkernel::Projection>(isGeographic));
 
         return 0;
     }
@@ -1923,7 +1920,7 @@ namespace meshkernelapi
     }
 
     // (ggeo_get_links_dll)
-    MKERNEL_API int mkernel_get_contacts(int contactsId, ContactsGeometry& meshGeometryDimensions, ContactsDimensions& meshGeometry)
+    MKERNEL_API int mkernel_get_contacts(int contactsId, Contacts_api& meshGeometryDimensions, ContactsDimensions& meshGeometry)
     {
         return 0;
     }

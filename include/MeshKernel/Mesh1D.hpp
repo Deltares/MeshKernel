@@ -1,9 +1,5 @@
 #pragma once
 #include <vector>
-#include <MeshKernel/Mesh1DGeometry.hpp>
-#include <MeshKernel/Mesh1DDimensions.hpp>
-#include <MeshKernel/Network1DGeometry.hpp>
-#include <MeshKernel/Network1DDimensions.hpp>
 #include <MeshKernel/Entities.hpp>
 
 namespace meshkernel
@@ -16,10 +12,8 @@ namespace meshkernel
         /// @brief Constructs the 1d mesh from ad UGrid network and mesh (ggeo_convert_1d_arrays_dll)
         /// @param network
         /// @param mesh1dUgrid
-        Mesh1D(const meshkernelapi::Mesh1DGeometry& network,
-               const meshkernelapi::Mesh1DDimensions& mesh1dUgrid,
-               const meshkernelapi::Network1DGeometry& network1DGeometry,
-               const meshkernelapi::Network1DDimensions& network1DDimensions,
+        Mesh1D(const std::vector<Edge>& edges,
+               const std::vector<Point>& nodes,
                const std::vector<int>& nodeMask,
                Projection projection){
             // Conversion operations

@@ -9,15 +9,15 @@
   <Class Name="meshkernel::Mesh1D">
     <Position X="10" Y="1.75" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>AAQCAAAAAAAABAAAACEAABAAIAAAAAEAAAAAAAAAAQA=</HashCode>
+      <HashCode>AAQCAAAAAAAAAAAAACEAABAAIAAAAAEAAAAAAAAAAQA=</HashCode>
       <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-249_investigate_1d2d\MeshKernel\include\MeshKernel\Mesh1D.hpp</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="meshkernel::Contacts">
     <Position X="13.75" Y="1.75" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>BAAAAAAAAggAAAAACAAAAEAAAAQACAAEAAAAAABgAAA=</HashCode>
-      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-249_investigate_1d2d\MeshKernel\include\MeshKernel\Contacts.hpp</FileName>
+      <HashCode>AAAAAAAAAggAAAAACAAAAEAAAAQACAAEAAAAAABgAAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-249_investigate_1d2d\MeshKernel\include\MeshKernel\ContactGenerator.hpp</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="meshkernel::Mesh" Collapsed="true">

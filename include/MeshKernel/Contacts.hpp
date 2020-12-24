@@ -27,30 +27,30 @@ namespace meshkernel
         /// @param mesh1d
         /// @param mesh
         /// @return
-        void ComputeSingleConnections(const Mesh1D& mesh1d, const Mesh& mesh){};
+        void ComputeSingleConnections(){};
 
         /// @brief  Computes 1D-2D connections, where a single 1d point is connected to multiple 2d face mass centers (ggeo_make1D2Dembeddedlinks_dll)
         /// @param mesh1d
         /// @param mesh
-        void ComputeMultipleConnections(const Mesh1D& mesh1d, const Mesh& mesh){};
+        void ComputeMultipleConnections(){};
 
         /// @brief Computes 1D-2D connections, where a 1d point is connected to the closest 2d face in polygons (ggeo_make1D2Droofgutterpipes_dll)
         /// @param mesh1d
         /// @param mesh
         /// @param polygons
-        void ComputeConnectionsWithPolygons(const Mesh1D& mesh1d, const Mesh& mesh, const Polygons& polygons){};
+        void ComputeConnectionsWithPolygons(const Polygons& polygons){};
 
         /// @brief Computes 1D-2D connections, where 1d nodes are connected to the 2d faces mass centers containing the input points (ggeo_make1D2Dstreetinletpipes_dll)
         /// @param mesh1d
         /// @param mesh
         /// @return
-        void ComputeConnectionsWithPoints(const Mesh1D& mesh1d, const Mesh& mesh, const std::vector<Point>& points){};
+        void ComputeConnectionsWithPoints(const std::vector<Point>& points){};
 
         /// @brief Computes 1D-2D connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         /// @param mesh1d
         /// @param mesh
         /// @return
-        void ComputeBoundaryConnections(const Mesh1D& mesh1d, const Mesh& mesh){};
+        void ComputeBoundaryConnections(){};
 
     private:
         std::shared_ptr<Mesh> m_mesh;
