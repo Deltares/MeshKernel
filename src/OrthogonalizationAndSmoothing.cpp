@@ -220,7 +220,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             m_compressedWeightY[cacheIndex] = wwy;
             cacheIndex++;
         }
-        int firstCacheIndex = n * 2;
+        size_t firstCacheIndex = n * 2;
         m_compressedRhs[firstCacheIndex] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 0);
         m_compressedRhs[firstCacheIndex + 1] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 1);
     }

@@ -105,7 +105,7 @@ namespace meshkernel
         /// @param numEdgesToBeRefined The computed number of edges to refined
         void ComputeEdgesRefinementMaskFromSamples(size_t face,
                                                    std::vector<size_t>& refineEdgeCache,
-                                                   int& numEdgesToBeRefined);
+                                                   size_t& numEdgesToBeRefined);
 
         /// Computes the edge refinement mask (comp_jalink)
         void ComputeEdgesRefinementMask();

@@ -162,7 +162,7 @@ void meshkernel::MeshRefinement::Compute()
 
         ComputeIfFaceShouldBeSplit();
 
-        int numFacesToRefine = 0;
+        size_t numFacesToRefine = 0;
         for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
         {
             if (m_faceMask[f] != 0)
@@ -734,7 +734,7 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
         FindHangingNodes(f, numHangingEdges, numHangingNodes, numEdgesToRefine);
 
         std::fill(refineEdgeCache.begin(), refineEdgeCache.end(), 0);
-        int numEdgesToBeRefined = 0;
+        size_t numEdgesToBeRefined = 0;
         ComputeEdgesRefinementMaskFromSamples(f, refineEdgeCache, numEdgesToBeRefined);
 
         m_faceMask[f] = 0;
@@ -835,7 +835,7 @@ void meshkernel::MeshRefinement::FindHangingNodes(size_t face,
 
 void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
                                                                        std::vector<size_t>& refineEdgeCache,
-                                                                       int& numEdgesToBeRefined)
+                                                                       size_t& numEdgesToBeRefined)
 {
     numEdgesToBeRefined = 0;
     if (m_refinementType == RefinementType::RidgeRefinement)
@@ -925,8 +925,8 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t fa
 void meshkernel::MeshRefinement::ComputeEdgesRefinementMask()
 {
     bool repeat = true;
-    int iter = 0;
-    const int numMaxIterations = 6;
+    size_t iter = 0;
+    const size_t numMaxIterations = 6;
     std::vector<int> isQuadEdge(numNodesQuads);
     std::vector<size_t> numOfEdges(maximumNumberOfEdgesPerFace);
 
@@ -1073,9 +1073,9 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMask()
 
 void meshkernel::MeshRefinement::ComputeIfFaceShouldBeSplit()
 {
-    const int maxiter = 1000;
-    int num = 1;
-    int iter = 0;
+    const size_t maxiter = 1000;
+    size_t num = 1;
+    size_t iter = 0;
     while (num != 0)
     {
         iter++;

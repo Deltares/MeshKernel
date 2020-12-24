@@ -109,7 +109,7 @@ void meshkernel::TriangulationInterpolation::Compute()
 
         // search for the triangle where the location is included
         bool isInTriangle = false;
-        int numFacesSearched = 0;
+        size_t numFacesSearched = 0;
         while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces && triangle != sizetMissingValue && triangle < triangulationWrapper.m_numFaces)
         {
 

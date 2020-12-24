@@ -237,7 +237,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
         return;
     }
 
-    int numValidSamplesInPolygon = 0;
+    size_t numValidSamplesInPolygon = 0;
     double wall = 0.0;
     bool firstValidSampleFound = false;
     double closestSquaredDistance = std::numeric_limits<double>::max();

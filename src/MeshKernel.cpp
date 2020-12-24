@@ -199,7 +199,7 @@ namespace meshkernelapi
     {
         meshKernelId = int(meshInstances.size());
         meshInstances.emplace_back(std::make_shared<meshkernel::Mesh>());
-        return 0;
+        return Success;
     };
 
     MKERNEL_API int mkernel_deallocate_state(int meshKernelId)
@@ -1674,9 +1674,8 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_get_error(const char*& error_message)
     {
-        int exitCode = Success;
         error_message = exceptionMessage;
-        return exitCode;
+        return Success;
     }
 
     MKERNEL_API int mkernel_get_obtuse_triangles_count(int meshKernelId, int& numObtuseTriangles)
