@@ -81,7 +81,6 @@ namespace meshkernelapi
 
         /// @brief Sets the grid state
         /// @param[in] meshKernelId Id of the grid state
-        /// @param[in] meshGeometryDimensions Mesh dimensions
         /// @param[in] mesh2D Mesh data
         /// @param[in] isGeographic Cartesian (false) or spherical (true) mesh
         /// @returns Error code
