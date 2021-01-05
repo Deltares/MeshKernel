@@ -21,10 +21,19 @@ configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 # Doxygen won't create this for us
 file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
 
+# meshkernel headers
+file(GLOB MESHKERNEL_HEADER_LIST CONFIGURE_DEPENDS
+     "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.hpp")
+
+# meshkernelapi headers
+file(GLOB MESHKERNELAPI_HEADER_LIST CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/include/MeshKernelApi/*.hpp")
+
+
 # Only regenerate Doxygen when the Doxyfile or public headers change
 add_custom_command(
   OUTPUT ${DOXYGEN_INDEX_FILE}
-  DEPENDS ${HEADER_LIST} ${DOXYGEN_MAIN_PAGE}
+  DEPENDS ${MESHKERNEL_HEADER_LIST} ${MESHKERNELAPI_HEADER_LIST} ${DOXYGEN_MAIN_PAGE}
   COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/include"
   MAIN_DEPENDENCY ${DOXYFILE_OUT}

@@ -40,7 +40,6 @@ namespace meshkernel
     // Forward declarations
     class CurvilinearGrid;
     class Polygons;
-    class MakeMeshParameters;
     class GeometryList;
 
     /// @brief A class describing an unstructured mesh
