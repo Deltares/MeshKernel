@@ -88,9 +88,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5a9eef522c789994d5afdf6cc5cf8b2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a5a9eef522c789994d5afdf6cc5cf8b2b">NearestNeighbors</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> node)</td></tr>
 <tr class="memdesc:a5a9eef522c789994d5afdf6cc5cf8b2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines the nearest neighbor.  <a href="#a5a9eef522c789994d5afdf6cc5cf8b2b">More...</a><br /></td></tr>
 <tr class="separator:a5a9eef522c789994d5afdf6cc5cf8b2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04a6355457db3a09bc8e9711c06042bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a04a6355457db3a09bc8e9711c06042bd">DeleteNode</a> (int position)</td></tr>
-<tr class="memdesc:a04a6355457db3a09bc8e9711c06042bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a node.  <a href="#a04a6355457db3a09bc8e9711c06042bd">More...</a><br /></td></tr>
-<tr class="separator:a04a6355457db3a09bc8e9711c06042bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3924e10cda6de78cf8b67670c6717457"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a3924e10cda6de78cf8b67670c6717457">DeleteNode</a> (size_t position)</td></tr>
+<tr class="memdesc:a3924e10cda6de78cf8b67670c6717457"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a node.  <a href="#a3924e10cda6de78cf8b67670c6717457">More...</a><br /></td></tr>
+<tr class="separator:a3924e10cda6de78cf8b67670c6717457"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55afd29dbf597fbb594565d8a08dee9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a55afd29dbf597fbb594565d8a08dee9b">InsertNode</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;node)</td></tr>
 <tr class="memdesc:a55afd29dbf597fbb594565d8a08dee9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a node.  <a href="#a55afd29dbf597fbb594565d8a08dee9b">More...</a><br /></td></tr>
 <tr class="separator:a55afd29dbf597fbb594565d8a08dee9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -106,10 +106,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a230061a307dd7879620148e8e9aaeddc">GetQueryResultSize</a> () const</td></tr>
 <tr class="memdesc:a230061a307dd7879620148e8e9aaeddc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size of the query. <br /></td></tr>
 <tr class="separator:a230061a307dd7879620148e8e9aaeddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf8f460b854dd4dfaf6fbcffdbbe3e2a"><td class="memItemLeft" align="right" valign="top"><a id="acf8f460b854dd4dfaf6fbcffdbbe3e2a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#acf8f460b854dd4dfaf6fbcffdbbe3e2a">GetQuerySampleIndex</a> (int index) const</td></tr>
-<tr class="memdesc:acf8f460b854dd4dfaf6fbcffdbbe3e2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the index of a sample in the query. <br /></td></tr>
-<tr class="separator:acf8f460b854dd4dfaf6fbcffdbbe3e2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a028c1ffc1cb35abbbdf5ad598bfe5fda"><td class="memItemLeft" align="right" valign="top"><a id="a028c1ffc1cb35abbbdf5ad598bfe5fda"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a028c1ffc1cb35abbbdf5ad598bfe5fda">GetQuerySampleIndex</a> (size_t index) const</td></tr>
+<tr class="memdesc:a028c1ffc1cb35abbbdf5ad598bfe5fda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the index of a sample in the query. <br /></td></tr>
+<tr class="separator:a028c1ffc1cb35abbbdf5ad598bfe5fda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class wrapping the boost::geometry::index::rtree code. </p>
@@ -151,8 +151,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a04a6355457db3a09bc8e9711c06042bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a04a6355457db3a09bc8e9711c06042bd">&#9670;&nbsp;</a></span>DeleteNode()</h2>
+<a id="a3924e10cda6de78cf8b67670c6717457"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3924e10cda6de78cf8b67670c6717457">&#9670;&nbsp;</a></span>DeleteNode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -160,7 +160,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">void meshkernel::SpatialTrees::RTree::DeleteNode </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>position</em></td><td>)</td>
           <td></td>
         </tr>

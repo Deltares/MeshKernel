@@ -1,12 +1,12 @@
 var searchData=
 [
   ['makeallgridlines',['MakeAllGridLines',['../classmeshkernel_1_1_curvilinear_grid_from_splines.html#abd7dde5376c642e1a740385d664d2805',1,'meshkernel::CurvilinearGridFromSplines']]],
-  ['makedualface',['MakeDualFace',['../classmeshkernel_1_1_mesh.html#a582e0effa07a441574091c732a4b0aca',1,'meshkernel::Mesh']]],
+  ['makedualface',['MakeDualFace',['../classmeshkernel_1_1_mesh.html#acd0c32dba67a332e85cdb55a3a4af925',1,'meshkernel::Mesh']]],
   ['makemesh',['MakeMesh',['../classmeshkernel_1_1_mesh.html#a9515c6b21c6cb8c24539f0c8e5832f2f',1,'meshkernel::Mesh']]],
   ['maskfaceedgesinpolygon',['MaskFaceEdgesInPolygon',['../classmeshkernel_1_1_mesh.html#ac0d2bf0e540f33413ca4ffeddcb3bcf6',1,'meshkernel::Mesh']]],
   ['masknodesinpolygons',['MaskNodesInPolygons',['../classmeshkernel_1_1_mesh.html#a8c0a18e4744ec1f89a6bdc85ae680257',1,'meshkernel::Mesh']]],
   ['mergenodesinpolygon',['MergeNodesInPolygon',['../classmeshkernel_1_1_mesh.html#a1a2011f14c17b72a25a54938fa8070b5',1,'meshkernel::Mesh']]],
-  ['mergetwonodes',['MergeTwoNodes',['../classmeshkernel_1_1_mesh.html#ae84cb421bd6457f4f98bd76fd625c59f',1,'meshkernel::Mesh']]],
+  ['mergetwonodes',['MergeTwoNodes',['../classmeshkernel_1_1_mesh.html#a0c88b44c65b3484ee25587b789dbc562',1,'meshkernel::Mesh']]],
   ['mesh',['Mesh',['../classmeshkernel_1_1_mesh.html#a05bc04f7af254a40598f8b9627da6e60',1,'meshkernel::Mesh::Mesh()=default'],['../classmeshkernel_1_1_mesh.html#ad46670c3e9aba963b2f11f8c3cd5066b',1,'meshkernel::Mesh::Mesh(const CurvilinearGrid &amp;curvilinearGrid, Projection projection)'],['../classmeshkernel_1_1_mesh.html#a3a118594d2abb4111fc5c6884c02b936',1,'meshkernel::Mesh::Mesh(const std::vector&lt; Point &gt; &amp;nodes, const Polygons &amp;polygons, Projection projection)'],['../classmeshkernel_1_1_mesh.html#a018c230088c0f6088426146c5b648d68',1,'meshkernel::Mesh::Mesh(const std::vector&lt; Edge &gt; &amp;edges, const std::vector&lt; Point &gt; &amp;nodes, Projection projection, AdministrationOptions administration=AdministrationOptions::AdministrateMeshEdgesAndFaces)']]],
   ['meshboundarytopolygon',['MeshBoundaryToPolygon',['../classmeshkernel_1_1_mesh.html#a7a8425b0b5137f9bf2766ea49dca56a4',1,'meshkernel::Mesh']]],
   ['meshgeometryerror',['MeshGeometryError',['../classmeshkernel_1_1_mesh_geometry_error.html#a0f2d644c4312b7c93f2b24105c642373',1,'meshkernel::MeshGeometryError::MeshGeometryError()'],['../classmeshkernel_1_1_mesh_geometry_error.html#ada8cb0e6cb3532c7d46f517c4c79be6a',1,'meshkernel::MeshGeometryError::MeshGeometryError(const std::string &amp;msg, size_t invalidIndex, MeshLocations location)'],['../classmeshkernel_1_1_mesh_geometry_error.html#a098f959d2b25efd5f7d08640c47ca3b4',1,'meshkernel::MeshGeometryError::MeshGeometryError(const char *msg, size_t invalidIndex, MeshLocations location)']]],
@@ -71,5 +71,5 @@ var searchData=
   ['mkernel_5frefine_5fpolygon',['mkernel_refine_polygon',['../namespacemeshkernelapi.html#a757cb24349b7a6c3df27e64a08ece938',1,'meshkernelapi']]],
   ['mkernel_5frefine_5fpolygon_5fcount',['mkernel_refine_polygon_count',['../namespacemeshkernelapi.html#acb4e253c6e745b0cabd395b4d03a226a',1,'meshkernelapi']]],
   ['mkernel_5fset_5fstate',['mkernel_set_state',['../namespacemeshkernelapi.html#a9fb610cce246d111d2a8d33ba4c330e3',1,'meshkernelapi']]],
-  ['movenode',['MoveNode',['../classmeshkernel_1_1_mesh.html#a11655e4a008cc7b92ac848e293e003eb',1,'meshkernel::Mesh']]]
+  ['movenode',['MoveNode',['../classmeshkernel_1_1_mesh.html#ae0a10c1455f2f06a48a16be08ce25dd8',1,'meshkernel::Mesh']]]
 ];

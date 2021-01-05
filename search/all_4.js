@@ -1,7 +1,7 @@
 var searchData=
 [
   ['earth_5fradius',['earth_radius',['../namespacemeshkernel.html#a47152cf01868e73135fa5c671c8050cf',1,'meshkernel']]],
-  ['edge',['Edge',['../namespacemeshkernel.html#a85847d7b9e4e11fdc96057fb00101606',1,'meshkernel']]],
+  ['edge',['Edge',['../namespacemeshkernel.html#a7fda31b0d2488c53f4b00c5d2e764fb7',1,'meshkernel']]],
   ['edge_5ffaces',['edge_faces',['../structmeshkernelapi_1_1_mesh_geometry.html#a6c980376b7dcaac4d2c772516ab2cd14',1,'meshkernelapi::MeshGeometry']]],
   ['edge_5fnodes',['edge_nodes',['../structmeshkernelapi_1_1_mesh_geometry.html#ae473cc0431aa547edbadb2c87da4a231',1,'meshkernelapi::MeshGeometry']]],
   ['edgex',['edgex',['../structmeshkernelapi_1_1_mesh_geometry.html#acbb04635feaf62af958d3125aa6ccac7',1,'meshkernelapi::MeshGeometry']]],

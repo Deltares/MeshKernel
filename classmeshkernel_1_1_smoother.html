@@ -85,15 +85,15 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_smoother.html#aec9e87d6264f384c2d870c4e51000f99">Compute</a> ()</td></tr>
 <tr class="memdesc:aec9e87d6264f384c2d870c4e51000f99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the smoother weights. <br /></td></tr>
 <tr class="separator:aec9e87d6264f384c2d870c4e51000f99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b50e727b4dbb716b4f358a5b95c0407"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_smoother.html#a7b50e727b4dbb716b4f358a5b95c0407">GetWeight</a> (int node, int connectedNode)</td></tr>
-<tr class="memdesc:a7b50e727b4dbb716b4f358a5b95c0407"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the weight for a certain node and connected node.  <a href="#a7b50e727b4dbb716b4f358a5b95c0407">More...</a><br /></td></tr>
-<tr class="separator:a7b50e727b4dbb716b4f358a5b95c0407"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f48b0356d6d060c474ae8a13b268365"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_smoother.html#a0f48b0356d6d060c474ae8a13b268365">GetConnectedNodeIndex</a> (int node, int connectedNode)</td></tr>
-<tr class="memdesc:a0f48b0356d6d060c474ae8a13b268365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the connected node as assigned by the smoother administration.  <a href="#a0f48b0356d6d060c474ae8a13b268365">More...</a><br /></td></tr>
-<tr class="separator:a0f48b0356d6d060c474ae8a13b268365"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8373d00dd1c5baa8b849cd8cc13befe"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_smoother.html#ab8373d00dd1c5baa8b849cd8cc13befe">GetNumConnectedNodes</a> (int node)</td></tr>
-<tr class="memdesc:ab8373d00dd1c5baa8b849cd8cc13befe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of connected nodes.  <a href="#ab8373d00dd1c5baa8b849cd8cc13befe">More...</a><br /></td></tr>
-<tr class="separator:ab8373d00dd1c5baa8b849cd8cc13befe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9757819524c86e1f5c817f15cfeeb939"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_smoother.html#a9757819524c86e1f5c817f15cfeeb939">GetWeight</a> (size_t node, int connectedNode)</td></tr>
+<tr class="memdesc:a9757819524c86e1f5c817f15cfeeb939"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the weight for a certain node and connected node.  <a href="#a9757819524c86e1f5c817f15cfeeb939">More...</a><br /></td></tr>
+<tr class="separator:a9757819524c86e1f5c817f15cfeeb939"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add1756cf58ed932305e36726467d2c31"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_smoother.html#add1756cf58ed932305e36726467d2c31">GetConnectedNodeIndex</a> (size_t node, int connectedNode)</td></tr>
+<tr class="memdesc:add1756cf58ed932305e36726467d2c31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the connected node as assigned by the smoother administration.  <a href="#add1756cf58ed932305e36726467d2c31">More...</a><br /></td></tr>
+<tr class="separator:add1756cf58ed932305e36726467d2c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a534459c599192f562349a7ef2c1845d7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_smoother.html#a534459c599192f562349a7ef2c1845d7">GetNumConnectedNodes</a> (size_t node)</td></tr>
+<tr class="memdesc:a534459c599192f562349a7ef2c1845d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of connected nodes.  <a href="#a534459c599192f562349a7ef2c1845d7">More...</a><br /></td></tr>
+<tr class="separator:a534459c599192f562349a7ef2c1845d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or area). </p>
@@ -128,8 +128,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0f48b0356d6d060c474ae8a13b268365"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0f48b0356d6d060c474ae8a13b268365">&#9670;&nbsp;</a></span>GetConnectedNodeIndex()</h2>
+<a id="add1756cf58ed932305e36726467d2c31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add1756cf58ed932305e36726467d2c31">&#9670;&nbsp;</a></span>GetConnectedNodeIndex()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -140,7 +140,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">auto meshkernel::Smoother::GetConnectedNodeIndex </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>node</em>, </td>
         </tr>
         <tr>
@@ -167,8 +167,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="ab8373d00dd1c5baa8b849cd8cc13befe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8373d00dd1c5baa8b849cd8cc13befe">&#9670;&nbsp;</a></span>GetNumConnectedNodes()</h2>
+<a id="a534459c599192f562349a7ef2c1845d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a534459c599192f562349a7ef2c1845d7">&#9670;&nbsp;</a></span>GetNumConnectedNodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -179,7 +179,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">auto meshkernel::Smoother::GetNumConnectedNodes </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
           <td></td>
         </tr>
@@ -196,8 +196,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a7b50e727b4dbb716b4f358a5b95c0407"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b50e727b4dbb716b4f358a5b95c0407">&#9670;&nbsp;</a></span>GetWeight()</h2>
+<a id="a9757819524c86e1f5c817f15cfeeb939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9757819524c86e1f5c817f15cfeeb939">&#9670;&nbsp;</a></span>GetWeight()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -208,7 +208,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">auto meshkernel::Smoother::GetWeight </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>node</em>, </td>
         </tr>
         <tr>

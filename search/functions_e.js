@@ -7,9 +7,9 @@ var searchData=
   ['size',['Size',['../classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a13a30b478bc12e3849ec1b675e4aa5cf',1,'meshkernel::SpatialTrees::RTree']]],
   ['smoother',['Smoother',['../classmeshkernel_1_1_smoother.html#acc671c33c9ce3ed9ac04c849f2beb848',1,'meshkernel::Smoother']]],
   ['snapmeshtolandboundaries',['SnapMeshToLandBoundaries',['../classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6',1,'meshkernel::LandBoundaries']]],
-  ['sortedfacesaroundnode',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh.html#a0eb0648bbf22c8f135b4485990f664f4',1,'meshkernel::Mesh']]],
-  ['sortedgesincounterclockwiseorder',['SortEdgesInCounterClockWiseOrder',['../classmeshkernel_1_1_mesh.html#ab60dad75c9b4398d6c8c0c41665952dc',1,'meshkernel::Mesh']]],
-  ['sortedindices',['SortedIndices',['../namespacemeshkernel.html#a9db7d2120f2007a591648001a3e97271',1,'meshkernel']]],
+  ['sortedfacesaroundnode',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh.html#af4575b63ff5bcfed891a81ca55cb4d1f',1,'meshkernel::Mesh']]],
+  ['sortedgesincounterclockwiseorder',['SortEdgesInCounterClockWiseOrder',['../classmeshkernel_1_1_mesh.html#ab1f4c1ea798428e4f4291ef836e3d965',1,'meshkernel::Mesh']]],
+  ['sortedindices',['SortedIndices',['../namespacemeshkernel.html#addc034baff4660617d88a46aae221a99',1,'meshkernel']]],
   ['sphericaltocartesian3d',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
   ['splines',['Splines',['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)']]],
   ['swapvectorelements',['SwapVectorElements',['../namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1',1,'meshkernel']]]

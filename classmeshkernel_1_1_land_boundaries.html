@@ -108,16 +108,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6">SnapMeshToLandBoundaries</a> ()</td></tr>
 <tr class="memdesc:a02db80d7314b1a24236e3150a0f64ee6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snap mesh nodes to land boundaries (snap_to_landboundary) <br /></td></tr>
 <tr class="separator:a02db80d7314b1a24236e3150a0f64ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a818db971a5909dc88b476f74d0882b8d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a818db971a5909dc88b476f74d0882b8d">GetNumNodes</a> () const</td></tr>
-<tr class="memdesc:a818db971a5909dc88b476f74d0882b8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of nodes.  <a href="#a818db971a5909dc88b476f74d0882b8d">More...</a><br /></td></tr>
-<tr class="separator:a818db971a5909dc88b476f74d0882b8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a111251420da377badb3e7bd593cec49f"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a111251420da377badb3e7bd593cec49f">GetNumNodes</a> () const</td></tr>
+<tr class="memdesc:a111251420da377badb3e7bd593cec49f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of nodes.  <a href="#a111251420da377badb3e7bd593cec49f">More...</a><br /></td></tr>
+<tr class="separator:a111251420da377badb3e7bd593cec49f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a0d28bc546a1332225d318602206ea0dd"><td class="memItemLeft" align="right" valign="top"><a id="a0d28bc546a1332225d318602206ea0dd"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a0d28bc546a1332225d318602206ea0dd">m_meshNodesLandBoundarySegments</a></td></tr>
-<tr class="memdesc:a0d28bc546a1332225d318602206ea0dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">lanseg_map, mesh nodes to land boundary mapping <br /></td></tr>
-<tr class="separator:a0d28bc546a1332225d318602206ea0dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11daf97747eafb56bd13efa414dafde7"><td class="memItemLeft" align="right" valign="top"><a id="a11daf97747eafb56bd13efa414dafde7"></a>
+std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a11daf97747eafb56bd13efa414dafde7">m_meshNodesLandBoundarySegments</a></td></tr>
+<tr class="memdesc:a11daf97747eafb56bd13efa414dafde7"><td class="mdescLeft">&#160;</td><td class="mdescRight">lanseg_map, mesh nodes to land boundary mapping <br /></td></tr>
+<tr class="separator:a11daf97747eafb56bd13efa414dafde7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing land boundaries, which are used to visualise the land-water interface. </p>
@@ -186,8 +186,8 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
 
 </div>
 </div>
-<a id="a818db971a5909dc88b476f74d0882b8d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a818db971a5909dc88b476f74d0882b8d">&#9670;&nbsp;</a></span>GetNumNodes()</h2>
+<a id="a111251420da377badb3e7bd593cec49f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a111251420da377badb3e7bd593cec49f">&#9670;&nbsp;</a></span>GetNumNodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -196,7 +196,7 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int meshkernel::LandBoundaries::GetNumNodes </td>
+          <td class="memname">auto meshkernel::LandBoundaries::GetNumNodes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
