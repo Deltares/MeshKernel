@@ -143,14 +143,14 @@ std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, m
 
 std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin)
 {
-    std::vector<std::vector<size_t>> indexesValues(n, std::vector<size_t>(m));
+    std::vector<std::vector<size_t>> indicesValues(n, std::vector<size_t>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
     for (auto i = 0; i < n; ++i)
     {
         for (auto j = 0; j < m; ++j)
         {
-            indexesValues[i][j] = i * m + j;
+            indicesValues[i][j] = i * m + j;
             nodes[nodeIndex] = {origin.x + i * delta, origin.y + j * delta};
             nodeIndex++;
         }
@@ -163,7 +163,7 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
     {
         for (auto j = 0; j < m; ++j)
         {
-            edges[edgeIndex] = {indexesValues[i][j], indexesValues[i + 1][j]};
+            edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
@@ -172,7 +172,7 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
     {
         for (auto j = 0; j < m - 1; ++j)
         {
-            edges[edgeIndex] = {indexesValues[i][j + 1], indexesValues[i][j]};
+            edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
         }
     }
@@ -182,7 +182,7 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
 
 std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> MakeRectangularMeshForApiTesting(int n, int m, double delta)
 {
-    std::vector<std::vector<size_t>> indexesValues(n, std::vector<size_t>(m));
+    std::vector<std::vector<size_t>> indicesValues(n, std::vector<size_t>(m));
     meshkernelapi::MeshGeometry meshgeometry{};
     meshkernelapi::MeshGeometryDimensions meshgeometryDimensions{};
 
@@ -196,7 +196,7 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> M
 
             meshgeometry.nodex[nodeIndex] = i * delta;
             meshgeometry.nodey[nodeIndex] = j * delta;
-            indexesValues[i][j] = i * m + j;
+            indicesValues[i][j] = i * m + j;
             nodeIndex++;
         }
     }
@@ -207,9 +207,9 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> M
     {
         for (auto j = 0; j < m; ++j)
         {
-            meshgeometry.edge_nodes[edgeIndex] = indexesValues[i][j];
+            meshgeometry.edge_nodes[edgeIndex] = indicesValues[i][j];
             edgeIndex++;
-            meshgeometry.edge_nodes[edgeIndex] = indexesValues[i + 1][j];
+            meshgeometry.edge_nodes[edgeIndex] = indicesValues[i + 1][j];
             edgeIndex++;
         }
     }
@@ -218,9 +218,9 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> M
     {
         for (auto j = 0; j < m - 1; ++j)
         {
-            meshgeometry.edge_nodes[edgeIndex] = indexesValues[i][j + 1];
+            meshgeometry.edge_nodes[edgeIndex] = indicesValues[i][j + 1];
             edgeIndex++;
-            meshgeometry.edge_nodes[edgeIndex] = indexesValues[i][j];
+            meshgeometry.edge_nodes[edgeIndex] = indicesValues[i][j];
             edgeIndex++;
         }
     }
