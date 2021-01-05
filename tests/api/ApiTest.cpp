@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <MeshKernel/GeometryList.hpp>
-#include <MeshKernel/MakeMeshParameters.hpp>
-#include <MeshKernel/MeshGeometry.hpp>
-#include <MeshKernel/MeshGeometryDimensions.hpp>
-#include <MeshKernel/MeshKernel.hpp>
+#include <MeshKernelApi/GeometryList.hpp>
+#include <MeshKernelApi/MakeMeshParameters.hpp>
+#include <MeshKernelApi/MeshGeometry.hpp>
+#include <MeshKernelApi/MeshGeometryDimensions.hpp>
+#include <MeshKernelApi/MeshKernel.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 class ApiTests : public ::testing::Test
