@@ -93,14 +93,14 @@ namespace meshkernel
         /// @param[out] dx0 The computed x increment
         /// @param[out] dy0 The computed y increment
         /// @param[out] weightsSum The sum of the weights in x and y
-        void ComputeLocalIncrements(int nodeIndex,
+        void ComputeLocalIncrements(size_t nodeIndex,
                                     double& dx0,
                                     double& dy0,
                                     std::array<double, 2>& weightsSum);
 
         /// @brief Update the nodal coordinates based on the increments
         /// @param[in] nodeIndex
-        void UpdateNodeCoordinates(int nodeIndex);
+        void UpdateNodeCoordinates(size_t nodeIndex);
 
         /// @brief Allocate linear system vectors
         void AllocateLinearSystem();
@@ -116,20 +116,19 @@ namespace meshkernel
         LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; // The project to land boundary option
         meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters;  // The orthogonalization parameters
 
-        std::vector<int> m_localCoordinatesIndices; // Used in sphericalAccurate projection (iloc)
-        std::vector<Point> m_localCoordinates;      // Used in sphericalAccurate projection (xloc,yloc)
-        std::vector<Point> m_orthogonalCoordinates; // A copy of the mesh node, orthogonalized
-        std::vector<Point> m_originalNodes;         // The original mesh
+        std::vector<size_t> m_localCoordinatesIndices; // Used in sphericalAccurate projection (iloc)
+        std::vector<Point> m_localCoordinates;         // Used in sphericalAccurate projection (xloc,yloc)
+        std::vector<Point> m_orthogonalCoordinates;    // A copy of the mesh node, orthogonalized
+        std::vector<Point> m_originalNodes;            // The original mesh
 
         // Linear system terms
-        int m_nodeCacheSize = 0;
-        std::vector<int> m_compressedEndNodeIndex;   // Start index in m_compressedWeightX
-        std::vector<int> m_compressedStartNodeIndex; // End index in m_compressedWeightY
-        std::vector<double> m_compressedWeightX;     // The computed weights X
-        std::vector<double> m_compressedWeightY;     // The computed weights Y
-        std::vector<double> m_compressedRhs;         // The right hand side
-        std::vector<int> m_compressedNodesNodes;     // The indices of the neighbouring nodes
-        std::vector<int> m_nodeErrorCode;            // nodes with errors
+        size_t m_nodeCacheSize = 0;
+        std::vector<size_t> m_compressedEndNodeIndex;   // Start index in m_compressedWeightX
+        std::vector<size_t> m_compressedStartNodeIndex; // End index in m_compressedWeightY
+        std::vector<double> m_compressedWeightX;        // The computed weights X
+        std::vector<double> m_compressedWeightY;        // The computed weights Y
+        std::vector<double> m_compressedRhs;            // The right hand side
+        std::vector<size_t> m_compressedNodesNodes;     // The indices of the neighbouring nodes
 
         // run-time parameters
         double m_mumax;

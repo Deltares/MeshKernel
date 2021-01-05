@@ -182,7 +182,12 @@ namespace meshkernel
     };
 
     /// @brief Describes an edge with two indices
-    typedef std::pair<int, int> Edge;
+    typedef std::pair<size_t, size_t> Edge;
+
+    size_t static OtherNodeOfEdge(const Edge& edge, size_t node)
+    {
+        return node == edge.first ? edge.second : edge.first;
+    }
 
     /// @brief A struct describing the three coordinates in a cartesian projection.
     struct Cartesian3DPoint
@@ -224,7 +229,7 @@ namespace meshkernel
         std::vector<Edge> edges(numEdges);
 
         int ei = 0;
-        for (int e = 0; e < numEdges; e++)
+        for (auto e = 0; e < numEdges; e++)
         {
             edges[e].first = edge_nodes[ei];
             ei++;
@@ -238,7 +243,7 @@ namespace meshkernel
     static std::vector<Point> ConvertToNodesVector(int numNodes, const double* nodex, const double* nodey)
     {
         std::vector<Point> nodes(numNodes);
-        for (int n = 0; n < numNodes; n++)
+        for (auto n = 0; n < numNodes; n++)
         {
             nodes[n].x = nodex[n];
             nodes[n].y = nodey[n];
@@ -250,7 +255,7 @@ namespace meshkernel
     static std::vector<Point> ConvertToFaceCentersVector(int numFaces, const double* facex, const double* facey)
     {
         std::vector<Point> faceCenters(numFaces);
-        for (int n = 0; n < numFaces; n++)
+        for (auto n = 0; n < numFaces; n++)
         {
             faceCenters[n].x = facex[n];
             faceCenters[n].y = facey[n];

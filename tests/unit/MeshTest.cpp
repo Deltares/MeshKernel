@@ -67,11 +67,11 @@ TEST(Mesh, OneQuadTestConstructor)
     ASSERT_EQ(1, mesh.m_edgesNumFaces[2]);
     ASSERT_EQ(1, mesh.m_edgesNumFaces[3]);
 
-    //each edge is a boundary edge, so the second entry of edgesFaces is an invalid index (in C++, -1)
-    ASSERT_EQ(-1, mesh.m_edgesFaces[0][1]);
-    ASSERT_EQ(-1, mesh.m_edgesFaces[1][1]);
-    ASSERT_EQ(-1, mesh.m_edgesFaces[2][1]);
-    ASSERT_EQ(-1, mesh.m_edgesFaces[3][1]);
+    //each edge is a boundary edge, so the second entry of edgesFaces is an invalid index (meshkernel::sizetMissingValue)
+    ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[0][1]);
+    ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[1][1]);
+    ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[2][1]);
+    ASSERT_EQ(meshkernel::sizetMissingValue, mesh.m_edgesFaces[3][1]);
 }
 
 TEST(Mesh, MakeMeshInPolygon)
@@ -343,9 +343,9 @@ TEST(Mesh, NodeMerging)
     std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
-    for (int j = 0; j < m; ++j)
+    for (auto j = 0; j < m; ++j)
     {
-        for (int i = 0; i < n; ++i)
+        for (auto i = 0; i < n; ++i)
         {
             indicesValues[i][j] = i + j * n;
             nodes[nodeIndex] = {(double)i, (double)j};
@@ -355,18 +355,18 @@ TEST(Mesh, NodeMerging)
 
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
-    for (int j = 0; j < m; ++j)
+    for (auto j = 0; j < m; ++j)
     {
-        for (int i = 0; i < n - 1; ++i)
+        for (auto i = 0; i < n - 1; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
 
-    for (int j = 0; j < m - 1; ++j)
+    for (auto j = 0; j < m - 1; ++j)
     {
-        for (int i = 0; i < n; ++i)
+        for (auto i = 0; i < n; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
@@ -386,9 +386,9 @@ TEST(Mesh, NodeMerging)
     nodes.resize(mesh.GetNumNodes() * 2);
     edges.resize(mesh.GetNumEdges() + mesh.GetNumNodes() * 2);
     int originalNodeIndex = 0;
-    for (int j = 0; j < m; ++j)
+    for (auto j = 0; j < m; ++j)
     {
-        for (int i = 0; i < n; ++i)
+        for (auto i = 0; i < n; ++i)
         {
             nodes[nodeIndex] = {i + xDistrution(generator), j + yDistrution(generator)};
 
@@ -429,9 +429,9 @@ TEST(Mesh, MillionQuads)
     std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
     std::vector<meshkernel::Point> nodes(n * m);
     std::size_t nodeIndex = 0;
-    for (int j = 0; j < m; ++j)
+    for (auto j = 0; j < m; ++j)
     {
-        for (int i = 0; i < n; ++i)
+        for (auto i = 0; i < n; ++i)
         {
             indicesValues[i][j] = i + j * n;
             nodes[nodeIndex] = {(double)i, (double)j};
@@ -441,18 +441,18 @@ TEST(Mesh, MillionQuads)
 
     std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
     std::size_t edgeIndex = 0;
-    for (int j = 0; j < m; ++j)
+    for (auto j = 0; j < m; ++j)
     {
-        for (int i = 0; i < n - 1; ++i)
+        for (auto i = 0; i < n - 1; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
             edgeIndex++;
         }
     }
 
-    for (int j = 0; j < m - 1; ++j)
+    for (auto j = 0; j < m - 1; ++j)
     {
-        for (int i = 0; i < n; ++i)
+        for (auto i = 0; i < n; ++i)
         {
             edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
             edgeIndex++;
@@ -559,7 +559,7 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
     // GetNodeIndex builds m_nodesRTree for searching the nodes
-    int nodeIndex = mesh->GetNodeIndex({1.5, 1.5}, 10);
+    const auto nodeIndex = mesh->GetNodeIndex({1.5, 1.5}, 10);
 
     // m_nodesRTree is build
     ASSERT_EQ(4, mesh->m_nodesRTree.Size());

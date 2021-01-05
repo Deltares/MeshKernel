@@ -714,7 +714,7 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
     mesh->ComputeEdgesLengths();
 
     // if the circumcenters are wrongly computed, some edges will be smaller than half cell size
-    for (int i = 0; i < mesh->GetNumEdges(); ++i)
+    for (auto i = 0; i < mesh->GetNumEdges(); ++i)
     {
         ASSERT_GT(mesh->m_edgeLengths[i], 0.4);
     }

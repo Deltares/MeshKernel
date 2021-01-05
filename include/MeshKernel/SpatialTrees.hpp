@@ -60,12 +60,12 @@ namespace meshkernel
 
             typedef bg::model::point<double, 2, bg::cs::cartesian> Point2D;
             typedef bg::model::box<Point2D> Box2D;
-            typedef std::pair<Point2D, int> value2D;
+            typedef std::pair<Point2D, size_t> value2D;
             typedef bgi::rtree<value2D, bgi::linear<16>> RTree2D;
 
             typedef bg::model::point<double, 3, bg::cs::cartesian> Point3D;
             typedef bg::model::box<Point2D> Box3D;
-            typedef std::pair<Point3D, int> value3D;
+            typedef std::pair<Point3D, size_t> value3D;
             typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;
 
         public:
@@ -78,7 +78,7 @@ namespace meshkernel
                 m_points.clear();
                 m_rtree2D.clear();
 
-                for (int n = 0; n < nodes.size(); ++n)
+                for (auto n = 0; n < nodes.size(); ++n)
                 {
                     if (nodes[n].x != doubleMissingValue && nodes[n].y != doubleMissingValue)
                     {
@@ -99,7 +99,7 @@ namespace meshkernel
 
             /// @brief Deletes a node
             /// @param[in] position Position of the node to remove in m_points
-            void DeleteNode(int position);
+            void DeleteNode(size_t position);
 
             /// @brief Inserts a node
             /// @param[in] node Node to insert in m_points
@@ -115,13 +115,13 @@ namespace meshkernel
             [[nodiscard]] size_t GetQueryResultSize() const;
 
             /// @brief Gets the index of a sample in the query
-            [[nodiscard]] int GetQuerySampleIndex(int index) const;
+            [[nodiscard]] size_t GetQuerySampleIndex(size_t index) const;
 
         private:
             RTree2D m_rtree2D;
             std::vector<std::pair<Point2D, size_t>> m_points;
             std::vector<value2D> m_queryCache;
-            std::vector<int> m_queryIndices;
+            std::vector<size_t> m_queryIndices;
         };
 
     } // namespace SpatialTrees

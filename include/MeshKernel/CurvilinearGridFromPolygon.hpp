@@ -44,10 +44,10 @@ namespace meshkernel
         explicit CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon);
 
         /// @brief Compute curvilinear in a polygon (pol2curvi)
-        void Compute(int firstNode, int secondNode, int thirdNode, bool useFourthSide, CurvilinearGrid& curvilinearGrid) const;
+        void Compute(size_t firstNode, size_t secondNode, size_t thirdNode, bool useFourthSide, CurvilinearGrid& curvilinearGrid) const;
 
         /// @brief Compute curvilinear in a triangle (pol2curvi_tri)
-        void Compute(int firstNode, int secondNode, int thirdNode, CurvilinearGrid& curvilinearGrid) const;
+        void Compute(size_t firstNode, size_t secondNode, size_t thirdNode, CurvilinearGrid& curvilinearGrid) const;
 
     private:
         std::shared_ptr<Polygons> m_polygon; // A pointer to Polygons
