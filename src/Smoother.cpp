@@ -330,7 +330,7 @@ void meshkernel::Smoother::ComputeOperatorsNode(size_t currentNode)
 
         if (m_topologySharedFaces[currentTopology][faceLeftIndex] != leftFace)
         {
-            throw std::invalid_argument("Smoother::ComputeOperatorsNode: Face could not be found, this happens when the cell is outside of the polygon.");
+            throw std::invalid_argument("Smoother::ComputeOperatorsNode: Face could not be found, this happens when the face is outside of the polygon.");
         }
 
         //by construction
@@ -728,7 +728,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
     }
     else if (numSharedFaces > 0)
     {
-        throw AlgorithmError("Smoother::ComputeNodeXiEta: Fatal error (phiTot=0).");
+        throw MeshGeometryError("Smoother::ComputeNodeXiEta: Fatal error (phiTot=0)", currentNode, MeshLocations::Nodes);
     }
 
     double phi0 = 0.0;
@@ -750,7 +750,7 @@ void meshkernel::Smoother::ComputeNodeXiEta(size_t currentNode,
             }
             else
             {
-                throw AlgorithmError("Smoother::ComputeNodeXiEta: Inappropriate fictitious boundary cell.");
+                throw MeshGeometryError("Smoother::ComputeNodeXiEta: Inappropriate fictitious boundary face", currentNode, MeshLocations::Nodes);
             }
             phi0 = phi0 + 0.5 * dPhi;
             continue;

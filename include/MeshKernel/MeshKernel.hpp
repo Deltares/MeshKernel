@@ -49,6 +49,14 @@
 /// @brief Contains all structs and functions exposed at the API level
 namespace meshkernelapi
 {
+    /// @brief Enumeration for api error types
+    enum MeshKernelApiErrors
+    {
+        Success = 0,
+        Exception = 1,
+        InvalidGeometry = 2
+    };
+
 #ifdef __cplusplus
     extern "C"
     {
@@ -76,7 +84,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId Id of the grid state
         /// @param[in] meshGeometryDimensions Mesh dimensions
         /// @param[in] meshGeometry Mesh data
-        /// @param[in] isGeographic Cartesian or spherical mesh
+        /// @param[in] isGeographic Cartesian (false) or spherical (true) mesh
         /// @returns Error code
         MKERNEL_API int mkernel_set_state(int meshKernelId, const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, bool isGeographic);
 
@@ -204,7 +212,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] layer The layer index
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_mesh_from_splines_iteration(int meshKernelId, int layer);
+        MKERNEL_API int mkernel_curvilinear_mesh_from_splines_ortho_iteration(int meshKernelId, int layer);
 
         /// @brief Converts curvilinear grid to mesh and refreshes the state (interactive)
         /// @param[in] meshKernelId
@@ -341,7 +349,7 @@ namespace meshkernelapi
 
         /// @brief Offsets a polygon
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[in] geometryListIn The coordinate of the offset point
+        /// @param[in] geometryListIn The polygon to be offsetted
         /// @param[in] innerPolygon Compute inner (true) or outer (false) polygon
         /// @param[in] distance The offset distance
         /// @param[out] geometryListOut The offsetted polygon
@@ -350,7 +358,7 @@ namespace meshkernelapi
 
         /// @brief Gets the number of nodes of the offsetted polygon  Count the number of nodes after polygon refinement
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[in] geometryListIn The coordinate of the offset point
+        /// @param[in] geometryListIn The polygon to be offsetted
         /// @param[in] innerPolygon Compute inner (true) or outer (false) polygon
         /// @param[in] distance The offset distance
         /// @param[out] numberOfPolygonNodes The number of nodes of the generated polygon
@@ -510,7 +518,7 @@ namespace meshkernelapi
         /// @param[in] samplesValue The sample values
         /// @param[in] numSamples The number of samples
         /// @param[out] results The interpolation results
-        /// @param[in] locationType The location type (see InterpolationLocation enum)
+        /// @param[in] locationType The location type (see MeshLocations enum)
         /// @param[in] Wu1Duni A setting for 1d meshes (not used)
         /// @param[in] averagingMethod The averaging method (see Method enum)
         /// @param[in] minNumberOfSamples The minimum amount of samples (not used)
@@ -538,6 +546,12 @@ namespace meshkernelapi
         /// @param[out] error_message
         /// @returns Error code
         MKERNEL_API int mkernel_get_error(const char*& error_message);
+
+        /// @brief Gets the index of the erroneous entity.
+        /// @param[out] invalidIndex The index of the erroneous entity
+        /// @param[out] type The entity type (node, edge or face, see MeshLocations)
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type);
 
 #ifdef __cplusplus
     }
