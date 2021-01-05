@@ -46,39 +46,6 @@ namespace meshkernelapi
         /// @brief The left and right face indices that an edge separates
         int* face_edges = nullptr;
 
-        /// @brief For each face, the indices of the other connected faces, through flow edges
-        int* face_links = nullptr;
-
-        /// @brief The x-coordinates of network1d nodes
-        double* nnodex = nullptr;
-
-        /// @brief The y-coordinates of network1d nodes
-        double* nnodey = nullptr;
-
-        /// @brief The nodes composing each network edge
-        int* nedge_nodes = nullptr;
-
-        /// @brief The lengths of each network branch
-        double* nbranchlengths = nullptr;
-
-        /// @brief The number of network geometry nodes
-        int* nbranchgeometrynodes = nullptr;
-
-        /// @brief The x-coordinates of network1d geometry nodes
-        double* ngeopointx = nullptr;
-
-        /// @brief The y-coordinates of network1d geometry nodes
-        double* ngeopointy = nullptr;
-
-        /// @brief For each network branch, its order
-        int* nbranchorder = nullptr;
-
-        /// @brief For each mesh1d node, the id of the branch where the node lies
-        int* branchidx = nullptr;
-
-        /// @brief For each mesh1d node, the offset from the start network node
-        double* branchoffsets = nullptr;
-
         /// @brief The x-coordinates of the mesh nodes
         double* nodex = nullptr;
 
@@ -105,15 +72,6 @@ namespace meshkernelapi
 
         /// @brief The x-coordinates of the mesh faces mass centers
         double* facez = nullptr;
-
-        /// @brief The vertical coordinates of the mesh layers centers (either z or sigma)
-        double* layer_zs = nullptr;
-
-        /// @brief The vertical coordinates of the mesh layers interfaces (either z or sigma)
-        double* interface_zs = nullptr;
-
-        /// @brief The start index of the arrays (indices starting from 0 or from 1)
-        int startIndex = 0;
     };
 
 } // namespace meshkernelapi
