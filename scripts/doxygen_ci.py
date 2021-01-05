@@ -38,7 +38,8 @@ def print_file(file: Path):
 
 # Set dirs
 root_dir = Path(__file__).parent.parent
-input_dir = root_dir / "include" / "MeshKernel"
+meshkernel_include_dir = root_dir / "include" / "MeshKernel"
+meshkernelapi_include_dir = root_dir / "include" / "MeshKernelApi"
 output_dir = root_dir / "build" / "docs"
 docs_dir = root_dir / "docs"
 
@@ -47,7 +48,7 @@ main_page_path = docs_dir / "main_page.md"
 doxyfile_in_path = docs_dir / "Doxyfile.in"
 doxyfile_path = output_dir / "Doxyfile"
 doxygen_log_path = output_dir / "Doxygen_log.txt"
-doxygen_input_list = f"{input_dir} {main_page_path}"
+doxygen_input_list = f"{meshkernel_include_dir} {meshkernelapi_include_dir} {main_page_path}"
 
 # The dir tree is not created automatically
 output_dir.parent.mkdir(exist_ok=True)

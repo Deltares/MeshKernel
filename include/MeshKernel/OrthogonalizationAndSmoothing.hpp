@@ -31,7 +31,7 @@
 #include <vector>
 
 #include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/OrthogonalizationParameters.hpp>
+#include <MeshKernelApi/OrthogonalizationParameters.hpp>
 
 namespace meshkernel
 {

@@ -37,12 +37,12 @@
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/MakeMeshParameters.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
+#include <MeshKernelApi/MakeMeshParameters.hpp>
 
 meshkernel::Mesh::Mesh(const std::vector<Edge>& edges,
                        const std::vector<Point>& nodes,
