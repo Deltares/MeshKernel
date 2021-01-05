@@ -13,7 +13,7 @@
 #include <TestUtils/MakeMeshes.hpp>
 #include <stdexcept>
 
-meshkernelapi::MeshGeometry ReadLegacyMeshFromFileForApiTesting(std::string filePath)
+meshkernelapi::Mesh2D ReadLegacyMeshFromFileForApiTesting(std::string filePath)
 {
     auto netcdf = LoadLibrary("netcdf.dll");
 
@@ -55,7 +55,7 @@ meshkernelapi::MeshGeometry ReadLegacyMeshFromFileForApiTesting(std::string file
         throw std::invalid_argument("ReadLegacyMeshFromFile: Could not find the ID of a dimension of 'nNetNode'.");
     }
 
-    meshkernelapi::MeshGeometry meshgeometry{};
+    meshkernelapi::Mesh2D meshgeometry{};
 
     std::size_t num_nodes;
     auto read_name = new char[NC_MAX_NAME];
@@ -174,10 +174,10 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
     return std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
 }
 
-meshkernelapi::MeshGeometry MakeRectangularMeshForApiTesting(int n, int m, double delta)
+meshkernelapi::Mesh2D MakeRectangularMeshForApiTesting(int n, int m, double delta)
 {
     std::vector<std::vector<size_t>> indicesValues(n, std::vector<size_t>(m));
-    meshkernelapi::MeshGeometry meshgeometry{};
+    meshkernelapi::Mesh2D meshgeometry{};
 
     meshgeometry.nodex = new double[n * m];
     meshgeometry.nodey = new double[n * m];
@@ -224,7 +224,7 @@ meshkernelapi::MeshGeometry MakeRectangularMeshForApiTesting(int n, int m, doubl
     return meshgeometry;
 }
 
-void DeleteRectangularMeshForApiTesting(const meshkernelapi::MeshGeometry& meshgeometry)
+void DeleteRectangularMeshForApiTesting(const meshkernelapi::Mesh2D& meshgeometry)
 {
     delete[] meshgeometry.nodex;
     delete[] meshgeometry.nodey;

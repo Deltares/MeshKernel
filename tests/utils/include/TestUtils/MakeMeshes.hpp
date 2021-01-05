@@ -31,17 +31,16 @@
 
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
-#include <MeshKernelApi/MeshGeometryDimensions.hpp>
 
-meshkernelapi::MeshGeometry ReadLegacyMeshFromFileForApiTesting(std::string filePath);
+meshkernelapi::Mesh2D ReadLegacyMeshFromFileForApiTesting(std::string filePath);
 
 std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
 
 std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin = {0.0, 0.0});
 
-meshkernelapi::MeshGeometry MakeRectangularMeshForApiTesting(int n, int m, double delta);
+meshkernelapi::Mesh2D MakeRectangularMeshForApiTesting(int n, int m, double delta);
 
-void DeleteRectangularMeshForApiTesting(const meshkernelapi::MeshGeometry& meshgeometry);
+void DeleteRectangularMeshForApiTesting(const meshkernelapi::Mesh2D& meshgeometry);
 
 std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile();
 

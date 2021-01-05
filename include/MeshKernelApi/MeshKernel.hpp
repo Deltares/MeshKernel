@@ -32,7 +32,6 @@
 #include <MeshKernelApi/InterpolationParameters.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
-#include <MeshKernelApi/MeshGeometryDimensions.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
 #include <MeshKernelApi/SampleRefineParameters.hpp>
 #include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
@@ -483,7 +482,6 @@ namespace meshkernelapi
         MKERNEL_API double mkernel_get_inner_outer_separator();
 
         /// @brief Triangle interpolation (ec_module)
-        /// @param[in] meshGeometryDimensions Mesh dimensions
         /// @param[in] meshGeometry Mesh data
         /// @param[in] startIndex start index (not used)
         /// @param[in] samplesXCoordinate The sample x coordinates
@@ -495,8 +493,7 @@ namespace meshkernelapi
         /// @param[in] spherical Current projection (0 cartesian, 1 spherical)
         /// @param[in] sphericalAccurate Accurate spherical projection (0 default spherical, 1 spherical accurate)
         /// @return Error code (0 Successful)
-        MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
-                                      const Mesh2D& meshGeometry,
+        MKERNEL_API int triangulation(const Mesh2D& meshGeometry,
                                       int& startIndex,
                                       const double** samplesXCoordinate,
                                       const double** samplesYCoordinate,
@@ -508,7 +505,6 @@ namespace meshkernelapi
                                       int& sphericalAccurate);
 
         /// @brief AveragingInterpolation interpolation (ec_module)
-        /// @param[in] meshGeometryDimensions Mesh dimensions
         /// @param[in] meshGeometry Mesh data
         /// @param[in] startIndex Mesh data start index (not used)
         /// @param[in] samplesXCoordinate The sample x coordinates
@@ -524,8 +520,7 @@ namespace meshkernelapi
         /// @param[in] spherical Current projection (0 cartesian, 1 spherical)
         /// @param[in] sphericalAccurate Accurate spherical computations (0 default spherical, 1 spherical accurate)
         /// @return Error code (0 Successful)
-        MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
-                                  const Mesh2D& meshGeometry,
+        MKERNEL_API int averaging(const Mesh2D& meshGeometry,
                                   const int& startIndex,
                                   const double** samplesXCoordinate,
                                   const double** samplesYCoordinate,

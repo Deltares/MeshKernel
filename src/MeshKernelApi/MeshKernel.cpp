@@ -169,7 +169,7 @@ namespace meshkernelapi
         return true;
     }
 
-    static std::vector<meshkernel::Point> ComputeLocations(const MeshGeometryDimensions& meshGeometryDimensions, const Mesh2D& meshGeometry, meshkernel::MeshLocations interpolationLocation)
+    static std::vector<meshkernel::Point> ComputeLocations(const Mesh2D& meshGeometry, meshkernel::MeshLocations interpolationLocation)
     {
         std::vector<meshkernel::Point> locations;
         if (interpolationLocation == meshkernel::MeshLocations::Nodes)
@@ -1719,8 +1719,7 @@ namespace meshkernelapi
         return meshkernel::innerOuterSeparator;
     }
 
-    MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
-                              const Mesh2D& meshGeometry,
+    MKERNEL_API int averaging(const Mesh2D& meshGeometry,
                               const int& startIndex,
                               const double** samplesXCoordinate,
                               const double** samplesYCoordinate,
@@ -1788,8 +1787,7 @@ namespace meshkernelapi
     }
 
     // ec_module dll (stateless)
-    MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
-                                  const Mesh2D& meshGeometry,
+    MKERNEL_API int triangulation(const Mesh2D& meshGeometry,
                                   int& startIndex,
                                   const double** samplesXCoordinate,
                                   const double** samplesYCoordinate,
@@ -1816,7 +1814,7 @@ namespace meshkernelapi
 
             // Locations
             const auto location = static_cast<meshkernel::MeshLocations>(locationType);
-            const auto locations = ComputeLocations(meshGeometryDimensions, meshGeometry, location);
+            const auto locations = ComputeLocations(meshGeometry, location);
 
             // Build the samples
             const auto samples = meshkernel::Sample::ConvertToSamples(numSamples, samplesXCoordinate, samplesYCoordinate, samplesValue);
