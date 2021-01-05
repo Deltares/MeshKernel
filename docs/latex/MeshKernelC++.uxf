@@ -32,7 +32,7 @@
       <w>60</w>
       <h>18</h>
     </coordinates>
-    <panel_attributes>Gridgeom.cpp</panel_attributes>
+    <panel_attributes>MeshKernel.cpp</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -124,7 +124,7 @@ MeshInstances</panel_attributes>
       <w>174</w>
       <h>24</h>
     </coordinates>
-    <panel_attributes>std::map&lt;int,GridGeom::Orthogonalization&gt;
+    <panel_attributes>std::map&lt;int,MeshKernel::Orthogonalization&gt;
 orthogonalizationInstances</panel_attributes>
     <additional_attributes/>
   </element>
