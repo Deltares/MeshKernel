@@ -65,17 +65,17 @@ namespace meshkernel
         /// @param[in] startSecond
         /// @param[in] endSecond
         /// @returns Boolean to indicate that procedure has to be repeated
-        [[nodiscard]] bool OrderSplines(int startFirst,
-                                        int endFirst,
-                                        int startSecond,
-                                        int endSecond);
+        [[nodiscard]] bool OrderSplines(size_t startFirst,
+                                        size_t endFirst,
+                                        size_t startSecond,
+                                        size_t endSecond);
 
         /// @brief Swap the rows of a two dimensional vector
         /// @param v The input vector
         /// @param firstRow The first row
         /// @param secondRow The second row
         template <typename T>
-        void SwapRows(std::vector<std::vector<T>>& v, int firstRow, int secondRow) const;
+        void SwapRows(std::vector<std::vector<T>>& v, size_t firstRow, size_t secondRow) const;
 
         /// @brief Swap the columns of a two dimensional vector (MAKESR)
         /// @tparam T The input vector
@@ -83,7 +83,7 @@ namespace meshkernel
         /// @param firstColumn The first column
         /// @param secondColumn The second column
         template <typename T>
-        void SwapColumns(std::vector<std::vector<T>>& v, int firstColumn, int secondColumn) const;
+        void SwapColumns(std::vector<std::vector<T>>& v, size_t firstColumn, size_t secondColumn) const;
 
         /// Compute the distances following an exponential increase
         /// @param[in] factor
@@ -101,19 +101,19 @@ namespace meshkernel
         /// @param[in] numDiscretizations
         /// @param[in] intersectionDistances
         /// @param[out] distances
-        void ComputeDiscretizations(int numIntersections,
-                                    int numPoints,
-                                    int numDiscretizations,
+        void ComputeDiscretizations(size_t numIntersections,
+                                    size_t numPoints,
+                                    size_t numDiscretizations,
                                     const std::vector<double>& intersectionDistances,
                                     std::vector<double>& distances) const;
 
-        std::vector<int> m_splineType;                                          ///< The spline types (1 horizontal, -1 vertical)
-        std::vector<std::vector<double>> m_splineIntersectionRatios;            ///< For each spline, stores the intersections in terms of total spline length
-        std::vector<std::vector<int>> m_splineGroupIndexAndFromToIntersections; ///< For each spline: position in m or n group, from and to spline crossing indices (MN12)
-        int m_numMSplines = -1;                                                 ///< The index of the last m spline
-        int m_numNSplines = -1;                                                 ///< The index of the last m spline
-        int m_numM = 0;                                                         ///< Number of m columns
-        int m_numN = 0;                                                         ///< Number of n rows
+        std::vector<int> m_splineType;                                             ///< The spline types (1 horizontal, -1 vertical)
+        std::vector<std::vector<double>> m_splineIntersectionRatios;               ///< For each spline, stores the intersections in terms of total spline length
+        std::vector<std::vector<size_t>> m_splineGroupIndexAndFromToIntersections; ///< For each spline: position in m or n group, from and to spline crossing indices (MN12)
+        size_t m_numMSplines = 0;                                                  ///< The index of the last m spline
+        size_t m_numNSplines = 0;                                                  ///< The index of the last m spline
+        size_t m_numM = 0;                                                         ///< Number of m columns
+        size_t m_numN = 0;                                                         ///< Number of n rows
     };
 
 } // namespace meshkernel

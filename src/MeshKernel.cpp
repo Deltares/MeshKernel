@@ -73,7 +73,7 @@ namespace meshkernelapi
         }
         result.resize(geometryListIn.numberOfCoordinates);
 
-        for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
+        for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
             result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i]};
         }
@@ -88,7 +88,7 @@ namespace meshkernelapi
         }
         result.resize(geometryListIn.numberOfCoordinates);
 
-        for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
+        for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
             result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i], geometryListIn.zCoordinates[i]};
         }
@@ -102,7 +102,7 @@ namespace meshkernelapi
             throw std::invalid_argument("MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates.");
         }
 
-        for (int i = 0; i < result.numberOfCoordinates; i++)
+        for (auto i = 0; i < result.numberOfCoordinates; i++)
         {
             result.xCoordinates[i] = pointVector[i].x;
             result.yCoordinates[i] = pointVector[i].y;
@@ -146,7 +146,7 @@ namespace meshkernelapi
         meshGeometry.edge_nodes = &(meshInstances[meshKernelId]->m_edgeNodes[0]);
 
         meshGeometryDimensions.maxnumfacenodes = meshkernel::maximumNumberOfNodesPerFace;
-        meshGeometryDimensions.numface = meshInstances[meshKernelId]->GetNumFaces();
+        meshGeometryDimensions.numface = static_cast<int>(meshInstances[meshKernelId]->GetNumFaces());
         if (meshGeometryDimensions.numface > 0)
         {
             meshGeometry.face_nodes = &(meshInstances[meshKernelId]->m_faceNodes[0]);
@@ -162,8 +162,8 @@ namespace meshkernelapi
         }
         else
         {
-            meshGeometryDimensions.numnode = meshInstances[meshKernelId]->GetNumNodes();
-            meshGeometryDimensions.numedge = meshInstances[meshKernelId]->GetNumEdges();
+            meshGeometryDimensions.numnode = static_cast<int>(meshInstances[meshKernelId]->GetNumNodes());
+            meshGeometryDimensions.numedge = static_cast<int>(meshInstances[meshKernelId]->GetNumEdges());
         }
 
         return true;
@@ -213,7 +213,7 @@ namespace meshkernelapi
     {
         meshKernelId = int(meshInstances.size());
         meshInstances.emplace_back(std::make_shared<meshkernel::Mesh>());
-        return 0;
+        return Success;
     };
 
     MKERNEL_API int mkernel_deallocate_state(int meshKernelId)
@@ -243,7 +243,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
             meshInstances[meshKernelId]->DeleteMesh(polygon, deletionOption, invertDeletion);
         }
         catch (...)
@@ -404,7 +404,7 @@ namespace meshkernelapi
 
             // build enclosing polygon
             std::vector<meshkernel::Point> nodes(geometryListPolygon.numberOfCoordinates);
-            for (int i = 0; i < geometryListPolygon.numberOfCoordinates; i++)
+            for (auto i = 0; i < geometryListPolygon.numberOfCoordinates; i++)
             {
                 nodes[i].x = geometryListPolygon.xCoordinates[i];
                 nodes[i].y = geometryListPolygon.yCoordinates[i];
@@ -414,15 +414,15 @@ namespace meshkernelapi
 
             // build land boundary
             std::vector<meshkernel::Point> landBoundaries(geometryListLandBoundaries.numberOfCoordinates);
-            for (int i = 0; i < geometryListLandBoundaries.numberOfCoordinates; i++)
+            for (auto i = 0; i < geometryListLandBoundaries.numberOfCoordinates; i++)
             {
                 landBoundaries[i].x = geometryListLandBoundaries.xCoordinates[i];
                 landBoundaries[i].y = geometryListLandBoundaries.yCoordinates[i];
             }
 
-            auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshInstances[meshKernelId]);
-            auto smoother = std::make_shared<meshkernel::Smoother>(meshInstances[meshKernelId]);
-            auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
+            const auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshInstances[meshKernelId]);
+            const auto smoother = std::make_shared<meshkernel::Smoother>(meshInstances[meshKernelId]);
+            const auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
 
             meshkernel::OrthogonalizationAndSmoothing ortogonalization(meshInstances[meshKernelId],
                                                                        smoother,
@@ -462,7 +462,7 @@ namespace meshkernelapi
 
             // build enclosing polygon
             std::vector<meshkernel::Point> nodes(geometryListPolygon.numberOfCoordinates);
-            for (int i = 0; i < geometryListPolygon.numberOfCoordinates; i++)
+            for (auto i = 0; i < geometryListPolygon.numberOfCoordinates; i++)
             {
                 nodes[i].x = geometryListPolygon.xCoordinates[i];
                 nodes[i].y = geometryListPolygon.yCoordinates[i];
@@ -470,7 +470,7 @@ namespace meshkernelapi
 
             // build land boundary
             std::vector<meshkernel::Point> landBoundaries(geometryListLandBoundaries.numberOfCoordinates);
-            for (int i = 0; i < geometryListLandBoundaries.numberOfCoordinates; i++)
+            for (auto i = 0; i < geometryListLandBoundaries.numberOfCoordinates; i++)
             {
                 landBoundaries[i].x = geometryListLandBoundaries.xCoordinates[i];
                 landBoundaries[i].y = geometryListLandBoundaries.yCoordinates[i];
@@ -666,7 +666,7 @@ namespace meshkernelapi
             }
 
             std::vector<meshkernel::Point> splines(geometryListIn.numberOfCoordinates);
-            for (int i = 0; i < geometryListIn.numberOfCoordinates; i++)
+            for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
             {
                 splines[i].x = geometryListIn.xCoordinates[i];
                 splines[i].y = geometryListIn.yCoordinates[i];
@@ -677,20 +677,19 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
 
             int index = 0;
-            for (int s = 0; s < numSplines; s++)
+            for (auto s = 0; s < numSplines; s++)
             {
                 std::vector<meshkernel::Point> coordinates(splines.begin() + indices[s][0], splines.begin() + int(indices[s][1]) + 1);
-                int numNodes = int(indices[s][1]) - int(indices[s][0]) + 1;
+                const int numNodes = int(indices[s][1]) - int(indices[s][0]) + 1;
                 meshkernel::Splines::SecondOrderDerivative(coordinates, numNodes, coordinatesDerivatives);
 
-                for (int n = 0; n < numNodes - 1; n++)
+                for (auto n = 0; n < numNodes - 1; n++)
                 {
-                    for (int p = 0; p <= numberOfPointsBetweenNodes; p++)
+                    for (auto p = 0; p <= numberOfPointsBetweenNodes; p++)
                     {
-
-                        double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenNodes);
+                        const double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenNodes);
                         meshkernel::Point pointCoordinate{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue};
-                        bool successful = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
+                        const bool successful = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
                         if (!successful)
                         {
                             break;
@@ -730,7 +729,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> result;
             ConvertGeometryListToPointVector(geometryList, result);
 
-            meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
 
             meshkernel::Mesh mesh;
             mesh.MakeMesh(makeGridParameters, polygon);
@@ -756,12 +755,12 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> result;
             ConvertGeometryListToPointVector(disposableGeometryListIn, result);
 
-            meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
 
             // generate samples in all polygons
             const auto generatedPoints = polygon.ComputePointsInPolygons();
 
-            meshkernel::Mesh mesh(generatedPoints[0], polygon, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Mesh mesh(generatedPoints[0], polygon, meshInstances[meshKernelId]->m_projection);
             *meshInstances[meshKernelId] += mesh;
         }
         catch (...)
@@ -784,7 +783,7 @@ namespace meshkernelapi
             ConvertGeometryListToPointVector(geometryList, samplePoints);
 
             meshkernel::Polygons polygon;
-            meshkernel::Mesh mesh(samplePoints, polygon, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Mesh mesh(samplePoints, polygon, meshInstances[meshKernelId]->m_projection);
             *meshInstances[meshKernelId] += mesh;
         }
         catch (...)
@@ -804,7 +803,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> polygonNodes;
+            const std::vector<meshkernel::Point> polygonNodes;
             const auto meshBoundaryPolygon = meshInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
 
             ConvertPointVectorToGeometryList(meshBoundaryPolygon, geometryList);
@@ -826,7 +825,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> polygonNodes;
+            const std::vector<meshkernel::Point> polygonNodes;
             const auto meshBoundaryPolygon = meshInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
             numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size() - 1); // last value is a separator
         }
@@ -849,7 +848,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
             ConvertPointVectorToGeometryList(refinedPolygon, geometryListOut);
@@ -874,7 +873,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
@@ -900,7 +899,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
             meshInstances[meshKernelId]->MergeNodesInPolygon(polygon);
         }
@@ -942,13 +941,13 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
-            bool selectInside = inside == 1 ? true : false;
+            const bool selectInside = inside == 1 ? true : false;
             meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
 
             int index = 0;
-            for (int i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
+            for (auto i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
             {
                 if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
                 {
@@ -976,9 +975,9 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
-            bool selectInside = inside == 1 ? true : false;
+            const bool selectInside = inside == 1 ? true : false;
             meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
 
             numberOfMeshNodes = 0;
@@ -1028,7 +1027,7 @@ namespace meshkernelapi
                 meshInstances[meshKernelId]->m_projection = meshkernel::Projection::cartesian;
             }
 
-            meshkernel::Point newNode{xCoordinate, yCoordinate};
+            const meshkernel::Point newNode{xCoordinate, yCoordinate};
             nodeIndex = meshInstances[meshKernelId]->InsertNode(newNode);
         }
         catch (...)
@@ -1092,7 +1091,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> newPoint;
             ConvertGeometryListToPointVector(geometryListIn, newPoint);
 
-            int edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
+            const auto edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
 
             meshInstances[meshKernelId]->DeleteEdge(edgeIndex);
         }
@@ -1116,7 +1115,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> newPoint;
             ConvertGeometryListToPointVector(geometryListIn, newPoint);
 
-            edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
+            edgeIndex = static_cast<int>(meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]));
         }
         catch (...)
         {
@@ -1138,7 +1137,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
             const auto newPolygon = polygon.OffsetCopy(distance, innerPolygon);
 
@@ -1163,7 +1162,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
             const auto newPolygon = polygon.OffsetCopy(distance, innerPolygon);
 
             numberOfPolygonNodes = newPolygon.GetNumNodes();
@@ -1243,7 +1242,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> points;
             ConvertGeometryListToPointVector(geometryList, points);
 
-            meshkernel::Polygons polygon(points, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(points, meshInstances[meshKernelId]->m_projection);
 
             meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], polygon, interpolationParameters);
             meshRefinement.Compute();
@@ -1272,7 +1271,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
+            nodeIndex = static_cast<int>(meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius));
         }
         catch (...)
         {
@@ -1303,10 +1302,10 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            int nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
+            const auto nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
 
             // Set the node coordinate
-            auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];
+            const auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];
             std::vector<meshkernel::Point> pointVector;
             pointVector.emplace_back(node);
             ConvertPointVectorToGeometryList(pointVector, geometryListOut);
@@ -1332,7 +1331,7 @@ namespace meshkernelapi
             }
 
             // use the default constructor, no instance present
-            auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
+            const auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
             SetSplines(geometryListIn, *spline);
 
             meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splinesToCurvilinearParameters);
@@ -1447,9 +1446,9 @@ namespace meshkernelapi
 
             std::vector<meshkernel::Point> points;
             ConvertGeometryListToPointVector(pointsNative, points);
-            meshkernel::Polygons localPolygon(polygonNodes, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons localPolygon(polygonNodes, meshInstances[meshKernelId]->m_projection);
 
-            for (int i = 0; i < points.size(); i++)
+            for (auto i = 0; i < points.size(); i++)
             {
                 selectedPointsNative.zCoordinates[i] = localPolygon.IsPointInPolygon(points[i], 0) ? 1.0 : 0.0;
             }
@@ -1477,11 +1476,11 @@ namespace meshkernelapi
             auto polygon = std::make_shared<meshkernel::Polygons>();
 
             std::vector<meshkernel::Point> landBoundary;
-            auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, meshInstances[meshKernelId], polygon);
+            const auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, meshInstances[meshKernelId], polygon);
 
-            bool triangulateFaces = isTriangulationRequired == 0 ? false : true;
-            bool projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
-            meshkernel::FlipEdges flipEdges(meshInstances[meshKernelId], landBoundaries, triangulateFaces, projectToLandBoundary);
+            const bool triangulateFaces = isTriangulationRequired == 0 ? false : true;
+            const bool projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
+            const meshkernel::FlipEdges flipEdges(meshInstances[meshKernelId], landBoundaries, triangulateFaces, projectToLandBoundary);
 
             flipEdges.Compute();
         }
@@ -1505,7 +1504,7 @@ namespace meshkernelapi
             }
 
             // Use the default constructor, no instance present
-            auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
+            const auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
             SetSplines(geometryListIn, *spline);
 
             // Create algorithm and set the splines
@@ -1543,10 +1542,10 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(polygon, polygonPoints);
 
-            auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
             meshkernel::CurvilinearGrid curvilinearGrid;
-            meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
+            const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
             curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
 
             // convert to curvilinear grid and add it to the current mesh
@@ -1576,10 +1575,10 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(polygon, polygonPoints);
 
-            auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
             meshkernel::CurvilinearGrid curvilinearGrid;
-            meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
+            const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
             curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
 
             // convert to curvilinear grid and add it to the current mesh

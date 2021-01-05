@@ -91,7 +91,7 @@ void meshkernel::TriangulationInterpolation::Compute()
     GetBoundingBox(m_samples, lowerLeft, upperRight);
 
     // loop over locations
-    for (int n = 0; n < m_locations.size(); ++n)
+    for (auto n = 0; n < m_locations.size(); ++n)
     {
         if (!IsValueInBoundingBox(m_locations[n], lowerLeft, upperRight) ||
             !IsEqual(m_results[n], doubleMissingValue))
@@ -109,11 +109,11 @@ void meshkernel::TriangulationInterpolation::Compute()
 
         // search for the triangle where the location is included
         bool isInTriangle = false;
-        int numFacesSearched = 0;
-        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces && triangle >= 0 && triangle < triangulationWrapper.m_numFaces)
+        size_t numFacesSearched = 0;
+        while (!isInTriangle && numFacesSearched < 2 * triangulationWrapper.m_numFaces && triangle != sizetMissingValue && triangle < triangulationWrapper.m_numFaces)
         {
 
-            isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], 0, 3, m_projection, trianglesCircumcenters[triangle]);
+            isInTriangle = IsPointInPolygonNodes(m_locations[n], triangles[triangle], m_projection, trianglesCircumcenters[triangle]);
 
             // valid triangle found, no need to search further
             if (isInTriangle)
@@ -123,7 +123,7 @@ void meshkernel::TriangulationInterpolation::Compute()
 
             // proceed to next triangle, which is adjacent to the edge that is cut by the line from the current triangle to the point location
             numFacesSearched++;
-            for (int i = 0; i < numNodesInTriangle; ++i)
+            for (auto i = 0; i < numNodesInTriangle; ++i)
             {
                 const auto edge = triangulationWrapper.m_faceEdges[triangle][i];
                 if (triangulationWrapper.m_edgesFaces[edge][1] == 0)
@@ -132,7 +132,7 @@ void meshkernel::TriangulationInterpolation::Compute()
                 }
 
                 // there is no valid other triangle
-                const auto otherTriangle = triangulationWrapper.m_edgesFaces[edge][0] + triangulationWrapper.m_edgesFaces[edge][1] - triangle;
+                const auto otherTriangle = triangle == triangulationWrapper.m_edgesFaces[edge][0] ? triangulationWrapper.m_edgesFaces[edge][1] : triangulationWrapper.m_edgesFaces[edge][0];
                 const auto k1 = triangulationWrapper.m_edgeNodes[edge][0];
                 const auto k2 = triangulationWrapper.m_edgeNodes[edge][1];
                 Point intersection;
@@ -158,7 +158,7 @@ void meshkernel::TriangulationInterpolation::Compute()
             }
         }
 
-        if (isInTriangle && triangle >= 0 && triangle < triangulationWrapper.m_numFaces)
+        if (isInTriangle && triangle != sizetMissingValue && triangle < triangulationWrapper.m_numFaces)
         {
             // Perform linear interpolation
             m_results[n] = LinearInterpolationInTriangle(m_locations[n], triangles[triangle], values[triangle], m_projection);

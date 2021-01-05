@@ -103,9 +103,9 @@ namespace meshkernel
         /// @param samples The samples to use for refinement
         /// @param refineEdgeCache 1 if the edge should be refined, 0 otherwise
         /// @param numEdgesToBeRefined The computed number of edges to refined
-        void ComputeEdgesRefinementMaskFromSamples(int face,
-                                                   std::vector<int>& refineEdgeCache,
-                                                   int& numEdgesToBeRefined);
+        void ComputeEdgesRefinementMaskFromSamples(size_t face,
+                                                   std::vector<size_t>& refineEdgeCache,
+                                                   size_t& numEdgesToBeRefined);
 
         /// Computes the edge refinement mask (comp_jalink)
         void ComputeEdgesRefinementMask();
@@ -115,14 +115,14 @@ namespace meshkernel
         /// @param numHangingEdges
         /// @param numHangingNodes
         /// @param numEdgesToRefine
-        void FindHangingNodes(int face,
-                              int& numHangingEdges,
-                              int& numHangingNodes,
-                              int& numEdgesToRefine);
+        void FindHangingNodes(size_t face,
+                              size_t& numHangingEdges,
+                              size_t& numHangingNodes,
+                              size_t& numEdgesToRefine);
 
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
         /// @returns Number of deleted isolated hanging nodes
-        [[nodiscard]] int DeleteIsolatedHangingnodes();
+        [[nodiscard]] size_t DeleteIsolatedHangingnodes();
 
         /// @brief Connect the hanging nodes with triangles (connect_hanging_nodes)
         void ConnectHangingNodes();
@@ -135,31 +135,21 @@ namespace meshkernel
 
         /// @brief The refinement operation by splitting the face (refine_cells)
         /// @param[in] numEdgesBeforeRefinemet Number of edges before the refinement
-        void RefineFacesBySplittingEdges(int numEdgesBeforeRefinement);
+        void RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement);
 
-        /// Compute the refinement value at the face center of mass
-        /// @param[in] numPolygonNodes The number of polygon nodes
-        /// @param[in] samples The number of samples
-        /// @param[in] averagingMethod The averaging method to used
-        /// @param[in] centerOfMass The face center of mass
-        /// @returns The refinement value at the face center of mass
-        [[nodiscard]] double ComputeFaceRefinementFromSamples(int numPolygonNodes,
-                                                              const std::vector<Sample>& samples,
-                                                              AveragingInterpolation::Method averagingMethod,
-                                                              Point centerOfMass);
         /// The sample node RTree
         SpatialTrees::RTree m_samplesRTree;
 
-        std::vector<int> m_faceMask;     ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
-        std::vector<int> m_edgeMask;     ///< If 0, edge is not split
-        std::vector<int> m_brotherEdges; ///< The index of the brother edge for each edge
+        std::vector<int> m_faceMask;        ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
+        std::vector<int> m_edgeMask;        ///< If 0, edge is not split
+        std::vector<size_t> m_brotherEdges; ///< The index of the brother edge for each edge
 
         /// Local caches
-        std::vector<bool> m_isHangingNodeCache;    ///< Cache for maintaining if node is hanging
-        std::vector<bool> m_isHangingEdgeCache;    ///< Cache for maintaining if edge is hanging
-        std::vector<Point> m_polygonNodesCache;    ///< Cache for maintaining polygon nodes
-        std::vector<int> m_localNodeIndicesCache;  ///< Cache for maintaining local node indices
-        std::vector<int> m_globalEdgeIndicesCache; ///< Cache for maintaining edge indices
+        std::vector<bool> m_isHangingNodeCache;       ///< Cache for maintaining if node is hanging
+        std::vector<bool> m_isHangingEdgeCache;       ///< Cache for maintaining if edge is hanging
+        std::vector<Point> m_polygonNodesCache;       ///< Cache for maintaining polygon nodes
+        std::vector<size_t> m_localNodeIndicesCache;  ///< Cache for maintaining local node indices
+        std::vector<size_t> m_globalEdgeIndicesCache; ///< Cache for maintaining edge indices
 
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement

@@ -78,18 +78,17 @@ namespace meshkernel
     /// @param[in] el The element to search for
     /// @returns The index of element
     template <typename T>
-    [[nodiscard]] int FindIndex(const std::vector<T>& vec, T el)
+    [[nodiscard]] size_t FindIndex(const std::vector<T>& vec, T el)
     {
-        int index = 0;
-        for (int n = 0; n < vec.size(); n++)
+        for (auto n = 0; n < vec.size(); n++)
         {
             if (vec[n] == el)
             {
-                index = n;
-                break;
+                return n;
             }
         }
-        return index;
+
+        return 0;
     }
 
     /// @brief Find all start-end positions in a vector separated by a separator
@@ -107,9 +106,9 @@ namespace meshkernel
     /// @param[in] v The vector to sort
     /// @returns The indices of elements
     template <typename T>
-    [[nodiscard]] std::vector<int> SortedIndices(const std::vector<T>& v)
+    [[nodiscard]] std::vector<size_t> SortedIndices(const std::vector<T>& v)
     {
-        std::vector<int> indices(v.size());
+        std::vector<size_t> indices(v.size());
         iota(indices.begin(), indices.end(), 0);
         std::stable_sort(indices.begin(), indices.end(), [&v](size_t i1, size_t i2) { return v[i1] < v[i2]; });
         return indices;
@@ -120,7 +119,7 @@ namespace meshkernel
     /// @param[in] order The order to use
     /// @returns The reordered vector
     template <typename T>
-    auto ReorderVector(const std::vector<T>& v, const std::vector<int>& order)
+    auto ReorderVector(const std::vector<T>& v, const std::vector<size_t>& order)
     {
         std::vector<T> ordered;
         ordered.reserve(v.size());
@@ -190,13 +189,13 @@ namespace meshkernel
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next forward index.
-    [[nodiscard]] int NextCircularForwardIndex(int currentIndex, int size);
+    [[nodiscard]] size_t NextCircularForwardIndex(size_t currentIndex, size_t size);
 
     /// @brief Get the next backward index.
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next backward index.
-    [[nodiscard]] int NextCircularBackwardIndex(int currentIndex, int size);
+    [[nodiscard]] size_t NextCircularBackwardIndex(size_t currentIndex, size_t size);
 
     /// @brief Determines if a point is close to the poles (latitude close to 90 degrees).
     /// @param[in] point The current point.
@@ -234,10 +233,10 @@ namespace meshkernel
     /// @returns If point is inside the designed polygon
     [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
                                              const std::vector<Point>& polygonNodes,
-                                             int startNode,
-                                             int endNode,
                                              const Projection& projection,
-                                             Point polygonCenter = {doubleMissingValue, doubleMissingValue});
+                                             Point polygonCenter = {doubleMissingValue, doubleMissingValue},
+                                             size_t startNode = sizetMissingValue,
+                                             size_t endNode = sizetMissingValue);
 
     /// @brief Computes three base components
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);
@@ -363,7 +362,6 @@ namespace meshkernel
     /// @return The resulting circumcenter
     [[nodiscard]] Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection);
 
-
     /// @brief Determines if two segments are crossing (cross, cross3D)
     /// @param[in] firstSegmentFistPoint The first point of the first segment
     /// @param[in] firstSegmentSecondPoint The second point of the first segment
@@ -423,15 +421,15 @@ namespace meshkernel
 
         const double eps = 1e-5;
         const double splFac = 1.0;
-        const auto intCoordinate = int(std::floor(pointAdimensionalCoordinate));
+        const auto intCoordinate = static_cast<size_t>(std::floor(pointAdimensionalCoordinate));
         if (pointAdimensionalCoordinate - intCoordinate < eps)
         {
             pointCoordinate = coordinates[intCoordinate];
             return true;
         }
 
-        int low = intCoordinate;
-        int high = low + 1;
+        size_t low = intCoordinate;
+        size_t high = low + 1;
         double a = high - pointAdimensionalCoordinate;
         double b = pointAdimensionalCoordinate - low;
 
@@ -486,8 +484,8 @@ namespace meshkernel
                                                                         const std::vector<Point>& sideThree,
                                                                         const std::vector<Point>& sideFour,
                                                                         const Projection& projection,
-                                                                        int numM,
-                                                                        int numN);
+                                                                        size_t numM,
+                                                                        size_t numN);
 
     /// @brief Computes the edge centers
     /// @param[in] nodes The vector of edge nodes.
@@ -516,7 +514,7 @@ namespace meshkernel
         double maxx = std::numeric_limits<double>::lowest();
         double miny = std::numeric_limits<double>::max();
         double maxy = std::numeric_limits<double>::lowest();
-        for (int n = 0; n < values.size(); n++)
+        for (auto n = 0; n < values.size(); n++)
         {
             bool isInvalid = IsEqual(values[n].x, doubleMissingValue) ||
                              IsEqual(values[n].y, doubleMissingValue);

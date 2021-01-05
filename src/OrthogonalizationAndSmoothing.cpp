@@ -92,7 +92,7 @@ void meshkernel::OrthogonalizationAndSmoothing::Initialize()
 
         m_localCoordinatesIndices.resize(m_mesh->GetNumNodes() + 1);
         m_localCoordinatesIndices[0] = 1;
-        for (int n = 0; n < m_mesh->GetNumNodes(); ++n)
+        for (auto n = 0; n < m_mesh->GetNumNodes(); ++n)
         {
             m_localCoordinatesIndices[n + 1] = m_localCoordinatesIndices[n] + std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
         }
@@ -144,12 +144,12 @@ void meshkernel::OrthogonalizationAndSmoothing::AllocateLinearSystem()
         std::fill(m_compressedRhs.begin(), m_compressedRhs.end(), 0.0);
 
         m_compressedEndNodeIndex.resize(m_mesh->GetNumNodes());
-        std::fill(m_compressedEndNodeIndex.begin(), m_compressedEndNodeIndex.end(), 0.0);
+        std::fill(m_compressedEndNodeIndex.begin(), m_compressedEndNodeIndex.end(), 0);
 
         m_compressedStartNodeIndex.resize(m_mesh->GetNumNodes());
-        std::fill(m_compressedStartNodeIndex.begin(), m_compressedStartNodeIndex.end(), 0.0);
+        std::fill(m_compressedStartNodeIndex.begin(), m_compressedStartNodeIndex.end(), 0);
 
-        for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+        for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
         {
             m_compressedEndNodeIndex[n] = m_nodeCacheSize;
             m_nodeCacheSize += std::max(m_mesh->m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
@@ -177,7 +177,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
     const double max_aptf = std::max(m_orthogonalizationParameters.OrthogonalizationToSmoothingFactorBoundary, m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor);
 #pragma omp parallel for
-    for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
         if ((m_mesh->m_nodesTypes[n] != 1 && m_mesh->m_nodesTypes[n] != 2) || m_mesh->m_nodesNumEdges[n] < 2)
         {
@@ -190,7 +190,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 
         const double atpfLoc = m_mesh->m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor;
         const double atpf1Loc = 1.0 - atpfLoc;
-        int maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
+        const auto maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
         auto cacheIndex = m_compressedEndNodeIndex[n];
         for (auto nn = 1; nn < maxnn; nn++)
         {
@@ -213,14 +213,14 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             }
             else
             {
-                m_compressedNodesNodes[cacheIndex] = int(m_smoother->GetConnectedNodeIndex(n, nn));
+                m_compressedNodesNodes[cacheIndex] = m_smoother->GetConnectedNodeIndex(n, nn);
             }
 
             m_compressedWeightX[cacheIndex] = wwx;
             m_compressedWeightY[cacheIndex] = wwy;
             cacheIndex++;
         }
-        int firstCacheIndex = n * 2;
+        const size_t firstCacheIndex = n * 2;
         m_compressedRhs[firstCacheIndex] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 0);
         m_compressedRhs[firstCacheIndex + 1] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 1);
     }
@@ -229,7 +229,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 void meshkernel::OrthogonalizationAndSmoothing::InnerIteration()
 {
 #pragma omp parallel for
-    for (int n = 0; n < m_mesh->GetNumNodes(); n++)
+    for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
         UpdateNodeCoordinates(n);
     }
@@ -253,12 +253,12 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
     Point normalThirdPoint{doubleMissingValue, doubleMissingValue};
 
     // in this case the nearest point is the point itself
-    std::vector<int> nearestPoints(m_mesh->GetNumNodes(), 0);
+    std::vector<size_t> nearestPoints(m_mesh->GetNumNodes(), 0);
     std::iota(nearestPoints.begin(), nearestPoints.end(), 0);
 
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {
-        int nearestPointIndex = nearestPoints[n];
+        const auto nearestPointIndex = nearestPoints[n];
         if (m_mesh->m_nodesTypes[n] == 2 && m_mesh->m_nodesNumEdges[n] > 0 && m_mesh->m_nodesNumEdges[nearestPointIndex] > 0)
         {
             Point firstPoint = m_mesh->m_nodes[n];
@@ -267,22 +267,22 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                 continue;
             }
 
-            int numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
-            int numNodes = 0;
-            int leftNode = -1;
-            int rightNode = -1;
+            const auto numEdges = m_mesh->m_nodesNumEdges[nearestPointIndex];
+            size_t numNodes = 0;
+            size_t leftNode = sizetMissingValue;
+            size_t rightNode = sizetMissingValue;
             Point secondPoint{doubleMissingValue, doubleMissingValue};
             Point thirdPoint{doubleMissingValue, doubleMissingValue};
             for (auto nn = 0; nn < numEdges; nn++)
             {
-                auto edgeIndex = m_mesh->m_nodesEdges[nearestPointIndex][nn];
+                const auto edgeIndex = m_mesh->m_nodesEdges[nearestPointIndex][nn];
                 if (m_mesh->IsEdgeOnBoundary(edgeIndex))
                 {
                     numNodes++;
                     if (numNodes == 1)
                     {
                         leftNode = m_mesh->m_nodesNodes[n][nn];
-                        if (leftNode == intMissingValue)
+                        if (leftNode == sizetMissingValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The left node is invalid.");
                         }
@@ -291,7 +291,7 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                     else if (numNodes == 2)
                     {
                         rightNode = m_mesh->m_nodesNodes[n][nn];
-                        if (rightNode == intMissingValue)
+                        if (rightNode == sizetMissingValue)
                         {
                             throw AlgorithmError("OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary: The right node is invalid.");
                         }
@@ -342,7 +342,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIndex)
+void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
 {
 
     double dx0 = 0.0;
@@ -355,14 +355,14 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
         return;
     }
 
-    int firstCacheIndex = nodeIndex * 2;
+    const auto firstCacheIndex = nodeIndex * 2;
     dx0 = (dx0 + m_compressedRhs[firstCacheIndex]) / increments[0];
     dy0 = (dy0 + m_compressedRhs[firstCacheIndex + 1]) / increments[1];
     constexpr double relaxationFactor = 0.75;
     if (m_mesh->m_projection == Projection::cartesian || m_mesh->m_projection == Projection::spherical)
     {
-        double x0 = m_mesh->m_nodes[nodeIndex].x + dx0;
-        double y0 = m_mesh->m_nodes[nodeIndex].y + dy0;
+        const double x0 = m_mesh->m_nodes[nodeIndex].x + dx0;
+        const double y0 = m_mesh->m_nodes[nodeIndex].y + dy0;
         static constexpr double relaxationFactorCoordinates = 1.0 - relaxationFactor;
 
         m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh->m_nodes[nodeIndex].x;
@@ -370,7 +370,7 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
     }
     if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
-        Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};
+        const Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};
 
         std::array<double, 3> exxp{0.0, 0.0, 0.0};
         std::array<double, 3> eyyp{0.0, 0.0, 0.0};
@@ -391,11 +391,11 @@ void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(int nodeIn
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(int nodeIndex, double& dx0, double& dy0, std::array<double, 2>& weightsSum)
+void meshkernel::OrthogonalizationAndSmoothing::ComputeLocalIncrements(size_t nodeIndex, double& dx0, double& dy0, std::array<double, 2>& weightsSum)
 {
-    int numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
+    const auto numConnectedNodes = m_compressedStartNodeIndex[nodeIndex] - m_compressedEndNodeIndex[nodeIndex];
     auto cacheIndex = m_compressedEndNodeIndex[nodeIndex];
-    for (int nn = 1; nn < numConnectedNodes; nn++)
+    for (auto nn = 1; nn < numConnectedNodes; nn++)
     {
         const auto wwx = m_compressedWeightX[cacheIndex];
         const auto wwy = m_compressedWeightY[cacheIndex];
