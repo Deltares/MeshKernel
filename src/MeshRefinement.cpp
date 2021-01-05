@@ -1198,7 +1198,7 @@ void meshkernel::MeshRefinement::FindBrotherEdges()
             }
 
             //check if node k is in the middle
-            const auto firstEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[firstEdgeIndex], n); //
+            const auto firstEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[firstEdgeIndex], n);
             const auto secondEdgeOtherNode = OtherNodeOfEdge(m_mesh->m_edges[secondEdgeIndex], n);
 
             //compute tolerance
