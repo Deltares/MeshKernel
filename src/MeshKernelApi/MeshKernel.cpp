@@ -35,13 +35,11 @@
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
-#include <MeshKernel/CurvilinearParameters.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/MeshKernel.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
@@ -49,8 +47,10 @@
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/Splines.hpp>
-#include <MeshKernel/SplinesToCurvilinearParameters.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
+#include <MeshKernelApi/CurvilinearParameters.hpp>
+#include <MeshKernelApi/MeshKernel.hpp>
+#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
 namespace meshkernelapi
 {

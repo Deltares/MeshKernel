@@ -30,8 +30,8 @@
 #include <string>
 
 #include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/MeshGeometry.hpp>
-#include <MeshKernel/MeshGeometryDimensions.hpp>
+#include <MeshKernelApi/MeshGeometry.hpp>
+#include <MeshKernelApi/MeshGeometryDimensions.hpp>
 
 std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath);
 

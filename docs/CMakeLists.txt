@@ -6,7 +6,7 @@ endif()
 
 set(DOXYGEN_MAIN_PAGE ${CMAKE_CURRENT_SOURCE_DIR}/main_page.md)
 set(DOXYGEN_INPUT_LIST
-    "${PROJECT_SOURCE_DIR}/include/MeshKernel ${DOXYGEN_MAIN_PAGE}")
+    "${PROJECT_SOURCE_DIR}/include/MeshKernel ${PROJECT_SOURCE_DIR}/include/MeshKernelApi ${DOXYGEN_MAIN_PAGE}")
 set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/html/index.html)
 set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
@@ -21,10 +21,19 @@ configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 # Doxygen won't create this for us
 file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
 
+# meshkernel headers
+file(GLOB MESHKERNEL_HEADER_LIST CONFIGURE_DEPENDS
+     "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.hpp")
+
+# meshkernelapi headers
+file(GLOB MESHKERNELAPI_HEADER_LIST CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/include/MeshKernelApi/*.hpp")
+
+
 # Only regenerate Doxygen when the Doxyfile or public headers change
 add_custom_command(
   OUTPUT ${DOXYGEN_INDEX_FILE}
-  DEPENDS ${HEADER_LIST} ${DOXYGEN_MAIN_PAGE}
+  DEPENDS ${MESHKERNEL_HEADER_LIST} ${MESHKERNELAPI_HEADER_LIST} ${DOXYGEN_MAIN_PAGE}
   COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/include"
   MAIN_DEPENDENCY ${DOXYFILE_OUT}
