@@ -30,8 +30,8 @@
 #include <vector>
 
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/MakeMeshParameters.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernelApi/MakeMeshParameters.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library

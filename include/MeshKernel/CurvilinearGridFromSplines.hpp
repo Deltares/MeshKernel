@@ -30,9 +30,9 @@
 #include <memory>
 #include <vector>
 
-#include <MeshKernel/CurvilinearParameters.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/SplinesToCurvilinearParameters.hpp>
+#include <MeshKernelApi/CurvilinearParameters.hpp>
+#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
 namespace meshkernel
 {

@@ -27,15 +27,15 @@
 
 #pragma once
 
-#include <MeshKernel/CurvilinearParameters.hpp>
-#include <MeshKernel/GeometryList.hpp>
-#include <MeshKernel/InterpolationParameters.hpp>
-#include <MeshKernel/MakeMeshParameters.hpp>
-#include <MeshKernel/MeshGeometry.hpp>
-#include <MeshKernel/MeshGeometryDimensions.hpp>
-#include <MeshKernel/OrthogonalizationParameters.hpp>
-#include <MeshKernel/SampleRefineParameters.hpp>
-#include <MeshKernel/SplinesToCurvilinearParameters.hpp>
+#include <MeshKernelApi/CurvilinearParameters.hpp>
+#include <MeshKernelApi/GeometryList.hpp>
+#include <MeshKernelApi/InterpolationParameters.hpp>
+#include <MeshKernelApi/MakeMeshParameters.hpp>
+#include <MeshKernelApi/MeshGeometry.hpp>
+#include <MeshKernelApi/MeshGeometryDimensions.hpp>
+#include <MeshKernelApi/OrthogonalizationParameters.hpp>
+#include <MeshKernelApi/SampleRefineParameters.hpp>
+#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
 #if defined(_WIN32)
 #if !defined(MKERNEL_API)
@@ -46,7 +46,7 @@
 #endif
 
 /// \namespace meshkernelapi
-/// @brief Contains all structs and functions exposed at the API level
+/// @brief Contains all structures and functions exposed at the API level
 namespace meshkernelapi
 {
     /// @brief Enumeration for api error types
@@ -65,6 +65,7 @@ namespace meshkernelapi
 
         /// @param[out] meshKernelId Identifier for the created grid state
         /// @returns Error code
+        //typedef int(mkernel_new_mesh)(int& meshKernelId);
         MKERNEL_API int mkernel_new_mesh(int& meshKernelId);
 
         /// @brief Deallocates mesh state

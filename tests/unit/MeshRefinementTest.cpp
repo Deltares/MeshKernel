@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <MeshKernel/InterpolationParameters.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/SampleRefineParameters.hpp>
+#include <MeshKernelApi/InterpolationParameters.hpp>
+#include <MeshKernelApi/SampleRefineParameters.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 

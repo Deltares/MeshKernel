@@ -31,10 +31,10 @@
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/InterpolationParameters.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/SampleRefineParameters.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernelApi/InterpolationParameters.hpp>
+#include <MeshKernelApi/SampleRefineParameters.hpp>
 
 namespace meshkernel
 {

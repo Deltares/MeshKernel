@@ -1,6 +1,11 @@
 # Tests need to be added as executables first
 file(GLOB API_TEST_LIST CONFIGURE_DEPENDS "*.cpp")
+
+# Make a test executable
 add_executable(MeshKernelApiTests ${API_TEST_LIST})
+
+# Add a dependency to ensure the correct build order 
+add_dependencies(MeshKernelApiTests MeshKernelStatic)
 
 # Should be linked to the main library, as well as the google test library
 target_link_libraries(MeshKernelApiTests PRIVATE ${Boost_LIBRARIES} MeshKernelStatic UtilsStatic gtest_main)
