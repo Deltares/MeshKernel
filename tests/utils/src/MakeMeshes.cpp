@@ -13,7 +13,7 @@
 #include <TestUtils/MakeMeshes.hpp>
 #include <stdexcept>
 
-std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath)
+meshkernelapi::MeshGeometry ReadLegacyMeshFromFileForApiTesting(std::string filePath)
 {
     auto netcdf = LoadLibrary("netcdf.dll");
 
@@ -55,7 +55,7 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
         throw std::invalid_argument("ReadLegacyMeshFromFile: Could not find the ID of a dimension of 'nNetNode'.");
     }
 
-    meshkernelapi::MeshGeometryDimensions meshgeometryDimensions{};
+    meshkernelapi::MeshGeometry meshgeometry{};
 
     std::size_t num_nodes;
     auto read_name = new char[NC_MAX_NAME];
@@ -64,7 +64,7 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
     {
         throw std::invalid_argument("ReadLegacyMeshFromFile: Could not gind the length of dimension of 'nNetNode'.");
     }
-    meshgeometryDimensions.numnode = static_cast<int>(num_nodes);
+    meshgeometry.numnode = static_cast<int>(num_nodes);
 
     std::string mesh2dEdges{"nNetLink"};
     err = nc_inq_dimid(ncidp, mesh2dEdges.c_str(), &dimid);
@@ -76,11 +76,10 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
     std::size_t num_edges;
     err = nc_inq_dim(ncidp, dimid, read_name, &num_edges);
     delete[] read_name;
-    meshgeometryDimensions.numedge = static_cast<int>(num_edges);
+    meshgeometry.numedge = static_cast<int>(num_edges);
 
-    meshkernelapi::MeshGeometry meshgeometry{};
-    meshgeometry.nodex = new double[meshgeometryDimensions.numnode];
-    meshgeometry.nodey = new double[meshgeometryDimensions.numnode];
+    meshgeometry.nodex = new double[meshgeometry.numnode];
+    meshgeometry.nodey = new double[meshgeometry.numnode];
 
     std::string mesh2dNodeX{"NetNode_x"};
     int varid = 0;
@@ -94,29 +93,24 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
     std::string mesh2dEdgeNodes{"NetLink"};
     err = nc_inq_varid(ncidp, mesh2dEdgeNodes.c_str(), &varid);
 
-    meshgeometry.edge_nodes = new int[meshgeometryDimensions.numedge * 2];
+    meshgeometry.edge_nodes = new int[meshgeometry.numedge * 2];
     err = nc_get_var_int(ncidp, varid, meshgeometry.edge_nodes);
 
     // transform into 0 based indexing
-    for (auto i = 0; i < meshgeometryDimensions.numedge * 2; i++)
+    for (auto i = 0; i < meshgeometry.numedge * 2; i++)
     {
         meshgeometry.edge_nodes[i] -= 1;
     }
 
-    return std::make_tuple(meshgeometry, meshgeometryDimensions);
+    return meshgeometry;
 }
 
 std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
 {
+    const auto meshgeometry = ReadLegacyMeshFromFileForApiTesting(filePath);
 
-    auto meshData = ReadLegacyMeshFromFileForApiTesting(filePath);
-    std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath);
-
-    const auto meshgeometry = std::get<0>(meshData);
-    const auto meshgeometryDimensions = std::get<1>(meshData);
-
-    std::vector<meshkernel::Edge> edges(meshgeometryDimensions.numedge);
-    std::vector<meshkernel::Point> nodes(meshgeometryDimensions.numnode);
+    std::vector<meshkernel::Edge> edges(meshgeometry.numedge);
+    std::vector<meshkernel::Point> nodes(meshgeometry.numnode);
 
     for (auto i = 0; i < nodes.size(); i++)
     {
@@ -180,11 +174,10 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
     return std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
 }
 
-std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> MakeRectangularMeshForApiTesting(int n, int m, double delta)
+meshkernelapi::MeshGeometry MakeRectangularMeshForApiTesting(int n, int m, double delta)
 {
     std::vector<std::vector<size_t>> indicesValues(n, std::vector<size_t>(m));
     meshkernelapi::MeshGeometry meshgeometry{};
-    meshkernelapi::MeshGeometryDimensions meshgeometryDimensions{};
 
     meshgeometry.nodex = new double[n * m];
     meshgeometry.nodey = new double[n * m];
@@ -225,10 +218,10 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> M
         }
     }
 
-    meshgeometryDimensions.numnode = nodeIndex;
-    meshgeometryDimensions.numedge = edgeIndex / 2;
+    meshgeometry.numnode = nodeIndex;
+    meshgeometry.numedge = edgeIndex / 2;
 
-    return std::make_tuple(meshgeometry, meshgeometryDimensions);
+    return meshgeometry;
 }
 
 void DeleteRectangularMeshForApiTesting(const meshkernelapi::MeshGeometry& meshgeometry)

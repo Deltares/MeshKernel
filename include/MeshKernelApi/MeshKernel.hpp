@@ -31,7 +31,7 @@
 #include <MeshKernelApi/GeometryList.hpp>
 #include <MeshKernelApi/InterpolationParameters.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
-#include <MeshKernelApi/MeshGeometry.hpp>
+#include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshGeometryDimensions.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
 #include <MeshKernelApi/SampleRefineParameters.hpp>
@@ -86,21 +86,19 @@ namespace meshkernelapi
         /// @param[in] meshGeometry Mesh data
         /// @param[in] isGeographic Cartesian (false) or spherical (true) mesh
         /// @returns Error code
-        MKERNEL_API int mkernel_set_state(int meshKernelId, const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, bool isGeographic);
+        MKERNEL_API int mkernel_set_state(int meshKernelId, const Mesh2D& meshGeometry, bool isGeographic);
 
-        /// @brief Gets the mesh state as a <see cref="MeshGeometry"/> structure
+        /// @brief Gets the mesh state as a <see cref="Mesh2D"/> structure
         /// @param[in] meshKernelId Id of the grid state
-        /// @param[out] meshGeometryDimensions Mesh dimensions
         /// @param[out] meshGeometry Grid data
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
+        MKERNEL_API int mkernel_get_mesh(int meshKernelId, Mesh2D& meshGeometry);
 
         /// @brief Gets the mesh faces
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[out] meshGeometryDimensions Grid dimensions
         /// @param[out] meshGeometry Mesh data (including face information)
         /// @returns Error code
-        MKERNEL_API int mkernel_find_faces(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry);
+        MKERNEL_API int mkernel_find_faces(int meshKernelId, Mesh2D& meshGeometry);
 
         /// @brief Count the number of hanging edges
         /// @param[in] meshKernelId Id of the mesh state
@@ -498,7 +496,7 @@ namespace meshkernelapi
         /// @param[in] sphericalAccurate Accurate spherical projection (0 default spherical, 1 spherical accurate)
         /// @return Error code (0 Successful)
         MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
-                                      const MeshGeometry& meshGeometry,
+                                      const Mesh2D& meshGeometry,
                                       int& startIndex,
                                       const double** samplesXCoordinate,
                                       const double** samplesYCoordinate,
@@ -527,7 +525,7 @@ namespace meshkernelapi
         /// @param[in] sphericalAccurate Accurate spherical computations (0 default spherical, 1 spherical accurate)
         /// @return Error code (0 Successful)
         MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
-                                  const MeshGeometry& meshGeometry,
+                                  const Mesh2D& meshGeometry,
                                   const int& startIndex,
                                   const double** samplesXCoordinate,
                                   const double** samplesYCoordinate,

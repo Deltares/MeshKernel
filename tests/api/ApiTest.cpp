@@ -2,8 +2,7 @@
 
 #include <MeshKernelApi/GeometryList.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
-#include <MeshKernelApi/MeshGeometry.hpp>
-#include <MeshKernelApi/MeshGeometryDimensions.hpp>
+#include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -25,10 +24,10 @@ public:
 
         // Set-up new mesh
         auto meshData = MakeRectangularMeshForApiTesting(n, m, delta);
-        auto errorCode = mkernel_set_state(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
+        auto errorCode = mkernel_set_state(meshKernelId, meshData, false);
         ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
         // Clean up client-allocated memory
-        DeleteRectangularMeshForApiTesting(std::get<0>(meshData));
+        DeleteRectangularMeshForApiTesting(meshData);
     }
 
 protected:
@@ -49,14 +48,13 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     auto errorCode = meshkernelapi::mkernel_delete_node(0, 0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(11, meshGeometryDimensions.numnode);
-    ASSERT_EQ(15, meshGeometryDimensions.numedge);
+    ASSERT_EQ(11, meshGeometry.numnode);
+    ASSERT_EQ(15, meshGeometry.numedge);
 }
 
 TEST_F(ApiTests, FlipEdgesThroughApi)
@@ -70,14 +68,13 @@ TEST_F(ApiTests, FlipEdgesThroughApi)
     auto errorCode = meshkernelapi::mkernel_flip_edges(0, isTriangulationRequired, projectToLandBoundaryOption);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(12, meshGeometryDimensions.numnode);
-    ASSERT_EQ(23, meshGeometryDimensions.numedge);
+    ASSERT_EQ(12, meshGeometry.numnode);
+    ASSERT_EQ(23, meshGeometry.numedge);
 }
 
 TEST_F(ApiTests, InsertEdgeThroughApi)
@@ -91,14 +88,13 @@ TEST_F(ApiTests, InsertEdgeThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(17, newEdgeIndex);
 
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(12, meshGeometryDimensions.numnode);
-    ASSERT_EQ(18, meshGeometryDimensions.numedge);
+    ASSERT_EQ(12, meshGeometry.numnode);
+    ASSERT_EQ(18, meshGeometry.numedge);
 }
 
 TEST_F(ApiTests, MergeTwoNodesThroughApi)
@@ -110,14 +106,13 @@ TEST_F(ApiTests, MergeTwoNodesThroughApi)
     auto errorCode = meshkernelapi::mkernel_merge_two_nodes(0, 0, 4);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(11, meshGeometryDimensions.numnode);
-    ASSERT_EQ(15, meshGeometryDimensions.numedge);
+    ASSERT_EQ(11, meshGeometry.numnode);
+    ASSERT_EQ(15, meshGeometry.numedge);
 }
 
 TEST_F(ApiTests, MergeNodesThroughApi)
@@ -130,14 +125,13 @@ TEST_F(ApiTests, MergeNodesThroughApi)
     auto errorCode = mkernel_merge_nodes(0, geometry_list);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(12, meshGeometryDimensions.numnode);
-    ASSERT_EQ(17, meshGeometryDimensions.numedge);
+    ASSERT_EQ(12, meshGeometry.numnode);
+    ASSERT_EQ(17, meshGeometry.numedge);
 }
 
 TEST_F(ApiTests, OrthogonalizationThroughApi)
@@ -177,13 +171,12 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
     errorCode = meshkernelapi::mkernel_orthogonalize_delete(0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
 
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(12, meshGeometryDimensions.numnode);
-    ASSERT_EQ(17, meshGeometryDimensions.numedge);
+    ASSERT_EQ(12, meshGeometry.numnode);
+    ASSERT_EQ(17, meshGeometry.numedge);
 }
 
 TEST_F(ApiTests, MakeGridThroughApi)
@@ -210,14 +203,13 @@ TEST_F(ApiTests, MakeGridThroughApi)
     auto errorCode = mkernel_make_mesh(0, makeMeshParameters, geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(20, meshGeometryDimensions.numnode);
-    ASSERT_EQ(31, meshGeometryDimensions.numedge);
+    ASSERT_EQ(20, meshGeometry.numnode);
+    ASSERT_EQ(31, meshGeometry.numedge);
 }
 TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
 {
@@ -257,14 +249,13 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     auto errorCode = mkernel_curvilinear_mesh_from_splines(0, geometryListIn, curvilinearParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(121, meshGeometryDimensions.numnode);
-    ASSERT_EQ(220, meshGeometryDimensions.numedge);
+    ASSERT_EQ(121, meshGeometry.numnode);
+    ASSERT_EQ(220, meshGeometry.numedge);
 
     // Delete dynamically allocated memory with operator new
     delete[] geometryListIn.xCoordinates;
@@ -329,14 +320,13 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    ASSERT_EQ(21, meshGeometryDimensions.numnode);
-    ASSERT_EQ(32, meshGeometryDimensions.numedge);
+    ASSERT_EQ(21, meshGeometry.numnode);
+    ASSERT_EQ(32, meshGeometry.numedge);
 
     // Delete dynamically allocated memory with operator new
     delete[] geometryListIn.xCoordinates;
@@ -415,14 +405,13 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
     auto errorCode = mkernel_make_mesh_from_polygon(0, geometryListIn);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     // Get the new state
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(38, meshGeometryDimensions.numnode);
-    ASSERT_EQ(95, meshGeometryDimensions.numedge);
+    ASSERT_EQ(38, meshGeometry.numnode);
+    ASSERT_EQ(95, meshGeometry.numedge);
 
     // Delete dynamically allocated memory with operator new
     delete[] geometryListIn.xCoordinates;
@@ -470,12 +459,12 @@ TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(4, meshGeometryDimensions.numnode);
-    ASSERT_EQ(5, meshGeometryDimensions.numedge);
+    ASSERT_EQ(4, meshGeometry.numnode);
+    ASSERT_EQ(5, meshGeometry.numedge);
 
     // Delete dynamically allocated memory with operator new
     delete[] geometryListIn.xCoordinates;
@@ -691,14 +680,13 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(12, meshGeometryDimensions.numnode);
-    ASSERT_EQ(17, meshGeometryDimensions.numedge);
+    ASSERT_EQ(12, meshGeometry.numnode);
+    ASSERT_EQ(17, meshGeometry.numedge);
 
     // Delete dynamically allocated memory with operator new
     delete[] geometryListIn.xCoordinates;
@@ -763,14 +751,13 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(12, meshGeometryDimensions.numnode);
-    ASSERT_EQ(17, meshGeometryDimensions.numedge);
+    ASSERT_EQ(12, meshGeometry.numnode);
+    ASSERT_EQ(17, meshGeometry.numedge);
 
     // Delete dynamically allocated memory with operator new
     delete[] geometryListIn.xCoordinates;
@@ -824,14 +811,13 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(21, meshGeometryDimensions.numnode);
-    ASSERT_EQ(29, meshGeometryDimensions.numedge);
+    ASSERT_EQ(21, meshGeometry.numnode);
+    ASSERT_EQ(29, meshGeometry.numedge);
 
     // Delete dynamically allocated memory with operator new
     delete[] geometryListIn.xCoordinates;
@@ -925,14 +911,13 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
-    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh(0, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(28, meshGeometryDimensions.numnode);
-    ASSERT_EQ(40, meshGeometryDimensions.numedge);
+    ASSERT_EQ(28, meshGeometry.numnode);
+    ASSERT_EQ(40, meshGeometry.numedge);
 
     // Delete dynamically allocated memory with operator new
     delete[] geometryListIn.xCoordinates;
@@ -979,9 +964,9 @@ TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError
     int meshKernelId;
     meshkernelapi::mkernel_new_mesh(meshKernelId);
 
-    auto meshData = ReadLegacyMeshFromFileForApiTesting("../../../../tests/data/InvalidMeshes/invalid_orthogonalization_net.nc");
-    auto errorCode = mkernel_set_state(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
-    DeleteRectangularMeshForApiTesting(std::get<0>(meshData));
+    const auto meshData = ReadLegacyMeshFromFileForApiTesting("../../../../tests/data/InvalidMeshes/invalid_orthogonalization_net.nc");
+    auto errorCode = mkernel_set_state(meshKernelId, meshData, false);
+    DeleteRectangularMeshForApiTesting(meshData);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};

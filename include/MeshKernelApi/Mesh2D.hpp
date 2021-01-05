@@ -72,6 +72,18 @@ namespace meshkernelapi
 
         /// @brief The x-coordinates of the mesh faces mass centers
         double* facez = nullptr;
+
+        /// @brief The number of mesh nodes
+        int numnode;
+
+        /// @brief The number of edges
+        int numedge;
+
+        /// @brief The number of faces
+        int numface;
+
+        /// @brief The maximum amount of nodes a face can have
+        int maxnumfacenodes;
     };
 
 } // namespace meshkernelapi
