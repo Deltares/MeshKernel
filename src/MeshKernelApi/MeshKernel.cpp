@@ -133,58 +133,58 @@ namespace meshkernelapi
         return true;
     }
 
-    static bool SetMeshGeometry(int meshKernelId, Mesh2D& meshGeometry)
+    static bool SetMeshGeometry(int meshKernelId, Mesh2D& mesh2D)
     {
         if (meshKernelId >= meshInstances.size())
         {
             return false;
         }
 
-        meshGeometry.nodex = &(meshInstances[meshKernelId]->m_nodex[0]);
-        meshGeometry.nodey = &(meshInstances[meshKernelId]->m_nodey[0]);
-        meshGeometry.nodez = &(meshInstances[meshKernelId]->m_nodez[0]);
-        meshGeometry.edge_nodes = &(meshInstances[meshKernelId]->m_edgeNodes[0]);
+        mesh2D.nodex = &(meshInstances[meshKernelId]->m_nodex[0]);
+        mesh2D.nodey = &(meshInstances[meshKernelId]->m_nodey[0]);
+        mesh2D.nodez = &(meshInstances[meshKernelId]->m_nodez[0]);
+        mesh2D.edge_nodes = &(meshInstances[meshKernelId]->m_edgeNodes[0]);
 
-        meshGeometry.maxnumfacenodes = meshkernel::maximumNumberOfNodesPerFace;
-        meshGeometry.numface = static_cast<int>(meshInstances[meshKernelId]->GetNumFaces());
-        if (meshGeometry.numface > 0)
+        mesh2D.maxnumfacenodes = meshkernel::maximumNumberOfNodesPerFace;
+        mesh2D.numface = static_cast<int>(meshInstances[meshKernelId]->GetNumFaces());
+        if (mesh2D.numface > 0)
         {
-            meshGeometry.face_nodes = &(meshInstances[meshKernelId]->m_faceNodes[0]);
-            meshGeometry.facex = &(meshInstances[meshKernelId]->m_facesCircumcentersx[0]);
-            meshGeometry.facey = &(meshInstances[meshKernelId]->m_facesCircumcentersy[0]);
-            meshGeometry.facez = &(meshInstances[meshKernelId]->m_facesCircumcentersz[0]);
+            mesh2D.face_nodes = &(meshInstances[meshKernelId]->m_faceNodes[0]);
+            mesh2D.facex = &(meshInstances[meshKernelId]->m_facesCircumcentersx[0]);
+            mesh2D.facey = &(meshInstances[meshKernelId]->m_facesCircumcentersy[0]);
+            mesh2D.facez = &(meshInstances[meshKernelId]->m_facesCircumcentersz[0]);
         }
 
         if (meshInstances[meshKernelId]->GetNumNodes() == 1)
         {
-            meshGeometry.numnode = 0;
-            meshGeometry.numedge = 0;
+            mesh2D.numnode = 0;
+            mesh2D.numedge = 0;
         }
         else
         {
-            meshGeometry.numnode = static_cast<int>(meshInstances[meshKernelId]->GetNumNodes());
-            meshGeometry.numedge = static_cast<int>(meshInstances[meshKernelId]->GetNumEdges());
+            mesh2D.numnode = static_cast<int>(meshInstances[meshKernelId]->GetNumNodes());
+            mesh2D.numedge = static_cast<int>(meshInstances[meshKernelId]->GetNumEdges());
         }
 
         return true;
     }
 
-    static std::vector<meshkernel::Point> ComputeLocations(const Mesh2D& meshGeometry, meshkernel::MeshLocations interpolationLocation)
+    static std::vector<meshkernel::Point> ComputeLocations(const Mesh2D& mesh2D, meshkernel::MeshLocations interpolationLocation)
     {
         std::vector<meshkernel::Point> locations;
         if (interpolationLocation == meshkernel::MeshLocations::Nodes)
         {
-            locations = meshkernel::ConvertToNodesVector(meshGeometry.numnode, meshGeometry.nodex, meshGeometry.nodey);
+            locations = meshkernel::ConvertToNodesVector(mesh2D.numnode, mesh2D.nodex, mesh2D.nodey);
         }
         if (interpolationLocation == meshkernel::MeshLocations::Edges)
         {
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometry.numedge, meshGeometry.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(meshGeometry.numnode, meshGeometry.nodex, meshGeometry.nodey);
+            const auto edges = meshkernel::ConvertToEdgeNodesVector(mesh2D.numedge, mesh2D.edge_nodes);
+            const auto nodes = meshkernel::ConvertToNodesVector(mesh2D.numnode, mesh2D.nodex, mesh2D.nodey);
             locations = ComputeEdgeCenters(nodes, edges);
         }
         if (interpolationLocation == meshkernel::MeshLocations::Faces)
         {
-            locations = meshkernel::ConvertToFaceCentersVector(meshGeometry.numface, meshGeometry.facex, meshGeometry.facey);
+            locations = meshkernel::ConvertToFaceCentersVector(mesh2D.numface, mesh2D.facex, mesh2D.facey);
         }
 
         return locations;
@@ -253,7 +253,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_set_state(int meshKernelId, const Mesh2D& meshGeometry, bool isGeographic)
+    MKERNEL_API int mkernel_set_state(int meshKernelId, const Mesh2D& mesh2D, bool isGeographic)
     {
         int exitCode = Success;
         try
@@ -263,8 +263,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometry.numedge, meshGeometry.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(meshGeometry.numnode, meshGeometry.nodex, meshGeometry.nodey);
+            const auto edges = meshkernel::ConvertToEdgeNodesVector(mesh2D.numedge, mesh2D.edge_nodes);
+            const auto nodes = meshkernel::ConvertToNodesVector(mesh2D.numnode, mesh2D.nodex, mesh2D.nodey);
 
             // spherical or cartesian
             if (isGeographic)
@@ -283,7 +283,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh(int meshKernelId, Mesh2D& meshGeometry)
+    MKERNEL_API int mkernel_get_mesh(int meshKernelId, Mesh2D& mesh2D)
     {
         int exitCode = Success;
         try
@@ -295,7 +295,7 @@ namespace meshkernelapi
 
             meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdges);
 
-            SetMeshGeometry(meshKernelId, meshGeometry);
+            SetMeshGeometry(meshKernelId, mesh2D);
         }
         catch (...)
         {
@@ -304,7 +304,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_find_faces(int meshKernelId, Mesh2D& meshGeometry)
+    MKERNEL_API int mkernel_find_faces(int meshKernelId, Mesh2D& mesh2D)
     {
         int exitCode = Success;
         try
@@ -315,7 +315,7 @@ namespace meshkernelapi
             }
             meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
-            SetMeshGeometry(meshKernelId, meshGeometry);
+            SetMeshGeometry(meshKernelId, mesh2D);
         }
         catch (...)
         {
@@ -1719,7 +1719,7 @@ namespace meshkernelapi
         return meshkernel::innerOuterSeparator;
     }
 
-    MKERNEL_API int averaging(const Mesh2D& meshGeometry,
+    MKERNEL_API int averaging(const Mesh2D& mesh2D,
                               const int& startIndex,
                               const double** samplesXCoordinate,
                               const double** samplesYCoordinate,
@@ -1749,8 +1749,8 @@ namespace meshkernelapi
             }
 
             // Set the mesh
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometry.numedge, meshGeometry.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(meshGeometry.numnode, meshGeometry.nodex, meshGeometry.nodey);
+            const auto edges = meshkernel::ConvertToEdgeNodesVector(mesh2D.numedge, mesh2D.edge_nodes);
+            const auto nodes = meshkernel::ConvertToNodesVector(mesh2D.numnode, mesh2D.nodex, mesh2D.nodey);
             const auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
 
             // Build the samples
@@ -1787,7 +1787,7 @@ namespace meshkernelapi
     }
 
     // ec_module dll (stateless)
-    MKERNEL_API int triangulation(const Mesh2D& meshGeometry,
+    MKERNEL_API int triangulation(const Mesh2D& mesh2D,
                                   int& startIndex,
                                   const double** samplesXCoordinate,
                                   const double** samplesYCoordinate,
@@ -1814,7 +1814,7 @@ namespace meshkernelapi
 
             // Locations
             const auto location = static_cast<meshkernel::MeshLocations>(locationType);
-            const auto locations = ComputeLocations(meshGeometry, location);
+            const auto locations = ComputeLocations(mesh2D, location);
 
             // Build the samples
             const auto samples = meshkernel::Sample::ConvertToSamples(numSamples, samplesXCoordinate, samplesYCoordinate, samplesValue);

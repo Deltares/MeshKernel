@@ -82,22 +82,22 @@ namespace meshkernelapi
         /// @brief Sets the grid state
         /// @param[in] meshKernelId Id of the grid state
         /// @param[in] meshGeometryDimensions Mesh dimensions
-        /// @param[in] meshGeometry Mesh data
+        /// @param[in] mesh2D Mesh data
         /// @param[in] isGeographic Cartesian (false) or spherical (true) mesh
         /// @returns Error code
-        MKERNEL_API int mkernel_set_state(int meshKernelId, const Mesh2D& meshGeometry, bool isGeographic);
+        MKERNEL_API int mkernel_set_state(int meshKernelId, const Mesh2D& mesh2D, bool isGeographic);
 
         /// @brief Gets the mesh state as a <see cref="Mesh2D"/> structure
         /// @param[in] meshKernelId Id of the grid state
-        /// @param[out] meshGeometry Grid data
+        /// @param[out] mesh2D Grid data
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh(int meshKernelId, Mesh2D& meshGeometry);
+        MKERNEL_API int mkernel_get_mesh(int meshKernelId, Mesh2D& mesh2D);
 
         /// @brief Gets the mesh faces
         /// @param[in] meshKernelId Id of the mesh state
-        /// @param[out] meshGeometry Mesh data (including face information)
+        /// @param[out] mesh2D Mesh data (including face information)
         /// @returns Error code
-        MKERNEL_API int mkernel_find_faces(int meshKernelId, Mesh2D& meshGeometry);
+        MKERNEL_API int mkernel_find_faces(int meshKernelId, Mesh2D& mesh2D);
 
         /// @brief Count the number of hanging edges
         /// @param[in] meshKernelId Id of the mesh state
@@ -482,7 +482,7 @@ namespace meshkernelapi
         MKERNEL_API double mkernel_get_inner_outer_separator();
 
         /// @brief Triangle interpolation (ec_module)
-        /// @param[in] meshGeometry Mesh data
+        /// @param[in] mesh2D Mesh data
         /// @param[in] startIndex start index (not used)
         /// @param[in] samplesXCoordinate The sample x coordinates
         /// @param[in] samplesYCoordinate The sample y coordinates
@@ -493,7 +493,7 @@ namespace meshkernelapi
         /// @param[in] spherical Current projection (0 cartesian, 1 spherical)
         /// @param[in] sphericalAccurate Accurate spherical projection (0 default spherical, 1 spherical accurate)
         /// @return Error code (0 Successful)
-        MKERNEL_API int triangulation(const Mesh2D& meshGeometry,
+        MKERNEL_API int triangulation(const Mesh2D& mesh2D,
                                       int& startIndex,
                                       const double** samplesXCoordinate,
                                       const double** samplesYCoordinate,
@@ -505,7 +505,7 @@ namespace meshkernelapi
                                       int& sphericalAccurate);
 
         /// @brief AveragingInterpolation interpolation (ec_module)
-        /// @param[in] meshGeometry Mesh data
+        /// @param[in] mesh2D Mesh data
         /// @param[in] startIndex Mesh data start index (not used)
         /// @param[in] samplesXCoordinate The sample x coordinates
         /// @param[in] samplesYCoordinate The sample y coordinates
@@ -520,7 +520,7 @@ namespace meshkernelapi
         /// @param[in] spherical Current projection (0 cartesian, 1 spherical)
         /// @param[in] sphericalAccurate Accurate spherical computations (0 default spherical, 1 spherical accurate)
         /// @return Error code (0 Successful)
-        MKERNEL_API int averaging(const Mesh2D& meshGeometry,
+        MKERNEL_API int averaging(const Mesh2D& mesh2D,
                                   const int& startIndex,
                                   const double** samplesXCoordinate,
                                   const double** samplesYCoordinate,
