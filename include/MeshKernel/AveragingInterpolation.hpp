@@ -27,8 +27,8 @@
 
 #pragma once
 
-#include <MeshKernel/SpatialTrees.hpp>
 #include <MeshKernel/Constants.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
 
 namespace meshkernel
 {
@@ -57,7 +57,7 @@ namespace meshkernel
         /// @param[in] method The averaging method to use
         /// @param[in] locationType The location type (faces, edges, nodes).
         /// @param[in] relativeSearchRadius The relative search radius, used to enlarge the search area when looking for samples.
-        /// @param[in] useClosestSampleIfNoneAvailable If no sample are found use the closest one.
+        /// @param[in] useClosestSampleIfNoneAvailable If no samples are found use the closest one.
         /// @param[in] subtractSampleValues For some algorithms (e.g. refinement based on levels) we need to subtract 1 to the sample value.
         explicit AveragingInterpolation(std::shared_ptr<Mesh> mesh,
                                         std::vector<Sample>& samples,
@@ -78,7 +78,7 @@ namespace meshkernel
         }
 
     private:
-        /// @brief[in] Compute The averaging results in polygon
+        /// @brief Compute the averaging results in polygon
         /// @param[in] polygon The bounding polygon where the samples are included
         /// @param[in] interpolationPoint The interpolation point
         /// @param[out] result The resulting value
@@ -89,6 +89,17 @@ namespace meshkernel
         /// @brief Compute the interpolated results on designed location
         /// @return the interpolated results
         [[nodiscard]] std::vector<double> ComputeOnLocations();
+
+        /// @brief Compute the interpolated results on faces
+        /// @return the interpolated results
+        [[nodiscard]] std::vector<double> ComputeOnFaces();
+
+        /// @brief Compute the interpolated results on nodes or edges
+        /// @return the interpolated results
+        [[nodiscard]] std::vector<double> ComputeOnNodesOrEdges();
+
+        /// @brief Decreases the values of samples
+        void DecreaseValueOfSamples();
 
         const std::shared_ptr<Mesh> m_mesh;
         std::vector<Sample>& m_samples;
