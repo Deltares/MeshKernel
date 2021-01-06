@@ -495,7 +495,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBefo
         }
 
         const auto newNodeIndex = m_mesh->InsertNode(middle);
-        m_edgeMask[e] = newNodeIndex;
+        m_edgeMask[e] = static_cast<int>(newNodeIndex);
 
         // set mask on the new node
         m_mesh->m_nodeMask[newNodeIndex] = 1;

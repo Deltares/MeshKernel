@@ -664,7 +664,6 @@ namespace meshkernel
 
             if (projection == Projection::spherical)
             {
-                const auto middlePoint = ComputeMiddlePoint(firstPoint, secondPoint, projection);
                 result.x = result.x / cos(degrad_hp * 0.5 * (firstPoint.y + secondPoint.y));
                 result.y = result.y;
             }
@@ -1479,16 +1478,16 @@ namespace meshkernel
                 averagePoint3D.y += point3D.y;
                 averagePoint3D.z += point3D.z;
             }
-            averagePoint3D.x = averagePoint3D.x / validPoints.size();
-            averagePoint3D.y = averagePoint3D.y / validPoints.size();
-            averagePoint3D.z = averagePoint3D.z / validPoints.size();
+            averagePoint3D.x = averagePoint3D.x / static_cast<double>(validPoints.size());
+            averagePoint3D.y = averagePoint3D.y / static_cast<double>(validPoints.size());
+            averagePoint3D.z = averagePoint3D.z / static_cast<double>(validPoints.size());
 
             return Cartesian3DToSpherical(averagePoint3D, points[0].x);
         }
 
         auto result = std::accumulate(validPoints.begin(), validPoints.end(), Point{0.0, 0.0});
-        result.x = result.x / validPoints.size();
-        result.y = result.y / validPoints.size();
+        result.x = result.x / static_cast<double>(validPoints.size());
+        result.y = result.y / static_cast<double>(validPoints.size());
         return result;
     }
 

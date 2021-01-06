@@ -330,7 +330,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
 
     if (m_method == Method::SimpleAveraging && numValidSamplesInPolygon > 0 && result > doubleMissingValue)
     {
-        result /= static_cast<size_t>(numValidSamplesInPolygon);
+        result /= static_cast<double>(numValidSamplesInPolygon);
     }
 
     if (m_method == Method::InverseWeightedDistance && numValidSamplesInPolygon > 0)
