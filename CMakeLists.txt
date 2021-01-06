@@ -43,7 +43,7 @@ add_subdirectory(extern)
 include(FetchContent)
 
 # Boost C++
-find_package(Boost 1.74.0 REQUIRED)
+find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 # The static library
