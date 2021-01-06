@@ -6,10 +6,10 @@
         <authors>Deltares</authors>
         <owners>Deltares</owners>
         <description>Deltares back end mesh editing engine (C++ version)</description>
-        <copyright>Copyright 2020</copyright>
+        <copyright>Copyright 2021</copyright>
     </metadata>
     <files>
-        <file src="..\src\Release\*" target="native\Lib" />
+        <file src="..\src\MeshKernelApi\Release\*" target="native\Lib" />
         <file src="Deltares.MeshKernel.targets" target="build\net461\Deltares.MeshKernel.targets" />
     </files>
 </package>
