@@ -6,7 +6,7 @@
 
 meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
-                           Projection projection) : Mesh(edges, nodes, m_projection){};
+                           Projection projection) : Mesh(edges, nodes, projection){};
 
 void meshkernel::Mesh1D::Administrate()
 {
