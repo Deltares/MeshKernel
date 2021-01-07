@@ -22,7 +22,7 @@ TEST(SpatialTrees, RTreeRemovePoint)
         }
     }
 
-    meshkernel::SpatialTrees::RTree rtree;
+    meshkernel::RTree rtree;
     rtree.BuildTree(nodes);
 
     rtree.DeleteNode(0);
@@ -46,7 +46,7 @@ TEST(SpatialTrees, PerformanceTestBuildAndSearchRTree)
     }
 
     auto start(std::chrono::steady_clock::now());
-    meshkernel::SpatialTrees::RTree rtree;
+    meshkernel::RTree rtree;
     rtree.BuildTree(nodes);
     auto end = std::chrono::steady_clock::now();
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
@@ -79,7 +79,7 @@ TEST(SpatialTrees, FindNodesInSquare)
         }
     }
 
-    meshkernel::SpatialTrees::RTree rtree;
+    meshkernel::RTree rtree;
     rtree.BuildTree(nodes);
 
     // large search size, node found

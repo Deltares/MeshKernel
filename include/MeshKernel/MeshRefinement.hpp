@@ -138,7 +138,7 @@ namespace meshkernel
         void RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement);
 
         /// The sample node RTree
-        SpatialTrees::RTree m_samplesRTree;
+        RTree m_samplesRTree;
 
         std::vector<int> m_faceMask;        ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;        ///< If 0, edge is not split

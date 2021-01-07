@@ -109,7 +109,7 @@ namespace meshkernel
         bool m_useClosestSampleIfNoneAvailable = false;
         bool m_transformSamples = false;
 
-        SpatialTrees::RTree m_samplesRtree;
+        RTree m_samplesRtree;
         std::vector<double> m_results;
         std::vector<bool> m_visitedSamples;
     };

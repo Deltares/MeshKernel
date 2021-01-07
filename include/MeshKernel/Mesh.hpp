@@ -392,8 +392,8 @@ namespace meshkernel
 
         Projection m_projection; ///< The projection used
 
-        SpatialTrees::RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
-        SpatialTrees::RTree m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
+        RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
+        RTree m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
 
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbors
 

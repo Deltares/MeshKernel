@@ -25,7 +25,7 @@
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
-    <AssociationLine Name="m_nodesRTree" Type="MeshKernel::SpatialTrees::RTree" FixedFromPoint="true">
+    <AssociationLine Name="m_nodesRTree" Type="MeshKernel::RTree" FixedFromPoint="true">
       <Path>
         <Point X="8" Y="4.312" />
         <Point X="10.25" Y="4.312" />
@@ -52,7 +52,7 @@
   </Class>
   <Class Name="MeshKernel::MeshRefinement" Collapsed="true">
     <Position X="5.25" Y="2.75" Width="2.75" />
-    <AssociationLine Name="m_samplesRTree" Type="MeshKernel::SpatialTrees::RTree">
+    <AssociationLine Name="m_samplesRTree" Type="MeshKernel::RTree">
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
         <Position X="0.588" Y="0.168" Height="0.182" Width="1.274" />
       </MemberNameLabel>
@@ -135,7 +135,7 @@
       <FileName>D:\LUCA\ENGINES\MeshKernel++\lastCheckout\src\Splines.hpp</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="MeshKernel::SpatialTrees::RTree" Collapsed="true">
+  <Class Name="MeshKernel::RTree" Collapsed="true">
     <Position X="9.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AABgAAAIAAAAgAEAACIACAAADAAAAAgAAAAFgABAACQ=</HashCode>

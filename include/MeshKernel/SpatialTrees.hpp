@@ -45,84 +45,79 @@
 
 namespace meshkernel
 {
-    /// @brief Contains the logic to describe spatial trees
-    namespace SpatialTrees
+    namespace bg = boost::geometry;
+    namespace bgi = boost::geometry::index;
+
+    /// @brief Class wrapping the boost::geometry::index::rtree code
+    ///
+    /// This class is required for inquiring adjacent nodes in the merging algorithm.
+    class RTree
     {
-        namespace bg = boost::geometry;
-        namespace bgi = boost::geometry::index;
-        constexpr int QueryVectorCapacity = 100; ///< Capacity of the query vector
+        typedef bg::model::point<double, 2, bg::cs::cartesian> Point2D;
+        typedef bg::model::box<Point2D> Box2D;
+        typedef std::pair<Point2D, size_t> value2D;
+        typedef bgi::rtree<value2D, bgi::linear<16>> RTree2D;
 
-        /// @brief Class wrapping the boost::geometry::index::rtree code
-        ///
-        /// This class is required for inquiring adjacent nodes in the merging algorithm.
-        class RTree
+        typedef bg::model::point<double, 3, bg::cs::cartesian> Point3D;
+        typedef bg::model::box<Point2D> Box3D;
+        typedef std::pair<Point3D, size_t> value3D;
+        typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;
+
+    public:
+        /// @brief Builds the tree
+        /// @tparam T Requires IsCoordinate<T>
+        template <typename T>
+        void BuildTree(std::vector<T>& nodes)
         {
+            m_points.reserve(m_points.size());
+            m_points.clear();
+            m_rtree2D.clear();
 
-            typedef bg::model::point<double, 2, bg::cs::cartesian> Point2D;
-            typedef bg::model::box<Point2D> Box2D;
-            typedef std::pair<Point2D, size_t> value2D;
-            typedef bgi::rtree<value2D, bgi::linear<16>> RTree2D;
-
-            typedef bg::model::point<double, 3, bg::cs::cartesian> Point3D;
-            typedef bg::model::box<Point2D> Box3D;
-            typedef std::pair<Point3D, size_t> value3D;
-            typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;
-
-        public:
-            /// @brief Builds the tree
-            /// @tparam T Requires IsCoordinate<T>
-            template <typename T>
-            void BuildTree(std::vector<T>& nodes)
+            for (auto n = 0; n < nodes.size(); ++n)
             {
-                m_points.reserve(m_points.size());
-                m_points.clear();
-                m_rtree2D.clear();
-
-                for (auto n = 0; n < nodes.size(); ++n)
+                if (nodes[n].x != doubleMissingValue && nodes[n].y != doubleMissingValue)
                 {
-                    if (nodes[n].x != doubleMissingValue && nodes[n].y != doubleMissingValue)
-                    {
-                        m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
-                    }
+                    m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
                 }
-                m_rtree2D = RTree2D(m_points.begin(), m_points.end());
             }
+            m_rtree2D = RTree2D(m_points.begin(), m_points.end());
+        }
 
-            /// @brief Determines the nearest neighbors on squared distance
-            /// @param[in] node The node
-            /// @param[in] searchRadiusSquared The squared search radius around the node
-            void NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared);
+        /// @brief Determines the nearest neighbors on squared distance
+        /// @param[in] node The node
+        /// @param[in] searchRadiusSquared The squared search radius around the node
+        void NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared);
 
-            /// @brief Determines the nearest neighbor
-            /// @param[in] node The node
-            void NearestNeighbors(Point node);
+        /// @brief Determines the nearest neighbor
+        /// @param[in] node The node
+        void NearestNeighbors(Point node);
 
-            /// @brief Deletes a node
-            /// @param[in] position Position of the node to remove in m_points
-            void DeleteNode(size_t position);
+        /// @brief Deletes a node
+        /// @param[in] position Position of the node to remove in m_points
+        void DeleteNode(size_t position);
 
-            /// @brief Inserts a node
-            /// @param[in] node Node to insert in m_points
-            void InsertNode(const Point& node);
+        /// @brief Inserts a node
+        /// @param[in] node Node to insert in m_points
+        void InsertNode(const Point& node);
 
-            /// @brief Determines size of the RTree
-            [[nodiscard]] size_t Size() const;
+        /// @brief Determines size of the RTree
+        [[nodiscard]] size_t Size() const;
 
-            /// @brief Determines if the RTree is empty
-            [[nodiscard]] bool Empty() const;
+        /// @brief Determines if the RTree is empty
+        [[nodiscard]] bool Empty() const;
 
-            /// @brief Gets the size of the query
-            [[nodiscard]] size_t GetQueryResultSize() const;
+        /// @brief Gets the size of the query
+        [[nodiscard]] size_t GetQueryResultSize() const;
 
-            /// @brief Gets the index of a sample in the query
-            [[nodiscard]] size_t GetQuerySampleIndex(size_t index) const;
+        /// @brief Gets the index of a sample in the query
+        [[nodiscard]] size_t GetQuerySampleIndex(size_t index) const;
 
-        private:
-            RTree2D m_rtree2D;
-            std::vector<std::pair<Point2D, size_t>> m_points;
-            std::vector<value2D> m_queryCache;
-            std::vector<size_t> m_queryIndices;
-        };
+    private:
+        RTree2D m_rtree2D;
+        std::vector<std::pair<Point2D, size_t>> m_points;
+        std::vector<value2D> m_queryCache;
+        std::vector<size_t> m_queryIndices;
+        int m_queryVectorCapacity = 100; ///< Capacity of the query vector
+    };
 
-    } // namespace SpatialTrees
 } // namespace meshkernel

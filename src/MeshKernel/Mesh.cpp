@@ -1117,7 +1117,7 @@ void meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     filteredNodes.resize(index);
 
     // Update the R-Tree of the mesh nodes
-    SpatialTrees::RTree nodesRtree;
+    RTree nodesRtree;
     nodesRtree.BuildTree(filteredNodes);
 
     // merge the closest nodes

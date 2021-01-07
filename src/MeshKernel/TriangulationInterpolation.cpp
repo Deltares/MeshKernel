@@ -82,7 +82,7 @@ void meshkernel::TriangulationInterpolation::Compute()
         trianglesCircumcenters[f] = ComputeAverageCoordinate(triangles[f], m_projection);
     }
 
-    SpatialTrees::RTree samplesRtree;
+    RTree samplesRtree;
     samplesRtree.BuildTree(trianglesCircumcenters);
 
     // compute the sample bounding box
