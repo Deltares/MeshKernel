@@ -9,7 +9,8 @@ file(GLOB UTILS_SOURCE_LIST CONFIGURE_DEPENDS
 add_library(UtilsStatic STATIC ${UTILS_HEADER_LIST} ${UTILS_SOURCE_LIST})
 
 # Should be linked to the main library
-target_link_libraries(UtilsStatic PRIVATE MeshKernelStatic)
+target_link_libraries(UtilsStatic PRIVATE MeshKernelStatic ${Boost_LIBRARIES}
+                                          Boost::filesystem Boost::system)
 
 # Expose the interface of the static lib
 target_include_directories(UtilsStatic PUBLIC include)

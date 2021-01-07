@@ -43,8 +43,9 @@ add_subdirectory(extern)
 include(FetchContent)
 
 # Boost C++
-find_package(Boost)
-include_directories(${Boost_INCLUDE_DIR})
+set(Boost_USE_STATIC_LIBS ON)
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+include_directories(${Boost_INCLUDE_DIRS})
 
 # The static library
 add_subdirectory(src/MeshKernel)

@@ -11,34 +11,19 @@
 
 #include <MeshKernel/Mesh.hpp>
 #include <TestUtils/MakeMeshes.hpp>
+#include <boost/dll.hpp>
 #include <stdexcept>
 
 std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath)
 {
-    auto netcdf = LoadLibrary("netcdf.dll");
+    boost::dll::shared_library lib("netcdf.dll");
 
-    if (!netcdf)
-    {
-        throw std::invalid_argument("ReadLegacyMeshFromFile: Could not load 'netcdf.dll'.");
-    }
-
-    typedef int(__stdcall * nc_open_dll)(const char* path, int mode, int* ncidp);
-    auto nc_open = (nc_open_dll)GetProcAddress(netcdf, "nc_open");
-
-    typedef int(__stdcall * nc_inq_dimid_dll)(int ncid, const char* name, int* idp);
-    auto nc_inq_dimid = (nc_inq_dimid_dll)GetProcAddress(netcdf, "nc_inq_dimid");
-
-    typedef int(__stdcall * nc_inq_dim_dll)(int ncid, int dimid, char* name, std::size_t* lenp);
-    auto nc_inq_dim = (nc_inq_dim_dll)GetProcAddress(netcdf, "nc_inq_dim");
-
-    typedef int(__stdcall * nc_inq_varid_dll)(int ncid, const char* name, int* varidp);
-    auto nc_inq_varid = (nc_inq_varid_dll)GetProcAddress(netcdf, "nc_inq_varid");
-
-    typedef int(__stdcall * nc_get_var_double_dll)(int ncid, int varid, double* ip);
-    auto nc_get_var_double = (nc_get_var_double_dll)GetProcAddress(netcdf, "nc_get_var_double");
-
-    typedef int(__stdcall * nc_get_var_int_dll)(int ncid, int varid, int* ip);
-    auto nc_get_var_int = (nc_get_var_int_dll)GetProcAddress(netcdf, "nc_get_var_int");
+    auto nc_open = lib.get<int(const char*, int, int*)>("nc_open");
+    auto nc_inq_dimid = lib.get<int(int, const char*, int*)>("nc_inq_dimid");
+    auto nc_inq_dim = lib.get<int(int, int, char*, std::size_t*)>("nc_inq_dim");
+    auto nc_inq_varid = lib.get<int(int, const char*, int*)>("nc_inq_varid");
+    auto nc_get_var_double = lib.get<int(int, int, double*)>("nc_get_var_double");
+    auto nc_get_var_int = lib.get<int(int, int, int*)>("nc_get_var_int");
 
     int ncidp = 0;
     int err = nc_open(filePath.c_str(), NC_NOWRITE, &ncidp);
