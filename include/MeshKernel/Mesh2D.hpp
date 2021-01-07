@@ -30,6 +30,7 @@
 #include <vector>
 
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 
@@ -44,7 +45,7 @@ namespace meshkernel
     class GeometryList;
 
     /// @brief A class describing an unstructured 2d mesh
-    class Mesh2D
+    class Mesh2D : public Mesh
     {
     public:
         /// Enumerator describing the different options to delete a mesh
@@ -231,28 +232,6 @@ namespace meshkernel
         /// @brief Computes the edges centers  in one go
         void ComputeEdgesCenters();
 
-        /// @brief Get the number of valid nodes
-        /// @return The number of valid node
-        [[nodiscard]] auto GetNumNodes() const { return m_numNodes; }
-
-        /// @brief Get the number of valid edges
-        /// @return The number of valid edges
-        [[nodiscard]] auto GetNumEdges() const { return m_numEdges; }
-
-        /// @brief Get the number of valid faces
-        /// @return The number of valid faces
-        [[nodiscard]] auto GetNumFaces() const { return m_numFaces; }
-
-        /// @brief Get the number of edges for a face
-        /// @param[in] faceIndex The face index
-        /// @return The number of valid faces
-        [[nodiscard]] auto GetNumFaceEdges(size_t faceIndex) const { return m_numFacesNodes[faceIndex]; }
-
-        /// @brief Get the number of faces an edges shares
-        /// @param[in] edgeIndex The edge index
-        /// @return The number of faces an edges shares
-        [[nodiscard]] auto GetNumEdgesFaces(size_t edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
-
         /// @brief Inquire if an edge is on boundary
         /// @param edge The edge index
         /// @return If the edge is on boundary
@@ -353,8 +332,8 @@ namespace meshkernel
         /// @brief Deletes the hanging edges
         void DeleteHangingEdges();
 
-        /// @brief
-        /// @return
+        /// @brief For a collection of points compute the face indices including them
+        /// @return The face indices including the points
         std::vector<size_t> PointFaceIndices(const std::vector<Point>& points);
 
         /// @brief
@@ -364,31 +343,6 @@ namespace meshkernel
         /// @param intersectedEdge
         /// @return
         bool IsSegmentCrossingAFace(const Point& firstPoint, const Point& secondPoint, size_t& intersectedFace, size_t& intersectedEdge) const;
-
-        // nodes
-        std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
-        std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
-        std::vector<size_t> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
-        std::vector<int> m_nodeMask;                   ///< The node mask (kc)
-        std::vector<std::vector<size_t>> m_nodesNodes; ///< For each node, its neighbours
-        std::vector<int> m_nodesTypes;                 ///< The node types (nb)
-
-        // edges
-        std::vector<Edge> m_edges;                     ///< The edges, defined as first and second node(kn)
-        std::vector<std::vector<size_t>> m_edgesFaces; ///< For each edge, the shared face index (lne)
-        std::vector<size_t> m_edgesNumFaces;           ///< For each edge, the number of shared faces(lnn)
-        std::vector<double> m_edgeLengths;             ///< The edge lengths
-        std::vector<int> m_edgeMask;                   ///< The edge mask (lc)
-        std::vector<Point> m_edgesCenters;             ///< The edges centers
-
-        // faces
-        std::vector<std::vector<size_t>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
-        std::vector<size_t> m_numFacesNodes;           ///< The number of nodes composing the face (netcell%N)
-        std::vector<std::vector<size_t>> m_facesEdges; ///< The edge indices composing the face (netcell%lin)
-        std::vector<Point> m_facesCircumcenters;       ///< The face circumcenters the face circumcenter (xz, yz)
-        std::vector<Point> m_facesMassCenters;         ///< The faces centers of mass (xzw, yzw)
-        std::vector<double> m_faceArea;                ///< The face area
-        std::vector<Point> m_polygonNodesCache;        ///< Cache to store the face nodes
 
         // vectors for communicating with the client
         std::vector<double> m_nodex;               ///< The nodes x-coordinate
@@ -400,17 +354,14 @@ namespace meshkernel
         std::vector<double> m_facesCircumcentersy; ///< The circumcenters y-coordinate
         std::vector<double> m_facesCircumcentersz; ///< The circumcenters z-coordinate
 
-        Projection m_projection; ///< The projection used
-
         SpatialTrees::RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
         SpatialTrees::RTree m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
 
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbors
 
-    private:
-        /// @brief Node administration (setnodadmin)
-        void NodeAdministration();
+        std::vector<Point> m_polygonNodesCache; ///< Cache to store the face nodes
 
+    private:
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param startingNode The starting node
         /// @param node The current node
@@ -438,14 +389,7 @@ namespace meshkernel
         /// @returns If triangle is okay
         [[nodiscard]] bool CheckTriangle(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
 
-        /// @brief Removes all invalid nodes and edges
-        void DeleteInvalidNodesAndEdges();
-
-        size_t m_numFaces = 0;            ///< Number of valid faces (nump)
-        size_t m_numNodes = 0;            ///< Number of valid nodes in m_nodes
-        size_t m_numEdges = 0;            ///< Number of valid edges in m_edges
-        std::vector<double> m_edgeAngles; ///< Internal cache for sorting the edges around nodes
-
+        std::vector<double> m_edgeAngles;       ///< Internal cache for sorting the edges around nodes
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
     };
