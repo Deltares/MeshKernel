@@ -29,11 +29,11 @@
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/SpatialTrees.hpp>
 
-meshkernel::AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh> mesh,
+meshkernel::AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh2D> mesh,
                                                            std::vector<Sample>& samples,
                                                            Method method,
                                                            MeshLocations locationType,

@@ -286,7 +286,7 @@ namespace meshkernel
     ///       to local coordinate directions(xloc, yloc) around reference point(xref, yref)
     void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, const Projection& projection, Point& localComponents);
 
-    /// @brief Computes the normal vector outside
+    /// @brief Computes the normal vector outside (normalout)
     ///
     /// \see NormalVectorInside
     ///

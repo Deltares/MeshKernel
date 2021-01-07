@@ -44,7 +44,7 @@ namespace meshkernel
     class GeometryList;
 
     /// @brief A class describing an unstructured mesh
-    class Mesh
+    class Mesh2D
     {
     public:
         /// Enumerator describing the different options to delete a mesh
@@ -74,32 +74,32 @@ namespace meshkernel
 
         /// @brief Default constructor
         /// @returns
-        Mesh() = default;
+        Mesh2D() = default;
 
         /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
         /// @param curvilinearGrid The curvilinear grid to create the mesh from
         /// @param projection The \ref Projection to use
         /// @returns
-        Mesh(const CurvilinearGrid& curvilinearGrid, Projection projection);
+        Mesh2D(const CurvilinearGrid& curvilinearGrid, Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
         /// @param[in] nodes Input nodes
         /// @param[in] polygons Selection polygon
         /// @param[in] projection Projection to use
-        Mesh(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
+        Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
         /// @brief Construct the mesh starting from the edges and nodes
         /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
         /// @param[in] projection Projection to use
         /// @param[in] administration Type of administration to perform
-        Mesh(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to the first
         /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
-        Mesh& operator+=(Mesh const& rhs);
+        Mesh2D& operator+=(Mesh2D const& rhs);
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         /// @param administrationOption Type of administration to perform
@@ -354,6 +354,18 @@ namespace meshkernel
 
         /// @brief Deletes the hanging edges
         void DeleteHangingEdges();
+
+        /// @brief
+        /// @return
+        std::vector<size_t> PointFaceIndices(const std::vector<Point>& points);
+
+        /// @brief
+        /// @param firstPoint
+        /// @param secondPoint
+        /// @param intersectedFace
+        /// @param intersectedEdge
+        /// @return
+        bool IsSegmentCrossingAFace(const Point& firstPoint, const Point& secondPoint, size_t& intersectedFace, size_t& intersectedEdge) const;
 
         // nodes
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)

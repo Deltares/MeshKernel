@@ -3,7 +3,7 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 

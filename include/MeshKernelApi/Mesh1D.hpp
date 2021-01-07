@@ -27,30 +27,24 @@
 
 #pragma once
 
-#include <memory>
-
-namespace meshkernel
+namespace meshkernelapi
 {
-    // Forward declarations
-    class Mesh2D;
-    class Polygons;
-    class CurvilinearGrid;
-
-    /// @brief A class used to compute a CurvilinearGrid from a polygon
-    class CurvilinearGridFromPolygon
+    struct Mesh1D
     {
-    public:
-        /// @param polygon The input polygon
-        explicit CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon);
+        int* edge_nodes = nullptr;
+        int* face_nodes = nullptr;
+        int* edge_faces = nullptr;
+        int* face_edges = nullptr;
 
-        /// @brief Compute curvilinear in a polygon (pol2curvi)
-        void Compute(size_t firstNode, size_t secondNode, size_t thirdNode, bool useFourthSide, CurvilinearGrid& curvilinearGrid) const;
+        double* nodex = nullptr;
+        double* nodey = nullptr;
+        double* edgex = nullptr;
+        double* edgey = nullptr;
+        double* facex = nullptr;
+        double* facey = nullptr;
 
-        /// @brief Compute curvilinear in a triangle (pol2curvi_tri)
-        void Compute(size_t firstNode, size_t secondNode, size_t thirdNode, CurvilinearGrid& curvilinearGrid) const;
-
-    private:
-        std::shared_ptr<Polygons> m_polygon; // A pointer to Polygons
+        int numnode;
+        int numedge;
     };
 
-} // namespace meshkernel
+} // namespace meshkernelapi

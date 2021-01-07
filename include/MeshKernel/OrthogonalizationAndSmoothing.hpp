@@ -37,7 +37,7 @@ namespace meshkernel
 {
     // Forward declare everything to reduce compile time dependency
     struct Point;
-    class Mesh;
+    class Mesh2D;
     class Smoother;
     class Orthogonalizer;
     class Polygons;
@@ -58,7 +58,7 @@ namespace meshkernel
         /// @param[in] landBoundaries The land boundaries
         /// @param[in] projectToLandBoundaryOption Snap to land boundaries (1) or not (0)
         /// @param[in] orthogonalizationParameters The orthogonalization parameters
-        OrthogonalizationAndSmoothing(std::shared_ptr<Mesh> mesh,
+        OrthogonalizationAndSmoothing(std::shared_ptr<Mesh2D> mesh,
                                       std::shared_ptr<Smoother> smoother,
                                       std::shared_ptr<Orthogonalizer> orthogonalizer,
                                       std::shared_ptr<Polygons> polygon,
@@ -108,7 +108,7 @@ namespace meshkernel
         /// @brief Compute nodes local coordinates (comp_local_coords)
         void ComputeCoordinates() const;
 
-        std::shared_ptr<Mesh> m_mesh;                                              // A pointer to mesh
+        std::shared_ptr<Mesh2D> m_mesh;                                              // A pointer to mesh
         std::shared_ptr<Smoother> m_smoother;                                      // A pointer to the smoother
         std::shared_ptr<Orthogonalizer> m_orthogonalizer;                          // A pointer to the orthogonalizer
         std::shared_ptr<Polygons> m_polygons;                                      // The polygon where to perform the orthogonalization

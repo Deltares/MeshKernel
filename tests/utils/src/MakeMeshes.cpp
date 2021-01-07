@@ -9,7 +9,7 @@
 
 #include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
 
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <stdexcept>
 
@@ -106,7 +106,7 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
     return std::make_tuple(meshgeometry, meshgeometryDimensions);
 }
 
-std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
+std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
 {
 
     auto meshData = ReadLegacyMeshFromFileForApiTesting(filePath);
@@ -133,7 +133,7 @@ std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, m
         index++;
     }
 
-    auto mesh = std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
+    auto mesh = std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
 
     // clean up c memory
     DeleteRectangularMeshForApiTesting(meshgeometry);
@@ -141,7 +141,7 @@ std::shared_ptr<meshkernel::Mesh> ReadLegacyMeshFromFile(std::string filePath, m
     return mesh;
 }
 
-std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin)
+std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin)
 {
     std::vector<std::vector<size_t>> indicesValues(n, std::vector<size_t>(m));
     std::vector<meshkernel::Point> nodes(n * m);
@@ -177,7 +177,7 @@ std::shared_ptr<meshkernel::Mesh> MakeRectangularMeshForTesting(int n, int m, do
         }
     }
 
-    return std::make_shared<meshkernel::Mesh>(edges, nodes, projection);
+    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
 }
 
 std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> MakeRectangularMeshForApiTesting(int n, int m, double delta)
@@ -238,7 +238,7 @@ void DeleteRectangularMeshForApiTesting(const meshkernelapi::MeshGeometry& meshg
     delete[] meshgeometry.edge_nodes;
 }
 
-std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile()
+std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile()
 {
     // Prepare
     std::vector<meshkernel::Point> nodes;
@@ -276,10 +276,10 @@ std::shared_ptr<meshkernel::Mesh> MakeSmallSizeTriangularMeshForTestingAsNcFile(
     edges.push_back({5, 9});
     edges.push_back({4, 5});
 
-    return std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
+    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 }
 
-std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
+std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting()
 {
 
     std::vector<double> xCoordinates{777.2400642395231,
@@ -464,5 +464,5 @@ std::shared_ptr<meshkernel::Mesh> MakeCurvilinearGridForTesting()
         edges[i].first -= 1;
         edges[i].second -= 1;
     }
-    return std::make_shared<meshkernel::Mesh>(edges, nodes, meshkernel::Projection::cartesian);
+    return std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 }

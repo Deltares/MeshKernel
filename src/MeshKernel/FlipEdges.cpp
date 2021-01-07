@@ -31,10 +31,10 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 
-meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
+meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh2D> mesh,
                                  std::shared_ptr<LandBoundaries> landBoundary,
                                  bool triangulateFaces,
                                  bool projectToLandBoundary) : m_mesh(mesh),
@@ -51,12 +51,12 @@ meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh> mesh,
 void meshkernel::FlipEdges::Compute() const
 {
 
-    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     if (m_triangulateFaces)
     {
         m_mesh->TriangulateFaces();
-        m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        m_mesh->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 
     const size_t MaxIter = 10;
@@ -240,7 +240,7 @@ void meshkernel::FlipEdges::Compute() const
     }
 
     // Perform mesh administration
-    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 }
 
 void meshkernel::FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const
