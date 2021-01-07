@@ -26,16 +26,17 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include "Entities.hpp"
-
 #include <vector>
+
+#include <Meshkernel/Entities.hpp>
+#include <Meshkernel/Mesh.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
 namespace meshkernel
 {
     /// @brief A class describing an unstructured 1d mesh
-    class Mesh1D
+    class Mesh1D : public Mesh
     {
     public:
         /// @brief Default constructor
@@ -54,31 +55,7 @@ namespace meshkernel
         /// @return If the node is on boundary
         [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
 
-        /// @brief Get the number of valid edges
-        /// @return The number of valid edges
-        [[nodiscard]] auto GetNumEdges() const { return m_numEdges; }
-
-        /// @brief constructs the mesh1d mapping (findcells)
-        void FindFaces();
-
-        // nodes
-        std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
-        std::vector<size_t> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
-        std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
-
-        // edges
-        std::vector<Edge> m_edges; ///< The edges, defined as first and second node(kn)
-
-        // faces
-        std::vector<std::vector<int>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
-        std::vector<Point> m_facesMassCenters;      ///< The faces centers of mass (xzw, yzw)
-
-        Projection m_projection; ///< The projection used
-
-    private:
-        // counters
-        size_t m_numFaces = 0; ///< Number of valid faces (nump)
-        size_t m_numNodes = 0; ///< Number of valid nodes in m_nodes
-        size_t m_numEdges = 0; ///< Number of valid edges in m_edges
+        /// @brief Perform mesh 1d administration
+        void Administrate();
     };
 } // namespace meshkernel

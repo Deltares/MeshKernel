@@ -6,8 +6,10 @@
 
 meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
-                           Projection projection) : m_edges(edges), m_nodes(nodes), m_projection(projection){};
+                           Projection projection) : Mesh(edges, nodes, m_projection){};
 
-void meshkernel::Mesh1D::FindFaces()
+void meshkernel::Mesh1D::Administrate()
 {
+    DeleteInvalidNodesAndEdges();
+    NodeAdministration();
 }

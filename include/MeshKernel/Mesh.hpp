@@ -34,7 +34,7 @@
 /// @brief Contains the logic of the C++ static library
 namespace meshkernel
 {
-    /// @brief A class describing an unstructured 1d mesh
+    /// @brief A class describing an unstructured mesh (can be both 1d or 2d)
     class Mesh
     {
     public:
