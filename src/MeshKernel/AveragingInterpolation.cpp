@@ -31,7 +31,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 
 meshkernel::AveragingInterpolation::AveragingInterpolation(std::shared_ptr<Mesh> mesh,
                                                            std::vector<Sample>& samples,

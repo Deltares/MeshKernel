@@ -32,7 +32,7 @@
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernelApi/InterpolationParameters.hpp>
 #include <MeshKernelApi/SampleRefineParameters.hpp>
 

@@ -139,7 +139,7 @@
     <Position X="9.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AABgAAAIAAAAgAEAACIACAAADAAAAAgAAAAFgABAACQ=</HashCode>
-      <FileName>D:\LUCA\ENGINES\MeshKernel++\lastCheckout\src\SpatialTrees.hpp</FileName>
+      <FileName>D:\LUCA\ENGINES\MeshKernel++\lastCheckout\src\RTree.hpp</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MeshKernel::CurvilinearGridFromSplines" Collapsed="true">

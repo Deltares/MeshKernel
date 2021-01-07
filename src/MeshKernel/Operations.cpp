@@ -31,7 +31,7 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 
 namespace meshkernel
 {

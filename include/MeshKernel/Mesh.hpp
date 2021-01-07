@@ -30,7 +30,7 @@
 #include <vector>
 
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 
 /// \namespace meshkernel

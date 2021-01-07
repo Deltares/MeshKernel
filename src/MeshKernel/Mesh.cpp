@@ -40,7 +40,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 

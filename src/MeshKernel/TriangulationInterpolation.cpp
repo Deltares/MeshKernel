@@ -28,7 +28,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 

@@ -4,9 +4,9 @@
 #include <random>
 
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 
-TEST(SpatialTrees, RTreeRemovePoint)
+TEST(RTree, RTreeRemovePoint)
 {
     const int n = 4; // x
     const int m = 4; // y
@@ -30,7 +30,7 @@ TEST(SpatialTrees, RTreeRemovePoint)
     ASSERT_EQ(rtree.Size(), 15);
 }
 
-TEST(SpatialTrees, PerformanceTestBuildAndSearchRTree)
+TEST(RTree, PerformanceTestBuildAndSearchRTree)
 {
     const int n = 10; // x
     const int m = 10; // y
@@ -63,7 +63,7 @@ TEST(SpatialTrees, PerformanceTestBuildAndSearchRTree)
     std::cout << "Elapsed time search " << nodes.size() << " nodes in RTree: " << elapsedTime << " s " << std::endl;
 }
 
-TEST(SpatialTrees, FindNodesInSquare)
+TEST(RTree, FindNodesInSquare)
 {
     const int n = 4; // x
     const int m = 4; // y

@@ -36,7 +36,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 
 meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh,
                                            std::shared_ptr<AveragingInterpolation> averaging,
