@@ -8,7 +8,7 @@
 #include <MeshKernel/Operations.hpp>
 
 meshkernel::Contacts::Contacts(std::shared_ptr<Mesh1D> mesh1d,
-                               std::shared_ptr<Mesh2D> mesh) : m_mesh1d(mesh1d), m_mesh2d(mesh)
+                               std::shared_ptr<Mesh2D> mesh2d) : m_mesh1d(mesh1d), m_mesh2d(mesh2d)
 {
     // assert mesh1d and mesh have the same projection!
     if (m_mesh1d->m_projection != m_mesh2d->m_projection)
@@ -134,10 +134,18 @@ bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face
     return false;
 }
 
-void meshkernel::Contacts::ComputeMultipleConnections(){};
+void meshkernel::Contacts::ComputeMultipleConnections(){
 
-void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons){};
+};
 
-void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points){};
+void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons){
 
-void meshkernel::Contacts::ComputeBoundaryConnections(){};
+};
+
+void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points){
+
+};
+
+void meshkernel::Contacts::ComputeBoundaryConnections(){
+
+};

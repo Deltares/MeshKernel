@@ -39,46 +39,43 @@ namespace meshkernel
     class Contacts
     {
     public:
+        /// @brief Default constructor
         Contacts() = default;
 
-        /// @brief
-        /// @param mesh1d
-        /// @param mesh
-        /// @param projection
-        Contacts(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh2D> mesh);
+        /// @brief Constructor taking the 1d and 2d meshes to connect
+        /// @param[in] mesh1d The mesh1d to connect
+        /// @param[in] mesh2d The mesh2d to connect
+        Contacts(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh2D> mesh2d);
 
-        /// @brief Computes 1D-2D connections, where every single 1d node is connected to one 2d face mass center (ggeo_make1D2Dinternalnetlinks_dll)
-        /// @param mesh1d
-        /// @param mesh
-        /// @return
-        void ComputeSingleConnections(const meshkernel::Polygons& polygons);
+        /// @brief Computes 1d-2d connections, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll)
+        /// @param[in] polygons The polygons where the 1d-2d connections are generated
+        void ComputeSingleConnections(const Polygons& polygons);
 
-        /// @brief  Computes 1D-2D connections, where a single 1d point is connected to multiple 2d face mass centers (ggeo_make1D2Dembeddedlinks_dll)
-        /// @param mesh1d
-        /// @param mesh
+        /// @brief Computes 1d-2d connections, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
         void ComputeMultipleConnections();
 
-        /// @brief Computes 1D-2D connections, where a 1d point is connected to the closest 2d face in polygons (ggeo_make1D2Droofgutterpipes_dll)
-        /// @param mesh1d
-        /// @param mesh
-        /// @param polygons
+        /// @brief Computes 1d-2d connections, where a 1d node is connected to the closest polygon (ggeo_make1D2Droofgutterpipes_dll)
+        /// @param[in] polygons The polygons to connect (Polygons class can have multiple polygons)
         void ComputeConnectionsWithPolygons(const Polygons& polygons);
 
-        /// @brief Computes 1D-2D connections, where 1d nodes are connected to the 2d faces mass centers containing the input points (ggeo_make1D2Dstreetinletpipes_dll)
-        /// @param mesh1d
-        /// @param mesh
-        /// @return
+        /// @brief Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)
+        /// @param[in] points the points to connect
         void ComputeConnectionsWithPoints(const std::vector<Point>& points);
 
-        /// @brief Computes 1D-2D connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
-        /// @param mesh1d
-        /// @param mesh
-        /// @return
+        /// @brief Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         void ComputeBoundaryConnections();
 
     private:
+        /// @brief Asserts if a connection is crossing a 1d mesh edge
+        /// @param node[in] The 1d node index (start of the connection)
+        /// @param face[in] The 2d face index (end of the connection)
+        /// @return True if the connection is crossing a 1d mesh edge
         bool IsConnectionIntersectingMesh1d(size_t node, size_t face) const;
 
+        /// @brief Asserts if a connection is crossing an existing connection
+        /// @param node[in] The 1d node index (start of the connection)
+        /// @param face[in] The 2d face index (end of the connection)
+        /// @return True if the connection is crossing an existing connection
         bool IsContactIntersectingContact(size_t node, size_t face) const;
 
         std::shared_ptr<Mesh2D> m_mesh2d;

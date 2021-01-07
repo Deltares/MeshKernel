@@ -77,9 +77,8 @@ namespace meshkernel
         Mesh2D() = default;
 
         /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
-        /// @param curvilinearGrid The curvilinear grid to create the mesh from
-        /// @param projection The \ref Projection to use
-        /// @returns
+        /// @param[in] curvilinearGrid The curvilinear grid to create the mesh from
+        /// @param[in] projection The \ref Projection to use
         Mesh2D(const CurvilinearGrid& curvilinearGrid, Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
