@@ -41,7 +41,6 @@ namespace meshkernel
     // Forward declarations
     class CurvilinearGrid;
     class Polygons;
-    class MakeMeshParameters;
     class GeometryList;
 
     /// @brief A class describing an unstructured 2d mesh
@@ -55,7 +54,6 @@ namespace meshkernel
             FacesWithIncludedCircumcenters = 1,
             FacesCompletelyIncluded = 2
         };
-
         /// Enumerator describing the different options to administrate a mesh
         enum class AdministrationOptions
         {
@@ -76,6 +74,13 @@ namespace meshkernel
         /// @brief Default constructor
         Mesh2D() = default;
 
+        /// @brief Construct a mesh2d starting from the edges and nodes
+        /// @param[in] edges The input edges
+        /// @param[in] nodes The input nodes
+        /// @param[in] projection The projection to use
+        /// @param[in] administration Type of administration to perform
+        Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
         /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
         /// @param[in] curvilinearGrid The curvilinear grid to create the mesh from
         /// @param[in] projection The \ref Projection to use
@@ -86,13 +91,6 @@ namespace meshkernel
         /// @param[in] polygons Selection polygon
         /// @param[in] projection The projection to use
         Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
-
-        /// @brief Construct a mesh2d starting from the edges and nodes
-        /// @param[in] edges The input edges
-        /// @param[in] nodes The input nodes
-        /// @param[in] projection The projection to use
-        /// @param[in] administration Type of administration to perform
-        Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to the first
@@ -128,62 +126,10 @@ namespace meshkernel
         /// @param[in] polygons Polygon where to perform the merging
         void MergeNodesInPolygon(const Polygons& polygons);
 
-        /// @brief Merges two mesh nodes
-        /// @param[in] startNode The index of the first node to be merged
-        /// @param[in] endNode The second of the second node to be merged
-        void MergeTwoNodes(size_t startNode, size_t endNode);
-
         /// @brief Make a new rectangular mesh, composed of quads (makenet)
         /// @param[in] MakeMeshParameters The structure containing the make grid parameters
         /// @param[in] polygons The polygon to account for
         void MakeMesh(const meshkernelapi::MakeMeshParameters& MakeMeshParameters, const Polygons& polygons);
-
-        /// @brief Deletes a mesh in a polygon, using several options (delnet)
-        /// @param[in] polygons The polygon where to perform the operation
-        /// @param[in] deletionOption The deletion option
-        /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
-        void DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion);
-
-        /// @brief Connect two existing nodes, forming a new edge (connectdbn)
-        /// @param[in] startNode The start node index
-        /// @param[in] endNode The end node index
-        /// @return The index of the new edge
-        size_t ConnectNodes(size_t startNode, size_t endNode);
-
-        /// @brief Insert a new node in the mesh (setnewpoint)
-        /// @param[in] newPoint The coordinate of the new point
-        /// @return The index of the new node
-        size_t InsertNode(const Point& newPoint);
-
-        /// @brief Delete a node
-        /// @param[in] nodeIndex The index of the node to delete
-        void DeleteNode(size_t nodeIndex);
-
-        /// @brief Find the edge sharing two nodes
-        /// @param[in] firstNodeIndex The index of the first node
-        /// @param[in] secondNodeIndex The index of the second node
-        /// @return The edge index
-        size_t FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const;
-
-        /// @brief Move a node to a new location
-        /// @param[in] newPoint The new location
-        /// @param[in] nodeindex The index of the node to move
-        void MoveNode(Point newPoint, size_t nodeindex);
-
-        /// @brief Get the index of a node close to a point
-        /// @param[in] point The starting point from where to start the search
-        /// @param[in] searchRadius The search radius
-        /// @returns The index of the closest node
-        [[nodiscard]] size_t GetNodeIndex(Point point, double searchRadius);
-
-        /// @brief Deletes an edge
-        /// @param[in] edgeIndex The edge index
-        void DeleteEdge(size_t edgeIndex);
-
-        /// Finds the closest edge close to a point
-        /// @param[in] point The starting point from where to start the search
-        /// @returns The index of the closest edge
-        [[nodiscard]] size_t FindEdgeCloseToAPoint(Point point);
 
         /// @brief Masks the edges of all faces included in a polygon
         /// @param polygons The selection polygon
@@ -218,29 +164,6 @@ namespace meshkernel
         /// @param[in] polygons The input polygon
         /// @param[in] inside Inside/outside option
         void MaskNodesInPolygons(const Polygons& polygons, bool inside);
-
-        /// @brief Find the common node two edges share
-        /// This method uses return parameters since the success is evaluated in a hot loop
-        /// @param[in] firstEdgeIndex The index of the first edge
-        /// @param[in] secondEdgeIndex The index of the second edge
-        /// @return The shared node (sizetMissingValue if no node is found)
-        [[nodiscard]] size_t FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const;
-
-        /// @brief Compute the lengths of all edges in one go
-        void ComputeEdgesLengths();
-
-        /// @brief Computes the edges centers  in one go
-        void ComputeEdgesCenters();
-
-        /// @brief Inquire if an edge is on boundary
-        /// @param edge The edge index
-        /// @return If the edge is on boundary
-        [[nodiscard]] bool IsEdgeOnBoundary(size_t edge) const { return m_edgesNumFaces[edge] == 1; }
-
-        /// @brief Inquire if a face is on boundary
-        /// @param[in] face The face index
-        /// @return If the face is on boundary
-        [[nodiscard]] bool IsFaceOnBoundary(size_t face) const;
 
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon Cache storing the face nodes
@@ -336,6 +259,12 @@ namespace meshkernel
         /// @return The face indices including the points
         std::vector<size_t> PointFaceIndices(const std::vector<Point>& points);
 
+        /// @brief Deletes a mesh in a polygon, using several options (delnet)
+        /// @param[in] polygons The polygon where to perform the operation
+        /// @param[in] deletionOption The deletion option
+        /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
+        void DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion);
+
         /// @brief
         /// @param firstPoint
         /// @param secondPoint
@@ -353,9 +282,6 @@ namespace meshkernel
         std::vector<double> m_facesCircumcentersx; ///< The circumcenters x-coordinate
         std::vector<double> m_facesCircumcentersy; ///< The circumcenters y-coordinate
         std::vector<double> m_facesCircumcentersz; ///< The circumcenters z-coordinate
-
-        SpatialTrees::RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
-        SpatialTrees::RTree m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
 
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbors
 
@@ -389,8 +315,6 @@ namespace meshkernel
         /// @returns If triangle is okay
         [[nodiscard]] bool CheckTriangle(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
 
-        std::vector<double> m_edgeAngles;       ///< Internal cache for sorting the edges around nodes
-        bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
-        bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
+        std::vector<double> m_edgeAngles; ///< Internal cache for sorting the edges around nodes
     };
 } // namespace meshkernel

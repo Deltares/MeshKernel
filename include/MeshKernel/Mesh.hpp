@@ -26,7 +26,9 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include "Entities.hpp"
+
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/SpatialTrees.hpp>
 
 #include <vector>
 
@@ -34,6 +36,8 @@
 /// @brief Contains the logic of the C++ static library
 namespace meshkernel
 {
+    class Polygons;
+
     /// @brief A class describing an unstructured mesh (can be both 1d or 2d)
     class Mesh
     {
@@ -76,6 +80,75 @@ namespace meshkernel
         /// @return The number of faces an edges shares
         [[nodiscard]] auto GetNumEdgesFaces(size_t edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
+        /// @brief Inquire if an edge is on boundary
+        /// @param edge The edge index
+        /// @return If the edge is on boundary
+        [[nodiscard]] bool IsEdgeOnBoundary(size_t edge) const { return m_edgesNumFaces[edge] == 1; }
+
+        /// @brief Inquire if a face is on boundary
+        /// @param[in] face The face index
+        /// @return If the face is on boundary
+        [[nodiscard]] bool IsFaceOnBoundary(size_t face) const;
+
+        /// @brief Merges two mesh nodes
+        /// @param[in] startNode The index of the first node to be merged
+        /// @param[in] endNode The second of the second node to be merged
+        void MergeTwoNodes(size_t startNode, size_t endNode);
+
+        /// @brief Connect two existing nodes, forming a new edge (connectdbn)
+        /// @param[in] startNode The start node index
+        /// @param[in] endNode The end node index
+        /// @return The index of the new edge
+        size_t ConnectNodes(size_t startNode, size_t endNode);
+
+        /// @brief Insert a new node in the mesh (setnewpoint)
+        /// @param[in] newPoint The coordinate of the new point
+        /// @return The index of the new node
+        size_t InsertNode(const Point& newPoint);
+
+        /// @brief Delete a node
+        /// @param[in] nodeIndex The index of the node to delete
+        void DeleteNode(size_t nodeIndex);
+
+        /// @brief Find the edge sharing two nodes
+        /// @param[in] firstNodeIndex The index of the first node
+        /// @param[in] secondNodeIndex The index of the second node
+        /// @return The edge index
+        size_t FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const;
+
+        /// @brief Move a node to a new location
+        /// @param[in] newPoint The new location
+        /// @param[in] nodeindex The index of the node to move
+        void MoveNode(Point newPoint, size_t nodeindex);
+
+        /// @brief Get the index of a node close to a point
+        /// @param[in] point The starting point from where to start the search
+        /// @param[in] searchRadius The search radius
+        /// @returns The index of the closest node
+        [[nodiscard]] size_t GetNodeIndex(Point point, double searchRadius);
+
+        /// @brief Deletes an edge
+        /// @param[in] edgeIndex The edge index
+        void DeleteEdge(size_t edgeIndex);
+
+        /// Finds the closest edge close to a point
+        /// @param[in] point The starting point from where to start the search
+        /// @returns The index of the closest edge
+        [[nodiscard]] size_t FindEdgeCloseToAPoint(Point point);
+
+        /// @brief Find the common node two edges share
+        /// This method uses return parameters since the success is evaluated in a hot loop
+        /// @param[in] firstEdgeIndex The index of the first edge
+        /// @param[in] secondEdgeIndex The index of the second edge
+        /// @return The shared node (sizetMissingValue if no node is found)
+        [[nodiscard]] size_t FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const;
+
+        /// @brief Compute the lengths of all edges in one go
+        void ComputeEdgesLengths();
+
+        /// @brief Computes the edges centers  in one go
+        void ComputeEdgesCenters();
+
         /// @brief Node administration (setnodadmin)
         void NodeAdministration();
 
@@ -109,8 +182,12 @@ namespace meshkernel
         Projection m_projection; ///< The projection used
 
         // counters
-        size_t m_numFaces = 0; ///< Number of valid faces (nump)
-        size_t m_numNodes = 0; ///< Number of valid nodes in m_nodes
-        size_t m_numEdges = 0; ///< Number of valid edges in m_edges
+        size_t m_numFaces = 0;                  ///< Number of valid faces (nump)
+        size_t m_numNodes = 0;                  ///< Number of valid nodes in m_nodes
+        size_t m_numEdges = 0;                  ///< Number of valid edges in m_edges
+        bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
+        bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
+        SpatialTrees::RTree m_nodesRTree;       ///< Spatial R-Tree used to inquire node nodes
+        SpatialTrees::RTree m_edgesRTree;       ///< Spatial R-Tree used to inquire edges centers
     };
 } // namespace meshkernel

@@ -50,7 +50,7 @@ namespace meshkernel
                const std::vector<Point>& nodes,
                Projection projection);
 
-        /// @brief Inquire if a node is on boundary
+        /// @brief Inquire if a mesh 1d-node is on boundary
         /// @param[in] node The node index
         /// @return If the node is on boundary
         [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
