@@ -35,18 +35,19 @@ namespace meshkernel
     class Mesh1D
     {
     public:
+        /// @brief Default constructor
         Mesh1D() = default;
 
-        /// @brief Constructs the 1d mesh
-        /// @param network
-        /// @param mesh1dUgrid
+        /// @brief Construct a mesh1d starting from the edges and nodes
+        /// @param[in] edges The input edges
+        /// @param[in] nodes The input nodes
+        /// @param[in] projection  The projection to use
         Mesh1D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
-               const std::vector<bool>& nodeMask,
                Projection projection);
 
         /// @brief Inquire if a node is on boundary
-        /// @param node The node index
+        /// @param[in] node The node index
         /// @return If the node is on boundary
         [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
 
@@ -54,25 +55,25 @@ namespace meshkernel
         /// @return The number of valid edges
         [[nodiscard]] auto GetNumEdges() const { return m_numEdges; }
 
-        /// @brief mostly calculates the 1d faces, half edge left and half edge right
+        /// @brief constructs the mesh1d mapping (findcells)
         void FindFaces();
 
         // nodes
         std::vector<Point> m_nodes;
         std::vector<size_t> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
         std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
-        std::vector<bool> m_nodeMask;
 
         // edges
         std::vector<Edge> m_edges;
-
-        // the projection
-        Projection m_projection;
 
         // faces
         std::vector<std::vector<int>> m_facesNodes;
         std::vector<Point> m_facesMassCenters;
 
+        // the projection
+        Projection m_projection;
+
+    private:
         // counters
         size_t m_numFaces = 0; ///< Number of valid faces (nump)
         size_t m_numNodes = 0; ///< Number of valid nodes in m_nodes

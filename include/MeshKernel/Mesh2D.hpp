@@ -73,7 +73,6 @@ namespace meshkernel
         };
 
         /// @brief Default constructor
-        /// @returns
         Mesh2D() = default;
 
         /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
@@ -84,13 +83,13 @@ namespace meshkernel
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
         /// @param[in] nodes Input nodes
         /// @param[in] polygons Selection polygon
-        /// @param[in] projection Projection to use
+        /// @param[in] projection The projection to use
         Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
-        /// @brief Construct the mesh starting from the edges and nodes
+        /// @brief Construct a mesh2d starting from the edges and nodes
         /// @param[in] edges The input edges
         /// @param[in] nodes The input nodes
-        /// @param[in] projection Projection to use
+        /// @param[in] projection The projection to use
         /// @param[in] administration Type of administration to perform
         Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
@@ -260,7 +259,7 @@ namespace meshkernel
         [[nodiscard]] bool IsEdgeOnBoundary(size_t edge) const { return m_edgesNumFaces[edge] == 1; }
 
         /// @brief Inquire if a face is on boundary
-        /// @param face The face index
+        /// @param[in] face The face index
         /// @return If the face is on boundary
         [[nodiscard]] bool IsFaceOnBoundary(size_t face) const;
 
