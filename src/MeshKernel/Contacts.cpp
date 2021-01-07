@@ -8,7 +8,8 @@
 #include <MeshKernel/Operations.hpp>
 
 meshkernel::Contacts::Contacts(std::shared_ptr<Mesh1D> mesh1d,
-                               std::shared_ptr<Mesh2D> mesh2d) : m_mesh1d(mesh1d), m_mesh2d(mesh2d)
+                               std::shared_ptr<Mesh2D> mesh2d,
+                               const std::vector<bool>& oneDNodeMask) : m_mesh1d(mesh1d), m_mesh2d(mesh2d), m_oneDNodeMask(oneDNodeMask)
 {
     // assert mesh1d and mesh have the same projection!
     if (m_mesh1d->m_projection != m_mesh2d->m_projection)
@@ -29,7 +30,7 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
     for (size_t n = 0; n < m_mesh1d->m_nodes.size(); ++n)
     {
         // Do not connect nodes at boundary of the network
-        if (!m_mesh1d->m_nodeMask[n] || m_mesh1d->IsNodeOnBoundary(n))
+        if (!m_oneDNodeMask[n] || m_mesh1d->IsNodeOnBoundary(n))
         {
             continue;
         }

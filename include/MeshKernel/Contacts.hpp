@@ -45,7 +45,8 @@ namespace meshkernel
         /// @brief Constructor taking the 1d and 2d meshes to connect
         /// @param[in] mesh1d The mesh1d to connect
         /// @param[in] mesh2d The mesh2d to connect
-        Contacts(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh2D> mesh2d);
+        /// @param[in] oneDNodeMask The mask used for masking 1d nodes
+        Contacts(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh2D> mesh2d, const std::vector<bool>& oneDNodeMask);
 
         /// @brief Computes 1d-2d connections, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll)
         /// @param[in] polygons The polygons where the 1d-2d connections are generated
@@ -83,5 +84,6 @@ namespace meshkernel
         // nodes
         std::vector<size_t> m_mesh2dIndices;
         std::vector<size_t> m_mesh1dIndices;
+        std::vector<bool> m_oneDNodeMask;
     };
 } // namespace meshkernel
