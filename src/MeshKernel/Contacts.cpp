@@ -31,7 +31,7 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
     for (size_t n = 0; n < m_mesh1d->m_nodes.size(); ++n)
     {
         // Do not connect nodes at boundary of the network
-        if (!m_oneDNodeMask[n] || m_mesh1d->IsNodeOnBoundary(n))
+        if (!m_oneDNodeMask.empty() && (!m_oneDNodeMask[n] || m_mesh1d->IsNodeOnBoundary(n)))
         {
             continue;
         }
@@ -62,7 +62,9 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
         size_t rightIntersectedFace;
         size_t rightIntersectedEdge;
         const auto isConnectionIntersectingAFace = m_mesh2d->IsSegmentCrossingAFace(m_mesh1d->m_nodes[n], rightProjectedNode, rightIntersectedFace, rightIntersectedEdge);
-        if (isConnectionIntersectingAFace && !IsConnectionIntersectingMesh1d(n, rightIntersectedFace) && !IsContactIntersectingContact(n, rightIntersectedFace))
+        if (isConnectionIntersectingAFace &&
+            !IsConnectionIntersectingMesh1d(n, rightIntersectedFace) &&
+            !IsContactIntersectingContact(n, rightIntersectedFace))
         {
             m_mesh1dIndices.emplace_back(n);
             m_mesh2dIndices.emplace_back(rightIntersectedFace);
@@ -72,7 +74,9 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
         size_t leftIntersectedFace;
         size_t leftIntersectedEdge;
         const auto isLeftProjectedNodeIntersected = m_mesh2d->IsSegmentCrossingAFace(m_mesh1d->m_nodes[n], leftProjectedNode, leftIntersectedFace, leftIntersectedEdge);
-        if (isLeftProjectedNodeIntersected && !IsConnectionIntersectingMesh1d(n, rightIntersectedFace) && !IsContactIntersectingContact(n, rightIntersectedFace))
+        if (isLeftProjectedNodeIntersected &&
+            !IsConnectionIntersectingMesh1d(n, rightIntersectedFace) &&
+            !IsContactIntersectingContact(n, rightIntersectedFace))
         {
             m_mesh1dIndices.emplace_back(n);
             m_mesh2dIndices.emplace_back(leftIntersectedFace);
