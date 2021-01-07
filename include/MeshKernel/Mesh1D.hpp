@@ -30,8 +30,11 @@
 
 #include <vector>
 
+/// \namespace meshkernel
+/// @brief Contains the logic of the C++ static library
 namespace meshkernel
 {
+    /// @brief A class describing an unstructured 1d mesh
     class Mesh1D
     {
     public:
