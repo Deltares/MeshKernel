@@ -29,6 +29,7 @@
 
 namespace meshkernelapi
 {
+    /// @brief A struct used to describe the values of a mesh 1d in a C-compatible manner
     struct Mesh1D
     {
         /// @brief The nodes composing each mesh 1d edge
