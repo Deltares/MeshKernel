@@ -62,19 +62,18 @@ namespace meshkernel
         void FindFaces();
 
         // nodes
-        std::vector<Point> m_nodes;
+        std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
         std::vector<size_t> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
         std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
 
         // edges
-        std::vector<Edge> m_edges;
+        std::vector<Edge> m_edges; ///< The edges, defined as first and second node(kn)
 
         // faces
-        std::vector<std::vector<int>> m_facesNodes;
-        std::vector<Point> m_facesMassCenters;
+        std::vector<std::vector<int>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
+        std::vector<Point> m_facesMassCenters;      ///< The faces centers of mass (xzw, yzw)
 
-        // the projection
-        Projection m_projection;
+        Projection m_projection; ///< The projection used
 
     private:
         // counters

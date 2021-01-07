@@ -29,13 +29,15 @@
 
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/Polygons.hpp>
 
 #include <memory>
 #include <vector>
 
+/// \namespace meshkernel
+/// @brief Contains the logic of the C++ static library
 namespace meshkernel
 {
+    /// @brief A class describing an 1d-2d contacts
     class Contacts
     {
     public:
@@ -79,11 +81,10 @@ namespace meshkernel
         /// @return True if the connection is crossing an existing connection
         bool IsContactIntersectingContact(size_t node, size_t face) const;
 
-        std::shared_ptr<Mesh2D> m_mesh2d;
-        std::shared_ptr<Mesh1D> m_mesh1d;
-        // nodes
-        std::vector<size_t> m_mesh2dIndices;
-        std::vector<size_t> m_mesh1dIndices;
-        std::vector<bool> m_oneDNodeMask;
+        std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect
+        std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
+        std::vector<size_t> m_mesh2dIndices; ///< The indices of the 2-d faces to connect
+        std::vector<size_t> m_mesh1dIndices; ///< The indices of the 1-d nodes to connect
+        std::vector<bool> m_oneDNodeMask;    ///< The mask to apply to 1d nodes (true = generate contacts, false = do not generate contacts)
     };
 } // namespace meshkernel

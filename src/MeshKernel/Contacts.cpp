@@ -3,9 +3,10 @@
 #include <memory>
 #include <vector>
 
-#include "MeshKernel/Exceptions.hpp"
 #include <MeshKernel/Contacts.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
 
 meshkernel::Contacts::Contacts(std::shared_ptr<Mesh1D> mesh1d,
                                std::shared_ptr<Mesh2D> mesh2d,
