@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2020.
+// Copyright (C)  Stichting Deltares, 2011-2021.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernelApi/InterpolationParameters.hpp>
 #include <MeshKernelApi/SampleRefineParameters.hpp>
 
@@ -138,7 +138,7 @@ namespace meshkernel
         void RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement);
 
         /// The sample node RTree
-        SpatialTrees::RTree m_samplesRTree;
+        RTree m_samplesRTree;
 
         std::vector<int> m_faceMask;        ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;        ///< If 0, edge is not split

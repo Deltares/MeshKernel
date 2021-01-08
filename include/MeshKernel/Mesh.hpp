@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2020.
+// Copyright (C)  Stichting Deltares, 2011-2021.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #pragma once
 
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 
 #include <vector>
 
@@ -187,7 +187,7 @@ namespace meshkernel
         size_t m_numEdges = 0;                  ///< Number of valid edges in m_edges
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
-        SpatialTrees::RTree m_nodesRTree;       ///< Spatial R-Tree used to inquire node nodes
-        SpatialTrees::RTree m_edgesRTree;       ///< Spatial R-Tree used to inquire edges centers
+        RTree m_nodesRTree;       ///< Spatial R-Tree used to inquire node nodes
+        RTree m_edgesRTree;       ///< Spatial R-Tree used to inquire edges centers
     };
 } // namespace meshkernel

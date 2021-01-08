@@ -36,11 +36,10 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 
@@ -971,7 +970,7 @@ void meshkernel::Mesh2D::MergeNodesInPolygon(const Polygons& polygon)
     filteredNodes.resize(index);
 
     // Update the R-Tree of the mesh nodes
-    SpatialTrees::RTree nodesRtree;
+    RTree nodesRtree;
     nodesRtree.BuildTree(filteredNodes);
 
     // merge the closest nodes

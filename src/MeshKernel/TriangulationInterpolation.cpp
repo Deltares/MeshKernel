@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2020.
+// Copyright (C)  Stichting Deltares, 2011-2021.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 
@@ -82,7 +82,7 @@ void meshkernel::TriangulationInterpolation::Compute()
         trianglesCircumcenters[f] = ComputeAverageCoordinate(triangles[f], m_projection);
     }
 
-    SpatialTrees::RTree samplesRtree;
+    RTree samplesRtree;
     samplesRtree.BuildTree(trianglesCircumcenters);
 
     // compute the sample bounding box

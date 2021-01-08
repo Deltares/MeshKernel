@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2020.
+// Copyright (C)  Stichting Deltares, 2011-2021.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,16 +25,16 @@
 //
 //------------------------------------------------------------------------------
 
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 
-void meshkernel::SpatialTrees::RTree::NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)
+void meshkernel::RTree::NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)
 {
     const auto searchRadius = std::sqrt(searchRadiusSquared);
 
     const Box2D box(Point2D(node.x - searchRadius, node.y - searchRadius), Point2D(node.x + searchRadius, node.y + searchRadius));
     Point2D nodeSought = Point2D(node.x, node.y);
 
-    m_queryCache.reserve(QueryVectorCapacity);
+    m_queryCache.reserve(m_queryVectorCapacity);
     m_queryCache.clear();
     m_rtree2D.query(
         bgi::within(box) &&
@@ -49,10 +49,10 @@ void meshkernel::SpatialTrees::RTree::NearestNeighborsOnSquaredDistance(Point no
     }
 }
 
-void meshkernel::SpatialTrees::RTree::NearestNeighbors(Point node)
+void meshkernel::RTree::NearestNeighbors(Point node)
 {
 
-    m_queryCache.reserve(QueryVectorCapacity);
+    m_queryCache.reserve(m_queryVectorCapacity);
     m_queryCache.clear();
     const Point2D nodeSought = Point2D(node.x, node.y);
     m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
@@ -64,38 +64,38 @@ void meshkernel::SpatialTrees::RTree::NearestNeighbors(Point node)
     }
 }
 
-void meshkernel::SpatialTrees::RTree::DeleteNode(size_t position)
+void meshkernel::RTree::DeleteNode(size_t position)
 {
     const auto numberRemoved = m_rtree2D.remove(m_points[position]);
     if (numberRemoved != 1)
     {
-        throw std::invalid_argument("SpatialTrees::DeleteNode: Could not remove node at given position.");
+        throw std::invalid_argument("DeleteNode: Could not remove node at given position.");
     }
     m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
 }
 
-void meshkernel::SpatialTrees::RTree::InsertNode(const Point& node)
+void meshkernel::RTree::InsertNode(const Point& node)
 {
     m_points.emplace_back(Point2D{node.x, node.y}, m_points.size());
     m_rtree2D.insert(m_points.end() - 1, m_points.end());
 }
 
-size_t meshkernel::SpatialTrees::RTree::Size() const
+size_t meshkernel::RTree::Size() const
 {
     return m_rtree2D.size();
 }
 
-bool meshkernel::SpatialTrees::RTree::Empty() const
+bool meshkernel::RTree::Empty() const
 {
     return m_rtree2D.empty();
 }
 
-size_t meshkernel::SpatialTrees::RTree::GetQueryResultSize() const
+size_t meshkernel::RTree::GetQueryResultSize() const
 {
     return m_queryCache.size();
 }
 
-size_t meshkernel::SpatialTrees::RTree::GetQuerySampleIndex(size_t index) const
+size_t meshkernel::RTree::GetQuerySampleIndex(size_t index) const
 {
     return m_queryIndices[index];
 }
