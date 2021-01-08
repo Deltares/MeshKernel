@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2020.
+// Copyright (C)  Stichting Deltares, 2011-2021.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 
 meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh,
                                            std::shared_ptr<AveragingInterpolation> averaging,
@@ -495,7 +495,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBefo
         }
 
         const auto newNodeIndex = m_mesh->InsertNode(middle);
-        m_edgeMask[e] = newNodeIndex;
+        m_edgeMask[e] = static_cast<int>(newNodeIndex);
 
         // set mask on the new node
         m_mesh->m_nodeMask[newNodeIndex] = 1;

@@ -43,7 +43,7 @@ add_subdirectory(extern)
 include(FetchContent)
 
 # Boost C++
-find_package(Boost)
+find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 # The static library
@@ -53,7 +53,7 @@ add_subdirectory(src/MeshKernel)
 add_subdirectory(src/MeshKernelApi)
 
 # Add target link dependency on OpenMP
-find_package(OpenMP)
+find_package(OpenMP REQUIRED)
 if(OpenMP_CXX_FOUND)
   target_link_libraries(MeshKernel PUBLIC OpenMP::OpenMP_CXX)
 endif()
