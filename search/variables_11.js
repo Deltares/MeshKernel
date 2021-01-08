@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['uniformgridsize',['UniformGridSize',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#a1b7e43d68ffa8821e0a515ffac1c4058',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
-  ['usemasscenterwhenrefining',['UseMassCenterWhenRefining',['../structmeshkernelapi_1_1_interpolation_parameters.html#a36741752f21175ed9de47e94bc6bfb8c',1,'meshkernelapi::InterpolationParameters']]]
+  ['value',['value',['../structmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]]
 ];

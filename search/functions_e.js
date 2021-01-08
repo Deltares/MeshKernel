@@ -4,7 +4,7 @@ var searchData=
   ['setdimensionaldistance',['SetDimensionalDistance',['../structmeshkernel_1_1_func_adimensional_to_dimensional_distance.html#a4718dd46093c58f6e4de94073459240c',1,'meshkernel::FuncAdimensionalToDimensionalDistance']]],
   ['setflatcopies',['SetFlatCopies',['../classmeshkernel_1_1_mesh.html#ad90337919be6540bb7cc8d34d52d22bc',1,'meshkernel::Mesh']]],
   ['sgn',['sgn',['../namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2',1,'meshkernel']]],
-  ['size',['Size',['../classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a13a30b478bc12e3849ec1b675e4aa5cf',1,'meshkernel::SpatialTrees::RTree']]],
+  ['size',['Size',['../classmeshkernel_1_1_r_tree.html#a8ff27cb7bdd80f818ad6286a225f20f3',1,'meshkernel::RTree']]],
   ['smoother',['Smoother',['../classmeshkernel_1_1_smoother.html#acc671c33c9ce3ed9ac04c849f2beb848',1,'meshkernel::Smoother']]],
   ['snapmeshtolandboundaries',['SnapMeshToLandBoundaries',['../classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6',1,'meshkernel::LandBoundaries']]],
   ['sortedfacesaroundnode',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh.html#af4575b63ff5bcfed891a81ca55cb4d1f',1,'meshkernel::Mesh']]],

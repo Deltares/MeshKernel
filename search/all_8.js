@@ -6,7 +6,7 @@ var searchData=
   ['innerouterseparator',['innerOuterSeparator',['../structmeshkernelapi_1_1_geometry_list.html#af94caa65aac8ce8bb5b325678be63bc9',1,'meshkernelapi::GeometryList::innerOuterSeparator()'],['../namespacemeshkernel.html#a0c8d26eeb839c1dd7f93357ebb297082',1,'meshkernel::innerOuterSeparator()']]],
   ['innerproduct',['InnerProduct',['../namespacemeshkernel.html#af6338c4df9b1a0680f013b9624776d91',1,'meshkernel']]],
   ['innerproducttwosegments',['InnerProductTwoSegments',['../namespacemeshkernel.html#a43c86e4faac7b1537a76ea4ba26ce591',1,'meshkernel']]],
-  ['insertnode',['InsertNode',['../classmeshkernel_1_1_mesh.html#a057fc512938636517f87d7724e9dd8c0',1,'meshkernel::Mesh::InsertNode()'],['../classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a55afd29dbf597fbb594565d8a08dee9b',1,'meshkernel::SpatialTrees::RTree::InsertNode()']]],
+  ['insertnode',['InsertNode',['../classmeshkernel_1_1_mesh.html#a057fc512938636517f87d7724e9dd8c0',1,'meshkernel::Mesh::InsertNode()'],['../classmeshkernel_1_1_r_tree.html#a1ab37d5972d280a10b90f747c27c1ca3',1,'meshkernel::RTree::InsertNode()']]],
   ['interface_5fzs',['interface_zs',['../structmeshkernelapi_1_1_mesh_geometry.html#ae87b2c4d8d0d358a3e5318f46ea17eab',1,'meshkernelapi::MeshGeometry']]],
   ['interpolatepointsonspline',['InterpolatePointsOnSpline',['../classmeshkernel_1_1_splines.html#ae1b9222a26d422098312f37a18852d76',1,'meshkernel::Splines']]],
   ['interpolatesplinepoint',['InterpolateSplinePoint',['../namespacemeshkernel.html#af8d65ed377e7d797ad5fc860a59325f0',1,'meshkernel']]],

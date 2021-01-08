@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['x',['x',['../structmeshkernel_1_1_point.html#aa9c42c9b770ffa7d6357be7d03b1498a',1,'meshkernel::Point::x()'],['../structmeshkernel_1_1_cartesian3_d_point.html#a9d9cd481cc25c8de8c69c6529ac99436',1,'meshkernel::Cartesian3DPoint::x()'],['../structmeshkernel_1_1_sample.html#ac176708fc03b82764d55e09b600ba9ee',1,'meshkernel::Sample::x()']]],
-  ['xcoordinates',['xCoordinates',['../structmeshkernelapi_1_1_geometry_list.html#a68002c955c4df8647c35ea8adb383bf3',1,'meshkernelapi::GeometryList']]],
-  ['xgridblocksize',['XGridBlockSize',['../structmeshkernelapi_1_1_make_mesh_parameters.html#a9869b12092b11edc822826b0aaafe0db',1,'meshkernelapi::MakeMeshParameters']]]
+  ['y',['y',['../structmeshkernel_1_1_point.html#aad94b2da9a9218821edbc5a4db62e513',1,'meshkernel::Point::y()'],['../structmeshkernel_1_1_cartesian3_d_point.html#a41e449f80963b5783ac3767e5f5f9402',1,'meshkernel::Cartesian3DPoint::y()'],['../structmeshkernel_1_1_sample.html#a194c4b18e0884c63f2d1fd1f0a68d3d6',1,'meshkernel::Sample::y()']]],
+  ['ycoordinates',['yCoordinates',['../structmeshkernelapi_1_1_geometry_list.html#ac97f944c879b23860f21cff79eebafea',1,'meshkernelapi::GeometryList']]],
+  ['ygridblocksize',['YGridBlockSize',['../structmeshkernelapi_1_1_make_mesh_parameters.html#a377d9668f6eb9a6f930ca511bc639f44',1,'meshkernelapi::MakeMeshParameters']]]
 ];

@@ -6,7 +6,7 @@ var searchData=
   ['deletehangingedges',['DeleteHangingEdges',['../classmeshkernel_1_1_mesh.html#acfc8faeba4000b3bf33493c0e53f11ed',1,'meshkernel::Mesh']]],
   ['deletemesh',['DeleteMesh',['../classmeshkernel_1_1_mesh.html#a9e005c6a14b76b10f1161ad961dfa9fc',1,'meshkernel::Mesh']]],
   ['deletemeshoptions',['DeleteMeshOptions',['../classmeshkernel_1_1_mesh.html#ad32ad99687dd388e74aae4f58c4b31c6',1,'meshkernel::Mesh']]],
-  ['deletenode',['DeleteNode',['../classmeshkernel_1_1_mesh.html#adeea6d9b1ebed9639997394d3bd1e9ee',1,'meshkernel::Mesh::DeleteNode()'],['../classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a3924e10cda6de78cf8b67670c6717457',1,'meshkernel::SpatialTrees::RTree::DeleteNode()']]],
+  ['deletenode',['DeleteNode',['../classmeshkernel_1_1_mesh.html#adeea6d9b1ebed9639997394d3bd1e9ee',1,'meshkernel::Mesh::DeleteNode()'],['../classmeshkernel_1_1_r_tree.html#acbe97257637d8b929442f6be028d4abf',1,'meshkernel::RTree::DeleteNode()']]],
   ['deleteskinnytriangles',['DeleteSkinnyTriangles',['../structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html#ad09a954fdebdd746e29e7cfbb8c6911a',1,'meshkernelapi::SplinesToCurvilinearParameters']]],
   ['deletesmallflowedges',['DeleteSmallFlowEdges',['../classmeshkernel_1_1_mesh.html#a34e4853bce6edc415f0a0272420338b0',1,'meshkernel::Mesh']]],
   ['deletesmalltrianglesatboundaries',['DeleteSmallTrianglesAtBoundaries',['../classmeshkernel_1_1_mesh.html#a080e66e92019fcaa92b3f1e1e4b7c19b',1,'meshkernel::Mesh']]],

@@ -4,7 +4,7 @@ var searchData=
   ['inneriteration',['InnerIteration',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#a282b75deb737c0eb1abd51c165e1a805',1,'meshkernel::OrthogonalizationAndSmoothing']]],
   ['innerproduct',['InnerProduct',['../namespacemeshkernel.html#af6338c4df9b1a0680f013b9624776d91',1,'meshkernel']]],
   ['innerproducttwosegments',['InnerProductTwoSegments',['../namespacemeshkernel.html#a43c86e4faac7b1537a76ea4ba26ce591',1,'meshkernel']]],
-  ['insertnode',['InsertNode',['../classmeshkernel_1_1_mesh.html#a057fc512938636517f87d7724e9dd8c0',1,'meshkernel::Mesh::InsertNode()'],['../classmeshkernel_1_1_spatial_trees_1_1_r_tree.html#a55afd29dbf597fbb594565d8a08dee9b',1,'meshkernel::SpatialTrees::RTree::InsertNode()']]],
+  ['insertnode',['InsertNode',['../classmeshkernel_1_1_mesh.html#a057fc512938636517f87d7724e9dd8c0',1,'meshkernel::Mesh::InsertNode()'],['../classmeshkernel_1_1_r_tree.html#a1ab37d5972d280a10b90f747c27c1ca3',1,'meshkernel::RTree::InsertNode()']]],
   ['interpolatepointsonspline',['InterpolatePointsOnSpline',['../classmeshkernel_1_1_splines.html#ae1b9222a26d422098312f37a18852d76',1,'meshkernel::Splines']]],
   ['interpolatesplinepoint',['InterpolateSplinePoint',['../namespacemeshkernel.html#af8d65ed377e7d797ad5fc860a59325f0',1,'meshkernel']]],
   ['isedgeonboundary',['IsEdgeOnBoundary',['../classmeshkernel_1_1_mesh.html#ab2741b112d098254135f0e116c8ea8b5',1,'meshkernel::Mesh']]],

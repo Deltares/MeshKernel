@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['value',['value',['../structmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]],
-  ['vectorproduct',['VectorProduct',['../namespacemeshkernel.html#a214dc989df380801d32a03bb4350300c',1,'meshkernel']]]
+  ['walkboundaryfromnode',['WalkBoundaryFromNode',['../classmeshkernel_1_1_mesh.html#a84f4ac033b4270921a404d20e5d6a822',1,'meshkernel::Mesh']]],
+  ['weightcircumcenter',['weightCircumCenter',['../namespacemeshkernel.html#a0749d5ac40719df6e147211e58f6083d',1,'meshkernel']]]
 ];

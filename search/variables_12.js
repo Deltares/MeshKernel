@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['value',['value',['../structmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]]
+  ['weightcircumcenter',['weightCircumCenter',['../namespacemeshkernel.html#a0749d5ac40719df6e147211e58f6083d',1,'meshkernel']]]
 ];
