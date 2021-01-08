@@ -997,159 +997,6 @@ void meshkernel::Mesh2D::MergeNodesInPolygon(const Polygons& polygon)
     Administrate(AdministrationOptions::AdministrateMeshEdges);
 }
 
-void meshkernel::Mesh2D::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
-{
-    if (firstNodeIndex >= GetNumNodes() || secondNodeIndex >= GetNumNodes())
-    {
-        throw std::invalid_argument("Mesh2D::MergeTwoNodes: Either the first or the second node-index is invalid.");
-    }
-
-    auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);
-    if (edgeIndex != sizetMissingValue)
-    {
-        m_edges[edgeIndex].first = sizetMissingValue;
-        m_edges[edgeIndex].second = sizetMissingValue;
-    }
-
-    // check if there is another edge starting at firstEdgeOtherNode and ending at secondNode
-    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
-    {
-        const auto firstEdgeIndex = m_nodesEdges[firstNodeIndex][n];
-        const auto firstEdge = m_edges[firstEdgeIndex];
-        const auto firstEdgeOtherNode = OtherNodeOfEdge(firstEdge, firstNodeIndex);
-        if (firstEdgeOtherNode != sizetMissingValue && firstEdgeOtherNode != secondNodeIndex)
-        {
-            for (auto nn = 0; nn < m_nodesNumEdges[firstEdgeOtherNode]; nn++)
-            {
-                const auto secondEdgeIndex = m_nodesEdges[firstEdgeOtherNode][nn];
-                auto secondEdge = m_edges[secondEdgeIndex];
-                const auto secondNodeSecondEdge = OtherNodeOfEdge(secondEdge, firstEdgeOtherNode);
-                if (secondNodeSecondEdge == secondNodeIndex)
-                {
-                    m_edges[secondEdgeIndex].first = sizetMissingValue;
-                    m_edges[secondEdgeIndex].second = sizetMissingValue;
-                }
-            }
-        }
-    }
-
-    // add all valid edges starting at secondNode
-    std::vector<size_t> secondNodeEdges(maximumNumberOfEdgesPerNode, sizetMissingValue);
-    size_t numSecondNodeEdges = 0;
-    for (auto n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
-    {
-        edgeIndex = m_nodesEdges[secondNodeIndex][n];
-        if (m_edges[edgeIndex].first != sizetMissingValue)
-        {
-            secondNodeEdges[numSecondNodeEdges] = edgeIndex;
-            numSecondNodeEdges++;
-        }
-    }
-
-    // add all valid edges starting at firstNode are assigned to the second node
-    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
-    {
-        edgeIndex = m_nodesEdges[firstNodeIndex][n];
-        if (m_edges[edgeIndex].first != sizetMissingValue)
-        {
-            secondNodeEdges[numSecondNodeEdges] = edgeIndex;
-            if (m_edges[edgeIndex].first == firstNodeIndex)
-            {
-                m_edges[edgeIndex].first = secondNodeIndex;
-            }
-            if (m_edges[edgeIndex].second == firstNodeIndex)
-            {
-                m_edges[edgeIndex].second = secondNodeIndex;
-            }
-            numSecondNodeEdges++;
-        }
-    }
-
-    // re-assign edges to second node
-    m_nodesEdges[secondNodeIndex] = std::vector<size_t>(secondNodeEdges.begin(), secondNodeEdges.begin() + numSecondNodeEdges);
-    m_nodesNumEdges[secondNodeIndex] = numSecondNodeEdges;
-
-    // remove edges to first node
-    m_nodesEdges[firstNodeIndex] = std::vector<size_t>(0);
-    m_nodesNumEdges[firstNodeIndex] = 0;
-    m_nodes[firstNodeIndex] = {doubleMissingValue, doubleMissingValue};
-
-    m_nodesRTreeRequiresUpdate = true;
-    m_edgesRTreeRequiresUpdate = true;
-}
-
-size_t meshkernel::Mesh2D::ConnectNodes(size_t startNode, size_t endNode)
-{
-    const auto edgeIndex = FindEdge(startNode, endNode);
-
-    // The nodes are already connected
-    if (edgeIndex != sizetMissingValue)
-        return sizetMissingValue;
-
-    // increment the edges container
-    const auto newEdgeIndex = GetNumEdges();
-    m_edges.resize(newEdgeIndex + 1);
-    m_edges[newEdgeIndex].first = startNode;
-    m_edges[newEdgeIndex].second = endNode;
-    m_numEdges++;
-
-    m_edgesRTreeRequiresUpdate = true;
-
-    return newEdgeIndex;
-}
-
-size_t meshkernel::Mesh2D::InsertNode(const Point& newPoint)
-{
-    const auto newSize = GetNumNodes() + 1;
-    const auto newNodeIndex = GetNumNodes();
-
-    m_nodes.resize(newSize);
-    m_nodeMask.resize(newSize);
-    m_nodesNumEdges.resize(newSize);
-    m_nodesEdges.resize(newSize);
-
-    m_numNodes++;
-
-    m_nodes[newNodeIndex] = newPoint;
-    m_nodeMask[newNodeIndex] = static_cast<int>(newNodeIndex);
-    m_nodesNumEdges[newNodeIndex] = 0;
-
-    m_nodesRTreeRequiresUpdate = true;
-
-    return newNodeIndex;
-}
-
-void meshkernel::Mesh2D::DeleteNode(size_t nodeIndex)
-{
-    if (nodeIndex >= GetNumNodes())
-    {
-        throw std::invalid_argument("Mesh2D::DeleteNode: The index of the node to be deleted does not exist.");
-    }
-
-    for (auto e = 0; e < m_nodesNumEdges[nodeIndex]; e++)
-    {
-        const auto edgeIndex = m_nodesEdges[nodeIndex][e];
-        DeleteEdge(edgeIndex);
-    }
-    m_nodes[nodeIndex] = {doubleMissingValue, doubleMissingValue};
-    m_numNodes--;
-
-    m_nodesRTreeRequiresUpdate = true;
-}
-
-void meshkernel::Mesh2D::DeleteEdge(size_t edgeIndex)
-{
-    if (edgeIndex == sizetMissingValue)
-    {
-        throw std::invalid_argument("Mesh2D::DeleteEdge: The index of the edge to be deleted does not exist.");
-    }
-
-    m_edges[edgeIndex].first = sizetMissingValue;
-    m_edges[edgeIndex].second = sizetMissingValue;
-
-    m_edgesRTreeRequiresUpdate = true;
-}
-
 void meshkernel::Mesh2D::ComputeFaceClosedPolygonWithLocalMappings(size_t faceIndex,
                                                                    std::vector<Point>& polygonNodesCache,
                                                                    std::vector<size_t>& localNodeIndicesCache,
@@ -1204,23 +1051,6 @@ void meshkernel::Mesh2D::MaskNodesInPolygons(const Polygons& polygon, bool insid
     }
 }
 
-void meshkernel::Mesh2D::ComputeEdgesLengths()
-{
-    auto const numEdges = GetNumEdges();
-    m_edgeLengths.resize(numEdges, doubleMissingValue);
-    for (auto e = 0; e < numEdges; e++)
-    {
-        auto const first = m_edges[e].first;
-        auto const second = m_edges[e].second;
-        m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
-    }
-}
-
-void meshkernel::Mesh2D::ComputeEdgesCenters()
-{
-    m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
-}
-
 bool meshkernel::Mesh2D::IsFullFaceNotInPolygon(size_t faceIndex) const
 {
     for (auto n = 0; n < GetNumFaceEdges(faceIndex); n++)
@@ -1231,51 +1061,6 @@ bool meshkernel::Mesh2D::IsFullFaceNotInPolygon(size_t faceIndex) const
         }
     }
     return false;
-}
-
-size_t meshkernel::Mesh2D::FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const
-{
-    const auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
-    const auto firstEdgeEdgeSecondNode = m_edges[firstEdgeIndex].second;
-
-    const auto secondEdgeFirstNode = m_edges[secondEdgeIndex].first;
-    const auto secondEdgeSecondNode = m_edges[secondEdgeIndex].second;
-
-    if (firstEdgeFirstNode == sizetMissingValue || firstEdgeEdgeSecondNode == sizetMissingValue || secondEdgeFirstNode == sizetMissingValue || secondEdgeSecondNode == sizetMissingValue)
-    {
-        throw std::invalid_argument("Mesh2D::FindCommonNode: At least one of the given edges is invalid.");
-    }
-
-    if (firstEdgeFirstNode == secondEdgeFirstNode || firstEdgeFirstNode == secondEdgeSecondNode)
-    {
-        return firstEdgeFirstNode;
-    }
-    if (firstEdgeEdgeSecondNode == secondEdgeFirstNode || firstEdgeEdgeSecondNode == secondEdgeSecondNode)
-    {
-        return firstEdgeEdgeSecondNode;
-    }
-    return sizetMissingValue;
-}
-
-size_t meshkernel::Mesh2D::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const
-{
-    if (firstNodeIndex == sizetMissingValue || secondNodeIndex == sizetMissingValue)
-    {
-        throw std::invalid_argument("Mesh2D::FindEdge: Invalid node index.");
-    }
-
-    size_t edgeIndex = sizetMissingValue;
-    for (auto n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
-    {
-        const auto localEdgeIndex = m_nodesEdges[firstNodeIndex][n];
-        const auto firstEdgeOtherNode = OtherNodeOfEdge(m_edges[localEdgeIndex], firstNodeIndex);
-        if (firstEdgeOtherNode == secondNodeIndex)
-        {
-            edgeIndex = localEdgeIndex;
-            break;
-        }
-    }
-    return edgeIndex;
 }
 
 void meshkernel::Mesh2D::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
@@ -1316,57 +1101,6 @@ void meshkernel::Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
             }
         }
     }
-}
-
-size_t meshkernel::Mesh2D::GetNodeIndex(Point point, double searchRadius)
-{
-    if (GetNumNodes() <= 0)
-    {
-        throw std::invalid_argument("Mesh2D::GetNodeIndex: There are no valid nodes.");
-    }
-
-    // create rtree a first time
-    if (m_nodesRTree.Empty())
-    {
-        m_nodesRTree.BuildTree(m_nodes);
-        m_nodesRTreeRequiresUpdate = false;
-    }
-
-    double const searchRadiusSquared = searchRadius * searchRadius;
-    m_nodesRTree.NearestNeighborsOnSquaredDistance(point, searchRadiusSquared);
-    const auto resultSize = m_nodesRTree.GetQueryResultSize();
-
-    if (resultSize > 0)
-    {
-        return m_nodesRTree.GetQuerySampleIndex(0);
-    }
-
-    throw AlgorithmError("Mesh2D::GetNodeIndex: Could not find the node index close to a point.");
-}
-
-size_t meshkernel::Mesh2D::FindEdgeCloseToAPoint(Point point)
-{
-    if (GetNumEdges() == 0)
-    {
-        throw std::invalid_argument("Mesh2D::GetNodeIndex: There are no valid edges.");
-    }
-
-    if (m_edgesRTree.Empty())
-    {
-        ComputeEdgesCenters();
-        m_edgesRTree.BuildTree(m_edgesCenters);
-        m_edgesRTreeRequiresUpdate = false;
-    }
-
-    m_edgesRTree.NearestNeighbors(point);
-    auto const resultSize = m_edgesRTree.GetQueryResultSize();
-    if (resultSize >= 1)
-    {
-        const auto edgeIndex = m_edgesRTree.GetQuerySampleIndex(0);
-        return edgeIndex;
-    }
-
-    throw AlgorithmError("Mesh2D::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
 }
 
 void meshkernel::Mesh2D::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)
@@ -1461,126 +1195,6 @@ void meshkernel::Mesh2D::MaskFaceEdgesInPolygon(const Polygons& polygons, bool i
     m_edgeMask = std::move(secondEdgeMask);
 }
 
-void meshkernel::Mesh2D::DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion)
-{
-    if (deletionOption == AllNodesInside)
-    {
-        for (auto n = 0; n < GetNumNodes(); ++n)
-        {
-            auto isInPolygon = polygons.IsPointInPolygon(m_nodes[n], 0);
-            if (invertDeletion)
-            {
-                isInPolygon = !isInPolygon;
-            }
-            if (isInPolygon)
-            {
-                m_nodes[n] = {doubleMissingValue, doubleMissingValue};
-            }
-        }
-    }
-
-    if (deletionOption == FacesWithIncludedCircumcenters)
-    {
-        Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
-
-        for (auto e = 0; e < GetNumEdges(); ++e)
-        {
-            bool allFaceCircumcentersInPolygon = true;
-
-            for (auto f = 0; f < GetNumEdgesFaces(e); ++f)
-            {
-                const auto faceIndex = m_edgesFaces[e][f];
-                if (faceIndex == sizetMissingValue)
-                {
-                    continue;
-                }
-
-                const auto faceCircumcenter = m_facesCircumcenters[faceIndex];
-                auto isInPolygon = polygons.IsPointInPolygon(faceCircumcenter, 0);
-                if (invertDeletion)
-                {
-                    isInPolygon = !isInPolygon;
-                }
-                if (!isInPolygon)
-                {
-                    allFaceCircumcentersInPolygon = false;
-                    break;
-                }
-            }
-
-            // 2D edge without surrounding faces.
-            if (GetNumEdgesFaces(e) == 0)
-            {
-                const auto firstNodeIndex = m_edges[e].first;
-                const auto secondNodeIndex = m_edges[e].second;
-
-                if (firstNodeIndex == sizetMissingValue || secondNodeIndex == sizetMissingValue)
-                {
-                    continue;
-                }
-
-                const auto edgeCenter = (m_nodes[firstNodeIndex] + m_nodes[secondNodeIndex]) / 2.0;
-
-                allFaceCircumcentersInPolygon = polygons.IsPointInPolygon(edgeCenter, 0);
-                if (invertDeletion)
-                {
-                    allFaceCircumcentersInPolygon = !allFaceCircumcentersInPolygon;
-                }
-            }
-
-            if (allFaceCircumcentersInPolygon)
-            {
-                m_edges[e].first = sizetMissingValue;
-                m_edges[e].second = sizetMissingValue;
-            }
-        }
-    }
-
-    if (deletionOption == FacesCompletelyIncluded)
-    {
-        MaskFaceEdgesInPolygon(polygons, invertDeletion, false);
-
-        // mark the edges for deletion
-        for (auto e = 0; e < GetNumEdges(); ++e)
-        {
-            if (m_edgeMask[e] == 1)
-            {
-                m_edges[e].first = sizetMissingValue;
-                m_edges[e].second = sizetMissingValue;
-            }
-        }
-    }
-
-    m_nodesRTreeRequiresUpdate = true;
-    m_edgesRTreeRequiresUpdate = true;
-
-    Administrate(AdministrationOptions::AdministrateMeshEdges);
-}
-
-void meshkernel::Mesh2D::MoveNode(Point newPoint, size_t nodeindex)
-{
-    const Point nodeToMove = m_nodes[nodeindex];
-
-    const auto dx = GetDx(nodeToMove, newPoint, m_projection);
-    const auto dy = GetDy(nodeToMove, newPoint, m_projection);
-
-    const auto distanceNodeToMoveFromNewPoint = std::sqrt(dx * dx + dy * dy);
-    for (auto n = 0; n < GetNumNodes(); ++n)
-    {
-        const auto nodeDx = GetDx(m_nodes[n], nodeToMove, m_projection);
-        const auto nodeDy = GetDy(m_nodes[n], nodeToMove, m_projection);
-        const double distanceCurrentNodeFromNewPoint = std::sqrt(nodeDx * nodeDx + nodeDy * nodeDy);
-
-        const auto factor = 0.5 * (1.0 + std::cos(std::min(distanceCurrentNodeFromNewPoint / distanceNodeToMoveFromNewPoint, 1.0) * M_PI));
-
-        m_nodes[n].x += dx * factor;
-        m_nodes[n].y += dy * factor;
-    }
-
-    m_nodesRTreeRequiresUpdate = true;
-    m_edgesRTreeRequiresUpdate = true;
-}
-
 meshkernel::Mesh2D& meshkernel::Mesh2D::operator+=(Mesh2D const& rhs)
 {
     if (m_projection != rhs.m_projection || rhs.GetNumNodes() == 0 || rhs.GetNumEdges() == 0)
@@ -1649,22 +1263,6 @@ void meshkernel::Mesh2D::ComputeNodeMaskFromEdgeMask()
             m_nodeMask[secondNodeIndex] = 1;
         }
     }
-}
-
-bool meshkernel::Mesh2D::IsFaceOnBoundary(size_t face) const
-{
-    bool isFaceOnBoundary = false;
-
-    for (auto e = 0; e < GetNumFaceEdges(face); ++e)
-    {
-        const auto edge = m_facesEdges[face][e];
-        if (IsEdgeOnBoundary(edge))
-        {
-            isFaceOnBoundary = true;
-            break;
-        }
-    }
-    return isFaceOnBoundary;
 }
 
 meshkernel::Point meshkernel::Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
@@ -2447,6 +2045,102 @@ std::vector<size_t> meshkernel::Mesh2D::GetHangingEdges() const
     }
 
     return result;
+}
+
+void meshkernel::Mesh2D::DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion)
+{
+    if (deletionOption == AllNodesInside)
+    {
+        for (auto n = 0; n < GetNumNodes(); ++n)
+        {
+            auto isInPolygon = polygons.IsPointInPolygon(m_nodes[n], 0);
+            if (invertDeletion)
+            {
+                isInPolygon = !isInPolygon;
+            }
+            if (isInPolygon)
+            {
+                m_nodes[n] = {doubleMissingValue, doubleMissingValue};
+            }
+        }
+    }
+
+    if (deletionOption == FacesWithIncludedCircumcenters)
+    {
+        Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+        for (auto e = 0; e < GetNumEdges(); ++e)
+        {
+            bool allFaceCircumcentersInPolygon = true;
+
+            for (auto f = 0; f < GetNumEdgesFaces(e); ++f)
+            {
+                const auto faceIndex = m_edgesFaces[e][f];
+                if (faceIndex == sizetMissingValue)
+                {
+                    continue;
+                }
+
+                const auto faceCircumcenter = m_facesCircumcenters[faceIndex];
+                auto isInPolygon = polygons.IsPointInPolygon(faceCircumcenter, 0);
+                if (invertDeletion)
+                {
+                    isInPolygon = !isInPolygon;
+                }
+                if (!isInPolygon)
+                {
+                    allFaceCircumcentersInPolygon = false;
+                    break;
+                }
+            }
+
+            // 2D edge without surrounding faces.
+            if (GetNumEdgesFaces(e) == 0)
+            {
+                const auto firstNodeIndex = m_edges[e].first;
+                const auto secondNodeIndex = m_edges[e].second;
+
+                if (firstNodeIndex == sizetMissingValue || secondNodeIndex == sizetMissingValue)
+                {
+                    continue;
+                }
+
+                const auto edgeCenter = (m_nodes[firstNodeIndex] + m_nodes[secondNodeIndex]) / 2.0;
+
+                allFaceCircumcentersInPolygon = polygons.IsPointInPolygon(edgeCenter, 0);
+                if (invertDeletion)
+                {
+                    allFaceCircumcentersInPolygon = !allFaceCircumcentersInPolygon;
+                }
+            }
+
+            if (allFaceCircumcentersInPolygon)
+            {
+                m_edges[e].first = sizetMissingValue;
+                m_edges[e].second = sizetMissingValue;
+            }
+        }
+    }
+
+    if (deletionOption == FacesCompletelyIncluded)
+    {
+        MaskFaceEdgesInPolygon(polygons, invertDeletion, false);
+
+        // mark the edges for deletion
+        for (auto e = 0; e < GetNumEdges(); ++e)
+        {
+            if (m_edgeMask[e] == 1)
+            {
+                m_edges[e].first = sizetMissingValue;
+                m_edges[e].second = sizetMissingValue;
+            }
+        }
+    }
+
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+
+    Administrate(AdministrationOptions::AdministrateMeshEdges);
 }
 
 void meshkernel::Mesh2D::DeleteHangingEdges()
