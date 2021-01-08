@@ -24,6 +24,7 @@
 // Stichting Deltares. All rights reserved.
 //
 //------------------------------------------------------------------------------
+#include <tuple>
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -86,9 +87,9 @@ void meshkernel::TriangulationInterpolation::Compute()
     samplesRtree.BuildTree(trianglesCircumcenters);
 
     // compute the sample bounding box
-    Point lowerLeft;
-    Point upperRight;
-    GetBoundingBox(m_samples, lowerLeft, upperRight);
+    const auto boundingBox = GetBoundingBox(m_samples);
+    Point lowerLeft = std::get<0>(boundingBox);
+    Point upperRight = std::get<1>(boundingBox);
 
     // loop over locations
     for (auto n = 0; n < m_locations.size(); ++n)

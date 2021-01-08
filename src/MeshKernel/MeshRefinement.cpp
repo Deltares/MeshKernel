@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <cmath>
 #include <numeric>
+#include <tuple>
 #include <vector>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
@@ -69,7 +70,9 @@ void meshkernel::MeshRefinement::Compute()
     Point upperRight{doubleMissingValue, doubleMissingValue};
     if (m_mesh->m_projection == Projection::spherical)
     {
-        m_mesh->GetBoundingBox(lowerLeft, upperRight);
+        const auto boundingBox = GetBoundingBox(m_mesh->m_nodes);
+        lowerLeft = std::get<0>(boundingBox);
+        upperRight = std::get<1>(boundingBox);
     }
 
     // select the nodes to refine

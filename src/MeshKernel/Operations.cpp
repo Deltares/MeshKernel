@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <tuple>
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>

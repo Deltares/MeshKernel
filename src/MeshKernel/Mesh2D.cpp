@@ -961,27 +961,6 @@ bool meshkernel::Mesh2D::IsFullFaceNotInPolygon(size_t faceIndex) const
     return false;
 }
 
-void meshkernel::Mesh2D::GetBoundingBox(Point& lowerLeft, Point& upperRight) const
-{
-
-    double minx = std::numeric_limits<double>::max();
-    double maxx = std::numeric_limits<double>::lowest();
-    double miny = std::numeric_limits<double>::max();
-    double maxy = std::numeric_limits<double>::lowest();
-    for (auto n = 0; n < GetNumNodes(); n++)
-    {
-        if (m_nodes[n].IsValid())
-        {
-            minx = std::min(minx, m_nodes[n].x);
-            maxx = std::max(maxx, m_nodes[n].x);
-            miny = std::min(miny, m_nodes[n].y);
-            maxy = std::max(maxy, m_nodes[n].y);
-        }
-    }
-    lowerLeft = {minx, miny};
-    upperRight = {maxx, maxy};
-}
-
 void meshkernel::Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
 {
     if (m_projection == Projection::spherical && maxx - minx > 180.0)

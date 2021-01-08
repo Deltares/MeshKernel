@@ -23,11 +23,7 @@ TEST(ComputeSingleConnections, ComputeContacts)
     meshkernel::Contacts contacts(mesh1d, mesh2d, onedNodeMask);
 
     // Set the polygon where to generate the contacts
-    std::vector<meshkernel::Point> polygonPoints{{-30, -20},
-                                                 {40, -20},
-                                                 {40, 50},
-                                                 {-40, 50},
-                                                 {-30, -20}};
+    std::vector<meshkernel::Point> polygonPoints{{-30, -20}, {40, -20}, {40, 50}, {-40, 50}, {-30, -20}};
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute

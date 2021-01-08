@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <stdexcept>
+#include <tuple>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -197,9 +198,10 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
     }
 
     // compute the polygon bounding box
-    Point lowerLeft;
-    Point upperRight;
-    GetBoundingBox(searchPolygon, lowerLeft, upperRight);
+
+    const auto boundingBox = GetBoundingBox(searchPolygon);
+    auto lowerLeft = std::get<0>(boundingBox);
+    auto upperRight = std::get<1>(boundingBox);
     if (m_mesh->m_projection == Projection::spherical && upperRight.x - lowerLeft.x > 180.0)
     {
         const auto xmean = 0.5 * (upperRight.x + lowerLeft.x);

@@ -112,11 +112,6 @@ namespace meshkernel
         /// @brief Find faces: constructs the m_facesNodes mapping, face mass centers and areas (findcells)
         void FindFaces();
 
-        /// @brief Gets the corners of a box bounding the mesh
-        /// @param[out] lowerLeft Lower left corner
-        /// @param[out] upperRight Upper right corner
-        void GetBoundingBox(Point& lowerLeft, Point& upperRight) const;
-
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx
         /// @param[in] miny
