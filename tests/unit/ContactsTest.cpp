@@ -27,7 +27,7 @@ TEST(ComputeSingleConnections, ComputeContacts)
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    //contacts.ComputeSingleConnections(polygon);
+    contacts.ComputeSingleConnections(polygon);
 
     //Assert
     //constexpr double tolerance = 1e-6;

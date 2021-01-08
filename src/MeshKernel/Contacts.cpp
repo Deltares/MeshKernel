@@ -75,8 +75,8 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
         size_t leftIntersectedEdge;
         const auto isLeftProjectedNodeIntersected = m_mesh2d->IsSegmentCrossingAFace(m_mesh1d->m_nodes[n], leftProjectedNode, leftIntersectedFace, leftIntersectedEdge);
         if (isLeftProjectedNodeIntersected &&
-            !IsConnectionIntersectingMesh1d(n, rightIntersectedFace) &&
-            !IsContactIntersectingContact(n, rightIntersectedFace))
+            !IsConnectionIntersectingMesh1d(n, leftIntersectedFace) &&
+            !IsContactIntersectingContact(n, leftIntersectedFace))
         {
             m_mesh1dIndices.emplace_back(n);
             m_mesh2dIndices.emplace_back(leftIntersectedFace);
@@ -86,7 +86,7 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
 
 bool meshkernel::Contacts::IsConnectionIntersectingMesh1d(size_t node, size_t face) const
 {
-
+    const auto numericZero = std::numeric_limits<double>::epsilon();
     for (size_t e = 0; e < m_mesh1d->GetNumEdges(); ++e)
     {
 
@@ -105,7 +105,9 @@ bool meshkernel::Contacts::IsConnectionIntersectingMesh1d(size_t node, size_t fa
                                                             ratioFirstSegment,
                                                             ratioSecondSegment);
 
-        if (areSegmentCrossing)
+        if (areSegmentCrossing &&
+            ratioFirstSegment > numericZero && ratioFirstSegment < 1.0 &&
+            ratioSecondSegment > numericZero && ratioSecondSegment < 1.0)
         {
             return true;
         }
@@ -115,7 +117,7 @@ bool meshkernel::Contacts::IsConnectionIntersectingMesh1d(size_t node, size_t fa
 
 bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face) const
 {
-
+    const auto numericZero = std::numeric_limits<double>::epsilon();
     for (size_t i = 0; i < m_mesh1dIndices.size(); ++i)
     {
         Point intersectionPoint;
@@ -132,8 +134,9 @@ bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face
                                                             crossProduct,
                                                             ratioFirstSegment,
                                                             ratioSecondSegment);
-
-        if (areSegmentCrossing)
+        if (areSegmentCrossing &&
+            ratioFirstSegment > numericZero && ratioFirstSegment < 1.0 &&
+            ratioSecondSegment > numericZero && ratioSecondSegment < 1.0)
         {
             return true;
         }

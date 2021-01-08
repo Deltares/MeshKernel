@@ -2063,6 +2063,7 @@ bool meshkernel::Mesh2D::IsSegmentCrossingAFace(const Point& firstPoint, const P
     double intersectionRatio = std::numeric_limits<double>::max();
     intersectedFace = sizetMissingValue;
     intersectedEdge = sizetMissingValue;
+    auto isCrossing = false;
     for (auto e = 0; e < GetNumEdges(); ++e)
     {
         if (!IsEdgeOnBoundary(e))
@@ -2091,8 +2092,8 @@ bool meshkernel::Mesh2D::IsSegmentCrossingAFace(const Point& firstPoint, const P
             intersectionRatio = ratioFirstSegment;
             intersectedFace = m_edgesFaces[e][0];
             intersectedEdge = e;
-            return true;
+            isCrossing =  true;
         }
     }
-    return false;
+    return isCrossing;
 }
