@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2020.
+// Copyright (C)  Stichting Deltares, 2011-2021.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 
@@ -713,9 +713,9 @@ void meshkernel::Mesh::FindFacesRecursive(size_t startingNode,
         // the order of the edges in a new face must be counterclockwise
         // in order to evaluate the clockwise order, the signed face area is computed
         nodalValues.clear();
-        for (const auto& node : nodes)
+        for (const auto& n : nodes)
         {
-            nodalValues.emplace_back(m_nodes[node]);
+            nodalValues.emplace_back(m_nodes[n]);
         }
         nodalValues.emplace_back(nodalValues.front());
 
@@ -1117,7 +1117,7 @@ void meshkernel::Mesh::MergeNodesInPolygon(const Polygons& polygon)
     filteredNodes.resize(index);
 
     // Update the R-Tree of the mesh nodes
-    SpatialTrees::RTree nodesRtree;
+    RTree nodesRtree;
     nodesRtree.BuildTree(filteredNodes);
 
     // merge the closest nodes

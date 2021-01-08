@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2020.
+// Copyright (C)  Stichting Deltares, 2011-2021.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <vector>
 
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/SpatialTrees.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 
 /// \namespace meshkernel
@@ -392,8 +392,8 @@ namespace meshkernel
 
         Projection m_projection; ///< The projection used
 
-        SpatialTrees::RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
-        SpatialTrees::RTree m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
+        RTree m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
+        RTree m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
 
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbors
 
