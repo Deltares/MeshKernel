@@ -155,6 +155,13 @@ namespace meshkernel
         /// @brief Removes all invalid nodes and edges
         void DeleteInvalidNodesAndEdges();
 
+        /// @brief Perform node and edges administration
+        void AdministrateNodesEdges();
+
+        /// @brief Sort edges in conterclockwise orther (Sort_links_ccw)
+        /// @param[in] node The node index for which sorting should take place
+        void SortEdgesInCounterClockWiseOrder(size_t node);
+
         // nodes
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
         std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
@@ -187,7 +194,7 @@ namespace meshkernel
         size_t m_numEdges = 0;                  ///< Number of valid edges in m_edges
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
-        RTree m_nodesRTree;       ///< Spatial R-Tree used to inquire node nodes
-        RTree m_edgesRTree;       ///< Spatial R-Tree used to inquire edges centers
+        RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
+        RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
     };
 } // namespace meshkernel

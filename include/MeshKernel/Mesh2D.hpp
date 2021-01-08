@@ -213,10 +213,6 @@ namespace meshkernel
         ///  @brief Classifies the nodes (makenetnodescoding)
         void ClassifyNodes();
 
-        /// @brief Sort edges in conterclockwise orther (Sort_links_ccw)
-        /// @param[in] node The node index for which sorting should take place
-        void SortEdgesInCounterClockWiseOrder(size_t node);
-
         /// @brief Deletes coinciding triangles
         void DeleteDegeneratedTriangles();
 
@@ -314,7 +310,5 @@ namespace meshkernel
         /// @param[in] nodes
         /// @returns If triangle is okay
         [[nodiscard]] bool CheckTriangle(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const;
-
-        std::vector<double> m_edgeAngles; ///< Internal cache for sorting the edges around nodes
     };
 } // namespace meshkernel

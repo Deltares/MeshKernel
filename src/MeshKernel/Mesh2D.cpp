@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2020.
+// Copyright (C)  Stichting Deltares, 2011-2021.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -58,39 +58,7 @@ meshkernel::Mesh2D::Mesh2D(const std::vector<Edge>& edges,
 
 void meshkernel::Mesh2D::Administrate(AdministrationOptions administrationOption)
 {
-    DeleteInvalidNodesAndEdges();
-
-    if (m_nodesRTreeRequiresUpdate && !m_nodesRTree.Empty())
-    {
-        m_nodesRTree.BuildTree(m_nodes);
-        m_nodesRTreeRequiresUpdate = false;
-    }
-
-    if (m_edgesRTreeRequiresUpdate && !m_edgesRTree.Empty())
-    {
-        ComputeEdgesCenters();
-        m_edgesRTree.BuildTree(m_edgesCenters);
-        m_edgesRTreeRequiresUpdate = false;
-    }
-
-    // return if there are no nodes or no edges
-    if (m_numNodes == 0 || m_numEdges == 0)
-    {
-        return;
-    }
-
-    m_nodesEdges.resize(m_nodes.size());
-    std::fill(m_nodesEdges.begin(), m_nodesEdges.end(), std::vector<size_t>(maximumNumberOfEdgesPerNode, sizetMissingValue));
-
-    m_nodesNumEdges.resize(m_nodes.size());
-    std::fill(m_nodesNumEdges.begin(), m_nodesNumEdges.end(), 0);
-
-    NodeAdministration();
-
-    for (auto n = 0; n < GetNumNodes(); n++)
-    {
-        SortEdgesInCounterClockWiseOrder(n);
-    }
+    AdministrateNodesEdges();
 
     if (administrationOption == AdministrationOptions::AdministrateMeshEdges)
     {
@@ -360,75 +328,6 @@ void meshkernel::Mesh2D::SetFlatCopies(AdministrationOptions administrationOptio
     if (m_facesCircumcentersz.empty())
     {
         m_facesCircumcentersz.resize(1);
-    }
-}
-
-void meshkernel::Mesh2D::SortEdgesInCounterClockWiseOrder(size_t node)
-{
-    if (!m_nodes[node].IsValid())
-    {
-        throw std::invalid_argument("Mesh2D::SortEdgesInCounterClockWiseOrder: Invalid nodes.");
-    }
-
-    double phi0 = 0.0;
-    double phi;
-    m_edgeAngles.resize(maximumNumberOfEdgesPerNode);
-    std::fill(m_edgeAngles.begin(), m_edgeAngles.end(), 0.0);
-    for (auto edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
-    {
-
-        auto firstNode = m_edges[m_nodesEdges[node][edgeIndex]].first;
-        auto secondNode = m_edges[m_nodesEdges[node][edgeIndex]].second;
-        if (firstNode == sizetMissingValue || secondNode == sizetMissingValue)
-        {
-            continue;
-        }
-
-        if (secondNode == node)
-        {
-            secondNode = firstNode;
-            firstNode = node;
-        }
-
-        const auto deltaX = GetDx(m_nodes[secondNode], m_nodes[firstNode], m_projection);
-        const auto deltaY = GetDy(m_nodes[secondNode], m_nodes[firstNode], m_projection);
-        if (abs(deltaX) < minimumDeltaCoordinate && abs(deltaY) < minimumDeltaCoordinate)
-        {
-            if (deltaY < 0.0)
-            {
-                phi = -M_PI / 2.0;
-            }
-            else
-            {
-                phi = M_PI / 2.0;
-            }
-        }
-        else
-        {
-            phi = atan2(deltaY, deltaX);
-        }
-
-        if (edgeIndex == 0)
-        {
-            phi0 = phi;
-        }
-
-        m_edgeAngles[edgeIndex] = phi - phi0;
-        if (m_edgeAngles[edgeIndex] < 0.0)
-        {
-            m_edgeAngles[edgeIndex] = m_edgeAngles[edgeIndex] + 2.0 * M_PI;
-        }
-    }
-
-    // Performing sorting
-    std::vector<std::size_t> indices(m_nodesNumEdges[node]);
-    std::vector<size_t> edgeNodeCopy{m_nodesEdges[node]};
-    iota(indices.begin(), indices.end(), 0);
-    sort(indices.begin(), indices.end(), [&, this](std::size_t i1, std::size_t i2) { return m_edgeAngles[i1] < m_edgeAngles[i2]; });
-
-    for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
-    {
-        m_nodesEdges[node][edgeIndex] = edgeNodeCopy[indices[edgeIndex]];
     }
 }
 

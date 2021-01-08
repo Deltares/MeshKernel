@@ -68,6 +68,12 @@ namespace meshkernel
         /// @brief Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         void ComputeBoundaryConnections();
 
+        std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect
+        std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
+        std::vector<size_t> m_mesh2dIndices; ///< The indices of the 2-d faces to connect
+        std::vector<size_t> m_mesh1dIndices; ///< The indices of the 1-d nodes to connect
+        std::vector<bool> m_oneDNodeMask;    ///< The mask to apply to 1d nodes (true = generate contacts, false = do not generate contacts)
+
     private:
         /// @brief Asserts if a connection is crossing a 1d mesh edge
         /// @param node[in] The 1d node index (start of the connection)
@@ -80,11 +86,5 @@ namespace meshkernel
         /// @param face[in] The 2d face index (end of the connection)
         /// @return True if the connection is crossing an existing connection
         bool IsContactIntersectingContact(size_t node, size_t face) const;
-
-        std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect
-        std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
-        std::vector<size_t> m_mesh2dIndices; ///< The indices of the 2-d faces to connect
-        std::vector<size_t> m_mesh1dIndices; ///< The indices of the 1-d nodes to connect
-        std::vector<bool> m_oneDNodeMask;    ///< The mask to apply to 1d nodes (true = generate contacts, false = do not generate contacts)
     };
 } // namespace meshkernel

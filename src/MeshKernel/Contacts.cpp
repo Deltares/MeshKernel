@@ -22,7 +22,7 @@ meshkernel::Contacts::Contacts(std::shared_ptr<Mesh1D> mesh1d,
 void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
 {
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-    m_mesh1d->Administrate();
+    m_mesh1d->AdministrateNodesEdges();
 
     const auto pointFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
     m_mesh1dIndices.reserve(m_mesh1d->m_nodes.size());
