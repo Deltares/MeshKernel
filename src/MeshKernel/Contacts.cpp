@@ -42,7 +42,7 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
             continue;
         }
 
-        if (pointFaceIndices[n] != sizetMissingValue)
+        if (!pointFaceIndices.empty() && pointFaceIndices[n] != sizetMissingValue)
         {
             m_mesh1dIndices.emplace_back(n);
             m_mesh2dIndices.emplace_back(pointFaceIndices[n]);
@@ -86,33 +86,6 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
 
 bool meshkernel::Contacts::IsConnectionIntersectingMesh1d(size_t node, size_t face) const
 {
-    for (size_t i = 0; i < m_mesh1dIndices.size(); ++i)
-    {
-        Point intersectionPoint;
-        double crossProduct;
-        double ratioFirstSegment;
-        double ratioSecondSegment;
-        const auto areSegmentCrossing = AreSegmentsCrossing(m_mesh1d->m_nodes[node],
-                                                            m_mesh2d->m_facesCircumcenters[face],
-                                                            m_mesh1d->m_nodes[m_mesh1dIndices[i]],
-                                                            m_mesh2d->m_facesCircumcenters[m_mesh2dIndices[i]],
-                                                            false,
-                                                            m_mesh1d->m_projection,
-                                                            intersectionPoint,
-                                                            crossProduct,
-                                                            ratioFirstSegment,
-                                                            ratioSecondSegment);
-
-        if (areSegmentCrossing)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face) const
-{
 
     for (size_t e = 0; e < m_mesh1d->GetNumEdges(); ++e)
     {
@@ -137,6 +110,35 @@ bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face
             return true;
         }
     }
+    return false;
+}
+
+bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face) const
+{
+
+    for (size_t i = 0; i < m_mesh1dIndices.size(); ++i)
+    {
+        Point intersectionPoint;
+        double crossProduct;
+        double ratioFirstSegment;
+        double ratioSecondSegment;
+        const auto areSegmentCrossing = AreSegmentsCrossing(m_mesh1d->m_nodes[node],
+                                                            m_mesh2d->m_facesCircumcenters[face],
+                                                            m_mesh1d->m_nodes[m_mesh1dIndices[i]],
+                                                            m_mesh2d->m_facesCircumcenters[m_mesh2dIndices[i]],
+                                                            false,
+                                                            m_mesh1d->m_projection,
+                                                            intersectionPoint,
+                                                            crossProduct,
+                                                            ratioFirstSegment,
+                                                            ratioSecondSegment);
+
+        if (areSegmentCrossing)
+        {
+            return true;
+        }
+    }
+
     return false;
 }
 
