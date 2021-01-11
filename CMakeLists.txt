@@ -47,8 +47,6 @@ set(BOOST_ROOT "C:/Program Files/boost/boost_1_75_0")
 set(BOOST_INCLUDEDIR "C:/Program Files/boost/boost_1_75_0/boost")
 set(BOOST_LIBRARYDIR "C:/Program Files/boost/boost_1_75_0/lib64-msvc-14.2")
 set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 include_directories(${Boost_INCLUDE_DIRS})
 
