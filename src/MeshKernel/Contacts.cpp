@@ -144,17 +144,17 @@ bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face
 }
 
 void meshkernel::Contacts::ComputeMultipleConnections(){
-
+    // Complete implementation
 };
 
 void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons){
-
+    // Complete implementation
 };
 
 void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points){
-
+    // Complete implementation
 };
 
 void meshkernel::Contacts::ComputeBoundaryConnections(){
-
+    // Complete implementation
 };

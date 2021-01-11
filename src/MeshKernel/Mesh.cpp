@@ -37,9 +37,7 @@
 
 meshkernel::Mesh::Mesh(const std::vector<Edge>& edges,
                        const std::vector<Point>& nodes,
-                       Projection projection) : m_edges(edges), m_nodes(nodes), m_projection(projection){
-
-                                                                                };
+                       Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection){};
 
 void meshkernel::Mesh::NodeAdministration()
 {
@@ -555,7 +553,7 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(size_t node)
     std::vector<std::size_t> indices(m_nodesNumEdges[node]);
     std::vector<size_t> edgeNodeCopy{m_nodesEdges[node]};
     iota(indices.begin(), indices.end(), 0);
-    sort(indices.begin(), indices.end(), [&, this](std::size_t i1, std::size_t i2) { return edgeAngles[i1] < edgeAngles[i2]; });
+    sort(indices.begin(), indices.end(), [&](std::size_t i1, std::size_t i2) { return edgeAngles[i1] < edgeAngles[i2]; });
 
     for (std::size_t edgeIndex = 0; edgeIndex < m_nodesNumEdges[node]; edgeIndex++)
     {

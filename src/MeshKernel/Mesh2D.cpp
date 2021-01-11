@@ -465,9 +465,9 @@ void meshkernel::Mesh2D::FindFacesRecursive(size_t startingNode,
         // the order of the edges in a new face must be counterclockwise
         // in order to evaluate the clockwise order, the signed face area is computed
         nodalValues.clear();
-        for (const auto& node : nodes)
+        for (const auto& n : nodes)
         {
-            nodalValues.emplace_back(m_nodes[node]);
+            nodalValues.emplace_back(m_nodes[n]);
         }
         nodalValues.emplace_back(nodalValues.front());
 
@@ -1159,7 +1159,7 @@ meshkernel::Point meshkernel::Mesh2D::ComputeFaceCircumenter(std::vector<Point>&
         centerOfMass.x += polygon[n].x;
         centerOfMass.y += polygon[n].y;
     }
-    centerOfMass = centerOfMass / numNodes;
+    centerOfMass = centerOfMass / static_cast<double>(numNodes);
 
     auto result = centerOfMass;
     if (numNodes == numNodesInTriangle)
@@ -1851,7 +1851,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const s
         // There is a nonempty second tail, so reverse the first tail, so that they connect.
         if (meshBoundaryPolygon.size() > numNodesFirstTail)
         {
-            const auto start = startPolygonEdges + static_cast<size_t>(std::ceil((numNodesFirstTail - startPolygonEdges + 1) * 0.5));
+            const auto start = startPolygonEdges + static_cast<size_t>(std::ceil((numNodesFirstTail - startPolygonEdges + static_cast<size_t>(1)) * 0.5));
             for (auto n = start; n < numNodesFirstTail; n++)
             {
                 const auto backupPoint = meshBoundaryPolygon[n];
