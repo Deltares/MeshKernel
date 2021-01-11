@@ -523,7 +523,7 @@ namespace meshkernel
 
     /// @brief Given a vector of coordinates, get the lowest upper and right points
     /// @tparam T Requires IsCoordinate<T>
-    /// @param[in] values The values
+    /// @param[in] points The point values
     /// @returns A tuple with bottom left and upper right corners of the bounding box
     template <typename T>
     [[nodiscard]] std::tuple<Point, Point> GetBoundingBox(const std::vector<T>& points)
@@ -543,7 +543,6 @@ namespace meshkernel
                 maxy = std::max(maxy, point.y);
             }
         }
-
         return {{minx, miny}, {maxx, maxy}};
     }
 
