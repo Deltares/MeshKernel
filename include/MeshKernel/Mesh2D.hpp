@@ -256,12 +256,12 @@ namespace meshkernel
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
         void DeleteMesh(const Polygons& polygons, int deletionOption, bool invertDeletion);
 
-        /// @brief
-        /// @param firstPoint
-        /// @param secondPoint
-        /// @param intersectedFace
-        /// @param intersectedEdge
-        /// @return
+        /// @brief Inquire if a segment is crossing a face
+        /// @param firstPoint The first point of the segment
+        /// @param secondPoint The second point of the segment
+        /// @param intersectedFace The intersected face index
+        /// @param intersectedEdge The intersected edge index
+        /// @return True if the segment is crossing a face
         bool IsSegmentCrossingAFace(const Point& firstPoint, const Point& secondPoint, size_t& intersectedFace, size_t& intersectedEdge) const;
 
         // vectors for communicating with the client
