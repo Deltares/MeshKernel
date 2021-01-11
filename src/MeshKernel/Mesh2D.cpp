@@ -2058,7 +2058,10 @@ std::vector<size_t> meshkernel::Mesh2D::PointFaceIndices(const std::vector<Point
     return result;
 }
 
-bool meshkernel::Mesh2D::IsSegmentCrossingAFace(const Point& firstPoint, const Point& secondPoint, size_t& intersectedFace, size_t& intersectedEdge) const
+bool meshkernel::Mesh2D::IsSegmentCrossingAFace(const Point& firstPoint,
+                                                const Point& secondPoint,
+                                                size_t& intersectedFace,
+                                                size_t& intersectedEdge) const
 {
     double intersectionRatio = std::numeric_limits<double>::max();
     intersectedFace = sizetMissingValue;
@@ -2075,7 +2078,6 @@ bool meshkernel::Mesh2D::IsSegmentCrossingAFace(const Point& firstPoint, const P
         double crossProduct;
         double ratioFirstSegment;
         double ratioSecondSegment;
-
         const auto areSegmentCrossing = AreSegmentsCrossing(firstPoint,
                                                             secondPoint,
                                                             m_nodes[m_edges[e].first],
@@ -2092,8 +2094,9 @@ bool meshkernel::Mesh2D::IsSegmentCrossingAFace(const Point& firstPoint, const P
             intersectionRatio = ratioFirstSegment;
             intersectedFace = m_edgesFaces[e][0];
             intersectedEdge = e;
-            isCrossing =  true;
+            isCrossing = true;
         }
     }
+
     return isCrossing;
 }
