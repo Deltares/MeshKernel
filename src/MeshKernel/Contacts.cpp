@@ -86,7 +86,6 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
 
 bool meshkernel::Contacts::IsConnectionIntersectingMesh1d(size_t node, size_t face) const
 {
-    const auto numericZero = std::numeric_limits<double>::epsilon();
     for (size_t e = 0; e < m_mesh1d->GetNumEdges(); ++e)
     {
 
@@ -106,8 +105,8 @@ bool meshkernel::Contacts::IsConnectionIntersectingMesh1d(size_t node, size_t fa
                                                             ratioSecondSegment);
 
         if (areSegmentCrossing &&
-            ratioFirstSegment > numericZero && ratioFirstSegment < 1.0 &&
-            ratioSecondSegment > numericZero && ratioSecondSegment < 1.0)
+            ratioFirstSegment > 0.0 && ratioFirstSegment < 1.0 &&
+            ratioSecondSegment > 0.0 && ratioSecondSegment < 1.0)
         {
             return true;
         }
@@ -117,7 +116,6 @@ bool meshkernel::Contacts::IsConnectionIntersectingMesh1d(size_t node, size_t fa
 
 bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face) const
 {
-    const auto numericZero = std::numeric_limits<double>::epsilon();
     for (size_t i = 0; i < m_mesh1dIndices.size(); ++i)
     {
         Point intersectionPoint;
@@ -135,8 +133,8 @@ bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face
                                                             ratioFirstSegment,
                                                             ratioSecondSegment);
         if (areSegmentCrossing &&
-            ratioFirstSegment > numericZero && ratioFirstSegment < 1.0 &&
-            ratioSecondSegment > numericZero && ratioSecondSegment < 1.0)
+            ratioFirstSegment > 0.0 && ratioFirstSegment < 1.0 &&
+            ratioSecondSegment > 0.0 && ratioSecondSegment < 1.0)
         {
             return true;
         }

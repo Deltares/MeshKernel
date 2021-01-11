@@ -1,14 +1,14 @@
-#include "TestUtils/MakeMeshes.hpp"
 
 #include <gtest/gtest.h>
 
+#include "TestUtils/MakeMeshes.hpp"
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 
-TEST(ComputeSingleConnections, ComputeContacts)
+TEST(ComputeContacts, ComputeSingleConnections)
 {
     // Create 1d mesh
     std::vector<meshkernel::Point> nodes{{-20, 0}, {-20, 10}, {-20, 20}, {-20, 30}, {-20, 40}, {-10, 40}, {0, 40}, {10, 40}};
@@ -16,7 +16,7 @@ TEST(ComputeSingleConnections, ComputeContacts)
     const auto mesh1d = std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::cartesian);
 
     // Create 2d mesh
-    const auto mesh2d = MakeRectangularMeshForTesting(3, 3, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
+    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
 
     // Create contacts
     std::vector<bool> onedNodeMask(nodes.size(), true);
@@ -30,6 +30,16 @@ TEST(ComputeSingleConnections, ComputeContacts)
     contacts.ComputeSingleConnections(polygon);
 
     //Assert
-    //constexpr double tolerance = 1e-6;
-    //ASSERT_EQ(0, contacts.m_mesh2dIndices[0]);
+    ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
+    ASSERT_EQ(4, contacts.m_mesh2dIndices.size());
+
+    ASSERT_EQ(1, contacts.m_mesh1dIndices[0]);
+    ASSERT_EQ(2, contacts.m_mesh1dIndices[1]);
+    ASSERT_EQ(3, contacts.m_mesh1dIndices[2]);
+    ASSERT_EQ(6, contacts.m_mesh1dIndices[3]);
+
+    ASSERT_EQ(0, contacts.m_mesh2dIndices[0]);
+    ASSERT_EQ(1, contacts.m_mesh2dIndices[1]);
+    ASSERT_EQ(2, contacts.m_mesh2dIndices[2]);
+    ASSERT_EQ(2, contacts.m_mesh2dIndices[3]);
 }
