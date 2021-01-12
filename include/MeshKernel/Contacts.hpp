@@ -73,14 +73,14 @@ namespace meshkernel
 
     private:
         /// @brief Asserts if a connection is crossing a 1d mesh edge
-        /// @param node[in] The 1d node index (start of the connection)
-        /// @param face[in] The 2d face index (end of the connection)
+        /// @param[in] node The 1d node index (start of the connection)
+        /// @param[in] face The 2d face index (end of the connection)
         /// @return True if the connection is crossing a 1d mesh edge
         [[nodiscard]] bool IsConnectionIntersectingMesh1d(size_t node, size_t face) const;
 
         /// @brief Asserts if a connection is crossing an existing connection
-        /// @param node[in] The 1d node index (start of the connection)
-        /// @param face[in] The 2d face index (end of the connection)
+        /// @param[in] node The 1d node index (start of the connection)
+        /// @param[in] face The 2d face index (end of the connection)
         /// @return True if the connection is crossing an existing connection
         [[nodiscard]] bool IsContactIntersectingContact(size_t node, size_t face) const;
 
