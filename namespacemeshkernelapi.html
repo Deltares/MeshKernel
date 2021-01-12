@@ -73,6 +73,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_contacts.html">Contacts</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe contacts between a 1d and a 2d mesh.  <a href="structmeshkernelapi_1_1_contacts.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner.  <a href="structmeshkernelapi_1_1_curvilinear_parameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -84,6 +87,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_make_mesh_parameters.html">MakeMeshParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This struct describes the necessary parameters to create a new mesh in a C-compatible manner.  <a href="structmeshkernelapi_1_1_make_mesh_parameters.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh1_d.html">Mesh1D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe the values of a mesh 1d in a C-compatible manner.  <a href="structmeshkernelapi_1_1_mesh1_d.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html">MeshGeometry</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe the values of an unstructured mesh in a C-compatible manner.  <a href="structmeshkernelapi_1_1_mesh_geometry.html#details">More...</a><br /></td></tr>
@@ -409,9 +415,9 @@ Functions</h2></td></tr>
 <p>AveragingInterpolation interpolation (ec_module) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometryDimensions</td><td>Mesh dimensions </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometry</td><td>Mesh data </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>Mesh data start index (not used) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometryDimensions</td><td>Mesh2D dimensions </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometry</td><td>Mesh2D data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>Mesh2D data start index (not used) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">samplesXCoordinate</td><td>The sample x coordinates </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">samplesYCoordinate</td><td>The sample y coordinates </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">samplesValue</td><td>The sample values </td></tr>
@@ -1272,7 +1278,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the mesh state </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">meshGeometryDimensions</td><td>Grid dimensions </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">meshGeometry</td><td>Mesh data (including face information) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">meshGeometry</td><td>Mesh2D data (including face information) </td></tr>
   </table>
   </dd>
 </dl>
@@ -1484,7 +1490,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the grid state </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">meshGeometryDimensions</td><td>Mesh dimensions </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">meshGeometryDimensions</td><td>Mesh2D dimensions </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">meshGeometry</td><td>Grid data </td></tr>
   </table>
   </dd>
@@ -1537,7 +1543,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the grid state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>Node coordinates </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>the radius where to search for the node </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">geometryListOut</td><td>Mesh node coordinates </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">geometryListOut</td><td>Mesh2D node coordinates </td></tr>
   </table>
   </dd>
 </dl>
@@ -3004,8 +3010,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the grid state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometryDimensions</td><td>Mesh dimensions </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometry</td><td>Mesh data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometryDimensions</td><td>Mesh2D dimensions </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometry</td><td>Mesh2D data </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">isGeographic</td><td>Cartesian (false) or spherical (true) mesh </td></tr>
   </table>
   </dd>
@@ -3097,8 +3103,8 @@ Functions</h2></td></tr>
 <p>Triangle interpolation (ec_module) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometryDimensions</td><td>Mesh dimensions </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometry</td><td>Mesh data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometryDimensions</td><td>Mesh2D dimensions </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshGeometry</td><td>Mesh2D data </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>start index (not used) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">samplesXCoordinate</td><td>The sample x coordinates </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">samplesYCoordinate</td><td>The sample y coordinates </td></tr>

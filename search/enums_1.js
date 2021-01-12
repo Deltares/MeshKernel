@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['deletemeshoptions',['DeleteMeshOptions',['../classmeshkernel_1_1_mesh.html#ad32ad99687dd388e74aae4f58c4b31c6',1,'meshkernel::Mesh']]]
+  ['deletemeshoptions',['DeleteMeshOptions',['../classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e',1,'meshkernel::Mesh2D']]]
 ];

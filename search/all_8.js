@@ -16,13 +16,15 @@ var searchData=
   ['intmissingvalue',['intMissingValue',['../namespacemeshkernel.html#a0af5c04a2ceb3077471ebdca70bfe4a8',1,'meshkernel']]],
   ['isedgeonboundary',['IsEdgeOnBoundary',['../classmeshkernel_1_1_mesh.html#ab2741b112d098254135f0e116c8ea8b5',1,'meshkernel::Mesh']]],
   ['isfaceonboundary',['IsFaceOnBoundary',['../classmeshkernel_1_1_mesh.html#a0332ff6932b642a71861b54e851e3728',1,'meshkernel::Mesh']]],
-  ['isfullfacenotinpolygon',['IsFullFaceNotInPolygon',['../classmeshkernel_1_1_mesh.html#ac87663b80ce3edafd2e56a5059afb666',1,'meshkernel::Mesh']]],
+  ['isfullfacenotinpolygon',['IsFullFaceNotInPolygon',['../classmeshkernel_1_1_mesh2_d.html#aa61a329e63eeaf3b5e8b8e3f1a2e9b2c',1,'meshkernel::Mesh2D']]],
   ['isleft',['IsLeft',['../namespacemeshkernel.html#a5dce9fe20343a37372cb4e442ae836c9',1,'meshkernel']]],
+  ['isnodeonboundary',['IsNodeOnBoundary',['../classmeshkernel_1_1_mesh.html#a4954d57baf24b3792520bcb81b0d733a',1,'meshkernel::Mesh::IsNodeOnBoundary()'],['../classmeshkernel_1_1_mesh1_d.html#a65167bd7e5182e49b4f246166003672c',1,'meshkernel::Mesh1D::IsNodeOnBoundary()']]],
   ['ispointinpolygon',['IsPointInPolygon',['../classmeshkernel_1_1_polygons.html#a3fea051e182c020f979000d139dcb1e7',1,'meshkernel::Polygons']]],
   ['ispointinpolygonnodes',['IsPointInPolygonNodes',['../namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29',1,'meshkernel']]],
   ['ispointinpolygons',['IsPointInPolygons',['../classmeshkernel_1_1_polygons.html#a550828de849a36fa3567a92d1dfa1b2c',1,'meshkernel::Polygons']]],
   ['ispointonpole',['IsPointOnPole',['../namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71',1,'meshkernel']]],
-  ['isvalid',['IsValid',['../structmeshkernel_1_1_point.html#a268487f05fb9526027668d2cbdd3fbff',1,'meshkernel::Point']]],
+  ['issegmentcrossingaface',['IsSegmentCrossingAFace',['../classmeshkernel_1_1_mesh2_d.html#a7a794c5b29585f9a4f7fae7a3357ba7b',1,'meshkernel::Mesh2D']]],
+  ['isvalid',['IsValid',['../structmeshkernel_1_1_point.html#a268487f05fb9526027668d2cbdd3fbff',1,'meshkernel::Point::IsValid()'],['../structmeshkernel_1_1_sample.html#a5566cc0092522f8fc8a19a70cc335cf6',1,'meshkernel::Sample::IsValid()']]],
   ['isvalueinboundingbox',['IsValueInBoundingBox',['../namespacemeshkernel.html#a0110cb34de6eada7abb0ef9d08793bd1',1,'meshkernel']]],
   ['iterate',['Iterate',['../classmeshkernel_1_1_curvilinear_grid_from_splines.html#a293be64533b1849b727afafe57169240',1,'meshkernel::CurvilinearGridFromSplines']]]
 ];

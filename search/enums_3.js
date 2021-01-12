@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nodetypes',['NodeTypes',['../classmeshkernel_1_1_mesh.html#a702d415a78665150ad7af8ef18a731aa',1,'meshkernel::Mesh']]]
+  ['nodetypes',['NodeTypes',['../classmeshkernel_1_1_mesh2_d.html#a17db40a7b9ea9151e51231c4af416d47',1,'meshkernel::Mesh2D']]]
 ];
