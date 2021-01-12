@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -24,7 +25,7 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     m_mesh1d->AdministrateNodesEdges();
 
-    const auto pointFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
+    const auto node1dFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
     m_mesh1dIndices.reserve(m_mesh1d->m_nodes.size());
     m_mesh2dIndices.reserve(m_mesh1d->m_nodes.size());
     const double distanceFactor = 5.0;
@@ -49,10 +50,10 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
         }
 
         // if a node is inside a face, connect the 1d node with the face including the node. No more work to do
-        if (pointFaceIndices[n] != sizetMissingValue)
+        if (node1dFaceIndices[n] != sizetMissingValue)
         {
             m_mesh1dIndices.emplace_back(n);
-            m_mesh2dIndices.emplace_back(pointFaceIndices[n]);
+            m_mesh2dIndices.emplace_back(node1dFaceIndices[n]);
             continue;
         }
 
@@ -150,75 +151,98 @@ bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face
 
 void meshkernel::Contacts::ComputeMultipleConnections()
 {
+    // Perform mesh2d administration
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+    // Perform mesh1d administration
     m_mesh1d->AdministrateNodesEdges();
     m_mesh1d->ComputeEdgesLengths();
-    const auto pointFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
 
-    // Build face circumcenters rtree
+    // Compute the indices of the faces including the 1d nodes
+    const auto node1dFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
+
+    // Build mesh2d face circumcenters r-tree
     RTree faceCircumcentersRTree;
     faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
     std::vector<bool> isFaceAlreadyConnected(m_mesh2d->GetNumFaces(), false);
 
-    for (auto e = 0; e < m_mesh1d->GetNumEdges(); ++e)
+    for (auto i = 0; i < m_mesh1d->GetNumEdges(); ++i)
     {
-        // loop over all edges connected to the first node
-        const auto firstNode1dMeshEdge = m_mesh1d->m_edges[e].first;
+
+        const auto firstNode1dMeshEdge = m_mesh1d->m_edges[i].first;
+        const auto secondNode1dMeshEdge = m_mesh1d->m_edges[i].second;
+
+        // loop over all edges connected to the first node, to determine the longest edge
         auto maxEdgeLenght = std::numeric_limits<double>::lowest();
-        for (auto e = 0; e < m_mesh1d->m_nodesNumEdges[firstNode1dMeshEdge]; ++e)
+        for (auto j = 0; j < m_mesh1d->m_nodesNumEdges[firstNode1dMeshEdge]; ++j)
         {
-            maxEdgeLenght = std::max(maxEdgeLenght, m_mesh1d->m_edgeLengths[e]);
+            const auto edge = m_mesh1d->m_nodesEdges[firstNode1dMeshEdge][j];
+            maxEdgeLenght = std::max(maxEdgeLenght, m_mesh1d->m_edgeLengths[edge]);
         }
 
-        faceCircumcentersRTree.NearestNeighborsOnSquaredDistance(m_mesh1d->m_nodes[e], 1.1 * maxEdgeLenght * maxEdgeLenght);
-        for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
+        // Computes the nearest 2d face indices
+        faceCircumcentersRTree.NearestNeighborsOnSquaredDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLenght * maxEdgeLenght);
+
+        // For each face determine if it is crossing the current 1d edge
+        for (auto k = 0; k < faceCircumcentersRTree.GetQueryResultSize(); ++k)
         {
-            // The face is already connected to a 1d node
-            if (isFaceAlreadyConnected[f])
+            const auto face = faceCircumcentersRTree.GetQueryResult(k);
+
+            // The face is already connected to a 1d node, nothing to do
+            if (isFaceAlreadyConnected[face])
             {
                 continue;
             }
 
-            for (auto e = 0; e < m_mesh2d->m_numFacesNodes[f]; ++e)
+            // Determine which of the mesh2d edges is crossing the current 1d edge
+            for (auto l = 0; l < m_mesh2d->m_numFacesNodes[face]; ++l)
             {
-
-                const auto edge = m_mesh2d->m_facesEdges[f][e];
-
                 Point intersectionPoint;
                 double crossProduct;
                 double ratioFirstSegment;
                 double ratioSecondSegment;
-                const auto secondNode1dMeshEdge = m_mesh1d->m_edges[e].second;
-                const auto firstNode2dMeshEdge = m_mesh1d->m_edges[e].second;
-                const auto secondNod2dMeshEdge = m_mesh1d->m_edges[e].second;
+
+                const auto edge = m_mesh2d->m_facesEdges[face][l];
+                const auto firstNode2dMeshEdge = m_mesh2d->m_edges[edge].first;
+                const auto secondNode2dMeshEdge = m_mesh2d->m_edges[edge].second;
 
                 const auto areSegmentCrossing = AreSegmentsCrossing(m_mesh1d->m_nodes[firstNode1dMeshEdge],
-                                                                    m_mesh2d->m_nodes[secondNode1dMeshEdge],
-                                                                    m_mesh1d->m_nodes[firstNode2dMeshEdge],
-                                                                    m_mesh2d->m_nodes[secondNod2dMeshEdge],
+                                                                    m_mesh1d->m_nodes[secondNode1dMeshEdge],
+                                                                    m_mesh2d->m_nodes[firstNode2dMeshEdge],
+                                                                    m_mesh2d->m_nodes[secondNode2dMeshEdge],
                                                                     false,
                                                                     m_mesh1d->m_projection,
                                                                     intersectionPoint,
                                                                     crossProduct,
                                                                     ratioFirstSegment,
                                                                     ratioSecondSegment);
-                if (areSegmentCrossing)
+                // Nothing is crossing, thus continue
+                if (!areSegmentCrossing)
                 {
-                    //compute the distance between the face circumcenter and the 1d edge nodes.
-                    const auto leftDistance = ComputeSquaredDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[f], m_mesh1d->m_projection);
-                    const auto rightDistance = ComputeSquaredDistance(m_mesh1d->m_nodes[secondNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[f], m_mesh1d->m_projection);
-                    const auto nodeToConnect = leftDistance <= rightDistance ? firstNode1dMeshEdge : secondNode1dMeshEdge;
-
-                    // if m_oneDNodeMask is not empty, connect only if the mask value for the current node is true
-                    if (!m_oneDNodeMask.empty() && !m_oneDNodeMask[nodeToConnect])
-                    {
-                        continue;
-                    }
-                    m_mesh1dIndices.emplace_back(nodeToConnect);
-                    m_mesh2dIndices.emplace_back(f);
-                    isFaceAlreadyConnected[f] = true;
-                    break;
+                    continue;
                 }
+
+                //compute the distance between the face circumcenter and the crossed 1d edge nodes.
+                const auto leftDistance = ComputeDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[face], m_mesh1d->m_projection);
+                const auto rightDistance = ComputeDistance(m_mesh1d->m_nodes[secondNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[face], m_mesh1d->m_projection);
+                const auto nodeToConnect = leftDistance <= rightDistance ? firstNode1dMeshEdge : secondNode1dMeshEdge;
+
+                // if m_oneDNodeMask is not empty, connect only if the mask value for the current node is true
+                if (!m_oneDNodeMask.empty() && !m_oneDNodeMask[nodeToConnect])
+                {
+                    continue;
+                }
+
+                // the 1d mesh node to be connected needs to be included in the 2d mesh
+                if (node1dFaceIndices[nodeToConnect] == sizetMissingValue)
+                {
+                    continue;
+                }
+
+                m_mesh1dIndices.emplace_back(nodeToConnect);
+                m_mesh2dIndices.emplace_back(face);
+                isFaceAlreadyConnected[face] = true;
+                break;
             }
         }
     }

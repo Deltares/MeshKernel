@@ -106,7 +106,7 @@ void meshkernel::TriangulationInterpolation::Compute()
         {
             continue;
         }
-        auto triangle = samplesRtree.GetQuerySampleIndex(0);
+        auto triangle = samplesRtree.GetQueryResult(0);
 
         // search for the triangle where the location is included
         bool isInTriangle = false;
