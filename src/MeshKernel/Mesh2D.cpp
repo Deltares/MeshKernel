@@ -2032,25 +2032,25 @@ void meshkernel::Mesh2D::DeleteHangingEdges()
 std::vector<size_t> meshkernel::Mesh2D::PointFaceIndices(const std::vector<Point>& points)
 {
     std::vector<size_t> result;
-    result.reserve(points.size());
-    for (const auto& point : points)
+    result.resize(points.size(), sizetMissingValue);
+    for (auto i = 0; i < points.size(); ++i)
     {
-        const auto edgeIndex = FindEdgeCloseToAPoint(point);
+        const auto edgeIndex = FindEdgeCloseToAPoint(points[i]);
 
         if (edgeIndex == sizetMissingValue)
         {
-            result.emplace_back(sizetMissingValue);
+            result[i] = sizetMissingValue;
             continue;
         }
 
-        for (auto i = 0; i < m_edgesNumFaces[edgeIndex]; ++i)
+        for (auto e = 0; e < m_edgesNumFaces[edgeIndex]; ++e)
         {
-            const auto faceIndex = m_edgesFaces[edgeIndex][i];
+            const auto faceIndex = m_edgesFaces[edgeIndex][e];
             ComputeFaceClosedPolygon(faceIndex, m_polygonNodesCache);
-            const auto isPointInFace = IsPointInPolygonNodes(point, m_polygonNodesCache, m_projection);
+            const auto isPointInFace = IsPointInPolygonNodes(points[i], m_polygonNodesCache, m_projection);
             if (isPointInFace)
             {
-                result.emplace_back(faceIndex);
+                result[i] = faceIndex;
                 break;
             }
         }

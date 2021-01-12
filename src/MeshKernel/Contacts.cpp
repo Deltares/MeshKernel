@@ -30,19 +30,26 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
     const double distanceFactor = 5.0;
     for (size_t n = 0; n < m_mesh1d->m_nodes.size(); ++n)
     {
-        // Do not connect nodes at boundary of the network
-        if (!m_oneDNodeMask.empty() && (!m_oneDNodeMask[n] || m_mesh1d->IsNodeOnBoundary(n)))
-        {
-            continue;
-        }
-
-        // Inquire if a node is inside a the polygons
+        // connect only nodes included in the polygons
         if (!polygons.IsPointInPolygons(m_mesh1d->m_nodes[n]))
         {
             continue;
         }
 
-        if (!pointFaceIndices.empty() && pointFaceIndices[n] != sizetMissingValue)
+        // do not connect nodes at boundary of the 1d mesh
+        if (m_mesh1d->IsNodeOnBoundary(n))
+        {
+            continue;
+        }
+
+        // if a oned nodemask is present, ensure the mask value for the current node is true
+        if (!m_oneDNodeMask.empty() && !m_oneDNodeMask[n])
+        {
+            continue;
+        }
+
+        // if a node is inside a face, connect the 1d node with the face including the node. No more work to do
+        if (pointFaceIndices[n] != sizetMissingValue)
         {
             m_mesh1dIndices.emplace_back(n);
             m_mesh2dIndices.emplace_back(pointFaceIndices[n]);
