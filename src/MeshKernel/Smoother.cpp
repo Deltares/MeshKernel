@@ -32,11 +32,11 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Smoother.hpp>
 
-meshkernel::Smoother::Smoother(std::shared_ptr<Mesh> mesh) : m_mesh(mesh)
+meshkernel::Smoother::Smoother(std::shared_ptr<Mesh2D> mesh) : m_mesh(mesh)
 {
 }
 
@@ -124,7 +124,7 @@ void meshkernel::Smoother::ComputeOperators()
 void meshkernel::Smoother::ComputeWeights()
 {
     std::vector<std::vector<double>> J(m_mesh->GetNumNodes(), std::vector<double>(4, 0));    // Jacobian
-    std::vector<std::vector<double>> Ginv(m_mesh->GetNumNodes(), std::vector<double>(4, 0)); // Mesh monitor matrices
+    std::vector<std::vector<double>> Ginv(m_mesh->GetNumNodes(), std::vector<double>(4, 0)); // Mesh2D monitor matrices
 
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)
     {

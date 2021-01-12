@@ -39,9 +39,9 @@
 namespace meshkernel
 {
     // Forward declarations
-    class Mesh;
+    class Mesh2D;
 
-    /// @brief A class used to refine a Mesh
+    /// @brief A class used to refine a Mesh2D
     class MeshRefinement
     {
         enum class RefinementType
@@ -57,7 +57,7 @@ namespace meshkernel
         /// @param[in] averaging The averaging interpolation to use
         /// @param[in] sampleRefineParameters Refinement based on samples parameters
         /// @param[in] interpolationParameters Interpolation parameters
-        explicit MeshRefinement(std::shared_ptr<Mesh> mesh,
+        explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                 std::shared_ptr<AveragingInterpolation> averaging,
                                 const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
                                 const meshkernelapi::InterpolationParameters& interpolationParameters);
@@ -66,7 +66,7 @@ namespace meshkernel
         /// @param[in] mesh The mesh to be refined
         /// @param[in] polygon The polygon where to refine
         /// @param[in] interpolationParameters Interpolation parameters
-        explicit MeshRefinement(std::shared_ptr<Mesh> mesh,
+        explicit MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                 const Polygons& polygon,
                                 const meshkernelapi::InterpolationParameters& interpolationParameters);
 
@@ -86,7 +86,7 @@ namespace meshkernel
         void Compute();
 
     private:
-        /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh
+        /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh2D
         void FindBrotherEdges();
 
         /// @brief Modifies m_mesh.m_nodeMask, all nodes of the faces intersecting the polygon perimeter will get value of -2 (set_initial_mask)
@@ -98,7 +98,7 @@ namespace meshkernel
         void ComputeRefinementMasksFromSamples();
 
         /// @brief Computes the number of edges that should be refined in a face (compute_jarefine_poly)
-        ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh.FaceClosedPolygon method
+        ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh2D.FaceClosedPolygon method
         /// @param numPolygonNodes The number of face nodes
         /// @param samples The samples to use for refinement
         /// @param refineEdgeCache 1 if the edge should be refined, 0 otherwise
@@ -155,7 +155,7 @@ namespace meshkernel
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
         bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
 
-        std::shared_ptr<Mesh> m_mesh;
+        std::shared_ptr<Mesh2D> m_mesh;
         std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;
         Polygons m_polygons;
         meshkernelapi::SampleRefineParameters m_sampleRefineParameters;   ///< The sample parameters

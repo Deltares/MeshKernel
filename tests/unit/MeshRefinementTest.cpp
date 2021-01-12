@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernelApi/InterpolationParameters.hpp>

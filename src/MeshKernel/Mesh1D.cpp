@@ -26,23 +26,11 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <memory>
-#include <string>
+#include "MeshKernel/Mesh1D.hpp"
 
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernelApi/MeshGeometry.hpp>
-#include <MeshKernelApi/MeshGeometryDimensions.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <vector>
 
-std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath);
-
-std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
-
-std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin = {0.0, 0.0});
-
-std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> MakeRectangularMeshForApiTesting(int n, int m, double delta);
-
-void DeleteRectangularMeshForApiTesting(const meshkernelapi::MeshGeometry& meshgeometry);
-
-std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
-
-std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting();
+meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
+                           const std::vector<Point>& nodes,
+                           Projection projection) : Mesh(edges, nodes, projection){};

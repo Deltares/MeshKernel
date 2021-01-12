@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <tuple>
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -170,6 +171,15 @@ namespace meshkernel
             return false;
         }
         if (polygonNodes[startNode] != polygonNodes[endNode])
+        {
+            return false;
+        }
+
+        const auto boundingBox = GetBoundingBox(polygonNodes);
+        const auto lowerleft = std::get<0>(boundingBox);
+        const auto upperRight = std::get<1>(boundingBox);
+
+        if (point.x < lowerleft.x || point.x > upperRight.x || point.y < lowerleft.y || point.y > upperRight.y)
         {
             return false;
         }

@@ -28,6 +28,7 @@
 #pragma once
 
 #include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/RTree.hpp>
 
 namespace meshkernel
@@ -59,7 +60,7 @@ namespace meshkernel
         /// @param[in] relativeSearchRadius The relative search radius, used to enlarge the search area when looking for samples.
         /// @param[in] useClosestSampleIfNoneAvailable If no samples are found use the closest one.
         /// @param[in] subtractSampleValues For some algorithms (e.g. refinement based on levels) we need to subtract 1 to the sample value.
-        explicit AveragingInterpolation(std::shared_ptr<Mesh> mesh,
+        explicit AveragingInterpolation(std::shared_ptr<Mesh2D> mesh,
                                         std::vector<Sample>& samples,
                                         Method method,
                                         MeshLocations locationType,
@@ -101,7 +102,7 @@ namespace meshkernel
         /// @brief Decreases the values of samples
         void DecreaseValueOfSamples();
 
-        const std::shared_ptr<Mesh> m_mesh;
+        const std::shared_ptr<Mesh2D> m_mesh;
         std::vector<Sample>& m_samples;
         Method m_method;
         MeshLocations m_interpolationLocation;

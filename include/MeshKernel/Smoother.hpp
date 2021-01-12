@@ -32,7 +32,7 @@
 
 namespace meshkernel
 {
-    class Mesh;
+    class Mesh2D;
 
     /// <summary>
     /// Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or area).
@@ -41,10 +41,10 @@ namespace meshkernel
     {
 
     public:
-        /// @brief Mesh ctor
+        /// @brief Mesh2D ctor
         /// @brief mesh
         /// @returns
-        explicit Smoother(std::shared_ptr<Mesh> mesh);
+        explicit Smoother(std::shared_ptr<Mesh2D> mesh);
 
         /// @brief Computes the smoother weights
         void Compute();
@@ -152,7 +152,7 @@ namespace meshkernel
                                         const std::vector<double>& matCoefficents) const;
 
         // The mesh to smooth
-        std::shared_ptr<Mesh> m_mesh;
+        std::shared_ptr<Mesh2D> m_mesh;
 
         // Smoother weights
         std::vector<std::vector<double>> m_weights;

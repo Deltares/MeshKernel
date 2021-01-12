@@ -286,7 +286,7 @@ namespace meshkernel
     ///       to local coordinate directions(xloc, yloc) around reference point(xref, yref)
     void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, const Projection& projection, Point& localComponents);
 
-    /// @brief Computes the normal vector outside
+    /// @brief Computes the normal vector outside (normalout)
     ///
     /// \see NormalVectorInside
     ///
@@ -501,39 +501,6 @@ namespace meshkernel
     /// @return The interpolated value.
     [[nodiscard]] double LinearInterpolationInTriangle(const Point& interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, const Projection& projection);
 
-    /// @brief Given a vector of coordinates, get the lowest upper and right points
-    /// @tparam T Requires IsCoordinate<T>
-    /// @param[in] values The values
-    /// @param[out] lowerLeft The lower left corner
-    /// @param[out] upperRight The upper right corner
-    template <typename T>
-    void GetBoundingBox(const std::vector<T>& values, Point& lowerLeft, Point& upperRight)
-    {
-
-        double minx = std::numeric_limits<double>::max();
-        double maxx = std::numeric_limits<double>::lowest();
-        double miny = std::numeric_limits<double>::max();
-        double maxy = std::numeric_limits<double>::lowest();
-        for (auto n = 0; n < values.size(); n++)
-        {
-            bool isInvalid = IsEqual(values[n].x, doubleMissingValue) ||
-                             IsEqual(values[n].y, doubleMissingValue);
-
-            if (isInvalid)
-            {
-                continue;
-            }
-
-            minx = std::min(minx, values[n].x);
-            maxx = std::max(maxx, values[n].x);
-            miny = std::min(miny, values[n].y);
-            maxy = std::max(maxy, values[n].y);
-        }
-
-        lowerLeft = {minx, miny};
-        upperRight = {maxx, maxy};
-    }
-
     /// @brief Checks if value is inside a bounding box
     /// @tparam T Requires IsCoordinate<T>
     /// @param[in] point The point to inquire
@@ -553,5 +520,30 @@ namespace meshkernel
     /// @param[in] projection The projection to use.
     /// @return The average coordinate.
     [[nodiscard]] Point ComputeAverageCoordinate(const std::vector<Point>& points, const Projection& projection);
+
+    /// @brief Given a vector of coordinates, get the lowest upper and right points
+    /// @tparam T Requires IsCoordinate<T>
+    /// @param[in] points The point values
+    /// @returns A tuple with bottom left and upper right corners of the bounding box
+    template <typename T>
+    [[nodiscard]] std::tuple<Point, Point> GetBoundingBox(const std::vector<T>& points)
+    {
+        double minx = std::numeric_limits<double>::max();
+        double maxx = std::numeric_limits<double>::lowest();
+        double miny = std::numeric_limits<double>::max();
+        double maxy = std::numeric_limits<double>::lowest();
+
+        for (const auto& point : points)
+        {
+            if (point.IsValid())
+            {
+                minx = std::min(minx, point.x);
+                maxx = std::max(maxx, point.x);
+                miny = std::min(miny, point.y);
+                maxy = std::max(maxy, point.y);
+            }
+        }
+        return {{minx, miny}, {maxx, maxy}};
+    }
 
 } // namespace meshkernel

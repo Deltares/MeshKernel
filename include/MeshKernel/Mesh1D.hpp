@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2020.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,23 +26,33 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <memory>
-#include <string>
+#include <vector>
 
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernelApi/MeshGeometry.hpp>
-#include <MeshKernelApi/MeshGeometryDimensions.hpp>
+#include <Meshkernel/Entities.hpp>
+#include <Meshkernel/Mesh.hpp>
 
-std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath);
+/// \namespace meshkernel
+/// @brief Contains the logic of the C++ static library
+namespace meshkernel
+{
+    /// @brief A class describing an unstructured 1d mesh
+    class Mesh1D : public Mesh
+    {
+    public:
+        /// @brief Default constructor
+        Mesh1D() = default;
 
-std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
+        /// @brief Construct a mesh1d starting from the edges and nodes
+        /// @param[in] edges The input edges
+        /// @param[in] nodes The input nodes
+        /// @param[in] projection  The projection to use
+        Mesh1D(const std::vector<Edge>& edges,
+               const std::vector<Point>& nodes,
+               Projection projection);
 
-std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin = {0.0, 0.0});
-
-std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> MakeRectangularMeshForApiTesting(int n, int m, double delta);
-
-void DeleteRectangularMeshForApiTesting(const meshkernelapi::MeshGeometry& meshgeometry);
-
-std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
-
-std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting();
+        /// @brief Inquire if a mesh 1d-node is on boundary
+        /// @param[in] node The node index
+        /// @return If the node is on boundary
+        [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
+    };
+} // namespace meshkernel

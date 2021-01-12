@@ -45,6 +45,7 @@
 
 namespace meshkernel
 {
+    // using a namespace alias
     namespace bg = boost::geometry;
     namespace bgi = boost::geometry::index;
 
@@ -53,6 +54,7 @@ namespace meshkernel
     /// This class is required for inquiring adjacent nodes in the merging algorithm.
     class RTree
     {
+
         typedef bg::model::point<double, 2, bg::cs::cartesian> Point2D;
         typedef bg::model::box<Point2D> Box2D;
         typedef std::pair<Point2D, size_t> value2D;

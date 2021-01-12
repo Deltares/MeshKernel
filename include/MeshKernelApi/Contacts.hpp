@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2020.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,23 +26,20 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <memory>
-#include <string>
 
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernelApi/MeshGeometry.hpp>
-#include <MeshKernelApi/MeshGeometryDimensions.hpp>
+namespace meshkernelapi
+{
+    /// @brief A struct used to describe contacts between a 1d and a 2d mesh
+    struct Contacts
+    {
+        /// @brief The indices of the 1d mesh
+        int* mesh1dNodes = nullptr;
+        /// @brief The indices of the 2d face
+        int* mesh2dFaces = nullptr;
+        /// @brief The contact types
+        int* contact_types = nullptr;
+        /// @brief The number of contacts
+        int numcontacts;
+    };
 
-std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath);
-
-std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
-
-std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin = {0.0, 0.0});
-
-std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> MakeRectangularMeshForApiTesting(int n, int m, double delta);
-
-void DeleteRectangularMeshForApiTesting(const meshkernelapi::MeshGeometry& meshgeometry);
-
-std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
-
-std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting();
+} // namespace meshkernelapi
