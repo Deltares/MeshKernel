@@ -43,6 +43,7 @@ add_subdirectory(extern)
 include(FetchContent)
 
 # Boost C++
+set(Boost_USE_MULTITHREADED OFF)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 set(Boost_DEBUG ON)
