@@ -55,6 +55,7 @@ namespace meshkernel
         void ComputeSingleConnections(const Polygons& polygons);
 
         /// @brief Computes 1d-2d connections, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
+        /// 1d edges are typically overlapping the 2d mesh, and potentially more than one 1d-2d connection per 1d mesh node is created.
         void ComputeMultipleConnections();
 
         /// @brief Computes 1d-2d connections, where a 1d node is connected to the closest polygon (ggeo_make1D2Droofgutterpipes_dll)
@@ -91,6 +92,6 @@ namespace meshkernel
         /// @brief Connect a 1d node with the face crossed by the projected normal originating from the node itself
         /// @param[in] node The 1d node index
         /// @param[in] distanceFactor The factor determining the length and the direction of the projected normal (positive right normal, negative left normal)
-        void Connect1dNodesWithCrossingFaces(size_t node, double distanceFactor);
+        void Connect1dNodesWithCrossingFace(size_t node, double distanceFactor);
     };
 } // namespace meshkernel

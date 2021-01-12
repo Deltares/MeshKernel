@@ -42,7 +42,7 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
             continue;
         }
 
-        // if m_oneDNodeMask is not empty, ensure the mask value for the current node is true
+        // if m_oneDNodeMask is not empty, connect only if the mask value for the current node is true
         if (!m_oneDNodeMask.empty() && !m_oneDNodeMask[n])
         {
             continue;
@@ -57,13 +57,13 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
         }
 
         // Connect faces crossing the right projected segment
-        Connect1dNodesWithCrossingFaces(n, 5.0);
+        Connect1dNodesWithCrossingFace(n, 5.0);
         // Connect faces crossing the left projected segment
-        Connect1dNodesWithCrossingFaces(n, -5.0);
+        Connect1dNodesWithCrossingFace(n, -5.0);
     }
 };
 
-void meshkernel::Contacts::Connect1dNodesWithCrossingFaces(size_t node, double distanceFactor)
+void meshkernel::Contacts::Connect1dNodesWithCrossingFace(size_t node, double distanceFactor)
 {
 
     const auto left1dEdge = m_mesh1d->m_nodesEdges[node][0];
@@ -148,8 +148,80 @@ bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face
     return false;
 }
 
-void meshkernel::Contacts::ComputeMultipleConnections(){
-    // Complete implementation
+void meshkernel::Contacts::ComputeMultipleConnections()
+{
+    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh1d->AdministrateNodesEdges();
+    m_mesh1d->ComputeEdgesLengths();
+    const auto pointFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
+
+    // Build face circumcenters rtree
+    RTree faceCircumcentersRTree;
+    faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
+    std::vector<bool> isFaceAlreadyConnected(m_mesh2d->GetNumFaces(), false);
+
+    for (auto e = 0; e < m_mesh1d->GetNumEdges(); ++e)
+    {
+        // loop over all edges connected to the first node
+        const auto firstNode1dMeshEdge = m_mesh1d->m_edges[e].first;
+        auto maxEdgeLenght = std::numeric_limits<double>::lowest();
+        for (auto e = 0; e < m_mesh1d->m_nodesNumEdges[firstNode1dMeshEdge]; ++e)
+        {
+            maxEdgeLenght = std::max(maxEdgeLenght, m_mesh1d->m_edgeLengths[e]);
+        }
+
+        faceCircumcentersRTree.NearestNeighborsOnSquaredDistance(m_mesh1d->m_nodes[e], 1.1 * maxEdgeLenght * maxEdgeLenght);
+        for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
+        {
+            // The face is already connected to a 1d node
+            if (isFaceAlreadyConnected[f])
+            {
+                continue;
+            }
+
+            for (auto e = 0; e < m_mesh2d->m_numFacesNodes[f]; ++e)
+            {
+
+                const auto edge = m_mesh2d->m_facesEdges[f][e];
+
+                Point intersectionPoint;
+                double crossProduct;
+                double ratioFirstSegment;
+                double ratioSecondSegment;
+                const auto secondNode1dMeshEdge = m_mesh1d->m_edges[e].second;
+                const auto firstNode2dMeshEdge = m_mesh1d->m_edges[e].second;
+                const auto secondNod2dMeshEdge = m_mesh1d->m_edges[e].second;
+
+                const auto areSegmentCrossing = AreSegmentsCrossing(m_mesh1d->m_nodes[firstNode1dMeshEdge],
+                                                                    m_mesh2d->m_nodes[secondNode1dMeshEdge],
+                                                                    m_mesh1d->m_nodes[firstNode2dMeshEdge],
+                                                                    m_mesh2d->m_nodes[secondNod2dMeshEdge],
+                                                                    false,
+                                                                    m_mesh1d->m_projection,
+                                                                    intersectionPoint,
+                                                                    crossProduct,
+                                                                    ratioFirstSegment,
+                                                                    ratioSecondSegment);
+                if (areSegmentCrossing)
+                {
+                    //compute the distance between the face circumcenter and the 1d edge nodes.
+                    const auto leftDistance = ComputeSquaredDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[f], m_mesh1d->m_projection);
+                    const auto rightDistance = ComputeSquaredDistance(m_mesh1d->m_nodes[secondNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[f], m_mesh1d->m_projection);
+                    const auto nodeToConnect = leftDistance <= rightDistance ? firstNode1dMeshEdge : secondNode1dMeshEdge;
+
+                    // if m_oneDNodeMask is not empty, connect only if the mask value for the current node is true
+                    if (!m_oneDNodeMask.empty() && !m_oneDNodeMask[nodeToConnect])
+                    {
+                        continue;
+                    }
+                    m_mesh1dIndices.emplace_back(nodeToConnect);
+                    m_mesh2dIndices.emplace_back(f);
+                    isFaceAlreadyConnected[f] = true;
+                    break;
+                }
+            }
+        }
+    }
 };
 
 void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons){
