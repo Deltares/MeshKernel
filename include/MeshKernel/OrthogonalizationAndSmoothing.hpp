@@ -108,31 +108,31 @@ namespace meshkernel
         /// @brief Compute nodes local coordinates (comp_local_coords)
         void ComputeCoordinates() const;
 
-        std::shared_ptr<Mesh2D> m_mesh;                                              // A pointer to mesh
-        std::shared_ptr<Smoother> m_smoother;                                      // A pointer to the smoother
-        std::shared_ptr<Orthogonalizer> m_orthogonalizer;                          // A pointer to the orthogonalizer
-        std::shared_ptr<Polygons> m_polygons;                                      // The polygon where to perform the orthogonalization
-        std::shared_ptr<LandBoundaries> m_landBoundaries;                          // The land boundaries
-        LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; // The project to land boundary option
-        meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters;  // The orthogonalization parameters
+        std::shared_ptr<Mesh2D> m_mesh;                                            ///< A pointer to mesh
+        std::shared_ptr<Smoother> m_smoother;                                      ///< A pointer to the smoother
+        std::shared_ptr<Orthogonalizer> m_orthogonalizer;                          ///< A pointer to the orthogonalizer
+        std::shared_ptr<Polygons> m_polygons;                                      ///< The polygon where to perform the orthogonalization
+        std::shared_ptr<LandBoundaries> m_landBoundaries;                          ///< The land boundaries
+        LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; ///< The project to land boundary option
+        meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters;  ///< The orthogonalization parameters
 
-        std::vector<size_t> m_localCoordinatesIndices; // Used in sphericalAccurate projection (iloc)
-        std::vector<Point> m_localCoordinates;         // Used in sphericalAccurate projection (xloc,yloc)
-        std::vector<Point> m_orthogonalCoordinates;    // A copy of the mesh node, orthogonalized
-        std::vector<Point> m_originalNodes;            // The original mesh
+        std::vector<size_t> m_localCoordinatesIndices; ///< Used in sphericalAccurate projection (iloc)
+        std::vector<Point> m_localCoordinates;         ///< Used in sphericalAccurate projection (xloc,yloc)
+        std::vector<Point> m_orthogonalCoordinates;    ///< A copy of the mesh node, orthogonalized
+        std::vector<Point> m_originalNodes;            ///< The original mesh
 
         // Linear system terms
-        size_t m_nodeCacheSize = 0;
-        std::vector<size_t> m_compressedEndNodeIndex;   // Start index in m_compressedWeightX
-        std::vector<size_t> m_compressedStartNodeIndex; // End index in m_compressedWeightY
-        std::vector<double> m_compressedWeightX;        // The computed weights X
-        std::vector<double> m_compressedWeightY;        // The computed weights Y
-        std::vector<double> m_compressedRhs;            // The right hand side
-        std::vector<size_t> m_compressedNodesNodes;     // The indices of the neighbouring nodes
+        size_t m_nodeCacheSize = 0;                     ///< Node cache size
+        std::vector<size_t> m_compressedEndNodeIndex;   ///< Start index in m_compressedWeightX
+        std::vector<size_t> m_compressedStartNodeIndex; ///< End index in m_compressedWeightY
+        std::vector<double> m_compressedWeightX;        ///< The computed weights X
+        std::vector<double> m_compressedWeightY;        ///< The computed weights Y
+        std::vector<double> m_compressedRhs;            ///< The right hand side
+        std::vector<size_t> m_compressedNodesNodes;     ///< The indices of the neighbouring nodes
 
         // run-time parameters
-        double m_mumax;
-        double m_mu;
-        bool m_keepCircumcentersAndMassCenters = false;
+        double m_mumax;                                 ///< Mumax stored for runtime
+        double m_mu;                                    ///< Mu stored for runtime
+        bool m_keepCircumcentersAndMassCenters = false; ///< Wheter to keep circumcenters and mass centers
     };
 } // namespace meshkernel

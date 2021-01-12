@@ -79,11 +79,11 @@ namespace meshkernel
         /// @param[in] nodeIndex The index of the node to process
         void DeleteEdgeFromNode(size_t edgeIndex, size_t nodeIndex) const;
 
-        std::shared_ptr<Mesh2D> m_mesh;                     // A pointer to mesh
-        std::shared_ptr<LandBoundaries> m_landBoundaries; // A pointer to land boundaries
+        std::shared_ptr<Mesh2D> m_mesh;                   ///< A pointer to mesh
+        std::shared_ptr<LandBoundaries> m_landBoundaries; ///< A pointer to land boundaries
 
-        bool m_triangulateFaces = false;
-        bool m_projectToLandBoundary = false;
+        bool m_triangulateFaces = false;      ///< Wheter to triangulate faces
+        bool m_projectToLandBoundary = false; ///< Wheter to project to land boundary
     };
 
 } // namespace meshkernel

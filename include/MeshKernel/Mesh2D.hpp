@@ -280,15 +280,16 @@ namespace meshkernel
 
     private:
         /// @brief Find cells recursive, works with an arbitrary number of edges
-        /// @param startingNode The starting node
-        /// @param node The current node
-        /// @param numEdges The number of edges visited so far
-        /// @param previousEdge The previously visited edge
-        /// @param numClosingEdges The number of edges closing a face (3 for triangles, 4 for quads, etc)
-        /// @param edges The vector storing the current edges forming a face
-        /// @param nodes The vector storing the current nodes forming a face
-        /// @param sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
-        /// @param sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
+        /// @param[in] startingNode The starting node
+        /// @param[in] node The current node
+        /// @param[in] numEdges The number of edges visited so far
+        /// @param[in] previousEdge The previously visited edge
+        /// @param[in] numClosingEdges The number of edges closing a face (3 for triangles, 4 for quads, etc)
+        /// @param[in,out] edges The vector storing the current edges forming a face
+        /// @param[in,out] nodes The vector storing the current nodes forming a face
+        /// @param[in,out] sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
+        /// @param[in,out] sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
+        /// @param[in,out] nodalValues The nodel values building a closed polygon
         void FindFacesRecursive(size_t startingNode,
                                 size_t node,
                                 size_t numEdges,
