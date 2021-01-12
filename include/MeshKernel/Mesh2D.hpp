@@ -289,7 +289,7 @@ namespace meshkernel
         /// @param[in,out] nodes The vector storing the current nodes forming a face
         /// @param[in,out] sortedEdges The caching array used for sorting the edges, used to inquire if an edge has been already visited
         /// @param[in,out] sortedNodes The caching array used for sorting the nodes, used to inquire if a node has been already visited
-        /// @param[in,out] nodalValues The nodel values building a closed polygon
+        /// @param[in,out] nodalValues The nodal values building a closed polygon
         void FindFacesRecursive(size_t startingNode,
                                 size_t node,
                                 size_t numEdges,

@@ -82,8 +82,8 @@ namespace meshkernel
         std::shared_ptr<Mesh2D> m_mesh;                   ///< A pointer to mesh
         std::shared_ptr<LandBoundaries> m_landBoundaries; ///< A pointer to land boundaries
 
-        bool m_triangulateFaces = false;      ///< Wheter to triangulate faces
-        bool m_projectToLandBoundary = false; ///< Wheter to project to land boundary
+        bool m_triangulateFaces = false;      ///< Whether to triangulate faces
+        bool m_projectToLandBoundary = false; ///< Whether to project to land boundary
     };
 
 } // namespace meshkernel

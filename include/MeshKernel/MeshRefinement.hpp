@@ -95,7 +95,6 @@ namespace meshkernel
         void ComputeNodeMaskAtPolygonPerimeter();
 
         /// @brief Computes the edge and face refinement mask from sample values (compute_jarefine_poly)
-        /// @param samples The sample to use for computing masking
         void ComputeRefinementMasksFromSamples();
 
         /// @brief Computes the number of edges that should be refined in a face (compute_jarefine_poly)

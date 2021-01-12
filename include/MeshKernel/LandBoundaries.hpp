@@ -249,8 +249,8 @@ namespace meshkernel
         std::vector<size_t> m_faceMask; ///< masking faces
         std::vector<size_t> m_edgeMask; ///< masking edges
 
-        bool m_landMask = true;          ///< Wheter land masks were given
-        bool m_addLandboundaries = true; ///< Wheter to add land boundaries
+        bool m_landMask = true;          ///< Whether land masks were given
+        bool m_addLandboundaries = true; ///< Whether to add land boundaries
         size_t m_numFacesMasked = 0;     ///< Number of masked faces
         size_t m_maskDepth = 0;          ///< Mask depth
 

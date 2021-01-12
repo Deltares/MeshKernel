@@ -107,7 +107,7 @@ namespace meshkernel
         Method m_method;                                ///< The method to use for the interpolation
         MeshLocations m_interpolationLocation;          ///< Interpolation location
         double m_relativeSearchRadius;                  ///< Relative search radius
-        bool m_useClosestSampleIfNoneAvailable = false; ///< Wheter to use the closest sample if there is none available
+        bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
         bool m_transformSamples = false;                ///< Wheher to transform samples
 
         RTree m_samplesRtree;               ///< The samples tree

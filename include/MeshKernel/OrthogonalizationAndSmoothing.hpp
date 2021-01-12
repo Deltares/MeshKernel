@@ -133,6 +133,6 @@ namespace meshkernel
         // run-time parameters
         double m_mumax;                                 ///< Mumax stored for runtime
         double m_mu;                                    ///< Mu stored for runtime
-        bool m_keepCircumcentersAndMassCenters = false; ///< Wheter to keep circumcenters and mass centers
+        bool m_keepCircumcentersAndMassCenters = false; ///< Whether to keep circumcenters and mass centers
     };
 } // namespace meshkernel
