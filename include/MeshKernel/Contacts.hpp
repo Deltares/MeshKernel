@@ -62,7 +62,7 @@ namespace meshkernel
         void ComputeConnectionsWithPolygons(const Polygons& polygons);
 
         /// @brief Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)
-        /// @param[in] The points the points to connect
+        /// @param[in] points the points to connect
         void ComputeConnectionsWithPoints(const std::vector<Point>& points);
 
         /// @brief Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
