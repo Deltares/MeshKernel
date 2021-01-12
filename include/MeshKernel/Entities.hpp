@@ -42,6 +42,7 @@ namespace meshkernel
     //{
     //    t.x;
     //    t.y;
+    //    t.IsValid
     //};
 
     /// @brief Generic function determining if two values are equal
@@ -171,7 +172,7 @@ namespace meshkernel
             y = y * degrad_hp * earth_radius;
         }
 
-        /// @brief Determines if the Point instance is valid
+        /// @brief Determines if the point instance has valid coordinates
         [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
         {
             bool isInvalid = IsEqual(x, missingValue) ||
@@ -220,6 +221,15 @@ namespace meshkernel
                 samples[i].value = (*samplesValue)[i];
             }
             return samples;
+        }
+
+        /// @brief Determines if the sample instance has valid coordinates
+        [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
+        {
+            bool isInvalid = IsEqual(x, missingValue) ||
+                             IsEqual(y, missingValue);
+
+            return !isInvalid;
         }
     };
 

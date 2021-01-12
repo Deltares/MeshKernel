@@ -32,14 +32,14 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
 namespace meshkernel
 {
     LandBoundaries::LandBoundaries(const std::vector<Point>& landBoundary,
-                                   std::shared_ptr<Mesh> mesh,
+                                   std::shared_ptr<Mesh2D> mesh,
                                    std::shared_ptr<Polygons> polygons) : m_mesh(mesh),
                                                                          m_polygons(polygons)
     {

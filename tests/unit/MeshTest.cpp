@@ -4,7 +4,7 @@
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -23,7 +23,7 @@ TEST(Mesh, OneQuadTestConstructor)
     edges.push_back({2, 3});
 
     // 2 Execution
-    const auto mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // 3 Validation
     // expect nodesEdges to be sorted ccw
@@ -88,7 +88,7 @@ TEST(Mesh, MakeMeshInPolygon)
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     meshkernelapi::MakeMeshParameters MakeMeshParameters;
     MakeMeshParameters.GridType = 0;
     MakeMeshParameters.GridAngle = 0.0;
@@ -120,7 +120,7 @@ TEST(Mesh, MakeMeshInPolygonSpherical)
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::spherical);
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     meshkernelapi::MakeMeshParameters MakeMeshParameters;
     MakeMeshParameters.GridType = 0;
     MakeMeshParameters.GridAngle = 0.0;
@@ -144,7 +144,7 @@ TEST(Mesh, MakeMeshInEmptyPolygonSpherical)
     std::vector<meshkernel::Point> nodes;
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::spherical);
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     meshkernelapi::MakeMeshParameters MakeMeshParameters;
     MakeMeshParameters.GridType = 0;
     MakeMeshParameters.GridAngle = 0.0;
@@ -211,7 +211,7 @@ TEST(Mesh, TriangulateSamplesWithSkinnyTriangle)
     // Execute
     const auto generatedPoints = polygons.ComputePointsInPolygons();
 
-    meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
 
     // Assert
     ASSERT_EQ(6, mesh.GetNumEdges());
@@ -252,7 +252,7 @@ TEST(Mesh, TriangulateSamples)
     // Execute
     const auto generatedPoints = polygons.ComputePointsInPolygons();
 
-    meshkernel::Mesh mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
 }
 
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
@@ -270,9 +270,9 @@ TEST(Mesh, TwoTrianglesDuplicatedEdges)
     edges.push_back({0, 1});
     edges.push_back({2, 1});
 
-    meshkernel::Mesh mesh;
+    meshkernel::Mesh2D mesh;
     // 2 Execution
-    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // 3 Validation
     ASSERT_EQ(2, mesh.GetNumFaces());
@@ -293,8 +293,8 @@ TEST(Mesh, MeshBoundaryToPolygon)
     edges.push_back({0, 1});
     edges.push_back({2, 1});
 
-    meshkernel::Mesh mesh;
-    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh;
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
     const auto meshBoundaryPolygon = mesh.MeshBoundaryToPolygon(polygonNodes);
@@ -328,8 +328,8 @@ TEST(Mesh, HangingEdge)
     edges.push_back({3, 0});
     edges.push_back({2, 1});
 
-    meshkernel::Mesh mesh;
-    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh;
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     ASSERT_EQ(1, mesh.GetNumFaces());
 }
@@ -373,8 +373,8 @@ TEST(Mesh, NodeMerging)
         }
     }
 
-    meshkernel::Mesh mesh;
-    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh;
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // Add overlapping nodes
     double generatingDistance = std::sqrt(std::pow(meshkernel::mergingDistance * 0.9, 2) / 2.0);
@@ -410,7 +410,7 @@ TEST(Mesh, NodeMerging)
     edges.resize(edgeIndex);
 
     // re set with augmented nodes
-    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // 2. Act
     meshkernel::Polygons polygon;
@@ -461,7 +461,7 @@ TEST(Mesh, MillionQuads)
 
     // now build node-edge mapping
     auto start(std::chrono::steady_clock::now());
-    const auto mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    const auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
     auto end(std::chrono::steady_clock::now());
 
     double elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
@@ -485,7 +485,7 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->ConnectNodes(0, newNodeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
-    mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     ASSERT_EQ(5, mesh->m_nodesRTree.Size());
 
@@ -506,7 +506,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->DeleteNode(0);
 
     // when m_nodesRTreeRequiresUpdate = true and m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
-    mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     ASSERT_EQ(3, mesh->m_nodesRTree.Size());
 }
@@ -526,7 +526,7 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->ConnectNodes(0, newNodeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
-    mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
@@ -545,7 +545,7 @@ TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->DeleteEdge(0);
 
     // when m_edgesRTreeRequiresUpdate = true the mesh.m_edgesRTree is re-build with one less edge
-    mesh->Administrate(meshkernel::Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     ASSERT_EQ(3, mesh->m_edgesRTree.Size());
 }
@@ -599,8 +599,8 @@ TEST(Mesh, GetObtuseTriangles)
         {0, 3},
         {3, 1}};
 
-    meshkernel::Mesh mesh;
-    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh;
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, only one obtuse triangle should be found
     const auto obtuseTrianglesCount = mesh.GetObtuseTrianglesCenters().size();
@@ -626,8 +626,8 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
         {2, 0},
     };
 
-    meshkernel::Mesh mesh;
-    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh;
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // execute, by setting the smallFlowEdgesThreshold high, a small flow edge will be found
     const auto numSmallFlowEdgeFirstQuery = mesh.GetEdgesCrossingSmallFlowEdges(100).size();
@@ -693,8 +693,8 @@ TEST(Mesh, DeleteHangingEdge)
     edges.push_back({2, 1});
 
     // Execute
-    meshkernel::Mesh mesh;
-    mesh = meshkernel::Mesh(edges, nodes, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2D mesh;
+    mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     // Assert
     ASSERT_EQ(1, mesh.GetNumFaces());

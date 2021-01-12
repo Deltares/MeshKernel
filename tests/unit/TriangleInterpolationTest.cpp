@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <Meshkernel/Entities.hpp>
 #include <TestUtils/MakeMeshes.hpp>

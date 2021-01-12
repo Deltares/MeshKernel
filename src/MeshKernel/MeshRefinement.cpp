@@ -28,17 +28,18 @@
 #include <algorithm>
 #include <cmath>
 #include <numeric>
+#include <tuple>
 #include <vector>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/RTree.hpp>
 
-meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh,
+meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                            std::shared_ptr<AveragingInterpolation> averaging,
                                            const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
                                            const meshkernelapi::InterpolationParameters& interpolationParameters) : m_mesh(mesh),
@@ -49,7 +50,7 @@ meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh,
     m_refinementType = static_cast<RefinementType>(m_sampleRefineParameters.RefinementType);
 };
 
-meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh,
+meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
                                            const Polygons& polygon,
                                            const meshkernelapi::InterpolationParameters& interpolationParameters) : m_mesh(mesh),
                                                                                                                     m_polygons(polygon),
@@ -58,7 +59,7 @@ meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh> mesh,
 void meshkernel::MeshRefinement::Compute()
 {
     // administrate mesh once more
-    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
     // all faces and edges refined
     m_faceMask.resize(m_mesh->GetNumFaces(), 1);
@@ -69,7 +70,9 @@ void meshkernel::MeshRefinement::Compute()
     Point upperRight{doubleMissingValue, doubleMissingValue};
     if (m_mesh->m_projection == Projection::spherical)
     {
-        m_mesh->GetBoundingBox(lowerLeft, upperRight);
+        const auto boundingBox = GetBoundingBox(m_mesh->m_nodes);
+        lowerLeft = std::get<0>(boundingBox);
+        upperRight = std::get<1>(boundingBox);
     }
 
     // select the nodes to refine
@@ -181,7 +184,7 @@ void meshkernel::MeshRefinement::Compute()
 
         m_mesh->OffsetSphericalCoordinates(lowerLeft.x, upperRight.x);
 
-        m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        m_mesh->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
         m_faceMask.resize(m_mesh->GetNumFaces());
         m_edgeMask.resize(m_mesh->GetNumEdges());
@@ -191,7 +194,7 @@ void meshkernel::MeshRefinement::Compute()
     if (m_sampleRefineParameters.ConnectHangingNodes)
     {
         ConnectHangingNodes();
-        m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        m_mesh->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     }
 }
 

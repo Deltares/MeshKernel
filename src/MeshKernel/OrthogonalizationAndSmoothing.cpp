@@ -33,14 +33,14 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
 
-meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mesh> mesh,
+meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::shared_ptr<Mesh2D> mesh,
                                                                          std::shared_ptr<Smoother> smoother,
                                                                          std::shared_ptr<Orthogonalizer> orthogonalizer,
                                                                          std::shared_ptr<Polygons> polygon,
@@ -59,7 +59,7 @@ meshkernel::OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(std::sh
 void meshkernel::OrthogonalizationAndSmoothing::Initialize()
 {
     // Sets the node mask
-    m_mesh->Administrate(Mesh::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     m_mesh->MaskNodesInPolygons(*m_polygons, true);
 
     // Flag nodes outside the polygon as corner points
