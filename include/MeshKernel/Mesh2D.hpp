@@ -96,7 +96,7 @@ namespace meshkernel
         /// firstMesh += secondmesh results in the second mesh being added to the first
         /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
-        Mesh2D& operator+=(Mesh2D const& rhs);
+        [[nodiscard]] Mesh2D& operator+=(Mesh2D const& rhs);
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         /// @param administrationOption Type of administration to perform
@@ -241,14 +241,14 @@ namespace meshkernel
 
         /// @brief Gets the hanging edges
         /// @return A vector with the indices of the hanging edges
-        std::vector<size_t> GetHangingEdges() const;
+        [[nodiscard]] std::vector<size_t> GetHangingEdges() const;
 
         /// @brief Deletes the hanging edges
         void DeleteHangingEdges();
 
         /// @brief For a collection of points compute the face indices including them
         /// @return The face indices including the points
-        std::vector<size_t> PointFaceIndices(const std::vector<Point>& points);
+        [[nodiscard]] std::vector<size_t> PointFaceIndices(const std::vector<Point>& points);
 
         /// @brief Deletes a mesh in a polygon, using several options (delnet)
         /// @param[in] polygons The polygon where to perform the operation
@@ -262,7 +262,7 @@ namespace meshkernel
         /// @param intersectedFace The intersected face index
         /// @param intersectedEdge The intersected edge index
         /// @return True if the segment is crossing a face
-        bool IsSegmentCrossingAFace(const Point& firstPoint, const Point& secondPoint, size_t& intersectedFace, size_t& intersectedEdge) const;
+        [[nodiscard]] bool IsSegmentCrossingAFace(const Point& firstPoint, const Point& secondPoint, size_t& intersectedFace, size_t& intersectedEdge) const;
 
         // vectors for communicating with the client
         std::vector<double> m_nodex;               ///< The nodes x-coordinate

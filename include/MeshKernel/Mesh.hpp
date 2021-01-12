@@ -99,12 +99,12 @@ namespace meshkernel
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
         /// @return The index of the new edge
-        size_t ConnectNodes(size_t startNode, size_t endNode);
+        [[nodiscard]] size_t ConnectNodes(size_t startNode, size_t endNode);
 
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
         /// @return The index of the new node
-        size_t InsertNode(const Point& newPoint);
+        [[nodiscard]] size_t InsertNode(const Point& newPoint);
 
         /// @brief Delete a node
         /// @param[in] nodeIndex The index of the node to delete
@@ -114,7 +114,7 @@ namespace meshkernel
         /// @param[in] firstNodeIndex The index of the first node
         /// @param[in] secondNodeIndex The index of the second node
         /// @return The edge index
-        size_t FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const;
+        [[nodiscard]] size_t FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const;
 
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location

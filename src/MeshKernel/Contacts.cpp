@@ -42,7 +42,7 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
             continue;
         }
 
-        // if a oned nodemask is present, ensure the mask value for the current node is true
+        // if m_oneDNodeMask is not empty, ensure the mask value for the current node is true
         if (!m_oneDNodeMask.empty() && !m_oneDNodeMask[n])
         {
             continue;
@@ -56,40 +56,38 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
             continue;
         }
 
-        const auto left1dEdge = m_mesh1d->m_nodesEdges[n][0];
-        const auto right1dEdge = m_mesh1d->m_nodesEdges[n][1];
-
-        const auto otherLeft1dNode = m_mesh1d->m_edges[left1dEdge].first == n ? m_mesh1d->m_edges[left1dEdge].second : m_mesh1d->m_edges[left1dEdge].first;
-        const auto otherRight1dNode = m_mesh1d->m_edges[right1dEdge].first == n ? m_mesh1d->m_edges[right1dEdge].second : m_mesh1d->m_edges[right1dEdge].first;
-
-        const auto normalVector = NormalVectorOutside(m_mesh1d->m_nodes[otherLeft1dNode], m_mesh1d->m_nodes[otherRight1dNode], m_mesh1d->m_projection);
-        const auto edgeLength = ComputeDistance(m_mesh1d->m_nodes[otherLeft1dNode], m_mesh1d->m_nodes[otherRight1dNode], m_mesh1d->m_projection);
-
-        const auto rightProjectedNode = m_mesh1d->m_nodes[n] + normalVector * edgeLength * distanceFactor;
-        size_t rightIntersectedFace;
-        size_t rightIntersectedEdge;
-        const auto isConnectionIntersectingAFace = m_mesh2d->IsSegmentCrossingAFace(m_mesh1d->m_nodes[n], rightProjectedNode, rightIntersectedFace, rightIntersectedEdge);
-        if (isConnectionIntersectingAFace &&
-            !IsConnectionIntersectingMesh1d(n, rightIntersectedFace) &&
-            !IsContactIntersectingContact(n, rightIntersectedFace))
-        {
-            m_mesh1dIndices.emplace_back(n);
-            m_mesh2dIndices.emplace_back(rightIntersectedFace);
-        }
-
-        const auto leftProjectedNode = m_mesh1d->m_nodes[n] - normalVector * edgeLength * distanceFactor;
-        size_t leftIntersectedFace;
-        size_t leftIntersectedEdge;
-        const auto isLeftProjectedNodeIntersected = m_mesh2d->IsSegmentCrossingAFace(m_mesh1d->m_nodes[n], leftProjectedNode, leftIntersectedFace, leftIntersectedEdge);
-        if (isLeftProjectedNodeIntersected &&
-            !IsConnectionIntersectingMesh1d(n, leftIntersectedFace) &&
-            !IsContactIntersectingContact(n, leftIntersectedFace))
-        {
-            m_mesh1dIndices.emplace_back(n);
-            m_mesh2dIndices.emplace_back(leftIntersectedFace);
-        }
+        // Connect faces crossing the right projected segment
+        Connect1dNodesWithCrossingFaces(n, 5.0);
+        // Connect faces crossing the left projected segment
+        Connect1dNodesWithCrossingFaces(n, -5.0);
     }
 };
+
+void meshkernel::Contacts::Connect1dNodesWithCrossingFaces(size_t node, double distanceFactor)
+{
+
+    const auto left1dEdge = m_mesh1d->m_nodesEdges[node][0];
+    const auto right1dEdge = m_mesh1d->m_nodesEdges[node][1];
+
+    const auto otherLeft1dNode = m_mesh1d->m_edges[left1dEdge].first == node ? m_mesh1d->m_edges[left1dEdge].second : m_mesh1d->m_edges[left1dEdge].first;
+    const auto otherRight1dNode = m_mesh1d->m_edges[right1dEdge].first == node ? m_mesh1d->m_edges[right1dEdge].second : m_mesh1d->m_edges[right1dEdge].first;
+
+    const auto normalVector = NormalVectorOutside(m_mesh1d->m_nodes[otherLeft1dNode], m_mesh1d->m_nodes[otherRight1dNode], m_mesh1d->m_projection);
+    const auto edgeLength = ComputeDistance(m_mesh1d->m_nodes[otherLeft1dNode], m_mesh1d->m_nodes[otherRight1dNode], m_mesh1d->m_projection);
+
+    const auto projectedNode = m_mesh1d->m_nodes[node] + normalVector * edgeLength * distanceFactor;
+    size_t intersectedFace;
+    size_t intersectedEdge;
+
+    const auto isConnectionIntersectingAFace = m_mesh2d->IsSegmentCrossingAFace(m_mesh1d->m_nodes[node], projectedNode, intersectedFace, intersectedEdge);
+    if (isConnectionIntersectingAFace &&
+        !IsConnectionIntersectingMesh1d(node, intersectedFace) &&
+        !IsContactIntersectingContact(node, intersectedFace))
+    {
+        m_mesh1dIndices.emplace_back(node);
+        m_mesh2dIndices.emplace_back(intersectedFace);
+    }
+}
 
 bool meshkernel::Contacts::IsConnectionIntersectingMesh1d(size_t node, size_t face) const
 {

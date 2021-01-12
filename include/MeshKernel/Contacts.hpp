@@ -62,29 +62,35 @@ namespace meshkernel
         void ComputeConnectionsWithPolygons(const Polygons& polygons);
 
         /// @brief Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)
-        /// @param[in] points the points to connect
+        /// @param[in] The points the points to connect
         void ComputeConnectionsWithPoints(const std::vector<Point>& points);
 
         /// @brief Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         void ComputeBoundaryConnections();
 
-        std::shared_ptr<Mesh1D> m_mesh1d;    ///< The 1-d mesh to connect
-        std::shared_ptr<Mesh2D> m_mesh2d;    ///< The 2-d mesh to connect
-        std::vector<size_t> m_mesh2dIndices; ///< The indices of the 2-d faces to connect
-        std::vector<size_t> m_mesh1dIndices; ///< The indices of the 1-d nodes to connect
-        std::vector<bool> m_oneDNodeMask;    ///< The mask to apply to 1d nodes (true = generate contacts, false = do not generate contacts)
+        std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces
+        std::vector<size_t> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
 
     private:
         /// @brief Asserts if a connection is crossing a 1d mesh edge
         /// @param node[in] The 1d node index (start of the connection)
         /// @param face[in] The 2d face index (end of the connection)
         /// @return True if the connection is crossing a 1d mesh edge
-        bool IsConnectionIntersectingMesh1d(size_t node, size_t face) const;
+        [[nodiscard]] bool IsConnectionIntersectingMesh1d(size_t node, size_t face) const;
 
         /// @brief Asserts if a connection is crossing an existing connection
         /// @param node[in] The 1d node index (start of the connection)
         /// @param face[in] The 2d face index (end of the connection)
         /// @return True if the connection is crossing an existing connection
-        bool IsContactIntersectingContact(size_t node, size_t face) const;
+        [[nodiscard]] bool IsContactIntersectingContact(size_t node, size_t face) const;
+
+        std::shared_ptr<Mesh1D> m_mesh1d; ///< The 1-d mesh to connect
+        std::shared_ptr<Mesh2D> m_mesh2d; ///< The 2-d mesh to connect
+        std::vector<bool> m_oneDNodeMask; ///< The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
+
+        /// @brief Connect a 1d node with the face crossed by the projected normal originating from the node itself
+        /// @param[in] node The 1d node index
+        /// @param[in] distanceFactor The factor determining the length and the direction of the projected normal (positive right normal, negative left normal)
+        void Connect1dNodesWithCrossingFaces(size_t node, double distanceFactor);
     };
 } // namespace meshkernel
