@@ -56,9 +56,9 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
             continue;
         }
 
-        // Connect faces crossing the right projected segment
+        // connect faces crossing the right projected segment
         Connect1dNodesWithCrossingFace(n, 5.0);
-        // Connect faces crossing the left projected segment
+        // connect faces crossing the left projected segment
         Connect1dNodesWithCrossingFace(n, -5.0);
     }
 };
@@ -150,22 +150,22 @@ bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face
 
 void meshkernel::Contacts::ComputeMultipleConnections()
 {
-    // Perform mesh2d administration
+    // perform mesh2d administration
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
-    // Perform mesh1d administration
+    // perform mesh1d administration
     m_mesh1d->AdministrateNodesEdges();
     m_mesh1d->ComputeEdgesLengths();
 
-    // Compute the indices of the faces including the 1d nodes
+    // compute the indices of the faces including the 1d nodes
     const auto node1dFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
 
-    // Build mesh2d face circumcenters r-tree
+    // build mesh2d face circumcenters r-tree
     RTree faceCircumcentersRTree;
     faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
     std::vector<bool> isFaceAlreadyConnected(m_mesh2d->GetNumFaces(), false);
 
-    // Loop over 1d mesh edges
+    // loop over 1d mesh edges
     for (auto e = 0; e < m_mesh1d->GetNumEdges(); ++e)
     {
         // get the mesh1d edge nodes
@@ -180,21 +180,21 @@ void meshkernel::Contacts::ComputeMultipleConnections()
             maxEdgeLenght = std::max(maxEdgeLenght, m_mesh1d->m_edgeLengths[edge]);
         }
 
-        // Computes the nearest 2d face indices
+        // compute the nearest 2d face indices
         faceCircumcentersRTree.NearestNeighborsOnSquaredDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLenght * maxEdgeLenght);
 
-        // For each face determine if it is crossing the current 1d edge
+        // for each face determine if it is crossing the current 1d edge
         for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
         {
             const auto face = faceCircumcentersRTree.GetQueryResult(f);
 
-            // The face is already connected to a 1d node, nothing to do
+            // the face is already connected to a 1d node, nothing to do
             if (isFaceAlreadyConnected[face])
             {
                 continue;
             }
 
-            // Determine which of the mesh2d edges is crossing the current 1d edge
+            // determine which of the mesh2d edges is crossing the current 1d edge
             for (auto ee = 0; ee < m_mesh2d->m_numFacesNodes[face]; ++ee)
             {
                 Point intersectionPoint;
@@ -216,13 +216,13 @@ void meshkernel::Contacts::ComputeMultipleConnections()
                                                                     crossProduct,
                                                                     ratioFirstSegment,
                                                                     ratioSecondSegment);
-                // Nothing is crossing, continue
+                // nothing is crossing, continue
                 if (!areSegmentCrossing)
                 {
                     continue;
                 }
 
-                //compute the distance between the face circumcenter and the crossed 1d edge nodes.
+                // compute the distance between the face circumcenter and the crossed 1d edge nodes.
                 const auto leftDistance = ComputeDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[face], m_mesh1d->m_projection);
                 const auto rightDistance = ComputeDistance(m_mesh1d->m_nodes[secondNode1dMeshEdge], m_mesh2d->m_facesCircumcenters[face], m_mesh1d->m_projection);
                 const auto nodeToConnect = leftDistance <= rightDistance ? firstNode1dMeshEdge : secondNode1dMeshEdge;
@@ -249,13 +249,13 @@ void meshkernel::Contacts::ComputeMultipleConnections()
 };
 
 void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons){
-    // Complete implementation
+    // complete implementation
 };
 
 void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points){
-    // Complete implementation
+    // complete implementation
 };
 
 void meshkernel::Contacts::ComputeBoundaryConnections(){
-    // Complete implementation
+    // complete implementation
 };
