@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -166,17 +165,18 @@ void meshkernel::Contacts::ComputeMultipleConnections()
     faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
     std::vector<bool> isFaceAlreadyConnected(m_mesh2d->GetNumFaces(), false);
 
-    for (auto i = 0; i < m_mesh1d->GetNumEdges(); ++i)
+    // Loop over 1d mesh edges
+    for (auto e = 0; e < m_mesh1d->GetNumEdges(); ++e)
     {
-
-        const auto firstNode1dMeshEdge = m_mesh1d->m_edges[i].first;
-        const auto secondNode1dMeshEdge = m_mesh1d->m_edges[i].second;
+        // get the mesh1d edge nodes
+        const auto firstNode1dMeshEdge = m_mesh1d->m_edges[e].first;
+        const auto secondNode1dMeshEdge = m_mesh1d->m_edges[e].second;
 
         // loop over all edges connected to the first node, to determine the longest edge
         auto maxEdgeLenght = std::numeric_limits<double>::lowest();
-        for (auto j = 0; j < m_mesh1d->m_nodesNumEdges[firstNode1dMeshEdge]; ++j)
+        for (auto ee = 0; ee < m_mesh1d->m_nodesNumEdges[firstNode1dMeshEdge]; ++ee)
         {
-            const auto edge = m_mesh1d->m_nodesEdges[firstNode1dMeshEdge][j];
+            const auto edge = m_mesh1d->m_nodesEdges[firstNode1dMeshEdge][ee];
             maxEdgeLenght = std::max(maxEdgeLenght, m_mesh1d->m_edgeLengths[edge]);
         }
 
@@ -184,9 +184,9 @@ void meshkernel::Contacts::ComputeMultipleConnections()
         faceCircumcentersRTree.NearestNeighborsOnSquaredDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLenght * maxEdgeLenght);
 
         // For each face determine if it is crossing the current 1d edge
-        for (auto k = 0; k < faceCircumcentersRTree.GetQueryResultSize(); ++k)
+        for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
         {
-            const auto face = faceCircumcentersRTree.GetQueryResult(k);
+            const auto face = faceCircumcentersRTree.GetQueryResult(f);
 
             // The face is already connected to a 1d node, nothing to do
             if (isFaceAlreadyConnected[face])
@@ -195,14 +195,14 @@ void meshkernel::Contacts::ComputeMultipleConnections()
             }
 
             // Determine which of the mesh2d edges is crossing the current 1d edge
-            for (auto l = 0; l < m_mesh2d->m_numFacesNodes[face]; ++l)
+            for (auto ee = 0; ee < m_mesh2d->m_numFacesNodes[face]; ++ee)
             {
                 Point intersectionPoint;
                 double crossProduct;
                 double ratioFirstSegment;
                 double ratioSecondSegment;
 
-                const auto edge = m_mesh2d->m_facesEdges[face][l];
+                const auto edge = m_mesh2d->m_facesEdges[face][ee];
                 const auto firstNode2dMeshEdge = m_mesh2d->m_edges[edge].first;
                 const auto secondNode2dMeshEdge = m_mesh2d->m_edges[edge].second;
 
@@ -216,7 +216,7 @@ void meshkernel::Contacts::ComputeMultipleConnections()
                                                                     crossProduct,
                                                                     ratioFirstSegment,
                                                                     ratioSecondSegment);
-                // Nothing is crossing, thus continue
+                // Nothing is crossing, continue
                 if (!areSegmentCrossing)
                 {
                     continue;
