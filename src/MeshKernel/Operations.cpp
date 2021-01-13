@@ -1045,7 +1045,7 @@ namespace meshkernel
         return circumcenter;
     }
 
-    bool AreSegmentsCrossing(const Point& firstSegmentFistPoint,
+    bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
                              const Point& firstSegmentSecondPoint,
                              const Point& secondSegmentFistPoint,
                              const Point& secondSegmentSecondPoint,
@@ -1064,14 +1064,14 @@ namespace meshkernel
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {
 
-            auto const x21 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-            auto const y21 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+            auto const x21 = GetDx(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
+            auto const y21 = GetDy(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
 
             auto const x43 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
             auto const y43 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
 
-            auto const x31 = GetDx(firstSegmentFistPoint, secondSegmentFistPoint, projection);
-            auto const y31 = GetDy(firstSegmentFistPoint, secondSegmentFistPoint, projection);
+            auto const x31 = GetDx(firstSegmentFirstPoint, secondSegmentFistPoint, projection);
+            auto const y31 = GetDy(firstSegmentFirstPoint, secondSegmentFistPoint, projection);
 
             auto const det = x43 * y21 - y43 * x21;
 
@@ -1089,8 +1089,8 @@ namespace meshkernel
             {
                 isCrossing = true;
             }
-            intersectionPoint.x = firstSegmentFistPoint.x + ratioFirstSegment * (firstSegmentSecondPoint.x - firstSegmentFistPoint.x);
-            intersectionPoint.y = firstSegmentFistPoint.y + ratioFirstSegment * (firstSegmentSecondPoint.y - firstSegmentFistPoint.y);
+            intersectionPoint.x = firstSegmentFirstPoint.x + ratioFirstSegment * (firstSegmentSecondPoint.x - firstSegmentFirstPoint.x);
+            intersectionPoint.y = firstSegmentFirstPoint.y + ratioFirstSegment * (firstSegmentSecondPoint.y - firstSegmentFirstPoint.y);
             crossProduct = -det;
             if (adimensionalCrossProduct)
             {
@@ -1100,7 +1100,7 @@ namespace meshkernel
 
         if (projection == Projection::sphericalAccurate)
         {
-            const Cartesian3DPoint firstSegmentFistCartesian3DPoint{SphericalToCartesian3D(firstSegmentFistPoint)};
+            const Cartesian3DPoint firstSegmentFistCartesian3DPoint{SphericalToCartesian3D(firstSegmentFirstPoint)};
 
             const Cartesian3DPoint firstSegmentSecondCartesian3DPoint{SphericalToCartesian3D(firstSegmentSecondPoint)};
 
@@ -1156,18 +1156,18 @@ namespace meshkernel
                 intersectionCartesian3DPoint.x = firstSegmentFistCartesian3DPoint.x + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.x - firstSegmentFistCartesian3DPoint.x);
                 intersectionCartesian3DPoint.y = firstSegmentFistCartesian3DPoint.y + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.y - firstSegmentFistCartesian3DPoint.y);
                 intersectionCartesian3DPoint.z = firstSegmentFistCartesian3DPoint.z + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.z - firstSegmentFistCartesian3DPoint.z);
-                intersectionPoint = Cartesian3DToSpherical(intersectionCartesian3DPoint, std::max(firstSegmentFistPoint.x, firstSegmentSecondPoint.x));
+                intersectionPoint = Cartesian3DToSpherical(intersectionCartesian3DPoint, std::max(firstSegmentFirstPoint.x, firstSegmentSecondPoint.x));
             }
         }
 
         return isCrossing;
     }
 
-    int CrossProductSign(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
+    int CrossProductSign(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
     {
 
-        const auto dx1 = GetDx(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
-        const auto dy1 = GetDy(firstSegmentFistPoint, firstSegmentSecondPoint, projection);
+        const auto dx1 = GetDx(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
+        const auto dy1 = GetDy(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
         const auto dx2 = GetDx(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
         const auto dy2 = GetDy(secondSegmentFistPoint, secondSegmentSecondPoint, projection);
         const auto val = dx1 * dy2 - dy1 * dx2;
