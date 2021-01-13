@@ -363,7 +363,7 @@ namespace meshkernel
     [[nodiscard]] Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection);
 
     /// @brief Determines if two segments are crossing (cross, cross3D)
-    /// @param[in] firstSegmentFistPoint The first point of the first segment
+    /// @param[in] firstSegmentFirstPoint The first point of the first segment
     /// @param[in] firstSegmentSecondPoint The second point of the first segment
     /// @param[in] secondSegmentFistPoint The first point of the second segment
     /// @param[in] secondSegmentSecondPoint The second point of the second segment
@@ -374,7 +374,7 @@ namespace meshkernel
     /// @param[out] ratioFirstSegment The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
     /// @param[out] ratioSecondSegment The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
     /// @return If the two segments are crossing
-    [[nodiscard]] bool AreSegmentsCrossing(const Point& firstSegmentFistPoint,
+    [[nodiscard]] bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
                                            const Point& firstSegmentSecondPoint,
                                            const Point& secondSegmentFistPoint,
                                            const Point& secondSegmentSecondPoint,
@@ -386,13 +386,13 @@ namespace meshkernel
                                            double& ratioSecondSegment);
 
     /// @brief Computes the sign of the cross product between two segments (duitpl)
-    /// @param[in] firstSegmentFistPoint The first point of the first segment
+    /// @param[in] firstSegmentFirstPoint The first point of the first segment
     /// @param[in] firstSegmentSecondPoint The second point of the first segment
     /// @param[in] secondSegmentFistPoint The first point of the second segment
     /// @param[in] secondSegmentSecondPoint The second point of the second segment
     /// @param[in] projection The coordinate system projection
     /// @return The cross product sign
-    [[nodiscard]] int CrossProductSign(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
+    [[nodiscard]] int CrossProductSign(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
 
     /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened
     /// @param[in] polygon The input vector containing the nodes of the polygon (must be closed)
