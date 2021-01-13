@@ -173,15 +173,15 @@ void meshkernel::Contacts::ComputeMultipleConnections()
         const auto secondNode1dMeshEdge = m_mesh1d->m_edges[e].second;
 
         // loop over all edges connected to the first node, to determine the longest edge
-        auto maxEdgeLenght = std::numeric_limits<double>::lowest();
+        auto maxEdgeLength = std::numeric_limits<double>::lowest();
         for (auto ee = 0; ee < m_mesh1d->m_nodesNumEdges[firstNode1dMeshEdge]; ++ee)
         {
             const auto edge = m_mesh1d->m_nodesEdges[firstNode1dMeshEdge][ee];
-            maxEdgeLenght = std::max(maxEdgeLenght, m_mesh1d->m_edgeLengths[edge]);
+            maxEdgeLength = std::max(maxEdgeLength, m_mesh1d->m_edgeLengths[edge]);
         }
 
         // compute the nearest 2d face indices
-        faceCircumcentersRTree.NearestNeighborsOnSquaredDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLenght * maxEdgeLenght);
+        faceCircumcentersRTree.NearestNeighborsOnSquaredDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLength * maxEdgeLength);
 
         // for each face determine if it is crossing the current 1d edge
         for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
