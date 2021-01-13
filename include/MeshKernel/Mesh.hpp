@@ -38,7 +38,7 @@ namespace meshkernel
 {
     class Polygons;
 
-    /// @brief A class describing an unstructured mesh (can be both 1d or 2d)
+    /// @brief A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2d meshes
     class Mesh
     {
     public:
