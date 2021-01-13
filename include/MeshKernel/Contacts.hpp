@@ -50,12 +50,14 @@ namespace meshkernel
         /// @param[in] oneDNodeMask The mask used for masking 1d nodes
         Contacts(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh2D> mesh2d, const std::vector<bool>& oneDNodeMask);
 
-        /// @brief Computes 1d-2d connections, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll)
+        /// @brief Computes 1d-2d connections, where every single 1d node is connected to one 2d face circumcenter. (ggeo_make1D2Dinternalnetlinks_dll)
+        ///        All 1d nodes are taken into account, independent if they are within a 2d face or not.
         /// @param[in] polygons The polygons where the 1d-2d connections are generated
         void ComputeSingleConnections(const Polygons& polygons);
 
         /// @brief Computes 1d-2d connections, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
-        /// 1d edges are typically overlapping the 2d mesh, and potentially more than one 1d-2d connection per 1d mesh node is created.
+        ///        1d edges are typically overlapping the 2d mesh, and potentially more than one 1d-2d connection per 1d mesh node is created.
+        ///        Only 1d nodes which are inside a 2d face is taken into account.
         void ComputeMultipleConnections();
 
         /// @brief Computes 1d-2d connections, where a 1d node is connected to the closest polygon (ggeo_make1D2Droofgutterpipes_dll)
