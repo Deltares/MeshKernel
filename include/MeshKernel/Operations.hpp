@@ -367,7 +367,7 @@ namespace meshkernel
     /// @param[in] firstSegmentSecondPoint The second point of the first segment
     /// @param[in] secondSegmentFistPoint The first point of the second segment
     /// @param[in] secondSegmentSecondPoint The second point of the second segment
-    /// @param[in] adimensionalCrossProduct Compute the dimensionless cross product
+    /// @param[in] adimensionalCrossProduct Whether to compute the dimensionless cross product
     /// @param[in] projection The coordinate system projection
     /// @param[out] intersectionPoint The intersection point
     /// @param[out] crossProduct The cross product of the intersection
