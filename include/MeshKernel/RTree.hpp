@@ -112,7 +112,7 @@ namespace meshkernel
         [[nodiscard]] size_t GetQueryResultSize() const;
 
         /// @brief Gets the index of a sample in the query
-        [[nodiscard]] size_t GetQuerySampleIndex(size_t index) const;
+        [[nodiscard]] size_t GetQueryResult(size_t index) const;
 
     private:
         RTree2D m_rtree2D;

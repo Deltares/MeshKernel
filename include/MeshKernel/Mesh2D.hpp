@@ -31,7 +31,6 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/RTree.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 
 /// \namespace meshkernel

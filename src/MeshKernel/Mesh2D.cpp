@@ -882,7 +882,7 @@ void meshkernel::Mesh2D::MergeNodesInPolygon(const Polygons& polygon)
         {
             for (auto j = 0; j < nodesRtree.GetQueryResultSize(); j++)
             {
-                const auto nodeIndexInFilteredNodes = nodesRtree.GetQuerySampleIndex(j);
+                const auto nodeIndexInFilteredNodes = nodesRtree.GetQueryResult(j);
                 if (nodeIndexInFilteredNodes != i)
                 {
                     MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]);
