@@ -87,55 +87,49 @@ width="100%"}
 # The Operations file
 
 In the current implementation, several geometrical methods acting on
-arrays or simple data structures (e.g. Points) are collected in the
-Operation.cpp file. This choice was made for reusing such methods in
-several other classes. Operations include:
+arrays or simple types (e.g. Points) are collected in the
+Operation.cpp file. This choice was made made because some geometric operations are often re-used in several classes.
+Operations include:
 
 -   Vector dot product.
-
--   Resize and filling a vector with a default value.
 
 -   Find the indices in a vector equal to a certain value.
 
 -   Sort a vector returning its permutation array.
 
--   Root finding using the golden section search algorithm.
+-   Function root finding using the golden section search algorithm.
 
--   Performing coordinate transformations.
+-   Performing coordinate transformations (e.g. from cartesian to spherical).
 
 -   Inquire if a point is in a polygon.
 
--   The outer and inner products of two segments.
+-   Outer/inner products of two segments.
 
--   Compute the normal vector of a segment.
+-   Compute the normal vector of a segment originating from a specific point.
 
--   Compute the distances and the squared distances.
+-   Compute squared distances the distances between two points.
 
 -   Compute the circumcenter of a triangle.
 
--   Compute if two lines are crossing.
+-   Compute if two lines are crossing and the propreties of the intersection.
 
 -   Interpolating values using the averaging algorithm.
 
 All operations reported above supports cartesian, spherical, and
 spherical accurate coordinate systems.
 
-# The mesh class
+# The Mesh class
 
-The mesh class represents an unstructured mesh. When communicating with
-the client only unstructured meshes are used. Some algorithms generate
-curvilinear grids (see section 9), but these are converted to a mesh
-instance when communicating with the client. The mesh class has the
-following responsibilities:
+MeshKernel can handle 2d meshes and 1d meshes. Algorithms require cartain mappings to be available for both mesh1d and mesh2d, such as a mapping listing all edge indices connected to a particular node. 
+The methods computing these mappings are shared between Mesh2D and Mesh1D, and implemented in the Mesh base class.
+The mesh base class also contains other common data members, such as the node coordinate, the edges definitions, the face definitions and the mesh projection.
+The mesh base class has the following responsibilities:
 
 -   Construct the mesh faces from the nodes and edges and other mesh
     mappings required by all algorithms (Mesh::FindFaces).
-    Mesh::FindFaces is using recursion to find faces with up to 6 edges.
-    This is an improvement over the Fortran implementation, where
-    several functions were coded for each face type by repeating code
-    (triangular face, quadrilateral face, etc..).
+    Mesh::FindFaces is using recursion to find faces with up to 6 edges (meshkernel::maximumNumberOfEdgesPerFace).
 
--   Enabling mesh editing, namely:
+-   Supporting mesh editing, namely:
 
     -   Node merging
 
@@ -147,9 +141,8 @@ following responsibilities:
 
     -   Deleting edges
 
-    -   Merging nodes (merging two nodes placed at very close distance).
-
-    These algorithms can be separated into different classes.
+    -   Merging nodes (merging two nodes at meshkernel::mergingDistance). This algorithm use an r-tree for inquiring
+adjacent nodes, see later.
 
 -   Converting a curvilinear grid to an unstructured mesh (converting
     constructor).
@@ -157,18 +150,12 @@ following responsibilities:
 -   Holding the mesh projection (cartesian, spherical, or spherical
     accurate).
 
--   Making a quad mesh from a polygon or from parameters (this algorithm
-    can be separated into different classes).
+-   Making a quad mesh from a polygon or from parameters.
 
--   Making a triangular mesh from a polygon (this algorithm can be
-    separated to a different class).
+-   Making a triangular mesh from a polygon. This algorithm introduces a dependency on 
+the Richard Shewchuk Triangle.c library, added as an external componet in extern\triangle folder.
 
-This algorithm introduces a dependency on the Richard Shewchuk
-Triangle.c library. The mesh class stores a reference to an RTree
-instance. RTree is a class wrapping the boost::geometry::index::rtree
-code, implemented in SpatialTree.hpp. This is required for inquiring
-adjacent nodes in the merging algorithm. The public interface of the
-mesh class contains several algorithms modifying the mesh class members.
+The public interface of the mesh class contains several algorithms modifying the mesh class members.
 Most of them are trivial, and we refer to the doxygen api documentation.
 Others are documented below:
 
@@ -214,6 +201,30 @@ This algorithm removes triangles having the following properties:
 These triangles having the above properties are merged by collapsing the
 face nodes to the node having the minimum absolute cosine (e.g. the node
 where the internal angle is closer to 90 degrees).
+
+# The Mesh1D class
+
+Mesh1D is a base class derived from Mesh. 
+A mesh 1d is composed of a series of connected edges representing 1d real word features, such as pipes or a sewage network.
+
+# The Mesh2D class
+
+The mesh class represents an unstructured mesh. When communicating with
+the client only unstructured meshes are used. Some algorithms generate
+curvilinear grids (see section 9), but these are converted to a mesh
+instance when communicating with the client. 
+
+# The RTree class
+
+The mesh class stores two RTree class instances, used for inquiring the closest mesh nodes and edge to a point.
+RTree is a class wrapping the boost::geometry::index::rtree code, adding an interface for performing common queries such as 
+inquiring the closest point (`meshkernel::RTree::NearestNeighborsOnSquaredDistance`) or a vector of the nearest neighbours (`meshkernel::RTree::NearestNeighbors`).
+RTee has a `m_queryCache`, a vector used for colleting all the query results and avoid frequent re-allocations when the number of results changes.
+
+# The Contacts class
+
+The responsability of the contacts class 
+
 
 # The mesh OrthogonalizationAndSmoothing class
 
