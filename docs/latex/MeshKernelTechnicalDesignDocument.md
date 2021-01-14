@@ -42,10 +42,10 @@ the face nodes, the face edges, the faces mass centers, and the faces
 circumcenters. See [mesh](#chap:mesh){reference-type="ref"
 reference="chap:mesh"} for some more details.
 
-As shown in Figure [2.1](#fig:classDiagram){reference-type="ref"
-reference="fig:classDiagram"}, the library has an API namespace (`meshkernelapi`)
+MeshKernel has an API namespace (`meshkernelapi`)
 and a back-end namespace (`meshkernel`), where the classes implementing the algorithms 
-are included. `meshkernelapi` contains the library
+are included, as shown in Figure [2.1](#fig:classDiagram){reference-type="ref"
+reference="fig:classDiagram"}. `meshkernelapi` contains the library
 API methods and several structures are used for communicating with the clients. 
 These structures must be replicated in the client applications 
 and filled with appropriate values.
@@ -97,7 +97,7 @@ Operations include:
 
 -   Sort a vector returning its permutation array.
 
--   Function root finding using the golden section search algorithm.
+-   Finding the root of a function using the golden section search algorithm.
 
 -   Performing coordinate transformations (e.g. from cartesian to spherical).
 
