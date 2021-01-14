@@ -1,90 +1,90 @@
 # Introduction
 
-The MeshKernel library is a C`++` dynamic library that performs
-generation and manipulations of 2D grids. The library originates from
-the D-Flow FM Fortran code base (interactor). The code was re-written in
-C`++` for the following reasons:
+The MeshKernel library is a C++ dynamic library that performs generation and manipulations of 2D grids.
+The code was re-written from a FORTRAN code base to C++ for the following reasons:
 
--   Introduce some design in the existing algorithms by separating
-    concerns.
+-   Split the monolithic code base.   
+
+-   Separating concerns.
+
+-   Introduce encapsulation: from global data and global methods to object oriented design.
 
 -   Introduce unit testing.
 
 -   Enabling the visualization of the meshes during creation
     (interactivity).
 
--   Simplify the connection with C like languages, such C\#. C`++` and
-    C\# have the same array memory layout and pointers can be passed
+-   Simplify the connection with C like languages, such C#. C++ and
+    C# have the same array memory layout and pointers can be passed
     seamlessly, without the need for pointer conversion.
 
-This document describes the MeshKernel design
+This document describes the design of MeshKernel
 (chapter [2](#chap:design){reference-type="ref"
 reference="chap:design"}), and then the responsibilities of the main
 classes.
 
 # MeshKernel design {#chap:design}
 
-The design of a geometrical library is influenced by the choices made
-for the representation of the mesh entities. In MeshKernel an
+The choices made for the representation of the geometric entities have
+a strong influence on library design and performance. In MeshKernel an
 unstructured mesh is uniquely defined by two entities:
 
--   The nodes vector: represented using an std::vector\<Point\>, where
-    Points is a structure containing the point coordinates (cartesian or
+-   The nodes vector: represented using `std::vector<Point>`, where
+    `Point` is a structure containing the 2D coordinates of a point (cartesian or
     spherical).
 
--   The edges vector: represented using an std::vector\<std::
-    pair\<int,int\>\>, containing the start and the end index of the
-    edges in the Nodes vector.
+-   The edges vector: represented using an `std::vector<std::
+    pair<size_t,size_t>>`, containing the start and the end indices of the
+    edges in the node vector described above.
 
 All other mesh properties are computed from these two entities, such as
 the face nodes, the face edges, the faces mass centers, and the faces
-circumcenters. See section 5 for some more details.
+circumcenters. See [mesh](#chap:mesh){reference-type="ref"
+reference="chap:mesh"} for some more details.
 
-The library is separated in an API namespace (MeshKernelApi) used for
-communication with the client and a backend namespace (MeshKernel),
-where the classes implementing the algorithms are included
-([2.1](#fig:classDiagram){reference-type="ref"
-reference="fig:classDiagram"}). The API namespace contains the library
-API methods (MeshKernel.cpp) and several structures used for
-communicating with the clients. These structures are mirrored in the
-client application and filled with appropriate values.
+As shown in Figure [2.1](#fig:classDiagram){reference-type="ref"
+reference="fig:classDiagram"}, the library has an API namespace (`meshkernelapi`)
+and a back-end namespace (`meshkernel`), where the classes implementing the algorithms 
+are included. `meshkernelapi` contains the library
+API methods and several structures are used for communicating with the clients. 
+These structures must be replicated in the client applications 
+and filled with appropriate values.
 
-An example of the mesh refinement algorithm execution is shown in
+An example of library execution is shown in figure
 [2.2](#fig:sequenceDiagram){reference-type="ref"
 reference="fig:sequenceDiagram"}. When the client application creates a
-new mesh two API calls are required: in the first call (ggeo_new_mesh) a
-new entry in the meshInstances vector is pushed, in the second call
-(ggeo_set_state) the Mesh class is created and assigned to the entry of
-the meshInstance vector pushed before. Now the mesh is stored in the
-library and ready to be used by the algorithms.
+new mesh two API calls are required: in the first call (`mkernel_new_mesh`) a
+new entry is created in the `meshInstances` vector, and in the second call
+(`mkernel_set_state`) the entry is set using the nodes and edges information
+obtained from the client. After this call, the mesh with all computed mappings 
+is stored in memory and is ready to be used by the algorithms (the library keeps the mesh state).
 
-The client now calls the ggeo_refine_mesh_based_on_samples function. In
-the local scope of the function an instance of the MeshRefinement class
-is created, the Refine method executed and the resulting mesh saved in
-the meshInstances vector. Finally, the last state of the mesh is
-retrieved using the ggeo_get_mesh function, whereby all information
-required for rendering the new mesh (nodes, edges, and faces) are
-retrieved from the meshInstances vector and returned to the client.
+The client now calls the `mkernel_refine_mesh_based_on_samples` function. In
+the local scope of the `mkernel_refine_mesh_based_on_samples` function 
+an instance of the `MeshRefinement` class is created, the Refine method is executed and the 
+resulting mesh is saved in the `meshInstances` vector. 
+The client retrieves the last state of the mesh using the `mkernel_get_mesh function`, where all information
+required for rendering the new mesh (the nodes, the edges, and the faces) is copied 
+from the library state to flat arrays. This extra copy is required for clients that
+cannot communicate an array of structures at the API level (C# and C++ clients could potentially do this, FORTRAN clients not ).
 
 By using this design only the mesh instances are saved throughout the
-executions and all other algorithm classes (modifiers) are automatically
-destroyed when the algorithm execution is complete. Exceptions are the
-algorithms that support interactivity. In these cases, the algorithms
-are divided into several API calls, and their instances survive until an
-explicit "delete" API call.
+API calls and all other algorithm classes act as mesh modifiers, 
+and are destroyed automatically after the API call is completed. 
+Exceptions to this rule are the algorithms supporting interactivity.
+In these cases, the algorithms are divided into several API methods, 
+and their instances survive until an explicit "delete" method is invoked (e.g. `mkernel_orthogonalize_delete`).
 
 ![MeshKernel library simplified class diagram. Rectangles with right
 corners represent structures, rectangles with round corners represent
-classes and yellow rectangles represent collections of methods (e.g. the
-API interface or collections of static
-functions).](figures/MeshKernelClassDiagram_1.jpg){#fig:classDiagram
+classes and yellow rectangles represent namespaces.](figures/MeshKernelClassDiagram_1.jpg){#fig:classDiagram
 width="100%"}
 
 ![Sequence diagram for creating a new grid and performing mesh
 refinement.](figures/sequence_diagram_refinement.jpg){#fig:sequenceDiagram
 width="100%"}
 
-# The Operations file
+# The Operations file{#chap:operations}
 
 In the current implementation, several geometrical methods acting on
 arrays or simple types (e.g. Points) are collected in the
@@ -118,7 +118,7 @@ Operations include:
 All operations reported above supports cartesian, spherical, and
 spherical accurate coordinate systems.
 
-# The Mesh class
+# The Mesh class{#chap:mesh}
 
 MeshKernel can handle 2d meshes and 1d meshes. Algorithms require cartain mappings to be available for both mesh1d and mesh2d, such as a mapping listing all edge indices connected to a particular node. 
 The methods computing these mappings are shared between Mesh2D and Mesh1D, and implemented in the Mesh base class.
@@ -202,26 +202,26 @@ These triangles having the above properties are merged by collapsing the
 face nodes to the node having the minimum absolute cosine (e.g. the node
 where the internal angle is closer to 90 degrees).
 
-# The Mesh1D class
+# The Mesh1D class{#chap:mesh1d}
 
 Mesh1D is a base class derived from Mesh. 
 A mesh 1d is composed of a series of connected edges representing 1d real word features, such as pipes or a sewage network.
 
-# The Mesh2D class
+# The Mesh2D class{#chap:mesh2d}
 
 The mesh class represents an unstructured mesh. When communicating with
 the client only unstructured meshes are used. Some algorithms generate
 curvilinear grids (see section 9), but these are converted to a mesh
 instance when communicating with the client. 
 
-# The RTree class
+# The RTree class{#chap:rtree}
 
 The mesh class stores two RTree class instances, used for inquiring the closest mesh nodes and edge to a point.
 RTree is a class wrapping the boost::geometry::index::rtree code, adding an interface for performing common queries such as 
 inquiring the nearest neighbors inside a specified distance(`meshkernel::RTree::NearestNeighborsOnSquaredDistance`) or a vector of the nearest neighbors (`meshkernel::RTree::NearestNeighbors`).
 RTee has a `m_queryCache`, a vector used for collecting all query results and avoid frequent re-allocations when the number of results changes.
 
-# The Contacts class
+# The Contacts class{#chap:contacts}
 
 The responsibility of the contacts class is connecting a 1d mesh to a 2d mesh. The class has a reference to the 1d and 2d mesh that will be connected. 
 A connection is defined by the indices of the connected 1d node and 2d face. The following algorithms are available for 1d-2d connections:
@@ -244,7 +244,7 @@ If the answer is positive, a connection is generated between the face and the cl
 
 ![1d mesh connecting to 2d mesh using the ComputeSingleConnections algorithm. Connections are shown in red.](figures/ComputeMultipleConnections.jpg){#fig:ComputeMultipleConnections="100%"}
 
-# The mesh OrthogonalizationAndSmoothing class
+# The mesh OrthogonalizationAndSmoothing class{#chap:orthoandsmoothing}
 
 This class implements the mesh orthogonalization and smoothing algorithm
 as described in D-Flow FM technical manual (consult this manual for the
@@ -301,7 +301,7 @@ The execution flow of these functions is shown in Figure A1 of the
 Appendix. Additional details about these functions can be retrieved from
 the API documentation.
 
-# The MeshRefinement class
+# The MeshRefinement class{#chap:refinement}
 
 Mesh refinement is based on iteratively splitting the edges until the
 desired level of refinement or the maximum number of iterations is
@@ -334,14 +334,14 @@ the edges. At a high level, the mesh refinement is performed as follow:
 As with OrthogonalizationAndSmoothing, MeshRefinement modifies an
 existing mesh instance.
 
-# The spline class
+# The spline class{#chap:splines}
 
 The spline class stores the corner points of each spline. Besides the
 corner points, the derivatives at the corner points are also stored. The
 coordinates of the points between the corner points are computed in the
 static method Splines::Interpolate.
 
-# The CurvilinearGridFromSplines class
+# The CurvilinearGridFromSplines class{#chap:curvifromsplines}
 
 In this class, the algorithm to gradually develop a mesh from the
 centreline of the channel towards the boundaries is implemented. It is
@@ -402,7 +402,7 @@ was divided into separate API calls:
     the CurvilinearGridFromSplines instance used in the previous API
     calls.
 
-# The AveragingInterpolation class
+# The AveragingInterpolation class{#chap:averagingInterp}
 
 The averaging interpolation operates on three specific locations: Faces
 (m face mass centers), Nodes, and Edges(m edge centers). The idea is to
@@ -449,7 +449,7 @@ The algorithm operates as follow:
 -   For the Edges location, the interpolated values at the node are
     averaged.
 
-# The TriangulationInterpolation class
+# The TriangulationInterpolation class{#chap:triangInterp}
 
 As for averaging, the triangle interpolation operates at three specific
 locations: Faces, Nodes, and Edges. The idea is to triangulate the
@@ -486,7 +486,7 @@ spherical accurate projection occurs at low-level geometrical functions
 independent of the implementation details that occur at the level of the
 geometrical functions.
 
-# Appendix
+# Appendix{#chap:appendix}
 
 ![Sequence diagram for orthogonalization and
 smoothing.](figures/sequence_diagram_orthogonalization.jpg){width="100%"}
