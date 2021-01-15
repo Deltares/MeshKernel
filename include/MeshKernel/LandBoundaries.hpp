@@ -82,10 +82,10 @@ namespace meshkernel
         /// @param[in] initialize
         /// @param[in] nodes
         /// @param[in] numNodes
-        void AssignSegmentsToMeshNodes(size_t edgeIndex,
-                                       bool initialize,
-                                       std::vector<size_t>& nodes,
-                                       size_t numNodes);
+        void AssignLandBoundaryPolylineToMeshNodes(size_t edgeIndex,
+                                                   bool initialize,
+                                                   std::vector<size_t>& nodes,
+                                                   size_t numNodes);
 
         /// @brief Add new land boundary segment that connects two others (add_land)
         /// @param[in] nodesLoc
@@ -95,30 +95,24 @@ namespace meshkernel
                              size_t numNodesLoc,
                              size_t nodeIndex);
 
-        /// @brief Assigns to each mesh node a land boundary segment index ()
-        /// @param[in] landBoundarySegment The current landboundary segment
+        /// @brief Assigns to each mesh node a landBoundaryPolyline
+        /// @param[in] landBoundaryPolyline The current landboundary segment
         /// @param[in] meshBoundOnly Account only for mesh boundaries
         /// @param[out] numNodesInPath The number of mesh nodes for this path
         /// @param[out] numRejectedNodesInPath The number of rejected nodes in path
-        void MakePath(size_t landBoundarySegment,
-                      bool meshBoundOnly,
+        void MakePath(size_t landBoundaryPolyline,
                       size_t& numNodesInPath,
                       size_t& numRejectedNodesInPath);
 
-        /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current segmentIndex.
+        /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current landBoundaryPolyline.
         /// Is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
-        /// @param[in] segmentIndex
+        /// @param[in] landBoundaryPolyline
         /// @param[in] meshBoundOnly
         /// @param[out] leftIndex
         /// @param[out] rightIndex
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
-        void ComputeMeshNodeMask(size_t segmentIndex,
-                                 bool meshBoundOnly,
-                                 size_t& leftIndex,
-                                 size_t& rightIndex,
-                                 double& leftEdgeRatio,
-                                 double& rightEdgeRatio);
+        void ComputeMeshNodeMask(size_t landBoundaryPolyline);
 
         /// @brief Mask all face close to a land boundary, starting from a seed of others and growing from there (maskcells)
         /// @param[in] meshBoundOnly Account only for mesh boundary
@@ -129,13 +123,8 @@ namespace meshkernel
         /// @param[out] rightIndex
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
-        void MaskMeshFaceMask(bool meshBoundOnly,
-                              std::vector<size_t>& initialFaces,
-                              size_t segmentIndex,
-                              size_t& leftIndex,
-                              size_t& rightIndex,
-                              double& leftEdgeRatio,
-                              double& rightEdgeRatio);
+        void MaskMeshFaceMask(std::vector<size_t>& initialFaces,
+                              size_t landBoundaryPolyline);
 
         /// @brief Check if a mesh edge is close to a land boundary segment (linkcrossedbyland)
         /// @param[in] meshEdgeIndex
@@ -148,8 +137,7 @@ namespace meshkernel
         /// @param[out] rightEdgeRatio
         /// @param[out] landBoundaryNode
         [[nodiscard]] bool IsMeshEdgeCloseToLandBoundaries(size_t meshEdgeIndex,
-                                                           size_t landBoundaryIndex,
-                                                           bool meshBoundOnly,
+                                                           size_t landBoundaryPolyline,
                                                            size_t& landBoundaryNode);
 
         /// @brief Finds the start and end mesh node.
@@ -161,9 +149,7 @@ namespace meshkernel
         /// @param[in] rightEdgeRatio
         /// @param[out] startMeshNode
         /// @param[out] endMeshNode
-        void FindStartEndMeshNodes(size_t endLandBoundaryIndex,
-                                   size_t leftIndex,
-                                   size_t rightIndex,
+        void FindStartEndMeshNodes(size_t landBoundaryPolyline,
                                    double leftEdgeRatio,
                                    double rightEdgeRatio,
                                    size_t& startMeshNode,
@@ -187,18 +173,17 @@ namespace meshkernel
         /// The distance of each edge is the edge length multiplied by the distance from the land boundary
         /// @brief mesh
         /// @brief polygons
-        /// @brief landBoundarySegment
+        /// @brief landBoundaryPolyline
         /// @brief startLandBoundaryIndex
         /// @brief endLandBoundaryIndex
         /// @brief startMeshNode
         /// @brief meshBoundOnly
         /// @brief connectedNodes
         /// @returns
-        void ShortestPath(size_t landBoundarySegment,
+        void ShortestPath(size_t landBoundaryPolyline,
                           size_t startLandBoundaryIndex,
                           size_t endLandBoundaryIndex,
                           size_t startMeshNode,
-                          bool meshBoundOnly,
                           std::vector<size_t>& connectedNodes);
 
         /// @brief Compute the nearest node on the land boundary (toland)
@@ -244,6 +229,9 @@ namespace meshkernel
         const double m_closeWholeMeshFactor = 1.0;      // close - to - landboundary tolerance, measured in number of meshwidths
         const double m_minDistanceFromLandFactor = 2.0;
         double m_closeFactor = 5.0;
+
+        //findOnlyOuterMeshBoundary
+        bool m_findOnlyOuterMeshBoundary = false;
     };
 
 } // namespace meshkernel

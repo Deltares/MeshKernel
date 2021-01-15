@@ -16,7 +16,7 @@ target_include_directories(MeshKernelStatic PUBLIC "${PROJECT_SOURCE_DIR}/includ
 target_link_libraries(MeshKernelStatic LINK_PUBLIC ${Boost_LIBRARIES} triangle)
 
 # All users of this library will need at least C++11
-target_compile_features(MeshKernelStatic PUBLIC cxx_std_11)
+target_compile_features(MeshKernelStatic PUBLIC cxx_std_17)
 
 # IDEs should put the headers in a nice place
 source_group(
