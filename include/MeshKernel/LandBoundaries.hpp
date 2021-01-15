@@ -135,10 +135,9 @@ namespace meshkernel
         /// @param[out] rightIndex
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
-        /// @param[out] landBoundaryNode
-        [[nodiscard]] bool IsMeshEdgeCloseToLandBoundaries(size_t meshEdgeIndex,
-                                                           size_t landBoundaryPolyline,
-                                                           size_t& landBoundaryNode);
+        /// @return the closest land boundary node
+        [[nodiscard]] size_t IsMeshEdgeCloseToLandBoundaries(size_t meshEdgeIndex,
+                                                             size_t landBoundaryPolyline);
 
         /// @brief Finds the start and end mesh node.
         /// These are the nodes that are on a edge close to the land boundary segment (get_kstartend2)
@@ -150,8 +149,6 @@ namespace meshkernel
         /// @param[out] startMeshNode
         /// @param[out] endMeshNode
         void FindStartEndMeshNodes(size_t landBoundaryPolyline,
-                                   double leftEdgeRatio,
-                                   double rightEdgeRatio,
                                    size_t& startMeshNode,
                                    size_t& endMeshNode);
 
@@ -218,8 +215,6 @@ namespace meshkernel
 
         bool m_landMask = true;
         bool m_addLandboundaries = true;
-        size_t m_numFacesMasked = 0;
-        size_t m_maskDepth = 0;
 
         // caches
         std::vector<double> m_nodesMinDistances;
