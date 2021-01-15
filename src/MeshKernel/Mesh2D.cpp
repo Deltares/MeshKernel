@@ -882,7 +882,7 @@ void meshkernel::Mesh2D::MergeNodesInPolygon(const Polygons& polygon)
         {
             for (auto j = 0; j < nodesRtree.GetQueryResultSize(); j++)
             {
-                const auto nodeIndexInFilteredNodes = nodesRtree.GetQueryResult(j);
+                const auto nodeIndexInFilteredNodes = nodesRtree.GetQueryIndex(j);
                 if (nodeIndexInFilteredNodes != i)
                 {
                     MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]);
@@ -2058,14 +2058,12 @@ std::vector<size_t> meshkernel::Mesh2D::PointFaceIndices(const std::vector<Point
     return result;
 }
 
-bool meshkernel::Mesh2D::IsSegmentCrossingAFace(const Point& firstPoint,
-                                                const Point& secondPoint,
-                                                size_t& intersectedFace,
-                                                size_t& intersectedEdge) const
+std::tuple<size_t, size_t> meshkernel::Mesh2D::IsSegmentCrossingABoundaryEdge(const Point& firstPoint,
+                                                                              const Point& secondPoint) const
 {
     double intersectionRatio = std::numeric_limits<double>::max();
-    intersectedFace = sizetMissingValue;
-    intersectedEdge = sizetMissingValue;
+    size_t intersectedFace = sizetMissingValue;
+    size_t intersectedEdge = sizetMissingValue;
     auto isCrossing = false;
     for (auto e = 0; e < GetNumEdges(); ++e)
     {
@@ -2098,5 +2096,5 @@ bool meshkernel::Mesh2D::IsSegmentCrossingAFace(const Point& firstPoint,
         }
     }
 
-    return isCrossing;
+    return {intersectedFace, intersectedEdge};
 }

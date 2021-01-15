@@ -421,7 +421,7 @@ size_t meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
 
     if (resultSize > 0)
     {
-        return m_nodesRTree.GetQueryResult(0);
+        return m_nodesRTree.GetQueryIndex(0);
     }
 
     throw AlgorithmError("Mesh2D::GetNodeIndex: Could not find the node index close to a point.");
@@ -445,7 +445,7 @@ size_t meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
     auto const resultSize = m_edgesRTree.GetQueryResultSize();
     if (resultSize >= 1)
     {
-        const auto edgeIndex = m_edgesRTree.GetQueryResult(0);
+        const auto edgeIndex = m_edgesRTree.GetQueryIndex(0);
         return edgeIndex;
     }
 

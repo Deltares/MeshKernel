@@ -95,7 +95,7 @@ size_t meshkernel::RTree::GetQueryResultSize() const
     return m_queryCache.size();
 }
 
-size_t meshkernel::RTree::GetQueryResult(size_t index) const
+size_t meshkernel::RTree::GetQueryIndex(size_t index) const
 {
     return m_queryIndices[index];
 }

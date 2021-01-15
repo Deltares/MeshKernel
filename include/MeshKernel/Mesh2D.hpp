@@ -31,6 +31,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 
 /// \namespace meshkernel
@@ -261,7 +262,7 @@ namespace meshkernel
         /// @param intersectedFace The intersected face index
         /// @param intersectedEdge The intersected edge index
         /// @return True if the segment is crossing a face
-        [[nodiscard]] bool IsSegmentCrossingAFace(const Point& firstPoint, const Point& secondPoint, size_t& intersectedFace, size_t& intersectedEdge) const;
+        [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
         // vectors for communicating with the client
         std::vector<double> m_nodex;               ///< The nodes x-coordinate

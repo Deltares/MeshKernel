@@ -52,16 +52,15 @@ namespace meshkernel
             WholeMesh = 4
         };
 
-        /// @brief Default Ctor
-        /// @brief landBoundary
-        /// @brief mesh
-        /// @brief polygons
-        /// @returns
+        /// @brief Default constructor
+        /// @brief landBoundary The points describing the landboundaries
+        /// @brief mesh The 2d mesh
+        /// @brief polygons Account for land boundaries within the polygon
         LandBoundaries(const std::vector<Point>& landBoundary,
                        std::shared_ptr<Mesh2D> mesh,
                        std::shared_ptr<Polygons> polygons);
 
-        /// @brief The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary (admin_landboundary_segments)
+        /// @brief The land boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments)
         void Administrate();
 
         /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline)
@@ -97,10 +96,10 @@ namespace meshkernel
                              size_t nodeIndex);
 
         /// @brief Assigns to each mesh node a land boundary segment index ()
-        /// @param[in] landBoundarySegment
-        /// @param[in] meshBoundOnly
-        /// @param[out] numNodesInPath
-        /// @param[out] numRejectedNodesInPath
+        /// @param[in] landBoundarySegment The current landboundary segment
+        /// @param[in] meshBoundOnly Account only for mesh boundaries
+        /// @param[out] numNodesInPath The number of mesh nodes for this path
+        /// @param[out] numRejectedNodesInPath The number of rejected nodes in path
         void MakePath(size_t landBoundarySegment,
                       bool meshBoundOnly,
                       size_t& numNodesInPath,
@@ -110,41 +109,36 @@ namespace meshkernel
         /// Is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
         /// @param[in] segmentIndex
         /// @param[in] meshBoundOnly
-        /// @param[in] startLandBoundaryIndex
-        /// @param[in] endLandBoundaryIndex
         /// @param[out] leftIndex
         /// @param[out] rightIndex
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
-        void ComputeMask(size_t segmentIndex,
-                         bool meshBoundOnly,
-                         size_t startLandBoundaryIndex,
-                         size_t endLandBoundaryIndex,
-                         size_t& leftIndex,
-                         size_t& rightIndex,
-                         double& leftEdgeRatio,
-                         double& rightEdgeRatio);
+        void ComputeMeshNodeMask(size_t segmentIndex,
+                                 bool meshBoundOnly,
+                                 size_t& leftIndex,
+                                 size_t& rightIndex,
+                                 double& leftEdgeRatio,
+                                 double& rightEdgeRatio);
 
-        /// @brief Mask the faces that are intersected by the land boundary (maskcells)
-        /// @param[in] meshBoundOnly
-        /// @param[in] landBoundaryFaces
-        /// @param[in] startNodeLandBoundaryIndex
-        /// @param[in] endNodeLandBoundaryindex
+        /// @brief Mask all face close to a land boundary, starting from a seed of others and growing from there (maskcells)
+        /// @param[in] meshBoundOnly Account only for mesh boundary
+        /// @param[in] initialFaces The initial face seed
+        /// @param[in] startNodeLandBoundaryIndex The start index of the current land boundary node to account for
+        /// @param[in] endNodeLandBoundaryindex The end index of the land boundary node to account for
         /// @param[out] leftIndex
         /// @param[out] rightIndex
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
-        void MaskFaces(bool meshBoundOnly,
-                       std::vector<size_t>& landBoundaryFaces,
-                       size_t startNodeLandBoundaryIndex,
-                       size_t endNodeLandBoundaryindex,
-                       size_t& leftIndex,
-                       size_t& rightIndex,
-                       double& leftEdgeRatio,
-                       double& rightEdgeRatio);
+        void MaskMeshFaceMask(bool meshBoundOnly,
+                              std::vector<size_t>& initialFaces,
+                              size_t segmentIndex,
+                              size_t& leftIndex,
+                              size_t& rightIndex,
+                              double& leftEdgeRatio,
+                              double& rightEdgeRatio);
 
         /// @brief Check if a mesh edge is close to a land boundary segment (linkcrossedbyland)
-        /// @param[in] edgeIndex
+        /// @param[in] meshEdgeIndex
         /// @param[in] startNodeLandBoundaryIndex
         /// @param[in] endNodeLandBoundaryIndex
         /// @param[in] meshBoundOnly
@@ -153,14 +147,9 @@ namespace meshkernel
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
         /// @param[out] landBoundaryNode
-        [[nodiscard]] bool IsMeshEdgeCloseToLandBoundaries(size_t edgeIndex,
-                                                           size_t startNodeLandBoundaryIndex,
-                                                           size_t endNodeLandBoundaryIndex,
+        [[nodiscard]] bool IsMeshEdgeCloseToLandBoundaries(size_t meshEdgeIndex,
+                                                           size_t landBoundaryIndex,
                                                            bool meshBoundOnly,
-                                                           size_t& leftIndex,
-                                                           size_t& rightIndex,
-                                                           double& leftEdgeRatio,
-                                                           double& rightEdgeRatio,
                                                            size_t& landBoundaryNode);
 
         /// @brief Finds the start and end mesh node.
@@ -230,23 +219,16 @@ namespace meshkernel
                                      size_t& nearestLandBoundaryNodeIndex,
                                      double& edgeRatio);
 
-        /// @brief (cellcrossedbyland)
-        /// @param face
-        /// @param startLandBoundaryIndex
-        /// @param endLandBoundaryIndex
-        [[nodiscard]] bool IsFaceCrossedByLandBoundaries(size_t face,
-                                                         size_t startLandBoundaryIndex,
-                                                         size_t endLandBoundaryIndex);
-
-        std::shared_ptr<Mesh2D> m_mesh;                      // A pointer to mesh
-        std::shared_ptr<Polygons> m_polygons;              // A pointer to polygons
-        std::vector<Point> m_nodes;                        // XLAN, YLAN, ZLAN
-        std::vector<Point> m_polygonNodesCache;            // array of points (e.g. points of a face)
-        std::vector<std::vector<size_t>> m_segmentIndices; // lanseg_startend
-        std::vector<std::vector<double>> m_nodesLand;      // node to land boundary segment mapping
+        std::shared_ptr<Mesh2D> m_mesh;                         // A pointer to mesh
+        std::shared_ptr<Polygons> m_polygons;                   // A pointer to polygons
+        std::vector<Point> m_nodes;                             // XLAN, YLAN, ZLAN
+        std::vector<Point> m_polygonNodesCache;                 // array of points (e.g. points of a face)
+        std::vector<std::vector<size_t>> m_validLandBoundaries; // lanseg_startend
+        std::vector<std::vector<double>> m_nodesLand;           // node to land boundary segment mapping
+        std::vector<size_t> m_nodeFaceIndices;                  // For each node, the indices of the faces including them
 
         std::vector<size_t> m_nodeMask; // nodemask, masking the net nodes
-        std::vector<size_t> m_faceMask; // masking faces
+        std::vector<bool> m_faceMask;   // masking faces
         std::vector<size_t> m_edgeMask; // masking edges
 
         bool m_landMask = true;

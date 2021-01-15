@@ -57,13 +57,13 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
         }
 
         // connect faces crossing the right projected segment
-        Connect1dNodesWithCrossingFace(n, 5.0);
+        Connect1dNodesWithCrossingFaces(n, 5.0);
         // connect faces crossing the left projected segment
-        Connect1dNodesWithCrossingFace(n, -5.0);
+        Connect1dNodesWithCrossingFaces(n, -5.0);
     }
 };
 
-void meshkernel::Contacts::Connect1dNodesWithCrossingFace(size_t node, double distanceFactor)
+void meshkernel::Contacts::Connect1dNodesWithCrossingFaces(size_t node, double distanceFactor)
 {
 
     const auto left1dEdge = m_mesh1d->m_nodesEdges[node][0];
@@ -76,11 +76,10 @@ void meshkernel::Contacts::Connect1dNodesWithCrossingFace(size_t node, double di
     const auto edgeLength = ComputeDistance(m_mesh1d->m_nodes[otherLeft1dNode], m_mesh1d->m_nodes[otherRight1dNode], m_mesh1d->m_projection);
 
     const auto projectedNode = m_mesh1d->m_nodes[node] + normalVector * edgeLength * distanceFactor;
-    size_t intersectedFace;
-    size_t intersectedEdge;
 
-    const auto isConnectionIntersectingAFace = m_mesh2d->IsSegmentCrossingAFace(m_mesh1d->m_nodes[node], projectedNode, intersectedFace, intersectedEdge);
-    if (isConnectionIntersectingAFace &&
+    const auto [intersectedFace, intersectedEdge] = m_mesh2d->IsSegmentCrossingABoundaryEdge(m_mesh1d->m_nodes[node], projectedNode);
+    if (intersectedFace != sizetMissingValue &&
+        intersectedEdge != sizetMissingValue &&
         !IsConnectionIntersectingMesh1d(node, intersectedFace) &&
         !IsContactIntersectingContact(node, intersectedFace))
     {
@@ -186,7 +185,7 @@ void meshkernel::Contacts::ComputeMultipleConnections()
         // for each face determine if it is crossing the current 1d edge
         for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
         {
-            const auto face = faceCircumcentersRTree.GetQueryResult(f);
+            const auto face = faceCircumcentersRTree.GetQueryIndex(f);
 
             // the face is already connected to a 1d node, nothing to do
             if (isFaceAlreadyConnected[face])

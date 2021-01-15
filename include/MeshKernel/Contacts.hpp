@@ -94,6 +94,6 @@ namespace meshkernel
         /// @brief Connect a 1d node with the face crossed by the projected normal originating from the node itself
         /// @param[in] node The 1d node index
         /// @param[in] distanceFactor The factor determining the length and the direction of the projected normal (positive right normal, negative left normal)
-        void Connect1dNodesWithCrossingFace(size_t node, double distanceFactor);
+        void Connect1dNodesWithCrossingFaces(size_t node, double distanceFactor);
     };
 } // namespace meshkernel

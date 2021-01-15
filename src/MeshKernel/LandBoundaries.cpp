@@ -51,13 +51,15 @@ namespace meshkernel
         }
     }
 
-    // TODO:  Why is splitting in two segments required?
     void LandBoundaries::Administrate()
     {
         if (m_nodes.empty())
         {
             return;
         }
+
+        // Computes the land boundary nodes inside a polygon
+        m_nodeFaceIndices = m_mesh->PointFaceIndices(m_nodes);
 
         // do not consider the landboundary nodes outside the polygon
         std::vector<bool> nodeMask(m_nodes.size() - 1, false);
@@ -81,7 +83,7 @@ namespace meshkernel
         const std::vector<Point> polygonNodes;
         const auto meshBoundaryPolygon = m_mesh->MeshBoundaryToPolygon(polygonNodes);
 
-        // mask all landboundary nodes close to the mesh boundary (distanceFromMeshNode < minDistance)
+        // mask all land boundary nodes close to the mesh boundary (distanceFromMeshNode < minDistance)
         for (auto n = 0; n < m_nodes.size() - 1; n++)
         {
             if (!nodeMask[n] || meshBoundaryPolygon.empty())
@@ -107,8 +109,8 @@ namespace meshkernel
                 const double minDistance = m_closeFactor * edgeLength;
 
                 Point normalPoint;
-                double rlout;
-                const double distanceFromMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, m_mesh->m_projection, normalPoint, rlout);
+                double ratio;
+                const double distanceFromMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, m_mesh->m_projection, normalPoint, ratio);
 
                 if (distanceFromMeshNode <= minDistance)
                 {
@@ -123,28 +125,31 @@ namespace meshkernel
             }
         }
 
-        // find the start/end node of the landboundaries. Emplace back them in m_segmentIndices if the land-boundary segment is close to a mesh node
+        // find the start/end node of the land boundaries.
+        // Emplace back them in m_validLandBoundaries if the land-boundary segment is close to a mesh node
+        // TODO:  Why is splitting in two segments required?
         const auto indices = FindIndices(m_nodes, 0, m_nodes.size(), doubleMissingValue);
-        m_segmentIndices.reserve(indices.size());
+        m_validLandBoundaries.reserve(indices.size());
         for (const auto& index : indices)
         {
+            // if the start node has a valid mask
             if (nodeMask[index[0]])
             {
-                m_segmentIndices.emplace_back(index);
+                m_validLandBoundaries.emplace_back(index);
             }
         }
 
         // Generate two segments for closed land boundaries
-        const auto numSegmentIndicesBeforeSplitting = m_segmentIndices.size();
+        const auto numSegmentIndicesBeforeSplitting = m_validLandBoundaries.size();
         for (auto i = 0; i < numSegmentIndicesBeforeSplitting; i++)
         {
-            const auto startSegmentIndex = m_segmentIndices[i][0];
-            const auto endSegmentIndex = m_segmentIndices[i][1];
+            const auto startSegmentIndex = m_validLandBoundaries[i][0];
+            const auto endSegmentIndex = m_validLandBoundaries[i][1];
             if (endSegmentIndex - startSegmentIndex > 1)
             {
-                const auto split = size_t(startSegmentIndex + (endSegmentIndex - startSegmentIndex) / 2);
-                m_segmentIndices[i][1] = split;
-                m_segmentIndices.emplace_back(std::initializer_list<size_t>{split, endSegmentIndex});
+                const auto split = static_cast<size_t>(startSegmentIndex + (endSegmentIndex - startSegmentIndex) / 2);
+                m_validLandBoundaries[i][1] = split;
+                m_validLandBoundaries.emplace_back(std::initializer_list<size_t>{split, endSegmentIndex});
             }
         }
     };
@@ -168,13 +173,13 @@ namespace meshkernel
         Administrate();
 
         m_nodeMask.resize(m_mesh->GetNumNodes(), sizetMissingValue);
-        m_faceMask.resize(m_mesh->GetNumFaces(), sizetMissingValue);
+        m_faceMask.resize(m_mesh->GetNumFaces(), false);
         m_edgeMask.resize(m_mesh->GetNumEdges(), sizetMissingValue);
         m_meshNodesLandBoundarySegments.resize(m_mesh->GetNumNodes(), sizetMissingValue);
         m_nodesMinDistances.resize(m_mesh->GetNumNodes(), doubleMissingValue);
 
-        // loop over the segments of the land boundary and make assign each node to the land boundary segment index
-        for (auto landBoundarySegment = 0; landBoundarySegment < m_segmentIndices.size(); landBoundarySegment++)
+        // Loop over the segments of the land boundary and assign each node to the land boundary segment index
+        for (auto landBoundarySegment = 0; landBoundarySegment < m_validLandBoundaries.size(); landBoundarySegment++)
         {
             size_t numPaths = 0;
             size_t numRejectedPaths = 0;
@@ -305,9 +310,9 @@ namespace meshkernel
 
                     // find the segment index of the found point
                     size_t landboundarySegmentIndex = std::numeric_limits<size_t>::max();
-                    for (auto s = 0; s < m_segmentIndices.size(); s++)
+                    for (auto s = 0; s < m_validLandBoundaries.size(); s++)
                     {
-                        if (nearestLandBoundaryNodeIndex >= m_segmentIndices[s][0] && nearestLandBoundaryNodeIndex < m_segmentIndices[s][1])
+                        if (nearestLandBoundaryNodeIndex >= m_validLandBoundaries[s][0] && nearestLandBoundaryNodeIndex < m_validLandBoundaries[s][1])
                         {
                             landboundarySegmentIndex = s;
                             break;
@@ -319,13 +324,13 @@ namespace meshkernel
                         throw AlgorithmError("LandBoundaries::AssignSegmentsToMeshNodes: No segment index found: cannot assign segment to mesh nodes.");
                     }
 
-                    if ((nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][0] && edgeRatio < 0.0) ||
-                        (nearestLandBoundaryNodeIndex == m_segmentIndices[landboundarySegmentIndex][1] - 1 && edgeRatio > 1.0))
+                    if ((nearestLandBoundaryNodeIndex == m_validLandBoundaries[landboundarySegmentIndex][0] && edgeRatio < 0.0) ||
+                        (nearestLandBoundaryNodeIndex == m_validLandBoundaries[landboundarySegmentIndex][1] - 1 && edgeRatio > 1.0))
                     {
                         if (m_addLandboundaries)
                         {
                             AddLandBoundary(nodesLoc, numNodesLoc, lastVisitedNode);
-                            m_meshNodesLandBoundarySegments[meshNode] = m_segmentIndices.size() - 1; //last added ;and boundary
+                            m_meshNodesLandBoundarySegments[meshNode] = m_validLandBoundaries.size() - 1; //last added ;and boundary
                         }
                     }
                     else
@@ -351,15 +356,15 @@ namespace meshkernel
         const auto startSegmentIndex = m_meshNodesLandBoundarySegments[nodesLoc[0]];
         const auto endSegmentIndex = m_meshNodesLandBoundarySegments[nodesLoc[numNodesLoc]];
 
-        if (startSegmentIndex == sizetMissingValue || startSegmentIndex >= m_segmentIndices.size() ||
-            endSegmentIndex == sizetMissingValue || endSegmentIndex >= m_segmentIndices.size())
+        if (startSegmentIndex == sizetMissingValue || startSegmentIndex >= m_validLandBoundaries.size() ||
+            endSegmentIndex == sizetMissingValue || endSegmentIndex >= m_validLandBoundaries.size())
         {
             throw std::invalid_argument("LandBoundaries::AddLandBoundary: Invalid segment index.");
         }
 
         // find start/end
-        auto startNode = m_segmentIndices[startSegmentIndex][0];
-        auto endNode = m_segmentIndices[startSegmentIndex][1];
+        auto startNode = m_validLandBoundaries[startSegmentIndex][0];
+        auto endNode = m_validLandBoundaries[startSegmentIndex][1];
 
         Point newNodeLeft;
         if (ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[startNode], m_mesh->m_projection) <= ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[endNode], m_mesh->m_projection))
@@ -379,8 +384,8 @@ namespace meshkernel
         else
         {
             // find start/end
-            startNode = m_segmentIndices[endSegmentIndex][0];
-            endNode = m_segmentIndices[endSegmentIndex][1];
+            startNode = m_validLandBoundaries[endSegmentIndex][0];
+            endNode = m_validLandBoundaries[endSegmentIndex][1];
             if (ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[startNode], m_mesh->m_projection) <= ComputeSquaredDistance(m_mesh->m_nodes[nodeIndex], m_nodes[endNode], m_mesh->m_projection))
             {
                 newNodeRight = m_nodes[startNode];
@@ -398,7 +403,7 @@ namespace meshkernel
         m_nodes.emplace_back(Point{doubleMissingValue, doubleMissingValue});
 
         // Update segment indices
-        m_segmentIndices.push_back(std::initializer_list<size_t>{m_nodes.size() - 3, m_nodes.size() - 2});
+        m_validLandBoundaries.push_back(std::initializer_list<size_t>{m_nodes.size() - 3, m_nodes.size() - 2});
     }
 
     void LandBoundaries::MakePath(size_t landBoundarySegment,
@@ -411,8 +416,8 @@ namespace meshkernel
             return;
         }
 
-        const auto startLandBoundaryIndex = m_segmentIndices[landBoundarySegment][0];
-        const auto endLandBoundaryIndex = m_segmentIndices[landBoundarySegment][1];
+        const auto startLandBoundaryIndex = m_validLandBoundaries[landBoundarySegment][0];
+        const auto endLandBoundaryIndex = m_validLandBoundaries[landBoundarySegment][1];
 
         if (startLandBoundaryIndex >= m_nodes.size() || startLandBoundaryIndex >= endLandBoundaryIndex)
             throw std::invalid_argument("LandBoundaries::MakePath: Invalid boundary index.");
@@ -423,14 +428,12 @@ namespace meshkernel
         auto leftIndex = endLandBoundaryIndex - 1;
         auto rightIndex = startLandBoundaryIndex;
 
-        ComputeMask(landBoundarySegment,
-                    meshBoundOnly,
-                    startLandBoundaryIndex,
-                    endLandBoundaryIndex,
-                    leftIndex,
-                    rightIndex,
-                    leftEdgeRatio,
-                    rightEdgeRatio);
+        ComputeMeshNodeMask(landBoundarySegment,
+                            meshBoundOnly,
+                            leftIndex,
+                            rightIndex,
+                            leftEdgeRatio,
+                            rightEdgeRatio);
 
         size_t startMeshNode = sizetMissingValue;
         size_t endMeshNode = sizetMissingValue;
@@ -471,8 +474,8 @@ namespace meshkernel
             {
                 // Multiple boundary segments: take the nearest
                 const auto previousLandBoundarySegment = m_meshNodesLandBoundarySegments[currentNode];
-                const auto previousStartMeshNode = m_segmentIndices[previousLandBoundarySegment][0];
-                const auto previousEndMeshNode = m_segmentIndices[previousLandBoundarySegment][1];
+                const auto previousStartMeshNode = m_validLandBoundaries[previousLandBoundarySegment][0];
+                const auto previousEndMeshNode = m_validLandBoundaries[previousLandBoundarySegment][1];
                 double previousMinDistance;
 
                 NearestLandBoundaryNode(m_mesh->m_projection, m_mesh->m_nodes[currentNode], previousStartMeshNode, previousEndMeshNode,
@@ -557,96 +560,68 @@ namespace meshkernel
         }
     }
 
-    void LandBoundaries::ComputeMask(size_t segmentIndex,
-                                     bool meshBoundOnly,
-                                     size_t startLandBoundaryIndex,
-                                     size_t endLandBoundaryIndex,
-                                     size_t& leftIndex,
-                                     size_t& rightIndex,
-                                     double& leftEdgeRatio,
-                                     double& rightEdgeRatio)
+    void LandBoundaries::ComputeMeshNodeMask(size_t segmentIndex,
+                                             bool meshBoundOnly,
+                                             size_t& leftIndex,
+                                             size_t& rightIndex,
+                                             double& leftEdgeRatio,
+                                             double& rightEdgeRatio)
     {
         if (m_nodes.empty())
         {
             return;
         }
 
-        std::fill(m_nodeMask.begin(), m_nodeMask.end(), sizetMissingValue);
+        const auto startLandBoundaryIndex = m_validLandBoundaries[segmentIndex][0];
+        const auto endLandBoundaryIndex = m_validLandBoundaries[segmentIndex][1];
 
-        // check if any of the land boundary node is inside a m_mesh face
-        bool nodeInFace = false;
+        // Try to find a face crossed by the current land boundary polyline:
+        // 1. One of the land boundary nodes is inside a face
+        // 2. Or one of the land boundary segments is crossing a boundary mesh edge
         size_t crossedFaceIndex = sizetMissingValue;
         for (auto i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
         {
-            for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
+            crossedFaceIndex = m_nodeFaceIndices[i];
+            if (crossedFaceIndex != sizetMissingValue)
             {
-                const auto numFaceNodes = m_mesh->GetNumFaceEdges(f);
-
-                if (numFaceNodes == 0)
-                    continue;
-
-                m_mesh->ComputeFaceClosedPolygon(f, m_polygonNodesCache);
-
-                nodeInFace = IsPointInPolygonNodes(m_nodes[i], m_polygonNodesCache, m_mesh->m_projection);
-                if (nodeInFace)
-                {
-                    crossedFaceIndex = f;
-                    break;
-                }
-            }
-
-            if (nodeInFace)
                 break;
-        }
+            }
 
-        // try to find a boundary cell that is crossed by the land boundary segment
-        if (!nodeInFace)
-        {
-            crossedFaceIndex = sizetMissingValue;
-            for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
+            auto [face, edge] = m_mesh->IsSegmentCrossingABoundaryEdge(m_nodes[i], m_nodes[i + 1]);
+            crossedFaceIndex = face;
+            if (crossedFaceIndex != sizetMissingValue)
             {
-                if (!m_mesh->IsEdgeOnBoundary(e))
-                    continue;
-
-                const bool isCellCrossed = IsFaceCrossedByLandBoundaries(m_mesh->m_edgesFaces[e][0],
-                                                                         startLandBoundaryIndex,
-                                                                         endLandBoundaryIndex);
-
-                if (isCellCrossed)
-                {
-                    crossedFaceIndex = m_mesh->m_edgesFaces[e][0];
-                    break;
-                }
+                break;
             }
         }
 
+        std::fill(m_nodeMask.begin(), m_nodeMask.end(), sizetMissingValue);
         if (m_landMask)
         {
-            std::fill(m_faceMask.begin(), m_faceMask.end(), sizetMissingValue);
+            std::fill(m_faceMask.begin(), m_faceMask.end(), false);
             std::fill(m_edgeMask.begin(), m_edgeMask.end(), sizetMissingValue);
             //m_faceMask assumes crossedFace has already been done.
             if (crossedFaceIndex != sizetMissingValue && crossedFaceIndex < m_mesh->GetNumFaces())
             {
-                m_faceMask[crossedFaceIndex] = 1;
+                m_faceMask[crossedFaceIndex] = true;
             }
 
             m_numFacesMasked = 0;
             m_maskDepth = 0;
 
             std::vector<size_t> landBoundaryFaces{crossedFaceIndex};
-            MaskFaces(meshBoundOnly,
-                      landBoundaryFaces,
-                      startLandBoundaryIndex,
-                      endLandBoundaryIndex,
-                      leftIndex,
-                      rightIndex,
-                      leftEdgeRatio,
-                      rightEdgeRatio);
+            MaskMeshFaceMask(meshBoundOnly,
+                             landBoundaryFaces,
+                             segmentIndex,
+                             leftIndex,
+                             rightIndex,
+                             leftEdgeRatio,
+                             rightEdgeRatio);
 
             // Mask all nodes of the masked faces
             for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
             {
-                if (m_faceMask[f] == 1)
+                if (m_faceMask[f])
                 {
                     for (auto n = 0; n < m_mesh->GetNumFaceEdges(f); n++)
                     {
@@ -674,23 +649,22 @@ namespace meshkernel
         }
     }
 
-    void LandBoundaries::MaskFaces(bool meshBoundOnly,
-                                   std::vector<size_t>& landBoundaryFaces,
-                                   size_t startNodeLandBoundaryIndex,
-                                   size_t endNodeLandBoundaryindex,
-                                   size_t& leftIndex,
-                                   size_t& rightIndex,
-                                   double& leftEdgeRatio,
-                                   double& rightEdgeRatio)
+    void LandBoundaries::MaskMeshFaceMask(bool meshBoundOnly,
+                                          std::vector<size_t>& initialFaces,
+                                          size_t segmentIndex,
+                                          size_t& leftIndex,
+                                          size_t& rightIndex,
+                                          double& leftEdgeRatio,
+                                          double& rightEdgeRatio)
     {
         if (m_nodes.empty())
         {
             return;
         }
 
-        size_t numNextFaces = 0;
-        std::vector<size_t> nextFaces(landBoundaryFaces.size(), sizetMissingValue);
-        for (const auto& face : landBoundaryFaces)
+        std::vector<size_t> nextFaces;
+        nextFaces.reserve(initialFaces.size());
+        for (const auto& face : initialFaces)
         {
             // no face was crossed by the land boundary: mask boundary faces only
             // these are the faces that are close (up to a certain tolerance) by a land boundary
@@ -698,23 +672,17 @@ namespace meshkernel
             {
                 for (auto e = 0; e < m_mesh->GetNumEdges(); e++)
                 {
-                    if (!m_mesh->IsEdgeOnBoundary(e) || m_mesh->m_edges[e].first == sizetMissingValue || m_mesh->m_edges[e].second == sizetMissingValue)
+                    if (!m_mesh->IsEdgeOnBoundary(e))
+                    {
                         continue;
+                    }
 
                     bool isClose = false;
-                    size_t landBoundaryNode = 0;
-                    const auto otherFace = m_mesh->m_edgesFaces[e][0];
-                    for (const auto& edge : m_mesh->m_facesEdges[otherFace])
+                    const auto currentFace = m_mesh->m_edgesFaces[e][0];
+                    for (const auto& edge : m_mesh->m_facesEdges[currentFace])
                     {
-                        isClose = IsMeshEdgeCloseToLandBoundaries(edge,
-                                                                  startNodeLandBoundaryIndex,
-                                                                  endNodeLandBoundaryindex,
-                                                                  meshBoundOnly,
-                                                                  leftIndex,
-                                                                  rightIndex,
-                                                                  leftEdgeRatio,
-                                                                  rightEdgeRatio,
-                                                                  landBoundaryNode);
+                        size_t landBoundaryNode = 0;
+                        isClose = IsMeshEdgeCloseToLandBoundaries(edge, segmentIndex, meshBoundOnly, landBoundaryNode);
 
                         if (isClose)
                         {
@@ -724,7 +692,7 @@ namespace meshkernel
 
                     if (isClose)
                     {
-                        m_faceMask[otherFace] = 1;
+                        m_faceMask[currentFace] = true;
                     }
                 }
             }
@@ -732,100 +700,83 @@ namespace meshkernel
             {
                 // face is crossed
                 if (m_mesh->GetNumFaces() < numNodesInTriangle)
+                {
                     continue;
+                }
 
-                size_t isFaceFound = 0;
-
+                bool isFaceFound = false;
                 for (const auto& currentEdge : m_mesh->m_facesEdges[face])
                 {
                     // is a boundary edge, continue
                     if (m_mesh->IsEdgeOnBoundary(currentEdge))
+                    {
                         continue;
+                    }
 
                     const auto otherFace = face == m_mesh->m_edgesFaces[currentEdge][0] ? m_mesh->m_edgesFaces[currentEdge][1] : m_mesh->m_edgesFaces[currentEdge][0];
 
                     // already masked
-                    if (m_faceMask[otherFace] != sizetMissingValue)
-                        continue;
-
-                    for (const auto& edgeOtherFace : m_mesh->m_facesEdges[otherFace])
+                    if (m_faceMask[otherFace])
                     {
-                        if (m_edgeMask[edgeOtherFace] == 1)
+                        continue;
+                    }
+
+                    for (const auto& edge : m_mesh->m_facesEdges[otherFace])
+                    {
+                        if (m_edgeMask[edge] == 1)
                         {
                             // previously visited crossed edge
-                            isFaceFound = 1;
-                        }
-                        else if (m_edgeMask[edgeOtherFace] == 0)
-                        {
-                            // previously visited uncrossed edge - check next (otherFace) edge
+                            isFaceFound = true;
                             continue;
                         }
-                        else
+                        if (m_edgeMask[edge] == 0)
                         {
-                            // visited edge
-                            m_edgeMask[edgeOtherFace] = 0;
-                            size_t landBoundaryNode = 0;
-                            const bool isClose = IsMeshEdgeCloseToLandBoundaries(edgeOtherFace,
-                                                                                 startNodeLandBoundaryIndex,
-                                                                                 endNodeLandBoundaryindex,
-                                                                                 meshBoundOnly,
-                                                                                 leftIndex,
-                                                                                 rightIndex,
-                                                                                 leftEdgeRatio,
-                                                                                 rightEdgeRatio,
-                                                                                 landBoundaryNode);
+                            // previously visited uncrossed edge
+                            continue;
+                        }
 
-                            if (isClose)
-                            {
-                                m_edgeMask[edgeOtherFace] = 1;
-                                isFaceFound = 1;
-                            }
+                        // visited edge
+                        m_edgeMask[edge] = 0;
+                        size_t landBoundaryNode = 0;
+                        const bool isClose = IsMeshEdgeCloseToLandBoundaries(edge, segmentIndex, meshBoundOnly, landBoundaryNode);
+
+                        if (isClose)
+                        {
+                            m_edgeMask[edge] = 1;
+                            isFaceFound = true;
                         }
                     }
 
                     m_faceMask[otherFace] = isFaceFound;
-
-                    if (isFaceFound == 1)
+                    if (m_faceMask[otherFace])
                     {
                         m_numFacesMasked += 1;
-                        numNextFaces += 1;
-                        if (numNextFaces >= nextFaces.size())
-                        {
-                            nextFaces.resize(std::max(static_cast<size_t>(static_cast<double>(numNextFaces) * 1.2), static_cast<size_t>(10)));
-                        }
-                        nextFaces[numNextFaces - 1] = otherFace;
+                        nextFaces.emplace_back(otherFace);
                     }
                 }
             }
         }
 
-        landBoundaryFaces.resize(0);
-
-        if (numNextFaces > 0)
+        initialFaces.resize(0);
+        if (!nextFaces.empty())
         {
             m_maskDepth += 1;
 
-            MaskFaces(meshBoundOnly,
-                      nextFaces,
-                      startNodeLandBoundaryIndex,
-                      endNodeLandBoundaryindex,
-                      leftIndex,
-                      rightIndex,
-                      leftEdgeRatio,
-                      rightEdgeRatio);
+            MaskMeshFaceMask(meshBoundOnly,
+                             nextFaces,
+                             segmentIndex,
+                             leftIndex,
+                             rightIndex,
+                             leftEdgeRatio,
+                             rightEdgeRatio);
 
             m_maskDepth -= 1;
         }
     }
 
-    bool LandBoundaries::IsMeshEdgeCloseToLandBoundaries(size_t edgeIndex,
-                                                         size_t startNodeLandBoundaryIndex,
-                                                         size_t endNodeLandBoundaryIndex,
+    bool LandBoundaries::IsMeshEdgeCloseToLandBoundaries(size_t meshEdgeIndex,
+                                                         size_t landBoundaryIndex,
                                                          bool meshBoundOnly,
-                                                         size_t& leftIndex,
-                                                         size_t& rightIndex,
-                                                         double& leftEdgeRatio,
-                                                         double& rightEdgeRatio,
                                                          size_t& landBoundaryNode)
     {
         if (m_nodes.empty())
@@ -833,15 +784,17 @@ namespace meshkernel
             return false;
         }
 
+        const auto startLandBoundaryIndex = m_validLandBoundaries[landBoundaryIndex][0];
+        const auto endLandBoundaryIndex = m_validLandBoundaries[landBoundaryIndex][1];
+
         bool isClose = false;
+        const auto startNode = std::max(std::min(landBoundaryNode, endLandBoundaryIndex - 1), startLandBoundaryIndex);
 
-        const auto startNode = std::max(std::min(landBoundaryNode, endNodeLandBoundaryIndex - 1), startNodeLandBoundaryIndex);
-
-        if (m_mesh->m_edges[edgeIndex].first == sizetMissingValue || m_mesh->m_edges[edgeIndex].second == sizetMissingValue)
+        if (m_mesh->m_edges[meshEdgeIndex].first == sizetMissingValue || m_mesh->m_edges[meshEdgeIndex].second == sizetMissingValue)
             return false;
 
-        const auto firstMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edgeIndex].first];
-        const auto secondMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edgeIndex].second];
+        const auto firstMeshNode = m_mesh->m_nodes[m_mesh->m_edges[meshEdgeIndex].first];
+        const auto secondMeshNode = m_mesh->m_nodes[m_mesh->m_edges[meshEdgeIndex].second];
 
         const double meshEdgeLength = ComputeDistance(firstMeshNode, secondMeshNode, m_mesh->m_projection);
 
@@ -894,7 +847,7 @@ namespace meshkernel
 
             // search the next land boundary edge if projection is not within is within the segment currentNode / currentNode + 1
             searchIter = 0;
-            while ((searchIter == 0 || currentNode < startNodeLandBoundaryIndex || currentNode > endNodeLandBoundaryIndex - 1) && searchIter < 3)
+            while ((searchIter == 0 || currentNode < startLandBoundaryIndex || currentNode > endLandBoundaryIndex - 1) && searchIter < 3)
             {
                 searchIter += 1;
                 if (stepNode < 0)
@@ -906,34 +859,6 @@ namespace meshkernel
                     stepNode = -stepNode - 1;
                 }
                 currentNode = currentNode + stepNode;
-            }
-        }
-
-        // the edge is close to the land boundary segment
-        if (isClose)
-        {
-            // minimum
-            const double minimumRatio = std::min(ratioFirstMeshNode, ratioSecondMeshNode);
-            if (landBoundaryNode < leftIndex)
-            {
-                leftIndex = landBoundaryNode;
-                leftEdgeRatio = std::min(std::max(minimumRatio, 0.0), 1.0);
-            }
-            else if (landBoundaryNode == leftIndex)
-            {
-                leftEdgeRatio = std::min(std::max(minimumRatio, 0.0), leftEdgeRatio);
-            }
-
-            // maximum
-            const double maximumRatio = std::max(ratioFirstMeshNode, ratioSecondMeshNode);
-            if (landBoundaryNode > rightIndex)
-            {
-                rightIndex = landBoundaryNode;
-                rightEdgeRatio = std::min(std::max(maximumRatio, 0.0), 1.0);
-            }
-            else if (landBoundaryNode == rightIndex)
-            {
-                rightEdgeRatio = std::max(std::min(maximumRatio, 1.0), rightEdgeRatio);
             }
         }
 
@@ -1229,39 +1154,6 @@ namespace meshkernel
         }
     }
 
-    /// TODO: it could be moved to generic operations
-    bool LandBoundaries::IsFaceCrossedByLandBoundaries(size_t face, size_t startLandBoundaryIndex, size_t endLandBoundaryIndex)
-    {
-        if (m_nodes.empty())
-        {
-            return false;
-        }
-
-        for (const auto& edge : m_mesh->m_facesEdges[face])
-        {
-            for (auto i = startLandBoundaryIndex; i < endLandBoundaryIndex; i++)
-            {
-                const auto firstMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edge].first];
-                const auto secondMeshNode = m_mesh->m_nodes[m_mesh->m_edges[edge].second];
-
-                const auto firstNode = m_nodes[i];
-                const auto secondNode = m_nodes[i + 1];
-                const bool adimensional = false;
-                Point intersection;
-                double crossProduct;
-                double firstRatio;
-                double secondRatio;
-                const auto areCrossing = AreSegmentsCrossing(firstMeshNode, secondMeshNode, firstNode, secondNode, adimensional, m_mesh->m_projection, intersection, crossProduct, firstRatio, secondRatio);
-
-                if (areCrossing)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     void LandBoundaries::SnapMeshToLandBoundaries()
     {
         if (m_nodes.empty() || m_meshNodesLandBoundarySegments.empty())
@@ -1287,8 +1179,8 @@ namespace meshkernel
 
                 NearestLandBoundaryNode(m_mesh->m_projection,
                                         m_mesh->m_nodes[n],
-                                        m_segmentIndices[meshNodeToLandBoundarySegment][0],
-                                        m_segmentIndices[meshNodeToLandBoundarySegment][1],
+                                        m_validLandBoundaries[meshNodeToLandBoundarySegment][0],
+                                        m_validLandBoundaries[meshNodeToLandBoundarySegment][1],
                                         minimumDistance,
                                         pointOnLandBoundary,
                                         nearestLandBoundaryNodeIndex,
