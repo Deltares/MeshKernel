@@ -833,7 +833,7 @@ namespace meshkernel
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {
             double dis = 0.0;
-            const double squaredDistance = ComputeSquaredDistance(secondNode, firstNode, projection);
+            const auto squaredDistance = ComputeSquaredDistance(secondNode, firstNode, projection);
             if (squaredDistance != 0.0)
             {
                 ratio = (GetDx(firstNode, point, projection) * GetDx(firstNode, secondNode, projection) +

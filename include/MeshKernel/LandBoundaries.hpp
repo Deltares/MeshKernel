@@ -141,16 +141,9 @@ namespace meshkernel
 
         /// @brief Finds the start and end mesh node.
         /// These are the nodes that are on a edge close to the land boundary segment (get_kstartend2)
-        /// @param[in] endLandBoundaryIndex
-        /// @param[in] leftIndex
-        /// @param[in] rightIndex
-        /// @param[in] leftEdgeRatio
-        /// @param[in] rightEdgeRatio
-        /// @param[out] startMeshNode
-        /// @param[out] endMeshNode
-        void FindStartEndMeshNodes(size_t landBoundaryPolyline,
-                                   size_t& startMeshNode,
-                                   size_t& endMeshNode);
+        /// @param[in] landBoundaryPolyline
+        /// @returns the start and end index on a mesh
+        std::tuple<size_t, size_t> FindStartEndMeshNodes(size_t landBoundaryPolyline);
 
         /// @brief Finds the start and end mesh node from given edges.
         /// @param[in] startEdge
@@ -177,13 +170,9 @@ namespace meshkernel
         /// @brief meshBoundOnly
         /// @brief connectedNodes
         /// @returns
-        void ShortestPath(size_t landBoundaryPolyline,
-                          size_t startLandBoundaryIndex,
-                          size_t endLandBoundaryIndex,
-                          size_t startMeshNode,
-                          std::vector<size_t>& connectedNodes);
+        std::vector<size_t> ShortestPath(size_t landBoundaryPolyline, size_t startMeshNode);
 
-        /// @brief Compute the nearest node on the land boundary (toland)
+        /// @brief Compute the nearest land boundary segment (toland)
         /// @param projection
         /// @param node
         /// @param startLandBoundaryIndex
@@ -192,14 +181,12 @@ namespace meshkernel
         /// @param pointOnLandBoundary
         /// @param nearestLandBoundaryNodeIndex
         /// @param edgeRatio
-        void NearestLandBoundaryNode(const Projection& projection,
-                                     const Point& node,
-                                     size_t startLandBoundaryIndex,
-                                     size_t endLandBoundaryIndex,
-                                     double& minimumDistance,
-                                     Point& pointOnLandBoundary,
-                                     size_t& nearestLandBoundaryNodeIndex,
-                                     double& edgeRatio);
+        void NearestLandBoundarySegment(const Point& node,
+                                        size_t landBoundaryPolyline,
+                                        double& minimumDistance,
+                                        Point& pointOnLandBoundary,
+                                        size_t& nearestLandBoundaryNodeIndex,
+                                        double& edgeRatio);
 
         std::shared_ptr<Mesh2D> m_mesh;                         // A pointer to mesh
         std::shared_ptr<Polygons> m_polygons;                   // A pointer to polygons
