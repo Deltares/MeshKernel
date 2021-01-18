@@ -310,7 +310,7 @@ namespace meshkernel
         return inPolygon;
     }
 
-    bool Polygons::IsPointInPolygons(Point point) const
+    size_t Polygons::PointInWhichPolygon(Point point) const
     {
         // empty polygon means everything is included
         if (m_indices.empty())
@@ -319,16 +319,18 @@ namespace meshkernel
         }
 
         bool inPolygon = false;
-
-        for (const auto& indices : m_indices)
+        for (auto polygonIndex = 0; polygonIndex < m_indices.size(); ++polygonIndex)
         {
+            auto polygonStartIndex = m_indices[polygonIndex][0];
+            auto polygonEndIndex = m_indices[polygonIndex][1];
+
             // Calculate the bounding box
             double XMin = std::numeric_limits<double>::max();
             double XMax = std::numeric_limits<double>::lowest();
             double YMin = std::numeric_limits<double>::max();
             double YMax = std::numeric_limits<double>::lowest();
 
-            for (auto n = indices[0]; n <= indices[1]; n++)
+            for (auto n = polygonStartIndex; n <= polygonEndIndex; n++)
             {
                 XMin = std::min(XMin, m_nodes[n].x);
                 XMax = std::max(XMax, m_nodes[n].x);
@@ -338,16 +340,16 @@ namespace meshkernel
 
             if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
             {
-                inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), indices[0], indices[1]);
+                inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), polygonStartIndex, polygonEndIndex);
             }
 
             if (inPolygon)
             {
-                return true;
+                return polygonIndex;
             }
         }
 
-        return inPolygon;
+        return sizetMissingValue;
     }
 
     bool Polygons::IsEmpty() const
@@ -400,5 +402,4 @@ namespace meshkernel
         }
         return maximumEdgeLength;
     }
-
 }; // namespace meshkernel

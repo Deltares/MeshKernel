@@ -31,7 +31,7 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
     for (size_t n = 0; n < m_mesh1d->m_nodes.size(); ++n)
     {
         // connect only nodes included in the polygons
-        if (!polygons.IsPointInPolygons(m_mesh1d->m_nodes[n]))
+        if (polygons.PointInWhichPolygon(m_mesh1d->m_nodes[n]) == sizetMissingValue)
         {
             continue;
         }
@@ -248,8 +248,10 @@ void meshkernel::Contacts::ComputeMultipleConnections()
     }
 };
 
-void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons){
-    // complete implementation
+void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons)
+{
+    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh1d->AdministrateNodesEdges();
 };
 
 void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points){
