@@ -27,6 +27,7 @@
 
 #pragma once
 #include "MeshKernel/Mesh1D.hpp"
+#include <MeshKernel/Exceptions.hpp>
 
 #include <MeshKernel/Entities.hpp>
 #include <vector>
@@ -34,3 +35,32 @@
 meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
                            Projection projection) : Mesh(edges, nodes, projection){};
+
+size_t meshkernel::Mesh1D::Find1dNodeCloseToAPoint(Point point, std::vector<bool> oneDNodeMask)
+{
+    if (GetNumNodes() <= 0)
+    {
+        throw std::invalid_argument("Mesh1D::Find1dNodeCloseToAPoint: There are no valid nodes.");
+    }
+
+    // create rtree a first time
+    if (m_nodesRTree.Empty())
+    {
+        m_nodesRTree.BuildTree(m_nodes);
+        m_nodesRTreeRequiresUpdate = false;
+    }
+
+    m_nodesRTree.NearestNeighbors(point);
+    const auto resultSize = m_nodesRTree.GetQueryResultSize();
+
+    for (auto index = 0; index < resultSize; ++index)
+    {
+        const auto nodeIndex = m_nodesRTree.GetQueryResult(0);
+        if (oneDNodeMask[nodeIndex])
+        {
+            return nodeIndex;
+        }
+    }
+
+    throw AlgorithmError("Mesh1D::Find1dNodeCloseToAPoint: Could not find the node index close to a point.");
+}
