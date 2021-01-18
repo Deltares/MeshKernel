@@ -248,21 +248,19 @@ If the answer is positive, a connection is generated between the face and the cl
 
 This class implements the mesh orthogonalization and smoothing algorithm
 as described in D-Flow FM technical manual (consult this manual for the
-mathematical details on the equations). The algorithm is composed of two
-differential equations: the first equation maximizes orthogonalization
-between edges and flow links and the second equation reduces the
+mathematical details on the equations). The algorithm operates on mesh2d and 
+is composed of two differential equations: the first equation maximizes orthogonalization
+between edges and flow edges and the second equation reduces the
 differences of the internal mesh angles (mesh smoothness). For this
 reason, the OrthogonalizationAndSmoothing class is composed of a
 smoother and an orthogonalizer, where the nodal contributions are
-computed by separate classes, as opposed to the original Fortran
-implementation. Essentially, the algorithm executes two loops:
+computed by separate classes. Essentially, the algorithm executes the following steps:
 
 -   An initialization step: The original mesh boundaries are saved. In
-    case the mesh needs to be snapped to the land boundaries, the
-    closest mesh edges to each land boundary are found
-    (FindNearestMeshBoundary).
+    case the mesh needs to be snapped to the land boundaries, the indices of the land boundaries
+    are mapped to the boundary mesh edges (`LandBoundaries::FindNearestMeshBoundary`).
 
--   An outer loop, which itself is composed of the following steps:
+-   An outer loop, which itself is composed of the following parts:
 
     1.  Computation of the orthogonalizer contributions.
 
@@ -272,38 +270,38 @@ implementation. Essentially, the algorithm executes two loops:
 
     4.  Summation of the two contributions (matrix assembly). The two
         contributions are weighted based on the desired smoothing to
-        orthogonality ratio. OpenMP thread parallelization is used when
+        orthogonality ratio. OpenMP parallelization is used when
         summing the terms (loop iterations are independent).
 
 -   An inner iteration: the resulting linear system is solved
     explicitly. The nodal coordinates are updated and the nodes moving
     on the mesh boundary are projected to the original mesh boundary
-    (SnapMeshToOriginalMeshBoundary). In case a projection to land
-    boundary is requested, the mesh nodes are projected to the land
+    (`OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary`). 
+    In case a projection to land boundary is requested, the mesh nodes are projected to the land
     boundaries. An OpenMP parallelization is used in
-    OrthogonalizationAndSmoothing::InnerIteration() because the update
-    of the nodal coordinates was made iteration-independent.
+    `OrthogonalizationAndSmoothing::InnerIteration` because the update
+    of the nodal coordinates is made iteration-independent.
 
-MeshKernel API has five functions to enable the client to display the
+The api layer has five functions to enable the client to display the
 mesh during the computations (interactivity). These functions are:
 
--   ggeo_orthogonalize_initialize
+-   `mkernel_orthogonalize_initialize`
 
--   ggeo_orthogonalize_prepare_outer_iteration
+-   `mkernel_orthogonalize_prepare_outer_iteration`
 
--   ggeo_orthogonalize_inner_iteration.
+-   `mkernel_orthogonalize_inner_iteration`
 
--   ggeo_orthogonalize_finalize_outer_iteration
+-   `mkernel_orthogonalize_finalize_outer_iteration`
 
--   ggeo_orthogonalize_delete
+-   `mkernel_orthogonalize_delete`
 
 The execution flow of these functions is shown in Figure A1 of the
 Appendix. Additional details about these functions can be retrieved from
-the API documentation.
+the `meshkernelapi` documentation.
 
 # The MeshRefinement class{#chap:refinement}
 
-Mesh refinement is based on iteratively splitting the edges until the
+Mesh refinement operates on mesh2d and it is based on iteratively splitting the edges until the
 desired level of refinement or the maximum number of iterations is
 reached. Refinement can be based on samples or based on a polygon. The
 refinement based on samples uses the averaging interpolation algorithm
@@ -345,12 +343,12 @@ static method Splines::Interpolate.
 
 In this class, the algorithm to gradually develop a mesh from the
 centreline of the channel towards the boundaries is implemented. It is
-the most complex algorithm in the library. The curvilinear mesh is
+the most complex algorithm in MeshKernel. The curvilinear mesh is
 developed from the center spline by the following steps:
 
 -   Initialization step
 
-    -   The splines are labelled (central or transversal spline) based
+    -   The splines are labeled (central or transversal spline) based
         on the number of corner points and the intersecting angles.
 
     -   The canal heights at a different position along the central
@@ -388,17 +386,17 @@ developed from the center spline by the following steps:
 to support interactivity with the client, the original Fortran algorithm
 was divided into separate API calls:
 
--   ggeo_curvilinear_mesh_from_splines_ortho_initialize, corresponding
+-   mkernel_curvilinear_mesh_from_splines_ortho_initialize, corresponding
     to the initialization step above.
 
--   ggeo_curvilinear_mesh_from_splines_iteration, corresponding to the
+-   mkernel_curvilinear_mesh_from_splines_iteration, corresponding to the
     iteration step above.
 
--   ggeo_curvilinear_mesh_from_splines_ortho_refresh_mesh, corresponding
+-   mkernel_curvilinear_mesh_from_splines_ortho_refresh_mesh, corresponding
     to the post-processing above, plus the conversion of the
     CurvilinearGrid to an unstructured mesh.
 
--   ggeo_curvilinear_mesh_from_splines_ortho_delete, necessary to delete
+-   mkernel_curvilinear_mesh_from_splines_ortho_delete, necessary to delete
     the CurvilinearGridFromSplines instance used in the previous API
     calls.
 
@@ -482,9 +480,31 @@ the computation of each location. The algorithm operates as follow:
 When a triangle enclosing a specific location is not found, the
 interpolated value at that location is invalid. The handling of
 spherical accurate projection occurs at low-level geometrical functions
-( IsPointInPolygonNodes, AreLineCrossing). Therefore, the algorithm is
+(IsPointInPolygonNodes, AreLineCrossing). Therefore, the algorithm is
 independent of the implementation details that occur at the level of the
 geometrical functions.
+
+# The mesh land boundary class{#chap:Landboundary}
+
+The main responsibility of this class is to store the land boundary polygons, categorize them based on their proximity to
+a mesh and provide the functionality to assign each mesh node to the appropriate land boundary polyline.
+
+The main functions are:
+
+- `LandBoundaries::Administrate`: from a vector of points identifies the start-end points of each  land boundary polyline with the requirement 
+that all polyline nodes are close enough to the mesh boundary.
+
+- `LandBoundaries::MakePath`: for a defined polyline,  assign to each mesh node to the appropriate land boundary polyline. The algorithm works as follow:
+ 
+ - `LandBoundaries::ComputeMeshNodeMask`: Computes a mask for all mesh nodes affected by the current land boundary polyline. 
+  The nodes composing the edges crossed by the land boundary polyline are masked, as well the nodes of the faces close to the land boundary polyline.
+  - `LandBoundaries::FindStartEndMeshNodes`: For the following step (the Dijkstra's shortest path algorithm), the start and end mesh noded need to be identified. 
+  These are the nodes connecting a polyline composed of the mesh edges describing the current land boundary polyline.
+  - `LandBoundaries::ShortestPath`: Compose the mesh edge sequence using Dijkstra's shortest path algorithm. 
+  - The nodes of the edge sequences are assigned to the land boundary polyline if close enough.
+
+
+
 
 # Appendix{#chap:appendix}
 
