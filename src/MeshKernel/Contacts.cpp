@@ -271,6 +271,18 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
         // If face is within a polygon
         if (polygonIndex != sizetMissingValue)
         {
+            auto faceMassCenter = m_mesh2d->m_facesMassCenters[faceIndex];
+            size_t close1DNodeIndex;
+            if (m_oneDNodeMask.empty())
+            {
+                close1DNodeIndex = m_mesh1d->FindNodeCloseToAPoint(faceMassCenter);
+            }
+            else
+            {
+                close1DNodeIndex = m_mesh1d->Find1dNodeCloseToAPoint(faceMassCenter, m_oneDNodeMask);
+            }
+            auto close1DNode = m_mesh1d->m_nodes[close1DNodeIndex];
+            auto distance = ComputeSquaredDistance(faceMassCenter, close1DNode, m_mesh2d->m_projection);
         }
     }
 };
