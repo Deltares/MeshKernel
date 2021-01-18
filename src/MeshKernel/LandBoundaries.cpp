@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <stdexcept>
+#include <tuple>
 #include <vector>
 
 #include <MeshKernel/Constants.hpp>
@@ -105,13 +106,11 @@ namespace meshkernel
                     continue;
                 }
 
-                const double edgeLength = ComputeDistance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh->m_projection);
-                const double minDistance = m_closeFactor * edgeLength;
+                const auto edgeLength = ComputeDistance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh->m_projection);
 
-                Point normalPoint;
-                double ratio;
-                const double distanceFromMeshNode = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, m_mesh->m_projection, normalPoint, ratio);
+                const auto [distanceFromMeshNode, normalPoint, ratio] = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, m_mesh->m_projection);
 
+                const auto minDistance = m_closeFactor * edgeLength;
                 if (distanceFromMeshNode <= minDistance)
                 {
                     landBoundaryIsClose = true;
@@ -778,15 +777,11 @@ namespace meshkernel
 
             if (landBoundaryLength > 0)
             {
-                double ratioFirstMeshNode = 0.0;
-                double ratioSecondMeshNode = 1.0;
-                Point normalPoint;
-                const double distanceFromLandBoundaryFirstMeshNode = DistanceFromLine(firstMeshNode,
-                                                                                      m_nodes[currentNode],
-                                                                                      m_nodes[currentNode + 1],
-                                                                                      m_mesh->m_projection,
-                                                                                      normalPoint,
-                                                                                      ratioFirstMeshNode);
+
+                const auto [distanceFromLandBoundaryFirstMeshNode, normalPoint, ratioFirstMeshNode] = DistanceFromLine(firstMeshNode,
+                                                                                                                       m_nodes[currentNode],
+                                                                                                                       m_nodes[currentNode + 1],
+                                                                                                                       m_mesh->m_projection);
 
                 if (distanceFromLandBoundaryFirstMeshNode < closeDistance)
                 {
@@ -800,20 +795,19 @@ namespace meshkernel
                 else
                 {
                     // check the second point
-                    Point normalPoint;
-                    const auto distanceFromLandBoundarySecondMeshNode = DistanceFromLine(secondMeshNode,
-                                                                                         m_nodes[currentNode],
-                                                                                         m_nodes[currentNode + 1],
-                                                                                         m_mesh->m_projection,
-                                                                                         normalPoint,
-                                                                                         ratioSecondMeshNode);
+                    const auto [distanceFromLandBoundarySecondMeshNode, normalPoint, ratioSecondMeshNode] = DistanceFromLine(secondMeshNode,
+                                                                                                                             m_nodes[currentNode],
+                                                                                                                             m_nodes[currentNode + 1],
+                                                                                                                             m_mesh->m_projection);
 
                     if (distanceFromLandBoundarySecondMeshNode < closeDistance)
                     {
                         landBoundaryNode = currentNode;
                         // the projection of secondMeshNode is within the segment currentNode / currentNode + 1
                         if (ratioSecondMeshNode >= 0.0 && ratioSecondMeshNode <= 1.0)
+                        {
                             break;
+                        }
                     }
                 }
             }
@@ -870,9 +864,6 @@ namespace meshkernel
         }
 
         // Get the edges that are closest the land boundary
-
-        double ratio;
-
         auto minDistStart = std::numeric_limits<double>::max();
         auto minDistEnd = std::numeric_limits<double>::max();
         size_t startEdge = sizetMissingValue;
@@ -890,20 +881,15 @@ namespace meshkernel
                 continue;
             }
 
-            Point normalPoint;
-            const double distanceFromFirstMeshNode = DistanceFromLine(startPoint,
-                                                                      m_mesh->m_nodes[m_mesh->m_edges[e].first],
-                                                                      m_mesh->m_nodes[m_mesh->m_edges[e].second],
-                                                                      m_mesh->m_projection,
-                                                                      normalPoint,
-                                                                      ratio);
+            const auto [distanceFromFirstMeshNode, normalFirstMeshNode, ratioFirstMeshNode] = DistanceFromLine(startPoint,
+                                                                                                               m_mesh->m_nodes[m_mesh->m_edges[e].first],
+                                                                                                               m_mesh->m_nodes[m_mesh->m_edges[e].second],
+                                                                                                               m_mesh->m_projection);
 
-            const double distanceFromSecondMeshNode = DistanceFromLine(endPoint,
-                                                                       m_mesh->m_nodes[m_mesh->m_edges[e].first],
-                                                                       m_mesh->m_nodes[m_mesh->m_edges[e].second],
-                                                                       m_mesh->m_projection,
-                                                                       normalPoint,
-                                                                       ratio);
+            const auto [distanceFromSecondMeshNode, normalSecondMeshNode, ratioSecondMeshNode] = DistanceFromLine(endPoint,
+                                                                                                                  m_mesh->m_nodes[m_mesh->m_edges[e].first],
+                                                                                                                  m_mesh->m_nodes[m_mesh->m_edges[e].second],
+                                                                                                                  m_mesh->m_projection);
 
             if (distanceFromFirstMeshNode < minDistStart)
             {
@@ -1051,20 +1037,22 @@ namespace meshkernel
                 {
                     for (auto n = currentNodeLandBoundaryNodeIndex + 1; n < neighbouringNodeLandBoundaryNodeIndex; ++n)
                     {
-                        double ratio;
-                        middlePointDistance = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, m_mesh->m_projection, middlePointOnLandBoundary, ratio);
+                        const auto [middlePointDistance, middlePointOnLandBoundary, ratio] = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, m_mesh->m_projection);
                         if (middlePointDistance > maximumDistance)
+                        {
                             maximumDistance = middlePointDistance;
+                        }
                     }
                 }
                 else if (currentNodeLandBoundaryNodeIndex > neighbouringNodeLandBoundaryNodeIndex)
                 {
                     for (auto n = neighbouringNodeLandBoundaryNodeIndex + 1; n < currentNodeLandBoundaryNodeIndex; ++n)
                     {
-                        double ratio;
-                        middlePointDistance = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, m_mesh->m_projection, middlePointOnLandBoundary, ratio);
+                        const auto [middlePointDistance, middlePointOnLandBoundary, ratio] = DistanceFromLine(m_nodes[n], currentNode, neighbouringNode, m_mesh->m_projection);
                         if (middlePointDistance > maximumDistance)
+                        {
                             maximumDistance = middlePointDistance;
+                        }
                     }
                 }
 
@@ -1134,9 +1122,7 @@ namespace meshkernel
                 continue;
             }
 
-            Point normalPoint{doubleMissingValue, doubleMissingValue};
-            double ratio = 0.0;
-            const double distanceFromLandBoundary = DistanceFromLine(node, m_nodes[n], m_nodes[n + 1], m_mesh->m_projection, normalPoint, ratio);
+            const auto [distanceFromLandBoundary, normalPoint, ratio] = DistanceFromLine(node, m_nodes[n], m_nodes[n + 1], m_mesh->m_projection);
 
             if (distanceFromLandBoundary > 0.0 && distanceFromLandBoundary < minimumDistance)
             {
