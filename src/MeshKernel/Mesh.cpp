@@ -421,7 +421,34 @@ size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
 
     if (resultSize > 0)
     {
-        return m_nodesRTree.GetQueryResult(0);
+        const auto nodeIndex = m_nodesRTree.GetQueryResult(0);
+        return nodeIndex;
+    }
+
+    throw AlgorithmError("Mesh2D::FindNodeCloseToAPoint: Could not find the node index close to a point.");
+}
+
+size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point)
+{
+    if (GetNumNodes() <= 0)
+    {
+        throw std::invalid_argument("Mesh2D::FindNodeCloseToAPoint: There are no valid nodes.");
+    }
+
+    // create rtree a first time
+    if (m_nodesRTree.Empty())
+    {
+        m_nodesRTree.BuildTree(m_nodes);
+        m_nodesRTreeRequiresUpdate = false;
+    }
+
+    m_nodesRTree.NearestNeighbors(point);
+    const auto resultSize = m_nodesRTree.GetQueryResultSize();
+
+    if (resultSize > 0)
+    {
+        const auto nodeIndex = m_nodesRTree.GetQueryResult(0);
+        return nodeIndex;
     }
 
     throw AlgorithmError("Mesh2D::FindNodeCloseToAPoint: Could not find the node index close to a point.");

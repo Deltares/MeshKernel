@@ -123,6 +123,11 @@ namespace meshkernel
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
+        /// @returns The index of the closest node
+        [[nodiscard]] size_t FindNodeCloseToAPoint(Point point);
+
+        /// @brief Get the index of a node close to a point
+        /// @param[in] point The starting point from where to start the search
         /// @param[in] searchRadius The search radius
         /// @returns The index of the closest node
         [[nodiscard]] size_t FindNodeCloseToAPoint(Point point, double searchRadius);
