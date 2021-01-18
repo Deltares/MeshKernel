@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -252,6 +253,14 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
 {
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     m_mesh1d->AdministrateNodesEdges();
+
+    // Store polygon index for each mesh2d face
+    std::vector<size_t> polygonIndices;
+    polygonIndices.reserve(m_mesh2d->GetNumFaces());
+    for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
+    {
+        polygonIndices[faceIndex] = polygons.PointInWhichPolygon(m_mesh2d->m_facesMassCenters[faceIndex]);
+    }
 };
 
 void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points){
