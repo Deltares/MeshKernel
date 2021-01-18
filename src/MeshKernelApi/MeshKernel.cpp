@@ -1271,7 +1271,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            nodeIndex = static_cast<int>(meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius));
+            nodeIndex = static_cast<int>(meshInstances[meshKernelId]->FindNodeCloseToAPoint(polygonPoints[0], searchRadius));
         }
         catch (...)
         {
@@ -1302,7 +1302,7 @@ namespace meshkernelapi
             std::vector<meshkernel::Point> polygonPoints;
             ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
 
-            const auto nodeIndex = meshInstances[meshKernelId]->GetNodeIndex(polygonPoints[0], searchRadius);
+            const auto nodeIndex = meshInstances[meshKernelId]->FindNodeCloseToAPoint(polygonPoints[0], searchRadius);
 
             // Set the node coordinate
             const auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];

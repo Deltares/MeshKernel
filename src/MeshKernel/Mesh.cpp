@@ -401,11 +401,11 @@ size_t meshkernel::Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex)
     return edgeIndex;
 }
 
-size_t meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
+size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
 {
     if (GetNumNodes() <= 0)
     {
-        throw std::invalid_argument("Mesh2D::GetNodeIndex: There are no valid nodes.");
+        throw std::invalid_argument("Mesh2D::FindNodeCloseToAPoint: There are no valid nodes.");
     }
 
     // create rtree a first time
@@ -424,7 +424,7 @@ size_t meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
         return m_nodesRTree.GetQueryResult(0);
     }
 
-    throw AlgorithmError("Mesh2D::GetNodeIndex: Could not find the node index close to a point.");
+    throw AlgorithmError("Mesh2D::FindNodeCloseToAPoint: Could not find the node index close to a point.");
 }
 
 size_t meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)

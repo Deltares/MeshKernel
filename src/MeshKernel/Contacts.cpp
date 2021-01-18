@@ -254,12 +254,24 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     m_mesh1d->AdministrateNodesEdges();
 
-    // Store polygon index for each mesh2d face
+    // For each mesh2d face, store polygon index
     std::vector<size_t> polygonIndices;
     polygonIndices.reserve(m_mesh2d->GetNumFaces());
     for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
         polygonIndices[faceIndex] = polygons.PointInWhichPolygon(m_mesh2d->m_facesMassCenters[faceIndex]);
+    }
+
+    // For each polygon, find closest 1D node to any 2D mass center within the polygon
+    std::vector<size_t> closest1dNodeIndices;
+    std::vector<size_t> closest2dNodeIndices;
+    for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
+    {
+        auto polygonIndex = polygonIndices[faceIndex];
+        // If face is within a polygon
+        if (polygonIndex != sizetMissingValue)
+        {
+        }
     }
 };
 
