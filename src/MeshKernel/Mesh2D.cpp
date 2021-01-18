@@ -1793,7 +1793,7 @@ std::vector<size_t> meshkernel::Mesh2D::SortedFacesAroundNode(size_t node) const
     return result;
 }
 
-std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes)
+std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygon)
 {
 
     // Find faces
@@ -1814,8 +1814,8 @@ std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const s
         const auto firstNode = m_nodes[firstNodeIndex];
         const auto secondNode = m_nodes[secondNodeIndex];
 
-        const auto firstNodeInPolygon = IsPointInPolygonNodes(m_nodes[firstNodeIndex], polygonNodes, m_projection);
-        const auto secondNodeInPolygon = IsPointInPolygonNodes(m_nodes[secondNodeIndex], polygonNodes, m_projection);
+        const auto firstNodeInPolygon = IsPointInPolygonNodes(m_nodes[firstNodeIndex], polygon, m_projection);
+        const auto secondNodeInPolygon = IsPointInPolygonNodes(m_nodes[secondNodeIndex], polygon, m_projection);
 
         if (!firstNodeInPolygon && !secondNodeInPolygon)
         {
@@ -1836,7 +1836,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const s
 
         // walk the current mesh boundary
         auto currentNode = secondNodeIndex;
-        WalkBoundaryFromNode(polygonNodes, isVisited, currentNode, meshBoundaryPolygon);
+        WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
 
         const auto numNodesFirstTail = meshBoundaryPolygon.size();
 
@@ -1845,7 +1845,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const s
         {
             //Now grow a polyline starting at the other side of the original link L, i.e., the second tail
             currentNode = firstNodeIndex;
-            WalkBoundaryFromNode(polygonNodes, isVisited, currentNode, meshBoundaryPolygon);
+            WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
         }
 
         // There is a nonempty second tail, so reverse the first tail, so that they connect.
@@ -2064,7 +2064,6 @@ std::tuple<size_t, size_t> meshkernel::Mesh2D::IsSegmentCrossingABoundaryEdge(co
     double intersectionRatio = std::numeric_limits<double>::max();
     size_t intersectedFace = sizetMissingValue;
     size_t intersectedEdge = sizetMissingValue;
-    auto isCrossing = false;
     for (auto e = 0; e < GetNumEdges(); ++e)
     {
         if (!IsEdgeOnBoundary(e))
@@ -2092,7 +2091,6 @@ std::tuple<size_t, size_t> meshkernel::Mesh2D::IsSegmentCrossingABoundaryEdge(co
             intersectionRatio = ratioFirstSegment;
             intersectedFace = m_edgesFaces[e][0];
             intersectedEdge = e;
-            isCrossing = true;
         }
     }
 

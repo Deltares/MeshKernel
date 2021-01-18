@@ -95,24 +95,24 @@ namespace meshkernel
                              size_t numNodesLoc,
                              size_t nodeIndex);
 
-        /// @brief Assigns to each mesh node a landBoundaryPolyline
-        /// @param[in] landBoundaryPolyline The current landboundary segment
+        /// @brief Assigns to each mesh node a landboundaryIndex
+        /// @param[in] landboundaryIndex The current landboundary segment
         /// @param[in] meshBoundOnly Account only for mesh boundaries
         /// @param[out] numNodesInPath The number of mesh nodes for this path
         /// @param[out] numRejectedNodesInPath The number of rejected nodes in path
-        void MakePath(size_t landBoundaryPolyline,
+        void MakePath(size_t landboundaryIndex,
                       size_t& numNodesInPath,
                       size_t& numRejectedNodesInPath);
 
-        /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current landBoundaryPolyline.
+        /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current landboundaryIndex.
         /// Is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
-        /// @param[in] landBoundaryPolyline
+        /// @param[in] landboundaryIndex
         /// @param[in] meshBoundOnly
         /// @param[out] leftIndex
         /// @param[out] rightIndex
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
-        void ComputeMeshNodeMask(size_t landBoundaryPolyline);
+        void ComputeMeshNodeMask(size_t landboundaryIndex);
 
         /// @brief Mask all face close to a land boundary, starting from a seed of others and growing from there (maskcells)
         /// @param[in] meshBoundOnly Account only for mesh boundary
@@ -124,7 +124,7 @@ namespace meshkernel
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
         void MaskMeshFaceMask(std::vector<size_t>& initialFaces,
-                              size_t landBoundaryPolyline);
+                              size_t landboundaryIndex);
 
         /// @brief Check if a mesh edge is close to a land boundary segment (linkcrossedbyland)
         /// @param[in] meshEdgeIndex
@@ -137,13 +137,13 @@ namespace meshkernel
         /// @param[out] rightEdgeRatio
         /// @return the closest land boundary node
         [[nodiscard]] size_t IsMeshEdgeCloseToLandBoundaries(size_t meshEdgeIndex,
-                                                             size_t landBoundaryPolyline);
+                                                             size_t landboundaryIndex);
 
-        /// @brief Finds the start and end mesh node.
+        /// @brief Finds the start and end mesh node index that correspond to a landboundary polyline.
         /// These are the nodes that are on a edge close to the land boundary segment (get_kstartend2)
-        /// @param[in] landBoundaryPolyline
+        /// @param[in] landboundaryIndex
         /// @returns the start and end index on a mesh
-        std::tuple<size_t, size_t> FindStartEndMeshNodes(size_t landBoundaryPolyline);
+        std::tuple<size_t, size_t> FindStartEndMeshNodes(size_t landboundaryIndex);
 
         /// @brief Finds the start and end mesh node from given edges.
         /// @param[in] startEdge
@@ -159,30 +159,21 @@ namespace meshkernel
                                             size_t& startMeshNode,
                                             size_t& endMeshNode) const;
 
-        /// @brief Connect mesh nodes starting from startMeshNode, using Dijkstra's shortest path algorithm.
-        /// The distance of each edge is the edge length multiplied by the distance from the land boundary
-        /// @brief mesh
-        /// @brief polygons
-        /// @brief landBoundaryPolyline
-        /// @brief startLandBoundaryIndex
-        /// @brief endLandBoundaryIndex
-        /// @brief startMeshNode
-        /// @brief meshBoundOnly
-        /// @brief connectedNodes
-        /// @returns
-        std::vector<size_t> ShortestPath(size_t landBoundaryPolyline, size_t startMeshNode);
+        /// @brief Connect mesh nodes close to the landboundaryIndex using Dijkstra's algorithm
+        /// @brief[in] landboundaryIndex The index of a valid landboundary
+        /// @brief[in] startMeshNode the starting point
+        /// @returns A vector of connected edge indices for each node
+        std::vector<size_t> ShortestPath(size_t landboundaryIndex, size_t startMeshNode);
 
         /// @brief Compute the nearest land boundary segment (toland)
-        /// @param projection
         /// @param node
-        /// @param startLandBoundaryIndex
-        /// @param endLandBoundaryIndex
+        /// @param landboundaryIndex
         /// @param minimumDistance
         /// @param pointOnLandBoundary
         /// @param nearestLandBoundaryNodeIndex
         /// @param edgeRatio
         void NearestLandBoundarySegment(const Point& node,
-                                        size_t landBoundaryPolyline,
+                                        size_t landboundaryIndex,
                                         double& minimumDistance,
                                         Point& pointOnLandBoundary,
                                         size_t& nearestLandBoundaryNodeIndex,
