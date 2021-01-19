@@ -38,7 +38,45 @@ namespace meshkernel
 {
     class Polygons;
 
-    /// @brief A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2d meshes
+    /// @brief A class describing an unstructured mesh.
+    /// This class contains the shared functionality between 1d or 2d meshes.
+    ///
+    /// MeshKernel can handle 2d meshes and 1d meshes. Algorithms require cartain mappings to be available for both Mesh1D and Mesh2D, such as a mapping listing all edge indices connected to a particular node.
+    /// The methods computing these mappings are shared between Mesh2D and Mesh1D, and implemented in the Mesh base class.
+    /// The Mesh base class also contains other common data members, such as the node coordinate, the edges definitions, the face definitions and the mesh projection.
+    /// The Mesh base class has the following responsibilities:
+    ///
+    /// -   Construct the mesh faces from the nodes and edges and other mesh
+    ///     mappings required by all algorithms (Mesh::FindFaces).
+    ///     Mesh::FindFaces is using recursion to find faces with up to 6 edges (meshkernel::maximumNumberOfEdgesPerFace).
+    ///
+    /// -   Supporting mesh editing, namely:
+    ///
+    ///     -   Node merging
+    ///
+    ///     -   Node insertion
+    ///
+    ///     -   Moving a node
+    ///
+    ///     -   Inserting edges
+    ///
+    ///     -   Deleting edges
+    ///
+    ///     -   Merging nodes (merging two nodes at meshkernel::mergingDistance). This algorithm use an r-tree for inquiring
+    /// adjacent nodes, see later.
+    ///
+    /// -   Converting a curvilinear grid to an unstructured mesh (converting
+    ///     constructor).
+    ///
+    /// -   Holding the mesh projection (cartesian, spherical, or spherical
+    ///     accurate).
+    ///
+    /// -   Making a quad mesh from a polygon or from parameters.
+    ///
+    /// -   Making a triangular mesh from a polygon. This algorithm introduces a dependency on
+    /// the Richard Shewchuk Triangle.c library, added as an external component in extern/triangle folder.
+    ///
+    /// The public interface of the mesh class contains several algorithms modifying the mesh class members.
     class Mesh
     {
     public:
