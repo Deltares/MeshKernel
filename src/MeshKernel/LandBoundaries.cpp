@@ -301,17 +301,10 @@ namespace meshkernel
                 for (auto n = 1; n < numNodesLoc; n++)
                 {
                     const auto meshNode = nodesLoc[n];
-
-                    double minimumDistance;
-                    Point pointOnLandBoundary;
-                    size_t nearestLandBoundaryNodeIndex = sizetMissingValue;
-                    double edgeRatio;
-                    NearestLandBoundarySegment(m_mesh->m_nodes[meshNode],
-                                               sizetMissingValue,
-                                               minimumDistance,
-                                               pointOnLandBoundary,
-                                               nearestLandBoundaryNodeIndex,
-                                               edgeRatio);
+                    const auto [minimumDistance,
+                                pointOnLandBoundary,
+                                nearestLandBoundaryNodeIndex,
+                                edgeRatio] = NearestLandBoundarySegment(-1, m_mesh->m_nodes[meshNode]);
 
                     // find the segment index of the found point
                     size_t landboundarySegmentIndex = std::numeric_limits<size_t>::max();
@@ -440,11 +433,6 @@ namespace meshkernel
         auto lastSegment = m_meshNodesLandBoundarySegments[endMeshNode];
         size_t lastNode = sizetMissingValue;
         auto currentNode = endMeshNode;
-        double minDinstanceFromLandBoundary;
-        double distanceFromLandBoundary;
-        Point nodeOnLandBoundary;
-        size_t currentNodeLandBoundaryNodeIndex;
-        double currentNodeEdgeRatio;
         size_t numConnectedNodes = 0;
         numRejectedNodesInPath = 0;
         numNodesInPath = 0;
@@ -457,20 +445,16 @@ namespace meshkernel
             {
                 // Multiple boundary segments: take the nearest
                 const auto previousLandBoundarySegment = m_meshNodesLandBoundarySegments[currentNode];
-                double previousMinDistance;
-                NearestLandBoundarySegment(m_mesh->m_nodes[currentNode],
-                                           previousLandBoundarySegment,
-                                           previousMinDistance,
-                                           nodeOnLandBoundary,
-                                           currentNodeLandBoundaryNodeIndex,
-                                           currentNodeEdgeRatio);
 
-                NearestLandBoundarySegment(m_mesh->m_nodes[currentNode],
-                                           landboundaryIndex,
-                                           distanceFromLandBoundary,
-                                           nodeOnLandBoundary,
-                                           currentNodeLandBoundaryNodeIndex,
-                                           currentNodeEdgeRatio);
+                const auto [previousMinDistance,
+                            nodeOnPreviousLandBoundary,
+                            nodeOnPreviousLandBoundaryNodeIndex,
+                            previousLandBoundaryEdgeRatio] = NearestLandBoundarySegment(previousLandBoundarySegment, m_mesh->m_nodes[currentNode]);
+
+                const auto [distanceFromLandBoundary,
+                            nodeOnLandBoundary,
+                            currentNodeLandBoundaryNodeIndex,
+                            currentNodeEdgeRatio] = NearestLandBoundarySegment(landboundaryIndex, m_mesh->m_nodes[currentNode]);
 
                 const auto minDinstanceFromLandBoundaryCurrentNode = m_nodesMinDistances[currentNode];
 
@@ -484,22 +468,18 @@ namespace meshkernel
             {
                 if (IsEqual(m_nodesMinDistances[currentNode], doubleMissingValue))
                 {
-                    NearestLandBoundarySegment(m_mesh->m_nodes[currentNode],
-                                               sizetMissingValue,
-                                               minDinstanceFromLandBoundary,
-                                               nodeOnLandBoundary,
-                                               currentNodeLandBoundaryNodeIndex,
-                                               currentNodeEdgeRatio);
+                    const auto [minDinstanceFromLandBoundary,
+                                nodeOnLandBoundary,
+                                currentNodeLandBoundaryNodeIndex,
+                                currentNodeEdgeRatio] = NearestLandBoundarySegment(-1, m_mesh->m_nodes[currentNode]);
 
                     m_nodesMinDistances[currentNode] = minDinstanceFromLandBoundary;
                 }
 
-                NearestLandBoundarySegment(m_mesh->m_nodes[currentNode],
-                                           landboundaryIndex,
-                                           distanceFromLandBoundary,
-                                           nodeOnLandBoundary,
-                                           currentNodeLandBoundaryNodeIndex,
-                                           currentNodeEdgeRatio);
+                const auto [distanceFromLandBoundary,
+                            nodeOnLandBoundary,
+                            currentNodeLandBoundaryNodeIndex,
+                            currentNodeEdgeRatio] = NearestLandBoundarySegment(landboundaryIndex, m_mesh->m_nodes[currentNode]);
 
                 if (distanceFromLandBoundary < m_minDistanceFromLandFactor * m_nodesMinDistances[currentNode] &&
                     (!m_findOnlyOuterMeshBoundary || m_mesh->m_nodesTypes[currentNode] == 2 || m_mesh->m_nodesTypes[currentNode] == 3))
@@ -937,20 +917,17 @@ namespace meshkernel
         while (true)
         {
             isVisited[currentNodeIndex] = true;
-            Point currentNode = m_mesh->m_nodes[currentNodeIndex];
-            Point currentNodeOnLandBoundary;
-            size_t currentNodeLandBoundaryNodeIndex;
-            double currentNodeEdgeRatio;
-            double currentNodeDistance;
-            NearestLandBoundarySegment(currentNode,
-                                       landboundaryIndex,
-                                       currentNodeDistance,
-                                       currentNodeOnLandBoundary,
-                                       currentNodeLandBoundaryNodeIndex,
-                                       currentNodeEdgeRatio);
+            const Point currentNode = m_mesh->m_nodes[currentNodeIndex];
+
+            const auto [currentNodeDistance,
+                        currentNodeOnLandBoundary,
+                        currentNodeLandBoundaryNodeIndex,
+                        currentNodeEdgeRatio] = NearestLandBoundarySegment(landboundaryIndex, currentNode);
 
             if (currentNodeLandBoundaryNodeIndex == sizetMissingValue)
+            {
                 throw AlgorithmError("LandBoundaries::ShortestPath: Cannot compute the nearest node on the land boundary.");
+            }
 
             for (const auto& edgeIndex : m_mesh->m_nodesEdges[currentNodeIndex])
             {
@@ -967,29 +944,11 @@ namespace meshkernel
                 }
 
                 const auto neighbouringNode = m_mesh->m_nodes[neighbouringNodeIndex];
-                Point neighbouringNodeOnLandBoundary;
-                size_t neighbouringNodeLandBoundaryNodeIndex;
-                double neighbouringNodeEdgeRatio;
-                double neighbouringNodeDistance;
-                NearestLandBoundarySegment(neighbouringNode,
-                                           landboundaryIndex,
-                                           neighbouringNodeDistance,
-                                           neighbouringNodeOnLandBoundary,
-                                           neighbouringNodeLandBoundaryNodeIndex,
-                                           neighbouringNodeEdgeRatio);
 
-                Point middlePoint{(currentNode.x + neighbouringNode.x) * 0.5,
-                                  (currentNode.y + neighbouringNode.y) * 0.5};
-                Point middlePointOnLandBoundary;
-                size_t middlePointLandBoundaryNodeIndex;
-                double middlePointEdgeRatio;
-                double middlePointDistance;
-                NearestLandBoundarySegment(middlePoint,
-                                           landboundaryIndex,
-                                           middlePointDistance,
-                                           middlePointOnLandBoundary,
-                                           middlePointLandBoundaryNodeIndex,
-                                           middlePointEdgeRatio);
+                const auto [neighbouringNodeDistance,
+                            neighbouringNodeOnLandBoundary,
+                            neighbouringNodeLandBoundaryNodeIndex,
+                            neighbouringNodeEdgeRatio] = NearestLandBoundarySegment(landboundaryIndex, neighbouringNode);
 
                 double maximumDistance = std::max(currentNodeDistance, neighbouringNodeDistance);
 
@@ -1055,25 +1014,20 @@ namespace meshkernel
         return connectedNodeEdges;
     }
 
-    void LandBoundaries::NearestLandBoundarySegment(const Point& node,
-                                                    size_t landboundaryIndex,
-                                                    double& minimumDistance,
-                                                    Point& pointOnLandBoundary,
-                                                    size_t& nearestLandBoundaryNodeIndex,
-                                                    double& edgeRatio)
+    std::tuple<double, Point, size_t, double> LandBoundaries::NearestLandBoundarySegment(int segmentIndex, const Point& node)
     {
+        double minimumDistance = std::numeric_limits<double>::max();
+        Point pointOnLandBoundary = node;
+        size_t nearestLandBoundaryNodeIndex = sizetMissingValue;
+        double edgeRatio = -1.0;
+
         if (m_nodes.empty())
         {
-            return;
+            return {minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio};
         }
 
-        minimumDistance = std::numeric_limits<double>::max();
-        nearestLandBoundaryNodeIndex = sizetMissingValue;
-        edgeRatio = -1.0;
-        pointOnLandBoundary = node;
-
-        const auto startLandBoundaryIndex = landboundaryIndex == sizetMissingValue ? 0 : m_validLandBoundaries[landboundaryIndex][0];
-        const auto endLandBoundaryIndex = landboundaryIndex == sizetMissingValue ? m_nodes.size() : m_validLandBoundaries[landboundaryIndex][1];
+        const auto startLandBoundaryIndex = segmentIndex < 0 ? 0 : m_validLandBoundaries[segmentIndex][0];
+        const auto endLandBoundaryIndex = segmentIndex < 0 ? m_nodes.size() : m_validLandBoundaries[segmentIndex][1];
 
         for (auto n = startLandBoundaryIndex; n < endLandBoundaryIndex; n++)
         {
@@ -1092,6 +1046,8 @@ namespace meshkernel
                 edgeRatio = ratio;
             }
         }
+
+        return {minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio};
     }
 
     void LandBoundaries::SnapMeshToLandBoundaries()
@@ -1112,17 +1068,10 @@ namespace meshkernel
                     continue;
                 }
 
-                double minimumDistance;
-                Point pointOnLandBoundary;
-                size_t nearestLandBoundaryNodeIndex;
-                double edgeRatio;
-
-                NearestLandBoundarySegment(m_mesh->m_nodes[n],
-                                           meshNodeToLandBoundarySegment,
-                                           minimumDistance,
-                                           pointOnLandBoundary,
-                                           nearestLandBoundaryNodeIndex,
-                                           edgeRatio);
+                const auto [minimumDistance,
+                            pointOnLandBoundary,
+                            nearestLandBoundaryNodeIndex,
+                            edgeRatio] = NearestLandBoundarySegment(meshNodeToLandBoundarySegment, m_mesh->m_nodes[n]);
 
                 m_mesh->m_nodes[n] = pointOnLandBoundary;
             }

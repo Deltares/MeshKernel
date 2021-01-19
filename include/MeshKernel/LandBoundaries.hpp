@@ -137,18 +137,10 @@ namespace meshkernel
         std::vector<size_t> ShortestPath(size_t landboundaryIndex, size_t startMeshNode);
 
         /// @brief Compute the nearest land boundary segment (toland)
-        /// @param node
-        /// @param landboundaryIndex
-        /// @param minimumDistance
-        /// @param pointOnLandBoundary
-        /// @param nearestLandBoundaryNodeIndex
-        /// @param edgeRatio
-        void NearestLandBoundarySegment(const Point& node,
-                                        size_t landboundaryIndex,
-                                        double& minimumDistance,
-                                        Point& pointOnLandBoundary,
-                                        size_t& nearestLandBoundaryNodeIndex,
-                                        double& edgeRatio);
+        /// @param[in] landBoundaryIndex The land boundary index
+        /// @returns A tuple containing the distance of the node from the land boundary, the projected node on the land boundary, the closest land boundary node,
+        /// The length of the segment from the starting point to the projected point expressed as an edge ratio
+        std::tuple<double, Point, size_t, double> NearestLandBoundarySegment(int landBoundaryIndex, const Point& node);
 
         std::shared_ptr<Mesh2D> m_mesh;                         // A pointer to mesh
         std::shared_ptr<Polygons> m_polygons;                   // A pointer to polygons
