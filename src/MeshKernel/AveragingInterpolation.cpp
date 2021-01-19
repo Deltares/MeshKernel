@@ -75,18 +75,15 @@ void meshkernel::AveragingInterpolation::Compute()
             const auto firstValue = interpolatedResults[first];
             const auto secondValue = interpolatedResults[second];
 
-            const bool isFirstValueValid = std::abs(firstValue - doubleMissingValue) > std::numeric_limits<double>::epsilon();
-            const bool isSecondValueValid = std::abs(secondValue - doubleMissingValue) > std::numeric_limits<double>::epsilon();
-
-            if (isFirstValueValid && isSecondValueValid)
+            if (!IsEqual(firstValue, doubleMissingValue) && !IsEqual(secondValue, doubleMissingValue))
             {
                 m_results[e] = (firstValue + secondValue) * 0.5;
             }
-            else if (!isFirstValueValid)
+            else if (IsEqual(firstValue, doubleMissingValue))
             {
                 m_results[e] = secondValue;
             }
-            else if (!isSecondValueValid)
+            else if (IsEqual(secondValue, doubleMissingValue))
             {
                 m_results[e] = firstValue;
             }
@@ -124,8 +121,7 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnFaces()
             // it is difficult to do it otherwise without sharing or caching the query result
             for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
             {
-                const auto sample = m_samplesRtree.GetQueryIndex(i);
-                if (!m_visitedSamples[sample])
+                if (const auto sample = m_samplesRtree.GetQueryIndex(i); !m_visitedSamples[sample])
                 {
                     m_visitedSamples[sample] = true;
                     m_samples[sample].value -= 1;
@@ -198,11 +194,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
     }
 
     // compute the polygon bounding box
-
-    const auto boundingBox = GetBoundingBox(searchPolygon);
-    auto lowerLeft = std::get<0>(boundingBox);
-    auto upperRight = std::get<1>(boundingBox);
-    if (m_mesh->m_projection == Projection::spherical && upperRight.x - lowerLeft.x > 180.0)
+    if (auto [lowerLeft, upperRight] = GetBoundingBox(searchPolygon); m_mesh->m_projection == Projection::spherical && upperRight.x - lowerLeft.x > 180.0)
     {
         const auto xmean = 0.5 * (upperRight.x + lowerLeft.x);
         lowerLeft.x = std::numeric_limits<double>::max();
@@ -265,8 +257,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
 
         Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
         // assume here polygon has a size equal to numPolygonNodes + 1
-        const auto isInPolygon = IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh->m_projection);
-        if (isInPolygon)
+        if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh->m_projection))
         {
             if (m_method == Method::SimpleAveraging)
             {
@@ -280,8 +271,8 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
             }
             if (m_method == Method::Closest)
             {
-                const auto squaredDistance = ComputeSquaredDistance(interpolationPoint, samplePoint, m_mesh->m_projection);
-                if (squaredDistance < closestSquaredDistance)
+                if (const auto squaredDistance = ComputeSquaredDistance(interpolationPoint, samplePoint, m_mesh->m_projection);
+                    squaredDistance < closestSquaredDistance)
                 {
                     closestSquaredDistance = squaredDistance;
                     result = sampleValue;

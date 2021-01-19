@@ -71,10 +71,7 @@ namespace meshkernel
                 continue;
             }
 
-            const bool firstPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n], 0);
-            const bool secondPointInPolygon = m_polygons->IsPointInPolygon(m_nodes[n + 1], 0);
-
-            if (firstPointInPolygon || secondPointInPolygon)
+            if (m_polygons->IsPointInPolygon(m_nodes[n], 0) || m_polygons->IsPointInPolygon(m_nodes[n + 1], 0))
             {
                 nodeMask[n] = 1;
             }
@@ -108,10 +105,8 @@ namespace meshkernel
 
                 const auto edgeLength = ComputeDistance(firstMeshBoundaryNode, secondMeshBoundaryNode, m_mesh->m_projection);
 
-                const auto [distanceFromMeshNode, normalPoint, ratio] = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, m_mesh->m_projection);
-
-                const auto minDistance = m_closeFactor * edgeLength;
-                if (distanceFromMeshNode <= minDistance)
+                if (const auto [distanceFromMeshNode, normalPoint, ratio] = DistanceFromLine(firstMeshBoundaryNode, firstPoint, secondPoint, m_mesh->m_projection);
+                    distanceFromMeshNode <= m_closeFactor * edgeLength)
                 {
                     landBoundaryIsClose = true;
                     break;
