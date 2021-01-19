@@ -141,7 +141,7 @@ namespace meshkernel
             const auto endSegmentIndex = m_validLandBoundaries[i][1];
             if (endSegmentIndex - startSegmentIndex > 1)
             {
-                const auto split = static_cast<size_t>(startSegmentIndex + (endSegmentIndex - startSegmentIndex) / 2);
+                const auto split = startSegmentIndex + (endSegmentIndex - startSegmentIndex) / 2;
                 m_validLandBoundaries[i][1] = split;
                 m_validLandBoundaries.emplace_back(std::initializer_list<size_t>{split, endSegmentIndex});
             }
@@ -396,7 +396,7 @@ namespace meshkernel
         m_nodes.emplace_back(Point{doubleMissingValue, doubleMissingValue});
 
         // Update segment indices
-        m_validLandBoundaries.push_back(std::initializer_list<size_t>{m_nodes.size() - 3, m_nodes.size() - 2});
+        m_validLandBoundaries.emplace_back(std::initializer_list<size_t>{m_nodes.size() - 3, m_nodes.size() - 2});
     }
 
     void LandBoundaries::MakePath(size_t landboundaryIndex,

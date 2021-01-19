@@ -78,8 +78,7 @@ void meshkernel::Mesh::NodeAdministration()
         alreadyAddedEdge = false;
         for (auto i = 0; i < m_nodesNumEdges[secondNode]; ++i)
         {
-            const auto currentEdge = m_edges[m_nodesEdges[secondNode][i]];
-            if (currentEdge.first == firstNode || currentEdge.second == firstNode)
+            if (const auto currentEdge = m_edges[m_nodesEdges[secondNode][i]]; currentEdge.first == firstNode || currentEdge.second == firstNode)
             {
                 alreadyAddedEdge = true;
                 break;
