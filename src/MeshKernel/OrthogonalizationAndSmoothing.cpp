@@ -335,12 +335,11 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 void meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
 {
     //TODO :  implementation for m_mesh->m_projection == Projection::sphericalAccurate
-    throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
 
     if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
-        throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
     }
+    throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
 }
 
 void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
