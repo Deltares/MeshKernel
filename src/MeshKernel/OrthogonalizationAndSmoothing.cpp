@@ -336,14 +336,11 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
 {
     //TODO :  implementation for m_mesh->m_projection == Projection::sphericalAccurate
     throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
-<<<<<<< HEAD
 
     if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
         throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
     }
-=======
->>>>>>> master
 }
 
 void meshkernel::OrthogonalizationAndSmoothing::UpdateNodeCoordinates(size_t nodeIndex)
