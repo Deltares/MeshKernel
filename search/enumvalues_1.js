@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['triangulatepoints',['TriangulatePoints',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa3aac8b209f59ca7f9cb9f022bc72d76c',1,'meshkernel::TriangulationWrapper']]],
-  ['triangulatepointsandgeneratefaces',['TriangulatePointsAndGenerateFaces',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa8fd89bb22640c4c53333ab29b9f84207',1,'meshkernel::TriangulationWrapper']]]
+  ['edges_962',['Edges',['../namespacemeshkernel.html#acb97240557899a7564683794daab5016a484afb8d54ec549700b1fe96417519a9',1,'meshkernel']]]
 ];

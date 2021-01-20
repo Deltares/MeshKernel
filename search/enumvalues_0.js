@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['generatepoints',['GeneratePoints',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa97f35f197df956a37084d39c32d97ebf',1,'meshkernel::TriangulationWrapper']]]
+  ['closest_961',['Closest',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0a0c89b66f6bdfb128781e2c68d43364d8',1,'meshkernel::AveragingInterpolation']]]
 ];
