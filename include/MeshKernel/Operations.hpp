@@ -363,18 +363,18 @@ namespace meshkernel
     [[nodiscard]] Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection);
 
     /// @brief Determines if two segments are crossing (cross, cross3D)
-    /// @param[in] firstSegmentFistPoint The first point of the first segment
+    /// @param[in] firstSegmentFirstPoint The first point of the first segment
     /// @param[in] firstSegmentSecondPoint The second point of the first segment
     /// @param[in] secondSegmentFistPoint The first point of the second segment
     /// @param[in] secondSegmentSecondPoint The second point of the second segment
-    /// @param[in] adimensionalCrossProduct Compute the dimensionless cross product
+    /// @param[in] adimensionalCrossProduct Whether to compute the dimensionless cross product
     /// @param[in] projection The coordinate system projection
-    /// @param[in,out] intersectionPoint The intersection point
-    /// @param[in,out] crossProduct The cross product of the intersection
-    /// @param[in,out] ratioFirstSegment The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
-    /// @param[in,out] ratioSecondSegment The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
+    /// @param[out] intersectionPoint The intersection point
+    /// @param[out] crossProduct The cross product of the intersection
+    /// @param[out] ratioFirstSegment The distance of the intersection from the first node of the first segment, expressed as a ratio of the segment length
+    /// @param[out] ratioSecondSegment The distance of the intersection from the first node of the second segment, expressed as a ratio of the segment length
     /// @return If the two segments are crossing
-    [[nodiscard]] bool AreSegmentsCrossing(const Point& firstSegmentFistPoint,
+    [[nodiscard]] bool AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
                                            const Point& firstSegmentSecondPoint,
                                            const Point& secondSegmentFistPoint,
                                            const Point& secondSegmentSecondPoint,
@@ -386,20 +386,20 @@ namespace meshkernel
                                            double& ratioSecondSegment);
 
     /// @brief Computes the sign of the cross product between two segments (duitpl)
-    /// @param[in] firstSegmentFistPoint The first point of the first segment
+    /// @param[in] firstSegmentFirstPoint The first point of the first segment
     /// @param[in] firstSegmentSecondPoint The second point of the first segment
     /// @param[in] secondSegmentFistPoint The first point of the second segment
     /// @param[in] secondSegmentSecondPoint The second point of the second segment
     /// @param[in] projection The coordinate system projection
     /// @return The cross product sign
-    [[nodiscard]] int CrossProductSign(const Point& firstSegmentFistPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
+    [[nodiscard]] int CrossProductSign(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFistPoint, const Point& secondSegmentSecondPoint, const Projection& projection);
 
     /// @brief Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened
     /// @param[in] polygon The input vector containing the nodes of the polygon (must be closed)
     /// @param[in] projection The projection to use.
-    /// @param[in,out] area The resulting area.
-    /// @param[in,out] centerOfMass The resulting center of mass.
-    /// @param[in,out] isCounterClockWise The orientation of the edges.
+    /// @param[out] area The resulting area.
+    /// @param[out] centerOfMass The resulting center of mass.
+    /// @param[out] isCounterClockWise The orientation of the edges.
     void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
 
     /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point
@@ -457,7 +457,7 @@ namespace meshkernel
     /// @param[in] v The vector of points
     /// @param[in] projection The projection to use.
     /// @param[in,out] result the resulting containing the dimensionless distances.
-    /// @param[in,out] totalDistance The dimensional total distance (used for normalization).
+    /// @param[out] totalDistance The dimensional total distance (used for normalization).
     void ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, const Projection& projection, std::vector<double>& result, double& totalDistance);
 
     /// @brief Computes the sign of a type
