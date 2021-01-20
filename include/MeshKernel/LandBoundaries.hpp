@@ -70,8 +70,9 @@ namespace meshkernel
         /// and either close or not to the mesh boundary (admin_landboundary_segments)
         ///
         /// This method uses a Point vector member variable and identifies
-        /// the start-end points of each  land boundary polyline with the requirement
-        /// that all polyline nodes are close enough to the mesh boundary.
+        /// the start-end points of each land boundary polyline with the requirement
+        /// that all polyline nodes are close enough to the mesh boundary and is inside the polygon.
+        /// \image html LandBoundarySegmentation_step1.jpg  "Land boundary segmentation"
         void Administrate();
 
         /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline)
@@ -126,6 +127,7 @@ namespace meshkernel
         /// @param[out] rightIndex
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
+        //// \image html LandBoundaryNodeFlagging_step2.jpg  "Flag the mesh node close to the land boundary"
         void ComputeMask(size_t segmentIndex,
                          bool meshBoundOnly,
                          size_t startLandBoundaryIndex,
@@ -182,6 +184,7 @@ namespace meshkernel
         /// @param[in] rightEdgeRatio
         /// @param[out] startMeshNode
         /// @param[out] endMeshNode
+        //// \image html LandBoundaryDijkstra_step4.jpg  "Compute the land boundary representation on the mesh using the Djikstra shortest path algorithm."
         void FindStartEndMeshNodes(size_t endLandBoundaryIndex,
                                    size_t leftIndex,
                                    size_t rightIndex,
@@ -197,6 +200,7 @@ namespace meshkernel
         /// @param[in] endPoint
         /// @param[out] startMeshNode
         /// @param[out] endMeshNode
+        /// \image html LandBoundaryStartEndNodes_step3.jpg  "Find the start and end mesh nodes of the land boundary on the mesh."
         void FindStartEndMeshNodesFromEdges(size_t startEdge,
                                             size_t endEdge,
                                             Point startPoint,
