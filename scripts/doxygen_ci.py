@@ -53,7 +53,11 @@ design_path = docs_dir / "design.md"
 doxyfile_in_path = docs_dir / "Doxyfile.in"
 doxyfile_path = output_dir / "Doxyfile"
 doxygen_log_path = output_dir / "Doxygen_log.txt"
-doxygen_input_list = f"{meshkernel_include_dir.resolve()} {meshkernelapi_include_dir.resolve()} {main_page_path.resolve()} {introduction_path.resolve()} {design_path.resolve()}"
+doxygen_input_list = f"{meshkernel_include_dir.resolve()}    \
+                       {meshkernelapi_include_dir.resolve()} \
+                       {main_page_path.resolve()}            \
+                       {introduction_path.resolve()}         \
+                       {design_path.resolve()}"
 
 # The dir tree is not created automatically
 output_dir.parent.mkdir(exist_ok=True)
