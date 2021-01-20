@@ -1,4 +1,4 @@
-# Introduction
+# Introduction {#Introduction}
 
 The MeshKernel library is a C++ dynamic library that performs generation and manipulations of 2D grids.
 The code was re-written from a FORTRAN code base to C++ for the following reasons:

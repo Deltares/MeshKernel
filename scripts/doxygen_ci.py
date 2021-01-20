@@ -16,8 +16,8 @@ def configure_doxyfile(
         doxyfile_data = file.read()
 
     doxyfile_data = doxyfile_data.replace("@DOXYGEN_INPUT_LIST@", doxygen_input_list)
-    doxyfile_data = doxyfile_data.replace("@DOXYGEN_OUTPUT_DIR@", str(output_dir))
-    doxyfile_data = doxyfile_data.replace("@CMAKE_CURRENT_SOURCE_DIR@", str(docs_dir))
+    doxyfile_data = doxyfile_data.replace("@DOXYGEN_OUTPUT_DIR@", str(output_dir.resolve()))
+    doxyfile_data = doxyfile_data.replace("@CMAKE_CURRENT_SOURCE_DIR@", str(docs_dir.resolve()))
     doxyfile_data = doxyfile_data.replace(
         "@DOXYGEN_IMAGE_DIR@", str(docs_dir / "images")
     )
@@ -53,7 +53,7 @@ design_path = docs_dir / "design.md"
 doxyfile_in_path = docs_dir / "Doxyfile.in"
 doxyfile_path = output_dir / "Doxyfile"
 doxygen_log_path = output_dir / "Doxygen_log.txt"
-doxygen_input_list = f"{meshkernel_include_dir} {meshkernelapi_include_dir} {main_page_path} {introduction_path} {design_path}"
+doxygen_input_list = f"{meshkernel_include_dir.resolve()} {meshkernelapi_include_dir.resolve()} {main_page_path.resolve()} {introduction_path.resolve()} {design_path.resolve()}"
 
 # The dir tree is not created automatically
 output_dir.parent.mkdir(exist_ok=True)

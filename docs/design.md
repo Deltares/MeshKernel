@@ -1,5 +1,5 @@
 
-# Design
+# Design {#Design}
 
 The choices made for the representation of the geometric entities have
 a strong influence on library design and performance. In MeshKernel an
