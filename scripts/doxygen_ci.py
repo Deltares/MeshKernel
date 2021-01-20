@@ -48,12 +48,12 @@ docs_dir = root_dir / "docs"
 
 # Set paths
 main_page_path = docs_dir / "main_page.md"
+introduction_path = docs_dir / "introduction.md"
+design_path = docs_dir / "design.md"
 doxyfile_in_path = docs_dir / "Doxyfile.in"
 doxyfile_path = output_dir / "Doxyfile"
 doxygen_log_path = output_dir / "Doxygen_log.txt"
-doxygen_input_list = (
-    f"{meshkernel_include_dir} {meshkernelapi_include_dir} {main_page_path}"
-)
+doxygen_input_list = f"{meshkernel_include_dir} {meshkernelapi_include_dir} {main_page_path} {introduction_path} {design_path}"
 
 # The dir tree is not created automatically
 output_dir.parent.mkdir(exist_ok=True)
