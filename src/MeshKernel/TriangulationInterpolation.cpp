@@ -87,9 +87,7 @@ void meshkernel::TriangulationInterpolation::Compute()
     samplesRtree.BuildTree(trianglesCircumcenters);
 
     // compute the sample bounding box
-    const auto boundingBox = GetBoundingBox(m_samples);
-    Point lowerLeft = std::get<0>(boundingBox);
-    Point upperRight = std::get<1>(boundingBox);
+    const auto [lowerLeft, upperRight] = GetBoundingBox(m_samples);
 
     // loop over locations
     for (auto n = 0; n < m_locations.size(); ++n)

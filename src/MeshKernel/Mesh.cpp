@@ -61,8 +61,7 @@ void meshkernel::Mesh::NodeAdministration()
         auto alreadyAddedEdge = false;
         for (auto i = 0; i < m_nodesNumEdges[firstNode]; ++i)
         {
-            const auto currentEdge = m_edges[m_nodesEdges[firstNode][i]];
-            if (currentEdge.first == secondNode || currentEdge.second == secondNode)
+            if (const auto currentEdge = m_edges[m_nodesEdges[firstNode][i]]; currentEdge.first == secondNode || currentEdge.second == secondNode)
             {
                 alreadyAddedEdge = true;
                 break;
@@ -105,17 +104,13 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     std::vector<bool> connectedNodes(m_nodes.size(), false);
     size_t numInvalidEdges = 0;
 
-    for (const auto& edge : m_edges)
+    for (const auto& [firstNode, secondNode] : m_edges)
     {
-        auto const firstNode = edge.first;
-        auto const secondNode = edge.second;
-
         if (firstNode == sizetMissingValue || secondNode == sizetMissingValue)
         {
             numInvalidEdges++;
             continue;
         }
-
         connectedNodes[firstNode] = true;
         connectedNodes[secondNode] = true;
     }
@@ -158,20 +153,17 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     }
 
     // Flag invalid edges
-    for (auto& edge : m_edges)
+    for (auto& [firstNode, secondNode] : m_edges)
     {
-        auto const firstNode = edge.first;
-        auto const secondNode = edge.second;
-
         if (firstNode != sizetMissingValue && secondNode != sizetMissingValue && validNodesIndices[firstNode] != sizetMissingValue && validNodesIndices[secondNode] != sizetMissingValue)
         {
-            edge.first = validNodesIndices[firstNode];
-            edge.second = validNodesIndices[secondNode];
+            firstNode = validNodesIndices[firstNode];
+            secondNode = validNodesIndices[secondNode];
             continue;
         }
 
-        edge.first = sizetMissingValue;
-        edge.second = sizetMissingValue;
+        firstNode = sizetMissingValue;
+        secondNode = sizetMissingValue;
     }
 
     // Remove invalid nodes, without reducing capacity
