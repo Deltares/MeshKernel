@@ -6,11 +6,8 @@ endif()
 
 set(DOXYGEN_IMAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/images)
 set(DOXYGEN_INPUT_LIST
-    "${PROJECT_SOURCE_DIR}/include/MeshKernel   \
-    ${PROJECT_SOURCE_DIR}/include/MeshKernelApi \
-    ${CMAKE_CURRENT_SOURCE_DIR}/main_page.md    \
-    ${CMAKE_CURRENT_SOURCE_DIR}/introduction.md \
-    ${CMAKE_CURRENT_SOURCE_DIR}/design.md")
+    "${PROJECT_SOURCE_DIR}/include/MeshKernel ${PROJECT_SOURCE_DIR}/include/MeshKernelApi ${CMAKE_CURRENT_SOURCE_DIR}/main_page.md ${CMAKE_CURRENT_SOURCE_DIR}/introduction.md ${CMAKE_CURRENT_SOURCE_DIR}/design.md"
+)
 set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/html/index.html)
 set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
