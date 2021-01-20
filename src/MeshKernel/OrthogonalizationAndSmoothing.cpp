@@ -338,7 +338,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
 
     if (m_mesh->m_projection == Projection::sphericalAccurate)
     {
-        //TODO : missing implementation
+        throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
     }
 }
 

@@ -43,7 +43,11 @@ namespace meshkernel
     class Polygons;
     class GeometryList;
 
-    /// @brief A class describing an unstructured 2d mesh
+    /// @brief A class derived from Mesh, which describes unstructures 2d meshes.
+    ///
+    /// When communicating with the client only unstructured meshes are used.
+    /// Some algorithms generate curvilinear grids, but these are converted to a mesh
+    /// instance when communicating with the client.
     class Mesh2D : public Mesh
     {
     public:
@@ -206,6 +210,20 @@ namespace meshkernel
         void DeleteSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Deletes small triangles at the boundaries (removesmallflowlinks, part 2)
+        ///
+        /// This algorithm removes triangles having the following properties:
+        /// - The are at mesh boundary.
+        ///
+        /// - One or more neighboring faces are non-triangles.
+        ///
+        /// - The ratio of the face area to the average area of neighboring non
+        ///   triangles is less than a minimum ratio (defaults to 0.2).
+        ///
+        /// - The absolute cosine of one internal angle is less than 0.2.
+        ///
+        /// These triangles having the above properties are merged by collapsing the
+        /// face nodes to the node having the minimum absolute cosine (e.g. the node
+        /// where the internal angle is closer to 90 degrees).
         /// @param[in] minFractionalAreaTriangles Small triangles at the boundaries will be eliminated.
         /// This threshold is the ration of the face area to the average area of neighboring faces.
         void DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);

@@ -40,8 +40,49 @@ namespace meshkernel
     class Splines;
 
     /// @brief A class used to create a curvilinear grid from a central spline
-    ///
     /// Usually this class should be preferred over CurvilinearGridFromSplinesTransfinite.
+    ///
+    /// In this class, the algorithm to gradually develop a mesh from the
+    /// centreline of the channel towards the boundaries is implemented. It is
+    /// the most complex algorithm in MeshKernel. The curvilinear mesh is
+    /// developed from the center spline by the following steps:
+    ///
+    /// - Initialization step
+    ///
+    ///     - The splines are labeled (central or transversal spline) based
+    ///       on the number of corner points and the intersecting angles.
+    ///
+    ///     - The canal heights at a different position along the central
+    ///       spline are computed from the crossing splines.
+    ///
+    ///     - The normal vectors of each m part are computed, as these
+    ///       determine the growing front directions.
+    ///
+    ///     - The edge velocities to apply to each normal direction are
+    ///       computed.
+    ///
+    /// - Iteration step, where the mesh is grown of one layer at the time
+    ///   from the left and right sides of the central spline:
+    ///
+    ///     - Compute the node velocities from the edge velocities.
+    ///
+    ///     - Find the nodes at the front (the front might miss some faces and
+    ///       be irregular).
+    ///
+    ///     - Compute the maximum growth time to avoid faces with intersecting
+    ///       edges.
+    ///
+    ///     - Grow the grid by translating the nodes at the front by an amount
+    ///       equal to the product of the nodal velocity by the maximum grow
+    ///       time.
+    ///
+    /// - Post-processing
+    ///
+    ///     - Remove the skewed faces whose aspect ratio exceeds a prescribed
+    ///       value.
+    ///
+    ///     - Compute the resulting CurvilinearGrid from the internal table of
+    ///       computed nodes (m_gridPoints).
     class CurvilinearGridFromSplines
     {
     public:
