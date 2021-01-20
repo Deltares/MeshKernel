@@ -37,7 +37,12 @@ namespace meshkernel
     class Polygons;
     class Mesh2D;
 
-    /// @brief A class describing land boundaries, which are used to visualise the land-water interface
+    /// @brief A class describing land boundaries.
+    /// These are used to visualise the land-water interface.
+    ///
+    /// The main responsibility of this class is to store the land boundary polygons,
+    /// categorize them based on their proximity to a mesh
+    /// and provide the functionality to assign each mesh node to the appropriate land boundary polyline.
     class LandBoundaries
     {
 
@@ -53,15 +58,21 @@ namespace meshkernel
         };
 
         /// @brief Default Ctor
-        /// @brief landBoundary
-        /// @brief mesh
-        /// @brief polygons
+        /// @param[in] landBoundary
+        /// @param[in] mesh
+        /// @param[in] polygons
         /// @returns
         LandBoundaries(const std::vector<Point>& landBoundary,
                        std::shared_ptr<Mesh2D> mesh,
                        std::shared_ptr<Polygons> polygons);
 
-        /// @brief The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary (admin_landboundary_segments)
+        /// @brief The land boundary will be split into segments that are within the polygon,
+        /// and either close or not to the mesh boundary (admin_landboundary_segments)
+        ///
+        /// This method uses a Point vector member variable and identifies
+        /// the start-end points of each land boundary polyline with the requirement
+        /// that all polyline nodes are close enough to the mesh boundary and is inside the polygon.
+        /// \image html LandBoundarySegmentation_step1.jpg  "Land boundary segmentation"
         void Administrate();
 
         /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline)
@@ -107,7 +118,7 @@ namespace meshkernel
                       size_t& numRejectedNodesInPath);
 
         /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current segmentIndex.
-        /// Is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
+        /// It is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
         /// @param[in] segmentIndex
         /// @param[in] meshBoundOnly
         /// @param[in] startLandBoundaryIndex
@@ -116,6 +127,7 @@ namespace meshkernel
         /// @param[out] rightIndex
         /// @param[out] leftEdgeRatio
         /// @param[out] rightEdgeRatio
+        //// \image html LandBoundaryNodeFlagging_step2.jpg  "Flag the mesh node close to the land boundary"
         void ComputeMask(size_t segmentIndex,
                          bool meshBoundOnly,
                          size_t startLandBoundaryIndex,
@@ -172,6 +184,7 @@ namespace meshkernel
         /// @param[in] rightEdgeRatio
         /// @param[out] startMeshNode
         /// @param[out] endMeshNode
+        //// \image html LandBoundaryDijkstra_step4.jpg  "Compute the land boundary representation on the mesh using the Djikstra shortest path algorithm."
         void FindStartEndMeshNodes(size_t endLandBoundaryIndex,
                                    size_t leftIndex,
                                    size_t rightIndex,
@@ -187,6 +200,7 @@ namespace meshkernel
         /// @param[in] endPoint
         /// @param[out] startMeshNode
         /// @param[out] endMeshNode
+        /// \image html LandBoundaryStartEndNodes_step3.jpg  "Find the start and end mesh nodes of the land boundary on the mesh."
         void FindStartEndMeshNodesFromEdges(size_t startEdge,
                                             size_t endEdge,
                                             Point startPoint,
@@ -238,7 +252,7 @@ namespace meshkernel
                                                          size_t startLandBoundaryIndex,
                                                          size_t endLandBoundaryIndex);
 
-        std::shared_ptr<Mesh2D> m_mesh;                      // A pointer to mesh
+        std::shared_ptr<Mesh2D> m_mesh;                    // A pointer to mesh
         std::shared_ptr<Polygons> m_polygons;              // A pointer to polygons
         std::vector<Point> m_nodes;                        // XLAN, YLAN, ZLAN
         std::vector<Point> m_polygonNodesCache;            // array of points (e.g. points of a face)

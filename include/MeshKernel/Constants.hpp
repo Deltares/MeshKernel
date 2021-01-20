@@ -43,7 +43,7 @@ namespace meshkernel
 
     // often used values
     const double squareRootOfThree = 1.73205080756887729352; ///< The result of sqrt(3)
-    const double oneThird = 1.0 / 3.0;                         ///< The result of 1 / 3
+    const double oneThird = 1.0 / 3.0;                       ///< The result of 1 / 3
 
     // geometric constants
     const double degrad_hp = M_PI / 180.0;                   ///< Conversion factor from degrees to radians(pi / 180)
@@ -91,10 +91,10 @@ namespace meshkernel
     /// @brief MeshLocations locations
     enum class MeshLocations
     {
-        Faces = 0,
-        Nodes = 1,
-        Edges = 2,
-        None
+        Faces = 0, ///< Faces
+        Nodes = 1, ///< Nodes
+        Edges = 2, ///< Edges
+        None       ///< None
     };
 
 } // namespace meshkernel
