@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="Enumerations">
+    <Position X="2.527" Y="1.997" Height="0.504" Width="1.452" />
+  </Comment>
+  <Comment CommentText="Base geometrical types">
+    <Position X="4.333" Y="1.969" Height="0.542" Width="1.452" />
+  </Comment>
+  <Comment CommentText="Meshes">
+    <Position X="7.342" Y="2.004" Height="0.542" Width="1.452" />
+  </Comment>
+  <Comment CommentText="Spatial tree">
+    <Position X="10.299" Y="1.988" Height="0.542" Width="1.452" />
+  </Comment>
+  <Comment CommentText="Mesh modifiers">
+    <Position X="13.283" Y="1.972" Height="0.542" Width="2.414" />
+  </Comment>
+  <Comment CommentText="Reference to meshes (as shared pointers)">
+    <Position X="18.063" Y="1.919" Height="0.542" Width="4.147" />
+  </Comment>
+  <Comment CommentText="Interpolators">
+    <Position X="23.997" Y="1.881" Height="0.542" Width="2.489" />
+  </Comment>
+  <Comment CommentText="Curvilinear grids">
+    <Position X="27.018" Y="1.865" Height="0.542" Width="3.046" />
+  </Comment>
+  <Class Name="meshkernel::Polygons" Collapsed="true">
+    <Position X="4.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARQAAAAAAAAAAAAICAaAAAAAQAAAAAFAAAAAAAgMAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Polygons.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="meshkernel::Mesh" Collapsed="true">
+    <Position X="7.25" Y="2.75" Width="1.5" />
+    <AssociationLine Name="m_nodesRTree" Type="meshkernel::RTree" FixedToPoint="true">
+      <Path>
+        <Point X="8.75" Y="3.188" />
+        <Point X="10.25" Y="3.188" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.06" Y="0.287" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="m_edgesRTree" Type="meshkernel::RTree">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.039" Y="0.245" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>gCQUAAAAFIwA4MEQAikAABO0RABAQAEEgRARBABEASA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Mesh.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_nodesRTree" />
+      <Field Name="m_edgesRTree" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="meshkernel::Mesh1D" Collapsed="true">
+    <Position X="8.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Mesh1D.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="meshkernel::CurvilinearGrid" Collapsed="true">
+    <Position X="4.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\CurvilinearGrid.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="meshkernel::Mesh2D" Collapsed="true">
+    <Position X="6.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AkB6AQAAAAAAWBwBCGAJAaAAQBEICLMABRIAAKKAAGQ=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Mesh2D.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="meshkernel::Smoother" Collapsed="true">
+    <Position X="13.25" Y="5" Width="2.5" />
+    <AssociationLine Name="m_mesh" Type="std::shared_ptr&lt;_Ty&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="5.388" />
+        <Point X="19.5" Y="5.388" />
+        <Point X="19.5" Y="3.441" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="1.598" Y="2.848" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AEQBAgAgDQAAIwARDJAIAkAdREAgUgAGGEAMEkFBAAI=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Smoother.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_mesh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="meshkernel::RTree" Collapsed="true">
+    <Position X="10.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAIAAAIgEAAAAIACAAEBAACAAgAAAABAAAAABQ=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\RTree.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="meshkernel::MeshRefinement" Collapsed="true">
+    <Position X="13.25" Y="2.75" Width="2.5" />
+    <NestedTypes>
+      <Enum Name="meshkernel::MeshRefinement::RefinementType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\MeshRefinement.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <AssociationLine Name="m_mesh" Type="std::shared_ptr&lt;_Ty&gt;">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="1.304" Y="0.087" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>EEACAggAAEIQCQEEAAAYEEAEEAiAAgIACACgoCAAAQA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\MeshRefinement.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_samplesRTree" />
+      <Field Name="m_mesh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="meshkernel::Orthogonalizer" Collapsed="true">
+    <Position X="13.25" Y="4.25" Width="2.5" />
+    <AssociationLine Name="m_mesh" Type="std::shared_ptr&lt;_Ty&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="4.531" />
+        <Point X="18.938" Y="4.531" />
+        <Point X="18.938" Y="3.441" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.771" Y="2.269" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AEAKAAAACAAAAAABAgAAAEAACAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Orthogonalizer.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_mesh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="meshkernel::OrthogonalizationAndSmoothing" Collapsed="true">
+    <Position X="13.25" Y="3.5" Width="2.5" />
+    <AssociationLine Name="m_mesh" Type="std::shared_ptr&lt;_Ty&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="3.781" />
+        <Point X="18.375" Y="3.781" />
+        <Point X="18.375" Y="3.441" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.075" Y="1.674" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QEACEAASBwQEAQEQAAAAAEAJRAACgAIoIBABAUBQAAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\OrthogonalizationAndSmoothing.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_mesh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="meshkernel::TriangulationInterpolation" Collapsed="true">
+    <Position X="24" Y="3.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>CEAAAAAAAAAAUAAAACAAAAAABAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\TriangulationInterpolation.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="meshkernel::AveragingInterpolation" Collapsed="true">
+    <Position X="24" Y="2.75" Width="2.5" />
+    <NestedTypes>
+      <Enum Name="meshkernel::AveragingInterpolation::Method" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\AveragingInterpolation.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <AssociationLine Name="m_mesh" Type="std::shared_ptr&lt;_Ty&gt;">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.869" Y="0.07" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>SFAIAAAQAAAAEAAAAAAAgGAEBAAAAASAAASAAAAAAIQ=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\AveragingInterpolation.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_mesh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="meshkernel::LandBoundaries" Collapsed="true">
+    <Position X="13.25" Y="5.75" Width="2.5" />
+    <NestedTypes>
+      <Enum Name="meshkernel::LandBoundaries::ProjectToLandBoundaryOption" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\LandBoundaries.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <AssociationLine Name="m_mesh" Type="std::shared_ptr&lt;_Ty&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="6" />
+        <Point X="20.188" Y="6" />
+        <Point X="20.188" Y="3.441" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="2.275" Y="3.521" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AARQAkQDAgAAIAEFgAAIAFAGQCAAEgIAKgIIAAhABAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\LandBoundaries.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_mesh" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="meshkernel::CurvilinearGridFromPolygon" Collapsed="true">
+    <Position X="27" Y="2.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAIAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\CurvilinearGridFromPolygon.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="meshkernel::Splines" Collapsed="true">
+    <Position X="4.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABABAAAACAAAAAAACCAIAIAAAAQIAAACFQAAQAAAAAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Splines.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="meshkernel::CurvilinearGridFromSplines" Collapsed="true">
+    <Position X="27" Y="3.5" Width="3" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="meshkernel::CurvilinearGridFromSplines::SplineTypes" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\CurvilinearGridFromSplines.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>F0HjIAAYNLAAASAgGAgAADAMgAAoIR0MRiAACAMDExY=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\CurvilinearGridFromSplines.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="meshkernel::CurvilinearGridFromSplinesTransfinite" Collapsed="true">
+    <Position X="27" Y="4.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AEAAgAAAIoAAIAAAAAAgAAAAAAAAgIAABAAAAACEAQA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\CurvilinearGridFromSplinesTransfinite.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="std::shared_ptr&lt;_Ty&gt;" Collapsed="true">
+    <Position X="18" Y="2.75" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAEAAAIAgAAEAEAAICgAQAgAAAAAAA=</HashCode>
+      <FileName>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.28.29333\include\memory</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="meshkernel::Contacts" Collapsed="true">
+    <Position X="13.25" Y="6.5" Width="2.5" />
+    <AssociationLine Name="m_mesh1d" Type="std::shared_ptr&lt;_Ty&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="6.867" />
+        <Point X="21.938" Y="6.867" />
+        <Point X="21.938" Y="3.441" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="5.224" Y="3.644" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="m_mesh2d" Type="std::shared_ptr&lt;_Ty&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="6.652" />
+        <Point X="21.25" Y="6.652" />
+        <Point X="21.25" Y="3.441" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="4.517" Y="2.915" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>BhAAAAAAIggAAAIACUAAAAAAAAQACAAEAAAAAAAgAAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Contacts.hpp</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_mesh1d" />
+      <Field Name="m_mesh2d" />
+    </ShowAsAssociation>
+  </Class>
+  <Struct Name="meshkernel::Point" Collapsed="true">
+    <Position X="4.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAgAAAAAgAAQAAAAAAAAAAAABgAAAAAAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Entities.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="meshkernel::Sample" Collapsed="true">
+    <Position X="4.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAACAABABgAAAAAAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Entities.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="meshkernel::Projection" Collapsed="true">
+    <Position X="2.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IEAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>D:\ENGINES\MeshKernel\branches\GRIDEDIT-297_markdown_doc\MeshKernel\include\MeshKernel\Entities.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

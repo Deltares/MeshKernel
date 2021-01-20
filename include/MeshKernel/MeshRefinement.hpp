@@ -41,7 +41,40 @@ namespace meshkernel
     // Forward declarations
     class Mesh2D;
 
-    /// @brief A class used to refine a Mesh2D
+    /// @brief A class used to refine a Mesh2D instance
+    ///
+    /// Mesh refinement operates on Mesh2D and is based on
+    /// iteratively splitting the edges until the desired level of refinement
+    /// or the maximum number of iterations is reached.
+    /// Refinement can be based on samples or based on a polygon.
+    /// The refinement based on samples uses
+    /// the averaging interpolation algorithm to compute the level of refinement
+    /// from the samples to the centers of the edges.
+    /// At a high level, the mesh refinement is performed as follow:
+    ///
+    /// -   Flag the nodes inside the refinement polygon.
+    ///
+    /// -   Flag all face nodes of the faces not fully included in the polygon.
+    ///
+    /// -   Execute the refinement iterations
+    ///
+    ///     1.  For each edge store the index of its neighboring edge sharing a
+    ///         hanging node (the so-called brother edge). This is required for
+    ///         the following steps because edges with hanging nodes will not be
+    ///         divided further.
+    ///
+    ///     2.  Compute edge and face refinement masks from the samples.
+    ///
+    ///     3.  Compute if a face should be divided based on the computed
+    ///         refinement value.
+    ///
+    ///     4.  Split the face by dividing the edges.
+    ///
+    /// -   Connect the hanging nodes if required, thus forming triangular faces
+    ///     in the transition area.
+    ///
+    /// As with OrthogonalizationAndSmoothing, MeshRefinement modifies an
+    /// existing Mesh2D instance.
     class MeshRefinement
     {
         enum class RefinementType
