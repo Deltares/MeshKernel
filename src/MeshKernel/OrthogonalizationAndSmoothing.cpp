@@ -334,6 +334,10 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 void meshkernel::OrthogonalizationAndSmoothing::ComputeCoordinates() const
 {
     //TODO :  implementation for m_mesh->m_projection == Projection::sphericalAccurate
+
+    if (m_mesh->m_projection == Projection::sphericalAccurate)
+    {
+    }
     throw AlgorithmError("OrthogonalizationAndSmoothing::ComputeCoordinates: This functionality is not implemented yet.");
 }
 

@@ -36,6 +36,11 @@ namespace meshkernel
     class CurvilinearGrid;
 
     /// @brief A class describing splines
+    ///
+    /// This class stores the corner points of each spline.
+    /// Besides the corner points, the derivatives at the corner points are also stored.
+    /// The coordinates of the points between the corner points are computed in the
+    /// method Splines::InterpolatePointsOnSpline.
     class Splines
     {
 
