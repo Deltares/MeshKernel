@@ -43,9 +43,43 @@ namespace meshkernel
     class Polygons;
     enum class Projection;
 
-    /// <summary>
-    /// Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or area).
-    /// </summary>
+    /// @brief Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or area).
+    ///
+    /// This class implements the mesh orthogonalization and smoothing algorithm
+    /// as described in D-Flow FM technical manual (consult this manual for the
+    /// mathematical details on the equations). The algorithm operates on mesh2d and
+    /// is composed of two differential equations: the first equation maximizes orthogonalization
+    /// between edges and flow edges and the second equation reduces the
+    /// differences of the internal mesh angles (mesh smoothness). For this
+    /// reason, the OrthogonalizationAndSmoothing class is composed of a
+    /// smoother and an orthogonalizer, where the nodal contributions are
+    /// computed by separate classes. Essentially, the algorithm executes the following steps:
+    ///
+    /// -   An initialization step: The original mesh boundaries are saved. In
+    ///     case the mesh needs to be snapped to the land boundaries, the indices of the land boundaries
+    ///     are mapped to the boundary mesh edges (`LandBoundaries::FindNearestMeshBoundary`).
+    ///
+    /// -   An outer loop, which itself is composed of the following parts:
+    ///
+    ///     1.  Computation of the orthogonalizer contributions.
+    ///
+    ///     2.  Computation of the smoother contributions.
+    ///
+    ///     3.  Allocation of the linear system to be solved.
+    ///
+    ///     4.  Summation of the two contributions (matrix assembly). The two
+    ///         contributions are weighted based on the desired smoothing to
+    ///         orthogonality ratio. OpenMP parallelization is used when
+    ///         summing the terms (loop iterations are independent).
+    ///
+    /// -   An inner iteration: the resulting linear system is solved
+    ///     explicitly. The nodal coordinates are updated and the nodes moving
+    ///     on the mesh boundary are projected to the original mesh boundary
+    ///     (`OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary`).
+    ///     In case a projection to land boundary is requested, the mesh nodes are projected to the land
+    ///     boundaries. An OpenMP parallelization is used in
+    ///     `OrthogonalizationAndSmoothing::InnerIteration` because the update
+    ///     of the nodal coordinates is made iteration-independent.
     class OrthogonalizationAndSmoothing
     {
 

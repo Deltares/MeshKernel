@@ -35,7 +35,9 @@
 /// @brief Contains the logic of the C++ static library
 namespace meshkernel
 {
-    /// @brief A class describing an unstructured 1d mesh
+    /// @brief A class derived from Mesh, which describes 1d meshes.
+    ///
+    /// A 1d mesh is composed of a series of connected edges representing 1d real word features, such as pipes or a sewage network.
     class Mesh1D : public Mesh
     {
     public:

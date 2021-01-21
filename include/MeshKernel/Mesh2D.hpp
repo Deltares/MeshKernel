@@ -42,7 +42,11 @@ namespace meshkernel
     class Polygons;
     class GeometryList;
 
-    /// @brief A class describing an unstructured 2d mesh
+    /// @brief A class derived from Mesh, which describes unstructures 2d meshes.
+    ///
+    /// When communicating with the client only unstructured meshes are used.
+    /// Some algorithms generate curvilinear grids, but these are converted to a mesh
+    /// instance when communicating with the client.
     class Mesh2D : public Mesh
     {
     public:
@@ -181,10 +185,44 @@ namespace meshkernel
         [[nodiscard]] std::vector<Point> GetFlowEdgesCenters(const std::vector<size_t>& edges) const;
 
         /// @brief Deletes small flow edges (removesmallflowlinks, part 1)
+        ///
+        /// An unstructured mesh can be used to calculate water flow. This involves
+        /// a pressure gradient between the circumcenters of neighbouring faces.
+        /// That procedure is numerically unreliable when the distance between face
+        /// circumcenters (flow edges) becomes too small. Let's consider the following figure
+        /// \image html coincide_circumcentre.svg  "Coincide Circumcentre"
+        /// The algorithm works as follow:
+        ///
+        /// -   Any degenerated triangle (e.g. those having a coinciding node) is
+        ///     removed by collapsing the second and third node into the first one.
+        ///
+        /// -   The edges crossing small flow edges are found. The flow edge length
+        ///     is computed from the face circumcenters and compared to an estimated
+        ///     cut off distance. The cutoff distance is computed using the face
+        ///     areas as follow:
+        ///
+        ///     \f$\textrm{cutOffDistance} = \textrm{threshold} \cdot 0.5 \cdot (\sqrt{\textrm{Area}_I}+\sqrt{\textrm{Area}_{II}})\f$
+        ///
+        /// -   All small flow edges are flagged with invalid indices and removed
+        ///     from the mesh. Removal occors in the \ref Mesh2D::Administrate method.
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
         void DeleteSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Deletes small triangles at the boundaries (removesmallflowlinks, part 2)
+        ///
+        /// This algorithm removes triangles having the following properties:
+        /// - The are at mesh boundary.
+        ///
+        /// - One or more neighboring faces are non-triangles.
+        ///
+        /// - The ratio of the face area to the average area of neighboring non
+        ///   triangles is less than a minimum ratio (defaults to 0.2).
+        ///
+        /// - The absolute cosine of one internal angle is less than 0.2.
+        ///
+        /// These triangles having the above properties are merged by collapsing the
+        /// face nodes to the node having the minimum absolute cosine (e.g. the node
+        /// where the internal angle is closer to 90 degrees).
         /// @param[in] minFractionalAreaTriangles Small triangles at the boundaries will be eliminated.
         /// This threshold is the ration of the face area to the average area of neighboring faces.
         void DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);

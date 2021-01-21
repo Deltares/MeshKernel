@@ -34,6 +34,43 @@
 namespace meshkernel
 {
     /// @brief A class used for triangulation interpolation
+    ///
+    /// As for averaging, the triangle interpolation operates at three specific
+    /// \ref MeshLocations - Faces, Nodes, and Edges.
+    /// The idea is to triangulate the samples and identify for each location
+    /// the triangle that fully contains
+    /// Only the values at the nodes of the identified triangle are used in
+    /// the computation of each location.
+    /// The algorithm operates as follow:
+    ///
+    /// - The triangulation of the samples is computed
+    ///
+    /// - For each triangle, the circumcentre is computed
+    ///
+    /// - The triangle circumcentres are ordered in an RTree for a fast search
+    ///
+    /// - For each location, the closest circumcentre is found
+    ///
+    /// - If the corresponding triangle contains the location then the linear
+    ///   interpolation is performed, otherwise, the next neighbouring
+    ///   triangle is searched. The next neighbouring triangle is the first
+    ///   triangle that satisfies these two conditions:
+    ///
+    ///   1.  shares one of the current triangle edges.
+    ///
+    ///   2.  the crossing of the edge and the line connecting the location
+    ///       the current triangle circumcentre exists.
+    ///
+    /// - If the next triangle does not contain the location, repeat the step
+    ///   above for a maximum number of times equal to two times the number of
+    ///   triangles.
+    ///
+    /// When a triangle enclosing a specific location is not found, the
+    /// interpolated value at that location is invalid. The handling of
+    /// spherical accurate projection occurs at low-level geometrical functions
+    /// (\ref IsPointInPolygonNodes, \ref AreSegmentsCrossing). Therefore, the algorithm is
+    /// independent of the implementation details that occur at the level of the
+    /// geometrical functions.
     class TriangulationInterpolation
     {
 

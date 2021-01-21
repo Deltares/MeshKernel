@@ -49,9 +49,15 @@ namespace meshkernel
     namespace bg = boost::geometry;
     namespace bgi = boost::geometry::index;
 
-    /// @brief Class wrapping the boost::geometry::index::rtree code
+    /// @brief Class used for inquiring adjacent nodes.
     ///
-    /// This class is required for inquiring adjacent nodes in the merging algorithm.
+    /// The mesh class stores two RTree class instances, used for inquiring the closest mesh nodes and edge to a point.
+    /// RTree is a class wrapping the boost::geometry::index::rtree code,
+    /// adding an interface for performing common queries
+    /// such as inquiring the nearest neighbors inside a specified distance(`meshkernel::RTree::NearestNeighborsOnSquaredDistance`)
+    /// or a vector of the nearest neighbors (`meshkernel::RTree::NearestNeighbors`).
+    /// RTee has a `m_queryCache`, a vector used for collecting all query results
+    /// and avoid frequent re-allocations when the number of results changes.
     class RTree
     {
 

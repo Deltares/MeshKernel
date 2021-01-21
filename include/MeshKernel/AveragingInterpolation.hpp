@@ -38,18 +38,50 @@ namespace meshkernel
     struct Sample;
 
     /// @brief The class used to interpolate based on averaging
+    ///
+    /// The averaging interpolation operates on three specific \ref MeshLocations - Faces
+    /// (m face mass centers), Nodes, and Edges(m edge centers). The idea is to
+    /// collect all samples close to the locations and perform a mathematical
+    /// operation on their values. The \ref Method enum describes available operations.
+    ///
+    /// The algorithm operates as follow:
+    ///
+    /// -   The samples are ordered in an RTree for a fast search
+    ///
+    /// -   The search area around the location is constructed as follow:
+    ///
+    ///     1.  For face locations, the sample areas correspond to the faces,
+    ///         increased/decreased by the relativeSearchRadius parameter
+    ///         (relativeSearchRadius > 1 increased, relativeSearchRadius < 1
+    ///         decreased).
+    ///
+    ///     2.  For \ref MeshLocations Nodes and \ref MeshLocations Edges locations, the dual face around the node is
+    ///         constructed by connecting the mid-points of all edges connected
+    ///         to the node. As above, the resulting polygon can be
+    ///         increased/decreased by the relativeSearchRadius parameter.
+    ///
+    /// -   The search radius is computed from the constructed polygon nodes and
+    ///     the locations, the maximum value is taken.
+    ///
+    /// -   The sample RTree is inquired to retrieve the indices of the samples
+    ///     within the search radius.
+    ///
+    /// -   The operations described above are executed on the found samples.
+    ///
+    /// -   For the \ref MeshLocations Edges location, the interpolated values at the node are
+    ///     averaged.
     class AveragingInterpolation
     {
     public:
         /// @brief Averaging methods
         enum class Method
         {
-            SimpleAveraging = 1,
-            Closest = 2,
-            Max = 3,
-            Min = 4,
-            InverseWeightedDistance = 5,
-            MinAbsValue = 6
+            SimpleAveraging = 1,         ///< Computes a simple mean
+            Closest = 2,                 ///< Takes the value of the closest sample to the interpolation location
+            Max = 3,                     ///< Takes the maximum sample value
+            Min = 4,                     ///< Takes the minimum sample value
+            InverseWeightedDistance = 5, ///< Computes the inverse weighted sample mean
+            MinAbsValue = 6              ///< Computes the minimum absolute value
         };
 
         /// @brief Interpolation based on averaging
