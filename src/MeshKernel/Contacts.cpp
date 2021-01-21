@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -265,6 +266,7 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
     // For each polygon, find closest 1D node to any 2D mass center within the polygon
     std::vector<size_t> closest1dNodeIndices;
     std::vector<size_t> closest2dNodeIndices;
+    std::map<size_t, double> minimalDistance; // key is polygon index, value is minimal distance between a 1D node and a 2D in the polygon
     for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
         auto polygonIndex = polygonIndices[faceIndex];
@@ -283,6 +285,16 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
             }
             auto close1DNode = m_mesh1d->m_nodes[close1DNodeIndex];
             auto distance = ComputeSquaredDistance(faceMassCenter, close1DNode, m_mesh2d->m_projection);
+            auto search = minimalDistance.find(polygonIndex);
+            // If it is the first found node of this polygon or
+            // there is already a distance stored, but ours is smaller
+            // -> store
+            if (search == minimalDistance.end() ||
+                distance < minimalDistance[polygonIndex])
+            {
+
+                minimalDistance[polygonIndex] = distance;
+            }
         }
     }
 };
