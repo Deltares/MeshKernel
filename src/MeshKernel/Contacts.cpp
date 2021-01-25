@@ -255,7 +255,7 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     m_mesh1d->AdministrateNodesEdges();
 
-    // For each mesh2d face, store polygon index
+    // for each mesh2d face, store polygon index
     std::vector<size_t> polygonIndices;
     polygonIndices.reserve(m_mesh2d->GetNumFaces());
     for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
@@ -263,14 +263,14 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
         polygonIndices[faceIndex] = polygons.PointInWhichPolygon(m_mesh2d->m_facesMassCenters[faceIndex]);
     }
 
-    // For each polygon, find closest 1D node to any 2D mass center within the polygon
+    // for each polygon, find closest 1d node to any 2d mass center within the polygon
     std::vector<size_t> closest1dNodeIndices;
     std::vector<size_t> closest2dNodeIndices;
-    std::map<size_t, double> minimalDistance; // key is polygon index, value is minimal distance between a 1D node and a 2D in the polygon
+    std::map<size_t, double> minimalDistance; // key is polygon index, value is minimal distance between a 1d node and a 2d in the polygon
     for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
         auto polygonIndex = polygonIndices[faceIndex];
-        // If face is within a polygon
+        // if face is within a polygon
         if (polygonIndex != sizetMissingValue)
         {
             auto faceMassCenter = m_mesh2d->m_facesMassCenters[faceIndex];
@@ -286,16 +286,24 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
             auto close1DNode = m_mesh1d->m_nodes[close1DNodeIndex];
             auto distance = ComputeSquaredDistance(faceMassCenter, close1DNode, m_mesh2d->m_projection);
             auto search = minimalDistance.find(polygonIndex);
-            // If it is the first found node of this polygon or
+            // if it is the first found node of this polygon or
             // there is already a distance stored, but ours is smaller
             // -> store
             if (search == minimalDistance.end() ||
                 distance < minimalDistance[polygonIndex])
             {
-
+                closest1dNodeIndices[polygonIndex] = close1DNodeIndex;
+                closest2dNodeIndices[polygonIndex] = faceIndex;
                 minimalDistance[polygonIndex] = distance;
             }
         }
+    }
+
+    // connect 1D nodes to closest 2d node in a polygon
+    for (auto const& [polygonIndex, _] : minimalDistance)
+    {
+        m_mesh1dIndices.emplace_back(closest1dNodeIndices[polygonIndex]);
+        m_mesh2dIndices.emplace_back(closest2dNodeIndices[polygonIndex]);
     }
 };
 
