@@ -248,12 +248,50 @@ void meshkernel::Contacts::ComputeMultipleConnections()
     }
 };
 
-void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons){
-    // complete implementation
-};
+void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons){};
 
-void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points){
-    // complete implementation
+void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points)
+{
+    // perform mesh2d administration
+    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+    // perform mesh1d administration (m_nodesRTree will also be build if necessary)
+    m_mesh1d->AdministrateNodesEdges();
+    m_mesh1d->ComputeEdgesLengths();
+    if (m_mesh1d->m_nodesRTree.Empty())
+    {
+        m_mesh1d->m_nodesRTree.BuildTree(m_mesh1d->m_nodes);
+    }
+
+    // find the face indices containing the 1d points
+    const auto pointsFaceIndices = m_mesh2d->PointFaceIndices(points);
+
+    // for each 1d node in the 2d mesh, find the closest 1d node.
+    for (int i = 0; i < points.size(); ++i)
+    {
+        // points not in the mesh
+        if (pointsFaceIndices[i] == sizetMissingValue)
+        {
+            continue;
+        }
+
+        // get the closest 1d node
+        m_mesh1d->m_nodesRTree.NearestNeighbors(points[i]);
+
+        // get the result size
+        auto const resultSize = m_mesh1d->m_nodesRTree.GetQueryResultSize();
+        if (resultSize == 0)
+        {
+            continue;
+        }
+
+        // get the node1d index
+        const auto node1d = m_mesh1d->m_nodesRTree.GetQueryResult(0);
+
+        // form the 1d-2d connection
+        m_mesh1dIndices.emplace_back(node1d);
+        m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
+    }
 };
 
 void meshkernel::Contacts::ComputeBoundaryConnections(){

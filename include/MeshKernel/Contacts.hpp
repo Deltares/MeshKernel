@@ -91,8 +91,12 @@ namespace meshkernel
         /// @param[in] polygons The polygons to connect (Polygons class can have multiple polygons)
         void ComputeConnectionsWithPolygons(const Polygons& polygons);
 
-        /// @brief Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeso_make1D2Dstreetinletpipes_dll)
+        /// @brief Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)
+        ///
+        /// With this algorithm, each 2d face containing a point is connected to the 1d node closest to point itself.
+        /// The search of the 2d faces and the closest 1d nodes uses RTrees.
         /// @param[in] points The points to connect
+        /// \image html ComputeConnectionsWithPoints.jpg  "2d faces containing the input points connecting to the 1d mesh. Connections are shown in red and the input points in blue."
         void ComputeConnectionsWithPoints(const std::vector<Point>& points);
 
         /// @brief Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
