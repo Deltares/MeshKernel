@@ -19,8 +19,8 @@ target_include_directories(MeshKernelStatic
 # Add target link dependency on boost and triangle
 target_link_libraries(MeshKernelStatic LINK_PUBLIC ${Boost_LIBRARIES} triangle)
 
-# All users of this library will need at least C++17
-target_compile_features(MeshKernelStatic PUBLIC cxx_std_17)
+# All users of this library will need at least C++11
+target_compile_features(MeshKernelStatic PUBLIC cxx_std_11)
 
 # IDEs should put the headers in a nice place
 source_group(
