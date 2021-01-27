@@ -48,7 +48,7 @@ namespace meshkernel
     {
 
         std::vector<std::vector<Point>> generatedPoints;
-        generatedPoints.reserve(NumberOfPolygons());
+        generatedPoints.reserve(GetNumPolygons());
         std::vector<Point> localPolygon(GetNumNodes());
 
         for (const auto& index : m_indices)
@@ -119,7 +119,7 @@ namespace meshkernel
 
         bool areIndicesValid = false;
         size_t polygonIndex;
-        for (auto i = 0; i < NumberOfPolygons(); ++i)
+        for (auto i = 0; i < GetNumPolygons(); ++i)
         {
             if (startIndex >= m_indices[i][0] && endIndex <= m_indices[i][1])
             {
@@ -301,7 +301,7 @@ namespace meshkernel
             return true;
         }
 
-        if (polygonIndex >= NumberOfPolygons())
+        if (polygonIndex >= GetNumPolygons())
         {
             throw std::invalid_argument("Polygons::IsPointInPolygon: Invalid polygon index.");
         }
@@ -310,7 +310,7 @@ namespace meshkernel
         return inPolygon;
     }
 
-    size_t Polygons::NumberOfPolygons() const
+    size_t Polygons::GetNumPolygons() const
     {
         return m_indices.size();
     }
@@ -324,7 +324,7 @@ namespace meshkernel
         }
 
         bool inPolygon = false;
-        for (auto polygonIndex = 0; polygonIndex < NumberOfPolygons(); ++polygonIndex)
+        for (auto polygonIndex = 0; polygonIndex < GetNumPolygons(); ++polygonIndex)
         {
             auto polygonStartIndex = m_indices[polygonIndex][0];
             auto polygonEndIndex = m_indices[polygonIndex][1];

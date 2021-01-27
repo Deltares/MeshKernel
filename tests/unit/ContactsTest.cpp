@@ -1,5 +1,6 @@
 
 #include <gtest/gtest.h>
+#include <iostream>
 
 #include "TestUtils/MakeMeshes.hpp"
 #include <MeshKernel/Contacts.hpp>
@@ -248,6 +249,7 @@ TEST(Contacts, ComputeConnectionsWithPolygons)
         {645.461609, 792.130249},
         {691.522522, 732.735718},
         {632.128113, 667.280518},
+        {meshkernel::doubleMissingValue, meshkernel::doubleMissingValue},
     };
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
@@ -258,13 +260,17 @@ TEST(Contacts, ComputeConnectionsWithPolygons)
     ASSERT_EQ(6, contacts.m_mesh1dIndices.size());
     ASSERT_EQ(6, contacts.m_mesh2dIndices.size());
 
-    // ASSERT_EQ(1, contacts.m_mesh1dIndices[0]);
-    // ASSERT_EQ(2, contacts.m_mesh1dIndices[1]);
-    // ASSERT_EQ(3, contacts.m_mesh1dIndices[2]);
-    // ASSERT_EQ(6, contacts.m_mesh1dIndices[3]);
+    ASSERT_EQ(2, contacts.m_mesh1dIndices[0]);
+    ASSERT_EQ(10, contacts.m_mesh1dIndices[1]);
+    ASSERT_EQ(19, contacts.m_mesh1dIndices[2]);
+    ASSERT_EQ(23, contacts.m_mesh1dIndices[3]);
+    ASSERT_EQ(31, contacts.m_mesh1dIndices[4]);
+    ASSERT_EQ(44, contacts.m_mesh1dIndices[5]);
 
-    // ASSERT_EQ(0, contacts.m_mesh2dIndices[0]);
-    // ASSERT_EQ(1, contacts.m_mesh2dIndices[1]);
-    // ASSERT_EQ(2, contacts.m_mesh2dIndices[2]);
-    // ASSERT_EQ(2, contacts.m_mesh2dIndices[3]);
+    ASSERT_EQ(1709, contacts.m_mesh2dIndices[0]);
+    ASSERT_EQ(2121, contacts.m_mesh2dIndices[1]);
+    ASSERT_EQ(3999, contacts.m_mesh2dIndices[2]);
+    ASSERT_EQ(4703, contacts.m_mesh2dIndices[3]);
+    ASSERT_EQ(6482, contacts.m_mesh2dIndices[4]);
+    ASSERT_EQ(6805, contacts.m_mesh2dIndices[5]);
 }

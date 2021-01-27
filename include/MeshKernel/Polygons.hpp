@@ -80,7 +80,7 @@ namespace meshkernel
 
         /// @brief Gives the number of polygons
         /// @return Number of polygons
-        [[nodiscard]] size_t Polygons::NumberOfPolygons() const;
+        [[nodiscard]] size_t Polygons::GetNumPolygons() const;
 
         /// @brief Gets the number of polygon nodes
         /// @return the number of polygon nodes

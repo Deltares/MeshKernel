@@ -256,17 +256,16 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
     m_mesh1d->AdministrateNodesEdges();
 
     // for each mesh2d face, store polygon index
-    std::vector<size_t> polygonIndices;
-    polygonIndices.reserve(m_mesh2d->GetNumFaces());
+    std::vector<size_t> polygonIndices(m_mesh2d->GetNumFaces(), sizetMissingValue);
     for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
         polygonIndices[faceIndex] = polygons.PointInWhichPolygon(m_mesh2d->m_facesMassCenters[faceIndex]);
     }
 
     // for each polygon, find closest 1d node to any 2d mass center within the polygon
-    std::vector<size_t> closest1dNodeIndices;
-    std::vector<size_t> closest2dNodeIndices;
-    std::map<size_t, double> minimalDistance; // key is polygon index, value is minimal distance between a 1d node and a 2d in the polygon
+    std::vector<size_t> minimalDistance(polygons.GetNumPolygons(), sizetMissingValue);
+    std::vector<size_t> closest1dNodeIndices(polygons.GetNumPolygons(), sizetMissingValue);
+    std::vector<size_t> closest2dNodeIndices(polygons.GetNumPolygons(), sizetMissingValue);
     for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
         auto polygonIndex = polygonIndices[faceIndex];
@@ -285,11 +284,10 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
             }
             auto close1DNode = m_mesh1d->m_nodes[close1DNodeIndex];
             auto distance = ComputeSquaredDistance(faceMassCenter, close1DNode, m_mesh2d->m_projection);
-            auto search = minimalDistance.find(polygonIndex);
             // if it is the first found node of this polygon or
             // there is already a distance stored, but ours is smaller
             // -> store
-            if (search == minimalDistance.end() ||
+            if (minimalDistance[polygonIndex] == sizetMissingValue ||
                 distance < minimalDistance[polygonIndex])
             {
                 closest1dNodeIndices[polygonIndex] = close1DNodeIndex;
@@ -300,7 +298,7 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
     }
 
     // connect 1D nodes to closest 2d node in a polygon
-    for (auto const& [polygonIndex, _] : minimalDistance)
+    for (auto polygonIndex = 0; polygonIndex < polygons.GetNumPolygons(); ++polygonIndex)
     {
         m_mesh1dIndices.emplace_back(closest1dNodeIndices[polygonIndex]);
         m_mesh2dIndices.emplace_back(closest2dNodeIndices[polygonIndex]);
