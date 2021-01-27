@@ -287,7 +287,7 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
         // if it is the first found node of this polygon or
         // there is already a distance stored, but ours is smaller
         // -> store
-        if (minimalDistance[polygonIndex] == doubleMissingValue || squaredDistance < minimalDistance[polygonIndex])
+        if (IsEqual(minimalDistance[polygonIndex], doubleMissingValue) || squaredDistance < minimalDistance[polygonIndex])
         {
             closest1dNodeIndices[polygonIndex] = close1DNodeIndex;
             closest2dNodeIndices[polygonIndex] = faceIndex;
