@@ -78,6 +78,10 @@ namespace meshkernel
         /// @return True if it is empty, false otherwise
         bool Polygons::IsEmpty() const;
 
+        /// @brief Gives the number of polygons
+        /// @return Number of polygons
+        [[nodiscard]] size_t Polygons::NumberOfPolygons() const;
+
         /// @brief Gets the number of polygon nodes
         /// @return the number of polygon nodes
         [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
