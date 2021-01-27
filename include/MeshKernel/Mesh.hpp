@@ -161,8 +161,9 @@ namespace meshkernel
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
+        /// @param[in] nodeMask The mask to apply to mesh nodes, if the mask value is false, the next closest node will be considered
         /// @returns The index of the closest node
-        [[nodiscard]] size_t FindNodeCloseToAPoint(Point point);
+        [[nodiscard]] size_t FindNodeCloseToAPoint(Point point, const std::vector<bool>& nodeMask);
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search

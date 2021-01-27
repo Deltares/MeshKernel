@@ -428,7 +428,7 @@ size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
     throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
 }
 
-size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point)
+size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool>& oneDNodeMask)
 {
     if (GetNumNodes() <= 0)
     {
@@ -445,10 +445,20 @@ size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point)
     m_nodesRTree.NearestNeighbors(point);
     const auto resultSize = m_nodesRTree.GetQueryResultSize();
 
-    if (resultSize > 0)
+    // no mask applied
+    if (oneDNodeMask.empty() && resultSize > 0)
     {
-        const auto nodeIndex = m_nodesRTree.GetQueryResult(0);
-        return nodeIndex;
+        return m_nodesRTree.GetQueryResult(0);
+    }
+
+    // a mask is applied
+    for (auto index = 0; index < resultSize; ++index)
+    {
+        const auto nodeIndex = m_nodesRTree.GetQueryResult(index);
+        if (oneDNodeMask[nodeIndex])
+        {
+            return nodeIndex;
+        }
     }
 
     throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");

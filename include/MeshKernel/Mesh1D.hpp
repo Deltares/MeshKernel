@@ -56,11 +56,5 @@ namespace meshkernel
         /// @param[in] node The node index
         /// @return If the node is on boundary
         [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
-
-        /// @brief Get the index of a node close to a point
-        /// @param[in] point The starting point from where to start the search
-        /// @param[in] oneDNodeMask Defines which nodes should be accounted for
-        /// @returns The index of the closest node
-        [[nodiscard]] size_t Find1dNodeCloseToAPoint(Point point, std::vector<bool> oneDNodeMask);
     };
 } // namespace meshkernel
