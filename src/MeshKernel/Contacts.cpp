@@ -254,7 +254,6 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
 {
     // perform mesh2d administration
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
-    m_mesh1d->AdministrateNodesEdges();
 
     // perform mesh1d administration
     m_mesh1d->AdministrateNodesEdges();
