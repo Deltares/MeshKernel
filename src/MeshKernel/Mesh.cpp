@@ -445,13 +445,19 @@ size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bo
     m_nodesRTree.NearestNeighbors(point);
     const auto resultSize = m_nodesRTree.GetQueryResultSize();
 
-    // no mask applied
-    if (oneDNodeMask.empty() && resultSize > 0)
+    // no results found
+    if (resultSize <= 0)
+    {
+        throw AlgorithmError("Mesh::FindNodeCloseToAPoint: query result size <= 0.");
+    }
+
+    // resultSize > 0, no node mask applied
+    if (oneDNodeMask.empty())
     {
         return m_nodesRTree.GetQueryResult(0);
     }
 
-    // a mask is applied
+    // resultSize > 0, a mask is applied
     for (auto index = 0; index < resultSize; ++index)
     {
         const auto nodeIndex = m_nodesRTree.GetQueryResult(index);
