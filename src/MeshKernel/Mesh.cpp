@@ -61,8 +61,7 @@ void meshkernel::Mesh::NodeAdministration()
         auto alreadyAddedEdge = false;
         for (auto i = 0; i < m_nodesNumEdges[firstNode]; ++i)
         {
-            const auto currentEdge = m_edges[m_nodesEdges[firstNode][i]];
-            if (currentEdge.first == secondNode || currentEdge.second == secondNode)
+            if (const auto currentEdge = m_edges[m_nodesEdges[firstNode][i]]; currentEdge.first == secondNode || currentEdge.second == secondNode)
             {
                 alreadyAddedEdge = true;
                 break;
@@ -78,8 +77,7 @@ void meshkernel::Mesh::NodeAdministration()
         alreadyAddedEdge = false;
         for (auto i = 0; i < m_nodesNumEdges[secondNode]; ++i)
         {
-            const auto currentEdge = m_edges[m_nodesEdges[secondNode][i]];
-            if (currentEdge.first == firstNode || currentEdge.second == firstNode)
+            if (const auto currentEdge = m_edges[m_nodesEdges[secondNode][i]]; currentEdge.first == firstNode || currentEdge.second == firstNode)
             {
                 alreadyAddedEdge = true;
                 break;
@@ -106,17 +104,13 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     std::vector<bool> connectedNodes(m_nodes.size(), false);
     size_t numInvalidEdges = 0;
 
-    for (const auto& edge : m_edges)
+    for (const auto& [firstNode, secondNode] : m_edges)
     {
-        auto const firstNode = edge.first;
-        auto const secondNode = edge.second;
-
         if (firstNode == sizetMissingValue || secondNode == sizetMissingValue)
         {
             numInvalidEdges++;
             continue;
         }
-
         connectedNodes[firstNode] = true;
         connectedNodes[secondNode] = true;
     }
@@ -159,20 +153,17 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     }
 
     // Flag invalid edges
-    for (auto& edge : m_edges)
+    for (auto& [firstNode, secondNode] : m_edges)
     {
-        auto const firstNode = edge.first;
-        auto const secondNode = edge.second;
-
         if (firstNode != sizetMissingValue && secondNode != sizetMissingValue && validNodesIndices[firstNode] != sizetMissingValue && validNodesIndices[secondNode] != sizetMissingValue)
         {
-            edge.first = validNodesIndices[firstNode];
-            edge.second = validNodesIndices[secondNode];
+            firstNode = validNodesIndices[firstNode];
+            secondNode = validNodesIndices[secondNode];
             continue;
         }
 
-        edge.first = sizetMissingValue;
-        edge.second = sizetMissingValue;
+        firstNode = sizetMissingValue;
+        secondNode = sizetMissingValue;
     }
 
     // Remove invalid nodes, without reducing capacity
@@ -421,8 +412,7 @@ size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
 
     if (resultSize > 0)
     {
-        const auto nodeIndex = m_nodesRTree.GetQueryResult(0);
-        return nodeIndex;
+        return m_nodesRTree.GetQueryIndex(0);
     }
 
     throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
@@ -454,13 +444,13 @@ size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bo
     // resultSize > 0, no node mask applied
     if (oneDNodeMask.empty())
     {
-        return m_nodesRTree.GetQueryResult(0);
+        return m_nodesRTree.GetQueryIndex(0);
     }
 
     // resultSize > 0, a mask is applied
     for (auto index = 0; index < resultSize; ++index)
     {
-        const auto nodeIndex = m_nodesRTree.GetQueryResult(index);
+        const auto nodeIndex = m_nodesRTree.GetQueryIndex(index);
         if (oneDNodeMask[nodeIndex])
         {
             return nodeIndex;
@@ -488,7 +478,7 @@ size_t meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
     auto const resultSize = m_edgesRTree.GetQueryResultSize();
     if (resultSize >= 1)
     {
-        const auto edgeIndex = m_edgesRTree.GetQueryResult(0);
+        const auto edgeIndex = m_edgesRTree.GetQueryIndex(0);
         return edgeIndex;
     }
 

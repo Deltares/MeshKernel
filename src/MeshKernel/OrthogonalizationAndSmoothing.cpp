@@ -306,16 +306,15 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             }
 
             //Project the moved boundary point back onto the closest original edge (either between 0 and 2 or 0 and 3)
-            double rl2 = 0.0;
-            const auto dis2 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, m_mesh->m_projection, normalSecondPoint, rl2);
 
-            double rl3 = 0.0;
-            const auto dis3 = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, m_mesh->m_projection, normalThirdPoint, rl3);
+            const auto [distanceSecondPoint, normalSecondPoint, ratioSecondPoint] = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], secondPoint, m_mesh->m_projection);
 
-            if (dis2 < dis3)
+            const auto [distanceThirdPoint, normalThirdPoint, ratioThirdPoint] = DistanceFromLine(firstPoint, m_originalNodes[nearestPointIndex], thirdPoint, m_mesh->m_projection);
+
+            if (distanceSecondPoint < distanceThirdPoint)
             {
                 m_mesh->m_nodes[n] = normalSecondPoint;
-                if (rl2 > 0.5 && m_mesh->m_nodesTypes[n] != 3)
+                if (ratioSecondPoint > 0.5 && m_mesh->m_nodesTypes[n] != 3)
                 {
                     nearestPoints[n] = leftNode;
                 }
@@ -323,7 +322,7 @@ void meshkernel::OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             else
             {
                 m_mesh->m_nodes[n] = normalThirdPoint;
-                if (rl3 > 0.5 && m_mesh->m_nodesTypes[n] != 3)
+                if (ratioThirdPoint > 0.5 && m_mesh->m_nodesTypes[n] != 3)
                 {
                     nearestPoints[n] = rightNode;
                 }
