@@ -460,7 +460,6 @@ namespace meshkernel
         {
             return {(firstPoint + secondPoint) * 0.5};
         }
-        return {doubleMissingValue, doubleMissingValue};
     }
 
     Point ComputeMiddlePointAccountingForPoles(const Point& firstPoint, const Point& secondPoint, const Projection& projection)
