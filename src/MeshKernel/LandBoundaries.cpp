@@ -176,8 +176,8 @@ namespace meshkernel
         // loop over the segments of the land boundary and make assign each node to the land boundary segment index
         for (auto landBoundarySegment = 0; landBoundarySegment < m_segmentIndices.size(); landBoundarySegment++)
         {
-            size_t numPaths = 0;
-            size_t numRejectedPaths = 0;
+            size_t numPaths;
+            size_t numRejectedPaths;
             MakePath(landBoundarySegment, findOnlyOuterMeshBoundary, numPaths, numRejectedPaths);
 
             if (numRejectedPaths > 0 && projectToLandBoundaryOption == ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary)
@@ -432,8 +432,8 @@ namespace meshkernel
                     leftEdgeRatio,
                     rightEdgeRatio);
 
-        size_t startMeshNode = sizetMissingValue;
-        size_t endMeshNode = sizetMissingValue;
+        size_t startMeshNode;
+        size_t endMeshNode;
         FindStartEndMeshNodes(endLandBoundaryIndex,
                               leftIndex,
                               rightIndex,
