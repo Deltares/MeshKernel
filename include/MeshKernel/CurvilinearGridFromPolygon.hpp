@@ -50,7 +50,7 @@ namespace meshkernel
         void Compute(size_t firstNode, size_t secondNode, size_t thirdNode, CurvilinearGrid& curvilinearGrid) const;
 
     private:
-        std::shared_ptr<Polygons> m_polygon; // A pointer to Polygons
+        std::shared_ptr<Polygons> m_polygon; ///< A pointer to Polygons
     };
 
 } // namespace meshkernel

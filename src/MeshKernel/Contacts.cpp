@@ -1,8 +1,10 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <vector>
 
+#include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -31,7 +33,7 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
     for (size_t n = 0; n < m_mesh1d->m_nodes.size(); ++n)
     {
         // connect only nodes included in the polygons
-        if (!polygons.IsPointInPolygons(m_mesh1d->m_nodes[n]))
+        if (polygons.PointInWhichPolygon(m_mesh1d->m_nodes[n]) == sizetMissingValue)
         {
             continue;
         }
@@ -248,8 +250,56 @@ void meshkernel::Contacts::ComputeMultipleConnections()
     }
 };
 
-void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons){
-    // complete implementation
+void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons)
+{
+    // perform mesh2d administration
+    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+    // perform mesh1d administration
+    m_mesh1d->AdministrateNodesEdges();
+
+    // for each mesh2d face, store polygon index
+    std::vector<size_t> polygonIndices(m_mesh2d->GetNumFaces(), sizetMissingValue);
+    for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
+    {
+        polygonIndices[faceIndex] = polygons.PointInWhichPolygon(m_mesh2d->m_facesMassCenters[faceIndex]);
+    }
+
+    // for each polygon, find closest 1d node to any 2d mass center within the polygon
+    std::vector<double> minimalDistance(polygons.GetNumPolygons(), doubleMissingValue);
+    std::vector<size_t> closest1dNodeIndices(polygons.GetNumPolygons(), sizetMissingValue);
+    std::vector<size_t> closest2dNodeIndices(polygons.GetNumPolygons(), sizetMissingValue);
+    for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
+    {
+        const auto polygonIndex = polygonIndices[faceIndex];
+        // if face is not within a polygon, continue
+        if (polygonIndex == sizetMissingValue)
+        {
+            continue;
+        }
+        const auto faceMassCenter = m_mesh2d->m_facesMassCenters[faceIndex];
+
+        const auto close1DNodeIndex = m_mesh1d->FindNodeCloseToAPoint(faceMassCenter, m_oneDNodeMask);
+
+        const auto close1DNode = m_mesh1d->m_nodes[close1DNodeIndex];
+        const auto squaredDistance = ComputeSquaredDistance(faceMassCenter, close1DNode, m_mesh2d->m_projection);
+        // if it is the first found node of this polygon or
+        // there is already a distance stored, but ours is smaller
+        // -> store
+        if (IsEqual(minimalDistance[polygonIndex], doubleMissingValue) || squaredDistance < minimalDistance[polygonIndex])
+        {
+            closest1dNodeIndices[polygonIndex] = close1DNodeIndex;
+            closest2dNodeIndices[polygonIndex] = faceIndex;
+            minimalDistance[polygonIndex] = squaredDistance;
+        }
+    }
+
+    // connect 1D nodes to closest 2d node in a polygon
+    for (auto polygonIndex = 0; polygonIndex < polygons.GetNumPolygons(); ++polygonIndex)
+    {
+        m_mesh1dIndices.emplace_back(closest1dNodeIndices[polygonIndex]);
+        m_mesh2dIndices.emplace_back(closest2dNodeIndices[polygonIndex]);
+    }
 };
 
 void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points){

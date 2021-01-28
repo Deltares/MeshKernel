@@ -71,12 +71,16 @@ namespace meshkernel
 
         /// @brief Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)
         /// @param[in] point The point to check
-        /// @return True if it is included, false otherwise
-        bool IsPointInPolygons(Point point) const;
+        /// @return The index of a polygon where the point is included or if none has been found, sizetMissingValue
+        size_t PointInWhichPolygon(Point point) const;
 
         /// @brief Checks if the polygon is empty
         /// @return True if it is empty, false otherwise
         bool Polygons::IsEmpty() const;
+
+        /// @brief Gives the number of polygons
+        /// @return Number of polygons
+        [[nodiscard]] size_t Polygons::GetNumPolygons() const;
 
         /// @brief Gets the number of polygon nodes
         /// @return the number of polygon nodes

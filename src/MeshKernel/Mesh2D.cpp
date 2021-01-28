@@ -936,7 +936,7 @@ void meshkernel::Mesh2D::MaskNodesInPolygons(const Polygons& polygon, bool insid
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
     for (auto i = 0; i < GetNumNodes(); ++i)
     {
-        bool isInPolygon = polygon.IsPointInPolygons(m_nodes[i]);
+        bool isInPolygon = polygon.PointInWhichPolygon(m_nodes[i]) != sizetMissingValue;
         if (!inside)
         {
             isInPolygon = !isInPolygon;

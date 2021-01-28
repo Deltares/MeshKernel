@@ -252,30 +252,30 @@ namespace meshkernel
                                                          size_t startLandBoundaryIndex,
                                                          size_t endLandBoundaryIndex);
 
-        std::shared_ptr<Mesh2D> m_mesh;                    // A pointer to mesh
-        std::shared_ptr<Polygons> m_polygons;              // A pointer to polygons
-        std::vector<Point> m_nodes;                        // XLAN, YLAN, ZLAN
-        std::vector<Point> m_polygonNodesCache;            // array of points (e.g. points of a face)
-        std::vector<std::vector<size_t>> m_segmentIndices; // lanseg_startend
-        std::vector<std::vector<double>> m_nodesLand;      // node to land boundary segment mapping
+        std::shared_ptr<Mesh2D> m_mesh;                    ///< A pointer to mesh
+        std::shared_ptr<Polygons> m_polygons;              ///< A pointer to polygons
+        std::vector<Point> m_nodes;                        ///< XLAN, YLAN, ZLAN
+        std::vector<Point> m_polygonNodesCache;            ///< array of points (e.g. points of a face)
+        std::vector<std::vector<size_t>> m_segmentIndices; ///< lanseg_startend
+        std::vector<std::vector<double>> m_nodesLand;      ///< node to land boundary segment mapping
 
-        std::vector<size_t> m_nodeMask; // nodemask, masking the net nodes
-        std::vector<size_t> m_faceMask; // masking faces
-        std::vector<size_t> m_edgeMask; // masking edges
+        std::vector<size_t> m_nodeMask; ///< nodemask, masking the net nodes
+        std::vector<size_t> m_faceMask; ///< masking faces
+        std::vector<size_t> m_edgeMask; ///< masking edges
 
-        bool m_landMask = true;
-        bool m_addLandboundaries = true;
-        size_t m_numFacesMasked = 0;
-        size_t m_maskDepth = 0;
+        bool m_landMask = true;          ///< Whether land masks were given
+        bool m_addLandboundaries = true; ///< Whether to add land boundaries
+        size_t m_numFacesMasked = 0;     ///< Number of masked faces
+        size_t m_maskDepth = 0;          ///< Mask depth
 
         // caches
-        std::vector<double> m_nodesMinDistances;
+        std::vector<double> m_nodesMinDistances; ///< Min distances of nodes
 
         // Parameters
-        const double m_closeToLandBoundaryFactor = 5.0; // close - to - landboundary tolerance, measured in number of meshwidths
-        const double m_closeWholeMeshFactor = 1.0;      // close - to - landboundary tolerance, measured in number of meshwidths
-        const double m_minDistanceFromLandFactor = 2.0;
-        double m_closeFactor = 5.0;
+        const double m_closeToLandBoundaryFactor = 5.0; ///< close - to - landboundary tolerance, measured in number of meshwidths
+        const double m_closeWholeMeshFactor = 1.0;      ///< close - to - landboundary tolerance, measured in number of meshwidths
+        const double m_minDistanceFromLandFactor = 2.0; ///< Minimum distance from land factor
+        double m_closeFactor = 5.0;                     ///< Factor to determine minimal distance from mesh nodes
     };
 
 } // namespace meshkernel

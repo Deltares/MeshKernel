@@ -11,6 +11,7 @@ def configure_doxyfile(
     doxygen_input_list: str,
     output_dir: Path,
     docs_dir: Path,
+    fail_with_warnings: bool,
 ):
     with open(doxyfile_in, "r") as file:
         doxyfile_data = file.read()
@@ -25,6 +26,11 @@ def configure_doxyfile(
     doxyfile_data = doxyfile_data.replace(
         "@DOXYGEN_WARN_LOG_FILE@", str(doxygen_log_path)
     )
+
+    if fail_with_warnings:
+        doxyfile_data = doxyfile_data.replace("@DOXYGEN_EXTRACT_PRIVATE@", "TRUE")
+    else:
+        doxyfile_data = doxyfile_data.replace("@DOXYGEN_EXTRACT_PRIVATE@", "FALSE")
 
     with open(doxyfile_path, "w") as file:
         file.write(doxyfile_data)
@@ -63,6 +69,13 @@ doxygen_input_list = f"{meshkernel_include_dir.resolve()}    \
 output_dir.parent.mkdir(exist_ok=True)
 output_dir.mkdir(exist_ok=True)
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--fail-with-warnings",
+    action="store_true",
+    help="let the script exit with code 1 with doxygen warnings",
+)
+args = parser.parse_args()
 
 configure_doxyfile(
     doxyfile_in_path,
@@ -71,18 +84,12 @@ configure_doxyfile(
     doxygen_input_list,
     output_dir,
     docs_dir,
+    args.fail_with_warnings,
 )
 
 # Call doxygen
 subprocess.call(f"doxygen {doxyfile_path}", shell=True)
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--fail-with-warnings",
-    action="store_true",
-    help="let the script exit with code 1 with doxygen warnings",
-)
-args = parser.parse_args()
 
 if args.fail_with_warnings:
     # Check if file is empty
