@@ -31,6 +31,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/RTree.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 
 /// \namespace meshkernel
@@ -263,8 +264,9 @@ namespace meshkernel
         [[nodiscard]] std::vector<size_t> SortedFacesAroundNode(size_t node) const;
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
+        /// @param[in] polygon The polygon where the operation is performed
         /// @return The resulting polygon mesh boundary
-        [[nodiscard]] std::vector<Point> MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes);
+        [[nodiscard]] std::vector<Point> MeshBoundaryToPolygon(const std::vector<Point>& polygon);
 
         /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
         /// @param[in] polygonNodes The input mesh
@@ -296,10 +298,8 @@ namespace meshkernel
         /// @brief Inquire if a segment is crossing a face
         /// @param firstPoint The first point of the segment
         /// @param secondPoint The second point of the segment
-        /// @param intersectedFace The intersected face index
-        /// @param intersectedEdge The intersected edge index
-        /// @return True if the segment is crossing a face
-        [[nodiscard]] bool IsSegmentCrossingAFace(const Point& firstPoint, const Point& secondPoint, size_t& intersectedFace, size_t& intersectedEdge) const;
+        /// @return A tuple with the intersectedFace face index and intersected  edge index
+        [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
         // vectors for communicating with the client
         std::vector<double> m_nodex;               ///< The nodes x-coordinate

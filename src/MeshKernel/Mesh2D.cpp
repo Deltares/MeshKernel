@@ -882,7 +882,7 @@ void meshkernel::Mesh2D::MergeNodesInPolygon(const Polygons& polygon)
         {
             for (auto j = 0; j < nodesRtree.GetQueryResultSize(); j++)
             {
-                const auto nodeIndexInFilteredNodes = nodesRtree.GetQueryResult(j);
+                const auto nodeIndexInFilteredNodes = nodesRtree.GetQueryIndex(j);
                 if (nodeIndexInFilteredNodes != i)
                 {
                     MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]);
@@ -1793,7 +1793,7 @@ std::vector<size_t> meshkernel::Mesh2D::SortedFacesAroundNode(size_t node) const
     return result;
 }
 
-std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygonNodes)
+std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const std::vector<Point>& polygon)
 {
 
     // Find faces
@@ -1814,8 +1814,8 @@ std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const s
         const auto firstNode = m_nodes[firstNodeIndex];
         const auto secondNode = m_nodes[secondNodeIndex];
 
-        const auto firstNodeInPolygon = IsPointInPolygonNodes(m_nodes[firstNodeIndex], polygonNodes, m_projection);
-        const auto secondNodeInPolygon = IsPointInPolygonNodes(m_nodes[secondNodeIndex], polygonNodes, m_projection);
+        const auto firstNodeInPolygon = IsPointInPolygonNodes(m_nodes[firstNodeIndex], polygon, m_projection);
+        const auto secondNodeInPolygon = IsPointInPolygonNodes(m_nodes[secondNodeIndex], polygon, m_projection);
 
         if (!firstNodeInPolygon && !secondNodeInPolygon)
         {
@@ -1836,7 +1836,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const s
 
         // walk the current mesh boundary
         auto currentNode = secondNodeIndex;
-        WalkBoundaryFromNode(polygonNodes, isVisited, currentNode, meshBoundaryPolygon);
+        WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
 
         const auto numNodesFirstTail = meshBoundaryPolygon.size();
 
@@ -1845,7 +1845,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const s
         {
             //Now grow a polyline starting at the other side of the original link L, i.e., the second tail
             currentNode = firstNodeIndex;
-            WalkBoundaryFromNode(polygonNodes, isVisited, currentNode, meshBoundaryPolygon);
+            WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
         }
 
         // There is a nonempty second tail, so reverse the first tail, so that they connect.
@@ -2058,15 +2058,12 @@ std::vector<size_t> meshkernel::Mesh2D::PointFaceIndices(const std::vector<Point
     return result;
 }
 
-bool meshkernel::Mesh2D::IsSegmentCrossingAFace(const Point& firstPoint,
-                                                const Point& secondPoint,
-                                                size_t& intersectedFace,
-                                                size_t& intersectedEdge) const
+std::tuple<size_t, size_t> meshkernel::Mesh2D::IsSegmentCrossingABoundaryEdge(const Point& firstPoint,
+                                                                              const Point& secondPoint) const
 {
     double intersectionRatio = std::numeric_limits<double>::max();
-    intersectedFace = sizetMissingValue;
-    intersectedEdge = sizetMissingValue;
-    auto isCrossing = false;
+    size_t intersectedFace = sizetMissingValue;
+    size_t intersectedEdge = sizetMissingValue;
     for (auto e = 0; e < GetNumEdges(); ++e)
     {
         if (!IsEdgeOnBoundary(e))
@@ -2094,9 +2091,8 @@ bool meshkernel::Mesh2D::IsSegmentCrossingAFace(const Point& firstPoint,
             intersectionRatio = ratioFirstSegment;
             intersectedFace = m_edgesFaces[e][0];
             intersectedEdge = e;
-            isCrossing = true;
         }
     }
 
-    return isCrossing;
+    return {intersectedFace, intersectedEdge};
 }

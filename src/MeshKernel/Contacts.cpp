@@ -59,13 +59,13 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
         }
 
         // connect faces crossing the right projected segment
-        Connect1dNodesWithCrossingFace(n, 5.0);
+        Connect1dNodesWithCrossingFaces(n, 5.0);
         // connect faces crossing the left projected segment
-        Connect1dNodesWithCrossingFace(n, -5.0);
+        Connect1dNodesWithCrossingFaces(n, -5.0);
     }
 };
 
-void meshkernel::Contacts::Connect1dNodesWithCrossingFace(size_t node, double distanceFactor)
+void meshkernel::Contacts::Connect1dNodesWithCrossingFaces(size_t node, double distanceFactor)
 {
 
     const auto left1dEdge = m_mesh1d->m_nodesEdges[node][0];
@@ -78,11 +78,10 @@ void meshkernel::Contacts::Connect1dNodesWithCrossingFace(size_t node, double di
     const auto edgeLength = ComputeDistance(m_mesh1d->m_nodes[otherLeft1dNode], m_mesh1d->m_nodes[otherRight1dNode], m_mesh1d->m_projection);
 
     const auto projectedNode = m_mesh1d->m_nodes[node] + normalVector * edgeLength * distanceFactor;
-    size_t intersectedFace;
-    size_t intersectedEdge;
 
-    const auto isConnectionIntersectingAFace = m_mesh2d->IsSegmentCrossingAFace(m_mesh1d->m_nodes[node], projectedNode, intersectedFace, intersectedEdge);
-    if (isConnectionIntersectingAFace &&
+    const auto [intersectedFace, intersectedEdge] = m_mesh2d->IsSegmentCrossingABoundaryEdge(m_mesh1d->m_nodes[node], projectedNode);
+    if (intersectedFace != sizetMissingValue &&
+        intersectedEdge != sizetMissingValue &&
         !IsConnectionIntersectingMesh1d(node, intersectedFace) &&
         !IsContactIntersectingContact(node, intersectedFace))
     {
@@ -100,18 +99,16 @@ bool meshkernel::Contacts::IsConnectionIntersectingMesh1d(size_t node, size_t fa
         double crossProduct;
         double ratioFirstSegment;
         double ratioSecondSegment;
-        const auto areSegmentCrossing = AreSegmentsCrossing(m_mesh1d->m_nodes[node],
-                                                            m_mesh2d->m_facesCircumcenters[face],
-                                                            m_mesh1d->m_nodes[m_mesh1d->m_edges[e].first],
-                                                            m_mesh1d->m_nodes[m_mesh1d->m_edges[e].second],
-                                                            false,
-                                                            m_mesh1d->m_projection,
-                                                            intersectionPoint,
-                                                            crossProduct,
-                                                            ratioFirstSegment,
-                                                            ratioSecondSegment);
-
-        if (areSegmentCrossing &&
+        if (AreSegmentsCrossing(m_mesh1d->m_nodes[node],
+                                m_mesh2d->m_facesCircumcenters[face],
+                                m_mesh1d->m_nodes[m_mesh1d->m_edges[e].first],
+                                m_mesh1d->m_nodes[m_mesh1d->m_edges[e].second],
+                                false,
+                                m_mesh1d->m_projection,
+                                intersectionPoint,
+                                crossProduct,
+                                ratioFirstSegment,
+                                ratioSecondSegment) &&
             ratioFirstSegment > 0.0 && ratioFirstSegment < 1.0 &&
             ratioSecondSegment > 0.0 && ratioSecondSegment < 1.0)
         {
@@ -129,17 +126,17 @@ bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face
         double crossProduct;
         double ratioFirstSegment;
         double ratioSecondSegment;
-        const auto areSegmentCrossing = AreSegmentsCrossing(m_mesh1d->m_nodes[node],
-                                                            m_mesh2d->m_facesCircumcenters[face],
-                                                            m_mesh1d->m_nodes[m_mesh1dIndices[i]],
-                                                            m_mesh2d->m_facesCircumcenters[m_mesh2dIndices[i]],
-                                                            false,
-                                                            m_mesh1d->m_projection,
-                                                            intersectionPoint,
-                                                            crossProduct,
-                                                            ratioFirstSegment,
-                                                            ratioSecondSegment);
-        if (areSegmentCrossing &&
+
+        if (AreSegmentsCrossing(m_mesh1d->m_nodes[node],
+                                m_mesh2d->m_facesCircumcenters[face],
+                                m_mesh1d->m_nodes[m_mesh1dIndices[i]],
+                                m_mesh2d->m_facesCircumcenters[m_mesh2dIndices[i]],
+                                false,
+                                m_mesh1d->m_projection,
+                                intersectionPoint,
+                                crossProduct,
+                                ratioFirstSegment,
+                                ratioSecondSegment) &&
             ratioFirstSegment > 0.0 && ratioFirstSegment < 1.0 &&
             ratioSecondSegment > 0.0 && ratioSecondSegment < 1.0)
         {
@@ -188,7 +185,7 @@ void meshkernel::Contacts::ComputeMultipleConnections()
         // for each face determine if it is crossing the current 1d edge
         for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
         {
-            const auto face = faceCircumcentersRTree.GetQueryResult(f);
+            const auto face = faceCircumcentersRTree.GetQueryIndex(f);
 
             // the face is already connected to a 1d node, nothing to do
             if (isFaceAlreadyConnected[face])
@@ -208,18 +205,17 @@ void meshkernel::Contacts::ComputeMultipleConnections()
                 const auto firstNode2dMeshEdge = m_mesh2d->m_edges[edge].first;
                 const auto secondNode2dMeshEdge = m_mesh2d->m_edges[edge].second;
 
-                const auto areSegmentCrossing = AreSegmentsCrossing(m_mesh1d->m_nodes[firstNode1dMeshEdge],
-                                                                    m_mesh1d->m_nodes[secondNode1dMeshEdge],
-                                                                    m_mesh2d->m_nodes[firstNode2dMeshEdge],
-                                                                    m_mesh2d->m_nodes[secondNode2dMeshEdge],
-                                                                    false,
-                                                                    m_mesh1d->m_projection,
-                                                                    intersectionPoint,
-                                                                    crossProduct,
-                                                                    ratioFirstSegment,
-                                                                    ratioSecondSegment);
                 // nothing is crossing, continue
-                if (!areSegmentCrossing)
+                if (!AreSegmentsCrossing(m_mesh1d->m_nodes[firstNode1dMeshEdge],
+                                         m_mesh1d->m_nodes[secondNode1dMeshEdge],
+                                         m_mesh2d->m_nodes[firstNode2dMeshEdge],
+                                         m_mesh2d->m_nodes[secondNode2dMeshEdge],
+                                         false,
+                                         m_mesh1d->m_projection,
+                                         intersectionPoint,
+                                         crossProduct,
+                                         ratioFirstSegment,
+                                         ratioSecondSegment))
                 {
                     continue;
                 }
