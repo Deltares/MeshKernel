@@ -134,16 +134,16 @@ namespace meshkernel
         /// @brief Decreases the values of samples
         void DecreaseValueOfSamples();
 
-        const std::shared_ptr<Mesh2D> m_mesh;
-        std::vector<Sample>& m_samples;
-        Method m_method;
-        MeshLocations m_interpolationLocation;
-        double m_relativeSearchRadius;
-        bool m_useClosestSampleIfNoneAvailable = false;
-        bool m_transformSamples = false;
+        const std::shared_ptr<Mesh2D> m_mesh;           ///< Pointer to the mesh
+        std::vector<Sample>& m_samples;                 ///< The samples
+        Method m_method;                                ///< The method to use for the interpolation
+        MeshLocations m_interpolationLocation;          ///< Interpolation location
+        double m_relativeSearchRadius;                  ///< Relative search radius
+        bool m_useClosestSampleIfNoneAvailable = false; ///< Whether to use the closest sample if there is none available
+        bool m_transformSamples = false;                ///< Wheher to transform samples
 
-        RTree m_samplesRtree;
-        std::vector<double> m_results;
-        std::vector<bool> m_visitedSamples;
+        RTree m_samplesRtree;               ///< The samples tree
+        std::vector<double> m_results;      ///< The results
+        std::vector<bool> m_visitedSamples; ///< The visited samples
     };
 } // namespace meshkernel

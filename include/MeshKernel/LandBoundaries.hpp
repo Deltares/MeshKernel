@@ -166,40 +166,41 @@ namespace meshkernel
         size_t FindStartEndMeshNodesFromEdges(size_t edge, Point point) const;
 
         /// @brief Connect mesh nodes close to the landboundaryIndex using Dijkstra's algorithm
-        /// @brief[in] landboundaryIndex The index of a valid landboundary
-        /// @brief[in] startMeshNode the starting point
+        /// @param[in] landboundaryIndex The index of a valid landboundary
+        /// @param[in] startMeshNode the starting point
         /// @returns A vector of connected edge indices for each node
         std::vector<size_t> ShortestPath(size_t landboundaryIndex, size_t startMeshNode);
 
         /// @brief Compute the nearest land boundary segment (toland)
         /// @param[in] landBoundaryIndex The land boundary index
+        /// @param[in] node The node
         /// @returns A tuple containing the distance of the node from the land boundary, the projected node on the land boundary, the closest land boundary node,
         /// The length of the segment from the starting point to the projected point expressed as an edge ratio
         std::tuple<double, Point, size_t, double> NearestLandBoundarySegment(int landBoundaryIndex, const Point& node);
 
-        std::shared_ptr<Mesh2D> m_mesh;                         // A pointer to mesh
-        std::shared_ptr<Polygons> m_polygons;                   // A pointer to polygons
-        std::vector<Point> m_nodes;                             // XLAN, YLAN, ZLAN
-        std::vector<Point> m_polygonNodesCache;                 // array of points (e.g. points of a face)
-        std::vector<std::vector<size_t>> m_validLandBoundaries; // lanseg_startend
-        std::vector<std::vector<double>> m_nodesLand;           // node to land boundary segment mapping
-        std::vector<size_t> m_nodeFaceIndices;                  // For each node, the indices of the faces including them
+        std::shared_ptr<Mesh2D> m_mesh;                         //< A pointer to mesh
+        std::shared_ptr<Polygons> m_polygons;                   //< A pointer to polygons
+        std::vector<Point> m_nodes;                             //< XLAN, YLAN, ZLAN
+        std::vector<Point> m_polygonNodesCache;                 //< array of points (e.g. points of a face)
+        std::vector<std::vector<size_t>> m_validLandBoundaries; //< lanseg_startend
+        std::vector<std::vector<double>> m_nodesLand;           //< node to land boundary segment mapping
+        std::vector<size_t> m_nodeFaceIndices;                  //< For each node, the indices of the faces including them
 
-        std::vector<size_t> m_nodeMask; // nodemask, masking the net nodes
-        std::vector<bool> m_faceMask;   // masking faces
-        std::vector<size_t> m_edgeMask; // masking edges
+        std::vector<size_t> m_nodeMask; //< nodemask, masking the net nodes
+        std::vector<bool> m_faceMask;   //< masking faces
+        std::vector<size_t> m_edgeMask; //< masking edges
 
-        bool m_landMask = true;
-        bool m_addLandboundaries = true;
+        bool m_landMask = true;          //< Land mask
+        bool m_addLandboundaries = true; //< Whether to add land boundaries
 
         // caches
-        std::vector<double> m_nodesMinDistances; // the minimum distances to land boundaries
+        std::vector<double> m_nodesMinDistances; //< the minimum distances to land boundaries
 
         // Parameters
-        const double m_closeToLandBoundaryFactor = 5.0; // close - to - landboundary tolerance, measured in number of meshwidths
-        const double m_closeWholeMeshFactor = 1.0;      // close - to - landboundary tolerance, measured in number of meshwidths
-        const double m_minDistanceFromLandFactor = 2.0;
-        double m_closeFactor = 5.0;
+        const double m_closeToLandBoundaryFactor = 5.0; //< close - to - landboundary tolerance, measured in number of meshwidths
+        const double m_closeWholeMeshFactor = 1.0;      //< close - to - landboundary tolerance, measured in number of meshwidths
+        const double m_minDistanceFromLandFactor = 2.0; //< Minimal distance from land factor
+        double m_closeFactor = 5.0;                     //< Close factor
 
         //findOnlyOuterMeshBoundary
         bool m_findOnlyOuterMeshBoundary = false;

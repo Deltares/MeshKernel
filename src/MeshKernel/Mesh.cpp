@@ -181,7 +181,7 @@ void meshkernel::Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeInd
 {
     if (firstNodeIndex >= GetNumNodes() || secondNodeIndex >= GetNumNodes())
     {
-        throw std::invalid_argument("Mesh2D::MergeTwoNodes: Either the first or the second node-index is invalid.");
+        throw std::invalid_argument("Mesh::MergeTwoNodes: Either the first or the second node-index is invalid.");
     }
 
     auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);
@@ -303,7 +303,7 @@ void meshkernel::Mesh::DeleteNode(size_t nodeIndex)
 {
     if (nodeIndex >= GetNumNodes())
     {
-        throw std::invalid_argument("Mesh2D::DeleteNode: The index of the node to be deleted does not exist.");
+        throw std::invalid_argument("Mesh::DeleteNode: The index of the node to be deleted does not exist.");
     }
 
     for (auto e = 0; e < m_nodesNumEdges[nodeIndex]; e++)
@@ -321,7 +321,7 @@ void meshkernel::Mesh::DeleteEdge(size_t edgeIndex)
 {
     if (edgeIndex == sizetMissingValue)
     {
-        throw std::invalid_argument("Mesh2D::DeleteEdge: The index of the edge to be deleted does not exist.");
+        throw std::invalid_argument("Mesh::DeleteEdge: The index of the edge to be deleted does not exist.");
     }
 
     m_edges[edgeIndex].first = sizetMissingValue;
@@ -357,7 +357,7 @@ size_t meshkernel::Mesh::FindCommonNode(size_t firstEdgeIndex, size_t secondEdge
 
     if (firstEdgeFirstNode == sizetMissingValue || firstEdgeEdgeSecondNode == sizetMissingValue || secondEdgeFirstNode == sizetMissingValue || secondEdgeSecondNode == sizetMissingValue)
     {
-        throw std::invalid_argument("Mesh2D::FindCommonNode: At least one of the given edges is invalid.");
+        throw std::invalid_argument("Mesh::FindCommonNode: At least one of the given edges is invalid.");
     }
 
     if (firstEdgeFirstNode == secondEdgeFirstNode || firstEdgeFirstNode == secondEdgeSecondNode)
@@ -375,7 +375,7 @@ size_t meshkernel::Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex)
 {
     if (firstNodeIndex == sizetMissingValue || secondNodeIndex == sizetMissingValue)
     {
-        throw std::invalid_argument("Mesh2D::FindEdge: Invalid node index.");
+        throw std::invalid_argument("Mesh::FindEdge: Invalid node index.");
     }
 
     size_t edgeIndex = sizetMissingValue;
@@ -392,11 +392,11 @@ size_t meshkernel::Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex)
     return edgeIndex;
 }
 
-size_t meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
+size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
 {
     if (GetNumNodes() <= 0)
     {
-        throw std::invalid_argument("Mesh2D::GetNodeIndex: There are no valid nodes.");
+        throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
     }
 
     // create rtree a first time
@@ -415,14 +415,56 @@ size_t meshkernel::Mesh::GetNodeIndex(Point point, double searchRadius)
         return m_nodesRTree.GetQueryIndex(0);
     }
 
-    throw AlgorithmError("Mesh2D::GetNodeIndex: Could not find the node index close to a point.");
+    throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
+}
+
+size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool>& oneDNodeMask)
+{
+    if (GetNumNodes() <= 0)
+    {
+        throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
+    }
+
+    // create rtree a first time
+    if (m_nodesRTree.Empty())
+    {
+        m_nodesRTree.BuildTree(m_nodes);
+        m_nodesRTreeRequiresUpdate = false;
+    }
+
+    m_nodesRTree.NearestNeighbors(point);
+    const auto resultSize = m_nodesRTree.GetQueryResultSize();
+
+    // no results found
+    if (resultSize <= 0)
+    {
+        throw AlgorithmError("Mesh::FindNodeCloseToAPoint: query result size <= 0.");
+    }
+
+    // resultSize > 0, no node mask applied
+    if (oneDNodeMask.empty())
+    {
+        return m_nodesRTree.GetQueryIndex(0);
+    }
+
+    // resultSize > 0, a mask is applied
+    for (auto index = 0; index < resultSize; ++index)
+    {
+        const auto nodeIndex = m_nodesRTree.GetQueryIndex(index);
+        if (oneDNodeMask[nodeIndex])
+        {
+            return nodeIndex;
+        }
+    }
+
+    throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
 }
 
 size_t meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
 {
     if (GetNumEdges() == 0)
     {
-        throw std::invalid_argument("Mesh2D::GetNodeIndex: There are no valid edges.");
+        throw std::invalid_argument("Mesh::GetNodeIndex: There are no valid edges.");
     }
 
     if (m_edgesRTree.Empty())
@@ -440,7 +482,7 @@ size_t meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
         return edgeIndex;
     }
 
-    throw AlgorithmError("Mesh2D::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
+    throw AlgorithmError("Mesh::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
 }
 
 void meshkernel::Mesh::MoveNode(Point newPoint, size_t nodeindex)
@@ -487,7 +529,7 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(size_t node)
 {
     if (!m_nodes[node].IsValid())
     {
-        throw std::invalid_argument("Mesh2D::SortEdgesInCounterClockWiseOrder: Invalid nodes.");
+        throw std::invalid_argument("Mesh::SortEdgesInCounterClockWiseOrder: Invalid nodes.");
     }
 
     double phi0 = 0.0;

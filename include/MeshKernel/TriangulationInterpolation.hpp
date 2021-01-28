@@ -94,10 +94,10 @@ namespace meshkernel
         }
 
     private:
-        const std::vector<Point>& m_locations;
-        const std::vector<Sample>& m_samples;
-        Projection m_projection;
-        std::vector<double> m_results;
+        const std::vector<Point>& m_locations; ///< Locations
+        const std::vector<Sample>& m_samples;  ///< Samples
+        Projection m_projection;               ///< Projection
+        std::vector<double> m_results;         ///< Results
     };
 
 }; // namespace meshkernel
