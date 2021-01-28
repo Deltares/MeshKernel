@@ -221,30 +221,30 @@ $(function() {
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;                                                         <span class="keywordtype">size_t</span> startLandBoundaryIndex,</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;                                                         <span class="keywordtype">size_t</span> endLandBoundaryIndex);</div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160; </div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        std::shared_ptr&lt;Mesh2D&gt; m_mesh;                    <span class="comment">// A pointer to mesh</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        std::shared_ptr&lt;Polygons&gt; m_polygons;              <span class="comment">// A pointer to polygons</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        std::vector&lt;Point&gt; m_nodes;                        <span class="comment">// XLAN, YLAN, ZLAN</span></div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        std::vector&lt;Point&gt; m_polygonNodesCache;            <span class="comment">// array of points (e.g. points of a face)</span></div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        std::vector&lt;std::vector&lt;size_t&gt;&gt; m_segmentIndices; <span class="comment">// lanseg_startend</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_nodesLand;      <span class="comment">// node to land boundary segment mapping</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        std::shared_ptr&lt;Mesh2D&gt; m_mesh;                    </div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        std::shared_ptr&lt;Polygons&gt; m_polygons;              </div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        std::vector&lt;Point&gt; m_nodes;                        </div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        std::vector&lt;Point&gt; m_polygonNodesCache;            </div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        std::vector&lt;std::vector&lt;size_t&gt;&gt; m_segmentIndices; </div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_nodesLand;      </div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160; </div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        std::vector&lt;size_t&gt; m_nodeMask; <span class="comment">// nodemask, masking the net nodes</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        std::vector&lt;size_t&gt; m_faceMask; <span class="comment">// masking faces</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        std::vector&lt;size_t&gt; m_edgeMask; <span class="comment">// masking edges</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        std::vector&lt;size_t&gt; m_nodeMask; </div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        std::vector&lt;size_t&gt; m_faceMask; </div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        std::vector&lt;size_t&gt; m_edgeMask; </div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160; </div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        <span class="keywordtype">bool</span> m_landMask = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="keywordtype">bool</span> m_addLandboundaries = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="keywordtype">size_t</span> m_numFacesMasked = 0;</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        <span class="keywordtype">size_t</span> m_maskDepth = 0;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        <span class="keywordtype">bool</span> m_landMask = <span class="keyword">true</span>;          </div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="keywordtype">bool</span> m_addLandboundaries = <span class="keyword">true</span>; </div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="keywordtype">size_t</span> m_numFacesMasked = 0;     </div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        <span class="keywordtype">size_t</span> m_maskDepth = 0;          </div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160; </div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        <span class="comment">// caches</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        std::vector&lt;double&gt; m_nodesMinDistances;</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        std::vector&lt;double&gt; m_nodesMinDistances; </div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160; </div>
 <div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        <span class="comment">// Parameters</span></div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_closeToLandBoundaryFactor = 5.0; <span class="comment">// close - to - landboundary tolerance, measured in number of meshwidths</span></div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_closeWholeMeshFactor = 1.0;      <span class="comment">// close - to - landboundary tolerance, measured in number of meshwidths</span></div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_minDistanceFromLandFactor = 2.0;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        <span class="keywordtype">double</span> m_closeFactor = 5.0;</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_closeToLandBoundaryFactor = 5.0; </div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_closeWholeMeshFactor = 1.0;      </div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_minDistanceFromLandFactor = 2.0; </div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        <span class="keywordtype">double</span> m_closeFactor = 5.0;                     </div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    };</div>
 <div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160; </div>
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;} <span class="comment">// namespace meshkernel</span></div>

@@ -245,20 +245,20 @@ $(function() {
 <div class="line"><a name="l00316"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_mesh2_d.html#a22e855cef6aa7ad8b1ead1cd9aff675b">  316</a></span>&#160;        std::vector&lt;Point&gt; <a class="code" href="classmeshkernel_1_1_mesh2_d.html#a22e855cef6aa7ad8b1ead1cd9aff675b">m_polygonNodesCache</a>; </div>
 <div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160; </div>
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;        <span class="keywordtype">void</span> FindFacesRecursive(<span class="keywordtype">size_t</span> startingNode,</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;                                <span class="keywordtype">size_t</span> node,</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;                                <span class="keywordtype">size_t</span> numEdges,</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;                                <span class="keywordtype">size_t</span> previousEdge,</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;                                <span class="keywordtype">size_t</span> numClosingEdges,</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;                                std::vector&lt;size_t&gt;&amp; edges,</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;                                std::vector&lt;size_t&gt;&amp; nodes,</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;                                std::vector&lt;size_t&gt;&amp; sortedEdges,</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;                                std::vector&lt;size_t&gt;&amp; sortedNodes,</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;                                std::vector&lt;Point&gt;&amp; nodalValues);</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160; </div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> CheckTriangle(<span class="keyword">const</span> std::vector&lt;size_t&gt;&amp; faceNodes, <span class="keyword">const</span> std::vector&lt;Point&gt;&amp; nodes) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;    };</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        <span class="keywordtype">void</span> FindFacesRecursive(<span class="keywordtype">size_t</span> startingNode,</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;                                <span class="keywordtype">size_t</span> node,</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;                                <span class="keywordtype">size_t</span> numEdges,</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;                                <span class="keywordtype">size_t</span> previousEdge,</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;                                <span class="keywordtype">size_t</span> numClosingEdges,</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;                                std::vector&lt;size_t&gt;&amp; edges,</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;                                std::vector&lt;size_t&gt;&amp; nodes,</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;                                std::vector&lt;size_t&gt;&amp; sortedEdges,</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;                                std::vector&lt;size_t&gt;&amp; sortedNodes,</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;                                std::vector&lt;Point&gt;&amp; nodalValues);</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160; </div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;        [[nodiscard]] <span class="keywordtype">bool</span> CheckTriangle(<span class="keyword">const</span> std::vector&lt;size_t&gt;&amp; faceNodes, <span class="keyword">const</span> std::vector&lt;Point&gt;&amp; nodes) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    };</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacemeshkernel_html_a22d09b6f79c4d1aa55aafadb84908716"><div class="ttname"><a href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">meshkernel::Projection</a></div><div class="ttdeci">Projection</div><div class="ttdoc">Enumerator describing the supported projections.</div><div class="ttdef"><b>Definition:</b> Entities.hpp:58</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html_a17db40a7b9ea9151e51231c4af416d47"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html#a17db40a7b9ea9151e51231c4af416d47">meshkernel::Mesh2D::NodeTypes</a></div><div class="ttdeci">NodeTypes</div><div class="ttdoc">Enumerator describing the different node types.</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:68</div></div>

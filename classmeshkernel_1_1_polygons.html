@@ -108,12 +108,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3fea051e182c020f979000d139dcb1e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a3fea051e182c020f979000d139dcb1e7">IsPointInPolygon</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, size_t polygonIndex) const</td></tr>
 <tr class="memdesc:a3fea051e182c020f979000d139dcb1e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in a given polygon.  <a href="classmeshkernel_1_1_polygons.html#a3fea051e182c020f979000d139dcb1e7">More...</a><br /></td></tr>
 <tr class="separator:a3fea051e182c020f979000d139dcb1e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a550828de849a36fa3567a92d1dfa1b2c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a550828de849a36fa3567a92d1dfa1b2c">IsPointInPolygons</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point) const</td></tr>
-<tr class="memdesc:a550828de849a36fa3567a92d1dfa1b2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)  <a href="classmeshkernel_1_1_polygons.html#a550828de849a36fa3567a92d1dfa1b2c">More...</a><br /></td></tr>
-<tr class="separator:a550828de849a36fa3567a92d1dfa1b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a02416dfbc01ee341261d6af370b6ec"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a1a02416dfbc01ee341261d6af370b6ec">PointInWhichPolygon</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point) const</td></tr>
+<tr class="memdesc:a1a02416dfbc01ee341261d6af370b6ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)  <a href="classmeshkernel_1_1_polygons.html#a1a02416dfbc01ee341261d6af370b6ec">More...</a><br /></td></tr>
+<tr class="separator:a1a02416dfbc01ee341261d6af370b6ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98de1a4c272b018d0fc40bf64a63b814"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a98de1a4c272b018d0fc40bf64a63b814">Polygons::IsEmpty</a> () const</td></tr>
 <tr class="memdesc:a98de1a4c272b018d0fc40bf64a63b814"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the polygon is empty.  <a href="classmeshkernel_1_1_polygons.html#a98de1a4c272b018d0fc40bf64a63b814">More...</a><br /></td></tr>
 <tr class="separator:a98de1a4c272b018d0fc40bf64a63b814"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10b6d46d1797ffab94d8cca57c8ec993"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a10b6d46d1797ffab94d8cca57c8ec993">Polygons::GetNumPolygons</a> () const</td></tr>
+<tr class="memdesc:a10b6d46d1797ffab94d8cca57c8ec993"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives the number of polygons.  <a href="classmeshkernel_1_1_polygons.html#a10b6d46d1797ffab94d8cca57c8ec993">More...</a><br /></td></tr>
+<tr class="separator:a10b6d46d1797ffab94d8cca57c8ec993"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a456c08fc862cac554b00a44e12f1dd41"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a456c08fc862cac554b00a44e12f1dd41">GetNumNodes</a> () const</td></tr>
 <tr class="memdesc:a456c08fc862cac554b00a44e12f1dd41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of polygon nodes.  <a href="classmeshkernel_1_1_polygons.html#a456c08fc862cac554b00a44e12f1dd41">More...</a><br /></td></tr>
 <tr class="separator:a456c08fc862cac554b00a44e12f1dd41"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -260,33 +263,6 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
 
 </div>
 </div>
-<a id="a550828de849a36fa3567a92d1dfa1b2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a550828de849a36fa3567a92d1dfa1b2c">&#9670;&nbsp;</a></span>IsPointInPolygons()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool meshkernel::Polygons::IsPointInPolygons </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td>
-          <td class="paramname"><em>point</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol) </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The point to check </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>True if it is included, false otherwise </dd></dl>
-
-</div>
-</div>
 <a id="a18b31cd6a49f8212bba9184547e36369"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a18b31cd6a49f8212bba9184547e36369">&#9670;&nbsp;</a></span>OffsetCopy()</h2>
 
@@ -322,6 +298,53 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The new offset polygon </dd></dl>
+
+</div>
+</div>
+<a id="a1a02416dfbc01ee341261d6af370b6ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a02416dfbc01ee341261d6af370b6ec">&#9670;&nbsp;</a></span>PointInWhichPolygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t meshkernel::Polygons::PointInWhichPolygon </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The point to check </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The index of a polygon where the point is included or if none has been found, sizetMissingValue </dd></dl>
+
+</div>
+</div>
+<a id="a10b6d46d1797ffab94d8cca57c8ec993"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10b6d46d1797ffab94d8cca57c8ec993">&#9670;&nbsp;</a></span>Polygons::GetNumPolygons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t meshkernel::Polygons::Polygons::GetNumPolygons </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gives the number of polygons. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of polygons </dd></dl>
 
 </div>
 </div>
