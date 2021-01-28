@@ -151,8 +151,8 @@ namespace meshkernel
         /// @brief Overloads equality with another Point
         bool operator==(const Point& rhs) const
         {
-            bool isEqual = IsEqual(x, rhs.x) &&
-                           IsEqual(y, rhs.y);
+            bool isEqual = (x == rhs.x) &&
+                           (y == rhs.y);
 
             return isEqual;
         }
