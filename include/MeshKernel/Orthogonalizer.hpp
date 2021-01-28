@@ -70,9 +70,9 @@ namespace meshkernel
         /// @returns If the method succeeded
         bool AspectRatio(const Mesh2D& mesh);
 
-        std::shared_ptr<Mesh2D> m_mesh;
-        std::vector<double> m_aspectRatios;
-        std::vector<std::vector<double>> m_weights;
-        std::vector<std::vector<double>> m_rhs;
+        std::shared_ptr<Mesh2D> m_mesh;             ///< Pointer to mesh
+        std::vector<double> m_aspectRatios;         ///< Aspect ratios
+        std::vector<std::vector<double>> m_weights; ///< Weights
+        std::vector<std::vector<double>> m_rhs;     ///< Right hand side
     };
 } // namespace meshkernel

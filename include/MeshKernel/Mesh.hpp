@@ -137,12 +137,12 @@ namespace meshkernel
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
         /// @return The index of the new edge
-        [[nodiscard]] size_t ConnectNodes(size_t startNode, size_t endNode);
+        size_t ConnectNodes(size_t startNode, size_t endNode);
 
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
         /// @return The index of the new node
-        [[nodiscard]] size_t InsertNode(const Point& newPoint);
+        size_t InsertNode(const Point& newPoint);
 
         /// @brief Delete a node
         /// @param[in] nodeIndex The index of the node to delete
@@ -161,9 +161,15 @@ namespace meshkernel
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
+        /// @param[in] nodeMask The mask to apply to mesh nodes, if the mask value is false, the next closest node will be considered
+        /// @returns The index of the closest node
+        [[nodiscard]] size_t FindNodeCloseToAPoint(Point point, const std::vector<bool>& nodeMask);
+
+        /// @brief Get the index of a node close to a point
+        /// @param[in] point The starting point from where to start the search
         /// @param[in] searchRadius The search radius
         /// @returns The index of the closest node
-        [[nodiscard]] size_t GetNodeIndex(Point point, double searchRadius);
+        [[nodiscard]] size_t FindNodeCloseToAPoint(Point point, double searchRadius);
 
         /// @brief Deletes an edge
         /// @param[in] edgeIndex The edge index
