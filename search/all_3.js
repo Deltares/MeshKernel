@@ -16,7 +16,7 @@ var searchData=
   ['directionalrefinement_85',['DirectionalRefinement',['../structmeshkernelapi_1_1_sample_refine_parameters.html#ada69ceefc37d008d02d23bf9e2c4eb2b',1,'meshkernelapi::SampleRefineParameters']]],
   ['discretizetransfinite_86',['DiscretizeTransfinite',['../namespacemeshkernel.html#a08a412768c6fec89197a6198117fad35',1,'meshkernel']]],
   ['displayinterpolationprocess_87',['DisplayInterpolationProcess',['../structmeshkernelapi_1_1_interpolation_parameters.html#a506a66e67530e75b7cbac988edbb70a4',1,'meshkernelapi::InterpolationParameters']]],
-  ['distancefromline_88',['DistanceFromLine',['../namespacemeshkernel.html#af52281da58b6a5018cd723b7c4f4853d',1,'meshkernel']]],
+  ['distancefromline_88',['DistanceFromLine',['../namespacemeshkernel.html#ac61995134187918aff44b4bf298700d8',1,'meshkernel']]],
   ['dotproduct_89',['DotProduct',['../namespacemeshkernel.html#ab7eba48571f6e2e6ec9857d9499d235d',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2)'],['../namespacemeshkernel.html#ac36c4ebc5ddac1360895f5af36574640',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2, Args &amp;... args)']]],
   ['doublemissingvalue_90',['doubleMissingValue',['../namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671',1,'meshkernel']]]
 ];

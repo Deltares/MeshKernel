@@ -24,7 +24,7 @@ var searchData=
   ['ispointinpolygon_176',['IsPointInPolygon',['../classmeshkernel_1_1_polygons.html#a3fea051e182c020f979000d139dcb1e7',1,'meshkernel::Polygons']]],
   ['ispointinpolygonnodes_177',['IsPointInPolygonNodes',['../namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29',1,'meshkernel']]],
   ['ispointonpole_178',['IsPointOnPole',['../namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71',1,'meshkernel']]],
-  ['issegmentcrossingaface_179',['IsSegmentCrossingAFace',['../classmeshkernel_1_1_mesh2_d.html#a7a794c5b29585f9a4f7fae7a3357ba7b',1,'meshkernel::Mesh2D']]],
+  ['issegmentcrossingaboundaryedge_179',['IsSegmentCrossingABoundaryEdge',['../classmeshkernel_1_1_mesh2_d.html#a5dc822de50acdf0f3cb964c1215a960a',1,'meshkernel::Mesh2D']]],
   ['isvalid_180',['IsValid',['../structmeshkernel_1_1_point.html#a268487f05fb9526027668d2cbdd3fbff',1,'meshkernel::Point::IsValid()'],['../structmeshkernel_1_1_sample.html#a5566cc0092522f8fc8a19a70cc335cf6',1,'meshkernel::Sample::IsValid()']]],
   ['isvalueinboundingbox_181',['IsValueInBoundingBox',['../namespacemeshkernel.html#a0110cb34de6eada7abb0ef9d08793bd1',1,'meshkernel']]],
   ['iterate_182',['Iterate',['../classmeshkernel_1_1_curvilinear_grid_from_splines.html#a293be64533b1849b727afafe57169240',1,'meshkernel::CurvilinearGridFromSplines']]]

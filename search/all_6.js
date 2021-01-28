@@ -19,7 +19,7 @@ var searchData=
   ['getnumsplines_137',['GetNumSplines',['../classmeshkernel_1_1_splines.html#a59b3a266adea9414d491c1313d07749b',1,'meshkernel::Splines']]],
   ['getobtusetrianglescenters_138',['GetObtuseTrianglesCenters',['../classmeshkernel_1_1_mesh2_d.html#aea6575301bc3c4c17e3a76c5efca4ad5',1,'meshkernel::Mesh2D']]],
   ['getorthogonality_139',['GetOrthogonality',['../classmeshkernel_1_1_mesh2_d.html#afaa6bfaadd219f15bbb7b45ee696a256',1,'meshkernel::Mesh2D']]],
-  ['getqueryresult_140',['GetQueryResult',['../classmeshkernel_1_1_r_tree.html#abe2c436ded228f83eea77d522a991f72',1,'meshkernel::RTree']]],
+  ['getqueryindex_140',['GetQueryIndex',['../classmeshkernel_1_1_r_tree.html#a69b90fce946f316787af2d6589d36fad',1,'meshkernel::RTree']]],
   ['getqueryresultsize_141',['GetQueryResultSize',['../classmeshkernel_1_1_r_tree.html#a37a5e441bc4cd078a90a662731a6ac5a',1,'meshkernel::RTree']]],
   ['getresults_142',['GetResults',['../classmeshkernel_1_1_averaging_interpolation.html#ad38724170f50509b755ce83087447410',1,'meshkernel::AveragingInterpolation::GetResults()'],['../classmeshkernel_1_1_triangulation_interpolation.html#abe75c6ebdc32a884d923d961559ad8cc',1,'meshkernel::TriangulationInterpolation::GetResults()']]],
   ['getrighthandside_143',['GetRightHandSide',['../classmeshkernel_1_1_orthogonalizer.html#a9e3e5a5c27ac6c2878117ed578ab55bb',1,'meshkernel::Orthogonalizer']]],

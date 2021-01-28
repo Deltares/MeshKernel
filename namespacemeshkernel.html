@@ -305,9 +305,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a9f6d26597793c1768be2f91121dd4432"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a9f6d26597793c1768be2f91121dd4432">ComputeDistance</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a9f6d26597793c1768be2f91121dd4432"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the distance between two points (dbdistance)  <a href="namespacemeshkernel.html#a9f6d26597793c1768be2f91121dd4432">More...</a><br /></td></tr>
 <tr class="separator:a9f6d26597793c1768be2f91121dd4432"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af52281da58b6a5018cd723b7c4f4853d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#af52281da58b6a5018cd723b7c4f4853d">DistanceFromLine</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstNode, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondNode, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;normalPoint, double &amp;ratio)</td></tr>
-<tr class="memdesc:af52281da58b6a5018cd723b7c4f4853d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the perpendicular distance of a point from a segment firstNode - secondNode (dlinedis3)  <a href="namespacemeshkernel.html#af52281da58b6a5018cd723b7c4f4853d">More...</a><br /></td></tr>
-<tr class="separator:af52281da58b6a5018cd723b7c4f4853d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac61995134187918aff44b4bf298700d8"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; double, <a class="el" href="structmeshkernel_1_1_point.html">Point</a>, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ac61995134187918aff44b4bf298700d8">DistanceFromLine</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstNode, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondNode, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:ac61995134187918aff44b4bf298700d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the perpendicular distance of a point from a segment firstNode - secondNode (dlinedis3)  <a href="namespacemeshkernel.html#ac61995134187918aff44b4bf298700d8">More...</a><br /></td></tr>
+<tr class="separator:ac61995134187918aff44b4bf298700d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43c86e4faac7b1537a76ea4ba26ce591"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a43c86e4faac7b1537a76ea4ba26ce591">InnerProductTwoSegments</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPointFirstSegment, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPointFirstSegment, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstPointSecondSegment, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondPointSecondSegment, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a43c86e4faac7b1537a76ea4ba26ce591"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inner product of two segments (dprodin)  <a href="namespacemeshkernel.html#a43c86e4faac7b1537a76ea4ba26ce591">More...</a><br /></td></tr>
 <tr class="separator:a43c86e4faac7b1537a76ea4ba26ce591"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1195,14 +1195,14 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 </div>
 </div>
-<a id="af52281da58b6a5018cd723b7c4f4853d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af52281da58b6a5018cd723b7c4f4853d">&#9670;&nbsp;</a></span>DistanceFromLine()</h2>
+<a id="ac61995134187918aff44b4bf298700d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac61995134187918aff44b4bf298700d8">&#9670;&nbsp;</a></span>DistanceFromLine()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double meshkernel::DistanceFromLine </td>
+          <td class="memname">std::tuple&lt;double, <a class="el" href="structmeshkernel_1_1_point.html">Point</a>, double&gt; meshkernel::DistanceFromLine </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
           <td class="paramname"><em>point</em>, </td>
@@ -1223,19 +1223,7 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;&#160;</td>
-          <td class="paramname"><em>projection</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>normalPoint</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double &amp;&#160;</td>
-          <td class="paramname"><em>ratio</em>&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1252,12 +1240,10 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
     <tr><td class="paramdir">[in]</td><td class="paramname">firstNode</td><td>The first point of the segment. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">secondNode</td><td>The second point of the segment. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>The coordinate system projection. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">normalPoint</td><td>The intersection of the normal projection with the segment. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">ratio</td><td>The distance from the first node, expressed as a ratio of the segment length. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The normal distance from the segment </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The normal distance from the segment, the intersection of the normal projection on the segment, the distance from the first node, expressed as ratio of the segment length </dd></dl>
 
 </div>
 </div>

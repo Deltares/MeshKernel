@@ -108,17 +108,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a1fa7ebec253f8be75b0fbcf69e224875"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default Ctor.  <a href="classmeshkernel_1_1_land_boundaries.html#a1fa7ebec253f8be75b0fbcf69e224875">More...</a><br /></td></tr>
 <tr class="separator:a1fa7ebec253f8be75b0fbcf69e224875"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd944a488636576a08960528b1e10f73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73">Administrate</a> ()</td></tr>
-<tr class="memdesc:abd944a488636576a08960528b1e10f73"><td class="mdescLeft">&#160;</td><td class="mdescRight">The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary (admin_landboundary_segments)  <a href="classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73">More...</a><br /></td></tr>
+<tr class="memdesc:abd944a488636576a08960528b1e10f73"><td class="mdescLeft">&#160;</td><td class="mdescRight">The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments)  <a href="classmeshkernel_1_1_land_boundaries.html#abd944a488636576a08960528b1e10f73">More...</a><br /></td></tr>
 <tr class="separator:abd944a488636576a08960528b1e10f73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade64d4802363ff257d6522d82ce11e27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#ade64d4802363ff257d6522d82ce11e27">FindNearestMeshBoundary</a> (<a class="el" href="classmeshkernel_1_1_land_boundaries.html#af722b430ae328691e49daaf616c90f29">ProjectToLandBoundaryOption</a> projectToLandBoundaryOption)</td></tr>
 <tr class="memdesc:ade64d4802363ff257d6522d82ce11e27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the mesh boundary line closest to the land boundary (find_nearest_meshline)  <a href="classmeshkernel_1_1_land_boundaries.html#ade64d4802363ff257d6522d82ce11e27">More...</a><br /></td></tr>
 <tr class="separator:ade64d4802363ff257d6522d82ce11e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02db80d7314b1a24236e3150a0f64ee6"><td class="memItemLeft" align="right" valign="top"><a id="a02db80d7314b1a24236e3150a0f64ee6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6">SnapMeshToLandBoundaries</a> ()</td></tr>
-<tr class="memdesc:a02db80d7314b1a24236e3150a0f64ee6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snap mesh nodes to land boundaries (snap_to_landboundary) <br /></td></tr>
+<tr class="memdesc:a02db80d7314b1a24236e3150a0f64ee6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snap the mesh nodes to land boundaries (snap_to_landboundary) <br /></td></tr>
 <tr class="separator:a02db80d7314b1a24236e3150a0f64ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a111251420da377badb3e7bd593cec49f"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a111251420da377badb3e7bd593cec49f">GetNumNodes</a> () const</td></tr>
-<tr class="memdesc:a111251420da377badb3e7bd593cec49f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of nodes.  <a href="classmeshkernel_1_1_land_boundaries.html#a111251420da377badb3e7bd593cec49f">More...</a><br /></td></tr>
+<tr class="memdesc:a111251420da377badb3e7bd593cec49f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of land boundary nodes.  <a href="classmeshkernel_1_1_land_boundaries.html#a111251420da377badb3e7bd593cec49f">More...</a><br /></td></tr>
 <tr class="separator:a111251420da377badb3e7bd593cec49f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -193,7 +193,7 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
       </table>
 </div><div class="memdoc">
 
-<p>The land boundary will be split into segments that are within the polygon, and either close or not to the mesh boundary (admin_landboundary_segments) </p>
+<p>The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments) </p>
 <p>This method uses a <a class="el" href="structmeshkernel_1_1_point.html" title="A struct describing a point in a two-dimensional space.">Point</a> vector member variable and identifies the start-end points of each land boundary polyline with the requirement that all polyline nodes are close enough to the mesh boundary and is inside the polygon. </p><div class="image">
 <img src="LandBoundarySegmentation_step1.jpg" alt=""/>
 <div class="caption">
@@ -250,8 +250,8 @@ Land boundary segmentation</div></div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the number of nodes. </p>
-<dl class="section return"><dt>Returns</dt><dd>the number of nodes </dd></dl>
+<p>Gets the number of land boundary nodes. </p>
+<dl class="section return"><dt>Returns</dt><dd>the number of land boundary nodes </dd></dl>
 
 </div>
 </div>
