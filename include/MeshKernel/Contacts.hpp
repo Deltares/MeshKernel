@@ -87,8 +87,11 @@ namespace meshkernel
         /// \image html ComputeMultipleConnections.jpg  "1d mesh connecting to 2d mesh using the ComputeMultipleConnections algorithm. Connections are shown in red."
         void ComputeMultipleConnections();
 
-        /// @brief Computes 1d-2d connections, where a 1d node is connected to the closest polygon (ggeo_make1D2Droofgutterpipes_dll)
+        /// @brief Computes 1d-2d connections, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)
         ///
+        /// The algorithms works as follows:
+        /// - find the 2d face within each polygon closest to a 1d node
+        /// - per polygon create one connection from the 2d circumcenter to the 1d node
         /// \image html ComputeConnectionsWithPolygons.svg  "1d mesh connecting to 2d mesh using the ComputeConnectionsWithPolygonss algorithm. Connections are shown in red. Polygons in green."
         /// @param[in] polygons The polygons to connect (Polygons class can have multiple polygons)
         void ComputeConnectionsWithPolygons(const Polygons& polygons);
