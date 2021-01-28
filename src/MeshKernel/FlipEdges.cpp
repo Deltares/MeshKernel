@@ -90,7 +90,7 @@ void meshkernel::FlipEdges::Compute() const
                 return;
             }
 
-            size_t nodeLeft = sizetMissingValue;
+            size_t nodeLeft;
             size_t nodeRight = sizetMissingValue;
             const auto topologyFunctional = ComputeTopologyFunctional(e, nodeLeft, nodeRight);
 
