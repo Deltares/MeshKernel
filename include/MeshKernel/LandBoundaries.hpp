@@ -108,7 +108,6 @@ namespace meshkernel
 
         /// @brief Assigns to each mesh node a landboundaryIndex
         /// @param[in] landboundaryIndex The current landboundary segment
-        /// @param[in] meshBoundOnly Account only for mesh boundaries
         /// @param[out] numNodesInPath The number of mesh nodes for this path
         /// @param[out] numRejectedNodesInPath The number of rejected nodes in path
         void MakePath(size_t landboundaryIndex,
