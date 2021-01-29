@@ -196,9 +196,35 @@ namespace meshkernel
         /// @brief Perform node and edges administration
         void AdministrateNodesEdges();
 
-        /// @brief Sort edges in conterclockwise orther (Sort_links_ccw)
+        /// @brief Sort mesh edges in conterclockwise orther (Sort_links_ccw)
         /// @param[in] node The node index for which sorting should take place
         void SortEdgesInCounterClockWiseOrder(size_t node);
+
+        /// @brief Build the rtree for the corresponding location
+        /// @param meshLocation[in] The mesh location for which the RTree is build
+        void BuildTree(MeshLocations meshLocation);
+
+        /// @brief Search the locations sorted by proximity to a point.
+        /// @param[in] point The reference point.
+        /// @param meshLocation[in] The mesh location (e.g. nodes, edge centers or face circumcenters).
+        void SearchNearestNeighbors(Point point, MeshLocations meshLocation);
+
+        /// @brief Search the locations sorted by proximity to a point and within a radius.
+        /// @param[in] point The reference point.
+        /// @param[in] squaredRadius the squared value of the radius.
+        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
+        void SearchNearestNeighboursOnSquaredDistance(Point point, double squaredRadius, MeshLocations meshLocation);
+
+        /// @brief Gets the number of found neighbors. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.
+        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @return The number of found neighbors.
+        size_t GetNumNearestNeighbors(MeshLocations meshLocation) const;
+
+        /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.
+        /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
+        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @return The index of the closest location.
+        size_t GetNearestNeighborIndex(size_t index, MeshLocations meshLocation);
 
         // nodes
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
@@ -234,5 +260,6 @@ namespace meshkernel
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
         RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
         RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
+        RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
     };
 } // namespace meshkernel

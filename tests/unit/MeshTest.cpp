@@ -475,7 +475,7 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 {
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-    mesh->m_nodesRTree.BuildTree(mesh->m_nodes);
+    mesh->BuildTree(meshkernel::MeshLocations::Nodes);
 
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
@@ -499,7 +499,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     meshkernel::Point newPoint{10.0, 10.0};
-    mesh->m_nodesRTree.BuildTree(mesh->m_nodes);
+    mesh->BuildTree(meshkernel::MeshLocations::Nodes);
     const auto newNodeIndex = mesh->InsertNode(newPoint);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
@@ -515,8 +515,7 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     //1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-    mesh->ComputeEdgesCenters();
-    mesh->m_edgesRTree.BuildTree(mesh->m_edgesCenters);
+    mesh->BuildTree(meshkernel::MeshLocations::Edges);
 
     meshkernel::Point newPoint{10.0, 10.0};
 
@@ -538,8 +537,7 @@ TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 {
     //1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-    mesh->ComputeEdgesCenters();
-    mesh->m_edgesRTree.BuildTree(mesh->m_edgesCenters);
+    mesh->BuildTree(meshkernel::MeshLocations::Edges);
 
     // DeleteEdge modifies the number of edges, m_edgesRTreeRequiresUpdate is set to true
     mesh->DeleteEdge(0);
