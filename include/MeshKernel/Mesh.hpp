@@ -201,12 +201,12 @@ namespace meshkernel
         void SortEdgesInCounterClockWiseOrder(size_t node);
 
         /// @brief Build the rtree for the corresponding location
-        /// @param meshLocation[in] The mesh location for which the RTree is build
+        /// @param[in] meshLocation The mesh location for which the RTree is build
         void BuildTree(MeshLocations meshLocation);
 
         /// @brief Search the locations sorted by proximity to a point.
         /// @param[in] point The reference point.
-        /// @param meshLocation[in] The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         void SearchNearestNeighbors(Point point, MeshLocations meshLocation);
 
         /// @brief Search the locations sorted by proximity to a point and within a radius.
