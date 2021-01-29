@@ -934,7 +934,7 @@ void meshkernel::Mesh2D::ComputeFaceClosedPolygon(size_t faceIndex, std::vector<
 void meshkernel::Mesh2D::MaskNodesInPolygons(const Polygons& polygon, bool inside)
 {
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
-    const auto nodePolygonIndices = polygon.ArePointInPolygons(m_nodes);
+    const auto nodePolygonIndices = polygon.PolygonIndices(m_nodes);
 
     for (auto i = 0; i < GetNumNodes(); ++i)
     {

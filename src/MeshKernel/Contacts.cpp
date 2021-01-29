@@ -30,7 +30,7 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
     m_mesh1dIndices.reserve(m_mesh1d->m_nodes.size());
     m_mesh2dIndices.reserve(m_mesh1d->m_nodes.size());
 
-    const auto nodePolygonIndices = polygons.ArePointInPolygons(m_mesh1d->m_nodes);
+    const auto nodePolygonIndices = polygons.PolygonIndices(m_mesh1d->m_nodes);
 
     for (size_t n = 0; n < m_mesh1d->m_nodes.size(); ++n)
     {
@@ -254,7 +254,7 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
     std::vector<size_t> polygonIndices(m_mesh2d->GetNumFaces(), sizetMissingValue);
     for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
-        polygonIndices[faceIndex] = polygons.PointInWhichPolygon(m_mesh2d->m_facesMassCenters[faceIndex]);
+        polygonIndices[faceIndex] = polygons.PolygonIndex(m_mesh2d->m_facesMassCenters[faceIndex]);
     }
 
     // for each polygon, find closest 1d node to any 2d mass center within the polygon
@@ -311,7 +311,7 @@ void meshkernel::Contacts::ComputeBoundaryConnections(const Polygons& polygons, 
     faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
 
     // get the indices
-    const auto facePolygonIndices = polygons.ArePointInPolygons(m_mesh2d->m_facesCircumcenters);
+    const auto facePolygonIndices = polygons.PolygonIndices(m_mesh2d->m_facesCircumcenters);
 
     // Loop over 1d edges
     std::vector<bool> isValidFace(m_mesh2d->GetNumFaces(), true);

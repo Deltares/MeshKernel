@@ -315,7 +315,7 @@ namespace meshkernel
         return m_indices.size();
     }
 
-    size_t Polygons::PointInWhichPolygon(Point point) const
+    size_t Polygons::PolygonIndex(Point point) const
     {
         // empty polygon means everything is included
         if (m_indices.empty())
@@ -357,12 +357,12 @@ namespace meshkernel
         return sizetMissingValue;
     }
 
-    std::vector<size_t> Polygons::ArePointInPolygons(const std::vector<Point>& points) const
+    std::vector<size_t> Polygons::PolygonIndices(const std::vector<Point>& points) const
     {
         std::vector<size_t> result(points.size(), sizetMissingValue);
         for (auto i = 0; i < points.size(); ++i)
         {
-            result[i] = PointInWhichPolygon(points[i]);
+            result[i] = PolygonIndex(points[i]);
         }
         return result;
     }
