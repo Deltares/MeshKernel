@@ -546,32 +546,22 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(size_t node)
 
 void meshkernel::Mesh::BuildTree(MeshLocations meshLocation)
 {
-    if (meshLocation == MeshLocations::Nodes)
+    if (meshLocation == MeshLocations::Nodes && m_nodesRTree.Empty())
     {
-        if (m_nodesRTree.Empty())
-        {
-            m_nodesRTree.BuildTree(m_nodes);
-            m_nodesRTreeRequiresUpdate = false;
-        }
+        m_nodesRTree.BuildTree(m_nodes);
+        m_nodesRTreeRequiresUpdate = false;
     }
 
-    if (meshLocation == MeshLocations::Edges)
+    if (meshLocation == MeshLocations::Edges && m_edgesRTree.Empty())
     {
-        if (m_edgesRTree.Empty())
-
-        {
-            ComputeEdgesCenters();
-            m_edgesRTree.BuildTree(m_edgesCenters);
-            m_edgesRTreeRequiresUpdate = false;
-        }
+        ComputeEdgesCenters();
+        m_edgesRTree.BuildTree(m_edgesCenters);
+        m_edgesRTreeRequiresUpdate = false;
     }
 
-    if (meshLocation == MeshLocations::Faces)
+    if (meshLocation == MeshLocations::Faces && m_facesRTree.Empty())
     {
-        if (m_facesRTree.Empty())
-        {
-            m_facesRTree.BuildTree(m_facesCircumcenters);
-        }
+        m_facesRTree.BuildTree(m_facesCircumcenters);
     }
 }
 
