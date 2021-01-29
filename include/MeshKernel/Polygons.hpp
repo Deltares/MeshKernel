@@ -74,6 +74,11 @@ namespace meshkernel
         /// @return The index of a polygon where the point is included or if none has been found, sizetMissingValue
         size_t PointInWhichPolygon(Point point) const;
 
+        /// @brief For each point, compute the index of the polygon including it
+        /// @param[in] point The vector of points
+        /// @return The index of the polygon including it
+        std::vector<size_t> ArePointInPolygons(const std::vector<Point>& point) const;
+
         /// @brief Checks if the polygon is empty
         /// @return True if it is empty, false otherwise
         bool Polygons::IsEmpty() const;

@@ -357,6 +357,16 @@ namespace meshkernel
         return sizetMissingValue;
     }
 
+    std::vector<size_t> Polygons::ArePointInPolygons(const std::vector<Point>& points) const
+    {
+        std::vector<size_t> result(points.size(), sizetMissingValue);
+        for (auto i = 0; i < points.size(); ++i)
+        {
+            result[i] = PointInWhichPolygon(points[i]);
+        }
+        return result;
+    }
+
     bool Polygons::IsEmpty() const
     {
         return m_indices.empty();

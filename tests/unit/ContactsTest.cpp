@@ -1,6 +1,5 @@
 
 #include <gtest/gtest.h>
-#include <iostream>
 
 #include "TestUtils/MakeMeshes.hpp"
 #include <MeshKernel/Contacts.hpp>
@@ -273,4 +272,56 @@ TEST(Contacts, ComputeConnectionsWithPolygons)
     ASSERT_EQ(4703, contacts.m_mesh2dIndices[3]);
     ASSERT_EQ(6482, contacts.m_mesh2dIndices[4]);
     ASSERT_EQ(6805, contacts.m_mesh2dIndices[5]);
+}
+
+TEST(Contacts, ComputeBoundaryConnections)
+{
+    // Create 1d mesh
+    std::vector<meshkernel::Point> nodes{
+        {-16.1886410000000, 0.89018900000000},
+        {-16.1464995876014, 9.78201442138723},
+        {-16.1043581752028, 18.6738398427745},
+        {-16.0622167628042, 27.5656652641617},
+        {-15.7539488236928, 36.1966603330179},
+        {-6.86476658679268, 36.4175095626911},
+        {2.02441565010741, 36.6383587923643},
+        {10.9135970000000, 36.8592080000000}};
+    std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}};
+    const auto mesh1d = std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::cartesian);
+
+    // Create 2d mesh
+    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
+
+    // Create contacts
+    std::vector<bool> onedNodeMask(nodes.size(), true);
+    meshkernel::Contacts contacts(mesh1d, mesh2d, onedNodeMask);
+
+    // Set the polygon where to generate the contacts
+    std::vector<meshkernel::Point> polygonPoints{{-30, -20}, {40, -20}, {40, 50}, {-40, 50}, {-30, -20}};
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
+
+    // Execute
+    contacts.ComputeBoundaryConnections(polygon, 200.0);
+
+    //Assert
+    ASSERT_EQ(8, contacts.m_mesh1dIndices.size());
+    ASSERT_EQ(8, contacts.m_mesh2dIndices.size());
+
+    ASSERT_EQ(0, contacts.m_mesh1dIndices[0]);
+    ASSERT_EQ(2, contacts.m_mesh1dIndices[1]);
+    ASSERT_EQ(6, contacts.m_mesh1dIndices[2]);
+    ASSERT_EQ(0, contacts.m_mesh1dIndices[3]);
+    ASSERT_EQ(7, contacts.m_mesh1dIndices[4]);
+    ASSERT_EQ(7, contacts.m_mesh1dIndices[5]);
+    ASSERT_EQ(7, contacts.m_mesh1dIndices[6]);
+    ASSERT_EQ(7, contacts.m_mesh1dIndices[7]);
+
+    ASSERT_EQ(0, contacts.m_mesh2dIndices[0]);
+    ASSERT_EQ(1, contacts.m_mesh2dIndices[1]);
+    ASSERT_EQ(2, contacts.m_mesh2dIndices[2]);
+    ASSERT_EQ(3, contacts.m_mesh2dIndices[3]);
+    ASSERT_EQ(5, contacts.m_mesh2dIndices[4]);
+    ASSERT_EQ(6, contacts.m_mesh2dIndices[5]);
+    ASSERT_EQ(7, contacts.m_mesh2dIndices[6]);
+    ASSERT_EQ(8, contacts.m_mesh2dIndices[7]);
 }

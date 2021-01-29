@@ -121,7 +121,7 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnFaces()
             // it is difficult to do it otherwise without sharing or caching the query result
             for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
             {
-                if (const auto sample = m_samplesRtree.GetQueryIndex(i); !m_visitedSamples[sample])
+                if (const auto sample = m_samplesRtree.GetQueryResult(i); !m_visitedSamples[sample])
                 {
                     m_visitedSamples[sample] = true;
                     m_samples[sample].value -= 1;
@@ -148,7 +148,7 @@ std::vector<double> meshkernel::AveragingInterpolation::ComputeOnNodesOrEdges()
         // flag the visited samples
         for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
         {
-            const auto sample = m_samplesRtree.GetQueryIndex(i);
+            const auto sample = m_samplesRtree.GetQueryResult(i);
             m_visitedSamples[sample] = true;
         }
 
@@ -233,7 +233,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
             m_samplesRtree.NearestNeighbors(interpolationPoint);
             if (m_samplesRtree.GetQueryResultSize() > 0)
             {
-                const auto sampleIndex = m_samplesRtree.GetQueryIndex(0);
+                const auto sampleIndex = m_samplesRtree.GetQueryResult(0);
                 result = m_samples[sampleIndex].value;
             }
         }
@@ -248,7 +248,7 @@ void meshkernel::AveragingInterpolation::ComputeOnPolygon(const std::vector<Poin
     for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
     {
         //do stuff based on the averaging method
-        const auto sampleIndex = m_samplesRtree.GetQueryIndex(i);
+        const auto sampleIndex = m_samplesRtree.GetQueryResult(i);
         const auto sampleValue = m_samples[sampleIndex].value;
         if (sampleValue <= doubleMissingValue)
         {

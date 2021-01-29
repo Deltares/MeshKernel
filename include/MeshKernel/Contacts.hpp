@@ -101,7 +101,9 @@ namespace meshkernel
         void ComputeConnectionsWithPoints(const std::vector<Point>& points);
 
         /// @brief Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
-        void ComputeBoundaryConnections();
+        /// @param[in] polygons The polygons where the 1d-2d connections are generated
+        /// @param[in] searchRadius The radius within which searching the faces, if equal to sizetMissing value, it will be calculated
+        void ComputeBoundaryConnections(const Polygons& polygons, double searchRadius);
 
         std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces
         std::vector<size_t> m_mesh1dIndices; ///< The indices of the connected 1-d nodes

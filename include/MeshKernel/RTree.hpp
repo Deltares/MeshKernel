@@ -108,16 +108,16 @@ namespace meshkernel
         void InsertNode(const Point& node);
 
         /// @brief Determines size of the RTree
-        [[nodiscard]] size_t Size() const;
+        [[nodiscard]] size_t Size() const { return m_rtree2D.size(); };
 
         /// @brief Determines if the RTree is empty
-        [[nodiscard]] bool Empty() const;
+        [[nodiscard]] bool Empty() const { return m_rtree2D.empty(); }
 
         /// @brief Gets the size of the query
-        [[nodiscard]] size_t GetQueryResultSize() const;
+        [[nodiscard]] size_t GetQueryResultSize() const { return m_queryCache.size(); }
 
         /// @brief Gets the index of a sample in the query
-        [[nodiscard]] size_t GetQueryIndex(size_t index) const;
+        [[nodiscard]] size_t GetQueryResult(size_t index) const { return m_queryIndices[index]; }
 
     private:
         RTree2D m_rtree2D;                                ///< The 2D RTree

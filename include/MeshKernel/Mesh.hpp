@@ -145,8 +145,8 @@ namespace meshkernel
         size_t InsertNode(const Point& newPoint);
 
         /// @brief Delete a node
-        /// @param[in] nodeIndex The index of the node to delete
-        void DeleteNode(size_t nodeIndex);
+        /// @param[in] node The index of the node to delete
+        void DeleteNode(size_t node);
 
         /// @brief Find the edge sharing two nodes
         /// @param[in] firstNodeIndex The index of the first node
@@ -172,8 +172,8 @@ namespace meshkernel
         [[nodiscard]] size_t FindNodeCloseToAPoint(Point point, double searchRadius);
 
         /// @brief Deletes an edge
-        /// @param[in] edgeIndex The edge index
-        void DeleteEdge(size_t edgeIndex);
+        /// @param[in] edge The edge index
+        void DeleteEdge(size_t edge);
 
         /// Finds the closest edge close to a point
         /// @param[in] point The starting point from where to start the search
@@ -205,6 +205,11 @@ namespace meshkernel
         /// @brief Sort edges in conterclockwise orther (Sort_links_ccw)
         /// @param[in] node The node index for which sorting should take place
         void SortEdgesInCounterClockWiseOrder(size_t node);
+
+        /// @brief Compute the max length of the edges connected to a node
+        /// @param node The mesh node
+        /// @return The max edge length
+        double ComputeMaxLengthSorroundingEdges(size_t node);
 
         // nodes
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
