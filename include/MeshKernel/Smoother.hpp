@@ -152,54 +152,54 @@ namespace meshkernel
                                         const std::vector<double>& matCoefficents) const;
 
         // The mesh to smooth
-        std::shared_ptr<Mesh2D> m_mesh;
+        std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to mesh
 
         // Smoother weights
-        std::vector<std::vector<double>> m_weights;
+        std::vector<std::vector<double>> m_weights; ///< Weights
 
         // Smoother operators
-        std::vector<std::vector<std::vector<double>>> m_Gxi;  // Node to edge xi derivative
-        std::vector<std::vector<std::vector<double>>> m_Geta; // Node to edge etha derivative
-        std::vector<std::vector<double>> m_Divxi;             // Edge to node xi derivative
-        std::vector<std::vector<double>> m_Diveta;            // Edge to node etha derivative
-        std::vector<std::vector<std::vector<double>>> m_Az;   // Coefficients to estimate values at cell circumcenters
-        std::vector<std::vector<double>> m_Jxi;               // Node to node xi derivative (Jacobian)
-        std::vector<std::vector<double>> m_Jeta;              // Node to node eta derivative (Jacobian)
-        std::vector<std::vector<double>> m_ww2;               // weights
+        std::vector<std::vector<std::vector<double>>> m_Gxi;  ///< Node to edge xi derivative
+        std::vector<std::vector<std::vector<double>>> m_Geta; ///< Node to edge etha derivative
+        std::vector<std::vector<double>> m_Divxi;             ///< Edge to node xi derivative
+        std::vector<std::vector<double>> m_Diveta;            ///< Edge to node etha derivative
+        std::vector<std::vector<std::vector<double>>> m_Az;   ///< Coefficients to estimate values at cell circumcenters
+        std::vector<std::vector<double>> m_Jxi;               ///< Node to node xi derivative (Jacobian)
+        std::vector<std::vector<double>> m_Jeta;              ///< Node to node eta derivative (Jacobian)
+        std::vector<std::vector<double>> m_ww2;               ///< weights
 
         // Smoother local caches
-        std::vector<size_t> m_sharedFacesCache;
-        std::vector<size_t> m_connectedNodesCache;
-        std::vector<std::vector<size_t>> m_faceNodeMappingCache;
-        std::vector<double> m_xiCache;
-        std::vector<double> m_etaCache;
-        std::vector<size_t> m_boundaryEdgesCache;
-        std::vector<double> m_leftXFaceCenterCache;
-        std::vector<double> m_leftYFaceCenterCache;
-        std::vector<double> m_rightXFaceCenterCache;
-        std::vector<double> m_rightYFaceCenterCache;
-        std::vector<double> m_xisCache;
-        std::vector<double> m_etasCache;
+        std::vector<size_t> m_sharedFacesCache;                  ///< Cache for shared faces
+        std::vector<size_t> m_connectedNodesCache;               ///< Cache for connected nodes
+        std::vector<std::vector<size_t>> m_faceNodeMappingCache; ///< Cache for face node mapping
+        std::vector<double> m_xiCache;                           ///< Cache for xi
+        std::vector<double> m_etaCache;                          ///< Cache for eta
+        std::vector<size_t> m_boundaryEdgesCache;                ///< Cache for boundary edges
+        std::vector<double> m_leftXFaceCenterCache;              ///< Cache for left x face center
+        std::vector<double> m_leftYFaceCenterCache;              ///< Cache for left y face center
+        std::vector<double> m_rightXFaceCenterCache;             ///< Cache for right x face center
+        std::vector<double> m_rightYFaceCenterCache;             ///< Cache for right y face center
+        std::vector<double> m_xisCache;                          ///< Cache for xis
+        std::vector<double> m_etasCache;                         ///< Cache for etas
 
         // Smoother topologies
-        size_t m_numTopologies = 0;
-        std::vector<size_t> m_nodeTopologyMapping;
-        std::vector<size_t> m_numTopologyNodes;
-        std::vector<size_t> m_numTopologyFaces;
-        std::vector<std::vector<double>> m_topologyXi;
-        std::vector<std::vector<double>> m_topologyEta;
-        std::vector<std::vector<size_t>> m_topologySharedFaces;
-        std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping;
-        std::vector<std::vector<size_t>> m_topologyConnectedNodes;
+        size_t m_numTopologies = 0;                                              ///< Number of topologies
+        std::vector<size_t> m_nodeTopologyMapping;                               ///< Node topology mapping
+        std::vector<size_t> m_numTopologyNodes;                                  ///< Number of topology nodes
+        std::vector<size_t> m_numTopologyFaces;                                  ///< Number of topology faces
+        std::vector<std::vector<double>> m_topologyXi;                           ///< Topology xi
+        std::vector<std::vector<double>> m_topologyEta;                          ///< Topology eta
+        std::vector<std::vector<size_t>> m_topologySharedFaces;                  ///< Topology shared faces
+        std::vector<std::vector<std::vector<size_t>>> m_topologyFaceNodeMapping; ///< Topology face node mapping
+        std::vector<std::vector<size_t>> m_topologyConnectedNodes;               ///< Topology connected nodes
 
-        std::vector<size_t> m_numConnectedNodes;           // (nmk2)
-        std::vector<std::vector<size_t>> m_connectedNodes; // (kk2)
+        std::vector<size_t> m_numConnectedNodes;           ///< Number of connected nodes (nmk2)
+        std::vector<std::vector<size_t>> m_connectedNodes; ///< Connected nodes (kk2)
 
         // Class variables
-        size_t m_maximumNumConnectedNodes = 0;
-        size_t m_maximumNumSharedFaces = 0;
+        size_t m_maximumNumConnectedNodes = 0; ///< Maximum number of connected nodes
+        size_t m_maximumNumSharedFaces = 0;    ///< Maximum number of shared faces
 
-        static constexpr int m_topologyInitialSize = 10;
-        static constexpr double m_thetaTolerance = 1e-4;
+        static constexpr int m_topologyInitialSize = 10; ///< Initial size of topology vectors
+        static constexpr double m_thetaTolerance = 1e-4; ///< Tolerance
     };
 } // namespace meshkernel

@@ -43,9 +43,9 @@ void meshkernel::RTree::NearestNeighborsOnSquaredDistance(Point node, double sea
 
     m_queryIndices.reserve(m_queryCache.size());
     m_queryIndices.clear();
-    for (const auto& v : m_queryCache)
+    for (const auto& [first, second] : m_queryCache)
     {
-        m_queryIndices.emplace_back(v.second);
+        m_queryIndices.emplace_back(second);
     }
 }
 
@@ -95,7 +95,7 @@ size_t meshkernel::RTree::GetQueryResultSize() const
     return m_queryCache.size();
 }
 
-size_t meshkernel::RTree::GetQueryResult(size_t index) const
+size_t meshkernel::RTree::GetQueryIndex(size_t index) const
 {
     return m_queryIndices[index];
 }

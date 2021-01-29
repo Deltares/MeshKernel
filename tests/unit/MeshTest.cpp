@@ -556,8 +556,8 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     // By default, no nodesRTree is build
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
 
-    // GetNodeIndex builds m_nodesRTree for searching the nodes
-    const auto nodeIndex = mesh->GetNodeIndex({1.5, 1.5}, 10);
+    // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
+    const auto nodeIndex = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10);
 
     // m_nodesRTree is build
     ASSERT_EQ(4, mesh->m_nodesRTree.Size());

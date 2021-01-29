@@ -77,6 +77,7 @@ namespace meshkernel
     /// existing Mesh2D instance.
     class MeshRefinement
     {
+        /// @brief Enumerator describing the different refinement types
         enum class RefinementType
         {
             RidgeRefinement = 1,
@@ -127,13 +128,11 @@ namespace meshkernel
         void ComputeNodeMaskAtPolygonPerimeter();
 
         /// @brief Computes the edge and face refinement mask from sample values (compute_jarefine_poly)
-        /// @param samples The sample to use for computing masking
         void ComputeRefinementMasksFromSamples();
 
         /// @brief Computes the number of edges that should be refined in a face (compute_jarefine_poly)
         ///        Face nodes, edge and edge lengths are stored in local caches. See Mesh2D.FaceClosedPolygon method
-        /// @param numPolygonNodes The number of face nodes
-        /// @param samples The samples to use for refinement
+        /// @param face The number of face nodes
         /// @param refineEdgeCache 1 if the edge should be refined, 0 otherwise
         /// @param numEdgesToBeRefined The computed number of edges to refined
         void ComputeEdgesRefinementMaskFromSamples(size_t face,
@@ -144,10 +143,10 @@ namespace meshkernel
         void ComputeEdgesRefinementMask();
 
         /// @brief Finds the hanging nodes in a face (find_hangingnodes)
-        /// @param faceIndex
-        /// @param numHangingEdges
-        /// @param numHangingNodes
-        /// @param numEdgesToRefine
+        /// @param[in] face
+        /// @param[out] numHangingEdges
+        /// @param[out] numHangingNodes
+        /// @param[out] numEdgesToRefine
         void FindHangingNodes(size_t face,
                               size_t& numHangingEdges,
                               size_t& numHangingNodes,
@@ -167,11 +166,10 @@ namespace meshkernel
         void ComputeIfFaceShouldBeSplit();
 
         /// @brief The refinement operation by splitting the face (refine_cells)
-        /// @param[in] numEdgesBeforeRefinemet Number of edges before the refinement
+        /// @param[in] numEdgesBeforeRefinement Number of edges before the refinement
         void RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement);
 
-        /// The sample node RTree
-        RTree m_samplesRTree;
+        RTree m_samplesRTree; ///< The sample node RTree
 
         std::vector<int> m_faceMask;        ///< Compute face without hanging nodes (1), refine face with hanging nodes (2), do not refine cell at all (0) or refine face outside polygon (-2)
         std::vector<int> m_edgeMask;        ///< If 0, edge is not split
@@ -188,9 +186,9 @@ namespace meshkernel
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
         bool m_useMassCenters = false;                                 ///< Split cells on the mass centers
 
-        std::shared_ptr<Mesh2D> m_mesh;
-        std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;
-        Polygons m_polygons;
+        std::shared_ptr<Mesh2D> m_mesh;                                   ///< Pointer to the mesh
+        std::shared_ptr<AveragingInterpolation> m_averaging = nullptr;    ///< Pointer to the AveragingInterpolation instance
+        Polygons m_polygons;                                              ///< Polygons
         meshkernelapi::SampleRefineParameters m_sampleRefineParameters;   ///< The sample parameters
         meshkernelapi::InterpolationParameters m_interpolationParameters; ///< The interpolation parameters
     };

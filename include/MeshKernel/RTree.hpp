@@ -61,15 +61,14 @@ namespace meshkernel
     class RTree
     {
 
-        typedef bg::model::point<double, 2, bg::cs::cartesian> Point2D;
-        typedef bg::model::box<Point2D> Box2D;
-        typedef std::pair<Point2D, size_t> value2D;
-        typedef bgi::rtree<value2D, bgi::linear<16>> RTree2D;
+        typedef bg::model::point<double, 2, bg::cs::cartesian> Point2D; ///< Typedef for Point2D
+        typedef bg::model::box<Point2D> Box2D;                          ///< Typedef for box of Point2D
+        typedef std::pair<Point2D, size_t> value2D;                     ///< Typedef of pair of Point2D and size_t
+        typedef bgi::rtree<value2D, bgi::linear<16>> RTree2D;           ///< Typedef for a 2D RTree
 
-        typedef bg::model::point<double, 3, bg::cs::cartesian> Point3D;
-        typedef bg::model::box<Point2D> Box3D;
-        typedef std::pair<Point3D, size_t> value3D;
-        typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;
+        typedef bg::model::point<double, 3, bg::cs::cartesian> Point3D; ///< Typedef for Point3D
+        typedef std::pair<Point3D, size_t> value3D;                     ///< Typedef of pair of Point3D and size_t
+        typedef bgi::rtree<value3D, bgi::linear<16>> RTree3D;           ///< Typedef for a 3D RTree
 
     public:
         /// @brief Builds the tree
@@ -118,14 +117,14 @@ namespace meshkernel
         [[nodiscard]] size_t GetQueryResultSize() const;
 
         /// @brief Gets the index of a sample in the query
-        [[nodiscard]] size_t GetQueryResult(size_t index) const;
+        [[nodiscard]] size_t GetQueryIndex(size_t index) const;
 
     private:
-        RTree2D m_rtree2D;
-        std::vector<std::pair<Point2D, size_t>> m_points;
-        std::vector<value2D> m_queryCache;
-        std::vector<size_t> m_queryIndices;
-        int m_queryVectorCapacity = 100; ///< Capacity of the query vector
+        RTree2D m_rtree2D;                                ///< The 2D RTree
+        std::vector<std::pair<Point2D, size_t>> m_points; ///< The points
+        std::vector<value2D> m_queryCache;                ///< The query cache
+        std::vector<size_t> m_queryIndices;               ///< The query indices
+        int m_queryVectorCapacity = 100;                  ///< Capacity of the query vector
     };
 
 } // namespace meshkernel
