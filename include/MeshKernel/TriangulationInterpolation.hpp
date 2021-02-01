@@ -45,11 +45,11 @@ namespace meshkernel
     ///
     /// - The triangulation of the samples is computed
     ///
-    /// - For each triangle, the circumcentre is computed
+    /// - For each triangle, the circumcenter is computed
     ///
-    /// - The triangle circumcentres are ordered in an RTree for a fast search
+    /// - The triangle circumcenters are ordered in an RTree for a fast search
     ///
-    /// - For each location, the closest circumcentre is found
+    /// - For each location, the closest circumcenter is found
     ///
     /// - If the corresponding triangle contains the location then the linear
     ///   interpolation is performed, otherwise, the next neighbouring
@@ -59,7 +59,7 @@ namespace meshkernel
     ///   1.  shares one of the current triangle edges.
     ///
     ///   2.  the crossing of the edge and the line connecting the location
-    ///       the current triangle circumcentre exists.
+    ///       the current triangle circumcenter exists.
     ///
     /// - If the next triangle does not contain the location, repeat the step
     ///   above for a maximum number of times equal to two times the number of
