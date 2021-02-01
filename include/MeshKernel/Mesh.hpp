@@ -41,9 +41,12 @@ namespace meshkernel
     /// @brief A class describing an unstructured mesh.
     /// This class contains the shared functionality between 1d or 2d meshes.
     ///
-    /// MeshKernel can handle 2d meshes and 1d meshes. Algorithms require cartain mappings to be available for both Mesh1D and Mesh2D, such as a mapping listing all edge indices connected to a particular node.
+    /// MeshKernel can handle 2d meshes and 1d meshes.
+    /// Algorithms require cartain mappings to be available for both Mesh1D and Mesh2D,
+    /// such as a mapping listing all edge indices connected to a particular node.
     /// The methods computing these mappings are shared between Mesh2D and Mesh1D, and implemented in the Mesh base class.
-    /// The Mesh base class also contains other common data members, such as the node coordinate, the edges definitions, the face definitions and the mesh projection.
+    /// The Mesh base class also contains other common data members,
+    /// such as the node coordinate, the edges definitions, the face definitions and the mesh projection.
     /// The Mesh base class has the following responsibilities:
     ///
     /// -   Construct the mesh faces from the nodes and edges and other mesh
@@ -76,7 +79,8 @@ namespace meshkernel
     /// -   Making a triangular mesh from a polygon. This algorithm introduces a dependency on
     /// the Richard Shewchuk Triangle.c library, added as an external component in extern/triangle folder.
     ///
-    /// The public interface of the mesh class contains several algorithms modifying the mesh class members.
+    /// The public interface of the mesh class contains several algorithms,
+    /// which modify the mesh class members when they are called.
     class Mesh
     {
     public:
@@ -202,9 +206,35 @@ namespace meshkernel
         /// @brief Perform node and edges administration
         void AdministrateNodesEdges();
 
-        /// @brief Sort edges in conterclockwise orther (Sort_links_ccw)
+        /// @brief Sort mesh edges in conterclockwise orther (Sort_links_ccw)
         /// @param[in] node The node index for which sorting should take place
         void SortEdgesInCounterClockWiseOrder(size_t node);
+
+        /// @brief Build the rtree for the corresponding location
+        /// @param[in] meshLocation The mesh location for which the RTree is build
+        void BuildTree(MeshLocations meshLocation);
+
+        /// @brief Search the locations sorted by proximity to a point.
+        /// @param[in] point The reference point.
+        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
+        void SearchNearestNeighbors(Point point, MeshLocations meshLocation);
+
+        /// @brief Search the locations sorted by proximity to a point and within a radius.
+        /// @param[in] point The reference point.
+        /// @param[in] squaredRadius the squared value of the radius.
+        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
+        void SearchNearestNeighboursOnSquaredDistance(Point point, double squaredRadius, MeshLocations meshLocation);
+
+        /// @brief Gets the number of found neighbors. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.
+        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @return The number of found neighbors.
+        size_t GetNumNearestNeighbors(MeshLocations meshLocation) const;
+
+        /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.
+        /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
+        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @return The index of the closest location.
+        size_t GetNearestNeighborIndex(size_t index, MeshLocations meshLocation);
 
         // nodes
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
@@ -240,5 +270,6 @@ namespace meshkernel
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
         RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
         RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
+        RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
     };
 } // namespace meshkernel

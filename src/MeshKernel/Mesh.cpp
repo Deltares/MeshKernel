@@ -399,20 +399,11 @@ size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
         throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
     }
 
-    // create rtree a first time
-    if (m_nodesRTree.Empty())
-    {
-        m_nodesRTree.BuildTree(m_nodes);
-        m_nodesRTreeRequiresUpdate = false;
-    }
+    SearchNearestNeighboursOnSquaredDistance(point, searchRadius * searchRadius, MeshLocations::Nodes);
 
-    double const searchRadiusSquared = searchRadius * searchRadius;
-    m_nodesRTree.NearestNeighborsOnSquaredDistance(point, searchRadiusSquared);
-    const auto resultSize = m_nodesRTree.GetQueryResultSize();
-
-    if (resultSize > 0)
+    if (GetNumNearestNeighbors(MeshLocations::Nodes) > 0)
     {
-        return m_nodesRTree.GetQueryIndex(0);
+        return GetNearestNeighborIndex(0, MeshLocations::Nodes);
     }
 
     throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
@@ -467,19 +458,11 @@ size_t meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
         throw std::invalid_argument("Mesh::GetNodeIndex: There are no valid edges.");
     }
 
-    if (m_edgesRTree.Empty())
-    {
-        ComputeEdgesCenters();
-        m_edgesRTree.BuildTree(m_edgesCenters);
-        m_edgesRTreeRequiresUpdate = false;
-    }
+    SearchNearestNeighbors(point, MeshLocations::Edges);
 
-    m_edgesRTree.NearestNeighbors(point);
-    auto const resultSize = m_edgesRTree.GetQueryResultSize();
-    if (resultSize >= 1)
+    if (GetNumNearestNeighbors(MeshLocations::Edges) >= 1)
     {
-        const auto edgeIndex = m_edgesRTree.GetQueryIndex(0);
-        return edgeIndex;
+        return GetNearestNeighborIndex(0, MeshLocations::Edges);
     }
 
     throw AlgorithmError("Mesh::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
@@ -592,6 +575,105 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(size_t node)
     {
         m_nodesEdges[node][edgeIndex] = edgeNodeCopy[indices[edgeIndex]];
     }
+}
+
+void meshkernel::Mesh::BuildTree(MeshLocations meshLocation)
+{
+    if (meshLocation == MeshLocations::Nodes && m_nodesRTree.Empty())
+    {
+        m_nodesRTree.BuildTree(m_nodes);
+        m_nodesRTreeRequiresUpdate = false;
+    }
+
+    if (meshLocation == MeshLocations::Edges && m_edgesRTree.Empty())
+    {
+        ComputeEdgesCenters();
+        m_edgesRTree.BuildTree(m_edgesCenters);
+        m_edgesRTreeRequiresUpdate = false;
+    }
+
+    if (meshLocation == MeshLocations::Faces && m_facesRTree.Empty())
+    {
+        m_facesRTree.BuildTree(m_facesCircumcenters);
+    }
+}
+
+void meshkernel::Mesh::SearchNearestNeighbors(Point point, MeshLocations meshLocation)
+{
+    BuildTree(meshLocation);
+    if (meshLocation == MeshLocations::Nodes)
+    {
+        m_nodesRTree.NearestNeighbors(point);
+    }
+
+    if (meshLocation == MeshLocations::Edges)
+    {
+        m_edgesRTree.NearestNeighbors(point);
+    }
+
+    if (meshLocation == MeshLocations::Faces)
+    {
+        m_facesRTree.NearestNeighbors(point);
+    }
+}
+
+void meshkernel::Mesh::SearchNearestNeighboursOnSquaredDistance(Point point, double squaredRadius, MeshLocations meshLocation)
+{
+    BuildTree(meshLocation);
+    if (meshLocation == MeshLocations::Nodes)
+    {
+        m_nodesRTree.NearestNeighborsOnSquaredDistance(point, squaredRadius);
+    }
+
+    if (meshLocation == MeshLocations::Edges)
+    {
+        m_edgesRTree.NearestNeighborsOnSquaredDistance(point, squaredRadius);
+    }
+
+    if (meshLocation == MeshLocations::Faces)
+    {
+        m_facesRTree.NearestNeighborsOnSquaredDistance(point, squaredRadius);
+    }
+}
+
+size_t meshkernel::Mesh::GetNumNearestNeighbors(MeshLocations meshLocation) const
+{
+    if (meshLocation == MeshLocations::Nodes)
+    {
+        return m_nodesRTree.GetQueryResultSize();
+    }
+
+    if (meshLocation == MeshLocations::Edges)
+    {
+        return m_edgesRTree.GetQueryResultSize();
+    }
+
+    if (meshLocation == MeshLocations::Faces)
+    {
+        return m_facesRTree.GetQueryResultSize();
+    }
+
+    return sizetMissingValue;
+}
+
+size_t meshkernel::Mesh::GetNearestNeighborIndex(size_t index, MeshLocations meshLocation)
+{
+    if (meshLocation == MeshLocations::Nodes)
+    {
+        return m_nodesRTree.GetQueryIndex(index);
+    }
+
+    if (meshLocation == MeshLocations::Edges)
+    {
+        return m_edgesRTree.GetQueryIndex(index);
+    }
+
+    if (meshLocation == MeshLocations::Faces)
+    {
+        return m_facesRTree.GetQueryIndex(index);
+    }
+
+    return sizetMissingValue;
 }
 
 void meshkernel::Mesh::AdministrateNodesEdges()
