@@ -1,0 +1,27 @@
+#include <map>
+#include <stdexcept>
+#include <vector>
+
+#include <MeshKernel/AveragingInterpolation.hpp>
+#include <MeshKernel/Constants.hpp>
+#include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridFromPolygon.hpp>
+#include <MeshKernel/CurvilinearGridFromSplines.hpp>
+#include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/FlipEdges.hpp>
+#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshRefinement.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
+#include <MeshKernel/Orthogonalizer.hpp>
+#include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Smoother.hpp>
+#include <MeshKernel/Splines.hpp>
+#include <MeshKernel/TriangulationInterpolation.hpp>
+#include <MeshKernelApi/CurvilinearParameters.hpp>
+#include <MeshKernelApi/MeshKernel.hpp>
+#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
+#include <MeshKernelApi/Utils.hpp>
