@@ -660,17 +660,17 @@ size_t meshkernel::Mesh::GetNearestNeighborIndex(size_t index, MeshLocations mes
 {
     if (meshLocation == MeshLocations::Nodes)
     {
-        return m_nodesRTree.GetQueryIndex(index);
+        return m_nodesRTree.GetQueryResult(index);
     }
 
     if (meshLocation == MeshLocations::Edges)
     {
-        return m_edgesRTree.GetQueryIndex(index);
+        return m_edgesRTree.GetQueryResult(index);
     }
 
     if (meshLocation == MeshLocations::Faces)
     {
-        return m_facesRTree.GetQueryIndex(index);
+        return m_facesRTree.GetQueryResult(index);
     }
 
     return sizetMissingValue;
