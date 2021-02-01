@@ -675,7 +675,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     interpolationParameters.MinimumNumberOfPoints = 1;
     interpolationParameters.RelativeSearchRadius = 1.01;
     interpolationParameters.InterpolateTo = 3;
-    interpolationParameters.RefineIntersected = false;
+    interpolationParameters.RefineIntersected = 0;
 
     meshkernelapi::SampleRefineParameters samplesRefineParameters;
     samplesRefineParameters.SampleVectorDimension = 1;
@@ -756,7 +756,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
     interpolationParameters.MinimumNumberOfPoints = 1;
     interpolationParameters.RelativeSearchRadius = 1.01;
     interpolationParameters.InterpolateTo = 3;
-    interpolationParameters.RefineIntersected = false;
+    interpolationParameters.RefineIntersected = 0;
 
     // Execute
     auto errorCode = mkernel_refine_mesh_based_on_polygon(0, geometryListIn, interpolationParameters);
