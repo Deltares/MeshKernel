@@ -106,7 +106,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a007a7ea43735d7eaa471ffff80310ead"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)  <a href="classmeshkernel_1_1_contacts.html#a007a7ea43735d7eaa471ffff80310ead">More...</a><br /></td></tr>
 <tr class="separator:a007a7ea43735d7eaa471ffff80310ead"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad576f3bdd0709bfaae5f4bd455ceb64f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#ad576f3bdd0709bfaae5f4bd455ceb64f">ComputeConnectionsWithPoints</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;points)</td></tr>
-<tr class="memdesc:ad576f3bdd0709bfaae5f4bd455ceb64f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeso_make1D2Dstreetinletpipes_dll)  <a href="classmeshkernel_1_1_contacts.html#ad576f3bdd0709bfaae5f4bd455ceb64f">More...</a><br /></td></tr>
+<tr class="memdesc:ad576f3bdd0709bfaae5f4bd455ceb64f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)  <a href="classmeshkernel_1_1_contacts.html#ad576f3bdd0709bfaae5f4bd455ceb64f">More...</a><br /></td></tr>
 <tr class="separator:ad576f3bdd0709bfaae5f4bd455ceb64f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d2f0568984a2d1be32405da5ad69964"><td class="memItemLeft" align="right" valign="top"><a id="a0d2f0568984a2d1be32405da5ad69964"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a0d2f0568984a2d1be32405da5ad69964">ComputeBoundaryConnections</a> ()</td></tr>
@@ -189,10 +189,14 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
       </table>
 </div><div class="memdoc">
 
-<p>Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeso_make1D2Dstreetinletpipes_dll) </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll) </p>
+<p>With this algorithm, each 2d face containing a point is connected to the 1d node closest to point itself. The search of the 2d faces and the closest 1d nodes uses RTrees. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">points</td><td>The points to connect </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">points</td><td>The points to connect <div class="image">
+<img src="ComputeConnectionsWithPoints.jpg" alt=""/>
+<div class="caption">
+2d faces containing the input points connecting to the 1d mesh. Connections are shown in red and the input points in blue.</div></div>
+ </td></tr>
   </table>
   </dd>
 </dl>

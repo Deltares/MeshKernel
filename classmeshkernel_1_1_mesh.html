@@ -183,8 +183,23 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a4f2c7373bafa1d4429c330876f445993"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform node and edges administration. <br /></td></tr>
 <tr class="separator:a4f2c7373bafa1d4429c330876f445993"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1f4c1ea798428e4f4291ef836e3d965"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ab1f4c1ea798428e4f4291ef836e3d965">SortEdgesInCounterClockWiseOrder</a> (size_t node)</td></tr>
-<tr class="memdesc:ab1f4c1ea798428e4f4291ef836e3d965"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort edges in conterclockwise orther (Sort_links_ccw)  <a href="classmeshkernel_1_1_mesh.html#ab1f4c1ea798428e4f4291ef836e3d965">More...</a><br /></td></tr>
+<tr class="memdesc:ab1f4c1ea798428e4f4291ef836e3d965"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort mesh edges in conterclockwise orther (Sort_links_ccw)  <a href="classmeshkernel_1_1_mesh.html#ab1f4c1ea798428e4f4291ef836e3d965">More...</a><br /></td></tr>
 <tr class="separator:ab1f4c1ea798428e4f4291ef836e3d965"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ed41638cbd948b4f6bf35888ab5e636"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a0ed41638cbd948b4f6bf35888ab5e636">BuildTree</a> (<a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation)</td></tr>
+<tr class="memdesc:a0ed41638cbd948b4f6bf35888ab5e636"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the rtree for the corresponding location.  <a href="classmeshkernel_1_1_mesh.html#a0ed41638cbd948b4f6bf35888ab5e636">More...</a><br /></td></tr>
+<tr class="separator:a0ed41638cbd948b4f6bf35888ab5e636"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc0dcbb20f890cee3aac4be53967bdd7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#afc0dcbb20f890cee3aac4be53967bdd7">SearchNearestNeighbors</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation)</td></tr>
+<tr class="memdesc:afc0dcbb20f890cee3aac4be53967bdd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search the locations sorted by proximity to a point.  <a href="classmeshkernel_1_1_mesh.html#afc0dcbb20f890cee3aac4be53967bdd7">More...</a><br /></td></tr>
+<tr class="separator:afc0dcbb20f890cee3aac4be53967bdd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a438f80fbcf9bad01d1c761605a275e7a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a438f80fbcf9bad01d1c761605a275e7a">SearchNearestNeighboursOnSquaredDistance</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point, double squaredRadius, <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation)</td></tr>
+<tr class="memdesc:a438f80fbcf9bad01d1c761605a275e7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search the locations sorted by proximity to a point and within a radius.  <a href="classmeshkernel_1_1_mesh.html#a438f80fbcf9bad01d1c761605a275e7a">More...</a><br /></td></tr>
+<tr class="separator:a438f80fbcf9bad01d1c761605a275e7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add23793478123dca7df0a10facdbf138"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#add23793478123dca7df0a10facdbf138">GetNumNearestNeighbors</a> (<a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation) const</td></tr>
+<tr class="memdesc:add23793478123dca7df0a10facdbf138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of found neighbors. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.  <a href="classmeshkernel_1_1_mesh.html#add23793478123dca7df0a10facdbf138">More...</a><br /></td></tr>
+<tr class="separator:add23793478123dca7df0a10facdbf138"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acace8827e1760ce5a87696956125ac1b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#acace8827e1760ce5a87696956125ac1b">GetNearestNeighborIndex</a> (size_t index, <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation)</td></tr>
+<tr class="memdesc:acace8827e1760ce5a87696956125ac1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.  <a href="classmeshkernel_1_1_mesh.html#acace8827e1760ce5a87696956125ac1b">More...</a><br /></td></tr>
+<tr class="separator:acace8827e1760ce5a87696956125ac1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -292,6 +307,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <a class="el" href="classmeshkernel_1_1_r_tree.html">RTree</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#abbb30c32af4e98b0772e8c3d55a670a8">m_edgesRTree</a></td></tr>
 <tr class="memdesc:abbb30c32af4e98b0772e8c3d55a670a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spatial R-Tree used to inquire edges centers. <br /></td></tr>
 <tr class="separator:abbb30c32af4e98b0772e8c3d55a670a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d44668af534ba075870c6be5567c9b7"><td class="memItemLeft" align="right" valign="top"><a id="a0d44668af534ba075870c6be5567c9b7"></a>
+<a class="el" href="classmeshkernel_1_1_r_tree.html">RTree</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a0d44668af534ba075870c6be5567c9b7">m_facesRTree</a></td></tr>
+<tr class="memdesc:a0d44668af534ba075870c6be5567c9b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spatial R-Tree used to inquire face circumcenters. <br /></td></tr>
+<tr class="separator:a0d44668af534ba075870c6be5567c9b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2d meshes. </p>
@@ -359,6 +378,32 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a0ed41638cbd948b4f6bf35888ab5e636"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ed41638cbd948b4f6bf35888ab5e636">&#9670;&nbsp;</a></span>BuildTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Mesh::BuildTree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a>&#160;</td>
+          <td class="paramname"><em>meshLocation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build the rtree for the corresponding location. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshLocation</td><td>The mesh location for which the <a class="el" href="classmeshkernel_1_1_r_tree.html" title="Class used for inquiring adjacent nodes.">RTree</a> is build </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a9baba75ddd46f4af5465d947f40fba3c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9baba75ddd46f4af5465d947f40fba3c">&#9670;&nbsp;</a></span>ConnectNodes()</h2>
 
@@ -626,6 +671,44 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="acace8827e1760ce5a87696956125ac1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acace8827e1760ce5a87696956125ac1b">&#9670;&nbsp;</a></span>GetNearestNeighborIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t meshkernel::Mesh::GetNearestNeighborIndex </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a>&#160;</td>
+          <td class="paramname"><em>meshLocation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>The closest neighbor index (index 0 corresponds to the closest). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshLocation</td><td>The mesh location (e.g. nodes, edge centers or face circumcenters). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The index of the closest location. </dd></dl>
+
+</div>
+</div>
 <a id="a5150280bdba56884de15211a34e64155"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5150280bdba56884de15211a34e64155">&#9670;&nbsp;</a></span>GetNumEdges()</h2>
 
@@ -749,6 +832,33 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>Get the number of valid faces. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of valid faces </dd></dl>
+
+</div>
+</div>
+<a id="add23793478123dca7df0a10facdbf138"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add23793478123dca7df0a10facdbf138">&#9670;&nbsp;</a></span>GetNumNearestNeighbors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t meshkernel::Mesh::GetNumNearestNeighbors </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a>&#160;</td>
+          <td class="paramname"><em>meshLocation</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the number of found neighbors. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshLocation</td><td>The mesh location (e.g. nodes, edge centers or face circumcenters). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of found neighbors. </dd></dl>
 
 </div>
 </div>
@@ -978,6 +1088,87 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="afc0dcbb20f890cee3aac4be53967bdd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc0dcbb20f890cee3aac4be53967bdd7">&#9670;&nbsp;</a></span>SearchNearestNeighbors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Mesh::SearchNearestNeighbors </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a>&#160;</td>
+          <td class="paramname"><em>meshLocation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Search the locations sorted by proximity to a point. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The reference point. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshLocation</td><td>The mesh location (e.g. nodes, edge centers or face circumcenters). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a438f80fbcf9bad01d1c761605a275e7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a438f80fbcf9bad01d1c761605a275e7a">&#9670;&nbsp;</a></span>SearchNearestNeighboursOnSquaredDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Mesh::SearchNearestNeighboursOnSquaredDistance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>squaredRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a>&#160;</td>
+          <td class="paramname"><em>meshLocation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Search the locations sorted by proximity to a point and within a radius. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The reference point. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">squaredRadius</td><td>the squared value of the radius. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshLocation</td><td>The mesh location (e.g. nodes, edge centers or face circumcenters). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ab1f4c1ea798428e4f4291ef836e3d965"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab1f4c1ea798428e4f4291ef836e3d965">&#9670;&nbsp;</a></span>SortEdgesInCounterClockWiseOrder()</h2>
 
@@ -994,7 +1185,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
       </table>
 </div><div class="memdoc">
 
-<p>Sort edges in conterclockwise orther (Sort_links_ccw) </p>
+<p>Sort mesh edges in conterclockwise orther (Sort_links_ccw) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">node</td><td>The node index for which sorting should take place </td></tr>
