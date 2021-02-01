@@ -54,9 +54,9 @@ namespace meshkernelapi
         int InterpolateTo;
 
         /// Compute faces intersected by polygon
-        bool RefineIntersected;
+        int RefineIntersected;
 
         /// Use the mass center when splitting a face in the refinement process
-        bool UseMassCenterWhenRefining;
+        int UseMassCenterWhenRefining;
     };
 } // namespace meshkernelapi
