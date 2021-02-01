@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['administrationoptions_963',['AdministrationOptions',['../classmeshkernel_1_1_mesh2_d.html#ad09293d2a077d67356f7ea42ee8c660c',1,'meshkernel::Mesh2D']]],
-  ['averagingmethod_964',['AveragingMethod',['../namespacemeshkernel.html#abeb40e907577646f05f65363ae79ccc4',1,'meshkernel']]]
+  ['administrationoptions_967',['AdministrationOptions',['../classmeshkernel_1_1_mesh2_d.html#ad09293d2a077d67356f7ea42ee8c660c',1,'meshkernel::Mesh2D']]],
+  ['averagingmethod_968',['AveragingMethod',['../namespacemeshkernel.html#abeb40e907577646f05f65363ae79ccc4',1,'meshkernel']]]
 ];

@@ -108,10 +108,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad576f3bdd0709bfaae5f4bd455ceb64f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#ad576f3bdd0709bfaae5f4bd455ceb64f">ComputeConnectionsWithPoints</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;points)</td></tr>
 <tr class="memdesc:ad576f3bdd0709bfaae5f4bd455ceb64f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)  <a href="classmeshkernel_1_1_contacts.html#ad576f3bdd0709bfaae5f4bd455ceb64f">More...</a><br /></td></tr>
 <tr class="separator:ad576f3bdd0709bfaae5f4bd455ceb64f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d2f0568984a2d1be32405da5ad69964"><td class="memItemLeft" align="right" valign="top"><a id="a0d2f0568984a2d1be32405da5ad69964"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a0d2f0568984a2d1be32405da5ad69964">ComputeBoundaryConnections</a> ()</td></tr>
-<tr class="memdesc:a0d2f0568984a2d1be32405da5ad69964"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll) <br /></td></tr>
-<tr class="separator:a0d2f0568984a2d1be32405da5ad69964"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a31a7aae996dee26ea2116e74de41f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a4a31a7aae996dee26ea2116e74de41f5">ComputeBoundaryConnections</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, double searchRadius)</td></tr>
+<tr class="memdesc:a4a31a7aae996dee26ea2116e74de41f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)  <a href="classmeshkernel_1_1_contacts.html#a4a31a7aae996dee26ea2116e74de41f5">More...</a><br /></td></tr>
+<tr class="separator:a4a31a7aae996dee26ea2116e74de41f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -173,6 +172,52 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a4a31a7aae996dee26ea2116e74de41f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a31a7aae996dee26ea2116e74de41f5">&#9670;&nbsp;</a></span>ComputeBoundaryConnections()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Contacts::ComputeBoundaryConnections </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>searchRadius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll) </p>
+<p>The algorithms works as follows:</p><ul>
+<li>For each oned node, find the closest 2d boundary faces within the search radius.</li>
+<li>If a boundary face can be connected to multiple oned nodes, choose the closest one.</li>
+<li>Generate the 1d-2d connections. <div class="image">
+<img src="ComputeBoundaryConnections.jpg" alt=""/>
+<div class="caption">
+1d mesh connecting to 2d mesh using the ComputeBoundaryConnections algorithm. Connections are shown in red.</div></div>
+ The mesh 2d boundary faces are connected to the closest 1d nodes." <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygons selecting the area where the 1d-2d connections will be generated. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The radius used for searching neighboring faces, if equal to sizetMissing value, the search radius will be calculated internally. </td></tr>
+  </table>
+  </dd>
+</dl>
+</li>
+</ul>
+
+</div>
+</div>
 <a id="ad576f3bdd0709bfaae5f4bd455ceb64f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad576f3bdd0709bfaae5f4bd455ceb64f">&#9670;&nbsp;</a></span>ComputeConnectionsWithPoints()</h2>
 
@@ -221,11 +266,11 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 
 <p>Computes 1d-2d connections, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll) </p>
 <p>The algorithms works as follows:</p><ul>
-<li>find the 2d face within each polygon closest to a 1d node</li>
-<li>per polygon create one connection from the 2d circumcenter to the 1d node <div class="image">
+<li>Find the 2d face within each polygon closest to a 1d node.</li>
+<li>Per polygon create one connection from the 2d circumcenters to the 1d node. <div class="image">
 <object type="image/svg+xml" data="ComputeConnectionsWithPolygons.svg" style="pointer-events: none;"></object>
 <div class="caption">
-1d mesh connecting to 2d mesh using the ComputeConnectionsWithPolygonss algorithm. Connections are shown in red. Polygons in green.</div></div>
+1d mesh connecting to 2d mesh using the ComputeConnectionsWithPolygons algorithm. Connections are shown in red. Polygons in green.</div></div>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygons to connect (<a class="el" href="classmeshkernel_1_1_polygons.html" title="A class describing polygons.">Polygons</a> class can have multiple polygons) </td></tr>
@@ -283,7 +328,7 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 1d mesh connecting to 2d mesh using the ComputeSingleConnections algorithm. Connections are shown in red.</div></div>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygons where the 1d-2d connections are generated </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygons selecting the area where the 1d-2d connections will be generated. </td></tr>
   </table>
   </dd>
 </dl>
