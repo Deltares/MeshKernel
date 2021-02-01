@@ -104,12 +104,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>As for averaging, the triangle interpolation operates at three specific <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> - Faces, Nodes, and Edges. The idea is to triangulate the samples and identify for each location the triangle that fully contains Only the values at the nodes of the identified triangle are used in the computation of each location. The algorithm operates as follow:</p>
 <ul>
 <li>The triangulation of the samples is computed</li>
-<li>For each triangle, the circumcentre is computed</li>
-<li>The triangle circumcentres are ordered in an <a class="el" href="classmeshkernel_1_1_r_tree.html" title="Class used for inquiring adjacent nodes.">RTree</a> for a fast search</li>
-<li>For each location, the closest circumcentre is found</li>
+<li>For each triangle, the circumcenter is computed</li>
+<li>The triangle circumcenters are ordered in an <a class="el" href="classmeshkernel_1_1_r_tree.html" title="Class used for inquiring adjacent nodes.">RTree</a> for a fast search</li>
+<li>For each location, the closest circumcenter is found</li>
 <li>If the corresponding triangle contains the location then the linear interpolation is performed, otherwise, the next neighbouring triangle is searched. The next neighbouring triangle is the first triangle that satisfies these two conditions:<ol type="1">
 <li>shares one of the current triangle edges.</li>
-<li>the crossing of the edge and the line connecting the location the current triangle circumcentre exists.</li>
+<li>the crossing of the edge and the line connecting the location the current triangle circumcenter exists.</li>
 </ol>
 </li>
 <li>If the next triangle does not contain the location, repeat the step above for a maximum number of times equal to two times the number of triangles.</li>
