@@ -160,8 +160,6 @@ void meshkernel::Contacts::ComputeMultipleConnections()
     const auto node1dFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
 
     // build mesh2d face circumcenters r-tree
-    RTree faceCircumcentersRTree;
-    faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
     std::vector<bool> isFaceAlreadyConnected(m_mesh2d->GetNumFaces(), false);
 
     // loop over 1d mesh edges
@@ -180,12 +178,13 @@ void meshkernel::Contacts::ComputeMultipleConnections()
         }
 
         // compute the nearest 2d face indices
-        faceCircumcentersRTree.NearestNeighborsOnSquaredDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLength * maxEdgeLength);
+        m_mesh2d->SearchNearestNeighboursOnSquaredDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLength * maxEdgeLength, MeshLocations::Faces);
 
         // for each face determine if it is crossing the current 1d edge
-        for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
+        const auto numNeighbours = m_mesh2d->GetNumNearestNeighbors(MeshLocations::Faces);
+        for (auto f = 0; f < numNeighbours; ++f)
         {
-            const auto face = faceCircumcentersRTree.GetQueryIndex(f);
+            const auto face = m_mesh2d->GetNearestNeighborIndex(f, MeshLocations::Faces);
 
             // the face is already connected to a 1d node, nothing to do
             if (isFaceAlreadyConnected[face])
@@ -298,8 +297,39 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
     }
 };
 
-void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points){
-    // complete implementation
+void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points)
+{
+    // perform mesh2d administration
+    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+    // perform mesh1d administration (m_nodesRTree will also be build if necessary)
+    m_mesh1d->AdministrateNodesEdges();
+
+    // find the face indices containing the 1d points
+    const auto pointsFaceIndices = m_mesh2d->PointFaceIndices(points);
+
+    // for each 1d node in the 2d mesh, find the closest 1d node.
+    for (auto i = 0; i < points.size(); ++i)
+    {
+        // point not in the mesh
+        if (pointsFaceIndices[i] == sizetMissingValue)
+        {
+            continue;
+        }
+
+        // get the closest 1d node
+        m_mesh1d->SearchNearestNeighbors(points[i], MeshLocations::Nodes);
+
+        // if nothing found continue
+        if (m_mesh1d->GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
+        {
+            continue;
+        }
+
+        // form the 1d-2d connection
+        m_mesh1dIndices.emplace_back(m_mesh1d->GetNearestNeighborIndex(0, MeshLocations::Nodes));
+        m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
+    }
 };
 
 void meshkernel::Contacts::ComputeBoundaryConnections(){
