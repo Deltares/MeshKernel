@@ -47,7 +47,7 @@ namespace meshkernelapi
         /// @brief Minimum ATPF on the boundary (1.0)
         double OrthogonalizationToSmoothingFactorBoundary;
 
-        /// @brief Factor to weight between circumcentres 1.0 and masscentre 0.0 (1.0)
+        /// @brief Factor to weight between circumcenters 1.0 and masscentre 0.0 (1.0)
         double CircumCenterOrMassCenter;
 
         /// @brief Factor between smoother 1d0 and area-homogenizer 0d0 (1.0)
