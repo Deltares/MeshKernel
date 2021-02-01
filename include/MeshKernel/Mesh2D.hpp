@@ -191,7 +191,7 @@ namespace meshkernel
         /// a pressure gradient between the circumcenters of neighbouring faces.
         /// That procedure is numerically unreliable when the distance between face
         /// circumcenters (flow edges) becomes too small. Let's consider the following figure
-        /// \image html coincide_circumcentre.svg  "Coincide Circumcentre"
+        /// \image html coincide_circumcenter.svg  "Coincide circumcenter"
         /// The algorithm works as follow:
         ///
         /// -   Any degenerated triangle (e.g. those having a coinciding node) is

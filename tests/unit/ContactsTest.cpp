@@ -140,6 +140,52 @@ TEST(Contacts, ComputeMultipleConnections1dMeshInside2dMesh)
     ASSERT_EQ(8, contacts.m_mesh2dIndices[4]);
 }
 
+TEST(Contacts, ComputeConnectionsWithPoints)
+{
+    // Create 1d mesh
+    std::vector<meshkernel::Point> nodes{
+        {1.73493900000000, -7.6626510000000},
+        {2.35659313023165, 1.67281447902331},
+        {5.38347452702839, 10.3513746546384},
+        {14.2980910429074, 12.4797224193970},
+        {22.9324017677239, 15.3007317677239},
+        {25.3723169493137, 24.1623588554512},
+        {25.8072280000000, 33.5111870000000}};
+    std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}};
+    const auto mesh1d = std::make_shared<meshkernel::Mesh1D>(edges, nodes, meshkernel::Projection::cartesian);
+
+    // Create 2d mesh
+    const auto mesh2d = MakeRectangularMeshForTesting(4, 4, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
+
+    // Create contacts
+    std::vector<bool> onedNodeMask(nodes.size(), true);
+    meshkernel::Contacts contacts(mesh1d, mesh2d, onedNodeMask);
+
+    // Create points to connect
+    std::vector<meshkernel::Point> pointsToConnect{
+        {2.9225159, 15.9190083},
+        {16.3976765, 5.9373722},
+        {27.6269741, 17.7656116},
+        {22.3367290, 21.4588184}};
+
+    // Execute
+    contacts.ComputeConnectionsWithPoints(pointsToConnect);
+
+    //Assert
+    ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
+    ASSERT_EQ(4, contacts.m_mesh2dIndices.size());
+
+    ASSERT_EQ(2, contacts.m_mesh1dIndices[0]);
+    ASSERT_EQ(3, contacts.m_mesh1dIndices[1]);
+    ASSERT_EQ(4, contacts.m_mesh1dIndices[2]);
+    ASSERT_EQ(5, contacts.m_mesh1dIndices[3]);
+
+    ASSERT_EQ(1, contacts.m_mesh2dIndices[0]);
+    ASSERT_EQ(3, contacts.m_mesh2dIndices[1]);
+    ASSERT_EQ(7, contacts.m_mesh2dIndices[2]);
+    ASSERT_EQ(8, contacts.m_mesh2dIndices[3]);
+}
+
 TEST(Contacts, ComputeConnectionsWithPolygons)
 {
     // Create 1d mesh
