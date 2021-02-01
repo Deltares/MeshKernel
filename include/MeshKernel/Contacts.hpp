@@ -69,7 +69,7 @@ namespace meshkernel
         /// for example when the 1d part represents a river and the 2d part the river banks.
         /// The 1d nodes overlapping the 2d mesh are directly connected to the face including them.
         /// \image html ComputeSingleConnections.jpg  "1d mesh connecting to 2d mesh using the ComputeSingleConnections algorithm. Connections are shown in red."
-        /// @param[in] polygons The polygons where the 1d-2d connections are generated
+        /// @param[in] polygons The polygons selecting the area where the 1d-2d connections will be generated.
         void ComputeSingleConnections(const Polygons& polygons);
 
         /// @brief Computes 1d-2d connections, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
@@ -90,9 +90,9 @@ namespace meshkernel
         /// @brief Computes 1d-2d connections, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)
         ///
         /// The algorithms works as follows:
-        /// - find the 2d face within each polygon closest to a 1d node
-        /// - per polygon create one connection from the 2d circumcenter to the 1d node
-        /// \image html ComputeConnectionsWithPolygons.svg  "1d mesh connecting to 2d mesh using the ComputeConnectionsWithPolygonss algorithm. Connections are shown in red. Polygons in green."
+        /// - Find the 2d face within each polygon closest to a 1d node.
+        /// - Per polygon create one connection from the 2d circumcenters to the 1d node.
+        /// \image html ComputeConnectionsWithPolygons.svg  "1d mesh connecting to 2d mesh using the ComputeConnectionsWithPolygons algorithm. Connections are shown in red. Polygons in green."
         /// @param[in] polygons The polygons to connect (Polygons class can have multiple polygons)
         void ComputeConnectionsWithPolygons(const Polygons& polygons);
 
@@ -105,7 +105,16 @@ namespace meshkernel
         void ComputeConnectionsWithPoints(const std::vector<Point>& points);
 
         /// @brief Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
-        void ComputeBoundaryConnections();
+        ///
+        /// The algorithms works as follows:
+        /// - For each oned node, find the closest 2d boundary faces within the search radius.
+        /// - If a boundary face can be connected to multiple oned nodes, choose the closest one.
+        /// - Generate the 1d-2d connections.
+        /// \image html ComputeBoundaryConnections.jpg  "1d mesh connecting to 2d mesh using the ComputeBoundaryConnections algorithm. Connections are shown in red.
+        /// The mesh 2d boundary faces are connected to the closest 1d nodes."
+        /// @param[in] polygons The polygons selecting the area where the 1d-2d connections will be generated.
+        /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to sizetMissing value, the search radius will be calculated internally.
+        void ComputeBoundaryConnections(const Polygons& polygons, double searchRadius);
 
         std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces
         std::vector<size_t> m_mesh1dIndices; ///< The indices of the connected 1-d nodes

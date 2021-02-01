@@ -29,11 +29,13 @@ void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
     const auto node1dFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
     m_mesh1dIndices.reserve(m_mesh1d->m_nodes.size());
     m_mesh2dIndices.reserve(m_mesh1d->m_nodes.size());
-    const double distanceFactor = 5.0;
+
+    const auto nodePolygonIndices = polygons.PolygonIndices(m_mesh1d->m_nodes);
+
     for (size_t n = 0; n < m_mesh1d->m_nodes.size(); ++n)
     {
         // connect only nodes included in the polygons
-        if (polygons.PointInWhichPolygon(m_mesh1d->m_nodes[n]) == sizetMissingValue)
+        if (nodePolygonIndices[n] == sizetMissingValue)
         {
             continue;
         }
@@ -154,7 +156,6 @@ void meshkernel::Contacts::ComputeMultipleConnections()
 
     // perform mesh1d administration
     m_mesh1d->AdministrateNodesEdges();
-    m_mesh1d->ComputeEdgesLengths();
 
     // compute the indices of the faces including the 1d nodes
     const auto node1dFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
@@ -169,13 +170,8 @@ void meshkernel::Contacts::ComputeMultipleConnections()
         const auto firstNode1dMeshEdge = m_mesh1d->m_edges[e].first;
         const auto secondNode1dMeshEdge = m_mesh1d->m_edges[e].second;
 
-        // loop over all edges connected to the first node, to determine the longest edge
-        auto maxEdgeLength = std::numeric_limits<double>::lowest();
-        for (auto ee = 0; ee < m_mesh1d->m_nodesNumEdges[firstNode1dMeshEdge]; ++ee)
-        {
-            const auto edge = m_mesh1d->m_nodesEdges[firstNode1dMeshEdge][ee];
-            maxEdgeLength = std::max(maxEdgeLength, m_mesh1d->m_edgeLengths[edge]);
-        }
+        // computes the maximum edge length
+        const auto maxEdgeLength = m_mesh1d->ComputeMaxLengthSurroundingEdges(firstNode1dMeshEdge);
 
         // compute the nearest 2d face indices
         m_mesh2d->SearchNearestNeighboursOnSquaredDistance(m_mesh1d->m_nodes[firstNode1dMeshEdge], 1.1 * maxEdgeLength * maxEdgeLength, MeshLocations::Faces);
@@ -257,7 +253,7 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
     std::vector<size_t> polygonIndices(m_mesh2d->GetNumFaces(), sizetMissingValue);
     for (auto faceIndex = 0; faceIndex < m_mesh2d->GetNumFaces(); ++faceIndex)
     {
-        polygonIndices[faceIndex] = polygons.PointInWhichPolygon(m_mesh2d->m_facesMassCenters[faceIndex]);
+        polygonIndices[faceIndex] = polygons.PolygonIndex(m_mesh2d->m_facesMassCenters[faceIndex]);
     }
 
     // for each polygon, find closest 1d node to any 2d mass center within the polygon
@@ -332,6 +328,98 @@ void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>
     }
 };
 
-void meshkernel::Contacts::ComputeBoundaryConnections(){
-    // complete implementation
+void meshkernel::Contacts::ComputeBoundaryConnections(const Polygons& polygons, double searchRadius)
+{
+    // perform mesh2d administration
+    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+
+    // perform mesh1d administration
+    m_mesh1d->AdministrateNodesEdges();
+
+    // build mesh2d face circumcenters r-tree
+    RTree faceCircumcentersRTree;
+    faceCircumcentersRTree.BuildTree(m_mesh2d->m_facesCircumcenters);
+
+    // get the indices
+    const auto facePolygonIndices = polygons.PolygonIndices(m_mesh2d->m_facesCircumcenters);
+
+    // Loop over 1d edges
+    std::vector<bool> isValidFace(m_mesh2d->GetNumFaces(), true);
+    std::vector<size_t> faceTo1DNode(m_mesh2d->GetNumFaces(), sizetMissingValue);
+    for (auto n = 0; n < m_mesh1d->GetNumNodes(); ++n)
+    {
+
+        // account for the 1d node mask if present
+        if (!m_oneDNodeMask.empty() && !m_oneDNodeMask[n])
+        {
+            continue;
+        }
+
+        auto localSearchRadius = searchRadius;
+        if (IsEqual(searchRadius, doubleMissingValue))
+        {
+            localSearchRadius = m_mesh1d->ComputeMaxLengthSurroundingEdges(n);
+        }
+
+        // compute the nearest 2d face indices
+        faceCircumcentersRTree.NearestNeighborsOnSquaredDistance(m_mesh1d->m_nodes[n], localSearchRadius * localSearchRadius);
+
+        //// for each face determine if it is crossing the current 1d edge
+        //auto numResults = faceCircumcentersRTree.GetQueryResultSize();
+        //std::cout << "The number of results is " << numResults << std::endl;
+
+        for (auto f = 0; f < faceCircumcentersRTree.GetQueryResultSize(); ++f)
+        {
+            const auto face = faceCircumcentersRTree.GetQueryResult(f);
+
+            // the face is already marked as invalid, nothing to do
+            if (!isValidFace[face])
+            {
+                continue;
+            }
+
+            // not a boundary face
+            if (!m_mesh2d->IsFaceOnBoundary(face))
+            {
+                isValidFace[face] = false;
+                continue;
+            }
+
+            // the face is not inside a polygon
+            if (facePolygonIndices[face] == sizetMissingValue)
+            {
+                isValidFace[face] = false;
+                continue;
+            }
+
+            // a candidate connection does not exist
+            if (faceTo1DNode[face] == sizetMissingValue)
+            {
+                faceTo1DNode[face] = n;
+                continue;
+            }
+
+            const auto currentSquaredDistance = ComputeSquaredDistance(m_mesh1d->m_nodes[n],
+                                                                       m_mesh2d->m_facesCircumcenters[face],
+                                                                       m_mesh2d->m_projection);
+            const auto previousSquaredDistance = ComputeSquaredDistance(m_mesh1d->m_nodes[faceTo1DNode[face]],
+                                                                        m_mesh2d->m_facesCircumcenters[face],
+                                                                        m_mesh2d->m_projection);
+
+            if (currentSquaredDistance < previousSquaredDistance)
+            {
+                faceTo1DNode[face] = n;
+            }
+        }
+    }
+
+    for (auto f = 0; f < m_mesh2d->GetNumFaces(); ++f)
+    {
+        if (faceTo1DNode[f] != sizetMissingValue && isValidFace[f])
+        {
+
+            m_mesh1dIndices.emplace_back(faceTo1DNode[f]);
+            m_mesh2dIndices.emplace_back(f);
+        }
+    }
 };

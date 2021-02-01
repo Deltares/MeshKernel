@@ -299,33 +299,33 @@ size_t meshkernel::Mesh::InsertNode(const Point& newPoint)
     return newNodeIndex;
 }
 
-void meshkernel::Mesh::DeleteNode(size_t nodeIndex)
+void meshkernel::Mesh::DeleteNode(size_t node)
 {
-    if (nodeIndex >= GetNumNodes())
+    if (node >= GetNumNodes())
     {
         throw std::invalid_argument("Mesh::DeleteNode: The index of the node to be deleted does not exist.");
     }
 
-    for (auto e = 0; e < m_nodesNumEdges[nodeIndex]; e++)
+    for (auto e = 0; e < m_nodesNumEdges[node]; e++)
     {
-        const auto edgeIndex = m_nodesEdges[nodeIndex][e];
+        const auto edgeIndex = m_nodesEdges[node][e];
         DeleteEdge(edgeIndex);
     }
-    m_nodes[nodeIndex] = {doubleMissingValue, doubleMissingValue};
+    m_nodes[node] = {doubleMissingValue, doubleMissingValue};
     m_numNodes--;
 
     m_nodesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::DeleteEdge(size_t edgeIndex)
+void meshkernel::Mesh::DeleteEdge(size_t edge)
 {
-    if (edgeIndex == sizetMissingValue)
+    if (edge == sizetMissingValue)
     {
         throw std::invalid_argument("Mesh::DeleteEdge: The index of the edge to be deleted does not exist.");
     }
 
-    m_edges[edgeIndex].first = sizetMissingValue;
-    m_edges[edgeIndex].second = sizetMissingValue;
+    m_edges[edge].first = sizetMissingValue;
+    m_edges[edge].second = sizetMissingValue;
 
     m_edgesRTreeRequiresUpdate = true;
 }
@@ -435,13 +435,13 @@ size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bo
     // resultSize > 0, no node mask applied
     if (oneDNodeMask.empty())
     {
-        return m_nodesRTree.GetQueryIndex(0);
+        return m_nodesRTree.GetQueryResult(0);
     }
 
     // resultSize > 0, a mask is applied
     for (auto index = 0; index < resultSize; ++index)
     {
-        const auto nodeIndex = m_nodesRTree.GetQueryIndex(index);
+        const auto nodeIndex = m_nodesRTree.GetQueryResult(index);
         if (oneDNodeMask[nodeIndex])
         {
             return nodeIndex;
@@ -660,17 +660,17 @@ size_t meshkernel::Mesh::GetNearestNeighborIndex(size_t index, MeshLocations mes
 {
     if (meshLocation == MeshLocations::Nodes)
     {
-        return m_nodesRTree.GetQueryIndex(index);
+        return m_nodesRTree.GetQueryResult(index);
     }
 
     if (meshLocation == MeshLocations::Edges)
     {
-        return m_edgesRTree.GetQueryIndex(index);
+        return m_edgesRTree.GetQueryResult(index);
     }
 
     if (meshLocation == MeshLocations::Faces)
     {
-        return m_facesRTree.GetQueryIndex(index);
+        return m_facesRTree.GetQueryResult(index);
     }
 
     return sizetMissingValue;
@@ -711,4 +711,22 @@ void meshkernel::Mesh::AdministrateNodesEdges()
     {
         SortEdgesInCounterClockWiseOrder(n);
     }
+}
+
+double meshkernel::Mesh::ComputeMaxLengthSurroundingEdges(size_t node)
+{
+
+    if (m_edgeLengths.empty())
+    {
+        ComputeEdgesLengths();
+    }
+
+    auto maxEdgeLength = std::numeric_limits<double>::lowest();
+    for (auto ee = 0; ee < m_nodesNumEdges[node]; ++ee)
+    {
+        const auto edge = m_nodesEdges[node][ee];
+        maxEdgeLength = std::max(maxEdgeLength, m_edgeLengths[edge]);
+    }
+
+    return maxEdgeLength;
 }
