@@ -100,7 +100,7 @@ namespace meshkernel
         /// firstMesh += secondmesh results in the second mesh being added to the first
         /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
-        [[nodiscard]] Mesh2D& operator+=(Mesh2D const& rhs);
+        Mesh2D& operator+=(Mesh2D const& rhs);
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         /// @param administrationOption Type of administration to perform
