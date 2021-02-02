@@ -76,7 +76,7 @@ namespace meshkernel
 
         /// @brief Checks if the polygon is empty
         /// @return True if it is empty, false otherwise
-        bool Polygons::IsEmpty() const;
+        bool IsEmpty() const;
 
         /// @brief Gets the number of polygon nodes
         /// @return the number of polygon nodes

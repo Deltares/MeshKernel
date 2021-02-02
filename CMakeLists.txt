@@ -6,16 +6,14 @@ project(
   MeshKernel
   VERSION 0.10.0
   DESCRIPTION "Library for creating and editing meshes."
-  LANGUAGES CXX)
-
+  LANGUAGES CXX C)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   if(WIN32)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc /MP")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc /MP")
   else()
-    set(CMAKE_CXX_FLAGS_RELEASE
-        "-g -O2"
-        CACHE STRING "List of C++ compiler flags for a Release build")
+    set(CMAKE_CXX_FLAGS_RELEASE "-g -O2" CACHE STRING "List of C++ compiler flags for a Release build")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
   endif(WIN32)
 
@@ -43,12 +41,14 @@ add_subdirectory(extern)
 include(FetchContent)
 
 # Boost C++
+if(WIN32)
+  # In windows use static libraries
+  set(Boost_USE_STATIC_LIBS ON)
+  set(Boost_THREADAPI win32)
+endif()  
 set(Boost_USE_MULTITHREADED OFF)
-set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-set(Boost_DEBUG ON)
 set(Boost_DETAILED_FAILURE_MSG ON)
-set(Boost_THREADAPI win32)
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 include_directories(${Boost_INCLUDE_DIR})
 
