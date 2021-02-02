@@ -55,7 +55,7 @@
 namespace meshkernelapi
 {
 
-    /// @brief Converts a GeometryList to a std::vector<meshkernel::Point>
+    /// @brief Converts a GeometryList to a vector<Point>
     /// @param[in] geometryListIn The geometry input list
     /// @returns The converted vector of points
     static std::vector<meshkernel::Point> ConvertGeometryListToPointVector(const GeometryList& geometryListIn)
@@ -75,19 +75,23 @@ namespace meshkernelapi
         return result;
     }
 
-    // TODO: Return result instead of relying on second input parameter
-    static void ConvertGeometryListToSampleVector(const GeometryList& geometryListIn, std::vector<meshkernel::Sample>& result)
+    /// @brief Converts a GeometryList to a vector<Sample>
+    /// @param[in] geometryListIn The geometry input list
+    /// @returns The converted vector of samples
+    static std::vector<meshkernel::Sample> ConvertGeometryListToSampleVector(const GeometryList& geometryListIn)
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
             throw std::invalid_argument("MeshKernel: The samples are empty.");
         }
+        std::vector<meshkernel::Sample> result;
         result.resize(geometryListIn.numberOfCoordinates);
 
         for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
             result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i], geometryListIn.zCoordinates[i]};
         }
+        return result;
     }
 
     // TODO: Return result instead of relying on second input parameter

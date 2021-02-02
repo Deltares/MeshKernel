@@ -1053,8 +1053,8 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
-            std::vector<meshkernel::Sample> samples;
-            ConvertGeometryListToSampleVector(geometryListIn, samples);
+
+            auto samples = ConvertGeometryListToSampleVector(geometryListIn);
 
             meshkernel::AveragingInterpolation::Method averagingMethod;
             if (sampleRefineParameters.RefinementType == 2)
