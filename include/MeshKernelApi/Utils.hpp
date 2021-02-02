@@ -55,19 +55,24 @@
 namespace meshkernelapi
 {
 
-    // TODO: Return result instead of relying on second input parameter
-    static void ConvertGeometryListToPointVector(const GeometryList& geometryListIn, std::vector<meshkernel::Point>& result)
+    /// @brief Converts a GeometryList to a std::vector<meshkernel::Point>
+    /// @param[in] geometryListIn The geometry input list
+    /// @returns The converted vector of points
+    static std::vector<meshkernel::Point> ConvertGeometryListToPointVector(const GeometryList& geometryListIn)
     {
+        std::vector<meshkernel::Point> result;
         if (geometryListIn.numberOfCoordinates == 0)
         {
-            return;
+            return result;
         }
+
         result.resize(geometryListIn.numberOfCoordinates);
 
         for (auto i = 0; i < geometryListIn.numberOfCoordinates; i++)
         {
             result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i]};
         }
+        return result;
     }
 
     // TODO: Return result instead of relying on second input parameter
@@ -107,8 +112,7 @@ namespace meshkernelapi
             return false;
         }
 
-        std::vector<meshkernel::Point> splineCornerPoints;
-        ConvertGeometryListToPointVector(geometryListIn, splineCornerPoints);
+        auto splineCornerPoints = ConvertGeometryListToPointVector(geometryListIn);
 
         const auto indices = FindIndices(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue);
 

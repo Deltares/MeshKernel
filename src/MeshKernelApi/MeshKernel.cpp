@@ -115,8 +115,8 @@ namespace meshkernelapi
             {
                 return exitCode;
             }
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
+
+            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
             meshInstances[meshKernelId]->DeleteMesh(polygon, deletionOption, invertDeletion);
@@ -601,8 +601,8 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            std::vector<meshkernel::Point> result;
-            ConvertGeometryListToPointVector(geometryList, result);
+
+            auto result = ConvertGeometryListToPointVector(geometryList);
 
             const meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
 
@@ -627,8 +627,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            std::vector<meshkernel::Point> result;
-            ConvertGeometryListToPointVector(disposableGeometryListIn, result);
+            auto result = ConvertGeometryListToPointVector(disposableGeometryListIn);
 
             const meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
 
@@ -654,8 +653,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            std::vector<meshkernel::Point> samplePoints;
-            ConvertGeometryListToPointVector(geometryList, samplePoints);
+            auto samplePoints = ConvertGeometryListToPointVector(geometryList);
 
             meshkernel::Polygons polygon;
             const meshkernel::Mesh2D mesh(samplePoints, polygon, meshInstances[meshKernelId]->m_projection);
@@ -720,8 +718,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
@@ -745,8 +742,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
@@ -771,8 +767,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
@@ -813,8 +808,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
@@ -847,8 +841,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
@@ -941,8 +934,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> newPoint;
-            ConvertGeometryListToPointVector(geometryListIn, newPoint);
+            auto newPoint = ConvertGeometryListToPointVector(geometryListIn);
 
             meshInstances[meshKernelId]->MoveNode(newPoint[0], nodeIndex);
         }
@@ -963,8 +955,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> newPoint;
-            ConvertGeometryListToPointVector(geometryListIn, newPoint);
+            auto newPoint = ConvertGeometryListToPointVector(geometryListIn);
 
             const auto edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
 
@@ -987,8 +978,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> newPoint;
-            ConvertGeometryListToPointVector(geometryListIn, newPoint);
+            auto newPoint = ConvertGeometryListToPointVector(geometryListIn);
 
             edgeIndex = static_cast<int>(meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]));
         }
@@ -1009,8 +999,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
@@ -1034,8 +1023,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
             const auto newPolygon = polygon.OffsetCopy(distance, innerPolygon);
@@ -1114,8 +1102,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            std::vector<meshkernel::Point> points;
-            ConvertGeometryListToPointVector(geometryList, points);
+            auto points = ConvertGeometryListToPointVector(geometryList);
 
             const meshkernel::Polygons polygon(points, meshInstances[meshKernelId]->m_projection);
 
@@ -1143,8 +1130,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             nodeIndex = static_cast<int>(meshInstances[meshKernelId]->FindNodeCloseToAPoint(polygonPoints[0], searchRadius));
         }
@@ -1174,8 +1160,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The output-geometry has no coordinates.");
             }
 
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(geometryListIn, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
             const auto nodeIndex = meshInstances[meshKernelId]->FindNodeCloseToAPoint(polygonPoints[0], searchRadius);
 
@@ -1316,11 +1301,9 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            std::vector<meshkernel::Point> polygonNodes;
-            ConvertGeometryListToPointVector(polygon, polygonNodes);
+            auto polygonNodes = ConvertGeometryListToPointVector(polygon);
 
-            std::vector<meshkernel::Point> points;
-            ConvertGeometryListToPointVector(pointsNative, points);
+            auto points = ConvertGeometryListToPointVector(pointsNative);
             const meshkernel::Polygons localPolygon(polygonNodes, meshInstances[meshKernelId]->m_projection);
 
             for (auto i = 0; i < points.size(); i++)
@@ -1414,8 +1397,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(polygon, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
             const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
@@ -1447,8 +1429,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            std::vector<meshkernel::Point> polygonPoints;
-            ConvertGeometryListToPointVector(polygon, polygonPoints);
+            auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
             const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
