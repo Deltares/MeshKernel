@@ -2,7 +2,7 @@
 
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
-#include <Meshkernel/Entities.hpp>
+#include <MeshKernel/Entities.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 

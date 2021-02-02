@@ -28,6 +28,7 @@
 #include <map>
 #include <stdexcept>
 #include <vector>
+#include <string.h>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Constants.hpp>
@@ -199,12 +200,12 @@ namespace meshkernelapi
         catch (const meshkernel::MeshGeometryError& e)
         {
             meshGeometryError = e;
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            strcpy(exceptionMessage, e.what());
             return InvalidGeometry;
         }
         catch (const std::exception& e)
         {
-            strcpy_s(exceptionMessage, sizeof exceptionMessage, e.what());
+            strcpy(exceptionMessage, e.what());
             return Exception;
         }
     }

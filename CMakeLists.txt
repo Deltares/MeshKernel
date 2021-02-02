@@ -6,8 +6,8 @@ project(
   MeshKernel
   VERSION 0.10.0
   DESCRIPTION "Library for creating and editing meshes."
-  LANGUAGES CXX)
-
+  LANGUAGES CXX C)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   if(WIN32)
     set(CMAKE_CXX_FLAGS_RELEASE
@@ -44,6 +44,11 @@ add_subdirectory(extern)
 include(FetchContent)
 
 # Boost C++
+if(WIN32)
+  # In windows use static libraries
+  set(Boost_USE_STATIC_LIBS ON)
+  set(Boost_THREADAPI win32)
+endif()
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 

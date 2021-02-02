@@ -6,6 +6,11 @@ add_executable(MeshKernelUnitTests ${UNIT_TEST_LIST})
 target_link_libraries(
   MeshKernelUnitTests PRIVATE MeshKernelStatic UtilsStatic ${Boost_LIBRARIES}
                               triangle gtest_main)
+ 
+if(UNIX)
+   # Link against libdl	  
+   set_target_properties (MeshKernelUnitTests PROPERTIES LINK_FLAGS  "-ldl")
+endif()
 
 # If you register a test, then ctest and make test will run it. You can also run
 # examples and check the output, as well. Command can be a target.
