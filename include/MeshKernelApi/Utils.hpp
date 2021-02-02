@@ -56,7 +56,7 @@ namespace meshkernelapi
 {
 
     /// @brief Converts a GeometryList to a vector<Point>
-    /// @param[in] geometryListIn The geometry input list
+    /// @param[in] geometryListIn The geometry input list to convert
     /// @returns The converted vector of points
     static std::vector<meshkernel::Point> ConvertGeometryListToPointVector(const GeometryList& geometryListIn)
     {
@@ -76,7 +76,7 @@ namespace meshkernelapi
     }
 
     /// @brief Converts a GeometryList to a vector<Sample>
-    /// @param[in] geometryListIn The geometry input list
+    /// @param[in] geometryListIn The geometry input list to convert
     /// @returns The converted vector of samples
     static std::vector<meshkernel::Sample> ConvertGeometryListToSampleVector(const GeometryList& geometryListIn)
     {
@@ -94,7 +94,9 @@ namespace meshkernelapi
         return result;
     }
 
-    // TODO: Return result instead of relying on second input parameter
+    /// @brief Converts a vector<Point> to a GeometryList
+    /// @param[in]  pointVector The point vector to convert
+    /// @param[out] result      The converted geometry list
     static void ConvertPointVectorToGeometryList(std::vector<meshkernel::Point> pointVector, GeometryList& result)
     {
         if (pointVector.size() < result.numberOfCoordinates)
@@ -109,11 +111,14 @@ namespace meshkernelapi
         }
     }
 
-    static bool SetSplines(const GeometryList& geometryListIn, meshkernel::Splines& spline)
+    /// @brief Sets splines from a geometry list
+    /// @param[in]  geometryListIn The input geometry list
+    /// @param[out] spline         The spline which will be set
+    static void SetSplines(const GeometryList& geometryListIn, meshkernel::Splines& spline)
     {
         if (geometryListIn.numberOfCoordinates == 0)
         {
-            return false;
+            return;
         }
 
         auto splineCornerPoints = ConvertGeometryListToPointVector(geometryListIn);
@@ -128,16 +133,18 @@ namespace meshkernelapi
                 spline.AddSpline(splineCornerPoints, index[0], size);
             }
         }
-
-        return true;
     }
 
-    static bool SetMeshGeometry(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry, std::vector<std::shared_ptr<meshkernel::Mesh2D>> meshInstances)
+    /// @brief Sets meshgeometry for a certain mesh
+    /// @param[in]  meshInstances          The mesh instances
+    /// @param[in]  meshKernelId           The id to the mesh which should be set
+    /// @param[out] meshGeometryDimensions The dimensions of the mesh geometry
+    /// @param[out] meshGeometry           The mesh geometry
+    static void SetMeshGeometry(std::vector<std::shared_ptr<meshkernel::Mesh2D>> meshInstances,
+                                int meshKernelId,
+                                MeshGeometryDimensions& meshGeometryDimensions,
+                                MeshGeometry& meshGeometry)
     {
-        if (meshKernelId >= meshInstances.size())
-        {
-            return false;
-        }
 
         meshGeometry.nodex = &(meshInstances[meshKernelId]->m_nodex[0]);
         meshGeometry.nodey = &(meshInstances[meshKernelId]->m_nodey[0]);
@@ -164,11 +171,15 @@ namespace meshkernelapi
             meshGeometryDimensions.numnode = static_cast<int>(meshInstances[meshKernelId]->GetNumNodes());
             meshGeometryDimensions.numedge = static_cast<int>(meshInstances[meshKernelId]->GetNumEdges());
         }
-
-        return true;
     }
 
-    static std::vector<meshkernel::Point> ComputeLocations(const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, meshkernel::MeshLocations interpolationLocation)
+    /// @brief Computes locations from the given mesh geometry
+    /// @param[in]  meshGeometryDimensions The dimensions of the mesh geometry
+    /// @param[in]  meshGeometry           The mesh geometry
+    /// @param[out] interpolationLocation  The computed interpolation location
+    static std::vector<meshkernel::Point> ComputeLocations(const MeshGeometryDimensions& meshGeometryDimensions,
+                                                           const MeshGeometry& meshGeometry,
+                                                           meshkernel::MeshLocations interpolationLocation)
     {
         std::vector<meshkernel::Point> locations;
         if (interpolationLocation == meshkernel::MeshLocations::Nodes)

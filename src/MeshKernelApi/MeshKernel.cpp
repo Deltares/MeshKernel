@@ -170,7 +170,7 @@ namespace meshkernelapi
 
             meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
 
-            SetMeshGeometry(meshKernelId, meshGeometryDimensions, meshGeometry, meshInstances);
+            SetMeshGeometry(meshInstances, meshKernelId, meshGeometryDimensions, meshGeometry);
         }
         catch (...)
         {
@@ -190,7 +190,7 @@ namespace meshkernelapi
             }
             meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
-            SetMeshGeometry(meshKernelId, meshGeometryDimensions, meshGeometry, meshInstances);
+            SetMeshGeometry(meshInstances, meshKernelId, meshGeometryDimensions, meshGeometry);
         }
         catch (...)
         {
