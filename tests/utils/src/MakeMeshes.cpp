@@ -11,7 +11,6 @@
 
 #include <MeshKernel/Mesh2D.hpp>
 #include <TestUtils/MakeMeshes.hpp>
-#include <boost/dll.hpp>
 #include <stdexcept>
 
 std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath)
