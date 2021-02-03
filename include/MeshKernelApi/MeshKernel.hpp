@@ -134,13 +134,13 @@ namespace meshkernelapi
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
         /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters
-        /// @param[in] polygon The polygon where to perform the orthogonalization
+        /// @param[in] polygons The polygon where to perform the orthogonalization
         /// @param[in] landBoundaries The land boundaries to account for in the orthogonalization process
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize(int meshKernelId,
                                               int projectToLandBoundaryOption,
                                               const OrthogonalizationParameters& orthogonalizationParameters,
-                                              const GeometryList& polygon,
+                                              const GeometryList& polygons,
                                               const GeometryList& landBoundaries);
 
         /// @brief Orthogonalization initialization (first function to use in interactive mode)
@@ -553,7 +553,7 @@ namespace meshkernelapi
         /// @param[out] contacts      The computed contacts
         /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
-                                                        const GeometryList& polygons,
+                                                        const GeometryList& polygon,
                                                         Contacts& contacts);
 
         /// @brief Computes 1d-2d contacts, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
@@ -590,7 +590,7 @@ namespace meshkernelapi
         ///
         /// \see meshkernel::Contacts::ComputeBoundaryContacts
         /// @param[in]  meshKernelId Id of the mesh state.
-        /// @param[in]  polygon      The points selecting the faces to connect.
+        /// @param[in]  polygons     The points selecting the faces to connect.
         /// @param[in]  searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
         /// @param[out] contacts     The computed contacts
         /// @return                  Error code (0 Successful)

@@ -262,7 +262,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_orthogonalize(int meshKernelId,
                                           int projectToLandBoundaryOption,
                                           const OrthogonalizationParameters& orthogonalizationParameters,
-                                          const GeometryList& polygon,
+                                          const GeometryList& polygons,
                                           const GeometryList& landBoundaries)
     {
         int exitCode = Success;
@@ -278,32 +278,32 @@ namespace meshkernelapi
             }
 
             // build enclosing polygon
-            std::vector<meshkernel::Point> nodes(polygon.numberOfCoordinates);
-            for (auto i = 0; i < polygon.numberOfCoordinates; i++)
+            std::vector<meshkernel::Point> nodes(polygons.numberOfCoordinates);
+            for (auto i = 0; i < polygons.numberOfCoordinates; i++)
             {
-                nodes[i].x = polygon.xCoordinates[i];
-                nodes[i].y = polygon.yCoordinates[i];
+                nodes[i].x = polygons.xCoordinates[i];
+                nodes[i].y = polygons.yCoordinates[i];
             }
 
-            auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
+            auto meshKernelPolygons = std::make_shared<meshkernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
 
             // build land boundary
-            std::vector<meshkernel::Point> landBoundaries(landBoundaries.numberOfCoordinates);
+            std::vector<meshkernel::Point> landBoundariesPoints(landBoundaries.numberOfCoordinates);
             for (auto i = 0; i < landBoundaries.numberOfCoordinates; i++)
             {
-                landBoundaries[i].x = landBoundaries.xCoordinates[i];
-                landBoundaries[i].y = landBoundaries.yCoordinates[i];
+                landBoundariesPoints[i].x = landBoundaries.xCoordinates[i];
+                landBoundariesPoints[i].y = landBoundaries.yCoordinates[i];
             }
 
             const auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshInstances[meshKernelId]);
             const auto smoother = std::make_shared<meshkernel::Smoother>(meshInstances[meshKernelId]);
-            const auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
+            const auto meshKernelLandBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesPoints, meshInstances[meshKernelId], meshKernelPolygons);
 
             meshkernel::OrthogonalizationAndSmoothing ortogonalization(meshInstances[meshKernelId],
                                                                        smoother,
                                                                        orthogonalizer,
-                                                                       polygon,
-                                                                       landBoundary,
+                                                                       meshKernelPolygons,
+                                                                       meshKernelLandBoundary,
                                                                        static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
                                                                        orthogonalizationParameters);
             ortogonalization.Initialize();
@@ -1557,6 +1557,28 @@ namespace meshkernelapi
 
             meshInstances[meshKernelId]->DeleteSmallFlowEdges(smallFlowEdgesThreshold);
             meshInstances[meshKernelId]->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
+                                                    const GeometryList& polygons,
+                                                    Contacts& contacts)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= meshInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            auto polygonPoints = ConvertGeometryListToPointVector(polygons);
+            const meshkernel::Polygons meshKernelPolygons(polygonPoints, meshInstances[meshKernelId]->m_projection);
         }
         catch (...)
         {
