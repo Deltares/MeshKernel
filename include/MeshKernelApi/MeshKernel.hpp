@@ -75,12 +75,12 @@ namespace meshkernelapi
 
         /// @brief Deletes a mesh in a polygon using several options
         /// @param[in] meshKernelId Id of the grid state
-        /// @param[in] disposableGeometryList The polygon where to perform the operation
+        /// @param[in] polygon The polygon where to perform the operation
         /// @param[in] deletionOption The deletion option (to be detailed)
         /// @param[in] invertDeletion Inverts the deletion of selected features
         /// @returns Error code
         MKERNEL_API int mkernel_delete_mesh(int meshKernelId,
-                                            const GeometryList& disposableGeometryList,
+                                            const GeometryList& polygon,
                                             int deletionOption,
                                             bool invertDeletion);
 
@@ -134,14 +134,14 @@ namespace meshkernelapi
         /// @param[in] meshKernelId Id of the mesh state
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
         /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters
-        /// @param[in] geometryListPolygon The polygon where to perform the orthogonalization
-        /// @param[in] geometryListLandBoundaries The land boundaries to account for in the orthogonalization process
+        /// @param[in] polygon The polygon where to perform the orthogonalization
+        /// @param[in] landBoundaries The land boundaries to account for in the orthogonalization process
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize(int meshKernelId,
                                               int projectToLandBoundaryOption,
                                               const OrthogonalizationParameters& orthogonalizationParameters,
-                                              const GeometryList& geometryListPolygon,
-                                              const GeometryList& geometryListLandBoundaries);
+                                              const GeometryList& polygon,
+                                              const GeometryList& landBoundaries);
 
         /// @brief Orthogonalization initialization (first function to use in interactive mode)
         /// @param[in] meshKernelId Id of the mesh state
@@ -548,10 +548,10 @@ namespace meshkernelapi
         /// @brief Computes 1d-2d contacts, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll)
         ///
         /// \see meshkernel::Contacts::ComputeSingleContacts
-        /// @param[in] meshKernelId  Id of the mesh state
-        /// @param[in] polygons The polygons selecting the area where the 1d-2d contacts will be generated.
-        /// @param[out] contacts The computed contacts
-        /// @return Error code (0 Successful)
+        /// @param[in]  meshKernelId  Id of the mesh state
+        /// @param[in]  polygons      The polygons selecting the area where the 1d-2d contacts will be generated.
+        /// @param[out] contacts      The computed contacts
+        /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
                                                         const GeometryList& polygons,
                                                         Contacts& contacts);
@@ -559,18 +559,18 @@ namespace meshkernelapi
         /// @brief Computes 1d-2d contacts, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
         ///
         /// \see meshkernel::Contacts::ComputeMultipleContacts
-        /// @param[in] meshKernelId  Id of the mesh state
-        /// @param[out] contacts The computed contacts
-        /// @return Error code (0 Successful)
+        /// @param[in]  meshKernelId  Id of the mesh state
+        /// @param[out] contacts      The computed contacts
+        /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId, Contacts& contacts);
 
         /// @brief Computes 1d-2d contacts, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)
         ///
         /// \see meshkernel::Contacts::ComputeContactsWithPolygons
-        /// @param[in] meshKernelId  Id of the mesh state
-        /// @param[in] polygons The polygons to connect
-        /// @param[out] contacts The computed contacts
-        /// @return Error code (0 Successful)
+        /// @param[in]  meshKernelId  Id of the mesh state
+        /// @param[in]  polygons      The polygons to connect
+        /// @param[out] contacts      The computed contacts
+        /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_contacts_with_polygons(int meshKernelId,
                                                                const GeometryList& polygons,
                                                                Contacts& contacts);
@@ -578,10 +578,10 @@ namespace meshkernelapi
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)
         ///
         /// \see meshkernel::Contacts::ComputeContactsWithPoints
-        /// @param[in] meshKernelId  Id of the mesh state
-        /// @param[in] points The points selecting the faces to connect
-        /// @param[out] contacts The computed contacts
-        /// @return Error code (0 Successful)
+        /// @param[in]  meshKernelId  Id of the mesh state
+        /// @param[in]  points        The points selecting the faces to connect
+        /// @param[out] contacts      The computed contacts
+        /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_contacts_with_points(int meshKernelId,
                                                              const GeometryList& points,
                                                              Contacts& contacts);
@@ -589,14 +589,15 @@ namespace meshkernelapi
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
         /// \see meshkernel::Contacts::ComputeBoundaryContacts
-        /// @param[in] meshKernelId  Id of the mesh state
-        /// @param[in] points The points selecting the faces to connect
-        /// @param[out] contacts The computed contacts
-        /// @return Error code (0 Successful)
-        MKERNEL_API int mkernel_compute_contacts_with_points(int meshKernelId,
-                                                             const GeometryList& polygons,
-                                                             double searchRadius,
-                                                             Contacts& contacts);
+        /// @param[in]  meshKernelId Id of the mesh state.
+        /// @param[in]  polygon      The points selecting the faces to connect.
+        /// @param[in]  searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
+        /// @param[out] contacts     The computed contacts
+        /// @return                  Error code (0 Successful)
+        MKERNEL_API int mkernel_compute_boundary_contacts(int meshKernelId,
+                                                          const GeometryList& polygons,
+                                                          double searchRadius,
+                                                          Contacts& contacts);
 
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel

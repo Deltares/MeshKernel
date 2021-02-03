@@ -113,7 +113,7 @@ namespace meshkernel
         /// \image html ComputeBoundaryContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeBoundaryContacts algorithm. Contacts are shown in red.
         /// The mesh 2d boundary faces are connected to the closest 1d nodes."
         /// @param[in] polygons The polygons selecting the area where the 1d-2d contacts will be generated.
-        /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to sizetMissing value, the search radius will be calculated internally.
+        /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
         void ComputeBoundaryContacts(const Polygons& polygons, double searchRadius);
 
         std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces

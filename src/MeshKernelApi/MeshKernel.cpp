@@ -102,7 +102,7 @@ namespace meshkernelapi
         return 0;
     }
 
-    MKERNEL_API int mkernel_delete_mesh(int meshKernelId, const GeometryList& geometryListIn, int deletionOption, bool invertDeletion)
+    MKERNEL_API int mkernel_delete_mesh(int meshKernelId, const GeometryList& polygon, int deletionOption, bool invertDeletion)
     {
         int exitCode = Success;
         try
@@ -116,7 +116,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
+            auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
             const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
             meshInstances[meshKernelId]->DeleteMesh(polygon, deletionOption, invertDeletion);
@@ -262,8 +262,8 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_orthogonalize(int meshKernelId,
                                           int projectToLandBoundaryOption,
                                           const OrthogonalizationParameters& orthogonalizationParameters,
-                                          const GeometryList& geometryListPolygon,
-                                          const GeometryList& geometryListLandBoundaries)
+                                          const GeometryList& polygon,
+                                          const GeometryList& landBoundaries)
     {
         int exitCode = Success;
         try
@@ -278,21 +278,21 @@ namespace meshkernelapi
             }
 
             // build enclosing polygon
-            std::vector<meshkernel::Point> nodes(geometryListPolygon.numberOfCoordinates);
-            for (auto i = 0; i < geometryListPolygon.numberOfCoordinates; i++)
+            std::vector<meshkernel::Point> nodes(polygon.numberOfCoordinates);
+            for (auto i = 0; i < polygon.numberOfCoordinates; i++)
             {
-                nodes[i].x = geometryListPolygon.xCoordinates[i];
-                nodes[i].y = geometryListPolygon.yCoordinates[i];
+                nodes[i].x = polygon.xCoordinates[i];
+                nodes[i].y = polygon.yCoordinates[i];
             }
 
             auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
 
             // build land boundary
-            std::vector<meshkernel::Point> landBoundaries(geometryListLandBoundaries.numberOfCoordinates);
-            for (auto i = 0; i < geometryListLandBoundaries.numberOfCoordinates; i++)
+            std::vector<meshkernel::Point> landBoundaries(landBoundaries.numberOfCoordinates);
+            for (auto i = 0; i < landBoundaries.numberOfCoordinates; i++)
             {
-                landBoundaries[i].x = geometryListLandBoundaries.xCoordinates[i];
-                landBoundaries[i].y = geometryListLandBoundaries.yCoordinates[i];
+                landBoundaries[i].x = landBoundaries.xCoordinates[i];
+                landBoundaries[i].y = landBoundaries.yCoordinates[i];
             }
 
             const auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshInstances[meshKernelId]);
