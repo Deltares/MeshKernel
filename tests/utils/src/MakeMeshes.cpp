@@ -44,7 +44,7 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
 
 #else
 
-    boost::dll::shared_library lib("libnetcdf.so");
+    boost::dll::shared_library lib("libnetcdf.so", boost::dll::load_mode::search_system_folders);
 
     auto nc_open = lib.get<int(const char*, int, int*)>("nc_open");
     auto nc_inq_dimid = lib.get<int(int, const char*, int*)>("nc_inq_dimid");
@@ -124,11 +124,7 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
 std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
 {
 
-    auto meshData = ReadLegacyMeshFromFileForApiTesting(filePath);
-    std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath);
-
-    const auto meshgeometry = std::get<0>(meshData);
-    const auto meshgeometryDimensions = std::get<1>(meshData);
+    const auto [meshgeometry, meshgeometryDimensions] = ReadLegacyMeshFromFileForApiTesting(filePath);
 
     std::vector<meshkernel::Edge> edges(meshgeometryDimensions.numedge);
     std::vector<meshkernel::Point> nodes(meshgeometryDimensions.numnode);
