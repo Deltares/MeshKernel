@@ -100,7 +100,7 @@ namespace meshkernel
         ///
         /// With this algorithm, each 2d face containing a point is connected to the 1d node closest to point itself.
         /// The search of the 2d faces and the closest 1d nodes uses RTrees.
-        /// @param[in] points The points to connect
+        /// @param[in] points The points selecting the faces to connect
         /// \image html ComputeContactsWithPoints.jpg  "2d faces containing the input points connecting to the 1d mesh. Contacts are shown in red and the input points in blue."
         void ComputeContactsWithPoints(const std::vector<Point>& points);
 
