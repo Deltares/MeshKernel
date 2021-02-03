@@ -1,14 +1,16 @@
+
 #include <gtest/gtest.h>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
+#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 
 //Simple averaging
 TEST(Averaging, InterpolateOnEdgesSimpleAveraging)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/simple_grid_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
