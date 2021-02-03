@@ -1350,7 +1350,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_curvilinear_mesh_from_splines(int meshKernelId,
-                                                          const GeometryList& geometryListIn,
+                                                          const GeometryList& splines,
                                                           const CurvilinearParameters& curvilinearParameters)
     {
         int exitCode = Success;
@@ -1362,11 +1362,11 @@ namespace meshkernelapi
             }
 
             // Use the default constructor, no instance present
-            const auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
-            SetSplines(geometryListIn, *spline);
+            const auto meshKernelSplines = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
+            SetSplines(splines, *meshKernelSplines);
 
             // Create algorithm and set the splines
-            meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(spline, curvilinearParameters);
+            meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(meshKernelSplines, curvilinearParameters);
 
             // Compute the curvilinear grid
             meshkernel::CurvilinearGrid curvilinearGrid;
@@ -1383,7 +1383,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_curvilinear_from_polygon(int meshKernelId,
-                                                     const GeometryList& polygon,
+                                                     const GeometryList& polygons,
                                                      int firstNode,
                                                      int secondNode,
                                                      int thirdNode,
@@ -1397,7 +1397,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            auto polygonPoints = ConvertGeometryListToPointVector(polygon);
+            auto polygonPoints = ConvertGeometryListToPointVector(polygons);
 
             const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
 
