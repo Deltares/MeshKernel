@@ -38,8 +38,6 @@ namespace meshkernelapi
         int* mesh2dFaces = nullptr;
         /// @brief The contact types
         int* contact_types = nullptr;
-        /// @brief The number of contacts
-        int numcontacts;
     };
 
 } // namespace meshkernelapi
