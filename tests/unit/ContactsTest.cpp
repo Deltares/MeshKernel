@@ -8,7 +8,7 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 
-TEST(Contacts, ComputeSingleConnections1dOutside2dMesh)
+TEST(Contacts, ComputeSingleContacts1dOutside2dMesh)
 {
     // Create 1d mesh
     std::vector<meshkernel::Point> nodes{
@@ -35,7 +35,7 @@ TEST(Contacts, ComputeSingleConnections1dOutside2dMesh)
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeSingleConnections(polygon);
+    contacts.ComputeSingleContacts(polygon);
 
     //Assert
     ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
@@ -52,7 +52,7 @@ TEST(Contacts, ComputeSingleConnections1dOutside2dMesh)
     ASSERT_EQ(2, contacts.m_mesh2dIndices[3]);
 }
 
-TEST(Contacts, ComputeSingleConnections1dMeshInside2dMesh)
+TEST(Contacts, ComputeSingleContacts1dMeshInside2dMesh)
 {
 
     // Create 1d mesh
@@ -79,7 +79,7 @@ TEST(Contacts, ComputeSingleConnections1dMeshInside2dMesh)
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeSingleConnections(polygon);
+    contacts.ComputeSingleContacts(polygon);
 
     //Assert
     ASSERT_EQ(5, contacts.m_mesh1dIndices.size());
@@ -98,7 +98,7 @@ TEST(Contacts, ComputeSingleConnections1dMeshInside2dMesh)
     ASSERT_EQ(8, contacts.m_mesh2dIndices[4]);
 }
 
-TEST(Contacts, ComputeMultipleConnections1dMeshInside2dMesh)
+TEST(Contacts, ComputeMultipleContacts1dMeshInside2dMesh)
 {
 
     // Create 1d mesh
@@ -121,7 +121,7 @@ TEST(Contacts, ComputeMultipleConnections1dMeshInside2dMesh)
     meshkernel::Contacts contacts(mesh1d, mesh2d, onedNodeMask);
 
     // Execute
-    contacts.ComputeMultipleConnections();
+    contacts.ComputeMultipleContacts();
 
     //Assert
     ASSERT_EQ(5, contacts.m_mesh1dIndices.size());
@@ -140,7 +140,7 @@ TEST(Contacts, ComputeMultipleConnections1dMeshInside2dMesh)
     ASSERT_EQ(8, contacts.m_mesh2dIndices[4]);
 }
 
-TEST(Contacts, ComputeConnectionsWithPoints)
+TEST(Contacts, ComputeContactsWithPoints)
 {
     // Create 1d mesh
     std::vector<meshkernel::Point> nodes{
@@ -169,7 +169,7 @@ TEST(Contacts, ComputeConnectionsWithPoints)
         {22.3367290, 21.4588184}};
 
     // Execute
-    contacts.ComputeConnectionsWithPoints(pointsToConnect);
+    contacts.ComputeContactsWithPoints(pointsToConnect);
 
     //Assert
     ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
@@ -186,7 +186,7 @@ TEST(Contacts, ComputeConnectionsWithPoints)
     ASSERT_EQ(8, contacts.m_mesh2dIndices[3]);
 }
 
-TEST(Contacts, ComputeConnectionsWithPolygons)
+TEST(Contacts, ComputeContactsWithPolygons)
 {
     // Create 1d mesh
     std::vector<meshkernel::Point> nodes{
@@ -299,7 +299,7 @@ TEST(Contacts, ComputeConnectionsWithPolygons)
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeConnectionsWithPolygons(polygon);
+    contacts.ComputeContactsWithPolygons(polygon);
 
     //Assert
     ASSERT_EQ(6, contacts.m_mesh1dIndices.size());
@@ -320,7 +320,7 @@ TEST(Contacts, ComputeConnectionsWithPolygons)
     ASSERT_EQ(6805, contacts.m_mesh2dIndices[5]);
 }
 
-TEST(Contacts, ComputeBoundaryConnections)
+TEST(Contacts, ComputeBoundaryContacts)
 {
     // Create 1d mesh
     std::vector<meshkernel::Point> nodes{
@@ -347,7 +347,7 @@ TEST(Contacts, ComputeBoundaryConnections)
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeBoundaryConnections(polygon, 200.0);
+    contacts.ComputeBoundaryContacts(polygon, 200.0);
 
     //Assert
     ASSERT_EQ(8, contacts.m_mesh1dIndices.size());

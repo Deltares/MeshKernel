@@ -482,7 +482,7 @@ namespace meshkernelapi
         /// @param[in] polygons The polygons selecting the area where the 1d-2d contacts will be generated.
         /// @param[out] contacts The computed contacts
         /// @return Error code (0 Successful)
-        MKERNEL_API int mkernel_compute_single_connections(int meshKernelId, const GeometryList& polygons, Contacts& contacts);
+        MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId, const GeometryList& polygons, Contacts& contacts);
 
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel

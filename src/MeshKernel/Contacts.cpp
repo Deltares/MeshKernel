@@ -21,7 +21,7 @@ meshkernel::Contacts::Contacts(std::shared_ptr<Mesh1D> mesh1d,
     }
 }
 
-void meshkernel::Contacts::ComputeSingleConnections(const Polygons& polygons)
+void meshkernel::Contacts::ComputeSingleContacts(const Polygons& polygons)
 {
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
     m_mesh1d->AdministrateNodesEdges();
@@ -84,7 +84,7 @@ void meshkernel::Contacts::Connect1dNodesWithCrossingFaces(size_t node, double d
     const auto [intersectedFace, intersectedEdge] = m_mesh2d->IsSegmentCrossingABoundaryEdge(m_mesh1d->m_nodes[node], projectedNode);
     if (intersectedFace != sizetMissingValue &&
         intersectedEdge != sizetMissingValue &&
-        !IsConnectionIntersectingMesh1d(node, intersectedFace) &&
+        !IsContactIntersectingMesh1d(node, intersectedFace) &&
         !IsContactIntersectingContact(node, intersectedFace))
     {
         m_mesh1dIndices.emplace_back(node);
@@ -92,7 +92,7 @@ void meshkernel::Contacts::Connect1dNodesWithCrossingFaces(size_t node, double d
     }
 }
 
-bool meshkernel::Contacts::IsConnectionIntersectingMesh1d(size_t node, size_t face) const
+bool meshkernel::Contacts::IsContactIntersectingMesh1d(size_t node, size_t face) const
 {
     for (size_t e = 0; e < m_mesh1d->GetNumEdges(); ++e)
     {
@@ -149,7 +149,7 @@ bool meshkernel::Contacts::IsContactIntersectingContact(size_t node, size_t face
     return false;
 }
 
-void meshkernel::Contacts::ComputeMultipleConnections()
+void meshkernel::Contacts::ComputeMultipleContacts()
 {
     // perform mesh2d administration
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -241,7 +241,7 @@ void meshkernel::Contacts::ComputeMultipleConnections()
     }
 };
 
-void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygons)
+void meshkernel::Contacts::ComputeContactsWithPolygons(const Polygons& polygons)
 {
     // perform mesh2d administration
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -293,7 +293,7 @@ void meshkernel::Contacts::ComputeConnectionsWithPolygons(const Polygons& polygo
     }
 };
 
-void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>& points)
+void meshkernel::Contacts::ComputeContactsWithPoints(const std::vector<Point>& points)
 {
     // perform mesh2d administration
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -322,13 +322,13 @@ void meshkernel::Contacts::ComputeConnectionsWithPoints(const std::vector<Point>
             continue;
         }
 
-        // form the 1d-2d connection
+        // form the 1d-2d contact
         m_mesh1dIndices.emplace_back(m_mesh1d->GetNearestNeighborIndex(0, MeshLocations::Nodes));
         m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
     }
 };
 
-void meshkernel::Contacts::ComputeBoundaryConnections(const Polygons& polygons, double searchRadius)
+void meshkernel::Contacts::ComputeBoundaryContacts(const Polygons& polygons, double searchRadius)
 {
     // perform mesh2d administration
     m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
@@ -392,7 +392,7 @@ void meshkernel::Contacts::ComputeBoundaryConnections(const Polygons& polygons, 
                 continue;
             }
 
-            // a candidate connection does not exist
+            // a candidate contact does not exist
             if (faceTo1DNode[face] == sizetMissingValue)
             {
                 faceTo1DNode[face] = n;
