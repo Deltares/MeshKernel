@@ -6,6 +6,7 @@
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 TEST(FlipEdges, FlipEdgesWithLandBoundary)
@@ -33,7 +34,7 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
 TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
 {
     //1 Setup
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
     //set landboundaries
     auto polygon = std::make_shared<meshkernel::Polygons>();

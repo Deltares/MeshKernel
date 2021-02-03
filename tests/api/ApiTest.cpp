@@ -5,6 +5,7 @@
 #include <MeshKernelApi/MeshGeometry.hpp>
 #include <MeshKernelApi/MeshGeometryDimensions.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
+#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 class ApiTests : public ::testing::Test
@@ -229,9 +230,9 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
 
     geometryListIn.xCoordinates = new double[13]{1.340015E+02, 3.642529E+02, 6.927549E+02, meshkernel::doubleMissingValue,
-                                               2.585022E+02, 4.550035E+02, 8.337558E+02, meshkernel::doubleMissingValue,
-                                               1.002513E+02, 4.610035E+02, meshkernel::doubleMissingValue,
-                                               6.522547E+02, 7.197551E+02};
+                                                 2.585022E+02, 4.550035E+02, 8.337558E+02, meshkernel::doubleMissingValue,
+                                                 1.002513E+02, 4.610035E+02, meshkernel::doubleMissingValue,
+                                                 6.522547E+02, 7.197551E+02};
 
     geometryListIn.yCoordinates = new double[13]{
         2.546282E+02, 4.586302E+02, 5.441311E+02, meshkernel::doubleMissingValue,
@@ -283,13 +284,13 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
 
     geometryListIn.xCoordinates = new double[6]{1.175014E+02, 3.755030E+02, 7.730054E+02, meshkernel::doubleMissingValue,
-                                               4.100089E+01, 3.410027E+02};
+                                                4.100089E+01, 3.410027E+02};
 
     geometryListIn.yCoordinates = new double[6]{2.437587E+01, 3.266289E+02, 4.563802E+02, meshkernel::doubleMissingValue,
-                                               2.388780E+02, 2.137584E+01};
+                                                2.388780E+02, 2.137584E+01};
 
     geometryListIn.zCoordinates = new double[6]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
-                                               0.0, 0.0};
+                                                0.0, 0.0};
     geometryListIn.numberOfCoordinates = 6;
 
     meshkernelapi::CurvilinearParameters curvilinearParameters;
@@ -979,7 +980,7 @@ TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError
     int meshKernelId;
     meshkernelapi::mkernel_new_mesh(meshKernelId);
 
-    auto meshData = ReadLegacyMeshFromFileForApiTesting("../../../../tests/data/InvalidMeshes/invalid_orthogonalization_net.nc");
+    auto meshData = ReadLegacyMeshFromFileForApiTesting(TEST_FOLDER + "/data/InvalidMeshes/invalid_orthogonalization_net.nc");
     auto errorCode = mkernel_set_state(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
     DeleteRectangularMeshForApiTesting(std::get<0>(meshData));
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);

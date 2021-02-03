@@ -5,6 +5,7 @@
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernelApi/InterpolationParameters.hpp>
 #include <MeshKernelApi/SampleRefineParameters.hpp>
+#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 
@@ -207,7 +208,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesEdgeSizeTwo)
 TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     //sample points
     std::vector<meshkernel::Sample> samples{
@@ -258,7 +259,7 @@ TEST(MeshRefinement, SmallTriangualMeshTwoSamples)
 TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     // Polygon sample
     std::vector<meshkernel::Point> point{
@@ -411,7 +412,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projection::cartesian, {197253.0, 442281.0});
 
     // Sample points
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
@@ -478,7 +479,7 @@ TEST(MeshRefinement, WindowOfRefinementFileBasedOnLevels)
     auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, meshkernel::Projection::cartesian, {197253.0, 442281.0});
 
     // Sample points
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
 
     const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh,
                                                                                 samples,
@@ -723,7 +724,7 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 TEST(MeshRefinement, RefineElongatedFaces)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/MeshRefinementTests/CurvilinearEnlonged.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/MeshRefinementTests/CurvilinearEnlonged.nc");
 
     std::vector<meshkernel::Point> point{
         {2018.73356016594, 1165.26385465465},

@@ -43,8 +43,8 @@ TEST(Averaging, InterpolateOnEdgesSimpleAveraging)
 
 TEST(Averaging, InterpolateOnNodesSimpleAveraging)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/simple_grid_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -77,8 +77,8 @@ TEST(Averaging, InterpolateOnNodesSimpleAveraging)
 
 TEST(Averaging, InterpolateOnFacesSimpleAveraging)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/simple_grid_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -113,8 +113,8 @@ TEST(Averaging, InterpolateOnFacesSimpleAveraging)
 //Closest Point
 TEST(Averaging, InterpolateOnEdgesClosestPoint)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -147,8 +147,8 @@ TEST(Averaging, InterpolateOnEdgesClosestPoint)
 
 TEST(Averaging, InterpolateOnNodesClosestPoint)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -179,8 +179,8 @@ TEST(Averaging, InterpolateOnNodesClosestPoint)
 
 TEST(Averaging, InterpolateOnFacesClosestPoint)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -204,8 +204,8 @@ TEST(Averaging, InterpolateOnFacesClosestPoint)
 // Max
 TEST(Averaging, InterpolateOnEdgesMax)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -238,8 +238,8 @@ TEST(Averaging, InterpolateOnEdgesMax)
 
 TEST(Averaging, InterpolateOnNodesMax)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -270,8 +270,8 @@ TEST(Averaging, InterpolateOnNodesMax)
 
 TEST(Averaging, InterpolateOnFacesMax)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -295,8 +295,8 @@ TEST(Averaging, InterpolateOnFacesMax)
 // Min
 TEST(Averaging, InterpolateOnEdgesMin)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -329,8 +329,8 @@ TEST(Averaging, InterpolateOnEdgesMin)
 
 TEST(Averaging, InterpolateOnNodesMin)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -361,8 +361,8 @@ TEST(Averaging, InterpolateOnNodesMin)
 
 TEST(Averaging, InterpolateOnFacesMin)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -386,8 +386,8 @@ TEST(Averaging, InterpolateOnFacesMin)
 // InverseWeightedDistance
 TEST(Averaging, InterpolateOnEdgesInverseWeightedDistance)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -420,8 +420,8 @@ TEST(Averaging, InterpolateOnEdgesInverseWeightedDistance)
 
 TEST(Averaging, InterpolateOnNodesInverseWeightedDistance)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -452,8 +452,8 @@ TEST(Averaging, InterpolateOnNodesInverseWeightedDistance)
 
 TEST(Averaging, InterpolateOnFacesInverseWeightedDistance)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -477,8 +477,8 @@ TEST(Averaging, InterpolateOnFacesInverseWeightedDistance)
 // MinAbsValue
 TEST(Averaging, InterpolateOnEdgesMinAbsValue)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -511,8 +511,8 @@ TEST(Averaging, InterpolateOnEdgesMinAbsValue)
 
 TEST(Averaging, InterpolateOnNodesMinAbsValue)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
@@ -543,8 +543,8 @@ TEST(Averaging, InterpolateOnNodesMinAbsValue)
 
 TEST(Averaging, InterpolateOnFacesMinAbsValue)
 {
-    std::vector<meshkernel::Sample> samples = ReadSampleFile("../../../../tests/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
+    std::vector<meshkernel::Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/AveragingInterpolationTests/sample_grid_coarse_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), 0);
 
     // Execute averaging
