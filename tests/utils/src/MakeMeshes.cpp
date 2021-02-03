@@ -44,7 +44,7 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
 
 #else
 
-    boost::dll::shared_library lib("netcdf.dll");
+    boost::dll::shared_library lib("libnetcdf.so");
 
     auto nc_open = lib.get<int(const char*, int, int*)>("nc_open");
     auto nc_inq_dimid = lib.get<int(int, const char*, int*)>("nc_inq_dimid");

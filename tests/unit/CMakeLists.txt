@@ -16,8 +16,8 @@ endif()
 # examples and check the output, as well. Command can be a target.
 add_test(NAME MeshKernelUnitTests COMMAND MeshKernelUnitTests)
 
-file(GLOB NETCDF_FILES_LIST CONFIGURE_DEPENDS
-     "${PROJECT_SOURCE_DIR}/extern/netcdf/netCDF 4.6.1/bin/*.dll")
+file(GLOB NETCDF_FILES_LIST CONFIGURE_DEPENDS 
+    "${NETCDF_BIN_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}*${CMAKE_SHARED_LIBRARY_SUFFIX}")
 foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
   add_custom_command(
     TARGET MeshKernelUnitTests
