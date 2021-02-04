@@ -182,22 +182,20 @@ namespace meshkernelapi
                                   int meshKernelId,
                                   meshkernelapi::Mesh1D& mesh1d)
     {
-        //TODO: Uncomment as soon as SetFlatCopies is implemented
+        mesh1d.nodex = &(mesh1dInstances[meshKernelId]->m_nodex[0]);
+        mesh1d.nodey = &(mesh1dInstances[meshKernelId]->m_nodey[0]);
+        mesh1d.edge_nodes = &(mesh1dInstances[meshKernelId]->m_edgeNodes[0]);
 
-        // mesh1d.nodex = &(mesh1dInstances[meshKernelId]->m_nodex[0]);
-        // mesh1d.nodey = &(mesh1dInstances[meshKernelId]->m_nodey[0]);
-        // mesh1d.edge_nodes = &(mesh1dInstances[meshKernelId]->m_edgeNodes[0]);
-
-        // if (mesh1dInstances[meshKernelId]->GetNumNodes() == 1)
-        // {
-        //     mesh1d.num_nodes = 0;
-        //     mesh1d.num_edges = 0;
-        // }
-        // else
-        // {
-        //     mesh1d.num_nodes = static_cast<int>(mesh1dInstances[meshKernelId]->GetNumNodes());
-        //     mesh1d.num_edges = static_cast<int>(mesh1dInstances[meshKernelId]->GetNumEdges());
-        // }
+        if (mesh1dInstances[meshKernelId]->GetNumNodes() == 1)
+        {
+            mesh1d.num_nodes = 0;
+            mesh1d.num_edges = 0;
+        }
+        else
+        {
+            mesh1d.num_nodes = static_cast<int>(mesh1dInstances[meshKernelId]->GetNumNodes());
+            mesh1d.num_edges = static_cast<int>(mesh1dInstances[meshKernelId]->GetNumEdges());
+        }
     }
 
     /// @brief Computes locations from the given mesh geometry

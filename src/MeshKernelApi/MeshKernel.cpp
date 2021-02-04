@@ -190,8 +190,7 @@ namespace meshkernelapi
             }
 
             mesh2dInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
-
-            // TODO: Add SetFlatCopies for Mesh1D
+            mesh1dInstances[meshKernelId]->SetFlatCopies();
 
             SetMesh2DGeometry(mesh2dInstances, meshKernelId, meshGeometryDimensions, meshGeometry);
             SetMesh1DGeometry(mesh1dInstances, meshKernelId, mesh1d);

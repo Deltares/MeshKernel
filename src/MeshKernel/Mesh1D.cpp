@@ -34,3 +34,40 @@
 meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
                            Projection projection) : Mesh(edges, nodes, projection){};
+
+void meshkernel::Mesh1D::SetFlatCopies()
+{
+
+    m_nodex.resize(GetNumNodes());
+    m_nodey.resize(GetNumNodes());
+
+    for (auto n = 0; n < GetNumNodes(); n++)
+    {
+        m_nodex[n] = m_nodes[n].x;
+        m_nodey[n] = m_nodes[n].y;
+    }
+
+    size_t edgeIndex = 0;
+    m_edgeNodes.resize(GetNumEdges() * 2);
+    for (auto e = 0; e < GetNumEdges(); e++)
+    {
+        m_edgeNodes[edgeIndex] = static_cast<int>(m_edges[e].first);
+        edgeIndex++;
+        m_edgeNodes[edgeIndex] = static_cast<int>(m_edges[e].second);
+        edgeIndex++;
+    }
+
+    // we always need to provide pointers to not empty memory
+    if (m_nodex.empty())
+    {
+        m_nodex.resize(1);
+    }
+    if (m_nodey.empty())
+    {
+        m_nodey.resize(1);
+    }
+    if (m_edgeNodes.empty())
+    {
+        m_edgeNodes.resize(1);
+    }
+}

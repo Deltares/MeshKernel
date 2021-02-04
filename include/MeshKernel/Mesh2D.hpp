@@ -140,9 +140,9 @@ namespace meshkernel
         void ComputeNodeMaskFromEdgeMask();
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
-        /// @param[in] faceIndex The face index
-        /// @param[out] polygonNodesCache The node cache array filled with the nodes values
-        /// @param[out] localNodeIndicesCache The consecutive node index in polygonNodesCache (0, 1, 2,...)
+        /// @param[in]  faceIndex              The face index
+        /// @param[out] polygonNodesCache      The node cache array filled with the nodes values
+        /// @param[out] localNodeIndicesCache  The consecutive node index in polygonNodesCache (0, 1, 2,...)
         /// @param[out] globalEdgeIndicesCache The edge cache array filled with the global edge indices
         void ComputeFaceClosedPolygonWithLocalMappings(size_t faceIndex,
                                                        std::vector<Point>& polygonNodesCache,
@@ -150,24 +150,24 @@ namespace meshkernel
                                                        std::vector<size_t>& globalEdgeIndicesCache) const;
 
         /// @brief For a face create a closed polygon
-        /// @param[in] faceIndex The face index
+        /// @param[in]     faceIndex         The face index
         /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
         void ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& polygonNodesCache) const;
 
         /// @brief Determine if a face is fully contained in polygon or not, based on m_nodeMask
         /// @param[in] faceIndex The face index
-        /// @returns If the face is fully contained in the polygon or not
+        /// @returns   If the face is fully contained in the polygon or not
         [[nodiscard]] bool IsFullFaceNotInPolygon(size_t faceIndex) const;
 
         /// @brief Mask all nodes in a polygon
         /// @param[in] polygons The input polygon
-        /// @param[in] inside Inside/outside option
+        /// @param[in] inside   Inside/outside option
         void MaskNodesInPolygons(const Polygons& polygons, bool inside);
 
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
-        /// @param[in,out] polygon Cache storing the face nodes
-        /// @param[in] edgesNumFaces For meshes, the number of faces sharing the edges
-        /// @returns The computed circumcenter
+        /// @param[in,out] polygon       Cache storing the face nodes
+        /// @param[in]     edgesNumFaces For meshes, the number of faces sharing the edges
+        /// @returns       The computed circumcenter
         [[nodiscard]] Point ComputeFaceCircumenter(std::vector<Point>& polygon,
                                                    const std::vector<size_t>& edgesNumFaces) const;
 

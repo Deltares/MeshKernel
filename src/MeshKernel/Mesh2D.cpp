@@ -296,7 +296,7 @@ void meshkernel::Mesh2D::SetFlatCopies(AdministrationOptions administrationOptio
         m_facesCircumcentersz[f] = 0.0;
     }
 
-    //we always need to provide pointers to not empty memory
+    // we always need to provide pointers to not empty memory
     if (m_nodex.empty())
     {
         m_nodex.resize(1);
