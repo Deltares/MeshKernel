@@ -27,8 +27,8 @@
 
 #include <map>
 #include <stdexcept>
-#include <vector>
 #include <string.h>
+#include <vector>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Constants.hpp>
@@ -124,8 +124,7 @@ namespace meshkernelapi
 
         for (const auto& index : indices)
         {
-            const auto size = index[1] - index[0] + 1;
-            if (size > 0)
+            if (const auto size = index[1] - index[0] + 1; size > 0)
             {
                 spline.AddSpline(splineCornerPoints, index[0], size);
             }
