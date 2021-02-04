@@ -301,9 +301,15 @@ namespace meshkernel
         /// @return A tuple with the intersectedFace face index and intersected  edge index
         [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
-        size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbors
+        size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
         std::vector<Point> m_polygonNodesCache; ///< Cache to store the face nodes
+
+        // vectors for communicating with the client
+        std::vector<int> m_faceNodes;              ///< For each face, the nodes
+        std::vector<double> m_facesCircumcentersx; ///< The circumcenters x-coordinate
+        std::vector<double> m_facesCircumcentersy; ///< The circumcenters y-coordinate
+        std::vector<double> m_facesCircumcentersz; ///< The circumcenters z-coordinate
 
     private:
         /// @brief Find cells recursive, works with an arbitrary number of edges

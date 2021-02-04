@@ -278,13 +278,9 @@ namespace meshkernel
         RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
 
         // vectors for communicating with the client
-        std::vector<double> m_nodex;               ///< The nodes x-coordinate
-        std::vector<double> m_nodey;               ///< The nodes y-coordinate
-        std::vector<double> m_nodez;               ///< The nodes z-coordinate
-        std::vector<int> m_edgeNodes;              ///< For each edge, the nodes
-        std::vector<int> m_faceNodes;              ///< For each face, the nodes
-        std::vector<double> m_facesCircumcentersx; ///< The circumcenters x-coordinate
-        std::vector<double> m_facesCircumcentersy; ///< The circumcenters y-coordinate
-        std::vector<double> m_facesCircumcentersz; ///< The circumcenters z-coordinate
+        std::vector<int> m_edgeNodes; ///< For each edge, the index to the nodes
+        std::vector<double> m_nodex;  ///< The nodes x-coordinate
+        std::vector<double> m_nodey;  ///< The nodes y-coordinate
+        std::vector<double> m_nodez;  ///< The nodes z-coordinate
     };
 } // namespace meshkernel
