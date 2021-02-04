@@ -554,6 +554,7 @@ namespace meshkernelapi
         ///
         /// \see meshkernel::Contacts::ComputeSingleContacts
         /// @param[in]  meshKernelId  The id of the mesh state
+        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
         /// @param[in]  polygons      The polygons selecting the area where the 1d-2d contacts will be generated.
         /// @param[out] contacts      The computed contacts
         /// @return                   Error code (0 Successful)
@@ -566,6 +567,7 @@ namespace meshkernelapi
         ///
         /// \see meshkernel::Contacts::ComputeMultipleContacts
         /// @param[in]  meshKernelId  The id of the mesh state
+        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
         /// @param[out] contacts      The computed contacts
         /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId, int** oneDNodeMask, Contacts& contacts);
@@ -574,6 +576,7 @@ namespace meshkernelapi
         ///
         /// \see meshkernel::Contacts::ComputeContactsWithPolygons
         /// @param[in]  meshKernelId  The id of the mesh state
+        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
         /// @param[in]  polygons      The polygons to connect
         /// @param[out] contacts      The computed contacts
         /// @return                   Error code (0 Successful)
@@ -586,6 +589,7 @@ namespace meshkernelapi
         ///
         /// \see meshkernel::Contacts::ComputeContactsWithPoints
         /// @param[in]  meshKernelId  The id of the mesh state
+        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
         /// @param[in]  points        The points selecting the faces to connect
         /// @param[out] contacts      The computed contacts
         /// @return                   Error code (0 Successful)
@@ -598,6 +602,7 @@ namespace meshkernelapi
         ///
         /// \see meshkernel::Contacts::ComputeBoundaryContacts
         /// @param[in]  meshKernelId The id of the mesh state.
+        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
         /// @param[in]  polygons     The points selecting the faces to connect.
         /// @param[in]  searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
         /// @param[out] contacts     The computed contacts
