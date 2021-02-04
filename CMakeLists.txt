@@ -17,7 +17,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_FLAGS_RELEASE
         "-g -O2"
         CACHE STRING "List of C++ compiler flags for a Release build")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -std=c++17")
   endif(WIN32)
 
   # Disable compiler specific extensions

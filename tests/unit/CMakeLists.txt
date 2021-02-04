@@ -7,9 +7,9 @@ target_link_libraries(
   MeshKernelUnitTests PRIVATE MeshKernelStatic UtilsStatic ${Boost_LIBRARIES}
                               triangle gtest_main)
  
-if(UNIX)
-   # Link against libdl	  
-   set_target_properties (MeshKernelUnitTests PROPERTIES LINK_FLAGS  "-ldl")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU") 
+   set_target_properties (MeshKernelUnitTests PROPERTIES COMPILE_FLAGS  "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++")
+   set_target_properties (MeshKernelUnitTests PROPERTIES LINK_FLAGS  "-ldl -lgcov --coverage")
 endif()
 
 # If you register a test, then ctest and make test will run it. You can also run
