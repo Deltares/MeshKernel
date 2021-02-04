@@ -49,8 +49,8 @@ namespace meshkernel
         Contacts() = default;
 
         /// @brief Constructor taking the 1d and 2d meshes to connect
-        /// @param[in] mesh1d The mesh1d to connect
-        /// @param[in] mesh2d The mesh2d to connect
+        /// @param[in] mesh1d       The mesh1d to connect
+        /// @param[in] mesh2d       The mesh2d to connect
         /// @param[in] oneDNodeMask The mask used for masking 1d nodes
         Contacts(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh2D> mesh2d, const std::vector<bool>& oneDNodeMask);
 
@@ -69,6 +69,7 @@ namespace meshkernel
         /// for example when the 1d part represents a river and the 2d part the river banks.
         /// The 1d nodes overlapping the 2d mesh are directly connected to the face including them.
         /// \image html ComputeSingleContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeSingleContacts algorithm. Contacts are shown in red."
+        ///
         /// @param[in] polygons The polygons selecting the area where the 1d-2d contacts will be generated.
         void ComputeSingleContacts(const Polygons& polygons);
 
@@ -93,6 +94,7 @@ namespace meshkernel
         /// - Find the 2d face within each polygon closest to a 1d node.
         /// - Per polygon create one contact from the 2d circumcenters to the 1d node.
         /// \image html ComputeContactsWithPolygons.svg  "1d mesh connecting to 2d mesh using the ComputeContactsWithPolygons algorithm. Contacts are shown in red. Polygons in green."
+        ///
         /// @param[in] polygons The polygons to connect (Polygons class can have multiple polygons)
         void ComputeContactsWithPolygons(const Polygons& polygons);
 
@@ -100,8 +102,9 @@ namespace meshkernel
         ///
         /// With this algorithm, each 2d face containing a point is connected to the 1d node closest to point itself.
         /// The search of the 2d faces and the closest 1d nodes uses RTrees.
-        /// @param[in] points The points selecting the faces to connect
         /// \image html ComputeContactsWithPoints.jpg  "2d faces containing the input points connecting to the 1d mesh. Contacts are shown in red and the input points in blue."
+        ///
+        /// @param[in] points The points selecting the faces to connect
         void ComputeContactsWithPoints(const std::vector<Point>& points);
 
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
@@ -112,7 +115,8 @@ namespace meshkernel
         /// - Generate the 1d-2d contacts.
         /// \image html ComputeBoundaryContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeBoundaryContacts algorithm. Contacts are shown in red.
         /// The mesh 2d boundary faces are connected to the closest 1d nodes."
-        /// @param[in] polygons The polygons selecting the area where the 1d-2d contacts will be generated.
+        ///
+        /// @param[in] polygons     The polygons selecting the area where the 1d-2d contacts will be generated.
         /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
         void ComputeBoundaryContacts(const Polygons& polygons, double searchRadius);
 

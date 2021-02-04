@@ -85,13 +85,13 @@ namespace meshkernel
         };
 
         /// @brief Interpolation based on averaging
-        /// @param[in] mesh The input mesh
-        /// @param[in] samples The samples with x,y locations and values
-        /// @param[in] method The averaging method to use
-        /// @param[in] locationType The location type (faces, edges, nodes).
-        /// @param[in] relativeSearchRadius The relative search radius, used to enlarge the search area when looking for samples.
-        /// @param[in] useClosestSampleIfNoneAvailable If no samples are found use the closest one.
-        /// @param[in] subtractSampleValues For some algorithms (e.g. refinement based on levels) we need to subtract 1 to the sample value.
+        /// @param[in] mesh                            The input mesh
+        /// @param[in] samples                         The samples with x,y locations and values
+        /// @param[in] method                          The averaging method to use
+        /// @param[in] locationType                    The location type (faces, edges, nodes).
+        /// @param[in] relativeSearchRadius            The relative search radius, used to enlarge the search area when looking for samples.
+        /// @param[in] useClosestSampleIfNoneAvailable If no samples are found, use the closest one.
+        /// @param[in] subtractSampleValues            For some algorithms (e.g. refinement based on levels) we need to subtract 1 to the sample value.
         explicit AveragingInterpolation(std::shared_ptr<Mesh2D> mesh,
                                         std::vector<Sample>& samples,
                                         Method method,
@@ -120,15 +120,15 @@ namespace meshkernel
                               double& result);
 
         /// @brief Compute the interpolated results on designed location
-        /// @return the interpolated results
+        /// @return The interpolated results
         [[nodiscard]] std::vector<double> ComputeOnLocations();
 
         /// @brief Compute the interpolated results on faces
-        /// @return the interpolated results
+        /// @return The interpolated results
         [[nodiscard]] std::vector<double> ComputeOnFaces();
 
         /// @brief Compute the interpolated results on nodes or edges
-        /// @return the interpolated results
+        /// @return The interpolated results
         [[nodiscard]] std::vector<double> ComputeOnNodesOrEdges();
 
         /// @brief Decreases the values of samples
