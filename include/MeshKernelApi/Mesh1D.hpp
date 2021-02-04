@@ -51,9 +51,11 @@ namespace meshkernelapi
         /// @brief The y-coordinates of the mesh faces mass centers
         double* facey = nullptr;
         /// @brief The number of 1d nodes
-        int numnode;
+        int num_nodes;
         /// @brief The number of 1d edges
-        int numedge;
+        int num_edges;
+        /// @brief The number of 1d faces
+        int num_faces;
     };
 
 } // namespace meshkernelapi

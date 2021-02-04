@@ -34,6 +34,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -135,8 +136,8 @@ namespace meshkernelapi
         }
     }
 
-    /// @brief Sets meshgeometry for a certain mesh
-    /// @param[in]  mesh2dInstances          The mesh instances
+    /// @brief Sets a meshkernelapi::Mesh2D instance from a meshkernel::Mesh2D instance
+    /// @param[in]  mesh2dInstances        The mesh instances
     /// @param[in]  meshKernelId           The id to the mesh which should be set
     /// @param[out] meshGeometryDimensions The dimensions of the mesh geometry
     /// @param[out] meshGeometry           The mesh geometry
@@ -171,6 +172,18 @@ namespace meshkernelapi
             meshGeometryDimensions.numnode = static_cast<int>(mesh2dInstances[meshKernelId]->GetNumNodes());
             meshGeometryDimensions.numedge = static_cast<int>(mesh2dInstances[meshKernelId]->GetNumEdges());
         }
+    }
+
+    /// @brief Sets a meshkernelapi::Mesh1D instance from a meshkernel::Mesh1D instance
+    /// @param[in]  mesh1dInstances  The mesh instances
+    /// @param[in]  meshKernelId     The id to the mesh which should be set
+    /// @param[out] mesh1d           The mesh geometry
+    static void SetMesh1DGeometry(std::vector<std::shared_ptr<meshkernel::Mesh1D>> mesh1dInstances,
+                                  int meshKernelId,
+                                  meshkernelapi::Mesh1D& mesh1d)
+    {
+
+        // TODO
     }
 
     /// @brief Computes locations from the given mesh geometry

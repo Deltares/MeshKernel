@@ -301,16 +301,6 @@ namespace meshkernel
         /// @return A tuple with the intersectedFace face index and intersected  edge index
         [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
-        // vectors for communicating with the client
-        std::vector<double> m_nodex;               ///< The nodes x-coordinate
-        std::vector<double> m_nodey;               ///< The nodes y-coordinate
-        std::vector<double> m_nodez;               ///< The nodes z-coordinate
-        std::vector<int> m_edgeNodes;              ///< For each edge, the nodes
-        std::vector<int> m_faceNodes;              ///< For each face, the nodes
-        std::vector<double> m_facesCircumcentersx; ///< The circumcenters x-coordinate
-        std::vector<double> m_facesCircumcentersy; ///< The circumcenters y-coordinate
-        std::vector<double> m_facesCircumcentersz; ///< The circumcenters z-coordinate
-
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbors
 
         std::vector<Point> m_polygonNodesCache; ///< Cache to store the face nodes

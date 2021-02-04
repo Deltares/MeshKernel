@@ -146,9 +146,9 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            const auto edges1d = meshkernel::ConvertToEdgeNodesVector(mesh1d.numedge,
+            const auto edges1d = meshkernel::ConvertToEdgeNodesVector(mesh1d.num_edges,
                                                                       mesh1d.edge_nodes);
-            const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.numnode,
+            const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.num_nodes,
                                                                   mesh1d.nodex,
                                                                   mesh1d.nodey);
 
@@ -192,7 +192,7 @@ namespace meshkernelapi
             mesh2dInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
 
             SetMesh2DGeometry(mesh2dInstances, meshKernelId, meshGeometryDimensions, meshGeometry);
-            // TODO: Add 1d
+            SetMesh1DGeometry(mesh1dInstances, meshKernelId, mesh1d);
         }
         catch (...)
         {
