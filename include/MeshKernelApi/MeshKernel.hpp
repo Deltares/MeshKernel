@@ -32,6 +32,7 @@
 #include <MeshKernelApi/GeometryList.hpp>
 #include <MeshKernelApi/InterpolationParameters.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
+#include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/MeshGeometry.hpp>
 #include <MeshKernelApi/MeshGeometryDimensions.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
@@ -85,24 +86,28 @@ namespace meshkernelapi
                                             bool invertDeletion);
 
         /// @brief Sets the grid state
-        /// @param[in] meshKernelId Id of the grid state
+        /// @param[in] meshKernelId           Id of the grid state
         /// @param[in] meshGeometryDimensions Mesh2D dimensions
-        /// @param[in] meshGeometry Mesh2D data
-        /// @param[in] isGeographic Cartesian (false) or spherical (true) mesh
-        /// @returns Error code
+        /// @param[in] meshGeometry           Mesh2D data
+        /// @param[in] mesh1d                 Mesh1D data
+        /// @param[in] isGeographic           Cartesian (false) or spherical (true) mesh
+        /// @returns                          Error code
         MKERNEL_API int mkernel_set_state(int meshKernelId,
                                           const MeshGeometryDimensions& meshGeometryDimensions,
                                           const MeshGeometry& meshGeometry,
+                                          const Mesh1D& mesh1d,
                                           bool isGeographic);
 
-        /// @brief Gets the mesh state as a <see cref="MeshGeometry"/> structure
-        /// @param[in] meshKernelId Id of the grid state
+        /// @brief Gets the mesh state as a MeshGeometry structure
+        /// @param[in]  meshKernelId           Id of the grid state
         /// @param[out] meshGeometryDimensions Mesh2D dimensions
-        /// @param[out] meshGeometry Grid data
-        /// @returns Error code
+        /// @param[out] meshGeometry           Mesh2D data
+        /// @param[out] mesh1d                 Mesh1D data
+        /// @returns                           Error code
         MKERNEL_API int mkernel_get_mesh(int meshKernelId,
                                          MeshGeometryDimensions& meshGeometryDimensions,
-                                         MeshGeometry& meshGeometry);
+                                         MeshGeometry& meshGeometry,
+                                         Mesh1D& mesh1d);
 
         /// @brief Gets the mesh faces
         /// @param[in] meshKernelId The id of the mesh state

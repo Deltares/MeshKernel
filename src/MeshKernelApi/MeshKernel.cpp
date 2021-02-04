@@ -39,6 +39,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -48,6 +49,7 @@
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
+
 #include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
 #include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
@@ -55,8 +57,9 @@
 
 namespace meshkernelapi
 {
-    // The vector containing the mesh instances
-    static std::vector<std::shared_ptr<meshkernel::Mesh2D>> meshInstances;
+    // The vectors containing the mesh instances
+    static std::vector<std::shared_ptr<meshkernel::Mesh2D>> mesh2dInstances;
+    static std::vector<std::shared_ptr<meshkernel::Mesh1D>> mesh1dInstances;
 
     // For interactivity
     static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
@@ -86,19 +89,21 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_new_mesh(int& meshKernelId)
     {
-        meshKernelId = int(meshInstances.size());
-        meshInstances.emplace_back(std::make_shared<meshkernel::Mesh2D>());
+        meshKernelId = int(mesh2dInstances.size());
+        mesh2dInstances.emplace_back(std::make_shared<meshkernel::Mesh2D>());
+        mesh1dInstances.emplace_back(std::make_shared<meshkernel::Mesh1D>());
         return Success;
     };
 
     MKERNEL_API int mkernel_deallocate_state(int meshKernelId)
     {
-        if (meshKernelId < 0 && meshKernelId >= meshInstances.size())
+        if (meshKernelId < 0 && meshKernelId >= mesh2dInstances.size())
         {
             return -1;
         }
 
-        meshInstances.erase(meshInstances.begin() + meshKernelId);
+        mesh2dInstances.erase(mesh2dInstances.begin() + meshKernelId);
+        mesh1dInstances.erase(mesh1dInstances.begin() + meshKernelId);
         return 0;
     }
 
@@ -107,19 +112,19 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 return exitCode;
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
-            meshInstances[meshKernelId]->DeleteMesh(polygon, deletionOption, invertDeletion);
+            const meshkernel::Polygons polygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
+            mesh2dInstances[meshKernelId]->DeleteMesh(polygon, deletionOption, invertDeletion);
         }
         catch (...)
         {
@@ -128,28 +133,41 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_set_state(int meshKernelId, const MeshGeometryDimensions& meshGeometryDimensions, const MeshGeometry& meshGeometry, bool isGeographic)
+    MKERNEL_API int mkernel_set_state(int meshKernelId,
+                                      const MeshGeometryDimensions& meshGeometryDimensions,
+                                      const MeshGeometry& meshGeometry,
+                                      const Mesh1D& mesh1d,
+                                      bool isGeographic)
     {
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
+            const auto edges1d = meshkernel::ConvertToEdgeNodesVector(mesh1d.numedge,
+                                                                      mesh1d.edge_nodes);
+            const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.numnode,
+                                                                  mesh1d.nodex,
+                                                                  mesh1d.nodey);
 
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
+            const auto edges2d = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge,
+                                                                      meshGeometry.edge_nodes);
+            const auto nodes2d = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode,
+                                                                  meshGeometry.nodex,
+                                                                  meshGeometry.nodey);
 
             // spherical or cartesian
-            if (isGeographic)
-            {
-                meshInstances[meshKernelId] = std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::spherical);
-            }
-            else
-            {
-                meshInstances[meshKernelId] = std::make_shared<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
-            }
+            meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
+
+            mesh1dInstances[meshKernelId] = std::make_shared<meshkernel::Mesh1D>(edges1d,
+                                                                                 nodes1d,
+                                                                                 projection);
+
+            mesh2dInstances[meshKernelId] = std::make_shared<meshkernel::Mesh2D>(edges2d,
+                                                                                 nodes2d,
+                                                                                 projection);
         }
         catch (...)
         {
@@ -158,19 +176,23 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    MKERNEL_API int mkernel_get_mesh(int meshKernelId,
+                                     MeshGeometryDimensions& meshGeometryDimensions,
+                                     MeshGeometry& meshGeometry,
+                                     Mesh1D& mesh1d)
     {
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
+            mesh2dInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
 
-            SetMeshGeometry(meshInstances, meshKernelId, meshGeometryDimensions, meshGeometry);
+            SetMesh2DGeometry(mesh2dInstances, meshKernelId, meshGeometryDimensions, meshGeometry);
+            // TODO: Add 1d
         }
         catch (...)
         {
@@ -184,13 +206,13 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            meshInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+            mesh2dInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
-            SetMeshGeometry(meshInstances, meshKernelId, meshGeometryDimensions, meshGeometry);
+            SetMesh2DGeometry(mesh2dInstances, meshKernelId, meshGeometryDimensions, meshGeometry);
         }
         catch (...)
         {
@@ -204,12 +226,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            const auto hangingEdges = meshInstances[meshKernelId]->GetHangingEdges();
+            const auto hangingEdges = mesh2dInstances[meshKernelId]->GetHangingEdges();
             numHangingEdges = hangingEdges.size();
         }
         catch (...)
@@ -224,11 +246,11 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            const auto hangingEdges = meshInstances[meshKernelId]->GetHangingEdges();
+            const auto hangingEdges = mesh2dInstances[meshKernelId]->GetHangingEdges();
             for (auto i = 0; i < hangingEdges.size(); ++i)
             {
                 *(hangingEdgesIndices)[i] = hangingEdges[i];
@@ -246,11 +268,11 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            meshInstances[meshKernelId]->DeleteHangingEdges();
+            mesh2dInstances[meshKernelId]->DeleteHangingEdges();
         }
         catch (...)
         {
@@ -268,11 +290,11 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 return exitCode;
             }
@@ -285,7 +307,7 @@ namespace meshkernelapi
                 nodes[i].y = polygons.yCoordinates[i];
             }
 
-            auto meshKernelPolygons = std::make_shared<meshkernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
+            auto meshKernelPolygons = std::make_shared<meshkernel::Polygons>(nodes, mesh2dInstances[meshKernelId]->m_projection);
 
             // build land boundary
             std::vector<meshkernel::Point> landBoundariesPoints(landBoundaries.numberOfCoordinates);
@@ -295,11 +317,11 @@ namespace meshkernelapi
                 landBoundariesPoints[i].y = landBoundaries.yCoordinates[i];
             }
 
-            const auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshInstances[meshKernelId]);
-            const auto smoother = std::make_shared<meshkernel::Smoother>(meshInstances[meshKernelId]);
-            const auto meshKernelLandBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesPoints, meshInstances[meshKernelId], meshKernelPolygons);
+            const auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh2dInstances[meshKernelId]);
+            const auto smoother = std::make_shared<meshkernel::Smoother>(mesh2dInstances[meshKernelId]);
+            const auto meshKernelLandBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundariesPoints, mesh2dInstances[meshKernelId], meshKernelPolygons);
 
-            meshkernel::OrthogonalizationAndSmoothing ortogonalization(meshInstances[meshKernelId],
+            meshkernel::OrthogonalizationAndSmoothing ortogonalization(mesh2dInstances[meshKernelId],
                                                                        smoother,
                                                                        orthogonalizer,
                                                                        meshKernelPolygons,
@@ -325,12 +347,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 return exitCode;
             }
@@ -351,12 +373,12 @@ namespace meshkernelapi
                 landBoundaries[i].y = geometryListLandBoundaries.yCoordinates[i];
             }
 
-            auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(meshInstances[meshKernelId]);
-            auto smoother = std::make_shared<meshkernel::Smoother>(meshInstances[meshKernelId]);
-            auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshInstances[meshKernelId]->m_projection);
-            auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, meshInstances[meshKernelId], polygon);
+            auto orthogonalizer = std::make_shared<meshkernel::Orthogonalizer>(mesh2dInstances[meshKernelId]);
+            auto smoother = std::make_shared<meshkernel::Smoother>(mesh2dInstances[meshKernelId]);
+            auto polygon = std::make_shared<meshkernel::Polygons>(nodes, mesh2dInstances[meshKernelId]->m_projection);
+            auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, mesh2dInstances[meshKernelId], polygon);
 
-            auto orthogonalizationInstance = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshInstances[meshKernelId],
+            auto orthogonalizationInstance = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(mesh2dInstances[meshKernelId],
                                                                                                          smoother,
                                                                                                          orthogonalizer,
                                                                                                          polygon,
@@ -379,12 +401,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 return exitCode;
             }
@@ -403,12 +425,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 return exitCode;
             }
@@ -427,12 +449,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 return exitCode;
             }
@@ -451,12 +473,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 return exitCode;
             }
@@ -475,17 +497,17 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 return exitCode;
             }
 
-            const auto result = meshInstances[meshKernelId]->GetOrthogonality();
+            const auto result = mesh2dInstances[meshKernelId]->GetOrthogonality();
 
             for (auto i = 0; i < geometryList.numberOfCoordinates; ++i)
             {
@@ -504,17 +526,17 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 return exitCode;
             }
 
-            const auto result = meshInstances[meshKernelId]->GetSmoothness();
+            const auto result = mesh2dInstances[meshKernelId]->GetSmoothness();
 
             for (auto i = 0; i < geometryList.numberOfCoordinates; ++i)
             {
@@ -597,19 +619,19 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto result = ConvertGeometryListToPointVector(geometryList);
 
-            const meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(result, mesh2dInstances[meshKernelId]->m_projection);
 
             meshkernel::Mesh2D mesh;
             mesh.MakeMesh(makeGridParameters, polygon);
 
-            *meshInstances[meshKernelId] += mesh;
+            *mesh2dInstances[meshKernelId] += mesh;
         }
         catch (...)
         {
@@ -623,19 +645,19 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             auto result = ConvertGeometryListToPointVector(disposableGeometryListIn);
 
-            const meshkernel::Polygons polygon(result, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(result, mesh2dInstances[meshKernelId]->m_projection);
 
             // generate samples in all polygons
             const auto generatedPoints = polygon.ComputePointsInPolygons();
 
-            const meshkernel::Mesh2D mesh(generatedPoints[0], polygon, meshInstances[meshKernelId]->m_projection);
-            *meshInstances[meshKernelId] += mesh;
+            const meshkernel::Mesh2D mesh(generatedPoints[0], polygon, mesh2dInstances[meshKernelId]->m_projection);
+            *mesh2dInstances[meshKernelId] += mesh;
         }
         catch (...)
         {
@@ -649,15 +671,15 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             auto samplePoints = ConvertGeometryListToPointVector(geometryList);
 
             meshkernel::Polygons polygon;
-            const meshkernel::Mesh2D mesh(samplePoints, polygon, meshInstances[meshKernelId]->m_projection);
-            *meshInstances[meshKernelId] += mesh;
+            const meshkernel::Mesh2D mesh(samplePoints, polygon, mesh2dInstances[meshKernelId]->m_projection);
+            *mesh2dInstances[meshKernelId] += mesh;
         }
         catch (...)
         {
@@ -671,13 +693,13 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
+            const auto meshBoundaryPolygon = mesh2dInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
 
             ConvertPointVectorToGeometryList(meshBoundaryPolygon, geometryList);
         }
@@ -693,13 +715,13 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
+            const auto meshBoundaryPolygon = mesh2dInstances[meshKernelId]->MeshBoundaryToPolygon(polygonNodes);
             numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size() - 1); // last value is a separator
         }
         catch (...)
@@ -714,13 +736,13 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
             ConvertPointVectorToGeometryList(refinedPolygon, geometryListOut);
@@ -737,14 +759,14 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
 
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
@@ -762,16 +784,16 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
 
-            meshInstances[meshKernelId]->MergeNodesInPolygon(polygon);
+            mesh2dInstances[meshKernelId]->MergeNodesInPolygon(polygon);
         }
         catch (...)
         {
@@ -785,11 +807,11 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            meshInstances[meshKernelId]->MergeTwoNodes(startNode, endNode);
+            mesh2dInstances[meshKernelId]->MergeTwoNodes(startNode, endNode);
         }
         catch (...)
         {
@@ -803,22 +825,22 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
 
             const bool selectInside = inside == 1 ? true : false;
-            meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
+            mesh2dInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
 
             int index = 0;
-            for (auto i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
+            for (auto i = 0; i < mesh2dInstances[meshKernelId]->GetNumNodes(); ++i)
             {
-                if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
+                if (mesh2dInstances[meshKernelId]->m_nodeMask[i] > 0)
                 {
                     (*selectedNodes)[index] = i;
                     index++;
@@ -837,21 +859,21 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
 
             const bool selectInside = inside == 1 ? true : false;
-            meshInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
+            mesh2dInstances[meshKernelId]->MaskNodesInPolygons(polygon, selectInside);
 
             numberOfMeshNodes = 0;
-            for (auto i = 0; i < meshInstances[meshKernelId]->GetNumNodes(); ++i)
+            for (auto i = 0; i < mesh2dInstances[meshKernelId]->GetNumNodes(); ++i)
             {
-                if (meshInstances[meshKernelId]->m_nodeMask[i] > 0)
+                if (mesh2dInstances[meshKernelId]->m_nodeMask[i] > 0)
                 {
                     numberOfMeshNodes++;
                 }
@@ -869,12 +891,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            new_edge_index = meshInstances[meshKernelId]->ConnectNodes(startNode, endNode);
+            new_edge_index = mesh2dInstances[meshKernelId]->ConnectNodes(startNode, endNode);
         }
         catch (...)
         {
@@ -888,15 +910,15 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 //create a valid instance, by default cartesian
-                *meshInstances[meshKernelId] = meshkernel::Mesh2D();
-                meshInstances[meshKernelId]->m_projection = meshkernel::Projection::cartesian;
+                *mesh2dInstances[meshKernelId] = meshkernel::Mesh2D();
+                mesh2dInstances[meshKernelId]->m_projection = meshkernel::Projection::cartesian;
             }
 
             const meshkernel::Point newNode{xCoordinate, yCoordinate};
-            nodeIndex = meshInstances[meshKernelId]->InsertNode(newNode);
+            nodeIndex = mesh2dInstances[meshKernelId]->InsertNode(newNode);
         }
         catch (...)
         {
@@ -910,12 +932,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            meshInstances[meshKernelId]->DeleteNode(nodeIndex);
+            mesh2dInstances[meshKernelId]->DeleteNode(nodeIndex);
         }
         catch (...)
         {
@@ -929,14 +951,14 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto newPoint = ConvertGeometryListToPointVector(geometryListIn);
 
-            meshInstances[meshKernelId]->MoveNode(newPoint[0], nodeIndex);
+            mesh2dInstances[meshKernelId]->MoveNode(newPoint[0], nodeIndex);
         }
         catch (...)
         {
@@ -950,16 +972,16 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto newPoint = ConvertGeometryListToPointVector(geometryListIn);
 
-            const auto edgeIndex = meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
+            const auto edgeIndex = mesh2dInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]);
 
-            meshInstances[meshKernelId]->DeleteEdge(edgeIndex);
+            mesh2dInstances[meshKernelId]->DeleteEdge(edgeIndex);
         }
         catch (...)
         {
@@ -973,14 +995,14 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto newPoint = ConvertGeometryListToPointVector(geometryListIn);
 
-            edgeIndex = static_cast<int>(meshInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]));
+            edgeIndex = static_cast<int>(mesh2dInstances[meshKernelId]->FindEdgeCloseToAPoint(newPoint[0]));
         }
         catch (...)
         {
@@ -994,14 +1016,14 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
 
             const auto newPolygon = polygon.OffsetCopy(distance, innerPolygon);
 
@@ -1019,13 +1041,13 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
             const auto newPolygon = polygon.OffsetCopy(distance, innerPolygon);
 
             numberOfPolygonNodes = newPolygon.GetNumNodes();
@@ -1045,11 +1067,11 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
@@ -1070,7 +1092,7 @@ namespace meshkernelapi
             const bool refineOutsideFace = sampleRefineParameters.AccountForSamplesOutside == 1 ? true : false;
             const bool transformSamples = sampleRefineParameters.RefinementType == 3 ? true : false;
 
-            const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(meshInstances[meshKernelId],
+            const auto averaging = std::make_shared<meshkernel::AveragingInterpolation>(mesh2dInstances[meshKernelId],
                                                                                         samples,
                                                                                         averagingMethod,
                                                                                         meshkernel::MeshLocations::Faces,
@@ -1078,7 +1100,7 @@ namespace meshkernelapi
                                                                                         refineOutsideFace,
                                                                                         transformSamples);
 
-            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], averaging, sampleRefineParameters, interpolationParameters);
+            meshkernel::MeshRefinement meshRefinement(mesh2dInstances[meshKernelId], averaging, sampleRefineParameters, interpolationParameters);
             meshRefinement.Compute();
         }
         catch (...)
@@ -1093,20 +1115,20 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
             auto points = ConvertGeometryListToPointVector(geometryList);
 
-            const meshkernel::Polygons polygon(points, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(points, mesh2dInstances[meshKernelId]->m_projection);
 
-            meshkernel::MeshRefinement meshRefinement(meshInstances[meshKernelId], polygon, interpolationParameters);
+            meshkernel::MeshRefinement meshRefinement(mesh2dInstances[meshKernelId], polygon, interpolationParameters);
             meshRefinement.Compute();
         }
         catch (...)
@@ -1121,18 +1143,18 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            nodeIndex = static_cast<int>(meshInstances[meshKernelId]->FindNodeCloseToAPoint(polygonPoints[0], searchRadius));
+            nodeIndex = static_cast<int>(mesh2dInstances[meshKernelId]->FindNodeCloseToAPoint(polygonPoints[0], searchRadius));
         }
         catch (...)
         {
@@ -1146,11 +1168,11 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            if (meshInstances[meshKernelId]->GetNumNodes() <= 0)
+            if (mesh2dInstances[meshKernelId]->GetNumNodes() <= 0)
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh has no nodes.");
             }
@@ -1162,10 +1184,10 @@ namespace meshkernelapi
 
             auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
 
-            const auto nodeIndex = meshInstances[meshKernelId]->FindNodeCloseToAPoint(polygonPoints[0], searchRadius);
+            const auto nodeIndex = mesh2dInstances[meshKernelId]->FindNodeCloseToAPoint(polygonPoints[0], searchRadius);
 
             // Set the node coordinate
-            const auto node = meshInstances[meshKernelId]->m_nodes[nodeIndex];
+            const auto node = mesh2dInstances[meshKernelId]->m_nodes[nodeIndex];
             std::vector<meshkernel::Point> pointVector;
             pointVector.emplace_back(node);
             ConvertPointVectorToGeometryList(pointVector, geometryListOut);
@@ -1185,20 +1207,20 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             // use the default constructor, no instance present
-            const auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
+            const auto spline = std::make_shared<meshkernel::Splines>(mesh2dInstances[meshKernelId]->m_projection);
             SetSplines(geometryListIn, *spline);
 
             meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splinesToCurvilinearParameters);
 
             meshkernel::CurvilinearGrid curvilinearGrid;
             curvilinearGridFromSplines.Compute(curvilinearGrid);
-            *meshInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+            *mesh2dInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, mesh2dInstances[meshKernelId]->m_projection);
         }
         catch (...)
         {
@@ -1212,12 +1234,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            auto spline = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
+            auto spline = std::make_shared<meshkernel::Splines>(mesh2dInstances[meshKernelId]->m_projection);
             SetSplines(geometryList, *spline);
 
             auto curvilinearGridFromSplines = std::make_shared<meshkernel::CurvilinearGridFromSplines>(spline, curvilinearParameters, splinesToCurvilinearParameters);
@@ -1238,7 +1260,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
@@ -1257,7 +1279,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
@@ -1265,7 +1287,7 @@ namespace meshkernelapi
             meshkernel::CurvilinearGrid curvilinearGrid;
             curvilinearGridFromSplinesInstances[meshKernelId]->ComputeCurvilinearGrid(curvilinearGrid);
 
-            *meshInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+            *mesh2dInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, mesh2dInstances[meshKernelId]->m_projection);
         }
         catch (...)
         {
@@ -1279,7 +1301,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
@@ -1297,14 +1319,14 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
             auto polygonNodes = ConvertGeometryListToPointVector(polygon);
 
             auto points = ConvertGeometryListToPointVector(pointsNative);
-            const meshkernel::Polygons localPolygon(polygonNodes, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons localPolygon(polygonNodes, mesh2dInstances[meshKernelId]->m_projection);
 
             for (auto i = 0; i < points.size(); i++)
             {
@@ -1325,7 +1347,7 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
@@ -1334,11 +1356,11 @@ namespace meshkernelapi
             auto polygon = std::make_shared<meshkernel::Polygons>();
 
             std::vector<meshkernel::Point> landBoundary;
-            const auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, meshInstances[meshKernelId], polygon);
+            const auto landBoundaries = std::make_shared<meshkernel::LandBoundaries>(landBoundary, mesh2dInstances[meshKernelId], polygon);
 
             const bool triangulateFaces = isTriangulationRequired == 0 ? false : true;
             const bool projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
-            const meshkernel::FlipEdges flipEdges(meshInstances[meshKernelId], landBoundaries, triangulateFaces, projectToLandBoundary);
+            const meshkernel::FlipEdges flipEdges(mesh2dInstances[meshKernelId], landBoundaries, triangulateFaces, projectToLandBoundary);
 
             flipEdges.Compute();
         }
@@ -1356,13 +1378,13 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             // Use the default constructor, no instance present
-            const auto meshKernelSplines = std::make_shared<meshkernel::Splines>(meshInstances[meshKernelId]->m_projection);
+            const auto meshKernelSplines = std::make_shared<meshkernel::Splines>(mesh2dInstances[meshKernelId]->m_projection);
             SetSplines(splines, *meshKernelSplines);
 
             // Create algorithm and set the splines
@@ -1373,7 +1395,7 @@ namespace meshkernelapi
             curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
 
             // Transform and set mesh pointer
-            *meshInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+            *mesh2dInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, mesh2dInstances[meshKernelId]->m_projection);
         }
         catch (...)
         {
@@ -1392,21 +1414,21 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
 
-            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
 
             meshkernel::CurvilinearGrid curvilinearGrid;
             const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
             curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, useFourthSide, curvilinearGrid);
 
             // convert to curvilinear grid and add it to the current mesh
-            *meshInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+            *mesh2dInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, mesh2dInstances[meshKernelId]->m_projection);
         }
         catch (...)
         {
@@ -1424,21 +1446,21 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
-            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
 
             meshkernel::CurvilinearGrid curvilinearGrid;
             const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
             curvilinearGridFromPolygon.Compute(firstNode, secondNode, thirdNode, curvilinearGrid);
 
             // convert to curvilinear grid and add it to the current mesh
-            *meshInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, meshInstances[meshKernelId]->m_projection);
+            *mesh2dInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, mesh2dInstances[meshKernelId]->m_projection);
         }
         catch (...)
         {
@@ -1452,12 +1474,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
-            const auto edgesCrossingSmallFlowEdges = meshInstances[meshKernelId]->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
-            const auto smallFlowEdgeCenters = meshInstances[meshKernelId]->GetFlowEdgesCenters(edgesCrossingSmallFlowEdges);
+            const auto edgesCrossingSmallFlowEdges = mesh2dInstances[meshKernelId]->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
+            const auto smallFlowEdgeCenters = mesh2dInstances[meshKernelId]->GetFlowEdgesCenters(edgesCrossingSmallFlowEdges);
 
             numSmallFlowEdges = static_cast<int>(smallFlowEdgeCenters.size());
         }
@@ -1473,13 +1495,13 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            const auto edgesCrossingSmallFlowEdges = meshInstances[meshKernelId]->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
-            const auto smallFlowEdgeCenters = meshInstances[meshKernelId]->GetFlowEdgesCenters(edgesCrossingSmallFlowEdges);
+            const auto edgesCrossingSmallFlowEdges = mesh2dInstances[meshKernelId]->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
+            const auto smallFlowEdgeCenters = mesh2dInstances[meshKernelId]->GetFlowEdgesCenters(edgesCrossingSmallFlowEdges);
 
             ConvertPointVectorToGeometryList(smallFlowEdgeCenters, result);
         }
@@ -1508,12 +1530,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            const auto obtuseTriangles = meshInstances[meshKernelId]->GetObtuseTrianglesCenters();
+            const auto obtuseTriangles = mesh2dInstances[meshKernelId]->GetObtuseTrianglesCenters();
 
             numObtuseTriangles = static_cast<int>(obtuseTriangles.size());
         }
@@ -1529,12 +1551,12 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            const auto obtuseTriangles = meshInstances[meshKernelId]->GetObtuseTrianglesCenters();
+            const auto obtuseTriangles = mesh2dInstances[meshKernelId]->GetObtuseTrianglesCenters();
 
             ConvertPointVectorToGeometryList(obtuseTriangles, result);
         }
@@ -1550,13 +1572,13 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            meshInstances[meshKernelId]->DeleteSmallFlowEdges(smallFlowEdgesThreshold);
-            meshInstances[meshKernelId]->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
+            mesh2dInstances[meshKernelId]->DeleteSmallFlowEdges(smallFlowEdgesThreshold);
+            mesh2dInstances[meshKernelId]->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
         }
         catch (...)
         {
@@ -1572,13 +1594,13 @@ namespace meshkernelapi
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= meshInstances.size())
+            if (meshKernelId >= mesh2dInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
-            const meshkernel::Polygons meshKernelPolygons(polygonPoints, meshInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons meshKernelPolygons(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
         }
         catch (...)
         {

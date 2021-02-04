@@ -136,40 +136,40 @@ namespace meshkernelapi
     }
 
     /// @brief Sets meshgeometry for a certain mesh
-    /// @param[in]  meshInstances          The mesh instances
+    /// @param[in]  mesh2dInstances          The mesh instances
     /// @param[in]  meshKernelId           The id to the mesh which should be set
     /// @param[out] meshGeometryDimensions The dimensions of the mesh geometry
     /// @param[out] meshGeometry           The mesh geometry
-    static void SetMeshGeometry(std::vector<std::shared_ptr<meshkernel::Mesh2D>> meshInstances,
-                                int meshKernelId,
-                                MeshGeometryDimensions& meshGeometryDimensions,
-                                MeshGeometry& meshGeometry)
+    static void SetMesh2DGeometry(std::vector<std::shared_ptr<meshkernel::Mesh2D>> mesh2dInstances,
+                                  int meshKernelId,
+                                  MeshGeometryDimensions& meshGeometryDimensions,
+                                  MeshGeometry& meshGeometry)
     {
 
-        meshGeometry.nodex = &(meshInstances[meshKernelId]->m_nodex[0]);
-        meshGeometry.nodey = &(meshInstances[meshKernelId]->m_nodey[0]);
-        meshGeometry.nodez = &(meshInstances[meshKernelId]->m_nodez[0]);
-        meshGeometry.edge_nodes = &(meshInstances[meshKernelId]->m_edgeNodes[0]);
+        meshGeometry.nodex = &(mesh2dInstances[meshKernelId]->m_nodex[0]);
+        meshGeometry.nodey = &(mesh2dInstances[meshKernelId]->m_nodey[0]);
+        meshGeometry.nodez = &(mesh2dInstances[meshKernelId]->m_nodez[0]);
+        meshGeometry.edge_nodes = &(mesh2dInstances[meshKernelId]->m_edgeNodes[0]);
 
         meshGeometryDimensions.maxnumfacenodes = meshkernel::maximumNumberOfNodesPerFace;
-        meshGeometryDimensions.numface = static_cast<int>(meshInstances[meshKernelId]->GetNumFaces());
+        meshGeometryDimensions.numface = static_cast<int>(mesh2dInstances[meshKernelId]->GetNumFaces());
         if (meshGeometryDimensions.numface > 0)
         {
-            meshGeometry.face_nodes = &(meshInstances[meshKernelId]->m_faceNodes[0]);
-            meshGeometry.facex = &(meshInstances[meshKernelId]->m_facesCircumcentersx[0]);
-            meshGeometry.facey = &(meshInstances[meshKernelId]->m_facesCircumcentersy[0]);
-            meshGeometry.facez = &(meshInstances[meshKernelId]->m_facesCircumcentersz[0]);
+            meshGeometry.face_nodes = &(mesh2dInstances[meshKernelId]->m_faceNodes[0]);
+            meshGeometry.facex = &(mesh2dInstances[meshKernelId]->m_facesCircumcentersx[0]);
+            meshGeometry.facey = &(mesh2dInstances[meshKernelId]->m_facesCircumcentersy[0]);
+            meshGeometry.facez = &(mesh2dInstances[meshKernelId]->m_facesCircumcentersz[0]);
         }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() == 1)
+        if (mesh2dInstances[meshKernelId]->GetNumNodes() == 1)
         {
             meshGeometryDimensions.numnode = 0;
             meshGeometryDimensions.numedge = 0;
         }
         else
         {
-            meshGeometryDimensions.numnode = static_cast<int>(meshInstances[meshKernelId]->GetNumNodes());
-            meshGeometryDimensions.numedge = static_cast<int>(meshInstances[meshKernelId]->GetNumEdges());
+            meshGeometryDimensions.numnode = static_cast<int>(mesh2dInstances[meshKernelId]->GetNumNodes());
+            meshGeometryDimensions.numedge = static_cast<int>(mesh2dInstances[meshKernelId]->GetNumEdges());
         }
     }
 
