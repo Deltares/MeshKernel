@@ -1,6 +1,7 @@
 import requests 
 import zipfile
 import shutil
+import argparse
 
 from pathlib import Path
 
@@ -19,9 +20,14 @@ def unzip_file(zip_file_path: Path, unzip_directory: Path) -> None:
         zip_ref.extractall(str(unzip_directory))
 
 
-def get_build_wrapper(save_dir: Path) -> None:
-    url = "https://sonarcloud.io/static/cpp/build-wrapper-win-x86.zip"
-    save_path = save_dir / Path("build-wrapper-win-x86.zip")
+def get_build_wrapper(save_dir: Path, os: str) -> None:
+
+    if os == "windows":
+        url = "https://sonarcloud.io/static/cpp/build-wrapper-win-x86.zip"
+        save_path = save_dir / Path("build-wrapper-win-x86.zip")
+    if os == "linux":
+        url = "http://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip"
+        save_path = save_dir / Path("build-wrapper-win-x86.zip")
 
     download_file(url, save_path)
     unzip_file(save_path, save_dir)
@@ -32,9 +38,13 @@ def rename_sonar_scanner_folder(save_dir: Path) -> None:
     shutil.move(str(sonar_scanner_folder), str(sonar_scanner_folder.with_name("sonar-scanner")))
 
 
-def get_scanner(save_dir: Path) -> None:
-    url = f"https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{SONAR_SCANNER_VERSION}-windows.zip"
-    save_path = save_dir / Path("download_sonar_scanner.zip")
+def get_scanner(save_dir: Path, os: str) -> None:
+    if os == "windows":
+        url = f"https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{SONAR_SCANNER_VERSION}-windows.zip"
+        save_path = save_dir / Path("download_sonar_scanner.zip")
+    if os == "linux":
+        url = f"https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{SONAR_SCANNER_VERSION}-linux.zip"
+        save_path = save_dir / Path("download_sonar_scanner.zip")
 
     download_file(url, save_path)
     unzip_file(save_path, save_dir)
@@ -45,5 +55,15 @@ if __name__ == "__main__":
     save_dir = Path(".") / Path(".sonar")
     save_dir.mkdir(exist_ok=True)
 
-    get_build_wrapper(save_dir)
-    get_scanner(save_dir)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--operating_system",
+                        choices=["windows","linux"],
+                        help="The operating system to use",
+                        default="windows",
+                        type=str)
+
+    args = parser.parse_args()
+    print(args.operating_system)
+
+    get_build_wrapper(save_dir, args.operating_system)
+    get_scanner(save_dir, args.operating_system)
