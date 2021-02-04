@@ -1589,6 +1589,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
+                                                    int** oneDNodeMask,
                                                     const GeometryList& polygons,
                                                     Contacts& contacts)
     {

@@ -36,8 +36,8 @@ namespace meshkernelapi
         int* mesh1dNodes = nullptr;
         /// @brief The indices of the 2d face
         int* mesh2dFaces = nullptr;
-        /// @brief The contact types
-        int* contact_types = nullptr;
+        /// @brief The number of contacts
+        int num_contacts;
     };
 
 } // namespace meshkernelapi

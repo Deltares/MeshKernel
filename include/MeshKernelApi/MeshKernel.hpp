@@ -558,6 +558,7 @@ namespace meshkernelapi
         /// @param[out] contacts      The computed contacts
         /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
+                                                        int** oneDNodeMask,
                                                         const GeometryList& polygons,
                                                         Contacts& contacts);
 
@@ -567,7 +568,7 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId  The id of the mesh state
         /// @param[out] contacts      The computed contacts
         /// @return                   Error code (0 Successful)
-        MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId, Contacts& contacts);
+        MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId, int** oneDNodeMask, Contacts& contacts);
 
         /// @brief Computes 1d-2d contacts, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)
         ///
@@ -577,6 +578,7 @@ namespace meshkernelapi
         /// @param[out] contacts      The computed contacts
         /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_contacts_with_polygons(int meshKernelId,
+                                                               int** oneDNodeMask,
                                                                const GeometryList& polygons,
                                                                Contacts& contacts);
 
@@ -588,6 +590,7 @@ namespace meshkernelapi
         /// @param[out] contacts      The computed contacts
         /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_contacts_with_points(int meshKernelId,
+                                                             int** oneDNodeMask,
                                                              const GeometryList& points,
                                                              Contacts& contacts);
 
@@ -600,6 +603,7 @@ namespace meshkernelapi
         /// @param[out] contacts     The computed contacts
         /// @return                  Error code (0 Successful)
         MKERNEL_API int mkernel_compute_boundary_contacts(int meshKernelId,
+                                                          int** oneDNodeMask,
                                                           const GeometryList& polygons,
                                                           double searchRadius,
                                                           Contacts& contacts);
