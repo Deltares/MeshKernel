@@ -1603,6 +1603,25 @@ namespace meshkernelapi
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
             const meshkernel::Polygons meshKernelPolygons(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
+
+            auto num1DNodes = mesh1dInstances[meshKernelId]->GetNumNodes();
+            std::vector<bool> meshKernel1DNodeMask(num1DNodes);
+
+            for (auto i = 0; i < num1DNodes; ++i)
+            {
+                switch ((*oneDNodeMask)[i])
+                {
+                case 0:
+                    meshKernel1DNodeMask[i] = false;
+                    break;
+                case 1:
+                    meshKernel1DNodeMask[i] = true;
+                    break;
+                default:
+                    throw std::invalid_argument("MeshKernel: Invalid 1D mask.");
+                    break;
+                }
+            }
         }
         catch (...)
         {
