@@ -135,11 +135,41 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_set_state(int meshKernelId,
-                                      const MeshGeometryDimensions& meshGeometryDimensions,
-                                      const MeshGeometry& meshGeometry,
-                                      const Mesh1D& mesh1d,
-                                      bool isGeographic)
+    MKERNEL_API int mkernel_set_mesh2d(int meshKernelId,
+                                       const MeshGeometryDimensions& meshGeometryDimensions,
+                                       const MeshGeometry& meshGeometry,
+                                       bool isGeographic)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= mesh2dInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            // convert raw arrays to containers
+            const auto edges2d = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge,
+                                                                      meshGeometry.edge_nodes);
+            const auto nodes2d = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode,
+                                                                  meshGeometry.nodex,
+                                                                  meshGeometry.nodey);
+
+            // spherical or cartesian
+            meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
+            mesh2dInstances[meshKernelId] = std::make_shared<meshkernel::Mesh2D>(edges2d,
+                                                                                 nodes2d,
+                                                                                 projection);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_set_mesh1d(int meshKernelId,
+                                       const Mesh1D& mesh1d,
+                                       bool isGeographic)
     {
         int exitCode = Success;
         try
@@ -154,22 +184,11 @@ namespace meshkernelapi
             const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.num_nodes,
                                                                   mesh1d.nodex,
                                                                   mesh1d.nodey);
-
-            const auto edges2d = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge,
-                                                                      meshGeometry.edge_nodes);
-            const auto nodes2d = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode,
-                                                                  meshGeometry.nodex,
-                                                                  meshGeometry.nodey);
-
             // spherical or cartesian
             meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
 
             mesh1dInstances[meshKernelId] = std::make_shared<meshkernel::Mesh1D>(edges1d,
                                                                                  nodes1d,
-                                                                                 projection);
-
-            mesh2dInstances[meshKernelId] = std::make_shared<meshkernel::Mesh2D>(edges2d,
-                                                                                 nodes2d,
                                                                                  projection);
         }
         catch (...)

@@ -73,7 +73,6 @@ namespace meshkernel
         /// \image html ComputeSingleContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeSingleContacts algorithm. Contacts are shown in red."
         ///
         /// @param[in] polygons The polygons selecting the area where the 1d-2d contacts will be generated.
-        /// @param[in] oneDNodeMask
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
         void ComputeSingleContacts(const Polygons& polygons,
                                    const std::vector<bool>& oneDNodeMask);

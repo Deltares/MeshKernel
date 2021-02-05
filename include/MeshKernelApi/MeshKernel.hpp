@@ -65,18 +65,18 @@ namespace meshkernelapi
 #endif
         /// @brief Creates a new mesh state and returns the generated \p meshKernelId
 
-        /// @param[out] meshKernelId Identifier for the created grid state
+        /// @param[out] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_new_mesh(int& meshKernelId);
 
         /// @brief Deallocates mesh state
-        /// @param[in] meshKernelId Id of the grid state
+        /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_deallocate_state(int meshKernelId);
 
         /// @brief Deletes a mesh in a polygon using several options
-        /// @param[in] meshKernelId Id of the grid state
-        /// @param[in] polygon The polygon where to perform the operation
+        /// @param[in] meshKernelId   The id of the mesh state
+        /// @param[in] polygon        The polygon where to perform the operation
         /// @param[in] deletionOption The deletion option (to be detailed)
         /// @param[in] invertDeletion Inverts the deletion of selected features
         /// @returns Error code
@@ -85,21 +85,28 @@ namespace meshkernelapi
                                             int deletionOption,
                                             bool invertDeletion);
 
-        /// @brief Sets the grid state
-        /// @param[in] meshKernelId           Id of the grid state
-        /// @param[in] meshGeometryDimensions Mesh2D dimensions
-        /// @param[in] meshGeometry           Mesh2D data
-        /// @param[in] mesh1d                 Mesh1D data
+        /// @brief Sets the meshkernel::Mesh2D state
+        /// @param[in] meshKernelId           The id of the mesh state
+        /// @param[in] meshGeometryDimensions The mesh dimensions
+        /// @param[in] meshGeometry           The mesh data
         /// @param[in] isGeographic           Cartesian (false) or spherical (true) mesh
         /// @returns                          Error code
-        MKERNEL_API int mkernel_set_state(int meshKernelId,
-                                          const MeshGeometryDimensions& meshGeometryDimensions,
-                                          const MeshGeometry& meshGeometry,
-                                          const Mesh1D& mesh1d,
-                                          bool isGeographic);
+        MKERNEL_API int mkernel_set_mesh2d(int meshKernelId,
+                                           const MeshGeometryDimensions& meshGeometryDimensions,
+                                           const MeshGeometry& meshGeometry,
+                                           bool isGeographic);
+
+        /// @brief Sets the meshkernel::Mesh1D state
+        /// @param[in] meshKernelId           The id of the mesh state
+        /// @param[in] mesh1d                 The Mesh1D data
+        /// @param[in] isGeographic           Cartesian (false) or spherical (true) mesh
+        /// @returns                          Error code
+        MKERNEL_API int mkernel_set_mesh1d(int meshKernelId,
+                                           const Mesh1D& mesh1d,
+                                           bool isGeographic);
 
         /// @brief Gets the mesh state as a MeshGeometry structure
-        /// @param[in]  meshKernelId           Id of the grid state
+        /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] meshGeometryDimensions Mesh2D dimensions
         /// @param[out] meshGeometry           Mesh2D data
         /// @param[out] mesh1d                 Mesh1D data

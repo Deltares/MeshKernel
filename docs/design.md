@@ -26,7 +26,7 @@ and filled with appropriate values.
 
 When the client application creates a new mesh two API calls are required: in the first call (\ref meshkernelapi::mkernel_new_mesh) a
 new entry is created in the `meshInstances` vector, and in the second call
-(\ref meshkernelapi::mkernel_set_state) the entry is set using the nodes and edges information
+(e.g. \ref meshkernelapi::mkernel_set_mesh2d) the entry is set using the nodes and edges information
 obtained from the client. After this call, the mesh with all computed mappings 
 is stored in memory and is ready to be used by the algorithms (the library keeps the mesh state).
 
