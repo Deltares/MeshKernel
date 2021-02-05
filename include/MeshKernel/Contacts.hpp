@@ -51,15 +51,17 @@ namespace meshkernel
         /// @brief Constructor taking the 1d and 2d meshes to connect
         /// @param[in] mesh1d       The mesh1d to connect
         /// @param[in] mesh2d       The mesh2d to connect
-        /// @param[in] oneDNodeMask The mask used for masking 1d nodes
-        Contacts(std::shared_ptr<Mesh1D> mesh1d, std::shared_ptr<Mesh2D> mesh2d, const std::vector<bool>& oneDNodeMask);
+        Contacts(std::shared_ptr<Mesh1D> mesh1d,
+                 std::shared_ptr<Mesh2D> mesh2d);
 
-        /// @brief Computes 1d-2d contacts, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll)
+        /// @brief Computes 1d-2d contacts,
+        /// where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll)
         ///
         /// Each non-boundary 1d node is connected to single 2d face.
         /// The figure below shows two 2d meshes, a 1d mesh between them, and the 1d-2d contacts (in red).
         /// The boundary nodes of the 1d mesh (those sharing only one 1d edge) are not connected to any 2d face.
-        /// For the 1d nodes not overlapping a 2d mesh, a ray starting from the current node n is computed (dashed blue ray).
+        /// For the 1d nodes not overlapping a 2d mesh,
+        /// a ray starting from the current node n is computed (dashed blue ray).
         /// This ray is normal to the segment connecting the previous (n-1) and next one 1d node (n+1),
         /// the connecting segment is shown with a green dashed line.
         /// The ray is extended for 5 times the length of the connecting segment.
@@ -71,9 +73,13 @@ namespace meshkernel
         /// \image html ComputeSingleContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeSingleContacts algorithm. Contacts are shown in red."
         ///
         /// @param[in] polygons The polygons selecting the area where the 1d-2d contacts will be generated.
-        void ComputeSingleContacts(const Polygons& polygons);
+        /// @param[in] oneDNodeMask
+        /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
+        void ComputeSingleContacts(const Polygons& polygons,
+                                   const std::vector<bool>& oneDNodeMask);
 
-        /// @brief Computes 1d-2d contacts, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
+        /// @brief Computes 1d-2d contacts,
+        /// where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
         ///
         /// Each internal 1d node is connected to multiple 2d faces.
         /// This type of contacts should be used when the lengths of the 1d mesh edges are considerably larger
@@ -86,9 +92,12 @@ namespace meshkernel
         /// and the closest 1d node composing the current 1d edge (i.e. n or n+1).
         /// The procedure is repeated for each 1d node.
         /// \image html ComputeMultipleContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeMultipleContacts algorithm. Contacts are shown in red."
-        void ComputeMultipleContacts();
+        ///
+        /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
+        void ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask);
 
-        /// @brief Computes 1d-2d contacts, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)
+        /// @brief Computes 1d-2d contacts,
+        /// where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)
         ///
         /// The algorithms works as follows:
         /// - Find the 2d face within each polygon closest to a 1d node.
@@ -96,18 +105,22 @@ namespace meshkernel
         /// \image html ComputeContactsWithPolygons.svg  "1d mesh connecting to 2d mesh using the ComputeContactsWithPolygons algorithm. Contacts are shown in red. Polygons in green."
         ///
         /// @param[in] polygons The polygons to connect (Polygons class can have multiple polygons)
-        void ComputeContactsWithPolygons(const Polygons& polygons);
+        /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
+        void ComputeContactsWithPolygons(const Polygons& polygons, const std::vector<bool>& oneDNodeMask);
 
-        /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)
+        /// @brief Computes 1d-2d contacts,
+        /// where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)
         ///
         /// With this algorithm, each 2d face containing a point is connected to the 1d node closest to point itself.
         /// The search of the 2d faces and the closest 1d nodes uses RTrees.
         /// \image html ComputeContactsWithPoints.jpg  "2d faces containing the input points connecting to the 1d mesh. Contacts are shown in red and the input points in blue."
         ///
         /// @param[in] points The points selecting the faces to connect
-        void ComputeContactsWithPoints(const std::vector<Point>& points);
+        /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
+        void ComputeContactsWithPoints(const std::vector<Point>& points, const std::vector<bool>& oneDNodeMask);
 
-        /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
+        /// @brief Computes 1d-2d contacts,
+        /// where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
         /// The algorithms works as follows:
         /// - For each oned node, find the closest 2d boundary faces within the search radius.
@@ -118,7 +131,10 @@ namespace meshkernel
         ///
         /// @param[in] polygons     The polygons selecting the area where the 1d-2d contacts will be generated.
         /// @param[in] searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
-        void ComputeBoundaryContacts(const Polygons& polygons, double searchRadius);
+        /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
+        void ComputeBoundaryContacts(const Polygons& polygons,
+                                     double searchRadius,
+                                     const std::vector<bool>& oneDNodeMask);
 
         std::vector<size_t> m_mesh2dIndices; ///< The indices of the connected 2-d faces
         std::vector<size_t> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
@@ -138,8 +154,6 @@ namespace meshkernel
 
         std::shared_ptr<Mesh1D> m_mesh1d; ///< The 1-d mesh to connect
         std::shared_ptr<Mesh2D> m_mesh2d; ///< The 2-d mesh to connect
-        std::vector<bool> m_oneDNodeMask; ///< The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
-
         /// @brief Connect a 1d node with the face crossed by the projected normal originating from the node itself
         /// @param[in] node The 1d node index
         /// @param[in] distanceFactor The factor determining the length and the direction of the projected normal (positive right normal, negative left normal)

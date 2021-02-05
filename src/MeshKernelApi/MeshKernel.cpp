@@ -31,6 +31,7 @@
 
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGridFromSplines.hpp>
@@ -60,6 +61,7 @@ namespace meshkernelapi
     // The vectors containing the mesh instances
     static std::vector<std::shared_ptr<meshkernel::Mesh2D>> mesh2dInstances;
     static std::vector<std::shared_ptr<meshkernel::Mesh1D>> mesh1dInstances;
+    static std::vector<std::shared_ptr<meshkernel::Contacts>> contactsInstances;
 
     // For interactivity
     static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
@@ -146,6 +148,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
+            // convert raw arrays to containers
             const auto edges1d = meshkernel::ConvertToEdgeNodesVector(mesh1d.num_edges,
                                                                       mesh1d.edge_nodes);
             const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.num_nodes,
@@ -1601,12 +1604,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            auto polygonPoints = ConvertGeometryListToPointVector(polygons);
-            const meshkernel::Polygons meshKernelPolygons(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
-
+            // Convert 1D node mask from int** to vector<bool>
             auto num1DNodes = mesh1dInstances[meshKernelId]->GetNumNodes();
             std::vector<bool> meshKernel1DNodeMask(num1DNodes);
-
             for (auto i = 0; i < num1DNodes; ++i)
             {
                 switch ((*oneDNodeMask)[i])
@@ -1622,6 +1622,19 @@ namespace meshkernelapi
                     break;
                 }
             }
+
+            // Init Contacts instance
+            meshkernel::Contacts meshKernelContacts(mesh1dInstances[meshKernelId],
+                                                    mesh2dInstances[meshKernelId]);
+
+            // Convert polygon date from GeometryList to Polygons
+            auto polygonPoints = ConvertGeometryListToPointVector(polygons);
+            const meshkernel::Polygons meshKernelPolygons(polygonPoints,
+                                                          mesh2dInstances[meshKernelId]->m_projection);
+
+            // Execute
+            meshKernelContacts.ComputeSingleContacts(meshKernelPolygons,
+                                                     meshKernel1DNodeMask);
         }
         catch (...)
         {

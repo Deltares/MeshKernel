@@ -28,14 +28,14 @@ TEST(Contacts, ComputeSingleContacts1dOutside2dMesh)
 
     // Create contacts
     std::vector<bool> onedNodeMask(nodes.size(), true);
-    meshkernel::Contacts contacts(mesh1d, mesh2d, onedNodeMask);
+    meshkernel::Contacts contacts(mesh1d, mesh2d);
 
     // Set the polygon where to generate the contacts
     std::vector<meshkernel::Point> polygonPoints{{-30, -20}, {40, -20}, {40, 50}, {-40, 50}, {-30, -20}};
-    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
+    meshkernel::Polygons polygons(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeSingleContacts(polygon);
+    contacts.ComputeSingleContacts(polygons, onedNodeMask);
 
     //Assert
     ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
@@ -72,14 +72,14 @@ TEST(Contacts, ComputeSingleContacts1dMeshInside2dMesh)
 
     // Create contacts
     std::vector<bool> onedNodeMask(nodes.size(), true);
-    meshkernel::Contacts contacts(mesh1d, mesh2d, onedNodeMask);
+    meshkernel::Contacts contacts(mesh1d, mesh2d);
 
     // Set the polygon where to generate the contacts
     std::vector<meshkernel::Point> polygonPoints{{-30, -20}, {40, -20}, {40, 50}, {-40, 50}, {-30, -20}};
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeSingleContacts(polygon);
+    contacts.ComputeSingleContacts(polygon, onedNodeMask);
 
     //Assert
     ASSERT_EQ(5, contacts.m_mesh1dIndices.size());
@@ -118,10 +118,10 @@ TEST(Contacts, ComputeMultipleContacts1dMeshInside2dMesh)
 
     // Create contacts
     std::vector<bool> onedNodeMask(nodes.size(), true);
-    meshkernel::Contacts contacts(mesh1d, mesh2d, onedNodeMask);
+    meshkernel::Contacts contacts(mesh1d, mesh2d);
 
     // Execute
-    contacts.ComputeMultipleContacts();
+    contacts.ComputeMultipleContacts(onedNodeMask);
 
     //Assert
     ASSERT_EQ(5, contacts.m_mesh1dIndices.size());
@@ -159,7 +159,7 @@ TEST(Contacts, ComputeContactsWithPoints)
 
     // Create contacts
     std::vector<bool> onedNodeMask(nodes.size(), true);
-    meshkernel::Contacts contacts(mesh1d, mesh2d, onedNodeMask);
+    meshkernel::Contacts contacts(mesh1d, mesh2d);
 
     // Create points to connect
     std::vector<meshkernel::Point> pointsToConnect{
@@ -169,7 +169,7 @@ TEST(Contacts, ComputeContactsWithPoints)
         {22.3367290, 21.4588184}};
 
     // Execute
-    contacts.ComputeContactsWithPoints(pointsToConnect);
+    contacts.ComputeContactsWithPoints(pointsToConnect, onedNodeMask);
 
     //Assert
     ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
@@ -252,7 +252,7 @@ TEST(Contacts, ComputeContactsWithPolygons)
 
     // Create contacts
     std::vector<bool> onedNodeMask(nodes.size(), true);
-    meshkernel::Contacts contacts(mesh1d, mesh2d, onedNodeMask);
+    meshkernel::Contacts contacts(mesh1d, mesh2d);
 
     // Set the polygon where to generate the contacts
     std::vector<meshkernel::Point> polygonPoints{
@@ -299,7 +299,7 @@ TEST(Contacts, ComputeContactsWithPolygons)
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeContactsWithPolygons(polygon);
+    contacts.ComputeContactsWithPolygons(polygon, onedNodeMask);
 
     //Assert
     ASSERT_EQ(6, contacts.m_mesh1dIndices.size());
@@ -340,14 +340,14 @@ TEST(Contacts, ComputeBoundaryContacts)
 
     // Create contacts
     std::vector<bool> onedNodeMask(nodes.size(), true);
-    meshkernel::Contacts contacts(mesh1d, mesh2d, onedNodeMask);
+    meshkernel::Contacts contacts(mesh1d, mesh2d);
 
     // Set the polygon where to generate the contacts
     std::vector<meshkernel::Point> polygonPoints{{-30, -20}, {40, -20}, {40, 50}, {-40, 50}, {-30, -20}};
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeBoundaryContacts(polygon, 200.0);
+    contacts.ComputeBoundaryContacts(polygon, 200.0, onedNodeMask);
 
     //Assert
     ASSERT_EQ(8, contacts.m_mesh1dIndices.size());
