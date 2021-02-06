@@ -6,8 +6,8 @@ add_executable(MeshKernelUnitTests ${UNIT_TEST_LIST})
 target_link_libraries(
   MeshKernelUnitTests PRIVATE MeshKernelStatic UtilsStatic ${Boost_LIBRARIES}
                               triangle gtest_main)
- 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU") 
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
    set_target_properties (MeshKernelUnitTests PROPERTIES COMPILE_FLAGS  "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++")
    set_target_properties (MeshKernelUnitTests PROPERTIES LINK_FLAGS  "-ldl -lgcov --coverage")
 endif()

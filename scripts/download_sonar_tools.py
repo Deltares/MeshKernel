@@ -63,7 +63,6 @@ if __name__ == "__main__":
                         type=str)
 
     args = parser.parse_args()
-    print(args.operating_system)
 
     get_build_wrapper(save_dir, args.operating_system)
     get_scanner(save_dir, args.operating_system)
