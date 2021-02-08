@@ -33,9 +33,9 @@ namespace meshkernelapi
     struct Contacts
     {
         /// @brief The indices of the 1d mesh
-        int* mesh1dNodes = nullptr;
+        int* mesh1d_indices = nullptr;
         /// @brief The indices of the 2d face
-        int* mesh2dFaces = nullptr;
+        int* mesh2d_indices = nullptr;
         /// @brief The number of contacts
         int num_contacts;
     };

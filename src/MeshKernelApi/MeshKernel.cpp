@@ -94,6 +94,9 @@ namespace meshkernelapi
         meshKernelId = int(mesh2dInstances.size());
         mesh2dInstances.emplace_back(std::make_shared<meshkernel::Mesh2D>());
         mesh1dInstances.emplace_back(std::make_shared<meshkernel::Mesh1D>());
+        contactsInstances.emplace_back(
+            std::make_shared<meshkernel::Contacts>(mesh1dInstances[meshKernelId],
+                                                   mesh2dInstances[meshKernelId]));
         return Success;
     };
 
@@ -106,6 +109,7 @@ namespace meshkernelapi
 
         mesh2dInstances.erase(mesh2dInstances.begin() + meshKernelId);
         mesh1dInstances.erase(mesh1dInstances.begin() + meshKernelId);
+        contactsInstances.erase(contactsInstances.begin() + meshKernelId);
         return 0;
     }
 
@@ -156,9 +160,9 @@ namespace meshkernelapi
 
             // spherical or cartesian
             meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
-            mesh2dInstances[meshKernelId] = std::make_shared<meshkernel::Mesh2D>(edges2d,
-                                                                                 nodes2d,
-                                                                                 projection);
+            *mesh2dInstances[meshKernelId] = meshkernel::Mesh2D(edges2d,
+                                                                nodes2d,
+                                                                projection);
         }
         catch (...)
         {
@@ -187,9 +191,9 @@ namespace meshkernelapi
             // spherical or cartesian
             meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
 
-            mesh1dInstances[meshKernelId] = std::make_shared<meshkernel::Mesh1D>(edges1d,
-                                                                                 nodes1d,
-                                                                                 projection);
+            *mesh1dInstances[meshKernelId] = meshkernel::Mesh1D(edges1d,
+                                                                nodes1d,
+                                                                projection);
         }
         catch (...)
         {
@@ -212,6 +216,49 @@ namespace meshkernelapi
 
             mesh2dInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
             SetMesh2DGeometry(mesh2dInstances, meshKernelId, meshGeometryDimensions, meshGeometry);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_get_contacts_size(int meshKernelId,
+                                              Contacts& contacts)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= mesh2dInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+            contacts.num_contacts = (int)contactsInstances[meshKernelId]->m_mesh2dIndices.size();
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_get_contacts_data(int meshKernelId,
+                                              Contacts& contacts)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= mesh2dInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            for (auto i = 0; i < contacts.num_contacts; ++i)
+            {
+                contacts.mesh1d_indices[i] = contactsInstances[meshKernelId]->m_mesh1dIndices[i];
+                contacts.mesh2d_indices[i] = contactsInstances[meshKernelId]->m_mesh2dIndices[i];
+            }
         }
         catch (...)
         {
@@ -664,9 +711,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
             }
 
-            auto result = ConvertGeometryListToPointVector(geometryList);
+            auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
 
-            const meshkernel::Polygons polygon(result, mesh2dInstances[meshKernelId]->m_projection);
+            const meshkernel::Polygons polygon(polygonNodes, mesh2dInstances[meshKernelId]->m_projection);
 
             meshkernel::Mesh2D mesh;
             mesh.MakeMesh(makeGridParameters, polygon);
@@ -1628,9 +1675,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
-                                                    int** oneDNodeMask,
-                                                    const GeometryList& polygons,
-                                                    Contacts& contacts)
+                                                    int* oneDNodeMask,
+                                                    const GeometryList& polygons)
     {
         int exitCode = Success;
         try
@@ -1645,7 +1691,7 @@ namespace meshkernelapi
             std::vector<bool> meshKernel1DNodeMask(num1DNodes);
             for (auto i = 0; i < num1DNodes; ++i)
             {
-                switch ((*oneDNodeMask)[i])
+                switch (oneDNodeMask[i])
                 {
                 case 0:
                     meshKernel1DNodeMask[i] = false;
@@ -1659,18 +1705,14 @@ namespace meshkernelapi
                 }
             }
 
-            // Init Contacts instance
-            meshkernel::Contacts meshKernelContacts(mesh1dInstances[meshKernelId],
-                                                    mesh2dInstances[meshKernelId]);
-
             // Convert polygon date from GeometryList to Polygons
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
             const meshkernel::Polygons meshKernelPolygons(polygonPoints,
                                                           mesh2dInstances[meshKernelId]->m_projection);
 
             // Execute
-            meshKernelContacts.ComputeSingleContacts(meshKernelPolygons,
-                                                     meshKernel1DNodeMask);
+            contactsInstances[meshKernelId]->ComputeSingleContacts(meshKernelPolygons,
+                                                                   meshKernel1DNodeMask);
         }
         catch (...)
         {

@@ -958,6 +958,97 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     delete[] geometryListIn.zCoordinates;
 }
 
+TEST_F(ApiTests, ComputeSingleContactsThroughApi)
+{
+    // Prepare
+    MakeMesh(4, 4, 10);
+
+    // Init 1d mesh
+    meshkernelapi::Mesh1D mesh1d;
+    mesh1d.nodex = new double[]{
+        1.73493900000000,
+        2.35659313023165,
+        5.38347452702839,
+        14.2980910429074,
+        22.9324017677239,
+        25.3723169493137,
+        25.8072280000000};
+
+    mesh1d.nodey = new double[]{
+        -7.6626510000000,
+        1.67281447902331,
+        10.3513746546384,
+        12.4797224193970,
+        15.3007317677239,
+        24.1623588554512,
+        33.5111870000000};
+    mesh1d.num_nodes = 7;
+
+    mesh1d.edge_nodes = new int[]{
+        0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6};
+    mesh1d.num_edges = 6;
+
+    auto errorCode = mkernel_set_mesh1d(0, mesh1d, false);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Init 1d mask
+    auto onedNodeMask = new int[]{
+        1, 1, 1, 1, 1, 1, 1};
+
+    // Init polygon
+    meshkernelapi::GeometryList polygon;
+    polygon.geometrySeparator = meshkernel::doubleMissingValue;
+    polygon.xCoordinates = new double[]{
+        -30, 40, 40, -40, -30};
+
+    polygon.yCoordinates = new double[]{
+        -20, -20, 50, 50, -20};
+
+    polygon.zCoordinates = new double[]{
+        0, 0, 0, 0, 0};
+
+    polygon.numberOfCoordinates = 5;
+
+    // Execute
+    errorCode = mkernel_compute_single_contacts(0, onedNodeMask, polygon);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Contacts contacts{};
+    errorCode = mkernel_get_contacts_size(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    contacts.mesh1d_indices = new int[contacts.num_contacts];
+    contacts.mesh2d_indices = new int[contacts.num_contacts];
+
+    errorCode = mkernel_get_contacts_data(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(5, contacts.num_contacts);
+
+    ASSERT_EQ(1, contacts.mesh1d_indices[0]);
+    ASSERT_EQ(2, contacts.mesh1d_indices[1]);
+    ASSERT_EQ(3, contacts.mesh1d_indices[2]);
+    ASSERT_EQ(4, contacts.mesh1d_indices[3]);
+    ASSERT_EQ(5, contacts.mesh1d_indices[4]);
+
+    ASSERT_EQ(0, contacts.mesh2d_indices[0]);
+    ASSERT_EQ(1, contacts.mesh2d_indices[1]);
+    ASSERT_EQ(4, contacts.mesh2d_indices[2]);
+    ASSERT_EQ(7, contacts.mesh2d_indices[3]);
+    ASSERT_EQ(8, contacts.mesh2d_indices[4]);
+
+    // Delete dynamically allocated memory with operator new
+    delete[] polygon.xCoordinates;
+    delete[] polygon.yCoordinates;
+    delete[] polygon.zCoordinates;
+    delete[] mesh1d.nodex;
+    delete[] mesh1d.nodey;
+    delete[] mesh1d.edge_nodes;
+    delete[] onedNodeMask;
+}
+
 TEST(ApiStatelessTests, GetSplinesThroughApi)
 {
     // Prepare

@@ -102,11 +102,11 @@ namespace meshkernel
 
         /// @brief Get the number of valid nodes
         /// @return The number of valid node
-        [[nodiscard]] auto GetNumNodes() const { return m_numNodes; }
+        [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
 
         /// @brief Get the number of valid edges
         /// @return The number of valid edges
-        [[nodiscard]] auto GetNumEdges() const { return m_numEdges; }
+        [[nodiscard]] auto GetNumEdges() const { return m_edges.size(); }
 
         /// @brief Get the number of valid faces
         /// @return The number of valid faces
@@ -269,8 +269,6 @@ namespace meshkernel
 
         // counters
         size_t m_numFaces = 0;                  ///< Number of valid faces (nump)
-        size_t m_numNodes = 0;                  ///< Number of valid nodes in m_nodes
-        size_t m_numEdges = 0;                  ///< Number of valid edges in m_edges
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
         RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes

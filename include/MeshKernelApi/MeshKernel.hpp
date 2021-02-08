@@ -121,6 +121,20 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_get_mesh1d(int meshKernelId,
                                            Mesh1D& mesh1d);
 
+        /// @brief Gets the meshkernel::Contacts size as a meshkernelapi::Contacts struct
+        /// @param[in]  meshKernelId           The id of the mesh state
+        /// @param[out] contacts               Contacts data
+        /// @returns                           Error code
+        MKERNEL_API int mkernel_get_contacts_size(int meshKernelId,
+                                                  Contacts& contacts);
+
+        /// @brief Gets the meshkernel::Contacts data as a meshkernelapi::Contacts struct
+        /// @param[in]  meshKernelId           The id of the mesh state
+        /// @param[out] contacts               Contacts data
+        /// @returns                           Error code
+        MKERNEL_API int mkernel_get_contacts_data(int meshKernelId,
+                                                  Contacts& contacts);
+
         /// @brief Gets the mesh faces
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[out] meshGeometryDimensions Grid dimensions
@@ -570,7 +584,7 @@ namespace meshkernelapi
         /// @param[in]  polygons      The polygons selecting the area where the 1d-2d contacts will be generated.
         /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
-                                                        int** oneDNodeMask,
+                                                        int* oneDNodeMask,
                                                         const GeometryList& polygons);
 
         /// @brief Computes 1d-2d contacts, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
