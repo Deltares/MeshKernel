@@ -1701,7 +1701,6 @@ namespace meshkernelapi
                     break;
                 default:
                     throw std::invalid_argument("MeshKernel: Invalid 1D mask.");
-                    break;
                 }
             }
 
