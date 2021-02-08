@@ -105,16 +105,21 @@ namespace meshkernelapi
                                            const Mesh1D& mesh1d,
                                            bool isGeographic);
 
-        /// @brief Gets the mesh state as a MeshGeometry structure
+        /// @brief Gets the meshkernel::Mesh2D state as a MeshGeometry struct
         /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] meshGeometryDimensions Mesh2D dimensions
         /// @param[out] meshGeometry           Mesh2D data
+        /// @returns                           Error code
+        MKERNEL_API int mkernel_get_mesh2d(int meshKernelId,
+                                           MeshGeometryDimensions& meshGeometryDimensions,
+                                           MeshGeometry& meshGeometry);
+
+        /// @brief Gets the meshkernel::Mesh1D state as a meshkernelapi::Mesh1D struct
+        /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] mesh1d                 Mesh1D data
         /// @returns                           Error code
-        MKERNEL_API int mkernel_get_mesh(int meshKernelId,
-                                         MeshGeometryDimensions& meshGeometryDimensions,
-                                         MeshGeometry& meshGeometry,
-                                         Mesh1D& mesh1d);
+        MKERNEL_API int mkernel_get_mesh1d(int meshKernelId,
+                                           Mesh1D& mesh1d);
 
         /// @brief Gets the mesh faces
         /// @param[in] meshKernelId The id of the mesh state

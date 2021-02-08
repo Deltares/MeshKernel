@@ -37,7 +37,7 @@
 /// @brief Contains the logic of the C++ static library
 namespace meshkernel
 {
-    /// @brief A class describing an 1d-2d contacts
+    /// @brief A class describing an 1d-2d contacts.
     ///
     /// The responsibility of the Contacts class is connecting a 1d mesh to a 2d mesh.
     /// The class has a reference to the Mesh1D and the Mesh2D instances that will be connected.
@@ -55,7 +55,7 @@ namespace meshkernel
                  std::shared_ptr<Mesh2D> mesh2d);
 
         /// @brief Computes 1d-2d contacts,
-        /// where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll)
+        /// where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll).
         ///
         /// Each non-boundary 1d node is connected to single 2d face.
         /// The figure below shows two 2d meshes, a 1d mesh between them, and the 1d-2d contacts (in red).
@@ -78,7 +78,7 @@ namespace meshkernel
                                    const std::vector<bool>& oneDNodeMask);
 
         /// @brief Computes 1d-2d contacts,
-        /// where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
+        /// where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll).
         ///
         /// Each internal 1d node is connected to multiple 2d faces.
         /// This type of contacts should be used when the lengths of the 1d mesh edges are considerably larger
@@ -96,7 +96,7 @@ namespace meshkernel
         void ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask);
 
         /// @brief Computes 1d-2d contacts,
-        /// where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)
+        /// where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll).
         ///
         /// The algorithms works as follows:
         /// - Find the 2d face within each polygon closest to a 1d node.
@@ -108,7 +108,7 @@ namespace meshkernel
         void ComputeContactsWithPolygons(const Polygons& polygons, const std::vector<bool>& oneDNodeMask);
 
         /// @brief Computes 1d-2d contacts,
-        /// where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)
+        /// where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll).
         ///
         /// With this algorithm, each 2d face containing a point is connected to the 1d node closest to point itself.
         /// The search of the 2d faces and the closest 1d nodes uses RTrees.
@@ -119,7 +119,7 @@ namespace meshkernel
         void ComputeContactsWithPoints(const std::vector<Point>& points, const std::vector<bool>& oneDNodeMask);
 
         /// @brief Computes 1d-2d contacts,
-        /// where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
+        /// where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll).
         ///
         /// The algorithms works as follows:
         /// - For each oned node, find the closest 2d boundary faces within the search radius.

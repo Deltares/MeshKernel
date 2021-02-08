@@ -34,7 +34,7 @@ The client now calls the \ref meshkernelapi::mkernel_refine_mesh_based_on_sample
 the local scope of the \ref meshkernelapi::mkernel_refine_mesh_based_on_samples function 
 an instance of the \ref meshkernel::MeshRefinement class is created, the Refine method is executed and the 
 resulting mesh is saved in the `meshInstances` vector. 
-The client retrieves the last state of the mesh using the \ref meshkernelapi::mkernel_get_mesh function, where all information
+The client retrieves the last state of the mesh using the \ref meshkernelapi::mkernel_get_mesh2d function, where all information
 required for rendering the new mesh (the nodes, the edges, and the faces) is copied 
 from the library state to flat arrays. This extra copy is required for clients that
 cannot communicate an array of structures at the API level (C# and C++ clients could potentially do this, FORTRAN clients not ).

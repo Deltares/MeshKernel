@@ -198,10 +198,9 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh(int meshKernelId,
-                                     MeshGeometryDimensions& meshGeometryDimensions,
-                                     MeshGeometry& meshGeometry,
-                                     Mesh1D& mesh1d)
+    MKERNEL_API int mkernel_get_mesh2d(int meshKernelId,
+                                       MeshGeometryDimensions& meshGeometryDimensions,
+                                       MeshGeometry& meshGeometry)
     {
         int exitCode = Success;
         try
@@ -212,9 +211,27 @@ namespace meshkernelapi
             }
 
             mesh2dInstances[meshKernelId]->SetFlatCopies(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
-            mesh1dInstances[meshKernelId]->SetFlatCopies();
-
             SetMesh2DGeometry(mesh2dInstances, meshKernelId, meshGeometryDimensions, meshGeometry);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_get_mesh1d(int meshKernelId,
+                                       Mesh1D& mesh1d)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= mesh2dInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            mesh1dInstances[meshKernelId]->SetFlatCopies();
             SetMesh1DGeometry(mesh1dInstances, meshKernelId, mesh1d);
         }
         catch (...)
