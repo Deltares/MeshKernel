@@ -21,8 +21,8 @@ meshkernel::Contacts::Contacts(std::shared_ptr<Mesh1D> mesh1d,
     }
 }
 
-void meshkernel::Contacts::ComputeSingleContacts(const Polygons& polygons,
-                                                 const std::vector<bool>& oneDNodeMask)
+void meshkernel::Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
+                                                 const Polygons& polygons)
 {
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
@@ -255,8 +255,8 @@ void meshkernel::Contacts::ComputeMultipleContacts(const std::vector<bool>& oneD
     }
 };
 
-void meshkernel::Contacts::ComputeContactsWithPolygons(const Polygons& polygons,
-                                                       const std::vector<bool>& oneDNodeMask)
+void meshkernel::Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask,
+                                                       const Polygons& polygons)
 {
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
@@ -314,8 +314,8 @@ void meshkernel::Contacts::ComputeContactsWithPolygons(const Polygons& polygons,
     }
 };
 
-void meshkernel::Contacts::ComputeContactsWithPoints(const std::vector<Point>& points,
-                                                     const std::vector<bool>& oneDNodeMask)
+void meshkernel::Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
+                                                     const std::vector<Point>& points)
 {
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())
@@ -356,9 +356,9 @@ void meshkernel::Contacts::ComputeContactsWithPoints(const std::vector<Point>& p
     }
 };
 
-void meshkernel::Contacts::ComputeBoundaryContacts(const Polygons& polygons,
-                                                   double searchRadius,
-                                                   const std::vector<bool>& oneDNodeMask)
+void meshkernel::Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
+                                                   const Polygons& polygons,
+                                                   double searchRadius)
 {
     // assert oneDNodeMask and m_mesh1d have the same number of nodes
     if (oneDNodeMask.size() != m_mesh1d->m_nodes.size())

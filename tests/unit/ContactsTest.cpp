@@ -35,7 +35,7 @@ TEST(Contacts, ComputeSingleContacts1dOutside2dMesh)
     meshkernel::Polygons polygons(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeSingleContacts(polygons, onedNodeMask);
+    contacts.ComputeSingleContacts(onedNodeMask, polygons);
 
     //Assert
     ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
@@ -79,7 +79,7 @@ TEST(Contacts, ComputeSingleContacts1dMeshInside2dMesh)
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeSingleContacts(polygon, onedNodeMask);
+    contacts.ComputeSingleContacts(onedNodeMask, polygon);
 
     //Assert
     ASSERT_EQ(5, contacts.m_mesh1dIndices.size());
@@ -169,7 +169,7 @@ TEST(Contacts, ComputeContactsWithPoints)
         {22.3367290, 21.4588184}};
 
     // Execute
-    contacts.ComputeContactsWithPoints(pointsToConnect, onedNodeMask);
+    contacts.ComputeContactsWithPoints(onedNodeMask, pointsToConnect);
 
     //Assert
     ASSERT_EQ(4, contacts.m_mesh1dIndices.size());
@@ -299,7 +299,7 @@ TEST(Contacts, ComputeContactsWithPolygons)
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeContactsWithPolygons(polygon, onedNodeMask);
+    contacts.ComputeContactsWithPolygons(onedNodeMask, polygon);
 
     //Assert
     ASSERT_EQ(6, contacts.m_mesh1dIndices.size());
@@ -347,7 +347,7 @@ TEST(Contacts, ComputeBoundaryContacts)
     meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
 
     // Execute
-    contacts.ComputeBoundaryContacts(polygon, 200.0, onedNodeMask);
+    contacts.ComputeBoundaryContacts(onedNodeMask, polygon, 200.0);
 
     //Assert
     ASSERT_EQ(8, contacts.m_mesh1dIndices.size());

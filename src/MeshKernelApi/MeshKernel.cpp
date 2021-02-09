@@ -1697,8 +1697,8 @@ namespace meshkernelapi
                                                           mesh2dInstances[meshKernelId]->m_projection);
 
             // Execute
-            contactsInstances[meshKernelId]->ComputeSingleContacts(meshKernelPolygons,
-                                                                   meshKernel1DNodeMask);
+            contactsInstances[meshKernelId]->ComputeSingleContacts(meshKernel1DNodeMask,
+                                                                   meshKernelPolygons);
         }
         catch (...)
         {
@@ -1756,8 +1756,8 @@ namespace meshkernelapi
                                                           mesh2dInstances[meshKernelId]->m_projection);
 
             // Execute
-            contactsInstances[meshKernelId]->ComputeContactsWithPolygons(meshKernelPolygons,
-                                                                         meshKernel1DNodeMask);
+            contactsInstances[meshKernelId]->ComputeContactsWithPolygons(meshKernel1DNodeMask,
+                                                                         meshKernelPolygons);
         }
         catch (...)
         {
@@ -1785,8 +1785,8 @@ namespace meshkernelapi
             // Convert polygon date from GeometryList to Point vector
             auto meshKernelPoints = ConvertGeometryListToPointVector(points);
             // Execute
-            contactsInstances[meshKernelId]->ComputeContactsWithPoints(meshKernelPoints,
-                                                                       meshKernel1DNodeMask);
+            contactsInstances[meshKernelId]->ComputeContactsWithPoints(meshKernel1DNodeMask,
+                                                                       meshKernelPoints);
         }
         catch (...)
         {
@@ -1819,9 +1819,9 @@ namespace meshkernelapi
                                                           mesh2dInstances[meshKernelId]->m_projection);
 
             // Execute
-            contactsInstances[meshKernelId]->ComputeBoundaryContacts(meshKernelPolygons,
-                                                                     searchRadius,
-                                                                     meshKernel1DNodeMask);
+            contactsInstances[meshKernelId]->ComputeBoundaryContacts(meshKernel1DNodeMask,
+                                                                     meshKernelPolygons,
+                                                                     searchRadius);
         }
         catch (...)
         {
