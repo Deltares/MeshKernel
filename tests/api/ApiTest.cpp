@@ -1206,6 +1206,201 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
     ASSERT_EQ(8, contacts.mesh2d_indices[0]);
 }
 
+TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
+{
+    // Prepare
+    MakeMesh(4, 4, 10);
+
+    // Init 1d mesh
+    meshkernelapi::Mesh1D mesh1d;
+    std::unique_ptr<double> nodex(new double[]{
+        1.73493900000000,
+        2.35659313023165,
+        5.38347452702839,
+        14.2980910429074,
+        22.9324017677239,
+        25.3723169493137,
+        25.8072280000000});
+    std::unique_ptr<double> nodey(new double[]{
+        -7.6626510000000,
+        1.67281447902331,
+        10.3513746546384,
+        12.4797224193970,
+        15.3007317677239,
+        24.1623588554512,
+        33.5111870000000});
+    mesh1d.nodex = nodex.get();
+    mesh1d.nodey = nodey.get();
+    mesh1d.num_nodes = 7;
+
+    std::unique_ptr<int> edge_nodes(new int[]{
+        0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6});
+    mesh1d.edge_nodes = edge_nodes.get();
+    mesh1d.num_edges = 6;
+
+    auto errorCode = mkernel_set_mesh1d(0, mesh1d, false);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Init 1d mask
+    std::unique_ptr<int> onedNodeMask(new int[]{
+        1, 1, 1, 1, 1, 1, 1});
+
+    // Init polygon
+    meshkernelapi::GeometryList points;
+    points.geometrySeparator = meshkernel::doubleMissingValue;
+
+    std::unique_ptr<double> xCoordinates(new double[]{
+        5,
+        15,
+        25,
+        35});
+    std::unique_ptr<double> yCoordinates(new double[]{
+        5,
+        15,
+        25,
+        35});
+    std::unique_ptr<double> zCoordinates(new double[]{
+        0, 0, 0, 0});
+    points.xCoordinates = xCoordinates.get();
+    points.yCoordinates = yCoordinates.get();
+    points.zCoordinates = zCoordinates.get();
+
+    points.numberOfCoordinates = 4;
+
+    // Execute
+    errorCode = mkernel_compute_contacts_with_points(0, onedNodeMask.get(), points);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Contacts contacts{};
+    errorCode = mkernel_get_contacts_size(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
+    std::unique_ptr<int> mesh2d_indices(new int[contacts.num_contacts]);
+    contacts.mesh1d_indices = mesh1d_indices.get();
+    contacts.mesh2d_indices = mesh2d_indices.get();
+
+    errorCode = mkernel_get_contacts_data(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(3, contacts.num_contacts);
+
+    ASSERT_EQ(1, contacts.mesh1d_indices[0]);
+    ASSERT_EQ(3, contacts.mesh1d_indices[1]);
+    ASSERT_EQ(5, contacts.mesh1d_indices[2]);
+
+    ASSERT_EQ(0, contacts.mesh2d_indices[0]);
+    ASSERT_EQ(4, contacts.mesh2d_indices[1]);
+    ASSERT_EQ(8, contacts.mesh2d_indices[2]);
+}
+
+TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
+{
+    // Prepare
+    MakeMesh(4, 4, 10);
+
+    // Init 1d mesh
+    meshkernelapi::Mesh1D mesh1d;
+    std::unique_ptr<double> nodex(new double[]{
+        -16.1886410000000,
+        -16.1464995876014,
+        -16.1043581752028,
+        -16.0622167628042,
+        -15.7539488236928,
+        -6.86476658679268,
+        2.02441565010741,
+        10.9135970000000,
+    });
+    std::unique_ptr<double> nodey(new double[]{
+        0.89018900000000,
+        9.78201442138723,
+        18.6738398427745,
+        27.5656652641617,
+        36.1966603330179,
+        36.4175095626911,
+        36.6383587923643,
+        36.8592080000000});
+    mesh1d.nodex = nodex.get();
+    mesh1d.nodey = nodey.get();
+    mesh1d.num_nodes = 8;
+
+    std::unique_ptr<int> edge_nodes(new int[]{
+        0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7});
+    mesh1d.edge_nodes = edge_nodes.get();
+    mesh1d.num_edges = 7;
+
+    auto errorCode = mkernel_set_mesh1d(0, mesh1d, false);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Init 1d mask
+    std::unique_ptr<int> onedNodeMask(new int[]{
+        1, 1, 1, 1, 1, 1, 1, 1});
+
+    // Init polygon
+    meshkernelapi::GeometryList polygon;
+    polygon.geometrySeparator = meshkernel::doubleMissingValue;
+
+    std::unique_ptr<double> xCoordinates(new double[]{
+        -30,
+        40,
+        40,
+        -40,
+        -30});
+    std::unique_ptr<double> yCoordinates(new double[]{
+        -20,
+        -20,
+        50,
+        50,
+        -20});
+    std::unique_ptr<double> zCoordinates(new double[]{
+        0, 0, 0, 0, 0});
+    polygon.xCoordinates = xCoordinates.get();
+    polygon.yCoordinates = yCoordinates.get();
+    polygon.zCoordinates = zCoordinates.get();
+
+    polygon.numberOfCoordinates = 5;
+
+    // Execute
+    errorCode = mkernel_compute_boundary_contacts(0, onedNodeMask.get(), polygon, 200.0);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Contacts contacts{};
+    errorCode = mkernel_get_contacts_size(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
+    std::unique_ptr<int> mesh2d_indices(new int[contacts.num_contacts]);
+    contacts.mesh1d_indices = mesh1d_indices.get();
+    contacts.mesh2d_indices = mesh2d_indices.get();
+
+    errorCode = mkernel_get_contacts_data(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(8, contacts.num_contacts);
+
+    ASSERT_EQ(0, contacts.mesh1d_indices[0]);
+    ASSERT_EQ(2, contacts.mesh1d_indices[1]);
+    ASSERT_EQ(6, contacts.mesh1d_indices[2]);
+    ASSERT_EQ(0, contacts.mesh1d_indices[3]);
+    ASSERT_EQ(7, contacts.mesh1d_indices[4]);
+    ASSERT_EQ(7, contacts.mesh1d_indices[5]);
+    ASSERT_EQ(7, contacts.mesh1d_indices[6]);
+    ASSERT_EQ(7, contacts.mesh1d_indices[7]);
+
+    ASSERT_EQ(0, contacts.mesh2d_indices[0]);
+    ASSERT_EQ(1, contacts.mesh2d_indices[1]);
+    ASSERT_EQ(2, contacts.mesh2d_indices[2]);
+    ASSERT_EQ(3, contacts.mesh2d_indices[3]);
+    ASSERT_EQ(5, contacts.mesh2d_indices[4]);
+    ASSERT_EQ(6, contacts.mesh2d_indices[5]);
+    ASSERT_EQ(7, contacts.mesh2d_indices[6]);
+    ASSERT_EQ(8, contacts.mesh2d_indices[7]);
+}
+
 TEST(ApiStatelessTests, GetSplinesThroughApi)
 {
     // Prepare

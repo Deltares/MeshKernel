@@ -1765,6 +1765,70 @@ namespace meshkernelapi
         }
         return exitCode;
     }
+    MKERNEL_API int mkernel_compute_contacts_with_points(int meshKernelId,
+                                                         const int* oneDNodeMask,
+                                                         const GeometryList& points)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= mesh2dInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            // Convert 1D node mask from int** to vector<bool>
+            auto num1DNodes = mesh1dInstances[meshKernelId]->GetNumNodes();
+            auto meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask,
+                                                                        num1DNodes);
+
+            // Convert polygon date from GeometryList to Point vector
+            auto meshKernelPoints = ConvertGeometryListToPointVector(points);
+            // Execute
+            contactsInstances[meshKernelId]->ComputeContactsWithPoints(meshKernelPoints,
+                                                                       meshKernel1DNodeMask);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_compute_boundary_contacts(int meshKernelId,
+                                                      const int* oneDNodeMask,
+                                                      const GeometryList& polygons,
+                                                      double searchRadius)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= mesh2dInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            // Convert 1D node mask from int** to vector<bool>
+            auto num1DNodes = mesh1dInstances[meshKernelId]->GetNumNodes();
+            auto meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask,
+                                                                        num1DNodes);
+
+            // Convert polygon date from GeometryList to Polygons
+            auto polygonPoints = ConvertGeometryListToPointVector(polygons);
+            const meshkernel::Polygons meshKernelPolygons(polygonPoints,
+                                                          mesh2dInstances[meshKernelId]->m_projection);
+
+            // Execute
+            contactsInstances[meshKernelId]->ComputeBoundaryContacts(meshKernelPolygons,
+                                                                     searchRadius,
+                                                                     meshKernel1DNodeMask);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
 
     MKERNEL_API double mkernel_get_separator()
     {
