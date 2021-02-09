@@ -1688,21 +1688,8 @@ namespace meshkernelapi
 
             // Convert 1D node mask from int** to vector<bool>
             auto num1DNodes = mesh1dInstances[meshKernelId]->GetNumNodes();
-            std::vector<bool> meshKernel1DNodeMask(num1DNodes);
-            for (auto i = 0; i < num1DNodes; ++i)
-            {
-                switch (oneDNodeMask[i])
-                {
-                case 0:
-                    meshKernel1DNodeMask[i] = false;
-                    break;
-                case 1:
-                    meshKernel1DNodeMask[i] = true;
-                    break;
-                default:
-                    throw std::invalid_argument("MeshKernel: Invalid 1D mask.");
-                }
-            }
+            auto meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask,
+                                                                        num1DNodes);
 
             // Convert polygon date from GeometryList to Polygons
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
@@ -1719,6 +1706,11 @@ namespace meshkernelapi
         }
         return exitCode;
     }
+
+    // MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId,
+    //                                                   const int oneDNodeMask[])
+    // {
+    // }
 
     MKERNEL_API double mkernel_get_separator()
     {

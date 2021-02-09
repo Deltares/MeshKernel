@@ -224,4 +224,29 @@ namespace meshkernelapi
 
         return locations;
     }
+
+    /// @brief Converts an int array to a vector<bool>
+    /// @param[in]  inputArray The data of the input array
+    /// @param[in]  inputSize  The size of the input array
+    static std::vector<bool> ConvertIntegerArrayToBoolVector(const int inputArray[],
+                                                             size_t inputSize)
+    {
+        std::vector<bool> result(inputSize);
+        for (auto i = 0; i < inputSize; ++i)
+        {
+            switch (inputArray[i])
+            {
+            case 0:
+                result[i] = false;
+                break;
+            case 1:
+                result[i] = true;
+                break;
+            default:
+                throw std::invalid_argument("MeshKernel: Invalid 1D mask.");
+            }
+        }
+        return result;
+    }
+
 } // namespace meshkernelapi
