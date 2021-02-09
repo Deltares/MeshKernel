@@ -55,7 +55,6 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
@@ -77,7 +76,6 @@ TEST_F(ApiTests, FlipEdgesThroughApi)
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
@@ -99,7 +97,6 @@ TEST_F(ApiTests, InsertEdgeThroughApi)
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
@@ -119,7 +116,6 @@ TEST_F(ApiTests, MergeTwoNodesThroughApi)
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
@@ -140,7 +136,6 @@ TEST_F(ApiTests, MergeNodesThroughApi)
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert (nothing is done, just check that the api communication works)
@@ -188,7 +183,6 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -222,7 +216,6 @@ TEST_F(ApiTests, MakeGridThroughApi)
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert (nothing is done, just check that the api communication works)
@@ -270,7 +263,6 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
@@ -343,7 +335,6 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
@@ -430,7 +421,6 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -484,7 +474,6 @@ TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -708,7 +697,6 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -781,7 +769,6 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -843,7 +830,6 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -945,7 +931,6 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    meshkernelapi::Mesh1D mesh1d{};
     errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 

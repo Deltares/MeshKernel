@@ -129,8 +129,8 @@ namespace meshkernelapi
 
             auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
-            const meshkernel::Polygons polygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
-            mesh2dInstances[meshKernelId]->DeleteMesh(polygon, deletionOption, invertDeletion);
+            const meshkernel::Polygons meshKernelPolygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
+            mesh2dInstances[meshKernelId]->DeleteMesh(meshKernelPolygon, deletionOption, invertDeletion);
         }
         catch (...)
         {
@@ -256,8 +256,8 @@ namespace meshkernelapi
 
             for (auto i = 0; i < contacts.num_contacts; ++i)
             {
-                contacts.mesh1d_indices[i] = contactsInstances[meshKernelId]->m_mesh1dIndices[i];
-                contacts.mesh2d_indices[i] = contactsInstances[meshKernelId]->m_mesh2dIndices[i];
+                contacts.mesh1d_indices[i] = static_cast<int>(contactsInstances[meshKernelId]->m_mesh1dIndices[i]);
+                contacts.mesh2d_indices[i] = static_cast<int>(contactsInstances[meshKernelId]->m_mesh2dIndices[i]);
             }
         }
         catch (...)
