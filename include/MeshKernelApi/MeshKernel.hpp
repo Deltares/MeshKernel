@@ -584,7 +584,7 @@ namespace meshkernelapi
         /// @param[in]  polygons      The polygons selecting the area where the 1d-2d contacts will be generated.
         /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
-                                                        const int oneDNodeMask[],
+                                                        const int* oneDNodeMask,
                                                         const GeometryList& polygons);
 
         /// @brief Computes 1d-2d contacts, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)
@@ -594,7 +594,7 @@ namespace meshkernelapi
         /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
         /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId,
-                                                          const int oneDNodeMask[]);
+                                                          const int* oneDNodeMask);
 
         /// @brief Computes 1d-2d contacts, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)
         ///
@@ -604,7 +604,7 @@ namespace meshkernelapi
         /// @param[in]  polygons      The polygons to connect
         /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_contacts_with_polygons(int meshKernelId,
-                                                               const int oneDNodeMask[],
+                                                               const int* oneDNodeMask,
                                                                const GeometryList& polygons);
 
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)
@@ -615,7 +615,7 @@ namespace meshkernelapi
         /// @param[in]  points        The points selecting the faces to connect
         /// @return                   Error code (0 Successful)
         MKERNEL_API int mkernel_compute_contacts_with_points(int meshKernelId,
-                                                             const int oneDNodeMask[],
+                                                             const int* oneDNodeMask,
                                                              const GeometryList& points);
 
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
@@ -627,7 +627,7 @@ namespace meshkernelapi
         /// @param[in]  searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
         /// @return                  Error code (0 Successful)
         MKERNEL_API int mkernel_compute_boundary_contacts(int meshKernelId,
-                                                          const int oneDNodeMask[],
+                                                          const int* oneDNodeMask,
                                                           const GeometryList& polygons,
                                                           double searchRadius);
 

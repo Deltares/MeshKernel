@@ -1675,7 +1675,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
-                                                    const int oneDNodeMask[],
+                                                    const int* oneDNodeMask,
                                                     const GeometryList& polygons)
     {
         int exitCode = Success;
@@ -1707,10 +1707,31 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    // MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId,
-    //                                                   const int oneDNodeMask[])
-    // {
-    // }
+    MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId,
+                                                      const int* oneDNodeMask)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= mesh2dInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            // Convert 1D node mask from int** to vector<bool>
+            auto num1DNodes = mesh1dInstances[meshKernelId]->GetNumNodes();
+            auto meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask,
+                                                                        num1DNodes);
+
+            // Execute
+            contactsInstances[meshKernelId]->ComputeMultipleContacts(meshKernel1DNodeMask);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
 
     MKERNEL_API double mkernel_get_separator()
     {
