@@ -556,13 +556,6 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     meshkernel::Polygons polygon(point, mesh->m_projection);
 
-    meshkernelapi::SampleRefineParameters sampleRefineParameters;
-    sampleRefineParameters.MaximumTimeStepInCourantGrid = 0.96;
-    sampleRefineParameters.MinimumCellSize = 3.0;
-    sampleRefineParameters.AccountForSamplesOutside = 0;
-    sampleRefineParameters.ConnectHangingNodes = 1;
-    sampleRefineParameters.RefinementType = 2;
-
     meshkernelapi::InterpolationParameters interpolationParameters;
     interpolationParameters.MaxNumberOfRefinementIterations = 1;
     interpolationParameters.RefineIntersected = 0;
