@@ -29,7 +29,6 @@ public:
 
         // Set-up new mesh
         auto meshData = MakeRectangularMeshForApiTesting(n, m, delta);
-        meshkernelapi::Mesh1D mesh1d{};
         auto errorCode = mkernel_set_mesh2d(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
         ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
         // Clean up client-allocated memory
@@ -1203,18 +1202,8 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
 
     // Assert
     ASSERT_EQ(1, contacts.num_contacts);
-
     ASSERT_EQ(5, contacts.mesh1d_indices[0]);
-    // ASSERT_EQ(2, contacts.mesh1d_indices[1]);
-    // ASSERT_EQ(3, contacts.mesh1d_indices[2]);
-    // ASSERT_EQ(4, contacts.mesh1d_indices[3]);
-    // ASSERT_EQ(5, contacts.mesh1d_indices[4]);
-
     ASSERT_EQ(8, contacts.mesh2d_indices[0]);
-    // ASSERT_EQ(1, contacts.mesh2d_indices[1]);
-    // ASSERT_EQ(4, contacts.mesh2d_indices[2]);
-    // ASSERT_EQ(7, contacts.mesh2d_indices[3]);
-    // ASSERT_EQ(8, contacts.mesh2d_indices[4]);
 }
 
 TEST(ApiStatelessTests, GetSplinesThroughApi)
