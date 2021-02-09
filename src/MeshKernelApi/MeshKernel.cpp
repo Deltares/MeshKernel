@@ -1733,6 +1733,39 @@ namespace meshkernelapi
         return exitCode;
     }
 
+    MKERNEL_API int mkernel_compute_contacts_with_polygons(int meshKernelId,
+                                                           const int* oneDNodeMask,
+                                                           const GeometryList& polygons)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= mesh2dInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh does not exist.");
+            }
+
+            // Convert 1D node mask from int** to vector<bool>
+            auto num1DNodes = mesh1dInstances[meshKernelId]->GetNumNodes();
+            auto meshKernel1DNodeMask = ConvertIntegerArrayToBoolVector(oneDNodeMask,
+                                                                        num1DNodes);
+
+            // Convert polygon date from GeometryList to Polygons
+            auto polygonPoints = ConvertGeometryListToPointVector(polygons);
+            const meshkernel::Polygons meshKernelPolygons(polygonPoints,
+                                                          mesh2dInstances[meshKernelId]->m_projection);
+
+            // Execute
+            contactsInstances[meshKernelId]->ComputeContactsWithPolygons(meshKernelPolygons,
+                                                                         meshKernel1DNodeMask);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
     MKERNEL_API double mkernel_get_separator()
     {
         return meshkernel::doubleMissingValue;
