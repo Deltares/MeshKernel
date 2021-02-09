@@ -110,7 +110,7 @@ namespace meshkernel
 
         /// @brief Get the number of valid faces
         /// @return The number of valid faces
-        [[nodiscard]] auto GetNumFaces() const { return m_numFaces; }
+        [[nodiscard]] auto GetNumFaces() const { return m_facesNodes.size(); }
 
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
@@ -268,7 +268,6 @@ namespace meshkernel
         Projection m_projection; ///< The projection used
 
         // counters
-        size_t m_numFaces = 0;                  ///< Number of valid faces (nump)
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
         RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes

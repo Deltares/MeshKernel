@@ -66,8 +66,6 @@ void meshkernel::Mesh2D::Administrate(AdministrationOptions administrationOption
     }
 
     // face administration
-    m_numFaces = 0;
-
     m_edgesNumFaces.resize(m_edges.size());
     std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
 
@@ -481,12 +479,11 @@ void meshkernel::Mesh2D::FindFacesRecursive(size_t startingNode,
         }
 
         // increase m_edgesNumFaces
-        m_numFaces += 1;
         for (const auto& edge : edges)
         {
             m_edgesNumFaces[edge] += 1;
             const auto numFace = m_edgesNumFaces[edge];
-            m_edgesFaces[edge][numFace - 1] = m_numFaces - 1;
+            m_edgesFaces[edge][numFace - 1] = GetNumFaces();
         }
 
         // store the result
@@ -549,8 +546,8 @@ void meshkernel::Mesh2D::FindFaces()
         }
     }
 
-    m_numFacesNodes.resize(m_numFaces);
-    for (auto f = 0; f < m_numFaces; ++f)
+    m_numFacesNodes.resize(GetNumFaces());
+    for (auto f = 0; f < GetNumFaces(); ++f)
     {
         m_numFacesNodes[f] = m_facesNodes[f].size();
     }
