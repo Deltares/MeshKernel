@@ -4,11 +4,13 @@ file(GLOB API_TEST_LIST CONFIGURE_DEPENDS "*.cpp")
 # Make a test executable
 add_executable(MeshKernelApiTests ${API_TEST_LIST})
 
-# Add a dependency to ensure the correct build order 
+# Add a dependency to ensure the correct build order
 add_dependencies(MeshKernelApiTests MeshKernelStatic)
 
 # Should be linked to the main library, as well as the google test library
-target_link_libraries(MeshKernelApiTests PRIVATE ${Boost_LIBRARIES} MeshKernelStatic UtilsStatic gtest_main)
+target_link_libraries(
+  MeshKernelApiTests PRIVATE ${Boost_LIBRARIES} MeshKernelStatic UtilsStatic
+                             gtest_main)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
    set_target_properties (MeshKernelApiTests PROPERTIES COMPILE_FLAGS  "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++")

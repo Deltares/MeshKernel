@@ -6,6 +6,7 @@
 #include <MeshKernelApi/MeshGeometryDimensions.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
 #include <TestUtils/Definitions.hpp>
+#include <MeshKernelApi/Utils.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 class ApiTests : public ::testing::Test
