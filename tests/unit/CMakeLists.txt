@@ -16,13 +16,14 @@ endif()
 # examples and check the output, as well. Command can be a target.
 add_test(NAME MeshKernelUnitTests COMMAND MeshKernelUnitTests)
 
-file(GLOB NETCDF_FILES_LIST CONFIGURE_DEPENDS 
-    "${NETCDF_BIN_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}*${CMAKE_SHARED_LIBRARY_SUFFIX}")
-foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
-  add_custom_command(
-    TARGET MeshKernelUnitTests
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile}
-            "$<TARGET_FILE_DIR:MeshKernelUnitTests>"
-    COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
-endforeach()
+file(GLOB NETCDF_FILES_LIST CONFIGURE_DEPENDS "${NETCDF_BIN_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}*${CMAKE_SHARED_LIBRARY_SUFFIX}")
+if(WIN32)
+   foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
+     add_custom_command(
+       TARGET MeshKernelUnitTests
+       POST_BUILD
+       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile}
+               "$<TARGET_FILE_DIR:MeshKernelUnitTests>"
+       COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
+   endforeach()
+endif()
