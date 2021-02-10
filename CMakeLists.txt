@@ -41,16 +41,17 @@ add_subdirectory(extern)
 include(FetchContent)
 
 # Boost C++
+if(UNIX)
+  # In unix use boost dll
+  find_package(Boost REQUIRED COMPONENTS system filesystem)
+endif()  
 if(WIN32)
   # In windows use static libraries
   set(Boost_USE_STATIC_LIBS ON)
-  set(Boost_THREADAPI win32)
+  find_package(Boost REQUIRED)
 endif()  
-set(Boost_USE_MULTITHREADED OFF)
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(Boost_DETAILED_FAILURE_MSG ON)
-find_package(Boost REQUIRED COMPONENTS system filesystem)
 include_directories(${Boost_INCLUDE_DIR})
+
 
 # The static library
 add_subdirectory(src/MeshKernel)
