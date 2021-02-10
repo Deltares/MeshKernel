@@ -49,6 +49,9 @@ endif()
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 include_directories(${Boost_INCLUDE_DIR})
 
+message(STATUS "Boost_FILESYSTEM_LIBRARY is ${Boost_FILESYSTEM_LIBRARY}")
+message(STATUS "Boost_SYSTEM_LIBRARY is ${Boost_SYSTEM_LIBRARY}")
+
 # The static library
 add_subdirectory(src/MeshKernel)
 
