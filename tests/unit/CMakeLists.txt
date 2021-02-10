@@ -6,8 +6,10 @@ add_executable(MeshKernelUnitTests ${UNIT_TEST_LIST})
 add_dependencies(MeshKernelUnitTests MeshKernelStatic UtilsStatic)
 
 # Should be linked to the main library, as well as the google test library
-target_link_libraries(MeshKernelUnitTests PRIVATE MeshKernelStatic UtilsStatic
-                                                  gtest_main)
+target_link_libraries(MeshKernelUnitTests PRIVATE MeshKernelStatic UtilsStatic gtest_main)
+if(WIN32)
+   target_link_directories(MeshKernelUnitTests PRIVATE ${Boost_LIBRARY_DIRS})
+endif()
 
 if(UNIX)
    # Link against libdl	  
