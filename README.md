@@ -1,7 +1,8 @@
 # MeshKernel
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Deltares_Grid_Editor_back-end&metric=alert_status)](https://sonarcloud.io/dashboard?id=Deltares_Grid_Editor_back-end)
 
-Deltares C++ library for creating and editing 2D unstructured and curvilinear meshes.
+MeshKernel is library for creating and editing meshes.
+It supports 1D & 2D unstructured as well as curvilinear meshes.
 
 The library is separated in an API namespace (MeshKernelApi), used for communication with the client and a backend namespace (MeshKernel), where the algorithms are implemented. 
 The API namespace contains several structures used as parameters for the API methods (see API usage section). 
