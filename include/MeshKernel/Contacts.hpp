@@ -73,7 +73,7 @@ namespace meshkernel
         /// \image html ComputeSingleContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeSingleContacts algorithm. Contacts are shown in red."
         ///
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
-        /// @param[in] polygons The polygons selecting the area where the 1d-2d contacts will be generated.
+        /// @param[in] polygons     The polygons selecting the area where the 1d-2d contacts will be generated.
         void ComputeSingleContacts(const std::vector<bool>& oneDNodeMask, const Polygons& polygons);
 
         /// @brief Computes 1d-2d contacts,
@@ -103,7 +103,7 @@ namespace meshkernel
         /// \image html ComputeContactsWithPolygons.svg  "1d mesh connecting to 2d mesh using the ComputeContactsWithPolygons algorithm. Contacts are shown in red. Polygons in green."
         ///
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
-        /// @param[in] polygons The polygons to connect (Polygons class can have multiple polygons)
+        /// @param[in] polygons     The polygons to connect (Polygons class can have multiple polygons)
         void ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask, const Polygons& polygons);
 
         /// @brief Computes 1d-2d contacts,
@@ -114,7 +114,7 @@ namespace meshkernel
         /// \image html ComputeContactsWithPoints.jpg  "2d faces containing the input points connecting to the 1d mesh. Contacts are shown in red and the input points in blue."
         ///
         /// @param[in] oneDNodeMask The mask to apply to 1d nodes (true = connect node, false = do not generate contacts)
-        /// @param[in] points The points selecting the faces to connect
+        /// @param[in] points       The points selecting the faces to connect
         void ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask, const std::vector<Point>& points);
 
         /// @brief Computes 1d-2d contacts,
