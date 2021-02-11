@@ -1,10 +1,10 @@
-#pragma once
-
 #if defined(_WIN32)
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
 #include <Windows.h>
+#else
+#include <boost/dll.hpp>
 #endif
 
 #include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
@@ -15,6 +15,8 @@
 
 std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath)
 {
+
+#if _WIN32
     auto netcdf = LoadLibrary("netcdf.dll");
 
     if (!netcdf)
@@ -39,6 +41,19 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
 
     typedef int(__stdcall * nc_get_var_int_dll)(int ncid, int varid, int* ip);
     auto nc_get_var_int = (nc_get_var_int_dll)GetProcAddress(netcdf, "nc_get_var_int");
+
+#else
+
+    boost::dll::shared_library lib("libnetcdf.so", boost::dll::load_mode::search_system_folders);
+
+    auto nc_open = lib.get<int(const char*, int, int*)>("nc_open");
+    auto nc_inq_dimid = lib.get<int(int, const char*, int*)>("nc_inq_dimid");
+    auto nc_inq_dim = lib.get<int(int, int, char*, std::size_t*)>("nc_inq_dim");
+    auto nc_inq_varid = lib.get<int(int, const char*, int*)>("nc_inq_varid");
+    auto nc_get_var_double = lib.get<int(int, int, double*)>("nc_get_var_double");
+    auto nc_get_var_int = lib.get<int(int, int, int*)>("nc_get_var_int");
+
+#endif
 
     int ncidp = 0;
     int err = nc_open(filePath.c_str(), NC_NOWRITE, &ncidp);
@@ -109,11 +124,7 @@ std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> R
 std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection)
 {
 
-    auto meshData = ReadLegacyMeshFromFileForApiTesting(filePath);
-    std::tuple<meshkernelapi::MeshGeometry, meshkernelapi::MeshGeometryDimensions> ReadLegacyMeshFromFileForApiTesting(std::string filePath);
-
-    const auto meshgeometry = std::get<0>(meshData);
-    const auto meshgeometryDimensions = std::get<1>(meshData);
+    const auto [meshgeometry, meshgeometryDimensions] = ReadLegacyMeshFromFileForApiTesting(filePath);
 
     std::vector<meshkernel::Edge> edges(meshgeometryDimensions.numedge);
     std::vector<meshkernel::Point> nodes(meshgeometryDimensions.numnode);

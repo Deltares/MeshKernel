@@ -7,17 +7,23 @@ target_link_libraries(
   MeshKernelUnitTests PRIVATE MeshKernelStatic UtilsStatic ${Boost_LIBRARIES}
                               triangle gtest_main)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+   set_target_properties (MeshKernelUnitTests PROPERTIES COMPILE_FLAGS  "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++")
+   set_target_properties (MeshKernelUnitTests PROPERTIES LINK_FLAGS  "-ldl -lgcov --coverage")
+endif()
+
 # If you register a test, then ctest and make test will run it. You can also run
 # examples and check the output, as well. Command can be a target.
 add_test(NAME MeshKernelUnitTests COMMAND MeshKernelUnitTests)
 
-file(GLOB NETCDF_FILES_LIST CONFIGURE_DEPENDS
-     "${PROJECT_SOURCE_DIR}/extern/netcdf/netCDF 4.6.1/bin/*.dll")
-foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
-  add_custom_command(
-    TARGET MeshKernelUnitTests
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile}
-            "$<TARGET_FILE_DIR:MeshKernelUnitTests>"
-    COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
-endforeach()
+file(GLOB NETCDF_FILES_LIST CONFIGURE_DEPENDS "${NETCDF_BIN_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}*${CMAKE_SHARED_LIBRARY_SUFFIX}")
+if(WIN32)
+   foreach(CurrentNetcdfLibFile IN LISTS NETCDF_FILES_LIST)
+     add_custom_command(
+       TARGET MeshKernelUnitTests
+       POST_BUILD
+       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CurrentNetcdfLibFile}
+               "$<TARGET_FILE_DIR:MeshKernelUnitTests>"
+       COMMENT "Copying netcdf lib file: ${CurrentNetcdfLibFile}")
+   endforeach()
+endif()

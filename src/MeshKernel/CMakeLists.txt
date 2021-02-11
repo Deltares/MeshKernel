@@ -12,6 +12,11 @@ set(API_SOURCE "${PROJECT_SOURCE_DIR}/src/MeshKernelApi/MeshKernel.cpp")
 add_library(MeshKernelStatic STATIC ${SOURCE_LIST} ${HEADER_LIST} ${API_HEADER}
                                     ${API_SOURCE})
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+   set_target_properties (MeshKernelStatic PROPERTIES COMPILE_FLAGS  "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++")
+   set_target_properties (MeshKernelStatic PROPERTIES LINK_FLAGS  "-ldl -lgcov --coverage")
+endif()
+
 # Expose the interface of the static lib
 target_include_directories(MeshKernelStatic
                            PUBLIC "${PROJECT_SOURCE_DIR}/include")
