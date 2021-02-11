@@ -952,7 +952,7 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi)
 
     // Init 1d mesh
     meshkernelapi::Mesh1D mesh1d;
-    std::unique_ptr<double> nodex(new double[]{
+    std::unique_ptr<double> nodex(new double[7]{
         1.73493900000000,
         2.35659313023165,
         5.38347452702839,
@@ -960,7 +960,7 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi)
         22.9324017677239,
         25.3723169493137,
         25.8072280000000});
-    std::unique_ptr<double> nodey(new double[]{
+    std::unique_ptr<double> nodey(new double[7]{
         -7.6626510000000,
         1.67281447902331,
         10.3513746546384,
@@ -972,7 +972,7 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi)
     mesh1d.nodey = nodey.get();
     mesh1d.num_nodes = 7;
 
-    std::unique_ptr<int> edge_nodes(new int[]{
+    std::unique_ptr<int> edge_nodes(new int[12]{
         0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6});
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
@@ -981,18 +981,18 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
-    std::unique_ptr<int> onedNodeMask(new int[]{
+    std::unique_ptr<int> onedNodeMask(new int[7]{
         1, 1, 1, 1, 1, 1, 1});
 
     // Init polygon
     meshkernelapi::GeometryList polygon;
     polygon.geometrySeparator = meshkernel::doubleMissingValue;
 
-    std::unique_ptr<double> xCoordinates(new double[]{
+    std::unique_ptr<double> xCoordinates(new double[5]{
         -30, 40, 40, -40, -30});
-    std::unique_ptr<double> yCoordinates(new double[]{
+    std::unique_ptr<double> yCoordinates(new double[5]{
         -20, -20, 50, 50, -20});
-    std::unique_ptr<double> zCoordinates(new double[]{
+    std::unique_ptr<double> zCoordinates(new double[5]{
         0, 0, 0, 0, 0});
     polygon.xCoordinates = xCoordinates.get();
     polygon.yCoordinates = yCoordinates.get();
@@ -1040,7 +1040,7 @@ TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
 
     // Init 1d mesh
     meshkernelapi::Mesh1D mesh1d;
-    std::unique_ptr<double> nodex(new double[]{
+    std::unique_ptr<double> nodex(new double[7]{
         1.73493900000000,
         2.35659313023165,
         5.38347452702839,
@@ -1048,7 +1048,7 @@ TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
         22.9324017677239,
         25.3723169493137,
         25.8072280000000});
-    std::unique_ptr<double> nodey(new double[]{
+    std::unique_ptr<double> nodey(new double[7]{
         -7.6626510000000,
         1.67281447902331,
         10.3513746546384,
@@ -1060,7 +1060,7 @@ TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
     mesh1d.nodey = nodey.get();
     mesh1d.num_nodes = 7;
 
-    std::unique_ptr<int> edge_nodes(new int[]{
+    std::unique_ptr<int> edge_nodes(new int[12]{
         0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6});
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
@@ -1069,7 +1069,7 @@ TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
-    std::unique_ptr<int> onedNodeMask(new int[]{
+    std::unique_ptr<int> onedNodeMask(new int[7]{
         1, 1, 1, 1, 1, 1, 1});
 
     // Execute
@@ -1113,7 +1113,7 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
 
     // Init 1d mesh
     meshkernelapi::Mesh1D mesh1d;
-    std::unique_ptr<double> nodex(new double[]{
+    std::unique_ptr<double> nodex(new double[7]{
         1.73493900000000,
         2.35659313023165,
         5.38347452702839,
@@ -1121,7 +1121,7 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
         22.9324017677239,
         25.3723169493137,
         25.8072280000000});
-    std::unique_ptr<double> nodey(new double[]{
+    std::unique_ptr<double> nodey(new double[7]{
         -7.6626510000000,
         1.67281447902331,
         10.3513746546384,
@@ -1133,7 +1133,7 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
     mesh1d.nodey = nodey.get();
     mesh1d.num_nodes = 7;
 
-    std::unique_ptr<int> edge_nodes(new int[]{
+    std::unique_ptr<int> edge_nodes(new int[12]{
         0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6});
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
@@ -1142,26 +1142,26 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
-    std::unique_ptr<int> onedNodeMask(new int[]{
+    std::unique_ptr<int> onedNodeMask(new int[7]{
         1, 1, 1, 1, 1, 1, 1});
 
     // Init polygon
     meshkernelapi::GeometryList polygon;
     polygon.geometrySeparator = meshkernel::doubleMissingValue;
 
-    std::unique_ptr<double> xCoordinates(new double[]{
+    std::unique_ptr<double> xCoordinates(new double[5]{
         25,
         50,
         50,
         25,
         25});
-    std::unique_ptr<double> yCoordinates(new double[]{
+    std::unique_ptr<double> yCoordinates(new double[5]{
         25,
         25,
         50,
         50,
         25});
-    std::unique_ptr<double> zCoordinates(new double[]{
+    std::unique_ptr<double> zCoordinates(new double[5]{
         0, 0, 0, 0, 0});
     polygon.xCoordinates = xCoordinates.get();
     polygon.yCoordinates = yCoordinates.get();
@@ -1199,7 +1199,7 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
 
     // Init 1d mesh
     meshkernelapi::Mesh1D mesh1d;
-    std::unique_ptr<double> nodex(new double[]{
+    std::unique_ptr<double> nodex(new double[7]{
         1.73493900000000,
         2.35659313023165,
         5.38347452702839,
@@ -1207,7 +1207,7 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
         22.9324017677239,
         25.3723169493137,
         25.8072280000000});
-    std::unique_ptr<double> nodey(new double[]{
+    std::unique_ptr<double> nodey(new double[7]{
         -7.6626510000000,
         1.67281447902331,
         10.3513746546384,
@@ -1219,7 +1219,7 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
     mesh1d.nodey = nodey.get();
     mesh1d.num_nodes = 7;
 
-    std::unique_ptr<int> edge_nodes(new int[]{
+    std::unique_ptr<int> edge_nodes(new int[12]{
         0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6});
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
@@ -1228,24 +1228,24 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
-    std::unique_ptr<int> onedNodeMask(new int[]{
+    std::unique_ptr<int> onedNodeMask(new int[7]{
         1, 1, 1, 1, 1, 1, 1});
 
     // Init polygon
     meshkernelapi::GeometryList points;
     points.geometrySeparator = meshkernel::doubleMissingValue;
 
-    std::unique_ptr<double> xCoordinates(new double[]{
+    std::unique_ptr<double> xCoordinates(new double[4]{
         5,
         15,
         25,
         35});
-    std::unique_ptr<double> yCoordinates(new double[]{
+    std::unique_ptr<double> yCoordinates(new double[4]{
         5,
         15,
         25,
         35});
-    std::unique_ptr<double> zCoordinates(new double[]{
+    std::unique_ptr<double> zCoordinates(new double[4]{
         0, 0, 0, 0});
     points.xCoordinates = xCoordinates.get();
     points.yCoordinates = yCoordinates.get();
@@ -1289,7 +1289,7 @@ TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
 
     // Init 1d mesh
     meshkernelapi::Mesh1D mesh1d;
-    std::unique_ptr<double> nodex(new double[]{
+    std::unique_ptr<double> nodex(new double[8]{
         -16.1886410000000,
         -16.1464995876014,
         -16.1043581752028,
@@ -1299,7 +1299,7 @@ TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
         2.02441565010741,
         10.9135970000000,
     });
-    std::unique_ptr<double> nodey(new double[]{
+    std::unique_ptr<double> nodey(new double[8]{
         0.89018900000000,
         9.78201442138723,
         18.6738398427745,
@@ -1312,7 +1312,7 @@ TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
     mesh1d.nodey = nodey.get();
     mesh1d.num_nodes = 8;
 
-    std::unique_ptr<int> edge_nodes(new int[]{
+    std::unique_ptr<int> edge_nodes(new int[14]{
         0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7});
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 7;
@@ -1321,26 +1321,26 @@ TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
-    std::unique_ptr<int> onedNodeMask(new int[]{
+    std::unique_ptr<int> onedNodeMask(new int[8]{
         1, 1, 1, 1, 1, 1, 1, 1});
 
     // Init polygon
     meshkernelapi::GeometryList polygon;
     polygon.geometrySeparator = meshkernel::doubleMissingValue;
 
-    std::unique_ptr<double> xCoordinates(new double[]{
+    std::unique_ptr<double> xCoordinates(new double[5]{
         -30,
         40,
         40,
         -40,
         -30});
-    std::unique_ptr<double> yCoordinates(new double[]{
+    std::unique_ptr<double> yCoordinates(new double[5]{
         -20,
         -20,
         50,
         50,
         -20});
-    std::unique_ptr<double> zCoordinates(new double[]{
+    std::unique_ptr<double> zCoordinates(new double[5]{
         0, 0, 0, 0, 0});
     polygon.xCoordinates = xCoordinates.get();
     polygon.yCoordinates = yCoordinates.get();
