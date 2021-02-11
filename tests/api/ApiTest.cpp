@@ -4,7 +4,7 @@
 
 #include <MeshKernelApi/GeometryList.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
-#include <MeshKernelApi/Mesh1d.hpp>
+#include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/MeshGeometry.hpp>
 #include <MeshKernelApi/MeshGeometryDimensions.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
