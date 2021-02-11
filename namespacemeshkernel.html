@@ -253,7 +253,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a5dce9fe20343a37372cb4e442ae836c9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5dce9fe20343a37372cb4e442ae836c9">IsLeft</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;leftPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;rightPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point)</td></tr>
 <tr class="memdesc:a5dce9fe20343a37372cb4e442ae836c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests if a point is Left|On|Right of an infinite line.  <a href="namespacemeshkernel.html#a5dce9fe20343a37372cb4e442ae836c9">More...</a><br /></td></tr>
 <tr class="separator:a5dce9fe20343a37372cb4e442ae836c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b00b39ebfe727bd035a36e774093d29"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29">IsPointInPolygonNodes</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodes, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> polygonCenter={<a class="el" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">doubleMissingValue</a>, <a class="el" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">doubleMissingValue</a>}, size_t startNode=<a class="el" href="namespacemeshkernel.html#a86f926037fa4ea742d37ef15beced9a5">sizetMissingValue</a>, size_t endNode=<a class="el" href="namespacemeshkernel.html#a86f926037fa4ea742d37ef15beced9a5">sizetMissingValue</a>)</td></tr>
+<tr class="memitem:a0b00b39ebfe727bd035a36e774093d29"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29">IsPointInPolygonNodes</a> (const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;point, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodes, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> polygonCenter={<a class="el" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">doubleMissingValue</a>, <a class="el" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">doubleMissingValue</a>}, size_t startNode=<a class="el" href="namespacemeshkernel.html#a94d2aa63bbb7fb6be607764c78b1b6be">sizetMissingValue</a>, size_t endNode=<a class="el" href="namespacemeshkernel.html#a94d2aa63bbb7fb6be607764c78b1b6be">sizetMissingValue</a>)</td></tr>
 <tr class="memdesc:a0b00b39ebfe727bd035a36e774093d29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is in polygonNodes using the winding number method.  <a href="namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29">More...</a><br /></td></tr>
 <tr class="separator:a0b00b39ebfe727bd035a36e774093d29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a351c3fd8e9cb0d3e60a79dbdfc43af9a"><td class="memItemLeft" align="right" valign="top"><a id="a351c3fd8e9cb0d3e60a79dbdfc43af9a"></a>
@@ -379,10 +379,10 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0af5c04a2ceb3077471ebdca70bfe4a8">intMissingValue</a> = -999</td></tr>
 <tr class="memdesc:a0af5c04a2ceb3077471ebdca70bfe4a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer value used as missing value. <br /></td></tr>
 <tr class="separator:a0af5c04a2ceb3077471ebdca70bfe4a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86f926037fa4ea742d37ef15beced9a5"><td class="memItemLeft" align="right" valign="top"><a id="a86f926037fa4ea742d37ef15beced9a5"></a>
-const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a86f926037fa4ea742d37ef15beced9a5">sizetMissingValue</a> = std::numeric_limits&lt;size_t&gt;::max()</td></tr>
-<tr class="memdesc:a86f926037fa4ea742d37ef15beced9a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">size_t missing value used for invalid indices <br /></td></tr>
-<tr class="separator:a86f926037fa4ea742d37ef15beced9a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94d2aa63bbb7fb6be607764c78b1b6be"><td class="memItemLeft" align="right" valign="top"><a id="a94d2aa63bbb7fb6be607764c78b1b6be"></a>
+const std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a94d2aa63bbb7fb6be607764c78b1b6be">sizetMissingValue</a> = std::numeric_limits&lt;std::size_t&gt;::max()</td></tr>
+<tr class="memdesc:a94d2aa63bbb7fb6be607764c78b1b6be"><td class="mdescLeft">&#160;</td><td class="mdescRight">std::size_t missing value used for invalid indices <br /></td></tr>
+<tr class="separator:a94d2aa63bbb7fb6be607764c78b1b6be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe79a717873ddb5760feae84567d98de"><td class="memItemLeft" align="right" valign="top"><a id="abe79a717873ddb5760feae84567d98de"></a>
 const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#abe79a717873ddb5760feae84567d98de">squareRootOfThree</a> = 1.73205080756887729352</td></tr>
 <tr class="memdesc:abe79a717873ddb5760feae84567d98de"><td class="mdescLeft">&#160;</td><td class="mdescRight">The result of sqrt(3) <br /></td></tr>
@@ -419,22 +419,22 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a31c4926091fa82b79c7d357feca28f27">minimumDeltaCoordinate</a> = 1e-14</td></tr>
 <tr class="memdesc:a31c4926091fa82b79c7d357feca28f27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum delta coordinate. <br /></td></tr>
 <tr class="separator:a31c4926091fa82b79c7d357feca28f27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d22f61f1f2f6994a1d85da15ea6dc9d"><td class="memItemLeft" align="right" valign="top"><a id="a5d22f61f1f2f6994a1d85da15ea6dc9d"></a>
-const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5d22f61f1f2f6994a1d85da15ea6dc9d">maximumNumberOfEdgesPerNode</a> = 12</td></tr>
-<tr class="memdesc:a5d22f61f1f2f6994a1d85da15ea6dc9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of edges per node. <br /></td></tr>
-<tr class="separator:a5d22f61f1f2f6994a1d85da15ea6dc9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58dea5a422fe6751201fb09ed0be192c"><td class="memItemLeft" align="right" valign="top"><a id="a58dea5a422fe6751201fb09ed0be192c"></a>
-const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a58dea5a422fe6751201fb09ed0be192c">maximumNumberOfEdgesPerFace</a> = 6</td></tr>
-<tr class="memdesc:a58dea5a422fe6751201fb09ed0be192c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of edges per face. <br /></td></tr>
-<tr class="separator:a58dea5a422fe6751201fb09ed0be192c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51392c326db46292876b19169d79a934"><td class="memItemLeft" align="right" valign="top"><a id="a51392c326db46292876b19169d79a934"></a>
-const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a51392c326db46292876b19169d79a934">maximumNumberOfNodesPerFace</a> = 8</td></tr>
-<tr class="memdesc:a51392c326db46292876b19169d79a934"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of nodes per face. <br /></td></tr>
-<tr class="separator:a51392c326db46292876b19169d79a934"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24914622376183c29367b7afa18be6ac"><td class="memItemLeft" align="right" valign="top"><a id="a24914622376183c29367b7afa18be6ac"></a>
-const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a24914622376183c29367b7afa18be6ac">maximumNumberOfConnectedNodes</a> = <a class="el" href="namespacemeshkernel.html#a5d22f61f1f2f6994a1d85da15ea6dc9d">maximumNumberOfEdgesPerNode</a> * 4</td></tr>
-<tr class="memdesc:a24914622376183c29367b7afa18be6ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of connected nodes. <br /></td></tr>
-<tr class="separator:a24914622376183c29367b7afa18be6ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af45a24621e55e155957618ddf7e00637"><td class="memItemLeft" align="right" valign="top"><a id="af45a24621e55e155957618ddf7e00637"></a>
+const std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#af45a24621e55e155957618ddf7e00637">maximumNumberOfEdgesPerNode</a> = 12</td></tr>
+<tr class="memdesc:af45a24621e55e155957618ddf7e00637"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of edges per node. <br /></td></tr>
+<tr class="separator:af45a24621e55e155957618ddf7e00637"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae0b022522e1e31499239d5b18d3da9b"><td class="memItemLeft" align="right" valign="top"><a id="aae0b022522e1e31499239d5b18d3da9b"></a>
+const std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aae0b022522e1e31499239d5b18d3da9b">maximumNumberOfEdgesPerFace</a> = 6</td></tr>
+<tr class="memdesc:aae0b022522e1e31499239d5b18d3da9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of edges per face. <br /></td></tr>
+<tr class="separator:aae0b022522e1e31499239d5b18d3da9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc3746b061ba782b37a0f9eb09c30e96"><td class="memItemLeft" align="right" valign="top"><a id="adc3746b061ba782b37a0f9eb09c30e96"></a>
+const std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#adc3746b061ba782b37a0f9eb09c30e96">maximumNumberOfNodesPerFace</a> = 8</td></tr>
+<tr class="memdesc:adc3746b061ba782b37a0f9eb09c30e96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of nodes per face. <br /></td></tr>
+<tr class="separator:adc3746b061ba782b37a0f9eb09c30e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9385043e4eb87381596cca867069cba4"><td class="memItemLeft" align="right" valign="top"><a id="a9385043e4eb87381596cca867069cba4"></a>
+const std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a9385043e4eb87381596cca867069cba4">maximumNumberOfConnectedNodes</a> = <a class="el" href="namespacemeshkernel.html#af45a24621e55e155957618ddf7e00637">maximumNumberOfEdgesPerNode</a> * 4</td></tr>
+<tr class="memdesc:a9385043e4eb87381596cca867069cba4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of connected nodes. <br /></td></tr>
+<tr class="separator:a9385043e4eb87381596cca867069cba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcd460adf42c413b283f7190c5c9ef95"><td class="memItemLeft" align="right" valign="top"><a id="adcd460adf42c413b283f7190c5c9ef95"></a>
 const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#adcd460adf42c413b283f7190c5c9ef95">minimumCellArea</a> = 1e-12</td></tr>
 <tr class="memdesc:adcd460adf42c413b283f7190c5c9ef95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum cell area. <br /></td></tr>
@@ -443,14 +443,14 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0749d5ac40719df6e147211e58f6083d">weightCircumCenter</a> = 1.0</td></tr>
 <tr class="memdesc:a0749d5ac40719df6e147211e58f6083d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weight circum center. <br /></td></tr>
 <tr class="separator:a0749d5ac40719df6e147211e58f6083d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1809132d4aabf786058dd76cbda961b2"><td class="memItemLeft" align="right" valign="top"><a id="a1809132d4aabf786058dd76cbda961b2"></a>
-const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a1809132d4aabf786058dd76cbda961b2">numNodesQuads</a> = 4</td></tr>
-<tr class="memdesc:a1809132d4aabf786058dd76cbda961b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of nodes in a quadrilateral. <br /></td></tr>
-<tr class="separator:a1809132d4aabf786058dd76cbda961b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accd0385ee4debd52a1562bccea666675"><td class="memItemLeft" align="right" valign="top"><a id="accd0385ee4debd52a1562bccea666675"></a>
-const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#accd0385ee4debd52a1562bccea666675">numNodesInTriangle</a> = 3</td></tr>
-<tr class="memdesc:accd0385ee4debd52a1562bccea666675"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of nodes in a triangle. <br /></td></tr>
-<tr class="separator:accd0385ee4debd52a1562bccea666675"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e00516445c7c93085a126981c6aa521"><td class="memItemLeft" align="right" valign="top"><a id="a0e00516445c7c93085a126981c6aa521"></a>
+const std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a0e00516445c7c93085a126981c6aa521">numNodesQuads</a> = 4</td></tr>
+<tr class="memdesc:a0e00516445c7c93085a126981c6aa521"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of nodes in a quadrilateral. <br /></td></tr>
+<tr class="separator:a0e00516445c7c93085a126981c6aa521"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afabf9e9ee0f448b4e02453335ccbbd7a"><td class="memItemLeft" align="right" valign="top"><a id="afabf9e9ee0f448b4e02453335ccbbd7a"></a>
+const std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#afabf9e9ee0f448b4e02453335ccbbd7a">numNodesInTriangle</a> = 3</td></tr>
+<tr class="memdesc:afabf9e9ee0f448b4e02453335ccbbd7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of nodes in a triangle. <br /></td></tr>
+<tr class="separator:afabf9e9ee0f448b4e02453335ccbbd7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c43acbca41e9612154031ba73ad7b3f"><td class="memItemLeft" align="right" valign="top"><a id="a5c43acbca41e9612154031ba73ad7b3f"></a>
 const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5c43acbca41e9612154031ba73ad7b3f">minimumEdgeLength</a> = 1e-4</td></tr>
 <tr class="memdesc:a5c43acbca41e9612154031ba73ad7b3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum edge length. <br /></td></tr>
@@ -1902,13 +1902,13 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>startNode</em> = <code><a class="el" href="namespacemeshkernel.html#a86f926037fa4ea742d37ef15beced9a5">sizetMissingValue</a></code>, </td>
+          <td class="paramname"><em>startNode</em> = <code><a class="el" href="namespacemeshkernel.html#a94d2aa63bbb7fb6be607764c78b1b6be">sizetMissingValue</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>endNode</em> = <code><a class="el" href="namespacemeshkernel.html#a86f926037fa4ea742d37ef15beced9a5">sizetMissingValue</a></code>&#160;</td>
+          <td class="paramname"><em>endNode</em> = <code><a class="el" href="namespacemeshkernel.html#a94d2aa63bbb7fb6be607764c78b1b6be">sizetMissingValue</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>

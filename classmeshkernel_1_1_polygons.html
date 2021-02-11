@@ -114,12 +114,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5222671c35a596240dcdf2bdb1d6e53e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a5222671c35a596240dcdf2bdb1d6e53e">PolygonIndices</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;point) const</td></tr>
 <tr class="memdesc:a5222671c35a596240dcdf2bdb1d6e53e"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each point, compute the index of the polygon including it.  <a href="classmeshkernel_1_1_polygons.html#a5222671c35a596240dcdf2bdb1d6e53e">More...</a><br /></td></tr>
 <tr class="separator:a5222671c35a596240dcdf2bdb1d6e53e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98de1a4c272b018d0fc40bf64a63b814"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a98de1a4c272b018d0fc40bf64a63b814">Polygons::IsEmpty</a> () const</td></tr>
-<tr class="memdesc:a98de1a4c272b018d0fc40bf64a63b814"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the polygon is empty.  <a href="classmeshkernel_1_1_polygons.html#a98de1a4c272b018d0fc40bf64a63b814">More...</a><br /></td></tr>
-<tr class="separator:a98de1a4c272b018d0fc40bf64a63b814"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10b6d46d1797ffab94d8cca57c8ec993"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a10b6d46d1797ffab94d8cca57c8ec993">Polygons::GetNumPolygons</a> () const</td></tr>
-<tr class="memdesc:a10b6d46d1797ffab94d8cca57c8ec993"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives the number of polygons.  <a href="classmeshkernel_1_1_polygons.html#a10b6d46d1797ffab94d8cca57c8ec993">More...</a><br /></td></tr>
-<tr class="separator:a10b6d46d1797ffab94d8cca57c8ec993"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada9dba423c7ed711062841761d058b4f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#ada9dba423c7ed711062841761d058b4f">IsEmpty</a> () const</td></tr>
+<tr class="memdesc:ada9dba423c7ed711062841761d058b4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the polygon is empty.  <a href="classmeshkernel_1_1_polygons.html#ada9dba423c7ed711062841761d058b4f">More...</a><br /></td></tr>
+<tr class="separator:ada9dba423c7ed711062841761d058b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f2d19f77c93799a0af69bb09962315d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a6f2d19f77c93799a0af69bb09962315d">GetNumPolygons</a> () const</td></tr>
+<tr class="memdesc:a6f2d19f77c93799a0af69bb09962315d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives the number of polygons.  <a href="classmeshkernel_1_1_polygons.html#a6f2d19f77c93799a0af69bb09962315d">More...</a><br /></td></tr>
+<tr class="separator:a6f2d19f77c93799a0af69bb09962315d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a456c08fc862cac554b00a44e12f1dd41"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a456c08fc862cac554b00a44e12f1dd41">GetNumNodes</a> () const</td></tr>
 <tr class="memdesc:a456c08fc862cac554b00a44e12f1dd41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of polygon nodes.  <a href="classmeshkernel_1_1_polygons.html#a456c08fc862cac554b00a44e12f1dd41">More...</a><br /></td></tr>
 <tr class="separator:a456c08fc862cac554b00a44e12f1dd41"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -225,6 +225,46 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
 
 <p>Gets the number of polygon nodes. </p>
 <dl class="section return"><dt>Returns</dt><dd>the number of polygon nodes </dd></dl>
+
+</div>
+</div>
+<a id="a6f2d19f77c93799a0af69bb09962315d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f2d19f77c93799a0af69bb09962315d">&#9670;&nbsp;</a></span>GetNumPolygons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t meshkernel::Polygons::GetNumPolygons </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gives the number of polygons. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of polygons </dd></dl>
+
+</div>
+</div>
+<a id="ada9dba423c7ed711062841761d058b4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada9dba423c7ed711062841761d058b4f">&#9670;&nbsp;</a></span>IsEmpty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool meshkernel::Polygons::IsEmpty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if the polygon is empty. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if it is empty, false otherwise </dd></dl>
 
 </div>
 </div>
@@ -355,46 +395,6 @@ std::vector&lt; std::vector&lt; size_t &gt; &gt;&#160;</td><td class="memItemRig
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The index of the polygon including it </dd></dl>
-
-</div>
-</div>
-<a id="a10b6d46d1797ffab94d8cca57c8ec993"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a10b6d46d1797ffab94d8cca57c8ec993">&#9670;&nbsp;</a></span>Polygons::GetNumPolygons()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t meshkernel::Polygons::Polygons::GetNumPolygons </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gives the number of polygons. </p>
-<dl class="section return"><dt>Returns</dt><dd>Number of polygons </dd></dl>
-
-</div>
-</div>
-<a id="a98de1a4c272b018d0fc40bf64a63b814"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a98de1a4c272b018d0fc40bf64a63b814">&#9670;&nbsp;</a></span>Polygons::IsEmpty()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool meshkernel::Polygons::Polygons::IsEmpty </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Checks if the polygon is empty. </p>
-<dl class="section return"><dt>Returns</dt><dd>True if it is empty, false otherwise </dd></dl>
 
 </div>
 </div>
