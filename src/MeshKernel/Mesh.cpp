@@ -25,7 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
 #include "MeshKernel/Mesh.hpp"
 
 #include <MeshKernel/Exceptions.hpp>

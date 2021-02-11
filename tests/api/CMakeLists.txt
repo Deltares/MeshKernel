@@ -12,6 +12,12 @@ target_link_libraries(
   MeshKernelApiTests PRIVATE ${Boost_LIBRARIES} MeshKernelStatic UtilsStatic
                              gtest_main)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+   set_target_properties (MeshKernelApiTests PROPERTIES COMPILE_FLAGS  "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++")
+   set_target_properties (MeshKernelApiTests PROPERTIES LINK_FLAGS  "-ldl -lgcov --coverage")
+endif()
+
+
 # If you register a test, then ctest and make test will run it. You can also run
 # examples and check the output, as well. Command can be a target.
 add_test(NAME MeshKernelApiTests COMMAND MeshKernelApiTests)

@@ -5,12 +5,13 @@
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 TEST(LandBoundaries, OneLandBoundary)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     std::vector<meshkernel::Point> landBoundaryPolygon{
         {222.621918, 382.651917},
@@ -41,7 +42,7 @@ TEST(LandBoundaries, OneLandBoundary)
 TEST(LandBoundaries, TwoLandBoundaries)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     std::vector<meshkernel::Point> landBoundaryPolygon{
         {222.621918, 382.651917},
@@ -78,7 +79,7 @@ TEST(LandBoundaries, TwoLandBoundaries)
 TEST(LandBoundaries, OneCrossingLandBoundary)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     std::vector<meshkernel::Point> landBoundaryPolygon{
         {221.418243, 315.848755},
@@ -110,7 +111,7 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
 TEST(LandBoundaries, TwoCrossingLandBoundary)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     std::vector<meshkernel::Point> landBoundaryPolygon{
         {235.561218, 290.571899},

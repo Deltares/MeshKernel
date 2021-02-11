@@ -191,7 +191,7 @@ void meshkernel::MeshRefinement::Compute()
     }
 
     //remove isolated hanging nodes and connect if needed
-    if (m_sampleRefineParameters.ConnectHangingNodes)
+    if (m_sampleRefineParameters.ConnectHangingNodes == 1)
     {
         ConnectHangingNodes();
         m_mesh->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);

@@ -1,10 +1,8 @@
-#pragma once
-
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 
 #include <MeshKernel/Entities.hpp>
 #include <TestUtils/SampleFileReader.hpp>
@@ -15,7 +13,7 @@ std::vector<meshkernel::Sample> ReadSampleFile(std::string filePath)
 
     // read sample file
     std::string line;
-    std::ifstream infile(filePath);
+    std::ifstream infile(filePath.c_str());
     while (std::getline(infile, line))
     {
         std::istringstream iss(line);

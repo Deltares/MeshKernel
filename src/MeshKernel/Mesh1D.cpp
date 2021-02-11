@@ -25,7 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
 #include "MeshKernel/Mesh1D.hpp"
 
 #include <MeshKernel/Entities.hpp>
