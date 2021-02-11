@@ -3,11 +3,12 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 TEST(Polygons, MeshBoundaryToPolygon)
 {
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     std::vector<meshkernel::Point> polygonNodes;
     const auto meshBoundaryPolygon = mesh->MeshBoundaryToPolygon(polygonNodes);

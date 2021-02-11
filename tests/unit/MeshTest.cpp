@@ -6,6 +6,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 TEST(Mesh, OneQuadTestConstructor)
@@ -641,7 +642,7 @@ TEST(Mesh, GetSmallFlowEdgeCenters)
 TEST(Mesh, DeleteSmallFlowEdge)
 {
     // Setup a mesh with eight triangles
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_net.nc");
 
     ASSERT_EQ(8, mesh->GetNumFaces());
 
@@ -654,7 +655,7 @@ TEST(Mesh, DeleteSmallFlowEdge)
 TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
 {
     // Setup a mesh with two triangles
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_quad_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_quad_net.nc");
 
     ASSERT_EQ(2, mesh->GetNumFaces());
 

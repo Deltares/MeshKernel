@@ -28,8 +28,8 @@
 #pragma once
 #include <vector>
 
-#include <Meshkernel/Entities.hpp>
-#include <Meshkernel/Mesh.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library

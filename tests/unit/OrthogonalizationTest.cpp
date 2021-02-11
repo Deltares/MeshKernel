@@ -9,6 +9,7 @@
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
+#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 #if defined(_WIN32)
@@ -80,7 +81,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
 {
 
     // now build node-edge mapping
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
     const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.OuterIterations = 2;
@@ -195,7 +196,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPolygon)
 {
     // now build node-edge mapping
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
@@ -263,7 +264,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
 {
     // now build node-edge mapping
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
     const auto projectToLandBoundaryOption = meshkernel::LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
     meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
@@ -352,7 +353,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 {
     // Prepare
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/SmallTriangularGrid_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     // the land boundary to use
     std::vector<meshkernel::Point> landBoundary{{235.561218, 290.571899},
@@ -557,7 +558,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationMeshWithEdgeWithNoFaces)
 {
-    auto mesh = ReadLegacyMeshFromFile("../../../../tests/data/EdgesWithNoFaces_net.nc");
+    auto mesh = ReadLegacyMeshFromFile(TEST_FOLDER + "/data/EdgesWithNoFaces_net.nc");
     ASSERT_EQ(mesh->GetNumNodes(), 376);
     ASSERT_EQ(mesh->GetNumEdges(), 698);
     ASSERT_EQ(mesh->GetNumFaces(), 319);
