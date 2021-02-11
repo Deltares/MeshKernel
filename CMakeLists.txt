@@ -56,10 +56,12 @@ endif()
 include_directories(${Boost_INCLUDE_DIR})
 
 #NetCDF
-find_path(NETCDF_BIN_PATH NAMES "${CMAKE_SHARED_LIBRARY_PREFIX}netcdf${CMAKE_SHARED_LIBRARY_SUFFIX}" 
-          HINTS 
-          "${CMAKE_CURRENT_SOURCE_DIR}/extern/netcdf/netCDF 4.6.1/bin")
-message(STATUS "netcdf bin dir is ${NETCDF_BIN_PATH}")
+if(WIN32)
+   find_path(NETCDF_BIN_PATH NAMES "${CMAKE_SHARED_LIBRARY_PREFIX}netcdf${CMAKE_SHARED_LIBRARY_SUFFIX}" 
+             HINTS 
+             "${CMAKE_CURRENT_SOURCE_DIR}/extern/netcdf/netCDF 4.6.1/bin")
+   message(STATUS "netcdf bin dir is ${NETCDF_BIN_PATH}")
+endif()  
 
 # The static library
 add_subdirectory(src/MeshKernel)
