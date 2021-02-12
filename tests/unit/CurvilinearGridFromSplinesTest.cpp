@@ -864,3 +864,75 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     ASSERT_NEAR(580.841498361190, mesh.m_nodes[23].y, tolerance);
     ASSERT_NEAR(600.952956688129, mesh.m_nodes[24].y, tolerance);
 }
+
+TEST(CurvilinearGridFromSplines, RealWorldCase)
+{
+
+    std::vector<meshkernel::Point> firstSpline{{7.7979524E+04, 3.7127829E+05},
+                                               {7.7979524E+04, 3.7025723E+05},
+                                               {7.8302860E+04, 3.6898090E+05},
+                                               {7.9732343E+04, 3.6809598E+05},
+                                               {8.0889543E+04, 3.6698984E+05},
+                                               {8.0668314E+04, 3.6578158E+05},
+                                               {7.9579184E+04, 3.6419894E+05}};
+
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    splines->AddSpline(firstSpline, 0, firstSpline.size());
+
+    std::vector<meshkernel::Point> secondSpline{{7.6618112E+04, 3.7136337E+05},
+                                                {7.6754253E+04, 3.7005301E+05},
+                                                {7.7179694E+04, 3.6874265E+05},
+                                                {7.8404966E+04, 3.6780668E+05},
+                                                {7.9681290E+04, 3.6721107E+05},
+                                                {8.0140766E+04, 3.6636018E+05},
+                                                {7.9477078E+04, 3.6544123E+05},
+                                                {7.8779354E+04, 3.6452228E+05}};
+
+    splines->AddSpline(secondSpline, 0, secondSpline.size());
+
+    std::vector<meshkernel::Point> thirdSpline{{7.7281800E+04, 3.7144846E+05},
+                                               {7.7366889E+04, 3.6984880E+05},
+                                               {7.7928471E+04, 3.6874265E+05},
+                                               {7.9153742E+04, 3.6792581E+05},
+                                               {8.0242872E+04, 3.6722808E+05},
+                                               {8.0481119E+04, 3.6641124E+05},
+                                               {7.9970590E+04, 3.6542421E+05},
+                                               {7.9579184E+04, 3.6484561E+05},
+                                               {7.9170760E+04, 3.6431806E+05}};
+
+    splines->AddSpline(thirdSpline, 0, thirdSpline.size());
+
+    std::vector<meshkernel::Point> fourthSpline{{7.613792E+04, 3.712157E+05},
+                                                {7.831719E+04, 3.710751E+05}};
+
+    splines->AddSpline(fourthSpline, 0, fourthSpline.size());
+
+    std::vector<meshkernel::Point> fifthSpline{{7.857202E+04, 3.649151E+05},
+                                               {8.003072E+04, 3.641506E+05}};
+
+    splines->AddSpline(fifthSpline, 0, fifthSpline.size());
+
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+
+    splinesToCurvilinearParameters.AspectRatio = 0.5;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1;
+    splinesToCurvilinearParameters.AverageWidth = 400.0;
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
+    splinesToCurvilinearParameters.DeleteSkinnyTriangles = true;
+
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+    curvilinearParameters.MRefinement = 200;
+    curvilinearParameters.NRefinement = 40;
+
+    // create the algorithm
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+
+    // compute
+    meshkernel::CurvilinearGrid curvilinearGrid;
+    curvilinearGridFromSplines.Compute(curvilinearGrid);
+
+    meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::cartesian);
+}

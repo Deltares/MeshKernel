@@ -1611,17 +1611,16 @@ void meshkernel::CurvilinearGridFromSplines::MakeAllGridLines()
             continue;
         }
 
-        // upper bound of m_gridLine, with two sides of spline and two missing values added
+        // upper bound of m_gridLine size, with two sides of spline and two missing values added
         const auto sizeGridLine = gridLineIndex + 1 + 2 * (m_curvilinearParameters.MRefinement + 1) + 2;
-        // increase size
         m_gridLine.resize(sizeGridLine);
         m_gridLineDimensionalCoordinates.resize(sizeGridLine);
 
         if (gridLineIndex > 0)
         {
-            gridLineIndex++;
             m_gridLine[gridLineIndex] = {doubleMissingValue, doubleMissingValue};
             m_gridLineDimensionalCoordinates[gridLineIndex] = doubleMissingValue;
+            gridLineIndex++;
         }
 
         m_leftGridLineIndex[s] = gridLineIndex;
@@ -1636,20 +1635,16 @@ void meshkernel::CurvilinearGridFromSplines::MakeAllGridLines()
 
         //add other side of gridline
         m_rightGridLineIndex[s] = gridLineIndex;
-        auto i = m_rightGridLineIndex[s] - 1;
+        auto rightIndex = m_rightGridLineIndex[s] - 1;
         for (auto j = m_rightGridLineIndex[s] - 1; j >= m_leftGridLineIndex[s] && j != static_cast<size_t>(0) - 1; --j)
         {
-            m_gridLine[i] = m_gridLine[j];
-            m_gridLineDimensionalCoordinates[i] = m_gridLineDimensionalCoordinates[j];
-            ++i;
+            m_gridLine[rightIndex] = m_gridLine[j];
+            m_gridLineDimensionalCoordinates[rightIndex] = m_gridLineDimensionalCoordinates[j];
+            ++rightIndex;
         }
 
-        //compute new (actual) grid size
-        //new size   old size   both sides of spline   DMISS between both sides
-        gridLineIndex = gridLineIndex + numM + 1;
+        gridLineIndex = rightIndex;
 
-        m_gridLine[gridLineIndex] = Point{doubleMissingValue, doubleMissingValue};
-        m_gridLineDimensionalCoordinates[gridLineIndex] = doubleMissingValue;
         m_numMSplines[s] = numM;
         m_numM = gridLineIndex;
     }
