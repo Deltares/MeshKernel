@@ -922,6 +922,7 @@ TEST(CurvilinearGridFromSplines, RealWorldCase)
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = true;
+    splinesToCurvilinearParameters.GrowGridOutside = 1;
 
     meshkernelapi::CurvilinearParameters curvilinearParameters;
     curvilinearParameters.MRefinement = 200;
@@ -935,4 +936,7 @@ TEST(CurvilinearGridFromSplines, RealWorldCase)
     curvilinearGridFromSplines.Compute(curvilinearGrid);
 
     meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::cartesian);
+
+    const auto numnodes = mesh.GetNumNodes();
+    // ASSERT_EQ(numnodes, 941);
 }

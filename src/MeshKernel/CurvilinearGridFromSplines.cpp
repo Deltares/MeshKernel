@@ -1110,6 +1110,12 @@ void meshkernel::CurvilinearGridFromSplines::ComputeEdgeVelocities(std::vector<d
 
     for (auto s = 0; s < m_splines->GetNumSplines(); s++)
     {
+
+        if (m_type[s] != SplineTypes::central)
+        {
+            continue;
+        }
+
         double maxHeight = std::numeric_limits<double>::lowest();
 
         for (const auto& e : m_gridHeights[0])
@@ -1166,14 +1172,14 @@ void meshkernel::CurvilinearGridFromSplines::ComputeEdgeVelocities(std::vector<d
 
         if (numLeftHeights == 0 && numRightHeights <= 1 ||
             numRightHeights == 0 && numLeftHeights <= 1 ||
-            numLeftHeights == numRightHeights == 1)
+            numLeftHeights == 1 && numRightHeights == 1)
         {
-            m_growGridOutside = true;
+            m_splinesToCurvilinearParameters.GrowGridOutside = 1;
         }
 
         // left part
         size_t numNLeftExponential = 0;
-        if (m_growGridOutside)
+        if (m_splinesToCurvilinearParameters.GrowGridOutside == 1)
         {
             numNLeftExponential = std::min(ComputeNumberExponentialIntervals(hh0LeftMaxRatio), static_cast<size_t>(m_curvilinearParameters.NRefinement));
         }
@@ -1184,7 +1190,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeEdgeVelocities(std::vector<d
 
         // right part
         size_t numNRightExponential = 0;
-        if (m_growGridOutside)
+        if (m_splinesToCurvilinearParameters.GrowGridOutside == 1)
         {
             numNRightExponential = std::min(ComputeNumberExponentialIntervals(hh0RightMaxRatio), static_cast<size_t>(m_curvilinearParameters.NRefinement));
         }

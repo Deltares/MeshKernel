@@ -318,7 +318,6 @@ namespace meshkernel
 
         const size_t m_maxNumCenterSplineHeights = 10; ///< Nsubmax, naz number of different heights a cross spline can have (is determined by how many crossing spline the user can input)
         const size_t m_maxNUniformPart = 5;            ///< Maximum number of layers in the uniform part
-        bool m_growGridOutside = true;                 ///< Grow the grid outside the prescribed grid height
         double m_onTopOfEachOtherSquaredTolerance;     ///< On top of each other squared tolerance
         size_t m_numOriginalSplines = 0;               ///< The original number of splines
 
