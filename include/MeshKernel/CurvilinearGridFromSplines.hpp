@@ -147,10 +147,9 @@ namespace meshkernel
         /// @brief Compute the maximum allowable grid layer growth time self crossings (comp_tmax_self)
         /// @param coordinates The coordinates to grow
         /// @param velocities The velocities
-        /// @param maximumGridLayerGrowTime The maximum grow layer time
-        void ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
-                                             const std::vector<Point>& velocities,
-                                             std::vector<double>& maximumGridLayerGrowTime) const;
+        /// @returns maximumGridLayerGrowTime The maximum grow layer time
+        std::vector<double> ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
+                                                            const std::vector<Point>& velocities) const;
 
         /// @brief Copy growth velocities to the advancing front, add points at front corners corners (copy_vel_to_front)
         /// @brief layerIndex
@@ -178,19 +177,14 @@ namespace meshkernel
 
         /// @brief Compute growth velocity vectors at grid points (comp_vel)
         /// @param layerIndex
-        /// @param velocityVector
-        void ComputeVelocitiesAtGridPoints(size_t layerIndex, std::vector<Point>& velocityVector);
+        /// @returns the velocity vector
+        std::vector<Point> ComputeVelocitiesAtGridPoints(size_t layerIndex);
 
         /// @brief Get left and right points at given layer for a given index (get_LR)
         /// @brief gridPoints The layer
-        /// @brief index
-        /// @brief currentLeftIndex
-        /// @brief currentRightIndex
-        /// @returns
-        void GetNeighbours(const std::vector<Point>& gridPoints,
-                           size_t index,
-                           size_t& currentLeftIndex,
-                           size_t& currentRightIndex) const;
+        /// @brief index The layer index
+        /// @returns the left and the right node index
+        std::tuple<size_t, size_t> GetNeighbours(const std::vector<Point>& gridPoints, size_t index) const;
 
         /// @brief Compute the edge grow velocities (comp_edgevel)
         /// TODO: can this be split in compute heights and computeGrowFactors
