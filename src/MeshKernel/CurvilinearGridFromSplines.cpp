@@ -597,24 +597,13 @@ void meshkernel::CurvilinearGridFromSplines::GrowLayer(size_t layerIndex)
         }
     }
 
-    const auto numGridPoints = m_gridPoints.size() * m_gridPoints[0].size();
-    std::vector<std::vector<size_t>> gridPointsIndices(numGridPoints, std::vector<size_t>(2, sizetMissingValue));
-    std::vector<Point> frontGridPoints(numGridPoints, {0.0, 0.0});
-    size_t numFrontPoints;
-    FindFront(gridPointsIndices, frontGridPoints, numFrontPoints);
-
-    std::vector<Point> frontVelocities(numGridPoints, {0.0, 0.0});
-    CopyVelocitiesToFront(layerIndex - 1,
-                          velocityVectorAtGridPoints,
-                          numFrontPoints,
-                          gridPointsIndices,
-                          frontGridPoints,
-                          frontVelocities);
+    auto frontVelocities = CopyVelocitiesToFront(layerIndex - 1, velocityVectorAtGridPoints);
 
     double totalTimeStep = 0.0;
     std::vector<Point> gridLine(m_gridPoints[layerIndex - 1]);
     double localTimeStep = 0.0;
     double otherTimeStep = std::numeric_limits<double>::max();
+    const auto numGridPoints = m_gridPoints.size() * m_gridPoints[0].size();
     std::vector<size_t> newValidFrontNodes(numGridPoints);
 
     while (totalTimeStep < m_timeStep)
@@ -694,13 +683,11 @@ void meshkernel::CurvilinearGridFromSplines::GrowLayer(size_t layerIndex)
                     activeLayerPoints[i] = {doubleMissingValue, doubleMissingValue};
                 }
             }
-
-            FindFront(gridPointsIndices, frontGridPoints, numFrontPoints);
-            CopyVelocitiesToFront(layerIndex - 1, velocityVectorAtGridPoints, numFrontPoints,
-                                  gridPointsIndices, frontGridPoints, frontVelocities);
+            frontVelocities = CopyVelocitiesToFront(layerIndex - 1, velocityVectorAtGridPoints);
         }
     }
 
+    auto [gridPointsIndices, frontGridPoints, numFrontPoints] = FindFront();
     if (layerIndex >= 2)
     {
         for (auto i = 1; i < m_numM - 1; ++i)
@@ -770,15 +757,15 @@ std::vector<double> meshkernel::CurvilinearGridFromSplines::ComputeMaximumGridLa
     return maximumGridLayerGrowTime;
 }
 
-void meshkernel::CurvilinearGridFromSplines::CopyVelocitiesToFront(size_t layerIndex,
-                                                                   const std::vector<Point>& previousVelocities,
-                                                                   size_t& numFrontPoints,
-                                                                   std::vector<std::vector<size_t>>& gridPointsIndices,
-                                                                   std::vector<Point>& frontGridPoints,
-                                                                   std::vector<Point>& velocities)
+std::vector<meshkernel::Point> meshkernel::CurvilinearGridFromSplines::CopyVelocitiesToFront(size_t layerIndex,
+                                                                                             const std::vector<Point>& previousVelocities)
 {
+    const auto numGridPoints = m_gridPoints.size() * m_gridPoints[0].size();
+    std::vector<Point> velocities(numGridPoints, {0.0, 0.0});
+
     size_t numCornerNodes = 0;
     size_t p = 0;
+    auto [gridPointsIndices, frontGridPoints, numFrontPoints] = FindFront();
     while (p < numFrontPoints)
     {
         if (gridPointsIndices[p][1] == layerIndex && m_validFrontNodes[gridPointsIndices[p][0]] == 1)
@@ -834,12 +821,16 @@ void meshkernel::CurvilinearGridFromSplines::CopyVelocitiesToFront(size_t layerI
         }
         p = p + 1;
     }
+
+    return velocities;
 }
 
-void meshkernel::CurvilinearGridFromSplines::FindFront(std::vector<std::vector<size_t>>& gridPointsIndices,
-                                                       std::vector<Point>& frontGridPoints,
-                                                       size_t& numFrontPoints)
+std::tuple<std::vector<std::vector<size_t>>, std::vector<meshkernel::Point>, size_t> meshkernel::CurvilinearGridFromSplines::FindFront()
 {
+    const auto numGridPoints = m_gridPoints.size() * m_gridPoints[0].size();
+    std::vector<std::vector<size_t>> gridPointsIndices(numGridPoints, std::vector<size_t>(2, sizetMissingValue));
+    std::vector<Point> frontGridPoints(numGridPoints, {0.0, 0.0});
+    size_t numFrontPoints;
 
     std::vector<int> frontPosition(m_gridPoints[0].size() - 2, static_cast<int>(m_gridPoints.size()));
     for (auto m = 0; m < frontPosition.size(); ++m)
@@ -939,6 +930,8 @@ void meshkernel::CurvilinearGridFromSplines::FindFront(std::vector<std::vector<s
             numFrontPoints++;
         }
     }
+
+    return {gridPointsIndices, frontGridPoints, numFrontPoints};
 }
 
 std::vector<meshkernel::Point> meshkernel::CurvilinearGridFromSplines::ComputeVelocitiesAtGridPoints(size_t layerIndex)

@@ -158,22 +158,16 @@ namespace meshkernel
         /// @brief gridPointsIndices
         /// @brief frontGridPoints
         /// @brief velocities
-        /// @returns
-        void CopyVelocitiesToFront(size_t layerIndex,
-                                   const std::vector<Point>& previousVelocities,
-                                   size_t& numFrontPoints,
-                                   std::vector<std::vector<size_t>>& gridPointsIndices,
-                                   std::vector<Point>& frontGridPoints,
-                                   std::vector<Point>& velocities);
+        /// @returns the copied front velocities
+        std::vector<Point> CopyVelocitiesToFront(size_t layerIndex,
+                                                 const std::vector<Point>& previousVelocities);
 
         /// @brief Computes the points at front, which have to be moved.
         /// @brief gridPointsIndices
         /// @brief frontGridPoints
         /// @brief numFrontPoints
-        /// @returns
-        void FindFront(std::vector<std::vector<size_t>>& gridPointsIndices,
-                       std::vector<Point>& frontGridPoints,
-                       size_t& numFrontPoints);
+        /// @returns the indices of the grid points, the front grid points and the number of front points
+        std::tuple<std::vector<std::vector<size_t>>, std::vector<Point>, size_t> FindFront();
 
         /// @brief Compute growth velocity vectors at grid points (comp_vel)
         /// @param layerIndex
