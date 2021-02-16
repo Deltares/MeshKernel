@@ -52,10 +52,10 @@ namespace meshkernel
     ///     - The splines are labeled (central or transversal spline) based
     ///       on the number of corner points and the intersecting angles.
     ///
-    ///     - The canal heights at a different position along the central
+    ///     - The grid heights at a different position along the central
     ///       spline are computed from the crossing splines.
     ///
-    ///     - The normal vectors of each m part are computed, as these
+    ///     - The normal vectors of each edge are computed, as these
     ///       determine the growing front directions.
     ///
     ///     - The edge velocities to apply to each normal direction are

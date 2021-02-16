@@ -271,7 +271,6 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
     ComputeSplineProperties(false);
 
     // get the properties of the center splines
-    m_numM = 0;
     MakeAllGridLines();
 
     // Store original number of splines
@@ -279,7 +278,7 @@ void meshkernel::CurvilinearGridFromSplines::Initialize()
     m_numOriginalSplines = m_splines->GetNumSplines();
     for (auto s = 0; s < m_numOriginalSplines; ++s)
     {
-        // mirrow only center splines
+        // mirror only center splines
         if (m_type[s] != SplineTypes::central)
         {
             continue;
@@ -1591,7 +1590,7 @@ void meshkernel::CurvilinearGridFromSplines::GetSplineIntersections(size_t index
 
 void meshkernel::CurvilinearGridFromSplines::MakeAllGridLines()
 {
-
+    m_numM = 0;
     size_t numCenterSplines = 0;
     for (auto s = 0; s < m_splines->GetNumSplines(); ++s)
     {
@@ -1909,7 +1908,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeSubHeights(size_t centerSpli
     m_numCrossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex] = numSubIntervalsLeft;
 
     // if not left oriented, swap
-    if (!m_isLeftOriented[centerSplineIndex][centerSplineLocalIndex])
+    if (!m_isLeftOriented[centerSplineIndex][crossingSplineLocalIndex])
     {
         m_numCrossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex] = numSubIntervalsRight;
         m_numCrossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex] = numSubIntervalsLeft;
