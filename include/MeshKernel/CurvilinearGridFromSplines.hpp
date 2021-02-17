@@ -134,11 +134,8 @@ namespace meshkernel
     private:
         /// @brief From the layer index gets the next grid layer and the transversal sublayer index (get_isub)
         /// @param[in] layer The current layer
-        /// @param[out] gridLayer The next grid layer
-        /// @param[out] subLayerIndex The transversal sub-layer index
-        void ComputeGridLayerAndSubLayer(size_t layer,
-                                         size_t& gridLayer,
-                                         size_t& subLayerIndex);
+        /// @returns The next grid layer and the sub layer index
+        std::tuple<size_t, size_t> ComputeGridLayerAndSubLayer(size_t layer);
 
         /// @brief Grow layer at layer index
         /// @param layerIndex The layer index to grow
@@ -159,8 +156,7 @@ namespace meshkernel
         /// @brief frontGridPoints
         /// @brief velocities
         /// @returns the copied front velocities
-        std::vector<Point> CopyVelocitiesToFront(size_t layerIndex,
-                                                 const std::vector<Point>& previousVelocities);
+        std::vector<Point> CopyVelocitiesToFront(size_t layerIndex, const std::vector<Point>& previousVelocities);
 
         /// @brief Computes the points at front, which have to be moved.
         /// @brief gridPointsIndices
@@ -182,23 +178,11 @@ namespace meshkernel
 
         /// @brief Compute the edge grow velocities (comp_edgevel)
         /// TODO: can this be split in compute heights and computeGrowFactors
-        /// @brief edgeVelocities
-        /// @brief growFactorOnSubintervalAndEdge
-        /// @brief numPerpendicularFacesOnSubintervalAndEdge
-        /// @returns
-        void ComputeEdgeVelocities(std::vector<double>& edgeVelocities,
-                                   std::vector<std::vector<double>>& growFactorOnSubintervalAndEdge,
-                                   std::vector<std::vector<size_t>>& numPerpendicularFacesOnSubintervalAndEdge);
+        void ComputeEdgeVelocities();
 
         /// @brief Compute the grid grow factor for a given total grid height, first grid layer height and number of grid layers (comp_dgrow)
-        /// @param[in] totalGridHeight
-        /// @param[in] firstGridLayerHeight
-        /// @param[in] numberOfGridLayers
-        /// @param[out] result
-        void ComputeGrowFactor(double totalGridHeight,
-                               double firstGridLayerHeight,
-                               size_t numberOfGridLayers,
-                               double& result) const;
+        /// @param[in] the spline index
+        double ComputeGrowFactor(size_t splineIndex) const;
 
         /// @brief Computes the exponential grid height
         /// @brief aspectRatioGrowFactor
@@ -261,10 +245,9 @@ namespace meshkernel
                                      std::vector<double>& crossingSplinesDimensionalCoordinates,
                                      std::vector<std::vector<double>>& heights);
 
-        /// @brief Computes the intersection of two splines, one must have only two nodes (get_crosssplines)
-        /// @brief index
-        /// @returns
-        void GetSplineIntersections(size_t index);
+        /// @brief Computes the intersections on a given spline (get_crosssplines)
+        /// @brief[in] splineIndex The spline index
+        void GetSplineIntersections(size_t splineIndex);
 
         /// @brief Generate a gridline on a spline with a prescribed maximum mesh width (make_gridline)
         /// @param[in] splineIndex
