@@ -1,7 +1,8 @@
 # MeshKernel
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Deltares_Grid_Editor_back-end&metric=alert_status)](https://sonarcloud.io/dashboard?id=Deltares_Grid_Editor_back-end)
 
-Deltares C++ library for creating and editing 2D unstructured and curvilinear meshes.
+MeshKernel is library for creating and editing meshes.
+It supports 1D & 2D unstructured meshes as well as curvilinear meshes.
 
 The library is separated in an API namespace (MeshKernelApi), used for communication with the client and a backend namespace (MeshKernel), where the algorithms are implemented. 
 The API namespace contains several structures used as parameters for the API methods (see API usage section). 
@@ -76,49 +77,3 @@ Curvilinear meshes for rivers can be generated using splines.
 A mesh can be refined in areas based on samples or polygon selections 
 
 ![alt tag](docs/images/GridRefinement.jpg)
-
-
-## API usage
-
-Setting a triangular mesh and moving its 2nd node to position 1.0, 3.0:
-```c++
-// Create a new mesh entry into MeshKernel library
-int meshKernelId;
-int state = mkernel_new_mesh(meshKernelId);
-
-// Mesh nodes and edges
-std::vector<double> nodex{0.0, 3.0, 1.5};
-std::vector<double> nodey{0.0, 0.0, 3.0};
-std::vector<int> edge_nodes{0, 1, 1, 2, 2, 0};
-
-// The MeshGeometry communication structures
-MeshGeometryDimensions meshGeometryDimensions;
-meshGeometryDimensions.numnode = 3;
-meshGeometryDimensions.numedge = 3;
-
-MeshGeometry meshGeometry;
-meshGeometry.nodex = &nodex[0];
-meshGeometry.nodey = &nodey[0];
-meshGeometry.edge_nodes = &edge_nodes[0];
-
-// if lat, lon coordinate isGeographic true, otherwise false
-bool isGeographic = false;
-
-// Set the mesh into the mesh entry created before
-state = mkernel_set_state(meshKernelId, meshGeometryDimensions, meshGeometry, isGeographic);
-
-// The new position
-std::vector<double> newPositionX{1.0};
-std::vector<double> newPositionY{3.0};
-
-GeometryList geometryListIn;
-geometryListIn.xCoordinates = &newPositionX[0];
-geometryListIn.yCoordinates = &newPositionY[0];
-
-// Move the second node to the new position  
-int nodeIndex = 2; 
-state = mkernel_move_node(meshKernelId, geometryListIn, nodeIndex);
-
-// Deallocate the mesh entry
-state = mkernel_deallocate_state(int meshKernelId);
-```

@@ -66,8 +66,6 @@ void meshkernel::Mesh2D::Administrate(AdministrationOptions administrationOption
     }
 
     // face administration
-    m_numFaces = 0;
-
     m_edgesNumFaces.resize(m_edges.size());
     std::fill(m_edgesNumFaces.begin(), m_edgesNumFaces.end(), 0);
 
@@ -80,11 +78,11 @@ void meshkernel::Mesh2D::Administrate(AdministrationOptions administrationOption
     m_facesEdges.clear();
     m_facesCircumcenters.clear();
 
-    m_facesMassCenters.reserve(m_numNodes);
-    m_faceArea.reserve(m_numNodes);
-    m_facesNodes.reserve(m_numNodes);
-    m_facesEdges.reserve(m_numNodes);
-    m_facesCircumcenters.reserve(m_numNodes);
+    m_facesMassCenters.reserve(GetNumNodes());
+    m_faceArea.reserve(GetNumNodes());
+    m_facesNodes.reserve(GetNumNodes());
+    m_facesEdges.reserve(GetNumNodes());
+    m_facesCircumcenters.reserve(GetNumNodes());
 
     // find faces
     FindFaces();
@@ -296,7 +294,7 @@ void meshkernel::Mesh2D::SetFlatCopies(AdministrationOptions administrationOptio
         m_facesCircumcentersz[f] = 0.0;
     }
 
-    //we always need to provide pointers to not empty memory
+    // we always need to provide pointers to not empty memory
     if (m_nodex.empty())
     {
         m_nodex.resize(1);
@@ -481,12 +479,11 @@ void meshkernel::Mesh2D::FindFacesRecursive(size_t startingNode,
         }
 
         // increase m_edgesNumFaces
-        m_numFaces += 1;
         for (const auto& edge : edges)
         {
             m_edgesNumFaces[edge] += 1;
             const auto numFace = m_edgesNumFaces[edge];
-            m_edgesFaces[edge][numFace - 1] = m_numFaces - 1;
+            m_edgesFaces[edge][numFace - 1] = GetNumFaces();
         }
 
         // store the result
@@ -549,8 +546,8 @@ void meshkernel::Mesh2D::FindFaces()
         }
     }
 
-    m_numFacesNodes.resize(m_numFaces);
-    for (auto f = 0; f < m_numFaces; ++f)
+    m_numFacesNodes.resize(GetNumFaces());
+    for (auto f = 0; f < GetNumFaces(); ++f)
     {
         m_numFacesNodes[f] = m_facesNodes[f].size();
     }
@@ -1084,22 +1081,24 @@ meshkernel::Mesh2D& meshkernel::Mesh2D::operator+=(Mesh2D const& rhs)
     const auto rhsNumNodes = rhs.GetNumNodes();
     const auto rhsNumEdges = rhs.GetNumEdges();
 
+    auto numNodes = GetNumNodes();
+    auto numEdges = GetNumEdges();
     m_edges.resize(GetNumEdges() + rhsNumEdges);
     m_nodes.resize(GetNumNodes() + rhsNumNodes);
 
     //copy mesh nodes
-    for (auto n = GetNumNodes(); n < GetNumNodes() + rhsNumNodes; ++n)
+    for (auto n = numNodes; n < numNodes + rhsNumNodes; ++n)
     {
-        const auto index = n - GetNumNodes();
+        const auto index = n - numNodes;
         m_nodes[n] = rhs.m_nodes[index];
     }
 
     //copy mesh edges
-    for (auto e = GetNumEdges(); e < GetNumEdges() + rhsNumEdges; ++e)
+    for (auto e = numEdges; e < numEdges + rhsNumEdges; ++e)
     {
-        const auto index = e - GetNumEdges();
-        m_edges[e].first = rhs.m_edges[index].first + GetNumNodes();
-        m_edges[e].second = rhs.m_edges[index].second + GetNumNodes();
+        const auto index = e - numEdges;
+        m_edges[e].first = rhs.m_edges[index].first + numNodes;
+        m_edges[e].second = rhs.m_edges[index].second + numNodes;
     }
 
     m_nodesRTreeRequiresUpdate = true;
