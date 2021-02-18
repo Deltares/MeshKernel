@@ -295,7 +295,10 @@ namespace meshkernelapi
         /// @param[in] inside Count nodes indices inside (1) or outside (0) the polygon
         /// @param[out] selectedNodes The selected nodes indices
         /// @returns Error code
-        MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, const GeometryList& geometryListIn, int inside, int** selectedNodes);
+        MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId,
+                                                  const GeometryList& geometryListIn,
+                                                  int inside,
+                                                  int** selectedNodes);
 
         /// @brief Counts the number of selected mesh node indices
         /// @param[in] meshKernelId Id of the mesh state
@@ -303,7 +306,10 @@ namespace meshkernelapi
         /// @param[in] inside Count nodes inside (1) or outside (0) the polygon
         /// @param[out] numberOfMeshNodes The number of selected nodes
         /// @returns Error code
-        MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, const GeometryList& geometryListIn, int inside, int& numberOfMeshNodes);
+        MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId,
+                                                        const GeometryList& geometryListIn,
+                                                        int inside,
+                                                        int& numberOfMeshNodes);
 
         /// @brief Insert a new edge connecting \p startNode and \p endNode
         /// @param[in] meshKernelId Id of the mesh state
