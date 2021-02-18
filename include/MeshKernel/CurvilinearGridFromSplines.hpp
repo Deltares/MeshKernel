@@ -165,7 +165,7 @@ namespace meshkernel
         /// @brief Get left and right points at given layer for a given index (get_LR)
         /// @brief[in] gridPoints The front grid points
         /// @brief[in] index The front grid point index from which the neighbors should be searched
-        /// @returns The left and the right index for the current fron grid point index
+        /// @returns The left and the right index for the current front grid point index
         std::tuple<size_t, size_t> GetNeighbours(const std::vector<Point>& gridPoints, size_t index) const;
 
         /// @brief Compute the edge grow velocities (comp_edgevel)
@@ -178,9 +178,9 @@ namespace meshkernel
 
         /// @brief Computes the exponential grid height from the aspect ratio, the heights and the number of grid layers
         /// @brief[in] aspectRatio The aspect ratio
-        /// @brief[in] height The current heigh
+        /// @brief[in] height The current height
         /// @brief[in] numLayers The number of layers
-        /// @returns The new grid heigh
+        /// @returns The new grid height
         [[nodiscard]] double ComputeTotalExponentialHeight(double aspectRatio,
                                                            double height,
                                                            size_t numLayers) const;

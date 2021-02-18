@@ -259,7 +259,7 @@ void meshkernel::CurvilinearGridFromSplines::DeleteSkinnyTriangles()
 
 void meshkernel::CurvilinearGridFromSplines::Initialize()
 {
-    // with only 1 spline, cant continue
+    // with only 1 spline, can't continue
     if (m_splines->GetNumSplines() <= 1)
     {
         throw std::invalid_argument("CurvilinearGridFromSplines::Initialize: Not enough splines to create a curvilinear grid.");
