@@ -102,15 +102,15 @@ namespace meshkernel
 
         /// @brief Get the number of valid nodes
         /// @return The number of valid node
-        [[nodiscard]] auto GetNumNodes() const { return m_numNodes; }
+        [[nodiscard]] auto GetNumNodes() const { return m_nodes.size(); }
 
         /// @brief Get the number of valid edges
         /// @return The number of valid edges
-        [[nodiscard]] auto GetNumEdges() const { return m_numEdges; }
+        [[nodiscard]] auto GetNumEdges() const { return m_edges.size(); }
 
         /// @brief Get the number of valid faces
         /// @return The number of valid faces
-        [[nodiscard]] auto GetNumFaces() const { return m_numFaces; }
+        [[nodiscard]] auto GetNumFaces() const { return m_facesNodes.size(); }
 
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
@@ -268,13 +268,16 @@ namespace meshkernel
         Projection m_projection; ///< The projection used
 
         // counters
-        size_t m_numFaces = 0;                  ///< Number of valid faces (nump)
-        size_t m_numNodes = 0;                  ///< Number of valid nodes in m_nodes
-        size_t m_numEdges = 0;                  ///< Number of valid edges in m_edges
         bool m_nodesRTreeRequiresUpdate = true; ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true; ///< m_edgesRTree requires an update
         RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
         RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
         RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
+
+        // vectors for communicating with the client
+        std::vector<int> m_edgeNodes; ///< For each edge, the index to the nodes
+        std::vector<double> m_nodex;  ///< The nodes x-coordinate
+        std::vector<double> m_nodey;  ///< The nodes y-coordinate
+        std::vector<double> m_nodez;  ///< The nodes z-coordinate
     };
 } // namespace meshkernel

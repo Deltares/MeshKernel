@@ -133,8 +133,6 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     // If nothing to invalidate return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
     {
-        m_numNodes = m_nodes.size();
-        m_numEdges = m_edges.size();
         return;
     }
 
@@ -168,12 +166,10 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     // Remove invalid nodes, without reducing capacity
     const auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n) { return !n.IsValid(); });
     m_nodes.erase(endNodeVector, m_nodes.end());
-    m_numNodes = m_nodes.size();
 
     // Remove invalid edges, without reducing capacity
     const auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e) { return e.first == sizetMissingValue || e.second == sizetMissingValue; });
     m_edges.erase(endEdgeVector, m_edges.end());
-    m_numEdges = m_edges.size();
 }
 
 void meshkernel::Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
@@ -270,7 +266,6 @@ size_t meshkernel::Mesh::ConnectNodes(size_t startNode, size_t endNode)
     m_edges.resize(newEdgeIndex + 1);
     m_edges[newEdgeIndex].first = startNode;
     m_edges[newEdgeIndex].second = endNode;
-    m_numEdges++;
 
     m_edgesRTreeRequiresUpdate = true;
 
@@ -286,8 +281,6 @@ size_t meshkernel::Mesh::InsertNode(const Point& newPoint)
     m_nodeMask.resize(newSize);
     m_nodesNumEdges.resize(newSize);
     m_nodesEdges.resize(newSize);
-
-    m_numNodes++;
 
     m_nodes[newNodeIndex] = newPoint;
     m_nodeMask[newNodeIndex] = static_cast<int>(newNodeIndex);
@@ -311,7 +304,6 @@ void meshkernel::Mesh::DeleteNode(size_t node)
         DeleteEdge(edgeIndex);
     }
     m_nodes[node] = {doubleMissingValue, doubleMissingValue};
-    m_numNodes--;
 
     m_nodesRTreeRequiresUpdate = true;
 }
@@ -693,7 +685,7 @@ void meshkernel::Mesh::AdministrateNodesEdges()
     }
 
     // return if there are no nodes or no edges
-    if (m_numNodes == 0 || m_numEdges == 0)
+    if (m_nodes.empty() || m_edges.empty())
     {
         return;
     }

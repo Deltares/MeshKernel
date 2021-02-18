@@ -69,12 +69,12 @@ namespace meshkernel
         double y; ///< Y-coordinate
 
         /// @brief Constructor initializing with missing values
-        Point() : x(doubleMissingValue), y(doubleMissingValue){};
+        Point() : x(doubleMissingValue), y(doubleMissingValue) {}
 
         /// @brief Constructor initializing with given arguments
         /// @param[in] x
         /// @param[in] y
-        Point(double x, double y) : x(x), y(y){};
+        Point(double x, double y) : x(x), y(y) {}
 
         /// @brief Overloads addition with another Point
         Point operator+(Point const& rhs) const
@@ -151,8 +151,8 @@ namespace meshkernel
         /// @brief Overloads equality with another Point
         bool operator==(const Point& rhs) const
         {
-            bool isEqual = IsEqual(x, rhs.x) &&
-                           IsEqual(y, rhs.y);
+            const bool isEqual = IsEqual(x, rhs.x) &&
+                                 IsEqual(y, rhs.y);
 
             return isEqual;
         }
@@ -160,8 +160,8 @@ namespace meshkernel
         /// @brief Overloads inequality with another Point
         bool operator!=(const Point& rhs) const
         {
-            bool isEqual = IsEqual(x, rhs.x) &&
-                           IsEqual(y, rhs.y);
+            const bool isEqual = IsEqual(x, rhs.x) &&
+                                 IsEqual(y, rhs.y);
             return !isEqual;
         }
 
@@ -175,8 +175,8 @@ namespace meshkernel
         /// @brief Determines if the point instance has valid coordinates
         [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
         {
-            bool isInvalid = IsEqual(x, missingValue) ||
-                             IsEqual(y, missingValue);
+            const bool isInvalid = IsEqual(x, missingValue) ||
+                                   IsEqual(y, missingValue);
 
             return !isInvalid;
         }

@@ -87,15 +87,15 @@ namespace meshkernel
     {
     public:
         /// @brief Ctor
-        /// @param splines Input splines
-        /// @param curvilinearParameters The parameters for OrthogonalCurvilinearGridFromSplines algorithm
-        /// @param splinesToCurvilinearParameters The parameters for OrthogonalCurvilinearGridFromSplines algorithm
+        /// @param[in] splines                        Input splines
+        /// @param[in] curvilinearParameters          The parameters for OrthogonalCurvilinearGridFromSplines algorithm
+        /// @param[in] splinesToCurvilinearParameters The parameters for OrthogonalCurvilinearGridFromSplines algorithm
         CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
                                    const meshkernelapi::CurvilinearParameters& curvilinearParameters,
                                    const meshkernelapi::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
-        /// Computes the spline properties, such as cross splines (get_splineprops)
-        /// @param restoreOriginalProperties
+        /// @brief Computes the spline properties, such as cross splines (get_splineprops)
+        /// @param[in] restoreOriginalProperties Whether to restore original properties
         void ComputeSplineProperties(bool restoreOriginalProperties);
 
         /// @brief Computes a curvilinear grid using the growing front method (spline2curvi).
@@ -107,8 +107,8 @@ namespace meshkernel
         /// 4. Compute properties with artificial splines added
         /// 5. Compute the edge velocities
         /// 6. Grow layers
-        /// @param curvilinearGrid The computed curvilinear grid
-        void Compute(CurvilinearGrid& curvilinearGrid);
+        /// @returns The computed curvilinear grid
+        CurvilinearGrid Compute();
 
         /// @brief Initialize the OrthogonalCurvilinearGrid algorithm.
         void Initialize();
@@ -118,8 +118,8 @@ namespace meshkernel
         void Iterate(size_t layer);
 
         /// @brief Get the curvilinear grid
-        /// @param curvilinearGrid
-        void ComputeCurvilinearGrid(CurvilinearGrid& curvilinearGrid);
+        /// @returns The computed curvilinear Grid
+        CurvilinearGrid ComputeCurvilinearGrid();
 
         /// @brief For the central spline, computes the spline subdivisions along the spline (make_wholegridline)
         void MakeAllGridLines();

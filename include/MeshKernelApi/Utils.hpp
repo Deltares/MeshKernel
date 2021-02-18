@@ -27,27 +27,16 @@
 
 #pragma once
 
-#include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Constants.hpp>
-#include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/FlipEdges.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
-#include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
-#include <MeshKernelApi/InterpolationParameters.hpp>
-#include <MeshKernelApi/MakeMeshParameters.hpp>
 #include <MeshKernelApi/MeshGeometry.hpp>
 #include <MeshKernelApi/MeshGeometryDimensions.hpp>
-#include <MeshKernelApi/OrthogonalizationParameters.hpp>
-#include <MeshKernelApi/SampleRefineParameters.hpp>
-#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
 #include <stdexcept>
 #include <vector>
@@ -135,41 +124,65 @@ namespace meshkernelapi
         }
     }
 
-    /// @brief Sets meshgeometry for a certain mesh
-    /// @param[in]  meshInstances          The mesh instances
+    /// @brief Sets a meshkernelapi::Mesh2D instance from a meshkernel::Mesh2D instance
+    /// @param[in]  mesh2dInstances        The mesh instances
     /// @param[in]  meshKernelId           The id to the mesh which should be set
     /// @param[out] meshGeometryDimensions The dimensions of the mesh geometry
     /// @param[out] meshGeometry           The mesh geometry
-    static void SetMeshGeometry(std::vector<std::shared_ptr<meshkernel::Mesh2D>> meshInstances,
-                                int meshKernelId,
-                                MeshGeometryDimensions& meshGeometryDimensions,
-                                MeshGeometry& meshGeometry)
+    static void SetMesh2DGeometry(std::vector<std::shared_ptr<meshkernel::Mesh2D>> mesh2dInstances,
+                                  int meshKernelId,
+                                  MeshGeometryDimensions& meshGeometryDimensions,
+                                  MeshGeometry& meshGeometry)
     {
 
-        meshGeometry.nodex = &(meshInstances[meshKernelId]->m_nodex[0]);
-        meshGeometry.nodey = &(meshInstances[meshKernelId]->m_nodey[0]);
-        meshGeometry.nodez = &(meshInstances[meshKernelId]->m_nodez[0]);
-        meshGeometry.edge_nodes = &(meshInstances[meshKernelId]->m_edgeNodes[0]);
+        meshGeometry.nodex = &(mesh2dInstances[meshKernelId]->m_nodex[0]);
+        meshGeometry.nodey = &(mesh2dInstances[meshKernelId]->m_nodey[0]);
+        meshGeometry.nodez = &(mesh2dInstances[meshKernelId]->m_nodez[0]);
+        meshGeometry.edge_nodes = &(mesh2dInstances[meshKernelId]->m_edgeNodes[0]);
 
         meshGeometryDimensions.maxnumfacenodes = meshkernel::maximumNumberOfNodesPerFace;
-        meshGeometryDimensions.numface = static_cast<int>(meshInstances[meshKernelId]->GetNumFaces());
+        meshGeometryDimensions.numface = static_cast<int>(mesh2dInstances[meshKernelId]->GetNumFaces());
         if (meshGeometryDimensions.numface > 0)
         {
-            meshGeometry.face_nodes = &(meshInstances[meshKernelId]->m_faceNodes[0]);
-            meshGeometry.facex = &(meshInstances[meshKernelId]->m_facesCircumcentersx[0]);
-            meshGeometry.facey = &(meshInstances[meshKernelId]->m_facesCircumcentersy[0]);
-            meshGeometry.facez = &(meshInstances[meshKernelId]->m_facesCircumcentersz[0]);
+            meshGeometry.face_nodes = &(mesh2dInstances[meshKernelId]->m_faceNodes[0]);
+            meshGeometry.facex = &(mesh2dInstances[meshKernelId]->m_facesCircumcentersx[0]);
+            meshGeometry.facey = &(mesh2dInstances[meshKernelId]->m_facesCircumcentersy[0]);
+            meshGeometry.facez = &(mesh2dInstances[meshKernelId]->m_facesCircumcentersz[0]);
         }
 
-        if (meshInstances[meshKernelId]->GetNumNodes() == 1)
+        if (mesh2dInstances[meshKernelId]->GetNumNodes() == 1)
         {
             meshGeometryDimensions.numnode = 0;
             meshGeometryDimensions.numedge = 0;
         }
         else
         {
-            meshGeometryDimensions.numnode = static_cast<int>(meshInstances[meshKernelId]->GetNumNodes());
-            meshGeometryDimensions.numedge = static_cast<int>(meshInstances[meshKernelId]->GetNumEdges());
+            meshGeometryDimensions.numnode = static_cast<int>(mesh2dInstances[meshKernelId]->GetNumNodes());
+            meshGeometryDimensions.numedge = static_cast<int>(mesh2dInstances[meshKernelId]->GetNumEdges());
+        }
+    }
+
+    /// @brief Sets a meshkernelapi::Mesh1D instance from a meshkernel::Mesh1D instance
+    /// @param[in]  mesh1dInstances  The mesh instances
+    /// @param[in]  meshKernelId     The id to the mesh which should be set
+    /// @param[out] mesh1d           The mesh geometry
+    static void SetGeometryMesh1D(std::vector<std::shared_ptr<meshkernel::Mesh1D>> mesh1dInstances,
+                                  int meshKernelId,
+                                  meshkernelapi::Mesh1D& mesh1d)
+    {
+        mesh1d.nodex = &(mesh1dInstances[meshKernelId]->m_nodex[0]);
+        mesh1d.nodey = &(mesh1dInstances[meshKernelId]->m_nodey[0]);
+        mesh1d.edge_nodes = &(mesh1dInstances[meshKernelId]->m_edgeNodes[0]);
+
+        if (mesh1dInstances[meshKernelId]->GetNumNodes() == 1)
+        {
+            mesh1d.num_nodes = 0;
+            mesh1d.num_edges = 0;
+        }
+        else
+        {
+            mesh1d.num_nodes = static_cast<int>(mesh1dInstances[meshKernelId]->GetNumNodes());
+            mesh1d.num_edges = static_cast<int>(mesh1dInstances[meshKernelId]->GetNumEdges());
         }
     }
 
@@ -199,4 +212,29 @@ namespace meshkernelapi
 
         return locations;
     }
+
+    /// @brief Converts an int array to a vector<bool>
+    /// @param[in]  inputArray The data of the input array
+    /// @param[in]  inputSize  The size of the input array
+    static std::vector<bool> ConvertIntegerArrayToBoolVector(const int inputArray[],
+                                                             size_t inputSize)
+    {
+        std::vector<bool> result(inputSize);
+        for (auto i = 0; i < inputSize; ++i)
+        {
+            switch (inputArray[i])
+            {
+            case 0:
+                result[i] = false;
+                break;
+            case 1:
+                result[i] = true;
+                break;
+            default:
+                throw std::invalid_argument("MeshKernel: Invalid 1D mask.");
+            }
+        }
+        return result;
+    }
+
 } // namespace meshkernelapi
