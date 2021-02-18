@@ -286,7 +286,7 @@ namespace meshkernelapi
             }
 
             mesh1dInstances[meshKernelId]->SetFlatCopies();
-            SetMesh1DGeometry(mesh1dInstances, meshKernelId, mesh1d);
+            SetGeometryMesh1D(mesh1dInstances, meshKernelId, mesh1d);
         }
         catch (...)
         {

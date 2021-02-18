@@ -166,7 +166,7 @@ namespace meshkernelapi
     /// @param[in]  mesh1dInstances  The mesh instances
     /// @param[in]  meshKernelId     The id to the mesh which should be set
     /// @param[out] mesh1d           The mesh geometry
-    static void SetMesh1DGeometry(std::vector<std::shared_ptr<meshkernel::Mesh1D>> mesh1dInstances,
+    static void SetGeometryMesh1D(std::vector<std::shared_ptr<meshkernel::Mesh1D>> mesh1dInstances,
                                   int meshKernelId,
                                   meshkernelapi::Mesh1D& mesh1d)
     {
