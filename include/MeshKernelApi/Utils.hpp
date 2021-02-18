@@ -27,28 +27,16 @@
 
 #pragma once
 
-#include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/Constants.hpp>
-#include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/FlipEdges.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
-#include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
-#include <MeshKernelApi/InterpolationParameters.hpp>
-#include <MeshKernelApi/MakeMeshParameters.hpp>
 #include <MeshKernelApi/MeshGeometry.hpp>
 #include <MeshKernelApi/MeshGeometryDimensions.hpp>
-#include <MeshKernelApi/OrthogonalizationParameters.hpp>
-#include <MeshKernelApi/SampleRefineParameters.hpp>
-#include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
 
 #include <stdexcept>
 #include <vector>
