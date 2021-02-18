@@ -173,7 +173,8 @@ namespace meshkernel
         void ComputeEdgeVelocities();
 
         /// @brief Compute the grid grow factor for a given total grid height, first grid layer height and number of grid layers (comp_dgrow)
-        /// @param[in] The spline index
+        /// @param[in] The current spline index
+        /// @returns The computed grow factor
         double ComputeGrowFactor(size_t splineIndex) const;
 
         /// @brief Computes the exponential grid height from the aspect ratio, the heights and the number of grid layers
