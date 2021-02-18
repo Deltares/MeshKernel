@@ -232,23 +232,24 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    std::unique_ptr<double> xCoordinates(new double[13]{1.340015E+02, 3.642529E+02, 6.927549E+02, meshkernel::doubleMissingValue,
+                                                        2.585022E+02, 4.550035E+02, 8.337558E+02, meshkernel::doubleMissingValue,
+                                                        1.002513E+02, 4.610035E+02, meshkernel::doubleMissingValue,
+                                                        6.522547E+02, 7.197551E+02});
 
-    geometryListIn.xCoordinates = new double[13]{1.340015E+02, 3.642529E+02, 6.927549E+02, meshkernel::doubleMissingValue,
-                                                 2.585022E+02, 4.550035E+02, 8.337558E+02, meshkernel::doubleMissingValue,
-                                                 1.002513E+02, 4.610035E+02, meshkernel::doubleMissingValue,
-                                                 6.522547E+02, 7.197551E+02};
+    std::unique_ptr<double> yCoordinates(new double[13]{2.546282E+02, 4.586302E+02, 5.441311E+02, meshkernel::doubleMissingValue,
+                                                        6.862631E+01, 2.726284E+02, 3.753794E+02, meshkernel::doubleMissingValue,
+                                                        4.068797E+02, 7.912642E+01, meshkernel::doubleMissingValue,
+                                                        6.026317E+02, 2.681283E+02});
 
-    geometryListIn.yCoordinates = new double[13]{
-        2.546282E+02, 4.586302E+02, 5.441311E+02, meshkernel::doubleMissingValue,
-        6.862631E+01, 2.726284E+02, 3.753794E+02, meshkernel::doubleMissingValue,
-        4.068797E+02, 7.912642E+01, meshkernel::doubleMissingValue,
-        6.026317E+02, 2.681283E+02};
+    std::unique_ptr<double> zCoordinates(new double[13]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
+                                                        0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
+                                                        0.0, 0.0, meshkernel::doubleMissingValue,
+                                                        0.0, 0.0});
 
-    geometryListIn.zCoordinates = new double[13]{
-        0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
-        0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
-        0.0, 0.0, meshkernel::doubleMissingValue,
-        0.0, 0.0};
+    geometryListIn.xCoordinates = xCoordinates.get();
+    geometryListIn.yCoordinates = yCoordinates.get();
+    geometryListIn.zCoordinates = zCoordinates.get();
 
     geometryListIn.numberOfCoordinates = 13;
     meshkernelapi::CurvilinearParameters curvilinearParameters;
@@ -270,11 +271,6 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(121, meshGeometryDimensions.numnode);
     ASSERT_EQ(220, meshGeometryDimensions.numedge);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
 }
 
 TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
@@ -286,15 +282,18 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     meshkernelapi::GeometryList geometryListIn;
 
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    std::unique_ptr<double> xCoordinates(new double[6]{1.175014E+02, 3.755030E+02, 7.730054E+02, meshkernel::doubleMissingValue,
+                                                       4.100089E+01, 3.410027E+02});
 
-    geometryListIn.xCoordinates = new double[6]{1.175014E+02, 3.755030E+02, 7.730054E+02, meshkernel::doubleMissingValue,
-                                                4.100089E+01, 3.410027E+02};
+    std::unique_ptr<double> yCoordinates(new double[6]{2.437587E+01, 3.266289E+02, 4.563802E+02, meshkernel::doubleMissingValue,
+                                                       2.388780E+02, 2.137584E+01});
 
-    geometryListIn.yCoordinates = new double[6]{2.437587E+01, 3.266289E+02, 4.563802E+02, meshkernel::doubleMissingValue,
-                                                2.388780E+02, 2.137584E+01};
+    std::unique_ptr<double> zCoordinates(new double[6]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
+                                                       0.0, 0.0});
 
-    geometryListIn.zCoordinates = new double[6]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
-                                                0.0, 0.0};
+    geometryListIn.xCoordinates = xCoordinates.get();
+    geometryListIn.yCoordinates = yCoordinates.get();
+    geometryListIn.zCoordinates = zCoordinates.get();
     geometryListIn.numberOfCoordinates = 6;
 
     meshkernelapi::CurvilinearParameters curvilinearParameters;
@@ -342,11 +341,6 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(21, meshGeometryDimensions.numnode);
     ASSERT_EQ(32, meshGeometryDimensions.numedge);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
 }
 
 TEST_F(ApiTests, GenerateTriangularGridThroughApi)
@@ -357,7 +351,7 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
-    geometryListIn.xCoordinates = new double[17]{
+    std::unique_ptr<double> xCoordinates(new double[17]{
         415.319672,
         390.271973,
         382.330048,
@@ -374,9 +368,9 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
         514.899475,
         461.138611,
         422.039764,
-        415.319672};
+        415.319672});
 
-    geometryListIn.yCoordinates = new double[17]{
+    std::unique_ptr<double> yCoordinates(new double[17]{
         490.293762,
         464.024139,
         438.365448,
@@ -393,9 +387,9 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
         504.955872,
         501.290344,
         493.348358,
-        490.293762};
+        490.293762});
 
-    geometryListIn.zCoordinates = new double[17]{
+    std::unique_ptr<double> zCoordinates(new double[17]{
         0.0,
         0.0,
         0.0,
@@ -412,8 +406,11 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
         0.0,
         0.0,
         0.0,
-        0.0};
+        0.0});
 
+    geometryListIn.xCoordinates = xCoordinates.get();
+    geometryListIn.yCoordinates = yCoordinates.get();
+    geometryListIn.zCoordinates = zCoordinates.get();
     geometryListIn.numberOfCoordinates = 17;
 
     // Execute
@@ -428,11 +425,6 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
     // Assert
     ASSERT_EQ(38, meshGeometryDimensions.numnode);
     ASSERT_EQ(95, meshGeometryDimensions.numedge);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
 }
 
 TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)
@@ -445,26 +437,30 @@ TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)
 
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
 
-    geometryListIn.xCoordinates = new double[5]{
+    std::unique_ptr<double> xCoordinates(new double[5]{
         0.0,
         10.0,
         10.0,
         0.0,
-        0.0};
+        0.0});
 
-    geometryListIn.yCoordinates = new double[5]{
+    std::unique_ptr<double> yCoordinates(new double[5]{
         0.0,
         0.0,
         10.0,
         10.0,
-        0.0};
+        0.0});
 
-    geometryListIn.zCoordinates = new double[5]{
+    std::unique_ptr<double> zCoordinates(new double[5]{
         0.0,
         0.0,
         0.0,
         0.0,
-        0.0};
+        0.0});
+
+    geometryListIn.xCoordinates = xCoordinates.get();
+    geometryListIn.yCoordinates = yCoordinates.get();
+    geometryListIn.zCoordinates = zCoordinates.get();
 
     geometryListIn.numberOfCoordinates = 5;
 
@@ -481,11 +477,6 @@ TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)
     // Assert
     ASSERT_EQ(4, meshGeometryDimensions.numnode);
     ASSERT_EQ(5, meshGeometryDimensions.numedge);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
 }
 
 TEST_F(ApiTests, GetMeshBoundariesThroughApi)
@@ -1387,17 +1378,23 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
 {
     // Prepare
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.xCoordinates = new double[3]{10.0, 20.0, 30.0};
-    geometryListIn.yCoordinates = new double[3]{-5.0, 5.0, -5.0};
-    geometryListIn.zCoordinates = new double[3]{0.0, 0.0, 0.0};
+    std::unique_ptr<double> xCoordinatesIn(new double[3]{10.0, 20.0, 30.0});
+    std::unique_ptr<double> yCoordinatesIn(new double[3]{-5.0, 5.0, -5.0});
+    std::unique_ptr<double> zCoordinatesIn(new double[3]{0.0, 0.0, 0.0});
+    geometryListIn.xCoordinates = xCoordinatesIn.get();
+    geometryListIn.yCoordinates = yCoordinatesIn.get();
+    geometryListIn.zCoordinates = zCoordinatesIn.get();
     geometryListIn.numberOfCoordinates = 3;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
 
     meshkernelapi::GeometryList geometryListOut;
     int numberOfPointsBetweenNodes = 20;
-    geometryListOut.xCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
-    geometryListOut.yCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
-    geometryListOut.zCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
+    std::unique_ptr<double> xCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
+    std::unique_ptr<double> yCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
+    std::unique_ptr<double> zCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
+    geometryListOut.xCoordinates = xCoordinatesOut.get();
+    geometryListOut.yCoordinates = yCoordinatesOut.get();
+    geometryListOut.zCoordinates = zCoordinatesOut.get();
 
     // Execute
     auto errorCode = mkernel_get_splines(geometryListIn, geometryListOut, numberOfPointsBetweenNodes);
@@ -1405,15 +1402,6 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
 
     // Assert
     ASSERT_EQ((numberOfPointsBetweenNodes + 1) * 2, geometryListOut.numberOfCoordinates);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
-
-    delete[] geometryListOut.xCoordinates;
-    delete[] geometryListOut.yCoordinates;
-    delete[] geometryListOut.zCoordinates;
 }
 
 TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError)
