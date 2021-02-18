@@ -28,8 +28,8 @@
 #pragma once
 #include <vector>
 
-#include <Meshkernel/Entities.hpp>
-#include <Meshkernel/Mesh.hpp>
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -37,7 +37,8 @@ namespace meshkernel
 {
     /// @brief A class derived from Mesh, which describes 1d meshes.
     ///
-    /// A 1d mesh is composed of a series of connected edges representing 1d real word features, such as pipes or a sewage network.
+    /// A 1d mesh is composed of a series of connected edges
+    /// representing 1d real word features, such as pipes or a sewage network.
     class Mesh1D : public Mesh
     {
     public:
@@ -56,5 +57,9 @@ namespace meshkernel
         /// @param[in] node The node index
         /// @return If the node is on boundary
         [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
+
+        /// @brief Set internal flat copies of nodes and edges,
+        /// so the pointer to the first entry is communicated with the front-end
+        void SetFlatCopies();
     };
 } // namespace meshkernel

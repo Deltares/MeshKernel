@@ -1,0 +1,3 @@
+#pragma once
+#include <string>
+#define TEST_FOLDER std::string("@TEST_FOLDER@")

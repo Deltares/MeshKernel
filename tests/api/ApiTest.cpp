@@ -1,11 +1,15 @@
+#include <memory>
+
 #include <gtest/gtest.h>
 
 #include <MeshKernelApi/GeometryList.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
+#include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/MeshGeometry.hpp>
 #include <MeshKernelApi/MeshGeometryDimensions.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
 #include <MeshKernelApi/Utils.hpp>
+#include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 class ApiTests : public ::testing::Test
@@ -14,7 +18,7 @@ public:
     void AllocateNewMesh(int& meshKernelId) const
     {
         // Allocate new mesh
-        const auto successful = meshkernelapi::mkernel_new_mesh(meshKernelId);
+        const auto successful = meshkernelapi::mkernel_allocate_state(meshKernelId);
         ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, successful);
     }
 
@@ -26,7 +30,7 @@ public:
 
         // Set-up new mesh
         auto meshData = MakeRectangularMeshForApiTesting(n, m, delta);
-        auto errorCode = mkernel_set_state(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
+        auto errorCode = mkernel_set_mesh2d(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
         ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
         // Clean up client-allocated memory
         DeleteRectangularMeshForApiTesting(std::get<0>(meshData));
@@ -47,12 +51,12 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     MakeMesh();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_delete_node(0, 0);
+    auto errorCode = meshkernelapi::mkernel_delete_node_mesh2d(0, 0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -68,12 +72,12 @@ TEST_F(ApiTests, FlipEdgesThroughApi)
     // Execute
     const int isTriangulationRequired = 1;
     const int projectToLandBoundaryOption = 1;
-    auto errorCode = meshkernelapi::mkernel_flip_edges(0, isTriangulationRequired, projectToLandBoundaryOption);
+    auto errorCode = meshkernelapi::mkernel_flip_edges_mesh2d(0, isTriangulationRequired, projectToLandBoundaryOption);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -88,13 +92,13 @@ TEST_F(ApiTests, InsertEdgeThroughApi)
 
     // Execute
     int newEdgeIndex;
-    auto errorCode = meshkernelapi::mkernel_insert_edge(0, 0, 4, newEdgeIndex);
+    auto errorCode = meshkernelapi::mkernel_insert_edge_mesh2d(0, 0, 4, newEdgeIndex);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(17, newEdgeIndex);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -108,12 +112,12 @@ TEST_F(ApiTests, MergeTwoNodesThroughApi)
     MakeMesh();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_merge_two_nodes(0, 0, 4);
+    auto errorCode = meshkernelapi::mkernel_merge_two_nodes_mesh2d(0, 0, 4);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -128,12 +132,12 @@ TEST_F(ApiTests, MergeNodesThroughApi)
     meshkernelapi::GeometryList geometry_list{};
 
     // Execute
-    auto errorCode = mkernel_merge_nodes(0, geometry_list);
+    auto errorCode = mkernel_merge_nodes_mesh2d(0, geometry_list);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -157,30 +161,30 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
     meshkernelapi::GeometryList landBoundaries{};
 
     // Execute
-    auto errorCode = mkernel_orthogonalize_initialize(0,
-                                                      1,
-                                                      orthogonalizationParameters,
-                                                      landBoundaries,
-                                                      geometryList);
+    auto errorCode = mkernel_initialize_orthogonalization_mesh2d(0,
+                                                                 1,
+                                                                 orthogonalizationParameters,
+                                                                 landBoundaries,
+                                                                 geometryList);
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_orthogonalize_prepare_outer_iteration(0);
+    errorCode = meshkernelapi::mkernel_prepare_outer_iteration_orthogonalization_mesh2d(0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_orthogonalize_inner_iteration(0);
+    errorCode = meshkernelapi::mkernel_compute_inner_ortogonalization_iteration_mesh2d(0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_orthogonalize_finalize_outer_iteration(0);
+    errorCode = meshkernelapi::mkernel_finalize_inner_ortogonalization_iteration_mesh2d(0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_orthogonalize_delete(0);
+    errorCode = meshkernelapi::mkernel_delete_orthogonalization_mesh2d(0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(12, meshGeometryDimensions.numnode);
@@ -208,12 +212,12 @@ TEST_F(ApiTests, MakeGridThroughApi)
     makeMeshParameters.YGridBlockSize = 0.0;
 
     // Execute
-    auto errorCode = mkernel_make_mesh(0, makeMeshParameters, geometryList);
+    auto errorCode = mkernel_make_mesh2d(0, makeMeshParameters, geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
@@ -228,23 +232,24 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    std::unique_ptr<double> xCoordinates(new double[13]{1.340015E+02, 3.642529E+02, 6.927549E+02, meshkernel::doubleMissingValue,
+                                                        2.585022E+02, 4.550035E+02, 8.337558E+02, meshkernel::doubleMissingValue,
+                                                        1.002513E+02, 4.610035E+02, meshkernel::doubleMissingValue,
+                                                        6.522547E+02, 7.197551E+02});
 
-    geometryListIn.xCoordinates = new double[]{1.340015E+02, 3.642529E+02, 6.927549E+02, meshkernel::doubleMissingValue,
-                                               2.585022E+02, 4.550035E+02, 8.337558E+02, meshkernel::doubleMissingValue,
-                                               1.002513E+02, 4.610035E+02, meshkernel::doubleMissingValue,
-                                               6.522547E+02, 7.197551E+02};
+    std::unique_ptr<double> yCoordinates(new double[13]{2.546282E+02, 4.586302E+02, 5.441311E+02, meshkernel::doubleMissingValue,
+                                                        6.862631E+01, 2.726284E+02, 3.753794E+02, meshkernel::doubleMissingValue,
+                                                        4.068797E+02, 7.912642E+01, meshkernel::doubleMissingValue,
+                                                        6.026317E+02, 2.681283E+02});
 
-    geometryListIn.yCoordinates = new double[]{
-        2.546282E+02, 4.586302E+02, 5.441311E+02, meshkernel::doubleMissingValue,
-        6.862631E+01, 2.726284E+02, 3.753794E+02, meshkernel::doubleMissingValue,
-        4.068797E+02, 7.912642E+01, meshkernel::doubleMissingValue,
-        6.026317E+02, 2.681283E+02};
+    std::unique_ptr<double> zCoordinates(new double[13]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
+                                                        0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
+                                                        0.0, 0.0, meshkernel::doubleMissingValue,
+                                                        0.0, 0.0});
 
-    geometryListIn.zCoordinates = new double[]{
-        0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
-        0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
-        0.0, 0.0, meshkernel::doubleMissingValue,
-        0.0, 0.0};
+    geometryListIn.xCoordinates = xCoordinates.get();
+    geometryListIn.yCoordinates = yCoordinates.get();
+    geometryListIn.zCoordinates = zCoordinates.get();
 
     geometryListIn.numberOfCoordinates = 13;
     meshkernelapi::CurvilinearParameters curvilinearParameters;
@@ -255,22 +260,17 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     curvilinearParameters.AttractionParameter = 0.0;
 
     // Execute
-    auto errorCode = mkernel_curvilinear_mesh_from_splines(0, geometryListIn, curvilinearParameters);
+    auto errorCode = mkernel_compute_transfinite_curvilinear_from_splines_mesh2d(0, geometryListIn, curvilinearParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(121, meshGeometryDimensions.numnode);
     ASSERT_EQ(220, meshGeometryDimensions.numedge);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
 }
 
 TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
@@ -282,15 +282,18 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     meshkernelapi::GeometryList geometryListIn;
 
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
+    std::unique_ptr<double> xCoordinates(new double[6]{1.175014E+02, 3.755030E+02, 7.730054E+02, meshkernel::doubleMissingValue,
+                                                       4.100089E+01, 3.410027E+02});
 
-    geometryListIn.xCoordinates = new double[]{1.175014E+02, 3.755030E+02, 7.730054E+02, meshkernel::doubleMissingValue,
-                                               4.100089E+01, 3.410027E+02};
+    std::unique_ptr<double> yCoordinates(new double[6]{2.437587E+01, 3.266289E+02, 4.563802E+02, meshkernel::doubleMissingValue,
+                                                       2.388780E+02, 2.137584E+01});
 
-    geometryListIn.yCoordinates = new double[]{2.437587E+01, 3.266289E+02, 4.563802E+02, meshkernel::doubleMissingValue,
-                                               2.388780E+02, 2.137584E+01};
+    std::unique_ptr<double> zCoordinates(new double[6]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
+                                                       0.0, 0.0});
 
-    geometryListIn.zCoordinates = new double[]{0.0, 0.0, 0.0, meshkernel::doubleMissingValue,
-                                               0.0, 0.0, meshkernel::doubleMissingValue};
+    geometryListIn.xCoordinates = xCoordinates.get();
+    geometryListIn.yCoordinates = yCoordinates.get();
+    geometryListIn.zCoordinates = zCoordinates.get();
     geometryListIn.numberOfCoordinates = 6;
 
     meshkernelapi::CurvilinearParameters curvilinearParameters;
@@ -311,38 +314,33 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     splinesToCurvilinearParameters.GrowGridOutside = 0;
 
     // Execute
-    auto errorCode = mkernel_curvilinear_mesh_from_splines_ortho_initialize(0, geometryListIn, curvilinearParameters, splinesToCurvilinearParameters);
+    auto errorCode = mkernel_initialize_orthogonal_curvilinear_mesh2d(0, geometryListIn, curvilinearParameters, splinesToCurvilinearParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Grow grid, from the second layer
     for (auto layer = 1; layer <= curvilinearParameters.NRefinement; ++layer)
     {
-        errorCode = meshkernelapi::mkernel_curvilinear_mesh_from_splines_ortho_iteration(0, layer);
+        errorCode = meshkernelapi::mkernel_iterate_orthogonal_curvilinear_mesh2d(0, layer);
         ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     }
 
     // Puts the computed curvilinear mesh into the mesh state (unstructured mesh)
-    errorCode = meshkernelapi::mkernel_curvilinear_mesh_from_splines_ortho_refresh_mesh(0);
+    errorCode = meshkernelapi::mkernel_refresh_orthogonal_curvilinear_mesh2d(0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Delete the mesh curvilinearGridFromSplinesInstances vector entry
-    errorCode = meshkernelapi::mkernel_curvilinear_mesh_from_splines_ortho_delete(0);
+    errorCode = meshkernelapi::mkernel_delete_orthogonal_curvilinear_mesh2d(0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(21, meshGeometryDimensions.numnode);
     ASSERT_EQ(32, meshGeometryDimensions.numedge);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
 }
 
 TEST_F(ApiTests, GenerateTriangularGridThroughApi)
@@ -353,7 +351,7 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
-    geometryListIn.xCoordinates = new double[]{
+    std::unique_ptr<double> xCoordinates(new double[17]{
         415.319672,
         390.271973,
         382.330048,
@@ -370,9 +368,9 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
         514.899475,
         461.138611,
         422.039764,
-        415.319672};
+        415.319672});
 
-    geometryListIn.yCoordinates = new double[]{
+    std::unique_ptr<double> yCoordinates(new double[17]{
         490.293762,
         464.024139,
         438.365448,
@@ -389,9 +387,9 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
         504.955872,
         501.290344,
         493.348358,
-        490.293762};
+        490.293762});
 
-    geometryListIn.zCoordinates = new double[]{
+    std::unique_ptr<double> zCoordinates(new double[17]{
         0.0,
         0.0,
         0.0,
@@ -408,27 +406,25 @@ TEST_F(ApiTests, GenerateTriangularGridThroughApi)
         0.0,
         0.0,
         0.0,
-        0.0};
+        0.0});
 
+    geometryListIn.xCoordinates = xCoordinates.get();
+    geometryListIn.yCoordinates = yCoordinates.get();
+    geometryListIn.zCoordinates = zCoordinates.get();
     geometryListIn.numberOfCoordinates = 17;
 
     // Execute
-    auto errorCode = mkernel_make_mesh_from_polygon(0, geometryListIn);
+    auto errorCode = mkernel_make_mesh_from_polygon_mesh2d(0, geometryListIn);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
     ASSERT_EQ(38, meshGeometryDimensions.numnode);
     ASSERT_EQ(95, meshGeometryDimensions.numedge);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
 }
 
 TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)
@@ -441,47 +437,46 @@ TEST_F(ApiTests, GenerateTriangularGridFromSamplesThroughApi)
 
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
 
-    geometryListIn.xCoordinates = new double[]{
+    std::unique_ptr<double> xCoordinates(new double[5]{
         0.0,
         10.0,
         10.0,
         0.0,
-        0.0};
+        0.0});
 
-    geometryListIn.yCoordinates = new double[]{
+    std::unique_ptr<double> yCoordinates(new double[5]{
         0.0,
         0.0,
         10.0,
         10.0,
-        0.0};
+        0.0});
 
-    geometryListIn.zCoordinates = new double[]{
+    std::unique_ptr<double> zCoordinates(new double[5]{
         0.0,
         0.0,
         0.0,
         0.0,
-        0.0};
+        0.0});
+
+    geometryListIn.xCoordinates = xCoordinates.get();
+    geometryListIn.yCoordinates = yCoordinates.get();
+    geometryListIn.zCoordinates = zCoordinates.get();
 
     geometryListIn.numberOfCoordinates = 5;
 
     // Execute
-    auto errorCode = mkernel_make_mesh_from_samples(0, geometryListIn);
+    auto errorCode = mkernel_make_mesh_from_samples_mesh2d(0, geometryListIn);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
     ASSERT_EQ(4, meshGeometryDimensions.numnode);
     ASSERT_EQ(5, meshGeometryDimensions.numedge);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
 }
 
 TEST_F(ApiTests, GetMeshBoundariesThroughApi)
@@ -489,7 +484,7 @@ TEST_F(ApiTests, GetMeshBoundariesThroughApi)
     // Prepare
     MakeMesh();
     int numberOfpolygonNodes;
-    auto errorCode = meshkernelapi::mkernel_copy_mesh_boundaries_to_polygon_count_nodes(0, numberOfpolygonNodes);
+    auto errorCode = meshkernelapi::mkernel_count_mesh_boundaries_to_polygon_mesh2d(0, numberOfpolygonNodes);
     ASSERT_EQ(11, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -501,7 +496,7 @@ TEST_F(ApiTests, GetMeshBoundariesThroughApi)
     geometryListIn.zCoordinates = new double[numberOfpolygonNodes];
 
     // Execute
-    errorCode = mkernel_copy_mesh_boundaries_to_polygon(0, geometryListIn);
+    errorCode = mkernel_get_mesh_boundaries_to_polygon_mesh2d(0, geometryListIn);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -523,19 +518,19 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
     geometryListIn.numberOfCoordinates = 4;
-    geometryListIn.xCoordinates = new double[]{
+    geometryListIn.xCoordinates = new double[4]{
         0.0,
         1.0,
         1.0,
         0.0};
 
-    geometryListIn.yCoordinates = new double[]{
+    geometryListIn.yCoordinates = new double[4]{
         0.0,
         0.0,
         1.0,
         1.0};
 
-    geometryListIn.zCoordinates = new double[]{
+    geometryListIn.zCoordinates = new double[4]{
         0.0,
         0.0,
         0.0,
@@ -543,7 +538,7 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
 
     // Execute
     int numberOfpolygonNodes;
-    auto errorCode = mkernel_offsetted_polygon_count(0, geometryListIn, false, 0.5, numberOfpolygonNodes);
+    auto errorCode = mkernel_count_offsetted_polygon(0, geometryListIn, false, 0.5, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(4, numberOfpolygonNodes);
 
@@ -554,7 +549,7 @@ TEST_F(ApiTests, OffsetAPolygonThroughApi)
     geometryListOut.xCoordinates = new double[numberOfpolygonNodes];
     geometryListOut.yCoordinates = new double[numberOfpolygonNodes];
     geometryListOut.zCoordinates = new double[numberOfpolygonNodes];
-    errorCode = mkernel_offsetted_polygon(0, geometryListIn, false, 10.0, geometryListOut);
+    errorCode = mkernel_get_offsetted_polygon(0, geometryListIn, false, 10.0, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -580,24 +575,24 @@ TEST_F(ApiTests, RefineAPolygonThroughApi)
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
     geometryListIn.numberOfCoordinates = 3;
-    geometryListIn.xCoordinates = new double[]{
+    geometryListIn.xCoordinates = new double[3]{
         76.251099,
         498.503723,
         505.253784};
 
-    geometryListIn.yCoordinates = new double[]{
+    geometryListIn.yCoordinates = new double[3]{
         92.626556,
         91.126541,
         490.130554};
 
-    geometryListIn.zCoordinates = new double[]{
+    geometryListIn.zCoordinates = new double[3]{
         0.0,
         0.0,
         0.0};
 
     // Execute
     int numberOfpolygonNodes;
-    auto errorCode = mkernel_refine_polygon_count(0, geometryListIn, 0, 2, 40, numberOfpolygonNodes);
+    auto errorCode = mkernel_count_refine_polygon(0, geometryListIn, 0, 2, 40, numberOfpolygonNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(22, numberOfpolygonNodes);
 
@@ -633,7 +628,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
 
-    geometryListIn.xCoordinates = new double[]{
+    geometryListIn.xCoordinates = new double[9]{
         50.0,
         150.0,
         250.0,
@@ -644,7 +639,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
         150.0,
         250.0};
 
-    geometryListIn.yCoordinates = new double[]{
+    geometryListIn.yCoordinates = new double[9]{
         50.0,
         50.0,
         50.0,
@@ -655,7 +650,7 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
         250.0,
         250.0};
 
-    geometryListIn.zCoordinates = new double[]{
+    geometryListIn.zCoordinates = new double[9]{
         2.0,
         2.0,
         2.0,
@@ -688,13 +683,13 @@ TEST_F(ApiTests, RefineAGridBasedOnSamplesThroughApi)
     samplesRefineParameters.AccountForSamplesOutside = 0;
 
     // Execute
-    auto errorCode = mkernel_refine_mesh_based_on_samples(0, geometryListIn, interpolationParameters, samplesRefineParameters);
+    auto errorCode = mkernel_refine_based_on_samples_mesh2d(0, geometryListIn, interpolationParameters, samplesRefineParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -714,7 +709,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
-    geometryListIn.xCoordinates = new double[]{
+    geometryListIn.xCoordinates = new double[9]{
         50.0,
         150.0,
         250.0,
@@ -725,7 +720,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
         150.0,
         250.0};
 
-    geometryListIn.yCoordinates = new double[]{
+    geometryListIn.yCoordinates = new double[9]{
         50.0,
         50.0,
         50.0,
@@ -736,7 +731,7 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
         250.0,
         250.0};
 
-    geometryListIn.zCoordinates = new double[]{
+    geometryListIn.zCoordinates = new double[9]{
         2.0,
         2.0,
         2.0,
@@ -760,13 +755,13 @@ TEST_F(ApiTests, RefineAGridBasedOnPolygonThroughApi)
     interpolationParameters.RefineIntersected = 0;
 
     // Execute
-    auto errorCode = mkernel_refine_mesh_based_on_polygon(0, geometryListIn, interpolationParameters);
+    auto errorCode = mkernel_refine_based_on_polygon_mesh2d(0, geometryListIn, interpolationParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -786,7 +781,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
-    geometryListIn.xCoordinates = new double[]{
+    geometryListIn.xCoordinates = new double[9]{
         273.502319,
         274.252319,
         275.002350,
@@ -797,7 +792,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
         507.503784,
         305.002533};
 
-    geometryListIn.yCoordinates = new double[]{
+    geometryListIn.yCoordinates = new double[9]{
         478.880432,
         325.128906,
         172.127350,
@@ -808,7 +803,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
         494.630615,
         493.130615};
 
-    geometryListIn.zCoordinates = new double[]{
+    geometryListIn.zCoordinates = new double[9]{
         0.0,
         0.0,
         0.0,
@@ -821,13 +816,13 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
     geometryListIn.numberOfCoordinates = 9;
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_curvilinear_from_polygon(0, geometryListIn, 0, 2, 4, true);
+    auto errorCode = meshkernelapi::mkernel_compute_transfinite_curvilinear_from_polygon_mesh2d(0, geometryListIn, 0, 2, 4, true);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -847,20 +842,20 @@ TEST_F(ApiTests, GetClosestMeshCoordinateThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
-    geometryListIn.xCoordinates = new double[]{-5.0};
-    geometryListIn.yCoordinates = new double[]{5.0};
-    geometryListIn.zCoordinates = new double[]{0.0};
+    geometryListIn.xCoordinates = new double[1]{-5.0};
+    geometryListIn.yCoordinates = new double[1]{5.0};
+    geometryListIn.zCoordinates = new double[1]{0.0};
     geometryListIn.numberOfCoordinates = 1;
 
     meshkernelapi::GeometryList geometryListOut;
     geometryListOut.geometrySeparator = meshkernel::doubleMissingValue;
-    geometryListOut.xCoordinates = new double[]{meshkernel::doubleMissingValue};
-    geometryListOut.yCoordinates = new double[]{meshkernel::doubleMissingValue};
-    geometryListOut.zCoordinates = new double[]{meshkernel::doubleMissingValue};
+    geometryListOut.xCoordinates = new double[1]{meshkernel::doubleMissingValue};
+    geometryListOut.yCoordinates = new double[1]{meshkernel::doubleMissingValue};
+    geometryListOut.zCoordinates = new double[1]{meshkernel::doubleMissingValue};
     geometryListOut.numberOfCoordinates = 1;
 
     // Execute
-    auto errorCode = mkernel_get_node_coordinate(0, geometryListIn, 10.0, geometryListOut);
+    auto errorCode = mkernel_get_closest_node_mesh2d(0, geometryListIn, 10.0, geometryListOut);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -883,7 +878,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
-    geometryListIn.xCoordinates = new double[]{
+    geometryListIn.xCoordinates = new double[10]{
         444.504791,
         427.731781,
         405.640503,
@@ -895,7 +890,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
         526.733398,
         444.095703};
 
-    geometryListIn.yCoordinates = new double[]{
+    geometryListIn.yCoordinates = new double[10]{
         437.155945,
         382.745758,
         317.699005,
@@ -907,7 +902,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
         377.836578,
         436.746857};
 
-    geometryListIn.zCoordinates = new double[]{
+    geometryListIn.zCoordinates = new double[10]{
         0.0,
         0.0,
         0.0,
@@ -922,13 +917,13 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     geometryListIn.numberOfCoordinates = 10;
 
     // Execute
-    auto errorCode = mkernel_curvilinear_from_triangle(0, geometryListIn, 0, 3, 6);
+    auto errorCode = mkernel_compute_transfinite_curvilinear_from_triangle_mesh2d(0, geometryListIn, 0, 3, 6);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
     meshkernelapi::MeshGeometry meshGeometry{};
-    errorCode = mkernel_get_mesh(0, meshGeometryDimensions, meshGeometry);
+    errorCode = mkernel_get_mesh2d(0, meshGeometryDimensions, meshGeometry);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert
@@ -941,21 +936,465 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
     delete[] geometryListIn.zCoordinates;
 }
 
+TEST_F(ApiTests, ComputeSingleContactsThroughApi)
+{
+    // Prepare
+    MakeMesh(4, 4, 10);
+
+    // Init 1d mesh
+    meshkernelapi::Mesh1D mesh1d;
+    std::unique_ptr<double> nodex(new double[7]{
+        1.73493900000000,
+        2.35659313023165,
+        5.38347452702839,
+        14.2980910429074,
+        22.9324017677239,
+        25.3723169493137,
+        25.8072280000000});
+    std::unique_ptr<double> nodey(new double[7]{
+        -7.6626510000000,
+        1.67281447902331,
+        10.3513746546384,
+        12.4797224193970,
+        15.3007317677239,
+        24.1623588554512,
+        33.5111870000000});
+    mesh1d.nodex = nodex.get();
+    mesh1d.nodey = nodey.get();
+    mesh1d.num_nodes = 7;
+
+    std::unique_ptr<int> edge_nodes(new int[12]{
+        0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6});
+    mesh1d.edge_nodes = edge_nodes.get();
+    mesh1d.num_edges = 6;
+
+    auto errorCode = mkernel_set_mesh1d(0, mesh1d, false);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Init 1d mask
+    std::unique_ptr<int> onedNodeMask(new int[7]{1, 1, 1, 1, 1, 1, 1});
+
+    // Init polygon
+    meshkernelapi::GeometryList polygon;
+    polygon.geometrySeparator = meshkernel::doubleMissingValue;
+
+    std::unique_ptr<double> xCoordinates(new double[5]{-30, 40, 40, -40, -30});
+    std::unique_ptr<double> yCoordinates(new double[5]{-20, -20, 50, 50, -20});
+    std::unique_ptr<double> zCoordinates(new double[5]{0, 0, 0, 0, 0});
+    polygon.xCoordinates = xCoordinates.get();
+    polygon.yCoordinates = yCoordinates.get();
+    polygon.zCoordinates = zCoordinates.get();
+
+    polygon.numberOfCoordinates = 5;
+
+    // Execute
+    errorCode = mkernel_compute_single_contacts(0, onedNodeMask.get(), polygon);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Contacts contacts{};
+    errorCode = mkernel_count_contacts(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
+    std::unique_ptr<int> mesh2d_indices(new int[contacts.num_contacts]);
+    contacts.mesh1d_indices = mesh1d_indices.get();
+    contacts.mesh2d_indices = mesh2d_indices.get();
+
+    errorCode = mkernel_get_contacts(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(5, contacts.num_contacts);
+
+    ASSERT_EQ(1, contacts.mesh1d_indices[0]);
+    ASSERT_EQ(2, contacts.mesh1d_indices[1]);
+    ASSERT_EQ(3, contacts.mesh1d_indices[2]);
+    ASSERT_EQ(4, contacts.mesh1d_indices[3]);
+    ASSERT_EQ(5, contacts.mesh1d_indices[4]);
+
+    ASSERT_EQ(0, contacts.mesh2d_indices[0]);
+    ASSERT_EQ(1, contacts.mesh2d_indices[1]);
+    ASSERT_EQ(4, contacts.mesh2d_indices[2]);
+    ASSERT_EQ(7, contacts.mesh2d_indices[3]);
+    ASSERT_EQ(8, contacts.mesh2d_indices[4]);
+}
+
+TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
+{
+    // Prepare
+    MakeMesh(4, 4, 10);
+
+    // Init 1d mesh
+    meshkernelapi::Mesh1D mesh1d;
+    std::unique_ptr<double> nodex(new double[7]{
+        1.73493900000000,
+        2.35659313023165,
+        5.38347452702839,
+        14.2980910429074,
+        22.9324017677239,
+        25.3723169493137,
+        25.8072280000000});
+    std::unique_ptr<double> nodey(new double[7]{
+        -7.6626510000000,
+        1.67281447902331,
+        10.3513746546384,
+        12.4797224193970,
+        15.3007317677239,
+        24.1623588554512,
+        33.5111870000000});
+    mesh1d.nodex = nodex.get();
+    mesh1d.nodey = nodey.get();
+    mesh1d.num_nodes = 7;
+
+    std::unique_ptr<int> edge_nodes(new int[12]{
+        0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6});
+    mesh1d.edge_nodes = edge_nodes.get();
+    mesh1d.num_edges = 6;
+
+    auto errorCode = mkernel_set_mesh1d(0, mesh1d, false);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Init 1d mask
+    std::unique_ptr<int> onedNodeMask(new int[7]{
+        1, 1, 1, 1, 1, 1, 1});
+
+    // Execute
+    // Why do we need to specify the namespace "meshkernelapi"?
+    errorCode = meshkernelapi::mkernel_compute_multiple_contacts(0, onedNodeMask.get());
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Contacts contacts{};
+    errorCode = mkernel_count_contacts(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
+    std::unique_ptr<int> mesh2d_indices(new int[contacts.num_contacts]);
+    contacts.mesh1d_indices = mesh1d_indices.get();
+    contacts.mesh2d_indices = mesh2d_indices.get();
+
+    errorCode = mkernel_get_contacts(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(5, contacts.num_contacts);
+
+    ASSERT_EQ(1, contacts.mesh1d_indices[0]);
+    ASSERT_EQ(2, contacts.mesh1d_indices[1]);
+    ASSERT_EQ(3, contacts.mesh1d_indices[2]);
+    ASSERT_EQ(4, contacts.mesh1d_indices[3]);
+    ASSERT_EQ(5, contacts.mesh1d_indices[4]);
+
+    ASSERT_EQ(0, contacts.mesh2d_indices[0]);
+    ASSERT_EQ(1, contacts.mesh2d_indices[1]);
+    ASSERT_EQ(4, contacts.mesh2d_indices[2]);
+    ASSERT_EQ(7, contacts.mesh2d_indices[3]);
+    ASSERT_EQ(8, contacts.mesh2d_indices[4]);
+}
+
+TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
+{
+    // Prepare
+    MakeMesh(4, 4, 10);
+
+    // Init 1d mesh
+    meshkernelapi::Mesh1D mesh1d;
+    std::unique_ptr<double> nodex(new double[7]{
+        1.73493900000000,
+        2.35659313023165,
+        5.38347452702839,
+        14.2980910429074,
+        22.9324017677239,
+        25.3723169493137,
+        25.8072280000000});
+    std::unique_ptr<double> nodey(new double[7]{
+        -7.6626510000000,
+        1.67281447902331,
+        10.3513746546384,
+        12.4797224193970,
+        15.3007317677239,
+        24.1623588554512,
+        33.5111870000000});
+    mesh1d.nodex = nodex.get();
+    mesh1d.nodey = nodey.get();
+    mesh1d.num_nodes = 7;
+
+    std::unique_ptr<int> edge_nodes(new int[12]{
+        0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6});
+    mesh1d.edge_nodes = edge_nodes.get();
+    mesh1d.num_edges = 6;
+
+    auto errorCode = mkernel_set_mesh1d(0, mesh1d, false);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Init 1d mask
+    std::unique_ptr<int> onedNodeMask(new int[7]{
+        1, 1, 1, 1, 1, 1, 1});
+
+    // Init polygon
+    meshkernelapi::GeometryList polygon;
+    polygon.geometrySeparator = meshkernel::doubleMissingValue;
+
+    std::unique_ptr<double> xCoordinates(new double[5]{
+        25,
+        50,
+        50,
+        25,
+        25});
+    std::unique_ptr<double> yCoordinates(new double[5]{
+        25,
+        25,
+        50,
+        50,
+        25});
+    std::unique_ptr<double> zCoordinates(new double[5]{
+        0, 0, 0, 0, 0});
+    polygon.xCoordinates = xCoordinates.get();
+    polygon.yCoordinates = yCoordinates.get();
+    polygon.zCoordinates = zCoordinates.get();
+
+    polygon.numberOfCoordinates = 5;
+
+    // Execute
+    errorCode = mkernel_compute_with_polygons_contacts(0, onedNodeMask.get(), polygon);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Contacts contacts{};
+    errorCode = mkernel_count_contacts(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
+    std::unique_ptr<int> mesh2d_indices(new int[contacts.num_contacts]);
+    contacts.mesh1d_indices = mesh1d_indices.get();
+    contacts.mesh2d_indices = mesh2d_indices.get();
+
+    errorCode = mkernel_get_contacts(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(1, contacts.num_contacts);
+    ASSERT_EQ(5, contacts.mesh1d_indices[0]);
+    ASSERT_EQ(8, contacts.mesh2d_indices[0]);
+}
+
+TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
+{
+    // Prepare
+    MakeMesh(4, 4, 10);
+
+    // Init 1d mesh
+    meshkernelapi::Mesh1D mesh1d;
+    std::unique_ptr<double> nodex(new double[7]{
+        1.73493900000000,
+        2.35659313023165,
+        5.38347452702839,
+        14.2980910429074,
+        22.9324017677239,
+        25.3723169493137,
+        25.8072280000000});
+    std::unique_ptr<double> nodey(new double[7]{
+        -7.6626510000000,
+        1.67281447902331,
+        10.3513746546384,
+        12.4797224193970,
+        15.3007317677239,
+        24.1623588554512,
+        33.5111870000000});
+    mesh1d.nodex = nodex.get();
+    mesh1d.nodey = nodey.get();
+    mesh1d.num_nodes = 7;
+
+    std::unique_ptr<int> edge_nodes(new int[12]{
+        0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6});
+    mesh1d.edge_nodes = edge_nodes.get();
+    mesh1d.num_edges = 6;
+
+    auto errorCode = mkernel_set_mesh1d(0, mesh1d, false);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Init 1d mask
+    std::unique_ptr<int> onedNodeMask(new int[7]{
+        1, 1, 1, 1, 1, 1, 1});
+
+    // Init polygon
+    meshkernelapi::GeometryList points;
+    points.geometrySeparator = meshkernel::doubleMissingValue;
+
+    std::unique_ptr<double> xCoordinates(new double[4]{
+        5,
+        15,
+        25,
+        35});
+    std::unique_ptr<double> yCoordinates(new double[4]{
+        5,
+        15,
+        25,
+        35});
+    std::unique_ptr<double> zCoordinates(new double[4]{
+        0, 0, 0, 0});
+    points.xCoordinates = xCoordinates.get();
+    points.yCoordinates = yCoordinates.get();
+    points.zCoordinates = zCoordinates.get();
+
+    points.numberOfCoordinates = 4;
+
+    // Execute
+    errorCode = mkernel_compute_with_points_contacts(0, onedNodeMask.get(), points);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Contacts contacts{};
+    errorCode = mkernel_count_contacts(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
+    std::unique_ptr<int> mesh2d_indices(new int[contacts.num_contacts]);
+    contacts.mesh1d_indices = mesh1d_indices.get();
+    contacts.mesh2d_indices = mesh2d_indices.get();
+
+    errorCode = mkernel_get_contacts(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(3, contacts.num_contacts);
+
+    ASSERT_EQ(1, contacts.mesh1d_indices[0]);
+    ASSERT_EQ(3, contacts.mesh1d_indices[1]);
+    ASSERT_EQ(5, contacts.mesh1d_indices[2]);
+
+    ASSERT_EQ(0, contacts.mesh2d_indices[0]);
+    ASSERT_EQ(4, contacts.mesh2d_indices[1]);
+    ASSERT_EQ(8, contacts.mesh2d_indices[2]);
+}
+
+TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
+{
+    // Prepare
+    MakeMesh(4, 4, 10);
+
+    // Init 1d mesh
+    meshkernelapi::Mesh1D mesh1d;
+    std::unique_ptr<double> nodex(new double[8]{
+        -16.1886410000000,
+        -16.1464995876014,
+        -16.1043581752028,
+        -16.0622167628042,
+        -15.7539488236928,
+        -6.86476658679268,
+        2.02441565010741,
+        10.9135970000000,
+    });
+    std::unique_ptr<double> nodey(new double[8]{
+        0.89018900000000,
+        9.78201442138723,
+        18.6738398427745,
+        27.5656652641617,
+        36.1966603330179,
+        36.4175095626911,
+        36.6383587923643,
+        36.8592080000000});
+    mesh1d.nodex = nodex.get();
+    mesh1d.nodey = nodey.get();
+    mesh1d.num_nodes = 8;
+
+    std::unique_ptr<int> edge_nodes(new int[14]{
+        0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7});
+    mesh1d.edge_nodes = edge_nodes.get();
+    mesh1d.num_edges = 7;
+
+    auto errorCode = mkernel_set_mesh1d(0, mesh1d, false);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Init 1d mask
+    std::unique_ptr<int> onedNodeMask(new int[8]{
+        1, 1, 1, 1, 1, 1, 1, 1});
+
+    // Init polygon
+    meshkernelapi::GeometryList polygon;
+    polygon.geometrySeparator = meshkernel::doubleMissingValue;
+
+    std::unique_ptr<double> xCoordinates(new double[5]{
+        -30,
+        40,
+        40,
+        -40,
+        -30});
+    std::unique_ptr<double> yCoordinates(new double[5]{
+        -20,
+        -20,
+        50,
+        50,
+        -20});
+    std::unique_ptr<double> zCoordinates(new double[5]{
+        0, 0, 0, 0, 0});
+    polygon.xCoordinates = xCoordinates.get();
+    polygon.yCoordinates = yCoordinates.get();
+    polygon.zCoordinates = zCoordinates.get();
+
+    polygon.numberOfCoordinates = 5;
+
+    // Execute
+    errorCode = mkernel_compute_boundary_contacts(0, onedNodeMask.get(), polygon, 200.0);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Get the new state
+    meshkernelapi::Contacts contacts{};
+    errorCode = mkernel_count_contacts(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    std::unique_ptr<int> mesh1d_indices(new int[contacts.num_contacts]);
+    std::unique_ptr<int> mesh2d_indices(new int[contacts.num_contacts]);
+    contacts.mesh1d_indices = mesh1d_indices.get();
+    contacts.mesh2d_indices = mesh2d_indices.get();
+
+    errorCode = mkernel_get_contacts(0, contacts);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(8, contacts.num_contacts);
+
+    ASSERT_EQ(0, contacts.mesh1d_indices[0]);
+    ASSERT_EQ(2, contacts.mesh1d_indices[1]);
+    ASSERT_EQ(6, contacts.mesh1d_indices[2]);
+    ASSERT_EQ(0, contacts.mesh1d_indices[3]);
+    ASSERT_EQ(7, contacts.mesh1d_indices[4]);
+    ASSERT_EQ(7, contacts.mesh1d_indices[5]);
+    ASSERT_EQ(7, contacts.mesh1d_indices[6]);
+    ASSERT_EQ(7, contacts.mesh1d_indices[7]);
+
+    ASSERT_EQ(0, contacts.mesh2d_indices[0]);
+    ASSERT_EQ(1, contacts.mesh2d_indices[1]);
+    ASSERT_EQ(2, contacts.mesh2d_indices[2]);
+    ASSERT_EQ(3, contacts.mesh2d_indices[3]);
+    ASSERT_EQ(5, contacts.mesh2d_indices[4]);
+    ASSERT_EQ(6, contacts.mesh2d_indices[5]);
+    ASSERT_EQ(7, contacts.mesh2d_indices[6]);
+    ASSERT_EQ(8, contacts.mesh2d_indices[7]);
+}
+
 TEST(ApiStatelessTests, GetSplinesThroughApi)
 {
     // Prepare
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.xCoordinates = new double[]{10.0, 20.0, 30.0};
-    geometryListIn.yCoordinates = new double[]{-5.0, 5.0, -5.0};
-    geometryListIn.zCoordinates = new double[]{0.0, 0.0, 0.0};
+    std::unique_ptr<double> xCoordinatesIn(new double[3]{10.0, 20.0, 30.0});
+    std::unique_ptr<double> yCoordinatesIn(new double[3]{-5.0, 5.0, -5.0});
+    std::unique_ptr<double> zCoordinatesIn(new double[3]{0.0, 0.0, 0.0});
+    geometryListIn.xCoordinates = xCoordinatesIn.get();
+    geometryListIn.yCoordinates = yCoordinatesIn.get();
+    geometryListIn.zCoordinates = zCoordinatesIn.get();
     geometryListIn.numberOfCoordinates = 3;
     geometryListIn.geometrySeparator = meshkernel::doubleMissingValue;
 
     meshkernelapi::GeometryList geometryListOut;
     int numberOfPointsBetweenNodes = 20;
-    geometryListOut.xCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
-    geometryListOut.yCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
-    geometryListOut.zCoordinates = new double[(numberOfPointsBetweenNodes + 1) * 2 + 1];
+    std::unique_ptr<double> xCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
+    std::unique_ptr<double> yCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
+    std::unique_ptr<double> zCoordinatesOut(new double[(numberOfPointsBetweenNodes + 1) * 2 + 1]);
+    geometryListOut.xCoordinates = xCoordinatesOut.get();
+    geometryListOut.yCoordinates = yCoordinatesOut.get();
+    geometryListOut.zCoordinates = zCoordinatesOut.get();
 
     // Execute
     auto errorCode = mkernel_get_splines(geometryListIn, geometryListOut, numberOfPointsBetweenNodes);
@@ -963,25 +1402,16 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
 
     // Assert
     ASSERT_EQ((numberOfPointsBetweenNodes + 1) * 2, geometryListOut.numberOfCoordinates);
-
-    // Delete dynamically allocated memory with operator new
-    delete[] geometryListIn.xCoordinates;
-    delete[] geometryListIn.yCoordinates;
-    delete[] geometryListIn.zCoordinates;
-
-    delete[] geometryListOut.xCoordinates;
-    delete[] geometryListOut.yCoordinates;
-    delete[] geometryListOut.zCoordinates;
 }
 
 TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError)
 {
     // Prepare
     int meshKernelId;
-    meshkernelapi::mkernel_new_mesh(meshKernelId);
+    meshkernelapi::mkernel_allocate_state(meshKernelId);
 
-    auto meshData = ReadLegacyMeshFromFileForApiTesting("../../../../tests/data/InvalidMeshes/invalid_orthogonalization_net.nc");
-    auto errorCode = mkernel_set_state(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
+    auto meshData = ReadLegacyMeshFromFileForApiTesting(TEST_FOLDER + "/data/InvalidMeshes/invalid_orthogonalization_net.nc");
+    auto errorCode = mkernel_set_mesh2d(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
     DeleteRectangularMeshForApiTesting(std::get<0>(meshData));
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -995,21 +1425,21 @@ TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError
     meshkernelapi::GeometryList landBoundaries{};
 
     // Execute
-    errorCode = mkernel_orthogonalize_initialize(0,
-                                                 1,
-                                                 orthogonalizationParameters,
-                                                 landBoundaries,
-                                                 geometryList);
+    errorCode = mkernel_initialize_orthogonalization_mesh2d(0,
+                                                            1,
+                                                            orthogonalizationParameters,
+                                                            landBoundaries,
+                                                            geometryList);
 
     // Assert
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert there is a geometry error
-    errorCode = meshkernelapi::mkernel_orthogonalize_prepare_outer_iteration(0);
+    errorCode = meshkernelapi::mkernel_prepare_outer_iteration_orthogonalization_mesh2d(0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::InvalidGeometry, errorCode);
 
     //Delete orthogonalization instance
-    errorCode = meshkernelapi::mkernel_orthogonalize_delete(0);
+    errorCode = meshkernelapi::mkernel_delete_orthogonalization_mesh2d(0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the message

@@ -1,3 +1,11 @@
+"""
+Script which builds the docs of MeshKernel with doxygen
+
+It is used to
+    - check for warnings
+    - build and push it to Github pages
+"""
+
 import subprocess
 import sys
 from pathlib import Path

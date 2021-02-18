@@ -140,9 +140,9 @@ namespace meshkernel
         void ComputeNodeMaskFromEdgeMask();
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
-        /// @param[in] faceIndex The face index
-        /// @param[out] polygonNodesCache The node cache array filled with the nodes values
-        /// @param[out] localNodeIndicesCache The consecutive node index in polygonNodesCache (0, 1, 2,...)
+        /// @param[in]  faceIndex              The face index
+        /// @param[out] polygonNodesCache      The node cache array filled with the nodes values
+        /// @param[out] localNodeIndicesCache  The consecutive node index in polygonNodesCache (0, 1, 2,...)
         /// @param[out] globalEdgeIndicesCache The edge cache array filled with the global edge indices
         void ComputeFaceClosedPolygonWithLocalMappings(size_t faceIndex,
                                                        std::vector<Point>& polygonNodesCache,
@@ -150,24 +150,24 @@ namespace meshkernel
                                                        std::vector<size_t>& globalEdgeIndicesCache) const;
 
         /// @brief For a face create a closed polygon
-        /// @param[in] faceIndex The face index
+        /// @param[in]     faceIndex         The face index
         /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
         void ComputeFaceClosedPolygon(size_t faceIndex, std::vector<Point>& polygonNodesCache) const;
 
         /// @brief Determine if a face is fully contained in polygon or not, based on m_nodeMask
         /// @param[in] faceIndex The face index
-        /// @returns If the face is fully contained in the polygon or not
+        /// @returns   If the face is fully contained in the polygon or not
         [[nodiscard]] bool IsFullFaceNotInPolygon(size_t faceIndex) const;
 
         /// @brief Mask all nodes in a polygon
         /// @param[in] polygons The input polygon
-        /// @param[in] inside Inside/outside option
+        /// @param[in] inside   Inside/outside option
         void MaskNodesInPolygons(const Polygons& polygons, bool inside);
 
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
-        /// @param[in,out] polygon Cache storing the face nodes
-        /// @param[in] edgesNumFaces For meshes, the number of faces sharing the edges
-        /// @returns The computed circumcenter
+        /// @param[in,out] polygon       Cache storing the face nodes
+        /// @param[in]     edgesNumFaces For meshes, the number of faces sharing the edges
+        /// @returns       The computed circumcenter
         [[nodiscard]] Point ComputeFaceCircumenter(std::vector<Point>& polygon,
                                                    const std::vector<size_t>& edgesNumFaces) const;
 
@@ -301,19 +301,15 @@ namespace meshkernel
         /// @return A tuple with the intersectedFace face index and intersected  edge index
         [[nodiscard]] std::tuple<size_t, size_t> IsSegmentCrossingABoundaryEdge(const Point& firstPoint, const Point& secondPoint) const;
 
+        size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
+
+        std::vector<Point> m_polygonNodesCache; ///< Cache to store the face nodes
+
         // vectors for communicating with the client
-        std::vector<double> m_nodex;               ///< The nodes x-coordinate
-        std::vector<double> m_nodey;               ///< The nodes y-coordinate
-        std::vector<double> m_nodez;               ///< The nodes z-coordinate
-        std::vector<int> m_edgeNodes;              ///< For each edge, the nodes
         std::vector<int> m_faceNodes;              ///< For each face, the nodes
         std::vector<double> m_facesCircumcentersx; ///< The circumcenters x-coordinate
         std::vector<double> m_facesCircumcentersy; ///< The circumcenters y-coordinate
         std::vector<double> m_facesCircumcentersz; ///< The circumcenters z-coordinate
-
-        size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbors
-
-        std::vector<Point> m_polygonNodesCache; ///< Cache to store the face nodes
 
     private:
         /// @brief Find cells recursive, works with an arbitrary number of edges

@@ -6,8 +6,8 @@ project(
   MeshKernel
   VERSION 0.10.0
   DESCRIPTION "Library for creating and editing meshes."
-  LANGUAGES CXX)
-
+  LANGUAGES CXX C)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   if(WIN32)
     set(CMAKE_CXX_FLAGS_RELEASE
@@ -15,9 +15,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc /MP /std:c++17")
   else()
     set(CMAKE_CXX_FLAGS_RELEASE
-        "-g -O2"
+        "-g -O2 -std=c++17"
         CACHE STRING "List of C++ compiler flags for a Release build")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -std=c++17")
   endif(WIN32)
 
   # Disable compiler specific extensions
@@ -44,8 +44,25 @@ add_subdirectory(extern)
 include(FetchContent)
 
 # Boost C++
-find_package(Boost REQUIRED)
+if(UNIX)
+  # In unix use boost dll
+  find_package(Boost REQUIRED COMPONENTS system filesystem)
+endif()
+if(WIN32)
+  # In windows use static libraries
+  set(Boost_USE_STATIC_LIBS ON)
+  find_package(Boost REQUIRED)
+endif()
 include_directories(${Boost_INCLUDE_DIR})
+
+# NetCDF
+if(WIN32)
+  find_path(
+    NETCDF_BIN_PATH
+    NAMES "${CMAKE_SHARED_LIBRARY_PREFIX}netcdf${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    HINTS "${CMAKE_CURRENT_SOURCE_DIR}/extern/netcdf/netCDF 4.6.1/bin")
+  message(STATUS "netcdf bin dir is ${NETCDF_BIN_PATH}")
+endif()
 
 # The static library
 add_subdirectory(src/MeshKernel)

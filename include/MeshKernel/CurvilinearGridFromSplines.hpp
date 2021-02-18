@@ -87,15 +87,15 @@ namespace meshkernel
     {
     public:
         /// @brief Ctor
-        /// @param splines Input splines
-        /// @param curvilinearParameters The parameters for OrthogonalCurvilinearGridFromSplines algorithm
-        /// @param splinesToCurvilinearParameters The parameters for OrthogonalCurvilinearGridFromSplines algorithm
+        /// @param[in] splines                        Input splines
+        /// @param[in] curvilinearParameters          The parameters for OrthogonalCurvilinearGridFromSplines algorithm
+        /// @param[in] splinesToCurvilinearParameters The parameters for OrthogonalCurvilinearGridFromSplines algorithm
         CurvilinearGridFromSplines(std::shared_ptr<Splines> splines,
                                    const meshkernelapi::CurvilinearParameters& curvilinearParameters,
                                    const meshkernelapi::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
-        /// Computes the spline properties, such as cross splines (get_splineprops)
-        /// @param restoreOriginalProperties
+        /// @brief Computes the spline properties, such as cross splines (get_splineprops)
+        /// @param[in] restoreOriginalProperties Whether to restore original properties
         void ComputeSplineProperties(bool restoreOriginalProperties);
 
         /// @brief Computes a curvilinear grid using the growing front method (spline2curvi).
