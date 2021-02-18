@@ -107,6 +107,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a65167bd7e5182e49b4f246166003672c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh1_d.html#a65167bd7e5182e49b4f246166003672c">IsNodeOnBoundary</a> (size_t node) const</td></tr>
 <tr class="memdesc:a65167bd7e5182e49b4f246166003672c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inquire if a mesh 1d-node is on boundary.  <a href="classmeshkernel_1_1_mesh1_d.html#a65167bd7e5182e49b4f246166003672c">More...</a><br /></td></tr>
 <tr class="separator:a65167bd7e5182e49b4f246166003672c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a234319cbcc8dcec4b9db3b4b95d87ec6"><td class="memItemLeft" align="right" valign="top"><a id="a234319cbcc8dcec4b9db3b4b95d87ec6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh1_d.html#a234319cbcc8dcec4b9db3b4b95d87ec6">SetFlatCopies</a> ()</td></tr>
+<tr class="memdesc:a234319cbcc8dcec4b9db3b4b95d87ec6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end. <br /></td></tr>
+<tr class="separator:a234319cbcc8dcec4b9db3b4b95d87ec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmeshkernel_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmeshkernel_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmeshkernel_1_1_mesh.html">meshkernel::Mesh</a></td></tr>
 <tr class="memitem:a05bc04f7af254a40598f8b9627da6e60 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a05bc04f7af254a40598f8b9627da6e60"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a05bc04f7af254a40598f8b9627da6e60">Mesh</a> ()=default</td></tr>
@@ -292,18 +296,6 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a01c05988ff2a54a0ddf3082c7e4aeeb6">m_projection</a></td></tr>
 <tr class="memdesc:a01c05988ff2a54a0ddf3082c7e4aeeb6 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The projection used. <br /></td></tr>
 <tr class="separator:a01c05988ff2a54a0ddf3082c7e4aeeb6 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b8dea6ab657486f454f8ea4d2ed5caa inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a4b8dea6ab657486f454f8ea4d2ed5caa"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a4b8dea6ab657486f454f8ea4d2ed5caa">m_numFaces</a> = 0</td></tr>
-<tr class="memdesc:a4b8dea6ab657486f454f8ea4d2ed5caa inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of valid faces (nump) <br /></td></tr>
-<tr class="separator:a4b8dea6ab657486f454f8ea4d2ed5caa inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a460104d0e6bcfa1cd7d3627fb0f9c64c inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a460104d0e6bcfa1cd7d3627fb0f9c64c"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a460104d0e6bcfa1cd7d3627fb0f9c64c">m_numNodes</a> = 0</td></tr>
-<tr class="memdesc:a460104d0e6bcfa1cd7d3627fb0f9c64c inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of valid nodes in m_nodes. <br /></td></tr>
-<tr class="separator:a460104d0e6bcfa1cd7d3627fb0f9c64c inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac5ce38e36156fe4f1d7d40ef396b499 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="aac5ce38e36156fe4f1d7d40ef396b499"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#aac5ce38e36156fe4f1d7d40ef396b499">m_numEdges</a> = 0</td></tr>
-<tr class="memdesc:aac5ce38e36156fe4f1d7d40ef396b499 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of valid edges in m_edges. <br /></td></tr>
-<tr class="separator:aac5ce38e36156fe4f1d7d40ef396b499 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9fa3b6615a02516abcb7609abfdb44b inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="ad9fa3b6615a02516abcb7609abfdb44b"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ad9fa3b6615a02516abcb7609abfdb44b">m_nodesRTreeRequiresUpdate</a> = true</td></tr>
 <tr class="memdesc:ad9fa3b6615a02516abcb7609abfdb44b inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">m_nodesRTree requires an update <br /></td></tr>
@@ -324,6 +316,22 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <a class="el" href="classmeshkernel_1_1_r_tree.html">RTree</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a0d44668af534ba075870c6be5567c9b7">m_facesRTree</a></td></tr>
 <tr class="memdesc:a0d44668af534ba075870c6be5567c9b7 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spatial R-Tree used to inquire face circumcenters. <br /></td></tr>
 <tr class="separator:a0d44668af534ba075870c6be5567c9b7 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3d5fba25fc219e55b190750406ecba7 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="ae3d5fba25fc219e55b190750406ecba7"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ae3d5fba25fc219e55b190750406ecba7">m_edgeNodes</a></td></tr>
+<tr class="memdesc:ae3d5fba25fc219e55b190750406ecba7 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each edge, the index to the nodes. <br /></td></tr>
+<tr class="separator:ae3d5fba25fc219e55b190750406ecba7 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a540a5560c998e255f9abdf9f2dd68e3a inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a540a5560c998e255f9abdf9f2dd68e3a"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a540a5560c998e255f9abdf9f2dd68e3a">m_nodex</a></td></tr>
+<tr class="memdesc:a540a5560c998e255f9abdf9f2dd68e3a inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nodes x-coordinate. <br /></td></tr>
+<tr class="separator:a540a5560c998e255f9abdf9f2dd68e3a inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4cbe014918d494c518761e92569a802 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="ac4cbe014918d494c518761e92569a802"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ac4cbe014918d494c518761e92569a802">m_nodey</a></td></tr>
+<tr class="memdesc:ac4cbe014918d494c518761e92569a802 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nodes y-coordinate. <br /></td></tr>
+<tr class="separator:ac4cbe014918d494c518761e92569a802 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cf2f2ba8c0a5cfd23a231f6fc0e925e inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a0cf2f2ba8c0a5cfd23a231f6fc0e925e"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a0cf2f2ba8c0a5cfd23a231f6fc0e925e">m_nodez</a></td></tr>
+<tr class="memdesc:a0cf2f2ba8c0a5cfd23a231f6fc0e925e inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nodes z-coordinate. <br /></td></tr>
+<tr class="separator:a0cf2f2ba8c0a5cfd23a231f6fc0e925e inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class derived from <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a>, which describes 1d meshes. </p>

@@ -93,24 +93,24 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a926fb2f9ed28702bcdcbc8b1d509b9fc">Contacts</a> ()=default</td></tr>
 <tr class="memdesc:a926fb2f9ed28702bcdcbc8b1d509b9fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
 <tr class="separator:a926fb2f9ed28702bcdcbc8b1d509b9fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf763567d4440b3a12706b417956fe16"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#adf763567d4440b3a12706b417956fe16">Contacts</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh1_d.html">Mesh1D</a> &gt; mesh1d, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh2d, const std::vector&lt; bool &gt; &amp;oneDNodeMask)</td></tr>
-<tr class="memdesc:adf763567d4440b3a12706b417956fe16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor taking the 1d and 2d meshes to connect.  <a href="classmeshkernel_1_1_contacts.html#adf763567d4440b3a12706b417956fe16">More...</a><br /></td></tr>
-<tr class="separator:adf763567d4440b3a12706b417956fe16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67430b95780e1654e2ee093ffa8473c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a67430b95780e1654e2ee093ffa8473c7">ComputeSingleConnections</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons)</td></tr>
-<tr class="memdesc:a67430b95780e1654e2ee093ffa8473c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll)  <a href="classmeshkernel_1_1_contacts.html#a67430b95780e1654e2ee093ffa8473c7">More...</a><br /></td></tr>
-<tr class="separator:a67430b95780e1654e2ee093ffa8473c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adfb8172f5eb928046c857383384fc1f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#adfb8172f5eb928046c857383384fc1f8">ComputeMultipleConnections</a> ()</td></tr>
-<tr class="memdesc:adfb8172f5eb928046c857383384fc1f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll)  <a href="classmeshkernel_1_1_contacts.html#adfb8172f5eb928046c857383384fc1f8">More...</a><br /></td></tr>
-<tr class="separator:adfb8172f5eb928046c857383384fc1f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a007a7ea43735d7eaa471ffff80310ead"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a007a7ea43735d7eaa471ffff80310ead">ComputeConnectionsWithPolygons</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons)</td></tr>
-<tr class="memdesc:a007a7ea43735d7eaa471ffff80310ead"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll)  <a href="classmeshkernel_1_1_contacts.html#a007a7ea43735d7eaa471ffff80310ead">More...</a><br /></td></tr>
-<tr class="separator:a007a7ea43735d7eaa471ffff80310ead"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad576f3bdd0709bfaae5f4bd455ceb64f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#ad576f3bdd0709bfaae5f4bd455ceb64f">ComputeConnectionsWithPoints</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;points)</td></tr>
-<tr class="memdesc:ad576f3bdd0709bfaae5f4bd455ceb64f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll)  <a href="classmeshkernel_1_1_contacts.html#ad576f3bdd0709bfaae5f4bd455ceb64f">More...</a><br /></td></tr>
-<tr class="separator:ad576f3bdd0709bfaae5f4bd455ceb64f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a31a7aae996dee26ea2116e74de41f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a4a31a7aae996dee26ea2116e74de41f5">ComputeBoundaryConnections</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, double searchRadius)</td></tr>
-<tr class="memdesc:a4a31a7aae996dee26ea2116e74de41f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)  <a href="classmeshkernel_1_1_contacts.html#a4a31a7aae996dee26ea2116e74de41f5">More...</a><br /></td></tr>
-<tr class="separator:a4a31a7aae996dee26ea2116e74de41f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acce1f3d90156413b49b532ead3553492"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#acce1f3d90156413b49b532ead3553492">Contacts</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh1_d.html">Mesh1D</a> &gt; mesh1d, std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt; mesh2d)</td></tr>
+<tr class="memdesc:acce1f3d90156413b49b532ead3553492"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor taking the 1d and 2d meshes to connect.  <a href="classmeshkernel_1_1_contacts.html#acce1f3d90156413b49b532ead3553492">More...</a><br /></td></tr>
+<tr class="separator:acce1f3d90156413b49b532ead3553492"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57476eb77e849bc15dd48f6ba2ad0622"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a57476eb77e849bc15dd48f6ba2ad0622">ComputeSingleContacts</a> (const std::vector&lt; bool &gt; &amp;oneDNodeMask, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons)</td></tr>
+<tr class="memdesc:a57476eb77e849bc15dd48f6ba2ad0622"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll).  <a href="classmeshkernel_1_1_contacts.html#a57476eb77e849bc15dd48f6ba2ad0622">More...</a><br /></td></tr>
+<tr class="separator:a57476eb77e849bc15dd48f6ba2ad0622"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f91875d5a0da23ffbb679e428aa94a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a7f91875d5a0da23ffbb679e428aa94a3">ComputeMultipleContacts</a> (const std::vector&lt; bool &gt; &amp;oneDNodeMask)</td></tr>
+<tr class="memdesc:a7f91875d5a0da23ffbb679e428aa94a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll).  <a href="classmeshkernel_1_1_contacts.html#a7f91875d5a0da23ffbb679e428aa94a3">More...</a><br /></td></tr>
+<tr class="separator:a7f91875d5a0da23ffbb679e428aa94a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a198d5ed49e69fcf8700ce9cf34b4f081"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a198d5ed49e69fcf8700ce9cf34b4f081">ComputeContactsWithPolygons</a> (const std::vector&lt; bool &gt; &amp;oneDNodeMask, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons)</td></tr>
+<tr class="memdesc:a198d5ed49e69fcf8700ce9cf34b4f081"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll).  <a href="classmeshkernel_1_1_contacts.html#a198d5ed49e69fcf8700ce9cf34b4f081">More...</a><br /></td></tr>
+<tr class="separator:a198d5ed49e69fcf8700ce9cf34b4f081"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf4f82c10642d3e8b2d9e8bab6b07006"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#acf4f82c10642d3e8b2d9e8bab6b07006">ComputeContactsWithPoints</a> (const std::vector&lt; bool &gt; &amp;oneDNodeMask, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;points)</td></tr>
+<tr class="memdesc:acf4f82c10642d3e8b2d9e8bab6b07006"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll).  <a href="classmeshkernel_1_1_contacts.html#acf4f82c10642d3e8b2d9e8bab6b07006">More...</a><br /></td></tr>
+<tr class="separator:acf4f82c10642d3e8b2d9e8bab6b07006"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ec01984b66446a3db7cd48de077e5df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_contacts.html#a4ec01984b66446a3db7cd48de077e5df">ComputeBoundaryContacts</a> (const std::vector&lt; bool &gt; &amp;oneDNodeMask, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons, double searchRadius)</td></tr>
+<tr class="memdesc:a4ec01984b66446a3db7cd48de077e5df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll).  <a href="classmeshkernel_1_1_contacts.html#a4ec01984b66446a3db7cd48de077e5df">More...</a><br /></td></tr>
+<tr class="separator:a4ec01984b66446a3db7cd48de077e5df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -125,10 +125,10 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing an 1d-2d contacts. </p>
-<p>The responsibility of the <a class="el" href="classmeshkernel_1_1_contacts.html" title="A class describing an 1d-2d contacts.">Contacts</a> class is connecting a 1d mesh to a 2d mesh. The class has a reference to the <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">Mesh1D</a> and the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a> instances that will be connected. A connection is defined by the indices of the connected 1d node and 2d face. </p>
+<p>The responsibility of the <a class="el" href="classmeshkernel_1_1_contacts.html" title="A class describing an 1d-2d contacts.">Contacts</a> class is connecting a 1d mesh to a 2d mesh. The class has a reference to the <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">Mesh1D</a> and the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a> instances that will be connected. A contact is defined by the indices of the connected 1d node and 2d face. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="adf763567d4440b3a12706b417956fe16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf763567d4440b3a12706b417956fe16">&#9670;&nbsp;</a></span>Contacts()</h2>
+<a id="acce1f3d90156413b49b532ead3553492"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acce1f3d90156413b49b532ead3553492">&#9670;&nbsp;</a></span>Contacts()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -143,13 +143,7 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &gt;&#160;</td>
-          <td class="paramname"><em>mesh2d</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&#160;</td>
-          <td class="paramname"><em>oneDNodeMask</em>&#160;</td>
+          <td class="paramname"><em>mesh2d</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -164,7 +158,6 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh1d</td><td>The mesh1d to connect </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh2d</td><td>The mesh2d to connect </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">oneDNodeMask</td><td>The mask used for masking 1d nodes </td></tr>
   </table>
   </dd>
 </dl>
@@ -172,15 +165,21 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a4a31a7aae996dee26ea2116e74de41f5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4a31a7aae996dee26ea2116e74de41f5">&#9670;&nbsp;</a></span>ComputeBoundaryConnections()</h2>
+<a id="a4ec01984b66446a3db7cd48de077e5df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ec01984b66446a3db7cd48de077e5df">&#9670;&nbsp;</a></span>ComputeBoundaryContacts()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void meshkernel::Contacts::ComputeBoundaryConnections </td>
+          <td class="memname">void meshkernel::Contacts::ComputeBoundaryContacts </td>
           <td>(</td>
+          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&#160;</td>
+          <td class="paramname"><em>oneDNodeMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
           <td class="paramname"><em>polygons</em>, </td>
         </tr>
@@ -198,137 +197,178 @@ std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><
       </table>
 </div><div class="memdoc">
 
-<p>Computes 1d-2d connections, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll) </p>
+<p>Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll). </p>
 <p>The algorithms works as follows:</p><ul>
 <li>For each oned node, find the closest 2d boundary faces within the search radius.</li>
 <li>If a boundary face can be connected to multiple oned nodes, choose the closest one.</li>
-<li>Generate the 1d-2d connections. <div class="image">
-<img src="ComputeBoundaryConnections.jpg" alt=""/>
+<li>Generate the 1d-2d contacts. <div class="image">
+<img src="ComputeBoundaryContacts.jpg" alt=""/>
 <div class="caption">
-1d mesh connecting to 2d mesh using the ComputeBoundaryConnections algorithm. Connections are shown in red.</div></div>
- The mesh 2d boundary faces are connected to the closest 1d nodes." <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygons selecting the area where the 1d-2d connections will be generated. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The radius used for searching neighboring faces, if equal to sizetMissing value, the search radius will be calculated internally. </td></tr>
-  </table>
-  </dd>
-</dl>
-</li>
+1d mesh connecting to 2d mesh using the ComputeBoundaryContacts algorithm. Contacts are shown in red.</div></div>
+ The mesh 2d boundary faces are connected to the closest 1d nodes."</li>
 </ul>
-
-</div>
-</div>
-<a id="ad576f3bdd0709bfaae5f4bd455ceb64f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad576f3bdd0709bfaae5f4bd455ceb64f">&#9670;&nbsp;</a></span>ComputeConnectionsWithPoints()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void meshkernel::Contacts::ComputeConnectionsWithPoints </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>points</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Computes 1d-2d connections, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll) </p>
-<p>With this algorithm, each 2d face containing a point is connected to the 1d node closest to point itself. The search of the 2d faces and the closest 1d nodes uses RTrees. </p><dl class="params"><dt>Parameters</dt><dd>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">points</td><td>The points to connect <div class="image">
-<img src="ComputeConnectionsWithPoints.jpg" alt=""/>
-<div class="caption">
-2d faces containing the input points connecting to the 1d mesh. Connections are shown in red and the input points in blue.</div></div>
- </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">oneDNodeMask</td><td>The mask to apply to 1d nodes (true = connect node, false = do not generate contacts) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygons selecting the area where the 1d-2d contacts will be generated. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a007a7ea43735d7eaa471ffff80310ead"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a007a7ea43735d7eaa471ffff80310ead">&#9670;&nbsp;</a></span>ComputeConnectionsWithPolygons()</h2>
+<a id="acf4f82c10642d3e8b2d9e8bab6b07006"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf4f82c10642d3e8b2d9e8bab6b07006">&#9670;&nbsp;</a></span>ComputeContactsWithPoints()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void meshkernel::Contacts::ComputeConnectionsWithPolygons </td>
+          <td class="memname">void meshkernel::Contacts::ComputeContactsWithPoints </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
-          <td class="paramname"><em>polygons</em></td><td>)</td>
+          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&#160;</td>
+          <td class="paramname"><em>oneDNodeMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>points</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Computes 1d-2d connections, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll) </p>
+<p>Computes 1d-2d contacts, where 1d nodes are connected to the 2d faces mass centers containing the input point (ggeo_make1D2Dstreetinletpipes_dll). </p>
+<p>With this algorithm, each 2d face containing a point is connected to the 1d node closest to point itself. The search of the 2d faces and the closest 1d nodes uses RTrees. </p><div class="image">
+<img src="ComputeContactsWithPoints.jpg" alt=""/>
+<div class="caption">
+2d faces containing the input points connecting to the 1d mesh. Contacts are shown in red and the input points in blue.</div></div>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">oneDNodeMask</td><td>The mask to apply to 1d nodes (true = connect node, false = do not generate contacts) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">points</td><td>The points selecting the faces to connect </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a198d5ed49e69fcf8700ce9cf34b4f081"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a198d5ed49e69fcf8700ce9cf34b4f081">&#9670;&nbsp;</a></span>ComputeContactsWithPolygons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Contacts::ComputeContactsWithPolygons </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&#160;</td>
+          <td class="paramname"><em>oneDNodeMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygons</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes 1d-2d contacts, where a 2d face per polygon is connected to the closest 1d node (ggeo_make1D2Droofgutterpipes_dll). </p>
 <p>The algorithms works as follows:</p><ul>
 <li>Find the 2d face within each polygon closest to a 1d node.</li>
-<li>Per polygon create one connection from the 2d circumcenters to the 1d node. <div class="image">
-<object type="image/svg+xml" data="ComputeConnectionsWithPolygons.svg" style="pointer-events: none;"></object>
+<li>Per polygon create one contact from the 2d circumcenters to the 1d node. <div class="image">
+<object type="image/svg+xml" data="ComputeContactsWithPolygons.svg" style="pointer-events: none;"></object>
 <div class="caption">
-1d mesh connecting to 2d mesh using the ComputeConnectionsWithPolygons algorithm. Connections are shown in red. Polygons in green.</div></div>
- <dl class="params"><dt>Parameters</dt><dd>
+1d mesh connecting to 2d mesh using the ComputeContactsWithPolygons algorithm. Contacts are shown in red. Polygons in green.</div></div>
+</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">oneDNodeMask</td><td>The mask to apply to 1d nodes (true = connect node, false = do not generate contacts) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygons to connect (<a class="el" href="classmeshkernel_1_1_polygons.html" title="A class describing polygons.">Polygons</a> class can have multiple polygons) </td></tr>
   </table>
   </dd>
 </dl>
-</li>
-</ul>
 
 </div>
 </div>
-<a id="adfb8172f5eb928046c857383384fc1f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adfb8172f5eb928046c857383384fc1f8">&#9670;&nbsp;</a></span>ComputeMultipleConnections()</h2>
+<a id="a7f91875d5a0da23ffbb679e428aa94a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f91875d5a0da23ffbb679e428aa94a3">&#9670;&nbsp;</a></span>ComputeMultipleContacts()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void meshkernel::Contacts::ComputeMultipleConnections </td>
+          <td class="memname">void meshkernel::Contacts::ComputeMultipleContacts </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&#160;</td>
+          <td class="paramname"><em>oneDNodeMask</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Computes 1d-2d connections, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll) </p>
-<p>Each internal 1d node is connected to multiple 2d faces. This type of connections should be used when the lengths of the 1d mesh edges are considerably larger than the 2d mesh edges and generating a single connection for each 1d node is not representative. In this algorithm, only the internal 1d nodes are connected. The following figure shows a 1d mesh overlapping a 2d mesh. For the node n, the closest 2d faces within a search radius are found and it is determined if those faces cross are crossed by the current 1d edge starting at node n and ending at and n+1. If the answer is positive, a connection is generated between the face and the closest 1d node composing the current 1d edge (i.e. n or n+1). The procedure is repeated for each 1d node. </p><div class="image">
-<img src="ComputeMultipleConnections.jpg" alt=""/>
+<p>Computes 1d-2d contacts, where a single 1d node is connected to multiple 2d face circumcenters (ggeo_make1D2Dembeddedlinks_dll). </p>
+<p>Each internal 1d node is connected to multiple 2d faces. This type of contacts should be used when the lengths of the 1d mesh edges are considerably larger than the 2d mesh edges and generating a single contact for each 1d node is not representative. In this algorithm, only the internal 1d nodes are connected. The following figure shows a 1d mesh overlapping a 2d mesh. For the node n, the closest 2d faces within a search radius are found and it is determined if those faces cross are crossed by the current 1d edge starting at node n and ending at and n+1. If the answer is positive, a contact is generated between the face and the closest 1d node composing the current 1d edge (i.e. n or n+1). The procedure is repeated for each 1d node. </p><div class="image">
+<img src="ComputeMultipleContacts.jpg" alt=""/>
 <div class="caption">
-1d mesh connecting to 2d mesh using the ComputeMultipleConnections algorithm. Connections are shown in red.</div></div>
- 
-</div>
-</div>
-<a id="a67430b95780e1654e2ee093ffa8473c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a67430b95780e1654e2ee093ffa8473c7">&#9670;&nbsp;</a></span>ComputeSingleConnections()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void meshkernel::Contacts::ComputeSingleConnections </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
-          <td class="paramname"><em>polygons</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Computes 1d-2d connections, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll) </p>
-<p>Each non-boundary 1d node is connected to single 2d face. The figure below shows two 2d meshes, a 1d mesh between them, and the 1d-2d connections (in red). The boundary nodes of the 1d mesh (those sharing only one 1d edge) are not connected to any 2d face. For the 1d nodes not overlapping a 2d mesh, a ray starting from the current node n is computed (dashed blue ray). This ray is normal to the segment connecting the previous (n-1) and next one 1d node (n+1), the connecting segment is shown with a green dashed line. The ray is extended for 5 times the length of the connecting segment. The current 1d node is connected to the first boundary 2d face crossing the ray, first in the left direction and then in the right direction. By doing so a 1d mesh can be connected on the left and right sides of a mesh 2d boundary, for example when the 1d part represents a river and the 2d part the river banks. The 1d nodes overlapping the 2d mesh are directly connected to the face including them. </p><div class="image">
-<img src="ComputeSingleConnections.jpg" alt=""/>
-<div class="caption">
-1d mesh connecting to 2d mesh using the ComputeSingleConnections algorithm. Connections are shown in red.</div></div>
- <dl class="params"><dt>Parameters</dt><dd>
+1d mesh connecting to 2d mesh using the ComputeMultipleContacts algorithm. Contacts are shown in red.</div></div>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygons selecting the area where the 1d-2d connections will be generated. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">oneDNodeMask</td><td>The mask to apply to 1d nodes (true = connect node, false = do not generate contacts) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a57476eb77e849bc15dd48f6ba2ad0622"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57476eb77e849bc15dd48f6ba2ad0622">&#9670;&nbsp;</a></span>ComputeSingleContacts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Contacts::ComputeSingleContacts </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; bool &gt; &amp;&#160;</td>
+          <td class="paramname"><em>oneDNodeMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygons</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes 1d-2d contacts, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll). </p>
+<p>Each non-boundary 1d node is connected to single 2d face. The figure below shows two 2d meshes, a 1d mesh between them, and the 1d-2d contacts (in red). The boundary nodes of the 1d mesh (those sharing only one 1d edge) are not connected to any 2d face. For the 1d nodes not overlapping a 2d mesh, a ray starting from the current node n is computed (dashed blue ray). This ray is normal to the segment connecting the previous (n-1) and next one 1d node (n+1), the connecting segment is shown with a green dashed line. The ray is extended for 5 times the length of the connecting segment. The current 1d node is connected to the first boundary 2d face crossing the ray, first in the left direction and then in the right direction. By doing so a 1d mesh can be connected on the left and right sides of a mesh 2d boundary, for example when the 1d part represents a river and the 2d part the river banks. The 1d nodes overlapping the 2d mesh are directly connected to the face including them. </p><div class="image">
+<img src="ComputeSingleContacts.jpg" alt=""/>
+<div class="caption">
+1d mesh connecting to 2d mesh using the ComputeSingleContacts algorithm. Contacts are shown in red.</div></div>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">oneDNodeMask</td><td>The mask to apply to 1d nodes (true = connect node, false = do not generate contacts) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygons selecting the area where the 1d-2d contacts will be generated. </td></tr>
   </table>
   </dd>
 </dl>
