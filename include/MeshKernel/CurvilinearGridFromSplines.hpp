@@ -52,17 +52,17 @@ namespace meshkernel
     ///     - The splines are labeled (central or transversal spline) based
     ///       on the number of corner points and the intersecting angles.
     ///
-    ///     - The canal heights at a different position along the central
+    ///     - The grid heights at a different position along the central
     ///       spline are computed from the crossing splines.
     ///
-    ///     - The normal vectors of each m part are computed, as these
+    ///     - The normal vectors of each edge are computed, as these
     ///       determine the growing front directions.
     ///
     ///     - The edge velocities to apply to each normal direction are
     ///       computed.
     ///
-    /// - Iteration step, where the mesh is grown of one layer at the time
-    ///   from the left and right sides of the central spline:
+    /// - Iteration step, where the mesh is grown one layer at a time
+    ///   starting from the left and right sides of the central spline:
     ///
     ///     - Compute the node velocities from the edge velocities.
     ///
@@ -110,16 +110,16 @@ namespace meshkernel
         /// @returns The computed curvilinear grid
         CurvilinearGrid Compute();
 
+        /// @brief Computes the curvilinear grid from the mesh points
+        /// @returns The computed curvilinear grid
+        CurvilinearGrid ComputeCurvilinearGridFromGridPoints();
+
         /// @brief Initialize the OrthogonalCurvilinearGrid algorithm.
         void Initialize();
 
         /// @brief Performs one iteration for generating another layer on the advancing fronts
-        /// @param layer The index of the layer to be generated
+        /// @param[in] layer The index of the layer to be generated
         void Iterate(size_t layer);
-
-        /// @brief Get the curvilinear grid
-        /// @returns The computed curvilinear Grid
-        CurvilinearGrid ComputeCurvilinearGrid();
 
         /// @brief For the central spline, computes the spline subdivisions along the spline (make_wholegridline)
         void MakeAllGridLines();
@@ -129,102 +129,67 @@ namespace meshkernel
         std::vector<double> m_maximumGridHeights;             ///< Maximum transversal grid height ()
         size_t m_numM = 0;                                    ///< Number of columns in the curvilinear grid
 
-        std::shared_ptr<Splines> m_splines; ///< A pointer to spline
+        std::shared_ptr<Splines> m_splines; ///< A pointer to spline class instance
 
     private:
-        /// @brief From the layer index gets the next grid layer and the transversal sublayer index (get_isub)
-        /// @param[in] layer The current layer
-        /// @param[out] gridLayer The next grid layer
-        /// @param[out] subLayerIndex The transversal sub-layer index
-        void ComputeGridLayerAndSubLayer(size_t layer,
-                                         size_t& gridLayer,
-                                         size_t& subLayerIndex);
+        /// @brief From the layerIndex index gets the next grid layerIndex and the transversal sublayer index (get_isub)
+        /// @param[in] layerIndex The current grid layerIndex index
+        /// @returns The next grid layerIndex and the sub layerIndex index
+        std::tuple<size_t, size_t> ComputeGridLayerAndSubLayer(size_t layerIndex);
 
-        /// @brief Grow layer at layer index
-        /// @param layerIndex The layer index to grow
+        /// @brief Grow a layer starting from a given layer index
         void GrowLayer(size_t layerIndex);
 
-        /// @brief Compute the maximum allowable grid layer growth time self crossings (comp_tmax_self)
-        /// @param coordinates The coordinates to grow
-        /// @param velocities The velocities
-        /// @param maximumGridLayerGrowTime The maximum grow layer time
-        void ComputeMaximumGridLayerGrowTime(const std::vector<Point>& coordinates,
-                                             const std::vector<Point>& velocities,
-                                             std::vector<double>& maximumGridLayerGrowTime) const;
+        /// @brief Compute the maximum allowable time step when growing a grid (comp_tmax_self)
+        /// @param[in] coordinates The starting point coordinates
+        /// @param[in] velocities  The velocities at the coordinates
+        /// @returns The maximum allowable time step for each edge
+        std::vector<double> ComputeMaximumEdgeGrowTime(const std::vector<Point>& coordinates,
+                                                       const std::vector<Point>& velocities) const;
 
         /// @brief Copy growth velocities to the advancing front, add points at front corners corners (copy_vel_to_front)
-        /// @brief layerIndex
-        /// @brief previousVelocities
-        /// @brief numFrontPoints
-        /// @brief gridPointsIndices
-        /// @brief frontGridPoints
-        /// @brief velocities
-        /// @returns
-        void CopyVelocitiesToFront(size_t layerIndex,
-                                   const std::vector<Point>& previousVelocities,
-                                   size_t& numFrontPoints,
-                                   std::vector<std::vector<size_t>>& gridPointsIndices,
-                                   std::vector<Point>& frontGridPoints,
-                                   std::vector<Point>& velocities);
+        /// @param[in] layerIndex The current grid layerIndex index
+        /// @param[in] previousFrontVelocities The previous front velocities
+        /// @returns The front velocities for the next front
+        std::vector<Point> CopyVelocitiesToFront(size_t layerIndex, const std::vector<Point>& previousFrontVelocities);
 
         /// @brief Computes the points at front, which have to be moved.
-        /// @brief gridPointsIndices
-        /// @brief frontGridPoints
-        /// @brief numFrontPoints
-        /// @returns
-        void FindFront(std::vector<std::vector<size_t>>& gridPointsIndices,
-                       std::vector<Point>& frontGridPoints,
-                       size_t& numFrontPoints);
+        /// @returns The indices of the grid points, the front grid points and the number of front points
+        std::tuple<std::vector<std::vector<size_t>>, std::vector<Point>, size_t> FindFront();
 
         /// @brief Compute growth velocity vectors at grid points (comp_vel)
-        /// @param layerIndex
-        /// @param velocityVector
-        void ComputeVelocitiesAtGridPoints(size_t layerIndex, std::vector<Point>& velocityVector);
+        /// @param[in] layerIndex The current grid layerIndex index
+        /// @returns The velocities at the grid point
+        std::vector<Point> ComputeVelocitiesAtGridPoints(size_t layerIndex);
 
         /// @brief Get left and right points at given layer for a given index (get_LR)
-        /// @brief gridPoints The layer
-        /// @brief index
-        /// @brief currentLeftIndex
-        /// @brief currentRightIndex
-        /// @returns
-        void GetNeighbours(const std::vector<Point>& gridPoints,
-                           size_t index,
-                           size_t& currentLeftIndex,
-                           size_t& currentRightIndex) const;
+        /// @param[in] gridPoints The front grid points
+        /// @param[in] index The front grid point index from which the neighbors should be searched
+        /// @returns The left and the right index for the current front grid point index
+        std::tuple<size_t, size_t> GetNeighbours(const std::vector<Point>& gridPoints, size_t index) const;
 
         /// @brief Compute the edge grow velocities (comp_edgevel)
         /// TODO: can this be split in compute heights and computeGrowFactors
-        /// @brief edgeVelocities
-        /// @brief growFactorOnSubintervalAndEdge
-        /// @brief numPerpendicularFacesOnSubintervalAndEdge
-        /// @returns
-        void ComputeEdgeVelocities(std::vector<double>& edgeVelocities,
-                                   std::vector<std::vector<double>>& growFactorOnSubintervalAndEdge,
-                                   std::vector<std::vector<size_t>>& numPerpendicularFacesOnSubintervalAndEdge);
+        void ComputeEdgeVelocities();
 
         /// @brief Compute the grid grow factor for a given total grid height, first grid layer height and number of grid layers (comp_dgrow)
-        /// @param[in] totalGridHeight
-        /// @param[in] firstGridLayerHeight
-        /// @param[in] numberOfGridLayers
-        /// @param[out] result
-        void ComputeGrowFactor(double totalGridHeight,
-                               double firstGridLayerHeight,
-                               size_t numberOfGridLayers,
-                               double& result) const;
+        /// @param[in] splineIndex The current spline index
+        /// @returns The computed grow factor
+        double ComputeGrowFactor(size_t splineIndex) const;
 
-        /// @brief Computes the exponential grid height
-        /// @brief aspectRatioGrowFactor
-        /// @brief firstGridLayerHeights
-        /// @brief numberOfGridLayers
-        /// @returns
-        [[nodiscard]] double ComputeTotalExponentialHeight(double aspectRatioGrowFactor,
-                                                           double firstGridLayerHeights,
-                                                           size_t numberOfGridLayers) const;
+        /// @brief Computes the exponential grid height from the aspect ratio, the heights and the number of grid layers
+        /// @brief[in] aspectRatio The aspect ratio
+        /// @brief[in] height The current height
+        /// @brief[in] numLayers The number of layers
+        /// @returns The new grid height
+        [[nodiscard]] double ComputeTotalExponentialHeight(double aspectRatio,
+                                                           double height,
+                                                           size_t numLayers) const;
 
-        /// @brief Compute the number of grid layers for a given grow factor, first grid layer height and total grid height (comp_nfac)
-        /// @brief hhMaxRatio
-        /// @returns
-        [[nodiscard]] size_t ComputeNumberExponentialIntervals(double hhMaxRatio) const;
+        /// @brief Compute the number of exponential layers for a given heightRatio
+        /// @param[in] heightRatio The max height ratio between layers
+        /// @returns The number of exponential layers
+        [[nodiscard]] size_t ComputeNumberExponentialLayers(double heightRatio) const;
 
         /// @brief Computes the sub-interval velocities (left and right)
         /// @param[in] s
@@ -273,18 +238,16 @@ namespace meshkernel
                                      std::vector<double>& crossingSplinesDimensionalCoordinates,
                                      std::vector<std::vector<double>>& heights);
 
-        /// @brief Computes the intersection of two splines, one must have only two nodes (get_crosssplines)
-        /// @brief index
-        /// @returns
-        void GetSplineIntersections(size_t index);
+        /// @brief Computes the intersections on a given spline (get_crosssplines)
+        /// @brief[in] splineIndex The current spline index
+        void GetSplineIntersections(size_t splineIndex);
 
         /// @brief Generate a gridline on a spline with a prescribed maximum mesh width (make_gridline)
-        /// @param[in] splineIndex
-        /// @param[in] startingIndex
-        /// @param[out] numM
-        void MakeGridLine(size_t splineIndex,
-                          size_t startingIndex,
-                          size_t& numM);
+        /// @param[in] splineIndex  The current spline index
+        /// @param[in] startingIndex The start index in the gridline
+        /// @returns The number of m subdivisions
+        size_t MakeGridLine(size_t splineIndex,
+                            size_t startingIndex);
 
         /// @brief Compute the grid heights using ComputeSubHeights and calculates the maximum sub height (get_heights)
         void ComputeHeights();
@@ -293,11 +256,11 @@ namespace meshkernel
         ///
         /// Heights are determined by the lengths of the left and right parts of the crossing splines (comp_subheights)
         ///
-        /// @param centerSplineIndex
-        /// @param crossingSplineLocalIndex
+        /// @param[in] centerSplineIndex
+        /// @param[in] crossingSplineLocalIndex
         void ComputeSubHeights(size_t centerSplineIndex, size_t crossingSplineLocalIndex);
 
-        /// @brief Delete skewed cells and cells whose aspect ratio exceeds a prescibed value (postgrid)
+        /// @brief Delete skewed cells and cells whose aspect ratio exceeds a prescribed value (postgrid)
         void DeleteSkinnyTriangles();
 
         /// @brief Allocate spline properties arrays
@@ -318,7 +281,6 @@ namespace meshkernel
 
         const size_t m_maxNumCenterSplineHeights = 10; ///< Nsubmax, naz number of different heights a cross spline can have (is determined by how many crossing spline the user can input)
         const size_t m_maxNUniformPart = 5;            ///< Maximum number of layers in the uniform part
-        bool m_growGridOutside = true;                 ///< Grow the grid outside the prescribed grid height
         double m_onTopOfEachOtherSquaredTolerance;     ///< On top of each other squared tolerance
         size_t m_numOriginalSplines = 0;               ///< The original number of splines
 
