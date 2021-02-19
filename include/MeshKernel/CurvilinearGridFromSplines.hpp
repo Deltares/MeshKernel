@@ -61,8 +61,8 @@ namespace meshkernel
     ///     - The edge velocities to apply to each normal direction are
     ///       computed.
     ///
-    /// - Iteration step, where the mesh is grown of one layer at the time
-    ///   from the left and right sides of the central spline:
+    /// - Iteration step, where the mesh is grown one layer at a time
+    ///   starting from the left and right sides of the central spline:
     ///
     ///     - Compute the node velocities from the edge velocities.
     ///
@@ -142,14 +142,14 @@ namespace meshkernel
 
         /// @brief Compute the maximum allowable time step when growing a grid (comp_tmax_self)
         /// @param[in] coordinates The starting point coordinates
-        /// @param[in] velocities The velocities at the coordinates
+        /// @param[in] velocities  The velocities at the coordinates
         /// @returns The maximum allowable time step for each edge
         std::vector<double> ComputeMaximumEdgeGrowTime(const std::vector<Point>& coordinates,
                                                        const std::vector<Point>& velocities) const;
 
         /// @brief Copy growth velocities to the advancing front, add points at front corners corners (copy_vel_to_front)
-        /// @brief[in] layerIndex The current grid layerIndex index
-        /// @brief[in] previousFrontVelocities The previous front velocities
+        /// @param[in] layerIndex The current grid layerIndex index
+        /// @param[in] previousFrontVelocities The previous front velocities
         /// @returns The front velocities for the next front
         std::vector<Point> CopyVelocitiesToFront(size_t layerIndex, const std::vector<Point>& previousFrontVelocities);
 
@@ -163,8 +163,8 @@ namespace meshkernel
         std::vector<Point> ComputeVelocitiesAtGridPoints(size_t layerIndex);
 
         /// @brief Get left and right points at given layer for a given index (get_LR)
-        /// @brief[in] gridPoints The front grid points
-        /// @brief[in] index The front grid point index from which the neighbors should be searched
+        /// @param[in] gridPoints The front grid points
+        /// @param[in] index The front grid point index from which the neighbors should be searched
         /// @returns The left and the right index for the current front grid point index
         std::tuple<size_t, size_t> GetNeighbours(const std::vector<Point>& gridPoints, size_t index) const;
 
@@ -187,7 +187,7 @@ namespace meshkernel
                                                            size_t numLayers) const;
 
         /// @brief Compute the number of exponential layers for a given heightRatio
-        /// @brief[in] heightRatio The max height ratio between layers
+        /// @param[in] heightRatio The max height ratio between layers
         /// @returns the number of exponential layers
         [[nodiscard]] size_t ComputeNumberExponentialLayers(double heightRatio) const;
 
