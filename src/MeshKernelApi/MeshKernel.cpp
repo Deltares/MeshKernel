@@ -1318,7 +1318,7 @@ namespace meshkernelapi
 
             meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splinesToCurvilinearParameters);
 
-            auto curvilinearGrid = curvilinearGridFromSplines.Compute();
+            const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
             *mesh2dInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, mesh2dInstances[meshKernelId]->m_projection);
         }
         catch (...)
@@ -1383,7 +1383,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            meshkernel::CurvilinearGrid curvilinearGrid = curvilinearGridFromSplinesInstances[meshKernelId]->ComputeCurvilinearGrid();
+            const auto curvilinearGrid = curvilinearGridFromSplinesInstances[meshKernelId]->ComputeCurvilinearGridFromGridPoints();
 
             *mesh2dInstances[meshKernelId] += meshkernel::Mesh2D(curvilinearGrid, mesh2dInstances[meshKernelId]->m_projection);
         }

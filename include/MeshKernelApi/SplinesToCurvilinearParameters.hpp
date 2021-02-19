@@ -45,7 +45,7 @@ namespace meshkernelapi
         int CurvatureAdaptedGridSpacing;
 
         /// @brief Grow the grid outside the prescribed grid height (1)
-        int GrowGridOutside;
+        int GrowGridOutside = 0;
 
         /// @brief Maximum number of layers in the uniform part (5)
         int MaximumNumberOfGridCellsInTheUniformPart;
