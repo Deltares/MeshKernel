@@ -1230,8 +1230,14 @@ double meshkernel::CurvilinearGridFromSplines::ComputeGrowFactor(size_t splineIn
             aspectRatioGrowFactor = aspectRatioGrowFactorIncremented;
             heightDifference = heightDifferenceIncremented;
 
-            aspectRatioGrowFactorIncremented = aspectRatioGrowFactor - relaxationFactor * heightDifference / (heightDifference - oldHeightDifference + 1e-16) * (aspectRatioGrowFactor - oldAspectRatio);
-            heightDifferenceIncremented = ComputeTotalExponentialHeight(aspectRatioGrowFactorIncremented, m_edgeVelocities[splineIndex], m_numPerpendicularFacesOnSubintervalAndEdge[1][splineIndex]) - m_gridHeights[1][splineIndex];
+            aspectRatioGrowFactorIncremented = aspectRatioGrowFactor - relaxationFactor * heightDifference /
+                                                                           (heightDifference - oldHeightDifference + 1e-16) *
+                                                                           (aspectRatioGrowFactor - oldAspectRatio);
+
+            heightDifferenceIncremented = ComputeTotalExponentialHeight(aspectRatioGrowFactorIncremented,
+                                                                        m_edgeVelocities[splineIndex],
+                                                                        m_numPerpendicularFacesOnSubintervalAndEdge[1][splineIndex]) -
+                                          m_gridHeights[1][splineIndex];
 
             if (std::abs(oldHeightDifference) < tolerance)
             {
@@ -1261,7 +1267,8 @@ size_t meshkernel::CurvilinearGridFromSplines::ComputeNumberExponentialLayers(co
 {
     if (m_splinesToCurvilinearParameters.AspectRatioGrowFactor - 1.0 > 1e-8)
     {
-        return size_t(std::floor(std::log((m_splinesToCurvilinearParameters.AspectRatioGrowFactor - 1.0) * heightRatio + 1.0) / log(m_splinesToCurvilinearParameters.AspectRatioGrowFactor)));
+        return size_t(std::floor(std::log((m_splinesToCurvilinearParameters.AspectRatioGrowFactor - 1.0) * heightRatio + 1.0) /
+                                 log(m_splinesToCurvilinearParameters.AspectRatioGrowFactor)));
     }
     return size_t(std::floor(0.999 + heightRatio));
 }
@@ -1379,7 +1386,10 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGridHeights()
             edgesCenterPoints[0] = m_splines->GetSplineLength(s, 0, m_gridLineDimensionalCoordinates[leftGridLineIndex]);
             for (auto i = 0; i < numM; ++i)
             {
-                edgesCenterPoints[i + 1] = edgesCenterPoints[i] + m_splines->GetSplineLength(s, m_gridLineDimensionalCoordinates[leftGridLineIndex + i], m_gridLineDimensionalCoordinates[leftGridLineIndex + i + 1]);
+                edgesCenterPoints[i + 1] = edgesCenterPoints[i] +
+                                           m_splines->GetSplineLength(s,
+                                                                      m_gridLineDimensionalCoordinates[leftGridLineIndex + i],
+                                                                      m_gridLineDimensionalCoordinates[leftGridLineIndex + i + 1]);
             }
 
             // compute at edge center points
@@ -1393,7 +1403,8 @@ void meshkernel::CurvilinearGridFromSplines::ComputeGridHeights()
             crossingSplinesDimensionalCoordinates[0] = m_splines->GetSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
             for (auto i = 0; i < m_numCrossingSplines[s] - 1; ++i)
             {
-                crossingSplinesDimensionalCoordinates[i + 1] = crossingSplinesDimensionalCoordinates[i] + m_splines->GetSplineLength(s, m_crossSplineCoordinates[s][i], m_crossSplineCoordinates[s][i + 1]);
+                crossingSplinesDimensionalCoordinates[i + 1] = crossingSplinesDimensionalCoordinates[i] +
+                                                               m_splines->GetSplineLength(s, m_crossSplineCoordinates[s][i], m_crossSplineCoordinates[s][i + 1]);
             }
 
             for (auto j = 0; j < m_maxNumCenterSplineHeights; ++j)
@@ -1631,7 +1642,12 @@ size_t meshkernel::CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
     numM = std::min(numM, static_cast<size_t>(m_curvilinearParameters.MRefinement));
 
     const auto endSplineAdimensionalCoordinate = static_cast<double>(m_splines->m_splineNodes[splineIndex].size()) - 1;
-    const auto splineLength = m_splines->GetSplineLength(splineIndex, 0.0, endSplineAdimensionalCoordinate, 10, m_splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing, m_maximumGridHeights[splineIndex]);
+    const auto splineLength = m_splines->GetSplineLength(splineIndex,
+                                                         0.0,
+                                                         endSplineAdimensionalCoordinate,
+                                                         10,
+                                                         m_splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing,
+                                                         m_maximumGridHeights[splineIndex]);
 
     m_gridLine[startingIndex] = m_splines->m_splineNodes[splineIndex][0];
 
@@ -1663,7 +1679,8 @@ size_t meshkernel::CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
         }
 
         // a gridline is computed
-        if (currentMaxWidth < m_splinesToCurvilinearParameters.AverageWidth || numM == static_cast<size_t>(m_curvilinearParameters.MRefinement))
+        if (currentMaxWidth < m_splinesToCurvilinearParameters.AverageWidth ||
+            numM == static_cast<size_t>(m_curvilinearParameters.MRefinement))
         {
             break;
         }
@@ -1671,8 +1688,10 @@ size_t meshkernel::CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
         // room for sub-division
         if (currentMaxWidth > m_splinesToCurvilinearParameters.AverageWidth)
         {
-            numM = std::min(std::max(static_cast<size_t>(m_curvilinearParameters.MRefinement / m_maximumGridHeights[splineIndex] * static_cast<double>(numM)), numM + static_cast<size_t>(1)),
+            numM = std::min(std::max(static_cast<size_t>(m_curvilinearParameters.MRefinement / m_maximumGridHeights[splineIndex] * static_cast<double>(numM)),
+                                     numM + static_cast<size_t>(1)),
                             static_cast<size_t>(m_curvilinearParameters.MRefinement));
+
             distances.resize(numM);
             adimensionalDistances.resize(numM);
             points.resize(numM);
@@ -1835,15 +1854,19 @@ void meshkernel::CurvilinearGridFromSplines::ComputeSubHeights(size_t centerSpli
         leftCenterSplineIndex = rightCenterSplineIndex;
         rightCenterSplineIndex = s + 1;
         m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsRight] = m_splines->GetSplineLength(crossingSplineIndex,
-                                                                                                                                  m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex], m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex]);
+                                                                                                                                  m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex],
+                                                                                                                                  m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex]);
         numSubIntervalsRight++;
     }
 
     const auto numSplineNodes = m_splines->m_splineNodes[crossingSplineIndex].size();
     m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsRight] = m_splines->GetSplineLength(crossingSplineIndex,
-                                                                                                                              m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex], static_cast<double>(numSplineNodes) - 1.0);
+                                                                                                                              m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex],
+                                                                                                                              static_cast<double>(numSplineNodes) - 1.0);
     numSubIntervalsRight++;
-    std::fill(m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex].begin() + numSubIntervalsRight, m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex].end(), 0.0);
+    std::fill(m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex].begin() + numSubIntervalsRight,
+              m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex].end(), 0.0);
+
     m_numCrossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex] = numSubIntervalsRight;
 
     // left part
@@ -1863,15 +1886,19 @@ void meshkernel::CurvilinearGridFromSplines::ComputeSubHeights(size_t centerSpli
         rightCenterSplineIndex = leftCenterSplineIndex;
         leftCenterSplineIndex = s - 1;
         m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsLeft] = m_splines->GetSplineLength(crossingSplineIndex,
-                                                                                                                                m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex], m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex]);
+                                                                                                                                m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex],
+                                                                                                                                m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex]);
         numSubIntervalsLeft++;
     }
 
     m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsLeft] = m_splines->GetSplineLength(crossingSplineIndex,
-                                                                                                                            0.0, m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex]);
+                                                                                                                            0.0,
+                                                                                                                            m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex]);
 
     numSubIntervalsLeft++;
-    std::fill(m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex].begin() + numSubIntervalsLeft, m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex].end(), 0.0);
+    std::fill(m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex].begin() + numSubIntervalsLeft,
+              m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex].end(), 0.0);
+
     m_numCrossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex] = numSubIntervalsLeft;
 
     // if not left oriented, swap
