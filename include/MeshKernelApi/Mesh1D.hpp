@@ -34,26 +34,14 @@ namespace meshkernelapi
     {
         /// @brief The nodes composing each mesh 1d edge
         int* edge_nodes = nullptr;
-        /// @brief The nodes composing each mesh 1d face
-        int* face_nodes = nullptr;
-        /// @brief The edges composing each mesh 1d face
-        int* edge_faces = nullptr;
         /// @brief The x-coordinates of the mesh nodes
         double* nodex = nullptr;
         /// @brief The y-coordinates of the mesh nodes
         double* nodey = nullptr;
-        /// @brief The x-coordinates of the mesh edges middle points
-        double* edgex = nullptr;
-        /// @brief The y-coordinates of the mesh edges middle points
-        double* edgey = nullptr;
-        /// @brief The x-coordinates of the mesh faces mass centers
-        double* facex = nullptr;
-        /// @brief The y-coordinates of the mesh faces mass centers
-        double* facey = nullptr;
         /// @brief The number of 1d nodes
-        int numnode;
+        int num_nodes;
         /// @brief The number of 1d edges
-        int numedge;
+        int num_edges;
     };
 
 } // namespace meshkernelapi

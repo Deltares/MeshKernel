@@ -107,9 +107,8 @@ void meshkernel::CurvilinearGridFromSplines::AllocateSplinesProperties()
     std::fill(m_rightGridLineIndex.begin(), m_rightGridLineIndex.end(), sizetMissingValue);
 }
 
-void meshkernel::CurvilinearGridFromSplines::Compute(CurvilinearGrid& curvilinearGrid)
+meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromSplines::Compute()
 {
-
     Initialize();
 
     // Grow grid, from the second layer
@@ -124,7 +123,8 @@ void meshkernel::CurvilinearGridFromSplines::Compute(CurvilinearGrid& curvilinea
         DeleteSkinnyTriangles();
     }
 
-    ComputeCurvilinearGrid(curvilinearGrid);
+    auto curvilinearGrid = ComputeCurvilinearGrid();
+    return curvilinearGrid;
 }
 
 void meshkernel::CurvilinearGridFromSplines::DeleteSkinnyTriangles()
@@ -452,11 +452,12 @@ void meshkernel::CurvilinearGridFromSplines::Iterate(size_t layer)
     assert(m_timeStep > 1e-8 && "time step is smaller than 1e-8!");
 }
 
-void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearGrid& curvilinearGrid)
+meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid()
 {
     std::vector<std::vector<size_t>> mIndicesOtherSide(1, std::vector<size_t>(2));
     std::vector<std::vector<size_t>> nIndicesThisSide(1, std::vector<size_t>(2));
-    std::vector<std::vector<Point>> gridPointsNDirection(m_gridPoints[0].size(), std::vector<Point>(m_gridPoints.size(), {doubleMissingValue, doubleMissingValue}));
+    std::vector<std::vector<Point>> gridPointsNDirection(m_gridPoints[0].size(),
+                                                         std::vector<Point>(m_gridPoints.size(), {doubleMissingValue, doubleMissingValue}));
     std::vector<std::vector<Point>> curvilinearMeshPoints;
     const double squaredDistanceTolerance = 1e-12;
 
@@ -556,7 +557,7 @@ void meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid(CurvilinearG
         startGridLine = endGridlineIndex + 2;
     }
 
-    curvilinearGrid = {curvilinearMeshPoints};
+    return meshkernel::CurvilinearGrid(curvilinearMeshPoints);
 }
 
 void meshkernel::CurvilinearGridFromSplines::ComputeGridLayerAndSubLayer(size_t layer, size_t& gridLayer, size_t& subLayerIndex)
