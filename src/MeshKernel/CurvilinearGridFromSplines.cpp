@@ -1853,16 +1853,18 @@ void meshkernel::CurvilinearGridFromSplines::ComputeSubHeights(size_t centerSpli
         }
         leftCenterSplineIndex = rightCenterSplineIndex;
         rightCenterSplineIndex = s + 1;
-        m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsRight] = m_splines->GetSplineLength(crossingSplineIndex,
-                                                                                                                                  m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex],
-                                                                                                                                  m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex]);
+        m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsRight] =
+            m_splines->GetSplineLength(crossingSplineIndex,
+                                       m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex],
+                                       m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex]);
         numSubIntervalsRight++;
     }
 
     const auto numSplineNodes = m_splines->m_splineNodes[crossingSplineIndex].size();
-    m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsRight] = m_splines->GetSplineLength(crossingSplineIndex,
-                                                                                                                              m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex],
-                                                                                                                              static_cast<double>(numSplineNodes) - 1.0);
+    m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsRight] =
+        m_splines->GetSplineLength(crossingSplineIndex,
+                                   m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex],
+                                   static_cast<double>(numSplineNodes) - 1.0);
     numSubIntervalsRight++;
     std::fill(m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex].begin() + numSubIntervalsRight,
               m_crossSplineRightHeights[centerSplineIndex][crossingSplineLocalIndex].end(), 0.0);
@@ -1885,15 +1887,17 @@ void meshkernel::CurvilinearGridFromSplines::ComputeSubHeights(size_t centerSpli
         }
         rightCenterSplineIndex = leftCenterSplineIndex;
         leftCenterSplineIndex = s - 1;
-        m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsLeft] = m_splines->GetSplineLength(crossingSplineIndex,
-                                                                                                                                m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex],
-                                                                                                                                m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex]);
+        m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsLeft] =
+            m_splines->GetSplineLength(crossingSplineIndex,
+                                       m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex],
+                                       m_crossSplineCoordinates[crossingSplineIndex][rightCenterSplineIndex]);
         numSubIntervalsLeft++;
     }
 
-    m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsLeft] = m_splines->GetSplineLength(crossingSplineIndex,
-                                                                                                                            0.0,
-                                                                                                                            m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex]);
+    m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex][numSubIntervalsLeft] =
+        m_splines->GetSplineLength(crossingSplineIndex,
+                                   0.0,
+                                   m_crossSplineCoordinates[crossingSplineIndex][leftCenterSplineIndex]);
 
     numSubIntervalsLeft++;
     std::fill(m_crossSplineLeftHeights[centerSplineIndex][crossingSplineLocalIndex].begin() + numSubIntervalsLeft,
