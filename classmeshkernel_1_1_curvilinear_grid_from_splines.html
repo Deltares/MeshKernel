@@ -98,6 +98,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6cca6bcddcfbe54920979f52da64e209"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#a6cca6bcddcfbe54920979f52da64e209">Compute</a> ()</td></tr>
 <tr class="memdesc:a6cca6bcddcfbe54920979f52da64e209"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a curvilinear grid using the growing front method (spline2curvi).  <a href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#a6cca6bcddcfbe54920979f52da64e209">More...</a><br /></td></tr>
 <tr class="separator:a6cca6bcddcfbe54920979f52da64e209"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfe16df3b51e4820634a4a5322493e49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#adfe16df3b51e4820634a4a5322493e49">ComputeCurvilinearGridFromGridPoints</a> ()</td></tr>
+<tr class="memdesc:adfe16df3b51e4820634a4a5322493e49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the curvilinear grid from the mesh points.  <a href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#adfe16df3b51e4820634a4a5322493e49">More...</a><br /></td></tr>
+<tr class="separator:adfe16df3b51e4820634a4a5322493e49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2160dbaa35ee7b49a55f93a6b81615a"><td class="memItemLeft" align="right" valign="top"><a id="ab2160dbaa35ee7b49a55f93a6b81615a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#ab2160dbaa35ee7b49a55f93a6b81615a">Initialize</a> ()</td></tr>
 <tr class="memdesc:ab2160dbaa35ee7b49a55f93a6b81615a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the OrthogonalCurvilinearGrid algorithm. <br /></td></tr>
@@ -105,9 +108,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a293be64533b1849b727afafe57169240"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#a293be64533b1849b727afafe57169240">Iterate</a> (size_t layer)</td></tr>
 <tr class="memdesc:a293be64533b1849b727afafe57169240"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs one iteration for generating another layer on the advancing fronts.  <a href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#a293be64533b1849b727afafe57169240">More...</a><br /></td></tr>
 <tr class="separator:a293be64533b1849b727afafe57169240"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb165ecc4297b042cbcded3e1b417fba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#aeb165ecc4297b042cbcded3e1b417fba">ComputeCurvilinearGrid</a> ()</td></tr>
-<tr class="memdesc:aeb165ecc4297b042cbcded3e1b417fba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the curvilinear grid.  <a href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#aeb165ecc4297b042cbcded3e1b417fba">More...</a><br /></td></tr>
-<tr class="separator:aeb165ecc4297b042cbcded3e1b417fba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd7dde5376c642e1a740385d664d2805"><td class="memItemLeft" align="right" valign="top"><a id="abd7dde5376c642e1a740385d664d2805"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#abd7dde5376c642e1a740385d664d2805">MakeAllGridLines</a> ()</td></tr>
 <tr class="memdesc:abd7dde5376c642e1a740385d664d2805"><td class="mdescLeft">&#160;</td><td class="mdescRight">For the central spline, computes the spline subdivisions along the spline (make_wholegridline) <br /></td></tr>
@@ -133,7 +133,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <tr class="separator:afcc5db690ffa8a519324d754ab90cfa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3fb6bb5f97b65519544bdde907e42657"><td class="memItemLeft" align="right" valign="top"><a id="a3fb6bb5f97b65519544bdde907e42657"></a>
 std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_splines.html">Splines</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_from_splines.html#a3fb6bb5f97b65519544bdde907e42657">m_splines</a></td></tr>
-<tr class="memdesc:a3fb6bb5f97b65519544bdde907e42657"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pointer to spline. <br /></td></tr>
+<tr class="memdesc:a3fb6bb5f97b65519544bdde907e42657"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pointer to spline class instance. <br /></td></tr>
 <tr class="separator:a3fb6bb5f97b65519544bdde907e42657"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -142,12 +142,12 @@ std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_splines.html">Spline
 <ul>
 <li>Initialization step<ul>
 <li>The splines are labeled (central or transversal spline) based on the number of corner points and the intersecting angles.</li>
-<li>The canal heights at a different position along the central spline are computed from the crossing splines.</li>
-<li>The normal vectors of each m part are computed, as these determine the growing front directions.</li>
+<li>The grid heights at a different position along the central spline are computed from the crossing splines.</li>
+<li>The normal vectors of each edge are computed, as these determine the growing front directions.</li>
 <li>The edge velocities to apply to each normal direction are computed.</li>
 </ul>
 </li>
-<li>Iteration step, where the mesh is grown of one layer at the time from the left and right sides of the central spline:<ul>
+<li>Iteration step, where the mesh is grown one layer at a time starting from the left and right sides of the central spline:<ul>
 <li>Compute the node velocities from the edge velocities.</li>
 <li>Find the nodes at the front (the front might miss some faces and be irregular).</li>
 <li>Compute the maximum growth time to avoid faces with intersecting edges.</li>
@@ -234,14 +234,14 @@ std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_splines.html">Spline
 
 </div>
 </div>
-<a id="aeb165ecc4297b042cbcded3e1b417fba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb165ecc4297b042cbcded3e1b417fba">&#9670;&nbsp;</a></span>ComputeCurvilinearGrid()</h2>
+<a id="adfe16df3b51e4820634a4a5322493e49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfe16df3b51e4820634a4a5322493e49">&#9670;&nbsp;</a></span>ComputeCurvilinearGridFromGridPoints()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a> meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGrid </td>
+          <td class="memname"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a> meshkernel::CurvilinearGridFromSplines::ComputeCurvilinearGridFromGridPoints </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -249,8 +249,8 @@ std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_splines.html">Spline
       </table>
 </div><div class="memdoc">
 
-<p>Get the curvilinear grid. </p>
-<dl class="section return"><dt>Returns</dt><dd>The computed curvilinear Grid </dd></dl>
+<p>Computes the curvilinear grid from the mesh points. </p>
+<dl class="section return"><dt>Returns</dt><dd>The computed curvilinear grid </dd></dl>
 
 </div>
 </div>
@@ -299,7 +299,7 @@ std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_splines.html">Spline
 <p>Performs one iteration for generating another layer on the advancing fronts. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">layer</td><td>The index of the layer to be generated </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">layer</td><td>The index of the layer to be generated </td></tr>
   </table>
   </dd>
 </dl>

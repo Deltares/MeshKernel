@@ -14,7 +14,7 @@ var searchData=
   ['computeboundarycontacts_35',['ComputeBoundaryContacts',['../classmeshkernel_1_1_contacts.html#a4ec01984b66446a3db7cd48de077e5df',1,'meshkernel::Contacts']]],
   ['computecontactswithpoints_36',['ComputeContactsWithPoints',['../classmeshkernel_1_1_contacts.html#acf4f82c10642d3e8b2d9e8bab6b07006',1,'meshkernel::Contacts']]],
   ['computecontactswithpolygons_37',['ComputeContactsWithPolygons',['../classmeshkernel_1_1_contacts.html#a198d5ed49e69fcf8700ce9cf34b4f081',1,'meshkernel::Contacts']]],
-  ['computecurvilineargrid_38',['ComputeCurvilinearGrid',['../classmeshkernel_1_1_curvilinear_grid_from_splines.html#aeb165ecc4297b042cbcded3e1b417fba',1,'meshkernel::CurvilinearGridFromSplines']]],
+  ['computecurvilineargridfromgridpoints_38',['ComputeCurvilinearGridFromGridPoints',['../classmeshkernel_1_1_curvilinear_grid_from_splines.html#adfe16df3b51e4820634a4a5322493e49',1,'meshkernel::CurvilinearGridFromSplines']]],
   ['computedistance_39',['ComputeDistance',['../namespacemeshkernel.html#a9f6d26597793c1768be2f91121dd4432',1,'meshkernel']]],
   ['computeedgecenters_40',['ComputeEdgeCenters',['../namespacemeshkernel.html#ac58dc9b0bbb628400d4e88cdd9be75e1',1,'meshkernel']]],
   ['computeedgescenters_41',['ComputeEdgesCenters',['../classmeshkernel_1_1_mesh.html#a48b2912121a8b224b96f3f8e15397884',1,'meshkernel::Mesh']]],
