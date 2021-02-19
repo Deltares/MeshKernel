@@ -138,7 +138,6 @@ void meshkernel::CurvilinearGridFromSplines::DeleteSkinnyTriangles()
         for (auto iter = 0; iter < numMaxIterations; ++iter)
         {
             size_t numChanged = 0;
-            size_t firstLeftIndex;
             size_t firstRightIndex = 0;
             size_t i = 0;
 
@@ -1661,6 +1660,8 @@ size_t meshkernel::CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
         for (auto n = 0; n < numM; ++n)
         {
             distances[n] = splineLength * static_cast<double>(n + 1.0) / static_cast<double>(numM);
+
+            //distances[n] = splineLength * (static_cast<double>(n) + 1.0) / static_cast<double>(numM);
         }
 
         m_splines->InterpolatePointsOnSpline(splineIndex,

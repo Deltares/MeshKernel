@@ -188,7 +188,7 @@ namespace meshkernel
 
         /// @brief Compute the number of exponential layers for a given heightRatio
         /// @param[in] heightRatio The max height ratio between layers
-        /// @returns the number of exponential layers
+        /// @returns The number of exponential layers
         [[nodiscard]] size_t ComputeNumberExponentialLayers(double heightRatio) const;
 
         /// @brief Computes the sub-interval velocities (left and right)
