@@ -914,7 +914,10 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId, GeometryList& geometryListIn, int inside, int numberOfMeshNodes, int** selectedNodes)
+    MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId,
+                                              const GeometryList& geometryListIn,
+                                              int inside,
+                                              int** selectedNodes)
     {
         int exitCode = Success;
         try
@@ -948,7 +951,10 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId, GeometryList& geometryListIn, int inside, int& numberOfMeshNodes)
+    MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId,
+                                                    const GeometryList& geometryListIn,
+                                                    int inside,
+                                                    int& numberOfMeshNodes)
     {
         int exitCode = Success;
         try
