@@ -155,11 +155,11 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
         {
             if (splineIndex < m_numMSplines)
             {
-                curvilinearGrid.m_grid[i][position] = points[index];
+                curvilinearGrid.m_nodes[i][position] = points[index];
             }
             else
             {
-                curvilinearGrid.m_grid[position][i] = points[index];
+                curvilinearGrid.m_nodes[position][i] = points[index];
             }
             index++;
         }
@@ -182,26 +182,26 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
                     const auto n = j * m_numN + l;
 
                     // We are at the boundary
-                    if (!curvilinearGrid.m_grid[m][n].IsValid())
+                    if (!curvilinearGrid.m_nodes[m][n].IsValid())
                     {
                         continue;
                     }
 
                     if (k == 0)
                     {
-                        sideOne[l] = curvilinearGrid.m_grid[m][n];
+                        sideOne[l] = curvilinearGrid.m_nodes[m][n];
                     }
                     if (k == m_numM)
                     {
-                        sideTwo[l] = curvilinearGrid.m_grid[m][n];
+                        sideTwo[l] = curvilinearGrid.m_nodes[m][n];
                     }
                     if (l == 0)
                     {
-                        sideThree[k] = curvilinearGrid.m_grid[m][n];
+                        sideThree[k] = curvilinearGrid.m_nodes[m][n];
                     }
                     if (l == m_numN)
                     {
-                        sideFour[k] = curvilinearGrid.m_grid[m][n];
+                        sideFour[k] = curvilinearGrid.m_nodes[m][n];
                     }
                 }
             }
@@ -223,12 +223,12 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::Compute(CurvilinearGrid&
                     const auto m = i * m_numM + k;
                     const auto n = j * m_numN + l;
 
-                    if (curvilinearGrid.m_grid[m][n].IsValid())
+                    if (curvilinearGrid.m_nodes[m][n].IsValid())
                     {
                         continue;
                     }
 
-                    curvilinearGrid.m_grid[m][n] = interpolationResult[k][l];
+                    curvilinearGrid.m_nodes[m][n] = interpolationResult[k][l];
                 }
             }
         }

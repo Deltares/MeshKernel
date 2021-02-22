@@ -63,6 +63,7 @@ namespace meshkernelapi
     static std::vector<std::shared_ptr<meshkernel::Mesh2D>> mesh2dInstances;
     static std::vector<std::shared_ptr<meshkernel::Mesh1D>> mesh1dInstances;
     static std::vector<std::shared_ptr<meshkernel::Contacts>> contactsInstances;
+    static std::vector<std::shared_ptr<meshkernel::CurvilinearGrid>> curvilinearGridInstances;
 
     // For interactivity
     static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
@@ -96,6 +97,7 @@ namespace meshkernelapi
         mesh2dInstances.emplace_back(std::make_shared<meshkernel::Mesh2D>());
         mesh1dInstances.emplace_back(std::make_shared<meshkernel::Mesh1D>());
         contactsInstances.emplace_back(std::make_shared<meshkernel::Contacts>(mesh1dInstances[meshKernelId], mesh2dInstances[meshKernelId]));
+        curvilinearGridInstances.emplace_back(std::make_shared<meshkernel::CurvilinearGrid>());
         return Success;
     };
 
@@ -112,6 +114,7 @@ namespace meshkernelapi
             mesh2dInstances.erase(mesh2dInstances.begin() + meshKernelId);
             mesh1dInstances.erase(mesh1dInstances.begin() + meshKernelId);
             contactsInstances.erase(contactsInstances.begin() + meshKernelId);
+            curvilinearGridInstances.erase(curvilinearGridInstances.begin() + meshKernelId);
         }
         catch (...)
         {
@@ -665,14 +668,13 @@ namespace meshkernelapi
 
             const auto indices = FindIndices(splines, 0, splines.size(), meshkernel::doubleMissingValue);
             const auto numSplines = indices.size();
-            std::vector<meshkernel::Point> coordinatesDerivatives(geometryListIn.numberOfCoordinates);
 
             int index = 0;
             for (auto s = 0; s < numSplines; s++)
             {
                 std::vector<meshkernel::Point> coordinates(splines.begin() + indices[s][0], splines.begin() + int(indices[s][1]) + 1);
                 const int numNodes = int(indices[s][1]) - int(indices[s][0]) + 1;
-                meshkernel::Splines::SecondOrderDerivative(coordinates, numNodes, coordinatesDerivatives);
+                const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates);
 
                 for (auto n = 0; n < numNodes - 1; n++)
                 {
@@ -1827,6 +1829,26 @@ namespace meshkernelapi
             contactsInstances[meshKernelId]->ComputeBoundaryContacts(meshKernel1DNodeMask,
                                                                      meshKernelPolygons,
                                                                      searchRadius);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_refine_curvilineargrid(int meshKernelId, int mIndex, int nIndex)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelId >= mesh2dInstances.size())
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            // Execute
+            //curvilinearGridInstances[meshKernelId]->Refine(mIndex, nIndex);
         }
         catch (...)
         {

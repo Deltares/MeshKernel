@@ -96,23 +96,23 @@ void meshkernel::Mesh2D::Administrate(AdministrationOptions administrationOption
 
 meshkernel::Mesh2D::Mesh2D(const CurvilinearGrid& curvilinearGrid, Projection projection)
 {
-    if (curvilinearGrid.m_grid.empty())
+    if (curvilinearGrid.m_nodes.empty())
     {
         throw std::invalid_argument("Mesh2D::Mesh2D: The curvilinear grid is empty.");
     }
 
-    std::vector<Point> nodes(curvilinearGrid.m_grid.size() * curvilinearGrid.m_grid[0].size());
-    std::vector<Edge> edges(curvilinearGrid.m_grid.size() * (curvilinearGrid.m_grid[0].size() - 1) + (curvilinearGrid.m_grid.size() - 1) * curvilinearGrid.m_grid[0].size());
-    std::vector<std::vector<size_t>> indices(curvilinearGrid.m_grid.size(), std::vector<size_t>(curvilinearGrid.m_grid[0].size(), sizetMissingValue));
+    std::vector<Point> nodes(curvilinearGrid.m_nodes.size() * curvilinearGrid.m_nodes[0].size());
+    std::vector<Edge> edges(curvilinearGrid.m_nodes.size() * (curvilinearGrid.m_nodes[0].size() - 1) + (curvilinearGrid.m_nodes.size() - 1) * curvilinearGrid.m_nodes[0].size());
+    std::vector<std::vector<size_t>> indices(curvilinearGrid.m_nodes.size(), std::vector<size_t>(curvilinearGrid.m_nodes[0].size(), sizetMissingValue));
 
     size_t ind = 0;
-    for (auto m = 0; m < curvilinearGrid.m_grid.size(); m++)
+    for (auto m = 0; m < curvilinearGrid.m_nodes.size(); m++)
     {
-        for (auto n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
+        for (auto n = 0; n < curvilinearGrid.m_nodes[0].size(); n++)
         {
-            if (curvilinearGrid.m_grid[m][n].IsValid())
+            if (curvilinearGrid.m_nodes[m][n].IsValid())
             {
-                nodes[ind] = curvilinearGrid.m_grid[m][n];
+                nodes[ind] = curvilinearGrid.m_nodes[m][n];
                 indices[m][n] = ind;
                 ind++;
             }
@@ -121,9 +121,9 @@ meshkernel::Mesh2D::Mesh2D(const CurvilinearGrid& curvilinearGrid, Projection pr
     nodes.resize(ind);
 
     ind = 0;
-    for (auto m = 0; m < curvilinearGrid.m_grid.size() - 1; m++)
+    for (auto m = 0; m < curvilinearGrid.m_nodes.size() - 1; m++)
     {
-        for (auto n = 0; n < curvilinearGrid.m_grid[0].size(); n++)
+        for (auto n = 0; n < curvilinearGrid.m_nodes[0].size(); n++)
         {
             if (indices[m][n] != sizetMissingValue && indices[m + 1][n] != sizetMissingValue)
             {
@@ -134,9 +134,9 @@ meshkernel::Mesh2D::Mesh2D(const CurvilinearGrid& curvilinearGrid, Projection pr
         }
     }
 
-    for (auto m = 0; m < curvilinearGrid.m_grid.size(); m++)
+    for (auto m = 0; m < curvilinearGrid.m_nodes.size(); m++)
     {
-        for (auto n = 0; n < curvilinearGrid.m_grid[0].size() - 1; n++)
+        for (auto n = 0; n < curvilinearGrid.m_nodes[0].size() - 1; n++)
         {
             if (indices[m][n] != sizetMissingValue && indices[m][n + 1] != sizetMissingValue)
             {
@@ -772,9 +772,9 @@ void meshkernel::Mesh2D::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeM
                 double newPointYCoordinate = OriginYCoordinate + m * XGridBlockSize * sinAngle + n * YGridBlockSize * cosineAngle;
                 if (m_projection == Projection::spherical && n > 0)
                 {
-                    newPointYCoordinate = XGridBlockSize * cos(degrad_hp * CurvilinearGrid.m_grid[n - 1][m].y);
+                    newPointYCoordinate = XGridBlockSize * cos(degrad_hp * CurvilinearGrid.m_nodes[n - 1][m].y);
                 }
-                CurvilinearGrid.m_grid[n][m] = {newPointXCoordinate, newPointYCoordinate};
+                CurvilinearGrid.m_nodes[n][m] = {newPointXCoordinate, newPointYCoordinate};
             }
         }
 
@@ -788,7 +788,7 @@ void meshkernel::Mesh2D::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeM
             {
                 for (auto m = 0; m < numM; ++m)
                 {
-                    const bool isInPolygon = polygons.IsPointInPolygon(CurvilinearGrid.m_grid[n][m], 0);
+                    const bool isInPolygon = polygons.IsPointInPolygon(CurvilinearGrid.m_nodes[n][m], 0);
                     if (isInPolygon)
                     {
                         nodeBasedMask[n][m] = true;
@@ -830,8 +830,8 @@ void meshkernel::Mesh2D::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeM
                 {
                     if (!nodeBasedMask[n][m])
                     {
-                        CurvilinearGrid.m_grid[n][m].x = doubleMissingValue;
-                        CurvilinearGrid.m_grid[n][m].y = doubleMissingValue;
+                        CurvilinearGrid.m_nodes[n][m].x = doubleMissingValue;
+                        CurvilinearGrid.m_nodes[n][m].y = doubleMissingValue;
                     }
                 }
             }

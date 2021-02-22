@@ -52,7 +52,7 @@ void meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t st
 
     // compute basic properties
     m_splineDerivatives.emplace_back();
-    SecondOrderDerivative(m_splineNodes.back(), size, m_splineDerivatives.back());
+    m_splineDerivatives.back() = SecondOrderDerivative(m_splineNodes.back());
     m_splinesLength.emplace_back(GetSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
 }
 
@@ -383,37 +383,38 @@ void meshkernel::Splines::ComputeCurvatureOnSplinePoint(size_t splineIndex,
     tangentialVector.y = dy / distance;
 }
 
-void meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline, size_t numNodes, std::vector<Point>& coordinatesDerivatives)
+std::vector<meshkernel::Point> meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline)
 {
-    std::vector<Point> u(numNodes);
-    u[0] = {0.0, 0.0};
-    coordinatesDerivatives.resize(spline.size(), {0.0, 0.0});
-    coordinatesDerivatives.front() = {0.0, 0.0};
 
-    for (auto i = 1; i < numNodes - 1; i++)
+    std::vector<Point> u(spline.size());
+    u[0] = {0.0, 0.0};
+    std::vector<Point> coordinatesDerivative(spline.size(), {0.0, 0.0});
+
+    for (auto i = 1; i < spline.size() - 1; i++)
     {
-        const Point p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
-        coordinatesDerivatives[i].x = -0.5 / p.x;
-        coordinatesDerivatives[i].y = -0.5 / p.y;
+        const Point p = coordinatesDerivative[i - 1] * 0.5 + 2.0;
+        coordinatesDerivative[i].x = -0.5 / p.x;
+        coordinatesDerivative[i].y = -0.5 / p.y;
 
         const Point delta = spline[i + 1] - spline[i] - (spline[i] - spline[i - 1]);
         u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
     }
     // TODO: C++ 20 for(auto& i :  views::reverse(vec))
-    coordinatesDerivatives.back() = {0.0, 0.0};
-    for (auto i = numNodes - 2; i < numNodes; --i)
+    coordinatesDerivative.back() = {0.0, 0.0};
+    for (auto i = spline.size() - 2; i < spline.size(); --i)
     {
-        coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
+        coordinatesDerivative[i] = coordinatesDerivative[i] * coordinatesDerivative[i + 1] + u[i];
     }
+
+    return coordinatesDerivative;
 }
 
-void meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, size_t numNodes, std::vector<double>& coordinatesDerivatives)
+std::vector<double> meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coordinates)
 {
-    std::vector<double> u(numNodes);
-    u[0] = 0.0;
-    coordinatesDerivatives.front() = 0.0;
+    std::vector<double> u(coordinates.size(), 0.0);
+    std::vector<double> coordinatesDerivatives(coordinates.size(), 0.0);
 
-    for (auto i = 1; i < numNodes - 1; i++)
+    for (auto i = 1; i < coordinates.size() - 1; i++)
     {
         const double p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
         coordinatesDerivatives[i] = -0.5 / p;
@@ -424,10 +425,12 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coord
 
     // TODO: C++ 20 for(auto& i :  views::reverse(vec))
     coordinatesDerivatives.back() = 0.0;
-    for (auto i = numNodes - 2; i < numNodes; --i)
+    for (auto i = coordinates.size() - 2; i < coordinates.size(); --i)
     {
         coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
     }
+
+    return coordinatesDerivatives;
 }
 
 void meshkernel::Splines::InterpolatePointsOnSpline(size_t index,

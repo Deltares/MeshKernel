@@ -30,13 +30,13 @@
 #include <vector>
 
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/RTree.hpp>
 
 namespace meshkernel
 {
     /// @brief A class representing a curvilinear grid
     class CurvilinearGrid
     {
-
     public:
         /// @brief Default constructor
         /// @returns
@@ -45,19 +45,32 @@ namespace meshkernel
         /// @brief Create a new curvilinear grid
         /// @param[in] m Number of columns (horizontal direction)
         /// @param[in] n Number of rows (vertical direction)
-        CurvilinearGrid(size_t m, size_t n)
-        {
-            m_grid.resize(m + 1, std::vector<Point>(n + 1, {doubleMissingValue, doubleMissingValue}));
-        }
+        CurvilinearGrid(size_t m, size_t n);
 
         /// @brief Sets the point to the curvilinear grid
         /// @param[in] grid Input grid points
-        CurvilinearGrid(const std::vector<std::vector<Point>>& grid)
-        {
-            CurvilinearGrid(grid.size(), grid[0].size());
-            m_grid = grid;
-        }
+        CurvilinearGrid(const std::vector<std::vector<Point>>& grid);
 
-        std::vector<std::vector<Point>> m_grid; ///< Member variable storing the grid
+        /// @brief Get the m and n indices of the closest cu
+        std::tuple<int, int> GetNodeIndices(Point point);
+
+        std::vector<std::vector<Point>> m_nodes; ///< Member variable storing the grid
+        RTree m_nodesRTree;                      ///< Spatial R-Tree used to inquire node nodes
+        size_t m_numM = 0;
+        size_t m_numN = 0;
+
+    private:
+        // a type for searching the closest m and n indices closest to a point
+        struct Node
+        {
+            double x;
+            double y;
+            size_t m;
+            size_t n;
+        };
+
+        /// @brief Builds the node three to find nodes on the curvi grid
+        void BuildTree();
+        std::vector<Node> m_flattenNodes; ///< The flattened nodes
     };
 } // namespace meshkernel

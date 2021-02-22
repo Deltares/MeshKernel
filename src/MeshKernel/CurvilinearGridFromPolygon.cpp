@@ -211,7 +211,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
     {
         for (auto j = 0; j < numNNodes; j++)
         {
-            curvilinearGrid.m_grid[i][j] = result[i][j];
+            curvilinearGrid.m_nodes[i][j] = result[i][j];
         }
     }
 }
@@ -396,7 +396,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
             {
                 for (auto j = 0; j < result[0].size(); ++j)
                 {
-                    curvilinearGrid.m_grid[i][j] = result[i][j];
+                    curvilinearGrid.m_nodes[i][j] = result[i][j];
                 }
             }
         }
@@ -408,7 +408,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
                 {
                     const auto iIndex = n1 + n3 - i;
                     const auto jIndex = n2 + n3 - j;
-                    curvilinearGrid.m_grid[iIndex][jIndex] = result[i][j];
+                    curvilinearGrid.m_nodes[iIndex][jIndex] = result[i][j];
                 }
             }
         }
@@ -419,7 +419,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
                 for (auto j = 0; j < result.size(); ++j)
                 {
                     const auto jIndex = n2 + n3 - j;
-                    curvilinearGrid.m_grid[i][jIndex] = result[j][i];
+                    curvilinearGrid.m_nodes[i][jIndex] = result[j][i];
                 }
             }
         }

@@ -1494,7 +1494,7 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(size_t s,
         localCornerPoints[i] = crossSplineLeftHeights[index][j];
     }
 
-    Splines::SecondOrderDerivative(localCornerPoints, numValid, localSplineDerivatives);
+    localSplineDerivatives = Splines::SecondOrderDerivative(localCornerPoints);
 
     crossingSplinesDimensionalCoordinates[0] = m_splines->GetSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
     for (auto i = 0; i < numM; ++i)

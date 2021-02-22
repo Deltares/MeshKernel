@@ -629,6 +629,13 @@ namespace meshkernelapi
                                                           const GeometryList& polygons,
                                                           double searchRadius);
 
+        /// @brief Curvilinear grid refinement
+        /// @param meshKernelId[in]  meshKernelId The id of the mesh state.
+        /// @param mIndex
+        /// @param nIndex
+        /// @return                  Error code (0 Successful)
+        MKERNEL_API int mkernel_refine_curvilineargrid(int meshKernelId, int mIndex, int nIndex);
+
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel
         MKERNEL_API double mkernel_get_separator();
