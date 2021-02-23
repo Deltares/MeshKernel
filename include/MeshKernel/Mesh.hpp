@@ -239,7 +239,7 @@ namespace meshkernel
         /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
         /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return The index of the closest location.
-        size_t GetNearestNeighborIndex(size_t index, MeshLocations meshLocation);
+        [[nodiscard]] size_t GetNearestNeighborIndex(size_t index, MeshLocations meshLocation);
 
         // nodes
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
