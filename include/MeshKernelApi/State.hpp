@@ -37,12 +37,11 @@
 
 namespace meshkernelapi
 {
-
+    /// @brief The class holding the state of the C API library
     class State
     {
     public:
-        /// @brief Default constructor
-        /// @returns
+        /// @brief Constructor initializing mesh and contacts classes
         State()
         {
             m_mesh1d = std::make_shared<meshkernel::Mesh1D>();
@@ -51,13 +50,13 @@ namespace meshkernelapi
         }
 
         // Mesh instances
-        std::shared_ptr<meshkernel::Mesh1D> m_mesh1d;
-        std::shared_ptr<meshkernel::Mesh2D> m_mesh2d;
-        std::shared_ptr<meshkernel::Contacts> m_contacts;
+        std::shared_ptr<meshkernel::Mesh1D> m_mesh1d;     ///< Shared pointer to meshkernel::Mesh1D instance
+        std::shared_ptr<meshkernel::Mesh2D> m_mesh2d;     ///< Shared pointer to meshkernel::Mesh2D instance
+        std::shared_ptr<meshkernel::Contacts> m_contacts; ///< Shared pointer to meshkernel::Contacts instance
 
         // For interactivity
-        std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_orthogonalization;
-        std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines;
+        std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_orthogonalization;       ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
+        std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines; ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
     };
 
 } // namespace meshkernelapi

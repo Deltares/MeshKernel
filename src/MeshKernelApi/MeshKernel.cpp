@@ -60,14 +60,11 @@
 
 namespace meshkernelapi
 {
-    // The map containing the state per meshkernelid
+    // The state held by MeshKernel
     static std::map<int, State> stateMap;
     static int counter = 0;
 
-    // For interactivity
-    static std::map<int, std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing>> orthogonalizationInstances;
-    static std::map<int, std::shared_ptr<meshkernel::CurvilinearGridFromSplines>> curvilinearGridFromSplinesInstances;
-
+    // Error state
     static char exceptionMessage[512] = "";
     static meshkernel::MeshGeometryError meshGeometryError = meshkernel::MeshGeometryError();
 
@@ -467,16 +464,14 @@ namespace meshkernelapi
             auto polygon = std::make_shared<meshkernel::Polygons>(nodes, stateMap[meshKernelId].m_mesh2d->m_projection);
             auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, stateMap[meshKernelId].m_mesh2d, polygon);
 
-            auto orthogonalizationInstance = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(stateMap[meshKernelId].m_mesh2d,
-                                                                                                         smoother,
-                                                                                                         orthogonalizer,
-                                                                                                         polygon,
-                                                                                                         landBoundary,
-                                                                                                         static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
-                                                                                                         orthogonalizationParameters);
-            orthogonalizationInstance->Initialize();
-
-            orthogonalizationInstances.insert({meshKernelId, orthogonalizationInstance});
+            stateMap[meshKernelId].m_orthogonalization = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(stateMap[meshKernelId].m_mesh2d,
+                                                                                                                     smoother,
+                                                                                                                     orthogonalizer,
+                                                                                                                     polygon,
+                                                                                                                     landBoundary,
+                                                                                                                     static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
+                                                                                                                     orthogonalizationParameters);
+            stateMap[meshKernelId].m_orthogonalization->Initialize();
         }
         catch (...)
         {
@@ -500,7 +495,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            orthogonalizationInstances[meshKernelId]->PrepareOuterIteration();
+            stateMap[meshKernelId].m_orthogonalization->PrepareOuterIteration();
         }
         catch (...)
         {
@@ -524,7 +519,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            orthogonalizationInstances[meshKernelId]->InnerIteration();
+            stateMap[meshKernelId].m_orthogonalization->InnerIteration();
         }
         catch (...)
         {
@@ -548,7 +543,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            orthogonalizationInstances[meshKernelId]->FinalizeOuterIteration();
+            stateMap[meshKernelId].m_orthogonalization->FinalizeOuterIteration();
         }
         catch (...)
         {
@@ -572,7 +567,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            orthogonalizationInstances.erase(meshKernelId);
+            stateMap[meshKernelId].m_orthogonalization.reset();
         }
         catch (...)
         {
@@ -1336,11 +1331,9 @@ namespace meshkernelapi
             auto spline = std::make_shared<meshkernel::Splines>(stateMap[meshKernelId].m_mesh2d->m_projection);
             SetSplines(geometryList, *spline);
 
-            auto curvilinearGridFromSplines = std::make_shared<meshkernel::CurvilinearGridFromSplines>(spline, curvilinearParameters, splinesToCurvilinearParameters);
+            stateMap[meshKernelId].m_curvilinearGridFromSplines = std::make_shared<meshkernel::CurvilinearGridFromSplines>(spline, curvilinearParameters, splinesToCurvilinearParameters);
 
-            curvilinearGridFromSplinesInstances.insert({meshKernelId, curvilinearGridFromSplines});
-
-            curvilinearGridFromSplinesInstances[meshKernelId]->Initialize();
+            stateMap[meshKernelId].m_curvilinearGridFromSplines->Initialize();
         }
         catch (...)
         {
@@ -1359,7 +1352,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            curvilinearGridFromSplinesInstances[meshKernelId]->Iterate(layer);
+            stateMap[meshKernelId].m_curvilinearGridFromSplines->Iterate(layer);
         }
         catch (...)
         {
@@ -1378,7 +1371,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            const auto curvilinearGrid = curvilinearGridFromSplinesInstances[meshKernelId]->ComputeCurvilinearGridFromGridPoints();
+            const auto curvilinearGrid = stateMap[meshKernelId].m_curvilinearGridFromSplines->ComputeCurvilinearGridFromGridPoints();
 
             *stateMap[meshKernelId].m_mesh2d += meshkernel::Mesh2D(curvilinearGrid, stateMap[meshKernelId].m_mesh2d->m_projection);
         }
@@ -1398,7 +1391,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            curvilinearGridFromSplinesInstances.erase(meshKernelId);
+            stateMap[meshKernelId].m_curvilinearGridFromSplines.reset();
         }
         catch (...)
         {
