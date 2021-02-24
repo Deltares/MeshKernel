@@ -90,7 +90,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_allocate_state(int& meshKernelId)
     {
         meshKernelId = counter++;
-        stateMap.try_emplace(meshKernelId, State());
+        stateMap.insert({meshKernelId, State()});
         return Success;
     };
 
