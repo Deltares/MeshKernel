@@ -468,10 +468,10 @@ namespace meshkernelapi
                                                                const InterpolationParameters& interpolationParameters);
 
         /// @brief Finds the node index closest to the input point
-        /// @param[in] meshKernelId
-        /// @param[in] geometryListIn
-        /// @param[in] searchRadius
-        /// @param[out] nodeIndex
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] geometryListIn The input point from where starting the search
+        /// @param[in] searchRadius The search radius to use for the search
+        /// @param[out] nodeIndex The index of the found node
         /// @returns Error code
         MKERNEL_API int mkernel_get_node_index_mesh2d(int meshKernelId,
                                                       const GeometryList& geometryListIn,
@@ -630,11 +630,11 @@ namespace meshkernelapi
                                                           double searchRadius);
 
         /// @brief Curvilinear grid refinement
-        /// @param meshKernelId[in]  meshKernelId The id of the mesh state.
-        /// @param mIndex
-        /// @param nIndex
-        /// @return                  Error code (0 Successful)
-        MKERNEL_API int mkernel_refine_curvilineargrid(int meshKernelId, int mIndex, int nIndex);
+        /// @param meshKernelId The id of the mesh state.
+        /// @param geometryListFirstPoint The geometry list containing the first vertex of the segment defining the refinement zone.
+        /// @param geometryListSecondPoint The geometry list containing the second vertex of the segment defining the refinement zone.
+        /// @return Error code (0 Successful)
+        MKERNEL_API int mkernel_refine_curvilineargrid(int meshKernelId, const GeometryList& geometryListFirstPoint, const GeometryList& geometryListSecondPoint);
 
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel

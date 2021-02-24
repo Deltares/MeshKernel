@@ -37,6 +37,7 @@
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
+#include <MeshKernel/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -1836,18 +1837,31 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_curvilineargrid(int meshKernelId, int mIndex, int nIndex)
+    MKERNEL_API int mkernel_refine_curvilineargrid(int meshKernelId, const GeometryList& geometryListFirstPoint, const GeometryList& geometryListSecondPoint, int mRefinement, int nRefinement)
     {
         int exitCode = Success;
         try
         {
-            if (meshKernelId >= mesh2dInstances.size())
+            if (meshKernelId >= curvilinearGridInstances.size())
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
+            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+
+            if (firstPoint.empty())
+            {
+                throw std::invalid_argument("mkernel_refine_curvilineargrid: No first vertex of the segment defining the refinement zone has been provided.");
+            }
+
+            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
+            if (secondPoint.empty())
+            {
+                throw std::invalid_argument("mkernel_refine_curvilineargrid: No second vertex of the segment defining the refinement zone has been provided.");
+            }
 
             // Execute
-            //curvilinearGridInstances[meshKernelId]->Refine(mIndex, nIndex);
+            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGridInstances[meshKernelId], firstPoint[0], secondPoint[0], mRefinement, nRefinement);
+            curvilinearGridRefinement.Compute();
         }
         catch (...)
         {
