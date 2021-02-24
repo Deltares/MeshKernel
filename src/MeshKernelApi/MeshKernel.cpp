@@ -1927,7 +1927,6 @@ namespace meshkernelapi
     // ec_module dll (stateless)
     MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
                                   const MeshGeometry& meshGeometry,
-                                  const int& startIndex,
                                   const double** samplesXCoordinate,
                                   const double** samplesYCoordinate,
                                   const double** samplesValue,

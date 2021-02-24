@@ -640,7 +640,6 @@ namespace meshkernelapi
         /// @brief Triangle interpolation (ec_module)
         /// @param[in] meshGeometryDimensions Mesh2D dimensions
         /// @param[in] meshGeometry Mesh2D data
-        /// @param[in] startIndex start index (not used)
         /// @param[in] samplesXCoordinate The sample x coordinates
         /// @param[in] samplesYCoordinate The sample y coordinates
         /// @param[in] samplesValue The sample values
@@ -652,7 +651,6 @@ namespace meshkernelapi
         /// @return Error code (0 Successful)
         MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
                                       const MeshGeometry& meshGeometry,
-                                      const int& startIndex,
                                       const double** samplesXCoordinate,
                                       const double** samplesYCoordinate,
                                       const double** samplesValue,
