@@ -49,7 +49,10 @@ namespace meshkernel
 
         /// @brief Sets the point to the curvilinear grid
         /// @param[in] grid Input grid points
-        CurvilinearGrid(const std::vector<std::vector<Point>>& grid);
+        CurvilinearGrid(const std::vector<std::vector<Point>>& grid, Projection projection);
+
+        /// @brief Builds the node three to find nodes on the curvi grid
+        void BuildTree();
 
         /// @brief Get the m and n indices of the closest cu
         std::tuple<int, int> GetNodeIndices(Point point);
@@ -70,8 +73,6 @@ namespace meshkernel
             size_t n;
         };
 
-        /// @brief Builds the node three to find nodes on the curvi grid
-        void BuildTree();
         std::vector<Node> m_flattenNodes; ///< The flattened nodes
     };
 } // namespace meshkernel

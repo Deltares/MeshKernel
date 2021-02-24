@@ -36,9 +36,10 @@ meshkernel::CurvilinearGrid::CurvilinearGrid(size_t m, size_t n)
     m_numN = n;
 }
 
-meshkernel::CurvilinearGrid::CurvilinearGrid(const std::vector<std::vector<Point>>& grid)
+meshkernel::CurvilinearGrid::CurvilinearGrid(const std::vector<std::vector<Point>>& grid, Projection projection) : m_projection(projection)
 {
-    CurvilinearGrid(grid.size(), grid[0].size());
+    m_numM = grid.size();
+    m_numN = grid[0].size();
     m_nodes = grid;
 }
 
