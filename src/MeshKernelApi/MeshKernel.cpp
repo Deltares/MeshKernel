@@ -326,7 +326,7 @@ namespace meshkernelapi
             }
 
             const auto hangingEdges = mesh2dInstances[meshKernelId]->GetHangingEdges();
-            numHangingEdges = hangingEdges.size();
+            numHangingEdges = static_cast<int>(hangingEdges.size());
         }
         catch (...)
         {
@@ -347,7 +347,7 @@ namespace meshkernelapi
             const auto hangingEdges = mesh2dInstances[meshKernelId]->GetHangingEdges();
             for (auto i = 0; i < hangingEdges.size(); ++i)
             {
-                *(hangingEdgesIndices)[i] = hangingEdges[i];
+                *(hangingEdgesIndices)[i] = static_cast<int>(hangingEdges[i]);
             }
         }
         catch (...)
@@ -760,7 +760,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, GeometryList& geometryList)
+    MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, const GeometryList& geometryList)
     {
         int exitCode = Success;
         try
@@ -848,7 +848,12 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_refine_polygon(int meshKernelId, GeometryList& geometryListIn, int firstIndex, int secondIndex, double distance, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_count_refine_polygon(int meshKernelId,
+                                                 const GeometryList& geometryListIn,
+                                                 int firstIndex,
+                                                 int secondIndex,
+                                                 double distance,
+                                                 int& numberOfPolygonNodes)
     {
         int exitCode = Success;
         try
@@ -1150,7 +1155,7 @@ namespace meshkernelapi
             const meshkernel::Polygons polygon(polygonPoints, mesh2dInstances[meshKernelId]->m_projection);
             const auto newPolygon = polygon.OffsetCopy(distance, innerPolygon);
 
-            numberOfPolygonNodes = newPolygon.GetNumNodes();
+            numberOfPolygonNodes = static_cast<int>(newPolygon.GetNumNodes());
         }
         catch (...)
         {
@@ -1618,7 +1623,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_get_geometry_error(int& invalidIndex, int& type)
     {
-        invalidIndex = meshGeometryError.m_invalidIndex;
+        invalidIndex = static_cast<int>(meshGeometryError.m_invalidIndex);
         type = static_cast<int>(meshGeometryError.m_location);
         return Success;
     }
@@ -1922,15 +1927,15 @@ namespace meshkernelapi
     // ec_module dll (stateless)
     MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
                                   const MeshGeometry& meshGeometry,
-                                  int& startIndex,
+                                  const int& startIndex,
                                   const double** samplesXCoordinate,
                                   const double** samplesYCoordinate,
                                   const double** samplesValue,
-                                  int& numSamples,
-                                  double** results,
-                                  int& locationType,
-                                  int& spherical,
-                                  int& sphericalAccurate)
+                                  const int& numSamples,
+                                  const int& locationType,
+                                  const int& spherical,
+                                  const int& sphericalAccurate,
+                                  double** results)
     {
         int exitCode = Success;
         try

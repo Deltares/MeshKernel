@@ -296,7 +296,7 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] geometryList The samples where to triangulate
         /// @returns Error code
-        MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, GeometryList& geometryList);
+        MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, const GeometryList& geometryList);
 
         /// @brief Retrieves the mesh boundary polygon
         /// @param[in] meshKernelId The id of the mesh state
@@ -335,7 +335,7 @@ namespace meshkernelapi
         /// @param[out] numberOfPolygonNodes The number of nodes after refinement
         /// @returns Error code
         MKERNEL_API int mkernel_count_refine_polygon(int meshKernelId,
-                                                     GeometryList& geometryListIn,
+                                                     const GeometryList& geometryListIn,
                                                      int firstIndex,
                                                      int secondIndex,
                                                      double distance,
@@ -645,22 +645,22 @@ namespace meshkernelapi
         /// @param[in] samplesYCoordinate The sample y coordinates
         /// @param[in] samplesValue The sample values
         /// @param[in] numSamples The number of samples
-        /// @param[out] results The interpolation results
         /// @param[in] locationType The location type
         /// @param[in] spherical Current projection (0 cartesian, 1 spherical)
         /// @param[in] sphericalAccurate Accurate spherical projection (0 default spherical, 1 spherical accurate)
+        /// @param[out] results The interpolation results
         /// @return Error code (0 Successful)
         MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
                                       const MeshGeometry& meshGeometry,
-                                      int& startIndex,
+                                      const int& startIndex,
                                       const double** samplesXCoordinate,
                                       const double** samplesYCoordinate,
                                       const double** samplesValue,
-                                      int& numSamples,
-                                      double** results,
-                                      int& locationType,
-                                      int& spherical,
-                                      int& sphericalAccurate);
+                                      const int& numSamples,
+                                      const int& locationType,
+                                      const int& spherical,
+                                      const int& sphericalAccurate,
+                                      double** results);
 
         /// @brief AveragingInterpolation interpolation (ec_module)
         /// @param[in] meshGeometryDimensions Mesh2D dimensions
