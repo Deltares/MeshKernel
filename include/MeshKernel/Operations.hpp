@@ -401,21 +401,21 @@ namespace meshkernel
     /// @param[out] isCounterClockWise The orientation of the edges.
     void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
 
-    /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point
+    /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)
     /// @param[in] coordinates
     /// @param[in] coordinatesDerivatives
     /// @param[in] pointAdimensionalCoordinate
     /// @param[out] pointCoordinate
     /// @returns False if an error occurs
     template <typename T>
-    [[nodiscard]] bool InterpolateSplinePoint(const std::vector<T>& coordinates,
-                                              const std::vector<T>& coordinatesDerivatives,
-                                              double pointAdimensionalCoordinate,
-                                              T& pointCoordinate)
+    [[nodiscard]] T InterpolateSplinePoint(const std::vector<T>& coordinates,
+                                           const std::vector<T>& coordinatesDerivatives,
+                                           double pointAdimensionalCoordinate)
     {
+        T pointCoordinate;
         if (pointAdimensionalCoordinate < 0)
         {
-            return false;
+            return pointCoordinate;
         }
 
         const double eps = 1e-5;
@@ -423,8 +423,7 @@ namespace meshkernel
         const auto intCoordinate = static_cast<size_t>(std::floor(pointAdimensionalCoordinate));
         if (pointAdimensionalCoordinate - intCoordinate < eps)
         {
-            pointCoordinate = coordinates[intCoordinate];
-            return true;
+            return pointCoordinate = coordinates[intCoordinate];
         }
 
         size_t low = intCoordinate;
@@ -435,7 +434,7 @@ namespace meshkernel
         pointCoordinate = coordinates[low] * a + coordinates[high] * b +
                           (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;
 
-        return true;
+        return pointCoordinate;
     }
 
     /// @brief Swap the elements of a vector, such as the last elements becomes the first elements

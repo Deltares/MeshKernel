@@ -1494,7 +1494,7 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(size_t s,
         localCornerPoints[i] = crossSplineLeftHeights[index][j];
     }
 
-    localSplineDerivatives = Splines::SecondOrderDerivative(localCornerPoints);
+    localSplineDerivatives = Splines::SecondOrderDerivative(localCornerPoints, 0, localCornerPoints.size() - 1);
 
     crossingSplinesDimensionalCoordinates[0] = m_splines->GetSplineLength(s, 0.0, m_crossSplineCoordinates[s][0]);
     for (auto i = 0; i < numM; ++i)
@@ -1524,11 +1524,7 @@ void meshkernel::CurvilinearGridFromSplines::FindNearestCrossSplines(size_t s,
 
         factor = std::max(std::min(double(leftIndex + 1) + factor - 1.0, double(numValid - 1)), 0.0);
 
-        const auto successful = InterpolateSplinePoint(localCornerPoints, localSplineDerivatives, factor, heights[j][i]);
-        if (!successful)
-        {
-            throw AlgorithmError("CurvilinearGridFromSplines::FindNearestCrossSplines: Could not interpolate spline points.");
-        }
+        heights[j][i] = InterpolateSplinePoint(localCornerPoints, localSplineDerivatives, factor);
     }
 }
 

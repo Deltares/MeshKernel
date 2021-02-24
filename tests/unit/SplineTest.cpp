@@ -7,15 +7,14 @@
 
 TEST(Splines, SetSpline)
 {
-    //One gets the edges
-    std::vector<meshkernel::Point> splineNodes;
-    splineNodes.push_back(meshkernel::Point{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue});
-    splineNodes.push_back(meshkernel::Point{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue});
-    splineNodes.push_back(meshkernel::Point{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue});
-    splineNodes.push_back(meshkernel::Point{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue});
+    //a valid spline
+    std::vector<meshkernel::Point> splineNodes({{212.001953125000, 155.627197265625},
+                                                {529.253906250000, 432.379974365234},
+                                                {930.506469726562, 453.380187988281},
+                                                {1030.506469726562, 653.380187988281}});
 
     meshkernel::Splines splines(meshkernel::Projection::cartesian);
-    splines.AddSpline(splineNodes, 0, int(splineNodes.size()));
+    splines.AddSpline(splineNodes, 0, splineNodes.size());
 
     ASSERT_EQ(1, splines.GetNumSplines());
     ASSERT_EQ(4, splines.m_splineNodes[0].size());
@@ -25,13 +24,12 @@ TEST(Splines, CubicSplineInterpolation)
 {
     //One gets the edges
     std::vector<meshkernel::Point> splineNodes;
-
     splineNodes.push_back(meshkernel::Point{212.001953125000, 155.627197265625});
     splineNodes.push_back(meshkernel::Point{529.253906250000, 432.379974365234});
     splineNodes.push_back(meshkernel::Point{930.506469726562, 453.380187988281});
 
     int pointsBetweenNodes = 20;
-    auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(splineNodes);
+    auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(splineNodes, 0, splineNodes.size() - 1);
     std::vector<meshkernel::Point> splineCoordinates;
 
     for (auto n = 0; n < splineNodes.size() - 1; n++)
@@ -39,9 +37,8 @@ TEST(Splines, CubicSplineInterpolation)
         for (auto p = 0; p <= pointsBetweenNodes; p++)
         {
             const double pointAdimensionalCoordinate = n + double(p) / double(pointsBetweenNodes);
-            meshkernel::Point pointCoordinate;
-            auto successful = InterpolateSplinePoint(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
-            ASSERT_TRUE(successful);
+            auto pointCoordinate = InterpolateSplinePoint(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate);
+            ASSERT_TRUE(pointCoordinate.IsValid());
 
             splineCoordinates.push_back({pointCoordinate.x, pointCoordinate.y});
         }

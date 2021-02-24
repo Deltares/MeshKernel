@@ -674,16 +674,15 @@ namespace meshkernelapi
             {
                 std::vector<meshkernel::Point> coordinates(splines.begin() + indices[s][0], splines.begin() + int(indices[s][1]) + 1);
                 const int numNodes = int(indices[s][1]) - int(indices[s][0]) + 1;
-                const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates);
+                const auto coordinatesDerivatives = meshkernel::Splines::SecondOrderDerivative(coordinates, 0, coordinates.size() - 1);
 
                 for (auto n = 0; n < numNodes - 1; n++)
                 {
                     for (auto p = 0; p <= numberOfPointsBetweenNodes; p++)
                     {
                         const double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenNodes);
-                        meshkernel::Point pointCoordinate{meshkernel::doubleMissingValue, meshkernel::doubleMissingValue};
-                        const bool successful = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate, pointCoordinate);
-                        if (!successful)
+                        const auto pointCoordinate = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate);
+                        if (!pointCoordinate.IsValid())
                         {
                             break;
                         }
