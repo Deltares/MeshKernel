@@ -67,10 +67,10 @@ namespace meshkernel
         /// @return The spline derivatives
         std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
 
-        std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to mesh
-        Point m_firstPoint;
-        Point m_secondPoint;
-        size_t m_refinement;
-        size_t n_refinement;
+        std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
+        Point m_firstPoint;                      ///< The first vertex of the segment defining the refinement zone
+        Point m_secondPoint;                     ///< The second vertex of the segment defining the refinement zone
+        size_t m_refinement;                     ///< The selected number of refinement lines along the m-direction
+        size_t n_refinement;                     ///< The selected number of refinement lines along the n-direction
     };
 } // namespace meshkernel

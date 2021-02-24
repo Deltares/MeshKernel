@@ -48,7 +48,8 @@ namespace meshkernel
         CurvilinearGrid(size_t m, size_t n);
 
         /// @brief Sets the point to the curvilinear grid
-        /// @param[in] grid Input grid points
+        /// @param[in] grid The input grid points
+        /// @param[in] grid The projection to use
         CurvilinearGrid(const std::vector<std::vector<Point>>& grid, Projection projection);
 
         /// @brief Builds the node three to find nodes on the curvi grid
@@ -67,10 +68,10 @@ namespace meshkernel
         /// @brief A customized type used for searching the closest m and n indices closest to a point
         struct Node
         {
-            double x;
-            double y;
-            size_t m;
-            size_t n;
+            double x; ///< The point x coordinate
+            double y; ///< The point y coordinate
+            size_t m; ///< The point m coordinate
+            size_t n; ///< The point n coordinate
         };
 
         std::vector<Node> m_flattenNodes; ///< The flattened nodes
