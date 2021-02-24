@@ -38,11 +38,11 @@
 namespace meshkernelapi
 {
     /// @brief The class holding the state of the C API library
-    class State
+    class MeshKernelState
     {
     public:
         /// @brief Constructor initializing mesh and contacts classes
-        State()
+        MeshKernelState()
         {
             m_mesh1d = std::make_shared<meshkernel::Mesh1D>();
             m_mesh2d = std::make_shared<meshkernel::Mesh2D>();
