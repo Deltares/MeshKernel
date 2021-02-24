@@ -402,11 +402,10 @@ namespace meshkernel
     void FaceAreaAndCenterOfMass(std::vector<Point>& polygon, const Projection& projection, double& area, Point& centerOfMass, bool& isCounterClockWise);
 
     /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)
-    /// @param[in] coordinates
-    /// @param[in] coordinatesDerivatives
-    /// @param[in] pointAdimensionalCoordinate
-    /// @param[out] pointCoordinate
-    /// @returns False if an error occurs
+    /// @param[in] coordinates The spline node coordinates
+    /// @param[in] coordinatesDerivatives The spline nodal derivatives
+    /// @param[in] pointAdimensionalCoordinate the adimensinal coordinate where to perform the interpolation
+    /// @returns The interpolated point
     template <typename T>
     [[nodiscard]] T InterpolateSplinePoint(const std::vector<T>& coordinates,
                                            const std::vector<T>& coordinatesDerivatives,
@@ -426,10 +425,10 @@ namespace meshkernel
             return pointCoordinate = coordinates[intCoordinate];
         }
 
-        size_t low = intCoordinate;
-        size_t high = low + 1;
-        double a = high - pointAdimensionalCoordinate;
-        double b = pointAdimensionalCoordinate - low;
+        const size_t low = intCoordinate;
+        const size_t high = low + 1;
+        const double a = high - pointAdimensionalCoordinate;
+        const double b = pointAdimensionalCoordinate - low;
 
         pointCoordinate = coordinates[low] * a + coordinates[high] * b +
                           (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;

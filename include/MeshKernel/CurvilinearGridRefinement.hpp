@@ -56,10 +56,10 @@ namespace meshkernel
     private:
         /// @brief Computes the m and n grid lines and spline derivatives in separate vectors
         /// @return The m grid lines and the spline derivatives, the n grid lines and the splines derivatives
-        std::tuple<std::vector<std::vector<Point>>,
-                   std::vector<std::vector<Point>>,
-                   std::vector<std::vector<Point>>,
-                   std::vector<std::vector<Point>>>
+        [[nodiscard]] std::tuple<std::vector<std::vector<Point>>,
+                                 std::vector<std::vector<Point>>,
+                                 std::vector<std::vector<Point>>,
+                                 std::vector<std::vector<Point>>>
         ComputeGridLinesAndSplinesDerivatives() const;
 
         /// @brief Compute spline derivatives along a gridline, also accounting for missing values
