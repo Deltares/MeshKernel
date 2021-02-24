@@ -49,7 +49,7 @@ namespace meshkernel
 
         /// @brief Sets the point to the curvilinear grid
         /// @param[in] grid The input grid points
-        /// @param[in] grid The projection to use
+        /// @param[in] projection The projection to use
         CurvilinearGrid(const std::vector<std::vector<Point>>& grid, Projection projection);
 
         /// @brief Builds the node three to find nodes on the curvi grid
