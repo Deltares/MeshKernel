@@ -638,6 +638,7 @@ namespace meshkernelapi
                                         GeometryList& geometryListOut,
                                         int numberOfPointsBetweenNodes)
     {
+        int testitest = 0;
         int exitCode = Success;
         try
         {
