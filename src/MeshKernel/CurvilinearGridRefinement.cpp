@@ -182,7 +182,7 @@ std::vector<meshkernel::Point> meshkernel::CurvilinearGridRefinement::ComputeSpl
     for (auto i = 0; i < indices.size(); ++i)
     {
         const auto derivatives = Splines::SecondOrderDerivative(gridLine, indices[i][0], indices[i][1]);
-        for (size_t j = indices[i][0], ind = 0; j <= indices[i][1]; ++j, ind++)
+        for (size_t j = indices[i][0], ind = 0; j <= indices[i][1]; ++j, ++ind)
         {
             gridlineDerivatives[j] = derivatives[ind];
         }
