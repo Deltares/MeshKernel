@@ -43,16 +43,13 @@ add_subdirectory(extern)
 # FetchContent added in CMake 3.11, downloads during the configure step
 include(FetchContent)
 
-# Boost C++
-if(UNIX)
-  # In unix use boost dll
-  find_package(Boost REQUIRED COMPONENTS system filesystem)
-endif()
+# Boost
 if(WIN32)
   # In windows use static libraries
   set(Boost_USE_STATIC_LIBS ON)
-  find_package(Boost REQUIRED)
+  set(Boost_THREADAPI win32)
 endif()
+find_package(Boost REQUIRED COMPONENTS system filesystem)
 include_directories(${Boost_INCLUDE_DIR})
 
 # NetCDF
