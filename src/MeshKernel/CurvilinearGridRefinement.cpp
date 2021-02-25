@@ -85,46 +85,53 @@ void meshkernel::CurvilinearGridRefinement::Compute()
         size_t refinedN = 0;
         for (auto currentN = 0; currentN < m_grid->m_numN - 1; ++currentN)
         {
+
             size_t localNRefinement = 1;
             if (currentN >= nFirstNode && currentN < nSecondNode)
             {
                 localNRefinement = n_refinement;
             }
 
-            // calculate m-direction spline points
-            bottomRefinement.clear();
-            upRefinementUp.clear();
-            for (auto m = 0; m < localMRefinement + 1; ++m)
+            if (m_grid->m_nodes[currentM][currentN].IsValid() &&
+                m_grid->m_nodes[currentM + 1 ][currentN].IsValid()&&
+                m_grid->m_nodes[currentM][currentN + 1].IsValid() &&
+                m_grid->m_nodes[currentM + 1][currentN + 1].IsValid())
             {
-                const auto interpolationPoint = static_cast<double>(currentM) + static_cast<double>(m) / static_cast<double>(localMRefinement);
-                bottomRefinement.emplace_back(InterpolateSplinePoint(mGridLines[currentN], mGridLineDerivates[currentN], interpolationPoint));
-                upRefinementUp.emplace_back(InterpolateSplinePoint(mGridLines[currentN + 1], mGridLineDerivates[currentN + 1], interpolationPoint));
-            }
+                // calculate m-direction spline points
+                bottomRefinement.clear();
+                upRefinementUp.clear();
+                for (auto m = 0; m < localMRefinement + 1; ++m)
+                {
+                    const auto interpolationPoint = static_cast<double>(currentM) + static_cast<double>(m) / static_cast<double>(localMRefinement);
+                    bottomRefinement.emplace_back(InterpolateSplinePoint(mGridLines[currentN], mGridLineDerivates[currentN], interpolationPoint));
+                    upRefinementUp.emplace_back(InterpolateSplinePoint(mGridLines[currentN + 1], mGridLineDerivates[currentN + 1], interpolationPoint));
+                }
 
-            // calculate n-direction spline points
-            leftRefinement.clear();
-            rightRefinement.clear();
-            for (auto n = 0; n < localNRefinement + 1; ++n)
-            {
-                const auto interpolationPoint = static_cast<double>(currentN) + static_cast<double>(n) / static_cast<double>(localNRefinement);
-                leftRefinement.emplace_back(InterpolateSplinePoint(nGridLines[currentM], nGridLinesDerivatives[currentM], interpolationPoint));
-                rightRefinement.emplace_back(InterpolateSplinePoint(nGridLines[currentM + 1], nGridLinesDerivatives[currentM + 1], interpolationPoint));
-            }
-
-            // perform transfinite interpolation on the current curvilinear face
-            const auto localGrid = DiscretizeTransfinite(leftRefinement,
-                                                         rightRefinement,
-                                                         bottomRefinement,
-                                                         upRefinementUp,
-                                                         m_grid->m_projection,
-                                                         localMRefinement,
-                                                         localNRefinement);
-            // copy the local grid into the refined grid
-            for (auto m = 0; m < localMRefinement + 1; ++m)
-            {
+                // calculate n-direction spline points
+                leftRefinement.clear();
+                rightRefinement.clear();
                 for (auto n = 0; n < localNRefinement + 1; ++n)
                 {
-                    refinedGrid[refinedM + m][refinedN + n] = localGrid[m][n];
+                    const auto interpolationPoint = static_cast<double>(currentN) + static_cast<double>(n) / static_cast<double>(localNRefinement);
+                    leftRefinement.emplace_back(InterpolateSplinePoint(nGridLines[currentM], nGridLinesDerivatives[currentM], interpolationPoint));
+                    rightRefinement.emplace_back(InterpolateSplinePoint(nGridLines[currentM + 1], nGridLinesDerivatives[currentM + 1], interpolationPoint));
+                }
+
+                // perform transfinite interpolation on the current curvilinear face
+                const auto localGrid = DiscretizeTransfinite(leftRefinement,
+                                                             rightRefinement,
+                                                             bottomRefinement,
+                                                             upRefinementUp,
+                                                             m_grid->m_projection,
+                                                             localMRefinement,
+                                                             localNRefinement);
+                // copy the local grid into the refined grid
+                for (auto m = 0; m < localMRefinement + 1; ++m)
+                {
+                    for (auto n = 0; n < localNRefinement + 1; ++n)
+                    {
+                        refinedGrid[refinedM + m][refinedN + n] = localGrid[m][n];
+                    }
                 }
             }
             refinedN += localNRefinement;
