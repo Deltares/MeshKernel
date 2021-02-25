@@ -12,7 +12,7 @@ These structures must be mirrored in the client application and filled with appr
 
 The requirements are:
 - CMake 3.14 or higher
-- A C++11 compatible compiler
+- A C++17 compatible compiler
 - The Boost libraries
 - Git
 - Doxygen (optional)
