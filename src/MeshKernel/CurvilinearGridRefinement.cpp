@@ -92,8 +92,9 @@ void meshkernel::CurvilinearGridRefinement::Compute()
                 localNRefinement = n_refinement;
             }
 
+            // Only if all grid nodes of the face are valid perform transfinite interpolation
             if (m_grid->m_nodes[currentM][currentN].IsValid() &&
-                m_grid->m_nodes[currentM + 1 ][currentN].IsValid()&&
+                m_grid->m_nodes[currentM + 1][currentN].IsValid() &&
                 m_grid->m_nodes[currentM][currentN + 1].IsValid() &&
                 m_grid->m_nodes[currentM + 1][currentN + 1].IsValid())
             {
