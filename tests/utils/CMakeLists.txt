@@ -5,11 +5,11 @@ file(GLOB UTILS_HEADER_LIST CONFIGURE_DEPENDS
 file(GLOB UTILS_SOURCE_LIST CONFIGURE_DEPENDS
      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
-# Create the static lib
+# Create the utils library
 add_library(UtilsStatic STATIC ${UTILS_HEADER_LIST} ${UTILS_SOURCE_LIST})
 
-# Should be linked to the main library
-target_link_libraries(UtilsStatic PRIVATE MeshKernelStatic)
+# Should be linked to the main (static) library
+target_link_libraries(UtilsStatic PRIVATE MeshKernel)
 
-# Expose the interface of the static lib
+# Expose the interface of the utils library
 target_include_directories(UtilsStatic PUBLIC include)

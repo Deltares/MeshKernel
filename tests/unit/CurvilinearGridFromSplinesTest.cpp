@@ -150,7 +150,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     curvilinearParameters.NRefinement = 40;
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
-    meshkernel::CurvilinearGrid curvilinearGrid = curvilinearGridFromSplines.Compute();
+    const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
 
     meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
@@ -228,7 +228,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
-    meshkernel::CurvilinearGrid curvilinearGrid = curvilinearGridFromSplines.Compute();
+    const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
 
     meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
@@ -308,7 +308,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    meshkernel::CurvilinearGrid curvilinearGrid = curvilinearGridFromSplines.Compute();
+    const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
 
     meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
@@ -440,7 +440,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    meshkernel::CurvilinearGrid curvilinearGrid = curvilinearGridFromSplines.Compute();
+    const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
 
     meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
@@ -539,6 +539,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     splinesToCurvilinearParameters.CheckFrontCollisions = false;
     splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
     splinesToCurvilinearParameters.DeleteSkinnyTriangles = 0;
+    splinesToCurvilinearParameters.GrowGridOutside = 1;
     curvilinearParameters.MRefinement = 20;
     curvilinearParameters.NRefinement = 40;
 
@@ -546,7 +547,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    meshkernel::CurvilinearGrid curvilinearGrid = curvilinearGridFromSplines.Compute();
+    const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
 
     meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
@@ -626,7 +627,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    meshkernel::CurvilinearGrid curvilinearGrid = curvilinearGridFromSplines.Compute();
+    const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
 
     meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::spherical);
 
@@ -707,7 +708,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    meshkernel::CurvilinearGrid curvilinearGrid = curvilinearGridFromSplines.Compute();
+    const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
 
     meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
@@ -798,7 +799,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    meshkernel::CurvilinearGrid curvilinearGrid = curvilinearGridFromSplines.Compute();
+    const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
 
     meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::cartesian);
 
@@ -855,4 +856,132 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     ASSERT_NEAR(541.250471813772, mesh.m_nodes[22].y, tolerance);
     ASSERT_NEAR(580.841498361190, mesh.m_nodes[23].y, tolerance);
     ASSERT_NEAR(600.952956688129, mesh.m_nodes[24].y, tolerance);
+}
+TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSplines_ShouldComputeMesh)
+{
+    //Setup
+    std::vector<meshkernel::Point> firstSpline{{7.7979524E+04, 3.7127829E+05},
+                                               {7.7979524E+04, 3.7025723E+05},
+                                               {7.8302860E+04, 3.6898090E+05},
+                                               {7.9732343E+04, 3.6809598E+05},
+                                               {8.0889543E+04, 3.6698984E+05},
+                                               {8.0668314E+04, 3.6578158E+05},
+                                               {7.9579184E+04, 3.6419894E+05}};
+
+    auto splines = std::make_shared<meshkernel::Splines>(meshkernel::Projection::cartesian);
+    splines->AddSpline(firstSpline, 0, firstSpline.size());
+
+    std::vector<meshkernel::Point> secondSpline{{7.6618112E+04, 3.7136337E+05},
+                                                {7.6754253E+04, 3.7005301E+05},
+                                                {7.7179694E+04, 3.6874265E+05},
+                                                {7.8404966E+04, 3.6780668E+05},
+                                                {7.9681290E+04, 3.6721107E+05},
+                                                {8.0140766E+04, 3.6636018E+05},
+                                                {7.9477078E+04, 3.6544123E+05},
+                                                {7.8779354E+04, 3.6452228E+05}};
+
+    splines->AddSpline(secondSpline, 0, secondSpline.size());
+
+    std::vector<meshkernel::Point> thirdSpline{{7.7281800E+04, 3.7144846E+05},
+                                               {7.7366889E+04, 3.6984880E+05},
+                                               {7.7928471E+04, 3.6874265E+05},
+                                               {7.9153742E+04, 3.6792581E+05},
+                                               {8.0242872E+04, 3.6722808E+05},
+                                               {8.0481119E+04, 3.6641124E+05},
+                                               {7.9970590E+04, 3.6542421E+05},
+                                               {7.9579184E+04, 3.6484561E+05},
+                                               {7.9170760E+04, 3.6431806E+05}};
+
+    splines->AddSpline(thirdSpline, 0, thirdSpline.size());
+
+    std::vector<meshkernel::Point> fourthSpline{{7.613792E+04, 3.712157E+05},
+                                                {7.831719E+04, 3.710751E+05}};
+
+    splines->AddSpline(fourthSpline, 0, fourthSpline.size());
+
+    std::vector<meshkernel::Point> fifthSpline{{7.857202E+04, 3.649151E+05},
+                                               {8.003072E+04, 3.641506E+05}};
+
+    splines->AddSpline(fifthSpline, 0, fifthSpline.size());
+
+    meshkernelapi::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    meshkernelapi::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.MRefinement = 200;
+    curvilinearParameters.NRefinement = 40;
+    splinesToCurvilinearParameters.AspectRatio = 0.5;
+    splinesToCurvilinearParameters.AspectRatioGrowFactor = 1.0;
+    splinesToCurvilinearParameters.AverageWidth = 400.0;
+    splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing = true;
+    splinesToCurvilinearParameters.GrowGridOutside = 0;
+    splinesToCurvilinearParameters.MaximumNumberOfGridCellsInTheUniformPart = 8;
+
+    splinesToCurvilinearParameters.GridsOnTopOfEachOtherTolerance = 1e-4;
+    splinesToCurvilinearParameters.MinimumCosineOfCrossingAngles = 0.95;
+    splinesToCurvilinearParameters.CheckFrontCollisions = false;
+    splinesToCurvilinearParameters.DeleteSkinnyTriangles = true;
+
+    meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
+
+    // Compute
+    const auto curvilinearGrid = curvilinearGridFromSplines.Compute();
+
+    meshkernel::Mesh2D mesh(curvilinearGrid, meshkernel::Projection::cartesian);
+
+    ASSERT_EQ(mesh.GetNumNodes(), 279);
+    ASSERT_EQ(mesh.GetNumEdges(), 518);
+
+    const double tolerance = 1e-6;
+
+    ASSERT_NEAR(76628.277886551819, mesh.m_nodes[0].x, tolerance);
+    ASSERT_NEAR(76791.455599638575, mesh.m_nodes[1].x, tolerance);
+    ASSERT_NEAR(76954.811639895925, mesh.m_nodes[2].x, tolerance);
+    ASSERT_NEAR(77118.281322492985, mesh.m_nodes[3].x, tolerance);
+    ASSERT_NEAR(77281.800000000003, mesh.m_nodes[4].x, tolerance);
+    ASSERT_NEAR(77456.012786563486, mesh.m_nodes[5].x, tolerance);
+    ASSERT_NEAR(77630.227785337833, mesh.m_nodes[6].x, tolerance);
+    ASSERT_NEAR(77804.442019475464, mesh.m_nodes[7].x, tolerance);
+    ASSERT_NEAR(77978.652474172515, mesh.m_nodes[8].x, tolerance);
+    ASSERT_NEAR(76662.032448408805, mesh.m_nodes[9].x, tolerance);
+    ASSERT_NEAR(76817.286847389085, mesh.m_nodes[10].x, tolerance);
+    ASSERT_NEAR(76972.714709055581, mesh.m_nodes[11].x, tolerance);
+    ASSERT_NEAR(77128.255737655345, mesh.m_nodes[12].x, tolerance);
+    ASSERT_NEAR(77283.849613552913, mesh.m_nodes[13].x, tolerance);
+    ASSERT_NEAR(77456.417295877734, mesh.m_nodes[14].x, tolerance);
+    ASSERT_NEAR(77628.979126778970, mesh.m_nodes[15].x, tolerance);
+    ASSERT_NEAR(77801.533934459163, mesh.m_nodes[16].x, tolerance);
+    ASSERT_NEAR(77974.080718107303, mesh.m_nodes[17].x, tolerance);
+    ASSERT_NEAR(76696.427555678631, mesh.m_nodes[18].x, tolerance);
+    ASSERT_NEAR(76845.029240917880, mesh.m_nodes[19].x, tolerance);
+    ASSERT_NEAR(76993.806439139778, mesh.m_nodes[20].x, tolerance);
+    ASSERT_NEAR(77142.721409325459, mesh.m_nodes[21].x, tolerance);
+    ASSERT_NEAR(77291.736508965405, mesh.m_nodes[22].x, tolerance);
+    ASSERT_NEAR(77461.424214244718, mesh.m_nodes[23].x, tolerance);
+    ASSERT_NEAR(77631.102117621107, mesh.m_nodes[24].x, tolerance);
+
+    ASSERT_NEAR(371425.60232370096, mesh.m_nodes[0].y, tolerance);
+    ASSERT_NEAR(371436.18997859408, mesh.m_nodes[1].y, tolerance);
+    ASSERT_NEAR(371443.52950145339, mesh.m_nodes[2].y, tolerance);
+    ASSERT_NEAR(371447.61941049609, mesh.m_nodes[3].y, tolerance);
+    ASSERT_NEAR(371448.46000000002, mesh.m_nodes[4].y, tolerance);
+    ASSERT_NEAR(371449.35556399345, mesh.m_nodes[5].y, tolerance);
+    ASSERT_NEAR(371449.53230994282, mesh.m_nodes[6].y, tolerance);
+    ASSERT_NEAR(371448.98672684340, mesh.m_nodes[7].y, tolerance);
+    ASSERT_NEAR(371447.71609262202, mesh.m_nodes[8].y, tolerance);
+    ASSERT_NEAR(371028.00333830336, mesh.m_nodes[9].y, tolerance);
+    ASSERT_NEAR(371038.07689532253, mesh.m_nodes[10].y, tolerance);
+    ASSERT_NEAR(371045.06020822527, mesh.m_nodes[11].y, tolerance);
+    ASSERT_NEAR(371048.95174731233, mesh.m_nodes[12].y, tolerance);
+    ASSERT_NEAR(371049.75159831985, mesh.m_nodes[13].y, tolerance);
+    ASSERT_NEAR(371050.63870543620, mesh.m_nodes[14].y, tolerance);
+    ASSERT_NEAR(371050.81377420085, mesh.m_nodes[15].y, tolerance);
+    ASSERT_NEAR(371050.27338789281, mesh.m_nodes[16].y, tolerance);
+    ASSERT_NEAR(371049.01488794532, mesh.m_nodes[17].y, tolerance);
+    ASSERT_NEAR(370641.72934693948, mesh.m_nodes[18].y, tolerance);
+    ASSERT_NEAR(370652.41904621699, mesh.m_nodes[19].y, tolerance);
+    ASSERT_NEAR(370660.58064652071, mesh.m_nodes[20].y, tolerance);
+    ASSERT_NEAR(370666.20885042200, mesh.m_nodes[21].y, tolerance);
+    ASSERT_NEAR(370669.29796934803, mesh.m_nodes[22].y, tolerance);
+    ASSERT_NEAR(370672.81563637080, mesh.m_nodes[23].y, tolerance);
+    ASSERT_NEAR(370675.06421111501, mesh.m_nodes[24].y, tolerance);
 }
