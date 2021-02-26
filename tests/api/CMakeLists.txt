@@ -8,7 +8,7 @@ add_executable(MeshKernelApiTests ${API_TEST_LIST})
 add_dependencies(MeshKernelApiTests MeshKernelApi)
 
 # Should be linked to the main library, as well as the google test library
-target_link_libraries(MeshKernelApiTests PRIVATE MeshKernel UtilsStatic
+target_link_libraries(MeshKernelApiTests PRIVATE MeshKernelApi UtilsStatic
                                                  gtest_main)
 
 # Make sure that coverage information is produced when using gcc
