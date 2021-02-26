@@ -8,8 +8,8 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
 add_library(MeshKernel SHARED ${SOURCE_LIST} ${HEADER_LIST}
                               ${CMAKE_BINARY_DIR}/version.rc)
 
-# Add a dependency to ensure correct build order
-add_dependencies(MeshKernel MeshKernelStatic)
+# Expose the interface of the shared lib
+target_include_directories(MeshKernel PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 # Make sure that coverage information is produced when using gcc
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

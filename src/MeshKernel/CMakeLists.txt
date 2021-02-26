@@ -4,13 +4,8 @@ file(GLOB HEADER_LIST CONFIGURE_DEPENDS
 file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
      "${PROJECT_SOURCE_DIR}/src/MeshKernel/*.cpp")
 
-# Set api files
-set(API_HEADER "${PROJECT_SOURCE_DIR}/include/MeshKernelApi/MeshKernel.hpp")
-set(API_SOURCE "${PROJECT_SOURCE_DIR}/src/MeshKernelApi/MeshKernel.cpp")
-
 # Create the static lib
-add_library(MeshKernelStatic STATIC ${SOURCE_LIST} ${HEADER_LIST} ${API_HEADER}
-                                    ${API_SOURCE})
+add_library(MeshKernelStatic STATIC ${SOURCE_LIST} ${HEADER_LIST})
 
 # Make sure that coverage information is produced when using gcc
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
