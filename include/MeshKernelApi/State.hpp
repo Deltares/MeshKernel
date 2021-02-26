@@ -31,6 +31,7 @@
 
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGridFromSplines.hpp>
+#include <MeshKernel/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
@@ -47,12 +48,14 @@ namespace meshkernelapi
             m_mesh1d = std::make_shared<meshkernel::Mesh1D>();
             m_mesh2d = std::make_shared<meshkernel::Mesh2D>();
             m_contacts = std::make_shared<meshkernel::Contacts>(m_mesh1d, m_mesh2d);
+            m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>();
         }
 
         // Mesh instances
-        std::shared_ptr<meshkernel::Mesh1D> m_mesh1d;     ///< Shared pointer to meshkernel::Mesh1D instance
-        std::shared_ptr<meshkernel::Mesh2D> m_mesh2d;     ///< Shared pointer to meshkernel::Mesh2D instance
-        std::shared_ptr<meshkernel::Contacts> m_contacts; ///< Shared pointer to meshkernel::Contacts instance
+        std::shared_ptr<meshkernel::Mesh1D> m_mesh1d;                   ///< Shared pointer to meshkernel::Mesh1D instance
+        std::shared_ptr<meshkernel::Mesh2D> m_mesh2d;                   ///< Shared pointer to meshkernel::Mesh2D instance
+        std::shared_ptr<meshkernel::Contacts> m_contacts;               ///< Shared pointer to meshkernel::Contacts instance
+        std::shared_ptr<meshkernel::CurvilinearGrid> m_curvilinearGrid; ///< Shared pointer to meshkernel::CurvilinearGrid instance
 
         // For interactivity
         std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_orthogonalization;       ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
