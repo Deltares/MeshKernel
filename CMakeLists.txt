@@ -7,18 +7,19 @@ project(
   VERSION 0.10.0
   DESCRIPTION "Library for creating and editing meshes."
   LANGUAGES CXX C)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-  if(WIN32)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g -O2 -std=c++17")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -std=c++17")
+  else()
     set(CMAKE_CXX_FLAGS_RELEASE
         "${CMAKE_CXX_FLAGS_RELEASE} /EHsc /MP /std:c++17")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc /MP /std:c++17")
-  else()
-    set(CMAKE_CXX_FLAGS_RELEASE
-        "-g -O2 -std=c++17"
-        CACHE STRING "List of C++ compiler flags for a Release build")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -std=c++17")
-  endif(WIN32)
+  endif()
+
+  # Create position independent binaries
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
   # Disable compiler specific extensions
   set(CMAKE_CXX_EXTENSIONS OFF)
@@ -61,17 +62,14 @@ if(WIN32)
   message(STATUS "netcdf bin dir is ${NETCDF_BIN_PATH}")
 endif()
 
+# OpenMP
+find_package(OpenMP REQUIRED)
+
 # The static library
 add_subdirectory(src/MeshKernel)
 
 # The dynamic library
 add_subdirectory(src/MeshKernelApi)
-
-# Add target link dependency on OpenMP
-find_package(OpenMP REQUIRED)
-if(OpenMP_CXX_FOUND)
-  target_link_libraries(MeshKernel PUBLIC OpenMP::OpenMP_CXX)
-endif()
 
 # Testing only available if this is the main app.
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
