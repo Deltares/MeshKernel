@@ -631,8 +631,8 @@ namespace meshkernelapi
 
         /// @brief Curvilinear grid refinement
         /// @param meshKernelId The id of the mesh state.
-        /// @param geometryListFirstPoint The geometry list containing the first vertex of the segment defining the refinement zone.
-        /// @param geometryListSecondPoint The geometry list containing the second vertex of the segment defining the refinement zone.
+        /// @param geometryListFirstPoint The geometry list containing the first node of the segment defining the refinement zone.
+        /// @param geometryListSecondPoint The geometry list containing the second node of the segment defining the refinement zone.
         /// @return Error code (0 Successful)
         MKERNEL_API int mkernel_refine_curvilineargrid(int meshKernelId, const GeometryList& geometryListFirstPoint, const GeometryList& geometryListSecondPoint);
 

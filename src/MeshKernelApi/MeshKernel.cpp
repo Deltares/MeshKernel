@@ -1846,13 +1846,13 @@ namespace meshkernelapi
 
             if (firstPoint.empty())
             {
-                throw std::invalid_argument("mkernel_refine_curvilineargrid: No first vertex of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("mkernel_refine_curvilineargrid: No first node of the segment defining the refinement zone has been provided.");
             }
 
             const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
             if (secondPoint.empty())
             {
-                throw std::invalid_argument("mkernel_refine_curvilineargrid: No second vertex of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("mkernel_refine_curvilineargrid: No second node of the segment defining the refinement zone has been provided.");
             }
 
             // Execute
