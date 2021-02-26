@@ -451,15 +451,15 @@ namespace meshkernel
     }
 
     /// @brief Computes dimensionless distances of a vector of points such as the first entry has distance 0 and the last entry has distance 1.
-    /// @param[in] v The vector of points
+    /// @param[in] v          The vector of points
     /// @param[in] projection The projection to use.
-    /// @returns The resulting containing the dimensionless distances, the dimensional total distance (used for normalization)
+    /// @returns The dimensionless distances and the dimensional total distance (used for normalization)
     std::tuple<std::vector<double>, double> ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, const Projection& projection);
 
     /// @brief Computes the sign of a type
-    /// @tparam T A signed type
+    /// @tparam    T   A signed type
     /// @param[in] val the value to use for computing a sign
-    /// @return  -1 for negatives and  +1 for positives
+    /// @returns -1 for negatives and +1 for positives
     template <typename T>
     [[nodiscard]] int sgn(T val)
     {
@@ -467,14 +467,14 @@ namespace meshkernel
     }
 
     /// @brief Computes the transfinite discretization inside the area defined by 4 sides, each one discretized with a series of points (tranfn2).
-    /// @param[in] leftDiscretization The first side of the area.
-    /// @param[in] rightDiscretization The second side of the area.
+    /// @param[in] leftDiscretization   The first side of the area.
+    /// @param[in] rightDiscretization  The second side of the area.
     /// @param[in] bottomDiscretization The third side of the area.
-    /// @param[in] upperDiscretization The fourth side of the area.
-    /// @param[in] projection The projection to use.
-    /// @param[in] numM The number of columns to generate (horizontal direction).
-    /// @param[in] numN  The number of rows to generate (vertical direction).
-    /// @return The resulting dicretization (expressed as number of points).
+    /// @param[in] upperDiscretization  The fourth side of the area.
+    /// @param[in] projection           The projection to use.
+    /// @param[in] numM                 The number of columns to generate (horizontal direction).
+    /// @param[in] numN                 The number of rows to generate (vertical direction).
+    /// @returns The resulting dicretization (expressed as number of points).
     [[nodiscard]] std::vector<std::vector<Point>> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
                                                                         const std::vector<Point>& rightDiscretization,
                                                                         const std::vector<Point>& bottomDiscretization,
@@ -491,16 +491,16 @@ namespace meshkernel
 
     /// @brief Given a triangles with values on each node, computes the interpolated value inside the triangle, using linear interpolation.
     /// @param[in] interpolationPoint The point where to interpolate.
-    /// @param[in] polygon The polygon containing the triangle nodes.
-    /// @param[in] values The values at each node.
-    /// @param[in] projection The projection to use.
+    /// @param[in] polygon            The polygon containing the triangle nodes.
+    /// @param[in] values             The values at each node.
+    /// @param[in] projection         The projection to use.
     /// @return The interpolated value.
     [[nodiscard]] double LinearInterpolationInTriangle(const Point& interpolationPoint, const std::vector<Point>& polygon, const std::vector<double>& values, const Projection& projection);
 
     /// @brief Checks if value is inside a bounding box
-    /// @tparam T Requires IsCoordinate<T>
-    /// @param[in] point The point to inquire
-    /// @param[in] lowerLeft The lower left corner of the bounding box
+    /// @tparam    T          Requires IsCoordinate<T>
+    /// @param[in] point      The point to inquire
+    /// @param[in] lowerLeft  The lower left corner of the bounding box
     /// @param[in] upperRight The upper right corner of the bounding box
     /// @returns If the point is in the bounding box
     template <typename T>
