@@ -3,7 +3,7 @@ file(GLOB UNIT_TEST_LIST CONFIGURE_DEPENDS "*.cpp")
 add_executable(MeshKernelUnitTests ${UNIT_TEST_LIST})
 
 # Should be linked to the main library, as well as the google test library
-target_link_libraries(MeshKernelUnitTests PRIVATE MeshKernelStatic UtilsStatic
+target_link_libraries(MeshKernelUnitTests PRIVATE MeshKernel UtilsStatic
                                                   gtest_main)
 
 # Make sure that coverage information is produced when using gcc

@@ -5,7 +5,7 @@ file(GLOB API_TEST_LIST CONFIGURE_DEPENDS "*.cpp")
 add_executable(MeshKernelApiTests ${API_TEST_LIST})
 
 # Add a dependency to ensure the correct build order
-add_dependencies(MeshKernelApiTests MeshKernel)
+add_dependencies(MeshKernelApiTests MeshKernelApi)
 
 # Should be linked to the main library, as well as the google test library
 target_link_libraries(MeshKernelApiTests PRIVATE MeshKernel UtilsStatic
@@ -45,6 +45,6 @@ endif()
 add_custom_command(
   TARGET MeshKernelApiTests
   POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:MeshKernel>"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:MeshKernelApi>"
           "$<TARGET_FILE_DIR:MeshKernelApiTests>"
   COMMENT "Copying MeshKernel shared library")

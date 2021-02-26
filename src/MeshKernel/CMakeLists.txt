@@ -5,25 +5,24 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
      "${PROJECT_SOURCE_DIR}/src/MeshKernel/*.cpp")
 
 # Create the static lib
-add_library(MeshKernelStatic STATIC ${SOURCE_LIST} ${HEADER_LIST})
+add_library(MeshKernel STATIC ${SOURCE_LIST} ${HEADER_LIST})
 
 # Make sure that coverage information is produced when using gcc
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set_target_properties(
-    MeshKernelStatic
+    MeshKernel
     PROPERTIES COMPILE_FLAGS
                "-fprofile-arcs -ftest-coverage -static-libgcc -static-libstdc++"
   )
-  set_target_properties(MeshKernelStatic PROPERTIES LINK_FLAGS
-                                                    "-ldl -lgcov --coverage")
+  set_target_properties(MeshKernel PROPERTIES LINK_FLAGS
+                                              "-ldl -lgcov --coverage")
 endif()
 
 # Expose the interface of the static lib
-target_include_directories(MeshKernelStatic
-                           PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_include_directories(MeshKernel PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 # Add target link dependencies
-target_link_libraries(MeshKernelStatic LINK_PUBLIC ${Boost_LIBRARIES} triangle
+target_link_libraries(MeshKernel LINK_PUBLIC ${Boost_LIBRARIES} triangle
                       OpenMP::OpenMP_CXX)
 
 # IDEs should put the headers in a nice place
