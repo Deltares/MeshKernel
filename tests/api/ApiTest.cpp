@@ -1,7 +1,6 @@
 #include <exception>
 #include <memory>
 
-#include <boost/dll.hpp>
 #include <gtest/gtest.h>
 
 #include <MeshKernelApi/GeometryList.hpp>
@@ -1409,12 +1408,9 @@ TEST(ApiStatelessTests, GetSplinesThroughApi)
     geometryListOut.xCoordinates = xCoordinatesOut.get();
     geometryListOut.yCoordinates = yCoordinatesOut.get();
     geometryListOut.zCoordinates = zCoordinatesOut.get();
-    auto x = MESH_KERNEL_LIB;
-    // Execute
-    boost::dll::shared_library lib(MESH_KERNEL_LIB);
-    auto get_splines = lib.get<int(const meshkernelapi::GeometryList&, meshkernelapi::GeometryList&, int)>("mkernel_get_splines");
 
-    auto errorCode = get_splines(geometryListIn, geometryListOut, numberOfPointsBetweenNodes);
+    // Execute
+    auto errorCode = mkernel_get_splines(geometryListIn, geometryListOut, numberOfPointsBetweenNodes);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Assert

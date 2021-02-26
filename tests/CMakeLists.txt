@@ -6,17 +6,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 set(TEST_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}")
-if(WIN32)
-  set(MESH_KERNEL_LIB
-      "${MeshKernel_BINARY_DIR}/src/MeshKernelApi/Debug/MeshKernel.dll")
-else()
-  set(MESH_KERNEL_LIB
-      "${MeshKernel_BINARY_DIR}/src/MeshKernelApi/libMeshKernel.so")
-endif()
-
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/utils/include/TestUtils/Definitions.hpp.in"
-  "${CMAKE_CURRENT_SOURCE_DIR}/utils/include/TestUtils/Definitions.hpp")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/utils/include/TestUtils/Definitions.hpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/utils/include/TestUtils/Definitions.hpp")
 
 add_subdirectory(utils)
 add_subdirectory(unit)
