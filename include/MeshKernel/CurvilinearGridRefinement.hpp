@@ -70,7 +70,6 @@ namespace meshkernel
         std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
         Point m_firstPoint;                      ///< The first node of the segment defining the refinement zone
         Point m_secondPoint;                     ///< The second node of the segment defining the refinement zone
-        size_t m_refinement;                     ///< The selected number of refinement lines along the m-direction
-        size_t n_refinement;                     ///< The selected number of refinement lines along the n-direction
+        size_t m_refinement;                     ///< The selected number of refinement lines
     };
 } // namespace meshkernel

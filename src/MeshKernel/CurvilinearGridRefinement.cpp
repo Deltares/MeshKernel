@@ -58,7 +58,7 @@ void meshkernel::CurvilinearGridRefinement::Compute()
     const auto numMToRefine = mSecondNode - mFirstNode;
     const auto numNToRefine = nSecondNode - nFirstNode;
     size_t maxM = m_grid->m_numM + numMToRefine * (m_refinement - 1);
-    size_t maxN = m_grid->m_numN + numNToRefine * (n_refinement - 1);
+    size_t maxN = m_grid->m_numN + numNToRefine * (m_refinement - 1);
 
     // Store the m and n grid lines in separate vectors, and compute the spline derivatives for each gridline
     const auto [mGridLines, mGridLineDerivates, nGridLines, nGridLinesDerivatives] = ComputeGridLinesAndSplinesDerivatives();
@@ -66,8 +66,8 @@ void meshkernel::CurvilinearGridRefinement::Compute()
     // Local vector for each curvilinear grid face
     std::vector<Point> bottomRefinement(m_refinement);
     std::vector<Point> topRefinement(m_refinement);
-    std::vector<Point> leftRefinement(n_refinement);
-    std::vector<Point> rightRefinement(n_refinement);
+    std::vector<Point> leftRefinement(m_refinement);
+    std::vector<Point> rightRefinement(m_refinement);
 
     // The refined grid
     std::vector<std::vector<Point>> refinedGrid(maxM, std::vector<Point>(maxN));
@@ -88,7 +88,7 @@ void meshkernel::CurvilinearGridRefinement::Compute()
             size_t localNRefinement = 1;
             if (currentN >= nFirstNode && currentN < nSecondNode)
             {
-                localNRefinement = n_refinement;
+                localNRefinement = m_refinement;
             }
 
             // Only if all grid nodes of the face are valid, perform transfinite interpolation
