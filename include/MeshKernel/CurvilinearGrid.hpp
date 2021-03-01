@@ -52,7 +52,7 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         CurvilinearGrid(const std::vector<std::vector<Point>>& grid, Projection projection);
 
-        /// @brief Builds the node three to find nodes on the curvi grid
+        /// @brief Builds the node three to find nodes on the curvilinear grid
         void BuildTree();
 
         /// @brief Get the m and n indices of the closest cu
