@@ -39,6 +39,8 @@ namespace meshkernel
     {
     public:
         /// @brief Class constructor
+        ///
+        /// \p firstPoint and \p secondPoint must lie on the same gridline
         /// @param[in] grid The input curvilinear grid
         /// @param[in] firstPoint  The first node of the segment defining the refinement zone
         /// @param[in] secondPoint The second node of the segment defining the refinement zone
