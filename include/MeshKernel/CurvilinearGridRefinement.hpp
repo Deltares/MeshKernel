@@ -40,7 +40,7 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        /// @param[in] firstPoint The first node of the segment defining the refinement zone
+        /// @param[in] firstPoint  The first node of the segment defining the refinement zone
         /// @param[in] secondPoint The second node of the segment defining the refinement zone
         /// @param[in] mRefinement The selected number of refinement lines along the m-direction
         /// @param[in] nRefinement The selected number of refinement lines along the n-direction
@@ -64,7 +64,7 @@ namespace meshkernel
 
         /// @brief Compute spline derivatives along a gridline, also accounting for missing values
         /// @param[in] gridLine The input gridline
-        /// @return The spline derivatives
+        /// @returns The spline derivatives
         std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
 
         std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
