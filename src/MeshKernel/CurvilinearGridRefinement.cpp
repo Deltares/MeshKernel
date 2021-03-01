@@ -179,12 +179,12 @@ std::vector<meshkernel::Point> meshkernel::CurvilinearGridRefinement::ComputeSpl
 {
     std::vector<Point> gridlineDerivatives(gridLine.size());
     const auto indices = FindIndices(gridLine, 0, gridLine.size(), doubleMissingValue);
-    for (auto i = 0; i < indices.size(); ++i)
+    for (auto index : indices)
     {
-        const auto derivatives = Splines::SecondOrderDerivative(gridLine, indices[i][0], indices[i][1]);
-        for (size_t j = indices[i][0], ind = 0; j <= indices[i][1]; ++j, ++ind)
+        const auto derivatives = Splines::SecondOrderDerivative(gridLine, index[0], index[1]);
+        for (size_t j = index[0]; j <= index[1]; ++j)
         {
-            gridlineDerivatives[j] = derivatives[ind];
+            gridlineDerivatives[j] = derivatives[j - index[0]];
         }
     }
     return gridlineDerivatives;

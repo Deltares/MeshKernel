@@ -65,14 +65,14 @@ namespace meshkernel
         /// @param[in] startIndex The start spline node
         /// @param[in] endIndex The end spline node
         /// @returns coordinatesDerivatives The second order derivative at corner points
-        static std::vector<Point> SecondOrderDerivative(const std::vector<Point>& splines, size_t startIndex, size_t endIndex);
+        [[nodiscard]] static std::vector<Point> SecondOrderDerivative(const std::vector<Point>& splines, size_t startIndex, size_t endIndex);
 
         /// @brief Second order derivative at spline corner point coordinates (splint)
         /// @param[in] coordinates The spline corner point coordinate (x or y)
         /// @param[in] startIndex The start spline node
         /// @param[in] endIndex The end spline node
         /// @returns coordinatesDerivatives The second order derivative at corner points (x derivative or y derivative)
-        static std::vector<double> SecondOrderDerivative(const std::vector<double>& coordinates, size_t startIndex, size_t endIndex);
+        [[nodiscard]] static std::vector<double> SecondOrderDerivative(const std::vector<double>& coordinates, size_t startIndex, size_t endIndex);
 
         /// @brief Computes the intersection of two splines (sect3r)
         /// @param[in] first The index of the first spline
