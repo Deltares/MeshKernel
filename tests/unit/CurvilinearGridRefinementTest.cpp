@@ -14,7 +14,7 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
         {{30, 0}, {30, 10}, {30, 20}, {30, 30}}};
 
     const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::cartesian);
-    meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, {10, 20}, {20, 20}, 10, 10);
+    meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, {10, 20}, {20, 20}, 10);
 
     // Execute
     curvilinearGridRefinement.Compute();
@@ -58,7 +58,7 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_Should
         {{50, 0}, {50, 10}, {50, 20}, {50, 30}}};
 
     const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(grid, meshkernel::Projection::cartesian);
-    meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, {10, 20}, {20, 20}, 10, 10);
+    meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, {10, 20}, {20, 20}, 10);
 
     // Execute
     curvilinearGridRefinement.Compute();

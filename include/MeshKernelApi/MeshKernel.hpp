@@ -630,11 +630,17 @@ namespace meshkernelapi
                                                           double searchRadius);
 
         /// @brief Curvilinear grid refinement
-        /// @param meshKernelId The id of the mesh state.
-        /// @param geometryListFirstPoint The geometry list containing the first node of the segment defining the refinement zone.
+        ///
+        /// \p geometryListFirstPoint and \p geometryListSecondPoint must lie on the same gridline
+        /// @param meshKernelId            The id of the mesh state.
+        /// @param geometryListFirstPoint  The geometry list containing the first node of the segment defining the refinement zone.
         /// @param geometryListSecondPoint The geometry list containing the second node of the segment defining the refinement zone.
+        /// @param refinement              The number of refinement lines between \p geometryListFirstPoint and \p geometryListSecondPoint
         /// @return Error code (0 Successful)
-        MKERNEL_API int mkernel_refine_curvilineargrid(int meshKernelId, const GeometryList& geometryListFirstPoint, const GeometryList& geometryListSecondPoint);
+        MKERNEL_API int mkernel_refine_curvilinear_grid(int meshKernelId,
+                                                        const GeometryList& geometryListFirstPoint,
+                                                        const GeometryList& geometryListSecondPoint,
+                                                        int refinement);
 
         /// @brief Gets the double value used in the back-end library as separator and missing value
         /// @return The double missing value used in mesh kernel

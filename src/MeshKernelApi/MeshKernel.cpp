@@ -1833,7 +1833,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_curvilineargrid(int meshKernelId, const GeometryList& geometryListFirstPoint, const GeometryList& geometryListSecondPoint, int mRefinement, int nRefinement)
+    MKERNEL_API int mkernel_refine_curvilinear_grid(int meshKernelId, const GeometryList& geometryListFirstPoint, const GeometryList& geometryListSecondPoint, int refinement)
     {
         int exitCode = Success;
         try
@@ -1856,7 +1856,7 @@ namespace meshkernelapi
             }
 
             // Execute
-            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, firstPoint[0], secondPoint[0], mRefinement, nRefinement);
+            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, firstPoint[0], secondPoint[0], refinement);
             curvilinearGridRefinement.Compute();
         }
         catch (...)

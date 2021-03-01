@@ -44,13 +44,11 @@ namespace meshkernel
         /// @param[in] grid The input curvilinear grid
         /// @param[in] firstPoint  The first node of the segment defining the refinement zone
         /// @param[in] secondPoint The second node of the segment defining the refinement zone
-        /// @param[in] mRefinement The selected number of refinement lines along the m-direction
-        /// @param[in] nRefinement The selected number of refinement lines along the n-direction
+        /// @param[in] refinement  The number of refinement lines between \p firstPoint and \p secondPoint
         CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid,
                                   const Point& firstPoint,
                                   const Point& secondPoint,
-                                  size_t mRefinement,
-                                  size_t nRefinement);
+                                  size_t refinement);
 
         /// @brief Refine the curvilinear grid
         void Compute();

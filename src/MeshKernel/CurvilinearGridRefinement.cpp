@@ -33,12 +33,11 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
-meshkernel::CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, const Point& firstPoint, const Point& secondPoint, size_t mRefinement, size_t nRefinement)
+meshkernel::CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, const Point& firstPoint, const Point& secondPoint, size_t refinement)
     : m_grid(grid),
       m_firstPoint(firstPoint),
       m_secondPoint(secondPoint),
-      m_refinement(mRefinement),
-      n_refinement(nRefinement)
+      m_refinement(refinement)
 {
 }
 
