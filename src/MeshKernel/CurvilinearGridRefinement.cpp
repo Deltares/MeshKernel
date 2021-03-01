@@ -49,28 +49,28 @@ void meshkernel::CurvilinearGridRefinement::Compute()
     auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(m_firstPoint);
     auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(m_secondPoint);
 
-    /// The points must lie on the same gridline
+    // The points must lie on the same gridline
     if (mSecondNode - mFirstNode != 0 && nSecondNode - nFirstNode != 0)
     {
         throw std::invalid_argument("CurvilinearGridRefinement::Compute: The selected curvilinear grid nodes are not on the same grid-line");
     }
 
-    /// estimate the dimension of the refined grid
+    // Estimate the dimension of the refined grid
     const auto numMToRefine = mSecondNode - mFirstNode;
     const auto numNToRefine = nSecondNode - nFirstNode;
     size_t maxM = m_grid->m_numM - numMToRefine + numMToRefine * m_refinement;
     size_t maxN = m_grid->m_numN - numNToRefine + numNToRefine * n_refinement;
 
-    /// store the m and n grid lines in separate vectors, and compute the spline derivatives for each gridline
+    // Store the m and n grid lines in separate vectors, and compute the spline derivatives for each gridline
     const auto [mGridLines, mGridLineDerivates, nGridLines, nGridLinesDerivatives] = ComputeGridLinesAndSplinesDerivatives();
 
-    // local vector for each curvilinear grid face
+    // Local vector for each curvilinear grid face
     std::vector<Point> bottomRefinement(m_refinement);
     std::vector<Point> upRefinementUp(m_refinement);
     std::vector<Point> leftRefinement(n_refinement);
     std::vector<Point> rightRefinement(n_refinement);
 
-    // the refined grid
+    // The refined grid
     std::vector<std::vector<Point>> refinedGrid(maxM, std::vector<Point>(maxN));
 
     size_t refinedM = 0;
@@ -98,7 +98,7 @@ void meshkernel::CurvilinearGridRefinement::Compute()
                 m_grid->m_nodes[currentM][currentN + 1].IsValid() &&
                 m_grid->m_nodes[currentM + 1][currentN + 1].IsValid())
             {
-                // calculate m-direction spline points
+                // Calculate m-direction spline points
                 bottomRefinement.clear();
                 upRefinementUp.clear();
                 for (auto m = 0; m < localMRefinement + 1; ++m)
@@ -108,7 +108,7 @@ void meshkernel::CurvilinearGridRefinement::Compute()
                     upRefinementUp.emplace_back(InterpolateSplinePoint(mGridLines[currentN + 1], mGridLineDerivates[currentN + 1], interpolationPoint));
                 }
 
-                // calculate n-direction spline points
+                // Calculate n-direction spline points
                 leftRefinement.clear();
                 rightRefinement.clear();
                 for (auto n = 0; n < localNRefinement + 1; ++n)
@@ -118,7 +118,7 @@ void meshkernel::CurvilinearGridRefinement::Compute()
                     rightRefinement.emplace_back(InterpolateSplinePoint(nGridLines[currentM + 1], nGridLinesDerivatives[currentM + 1], interpolationPoint));
                 }
 
-                // perform transfinite interpolation on the current curvilinear face
+                // Perform transfinite interpolation on the current curvilinear face
                 const auto localGrid = DiscretizeTransfinite(leftRefinement,
                                                              rightRefinement,
                                                              bottomRefinement,
@@ -126,7 +126,7 @@ void meshkernel::CurvilinearGridRefinement::Compute()
                                                              m_grid->m_projection,
                                                              localMRefinement,
                                                              localNRefinement);
-                // copy the local grid into the refined grid
+                // Copy the local grid into the refined grid
                 for (auto m = 0; m < localMRefinement + 1; ++m)
                 {
                     for (auto n = 0; n < localNRefinement + 1; ++n)
@@ -140,7 +140,7 @@ void meshkernel::CurvilinearGridRefinement::Compute()
         refinedM += localMRefinement;
     }
 
-    // substitute original grid with the refined one
+    // Substitute original grid with the refined one
     *m_grid = CurvilinearGrid(refinedGrid, m_grid->m_projection);
 }
 
