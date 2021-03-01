@@ -60,7 +60,7 @@ namespace meshkernel
 
         Projection m_projection;                 ///< The projection used
         std::vector<std::vector<Point>> m_nodes; ///< Member variable storing the grid
-        RTree m_nodesRTree;                      ///< Spatial R-Tree used to inquire node nodes
+        RTree m_nodesRTree;                      ///< Spatial R-Tree used to inquire nodes
         size_t m_numM = 0;                       ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                       ///< The number of n coordinates (horizontal lines)
 
