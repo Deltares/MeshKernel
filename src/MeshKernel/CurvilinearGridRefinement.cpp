@@ -58,8 +58,8 @@ void meshkernel::CurvilinearGridRefinement::Compute()
     // Estimate the dimension of the refined grid
     const auto numMToRefine = mSecondNode - mFirstNode;
     const auto numNToRefine = nSecondNode - nFirstNode;
-    size_t maxM = m_grid->m_numM - numMToRefine + numMToRefine * m_refinement;
-    size_t maxN = m_grid->m_numN - numNToRefine + numNToRefine * n_refinement;
+    size_t maxM = m_grid->m_numM + numMToRefine * (m_refinement - 1);
+    size_t maxN = m_grid->m_numN + numNToRefine * (n_refinement - 1);
 
     // Store the m and n grid lines in separate vectors, and compute the spline derivatives for each gridline
     const auto [mGridLines, mGridLineDerivates, nGridLines, nGridLinesDerivatives] = ComputeGridLinesAndSplinesDerivatives();
