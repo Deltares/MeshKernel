@@ -66,7 +66,7 @@ void meshkernel::CurvilinearGridRefinement::Compute()
 
     // Local vector for each curvilinear grid face
     std::vector<Point> bottomRefinement(m_refinement);
-    std::vector<Point> upRefinementUp(m_refinement);
+    std::vector<Point> topRefinement(m_refinement);
     std::vector<Point> leftRefinement(n_refinement);
     std::vector<Point> rightRefinement(n_refinement);
 
@@ -100,12 +100,12 @@ void meshkernel::CurvilinearGridRefinement::Compute()
             {
                 // Calculate m-direction spline points
                 bottomRefinement.clear();
-                upRefinementUp.clear();
+                topRefinement.clear();
                 for (auto m = 0; m < localMRefinement + 1; ++m)
                 {
                     const auto interpolationPoint = static_cast<double>(currentM) + static_cast<double>(m) / static_cast<double>(localMRefinement);
                     bottomRefinement.emplace_back(InterpolateSplinePoint(mGridLines[currentN], mGridLineDerivates[currentN], interpolationPoint));
-                    upRefinementUp.emplace_back(InterpolateSplinePoint(mGridLines[currentN + 1], mGridLineDerivates[currentN + 1], interpolationPoint));
+                    topRefinement.emplace_back(InterpolateSplinePoint(mGridLines[currentN + 1], mGridLineDerivates[currentN + 1], interpolationPoint));
                 }
 
                 // Calculate n-direction spline points
@@ -122,7 +122,7 @@ void meshkernel::CurvilinearGridRefinement::Compute()
                 const auto localGrid = DiscretizeTransfinite(leftRefinement,
                                                              rightRefinement,
                                                              bottomRefinement,
-                                                             upRefinementUp,
+                                                             topRefinement,
                                                              m_grid->m_projection,
                                                              localMRefinement,
                                                              localNRefinement);
