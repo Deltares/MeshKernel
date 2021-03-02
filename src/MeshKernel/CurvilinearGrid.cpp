@@ -35,10 +35,10 @@ meshkernel::CurvilinearGrid::CurvilinearGrid(size_t m, size_t n) : m_numM(m), m_
 }
 
 meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> grid, Projection projection) : m_projection(projection),
-                                                                                                            m_gridNodes(std::move(grid)),
-                                                                                                            m_numM(grid.size()),
-                                                                                                            m_numN(grid[0].size())
+                                                                                                            m_gridNodes(std::move(grid))
 {
+    m_numM = m_gridNodes.size();
+    m_numN = m_gridNodes[0].size();
 }
 
 std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> meshkernel::CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()

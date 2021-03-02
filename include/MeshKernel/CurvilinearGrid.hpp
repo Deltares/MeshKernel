@@ -67,11 +67,11 @@ namespace meshkernel
         /// @brief Get the m and n indices of the closest cu
         std::tuple<int, int> GetNodeIndices(Point point);
 
-        Projection m_projection;                     ///< The projection used
-        std::vector<std::vector<Point>> m_gridNodes; ///< Member variable storing the grid
         RTree m_nodesRTree;                          ///< Spatial R-Tree used to inquire nodes
         size_t m_numM = 0;                           ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                           ///< The number of n coordinates (horizontal lines)
+        Projection m_projection;                     ///< The projection used
+        std::vector<std::vector<Point>> m_gridNodes; ///< Member variable storing the grid
 
     private:
         /// @brief A customized type used for searching the closest m and n indices closest to a point
