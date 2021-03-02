@@ -1926,6 +1926,11 @@ namespace meshkernelapi
                 throw std::invalid_argument("mkernel_convert_curvilinear_to_mesh2d: The selected mesh kernel id does not exist.");
             }
 
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0 && meshKernelState[meshKernelId].m_curvilinearGrid->m_projection != meshKernelState[meshKernelId].m_mesh2d->m_projection)
+            {
+                throw std::invalid_argument("mkernel_convert_curvilinear_to_mesh2d: The existing mesh2d projection is not equal to the curvilinear grid projection");
+            }
+
             const auto [nodes, edges, gridIndices] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
 
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
