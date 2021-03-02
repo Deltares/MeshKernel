@@ -51,7 +51,7 @@ namespace meshkernel
         /// @brief Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
-        CurvilinearGrid(const std::vector<std::vector<Point>>& grid, Projection projection);
+        CurvilinearGrid(std::vector<std::vector<Point>> grid, Projection projection);
 
         /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
         /// @param[in] curvilinearGrid The curvilinear grid to create the mesh from

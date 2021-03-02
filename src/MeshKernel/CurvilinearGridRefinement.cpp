@@ -41,7 +41,7 @@ meshkernel::CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shar
 {
 }
 
-void meshkernel::CurvilinearGridRefinement::Compute()
+void meshkernel::CurvilinearGridRefinement::Compute() const
 {
     // Get the m and n indices from the point coordinates
     m_grid->BuildTree();

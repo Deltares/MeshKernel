@@ -40,7 +40,7 @@ meshkernel::CurvilinearGridCreateUniform::CurvilinearGridCreateUniform(const mes
 {
 }
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridCreateUniform::Compute()
+meshkernel::CurvilinearGrid meshkernel::CurvilinearGridCreateUniform::Compute() const
 {
     if (m_makeMeshParameters.GridType != 0)
     {

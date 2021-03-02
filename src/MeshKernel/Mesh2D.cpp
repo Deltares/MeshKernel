@@ -557,18 +557,6 @@ void meshkernel::Mesh2D::ClassifyNodes()
     }
 }
 
-//void meshkernel::Mesh2D::MakeMesh(const meshkernelapi::MakeMeshParameters& MakeMeshParameters, const Polygons& polygons)
-//{
-//
-//    // Assign mesh
-//    *this = Mesh2D(CurvilinearGrid, m_projection);
-//
-//    m_nodesRTreeRequiresUpdate = true;
-//    m_edgesRTreeRequiresUpdate = true;
-//
-//    Administrate(AdministrationOptions::AdministrateMeshEdges);
-//}
-
 void meshkernel::Mesh2D::MergeNodesInPolygon(const Polygons& polygon)
 {
     // first filter the nodes in polygon

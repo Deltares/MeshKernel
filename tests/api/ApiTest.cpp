@@ -210,7 +210,7 @@ TEST_F(ApiTests, OrthogonalizationThroughApi)
     ASSERT_EQ(17, meshGeometryDimensions.numedge);
 }
 
-TEST_F(ApiTests, MakeGridThroughApi)
+TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
 {
     // Prepare
     auto meshKernelId = GetMeshKernelId();

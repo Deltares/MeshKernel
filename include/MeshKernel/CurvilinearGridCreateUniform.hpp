@@ -47,7 +47,7 @@ namespace meshkernel
         CurvilinearGridCreateUniform(const meshkernelapi::MakeMeshParameters& MakeMeshParameters, std::shared_ptr<Polygons> polygons);
 
         /// @brief Compute an uniform curvilinear grid
-        CurvilinearGrid Compute();
+        CurvilinearGrid Compute() const;
 
     private:
         meshkernelapi::MakeMeshParameters m_makeMeshParameters; ///< A copy of the structure containing the parameters used for making the grid

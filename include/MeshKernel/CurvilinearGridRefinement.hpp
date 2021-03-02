@@ -51,7 +51,7 @@ namespace meshkernel
                                   size_t refinement);
 
         /// @brief Refine the curvilinear grid
-        void Compute();
+        void Compute() const;
 
     private:
         /// @brief Computes the m and n grid lines and spline derivatives in separate vectors
