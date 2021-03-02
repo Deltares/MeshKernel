@@ -57,7 +57,19 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
 {
     if (m_gridNodes.empty())
     {
-        throw std::invalid_argument("Mesh2D::Mesh2D: The curvilinear grid is empty.");
+        throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: m_gridNodes is empty ");
+    }
+    if (m_gridNodes[0].empty())
+    {
+        throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: m_gridNodes[0] is empty");
+    }
+    if (m_gridNodes.size() < 2)
+    {
+        throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: m_gridNodes.size() < 2");
+    }
+    if (m_gridNodes[0].size() < 2)
+    {
+        throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: m_gridNodes[0].size() < 2");
     }
 
     std::vector<Point> nodes(m_gridNodes.size() * m_gridNodes[0].size());
