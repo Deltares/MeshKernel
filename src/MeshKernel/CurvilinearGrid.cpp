@@ -29,9 +29,26 @@
 
 #include <MeshKernel/CurvilinearGrid.hpp>
 
-meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> grid, Projection projection) : m_projection(projection),
-                                                                                                            m_gridNodes(std::move(grid))
+meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> grid, Projection projection) : m_gridNodes(std::move(grid))
 {
+    if (m_gridNodes.empty())
+    {
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: m_gridNodes is empty. ");
+    }
+    if (m_gridNodes[0].empty())
+    {
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: m_gridNodes[0] is empty");
+    }
+    if (m_gridNodes.size() < 2)
+    {
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: m_gridNodes.size() < 2");
+    }
+    if (m_gridNodes[0].size() < 2)
+    {
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: m_gridNodes[0].size() < 2");
+    }
+
+    m_projection = projection;
     m_numM = m_gridNodes.size();
     m_numN = m_gridNodes[0].size();
 }

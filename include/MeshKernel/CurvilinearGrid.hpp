@@ -64,7 +64,6 @@ namespace meshkernel
 
         size_t m_numM = 0;                           ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                           ///< The number of n coordinates (horizontal lines)
-        Projection m_projection;                     ///< The projection used
         std::vector<std::vector<Point>> m_gridNodes; ///< Member variable storing the grid
 
     private:
