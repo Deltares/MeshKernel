@@ -1926,7 +1926,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("mkernel_convert_curvilinear_to_mesh2d: The selected mesh kernel id does not exist.");
             }
 
-            const auto [nodes, edges] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
+            const auto [nodes, edges, gridIndices] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
 
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
         }

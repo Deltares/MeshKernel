@@ -41,7 +41,7 @@ meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> gri
     m_numN = m_gridNodes[0].size();
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> meshkernel::CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>> meshkernel::CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
 {
     if (m_gridNodes.empty())
     {
@@ -50,7 +50,8 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> meshke
 
     std::vector<Point> nodes(m_gridNodes.size() * m_gridNodes[0].size());
     std::vector<Edge> edges(m_gridNodes.size() * (m_gridNodes[0].size() - 1) + (m_gridNodes.size() - 1) * m_gridNodes[0].size());
-    std::vector<std::vector<size_t>> indices(m_gridNodes.size(), std::vector<size_t>(m_gridNodes[0].size(), sizetMissingValue));
+    std::vector<std::vector<size_t>> nodeIndices(m_gridNodes.size(), std::vector<size_t>(m_gridNodes[0].size(), sizetMissingValue));
+    std::vector<std::pair<size_t, size_t>> gridIndices(nodes.size(), std::pair<size_t, size_t>(sizetMissingValue, sizetMissingValue));
 
     size_t ind = 0;
     for (auto m = 0; m < m_gridNodes.size(); m++)
@@ -60,7 +61,8 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> meshke
             if (m_gridNodes[m][n].IsValid())
             {
                 nodes[ind] = m_gridNodes[m][n];
-                indices[m][n] = ind;
+                nodeIndices[m][n] = ind;
+                gridIndices[ind] = {m, n};
                 ind++;
             }
         }
@@ -72,10 +74,10 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> meshke
     {
         for (auto n = 0; n < m_gridNodes[0].size(); n++)
         {
-            if (indices[m][n] != sizetMissingValue && indices[m + 1][n] != sizetMissingValue)
+            if (nodeIndices[m][n] != sizetMissingValue && nodeIndices[m + 1][n] != sizetMissingValue)
             {
-                edges[ind].first = indices[m][n];
-                edges[ind].second = indices[m + 1][n];
+                edges[ind].first = nodeIndices[m][n];
+                edges[ind].second = nodeIndices[m + 1][n];
                 ind++;
             }
         }
@@ -85,45 +87,32 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> meshke
     {
         for (auto n = 0; n < m_gridNodes[0].size() - 1; n++)
         {
-            if (indices[m][n] != sizetMissingValue && indices[m][n + 1] != sizetMissingValue)
+            if (nodeIndices[m][n] != sizetMissingValue && nodeIndices[m][n + 1] != sizetMissingValue)
             {
-                edges[ind].first = indices[m][n];
-                edges[ind].second = indices[m][n + 1];
+                edges[ind].first = nodeIndices[m][n];
+                edges[ind].second = nodeIndices[m][n + 1];
                 ind++;
             }
         }
     }
     edges.resize(ind);
 
-    return {nodes, edges};
+    return {nodes, edges, gridIndices};
 }
 
 void meshkernel::CurvilinearGrid::SetFlatCopies()
 {
-    const auto [nodes, edges] = ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
     m_nodes = nodes;
     m_edges = edges;
+    m_gridIndices = gridIndices;
     Mesh::SetFlatCopies();
 }
 
 void meshkernel::CurvilinearGrid::BuildTree()
 {
-    m_flattenNodes.resize(m_gridNodes.size() * m_gridNodes[0].size(), {doubleMissingValue, doubleMissingValue, sizetMissingValue, sizetMissingValue});
-
-    size_t index = 0;
-    for (auto n = 0; n < m_gridNodes[0].size(); ++n)
-    {
-        for (auto m = 0; m < m_gridNodes.size(); ++m)
-        {
-            m_flattenNodes[index].x = m_gridNodes[m][n].x;
-            m_flattenNodes[index].y = m_gridNodes[m][n].y;
-            m_flattenNodes[index].m = m;
-            m_flattenNodes[index].n = n;
-            index++;
-        }
-    }
-
-    m_nodesRTree.BuildTree(m_flattenNodes);
+    SetFlatCopies();
+    m_nodesRTree.BuildTree(m_nodes);
 }
 
 std::tuple<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
@@ -134,5 +123,5 @@ std::tuple<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
         return {sizetMissingValue, sizetMissingValue};
     }
     const auto nodeIndex = m_nodesRTree.GetQueryResult(0);
-    return {m_flattenNodes[nodeIndex].m, m_flattenNodes[nodeIndex].n};
+    return {m_gridIndices[nodeIndex].first, m_gridIndices[nodeIndex].second};
 }

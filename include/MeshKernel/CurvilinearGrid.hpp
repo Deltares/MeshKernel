@@ -53,10 +53,9 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         CurvilinearGrid(std::vector<std::vector<Point>> grid, Projection projection);
 
-        /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
-        /// @param[in] curvilinearGrid The curvilinear grid to create the mesh from
-        /// @param[in] projection The \ref Projection to use
-        std::tuple<std::vector<Point>, std::vector<Edge>> ConvertCurvilinearToNodesAndEdges();
+        /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
+        /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
+        std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<std::pair<size_t, size_t>>> ConvertCurvilinearToNodesAndEdges();
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         void SetFlatCopies();
@@ -74,15 +73,6 @@ namespace meshkernel
         std::vector<std::vector<Point>> m_gridNodes; ///< Member variable storing the grid
 
     private:
-        /// @brief A customized type used for searching the closest m and n indices closest to a point
-        struct Node
-        {
-            double x; ///< The point x coordinate
-            double y; ///< The point y coordinate
-            size_t m; ///< The point m coordinate
-            size_t n; ///< The point n coordinate
-        };
-
-        std::vector<Node> m_flattenNodes; ///< The flattened nodes
+        std::vector<std::pair<size_t, size_t>> m_gridIndices; ///< the original mapping of the flatten nodes in the curvilinear grid
     };
 } // namespace meshkernel

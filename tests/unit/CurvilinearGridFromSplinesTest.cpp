@@ -151,7 +151,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
-    const auto [nodes, edges] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
 
@@ -229,7 +229,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureNo
 
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
-    const auto [nodes, edges] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
 
@@ -309,7 +309,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    const auto [nodes, edges] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
 
@@ -441,7 +441,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshFourSplineCrossingFron
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    const auto [nodes, edges] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
 
@@ -548,7 +548,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearGridFromSplineWithSevenSpl
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    const auto [nodes, edges] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
 
@@ -628,7 +628,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingCurvatureAd
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    const auto [nodes, edges] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
 
@@ -709,7 +709,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    const auto [nodes, edges] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
 
@@ -800,7 +800,7 @@ TEST(CurvilinearGridFromSplines, OrthogonalCurvilinearMeshTwoCrossingHighCurvatu
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // compute
-    const auto [nodes, edges] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
 
@@ -925,7 +925,7 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
     meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     // Compute
-    const auto [nodes, edges] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridFromSplines.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
 

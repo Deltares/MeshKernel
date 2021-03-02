@@ -33,7 +33,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInInPolygon)
 
     // 2 Execution
     meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeMeshParameters, polygons);
-    const auto [nodes, edges] = curvilinearGridCreateUniform.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridCreateUniform.Compute().ConvertCurvilinearToNodesAndEdges();
     ASSERT_EQ(43, edges.size());
     ASSERT_EQ(27, nodes.size());
 }
@@ -63,7 +63,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInPolygonSpherical)
 
     // 2 Execution: function not producing grid points (points gets transformed in meters, therfore everything is outside)
     meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeMeshParameters, polygons);
-    const auto [nodes, edges] = curvilinearGridCreateUniform.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridCreateUniform.Compute().ConvertCurvilinearToNodesAndEdges();
     ASSERT_EQ(0, nodes.size());
     ASSERT_EQ(0, edges.size());
 }
@@ -87,7 +87,7 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
 
     // 2 Execution
     meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeMeshParameters, polygons);
-    const auto [nodes, edges] = curvilinearGridCreateUniform.Compute().ConvertCurvilinearToNodesAndEdges();
+    const auto [nodes, edges, gridIndices] = curvilinearGridCreateUniform.Compute().ConvertCurvilinearToNodesAndEdges();
 
     meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::spherical);
 
