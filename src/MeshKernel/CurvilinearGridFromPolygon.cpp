@@ -37,11 +37,10 @@
 
 meshkernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon){};
 
-void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
-                                                     size_t secondNode,
-                                                     size_t thirdNode,
-                                                     bool useFourthSide,
-                                                     CurvilinearGrid& curvilinearGrid) const
+meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
+                                                                            size_t secondNode,
+                                                                            size_t thirdNode,
+                                                                            bool useFourthSide) const
 {
     if (m_polygon->IsEmpty())
     {
@@ -206,20 +205,21 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
     const auto result = DiscretizeTransfinite(sideOne, sideTwo, sideThree, sideFour, m_polygon->m_projection, numMNodes - 1, numNNodes - 1);
 
     // Assign the points to the curvilinear grid
-    curvilinearGrid = {numMNodes, numNNodes};
+    std::vector<std::vector<Point>> gridNodes(numMNodes, std::vector<Point>(numNNodes));
     for (auto i = 0; i < numMNodes; i++)
     {
         for (auto j = 0; j < numNNodes; j++)
         {
-            curvilinearGrid.m_nodes[i][j] = result[i][j];
+            gridNodes[i][j] = result[i][j];
         }
     }
+    CurvilinearGrid curvilinearGrid(gridNodes, m_polygon->m_projection);
+    return curvilinearGrid;
 }
 
-void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
-                                                     size_t secondNode,
-                                                     size_t thirdNode,
-                                                     CurvilinearGrid& curvilinearGrid) const
+meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
+                                                                            size_t secondNode,
+                                                                            size_t thirdNode) const
 {
     if (m_polygon->IsEmpty())
     {
@@ -324,7 +324,8 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
     std::vector<Point> sideThree(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
     std::vector<Point> sideFour(maximumNumberOfNodes, {doubleMissingValue, doubleMissingValue});
 
-    curvilinearGrid = {n1 + n3 + 1, n2 + n3 + 1};
+    std::vector<std::vector<Point>> gridNodes(n1 + n3 + 1, std::vector<Point>(n2 + n3 + 1));
+
     for (auto t = 0; t < numNodesInTriangle; ++t)
     {
         std::fill(sideOne.begin(), sideOne.end(), Point{doubleMissingValue, doubleMissingValue});
@@ -396,7 +397,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
             {
                 for (auto j = 0; j < result[0].size(); ++j)
                 {
-                    curvilinearGrid.m_nodes[i][j] = result[i][j];
+                    gridNodes[i][j] = result[i][j];
                 }
             }
         }
@@ -408,7 +409,7 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
                 {
                     const auto iIndex = n1 + n3 - i;
                     const auto jIndex = n2 + n3 - j;
-                    curvilinearGrid.m_nodes[iIndex][jIndex] = result[i][j];
+                    gridNodes[iIndex][jIndex] = result[i][j];
                 }
             }
         }
@@ -419,9 +420,12 @@ void meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
                 for (auto j = 0; j < result.size(); ++j)
                 {
                     const auto jIndex = n2 + n3 - j;
-                    curvilinearGrid.m_nodes[i][jIndex] = result[j][i];
+                    gridNodes[i][jIndex] = result[j][i];
                 }
             }
         }
     }
+
+    CurvilinearGrid curvilinearGrid(gridNodes, m_polygon->m_projection);
+    return curvilinearGrid;
 }

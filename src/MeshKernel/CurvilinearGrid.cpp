@@ -31,24 +31,92 @@
 
 meshkernel::CurvilinearGrid::CurvilinearGrid(size_t m, size_t n) : m_numM(m), m_numN(n)
 {
-    m_nodes.resize(m + 1, std::vector<Point>(n + 1, {doubleMissingValue, doubleMissingValue}));
+    m_gridNodes.resize(m + 1, std::vector<Point>(n + 1, {doubleMissingValue, doubleMissingValue}));
 }
 
-meshkernel::CurvilinearGrid::CurvilinearGrid(const std::vector<std::vector<Point>>& grid, Projection projection) : m_projection(projection), m_nodes(grid), m_numM(grid.size()), m_numN(grid[0].size())
+meshkernel::CurvilinearGrid::CurvilinearGrid(const std::vector<std::vector<Point>>& grid, Projection projection) : m_projection(projection),
+                                                                                                                   m_gridNodes(std::move(grid)),
+                                                                                                                   m_numM(grid.size()),
+                                                                                                                   m_numN(grid[0].size())
 {
+}
+
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> meshkernel::CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
+{
+    if (m_gridNodes.empty())
+    {
+        throw std::invalid_argument("Mesh2D::Mesh2D: The curvilinear grid is empty.");
+    }
+
+    std::vector<Point> nodes(m_gridNodes.size() * m_gridNodes[0].size());
+    std::vector<Edge> edges(m_gridNodes.size() * (m_gridNodes[0].size() - 1) + (m_gridNodes.size() - 1) * m_gridNodes[0].size());
+    std::vector<std::vector<size_t>> indices(m_gridNodes.size(), std::vector<size_t>(m_gridNodes[0].size(), sizetMissingValue));
+
+    size_t ind = 0;
+    for (auto m = 0; m < m_gridNodes.size(); m++)
+    {
+        for (auto n = 0; n < m_gridNodes[0].size(); n++)
+        {
+            if (m_gridNodes[m][n].IsValid())
+            {
+                nodes[ind] = m_gridNodes[m][n];
+                indices[m][n] = ind;
+                ind++;
+            }
+        }
+    }
+    nodes.resize(ind);
+
+    ind = 0;
+    for (auto m = 0; m < m_gridNodes.size() - 1; m++)
+    {
+        for (auto n = 0; n < m_gridNodes[0].size(); n++)
+        {
+            if (indices[m][n] != sizetMissingValue && indices[m + 1][n] != sizetMissingValue)
+            {
+                edges[ind].first = indices[m][n];
+                edges[ind].second = indices[m + 1][n];
+                ind++;
+            }
+        }
+    }
+
+    for (auto m = 0; m < m_gridNodes.size(); m++)
+    {
+        for (auto n = 0; n < m_gridNodes[0].size() - 1; n++)
+        {
+            if (indices[m][n] != sizetMissingValue && indices[m][n + 1] != sizetMissingValue)
+            {
+                edges[ind].first = indices[m][n];
+                edges[ind].second = indices[m][n + 1];
+                ind++;
+            }
+        }
+    }
+    edges.resize(ind);
+
+    return {nodes, edges};
+}
+
+void meshkernel::CurvilinearGrid::SetFlatCopies()
+{
+    const auto [nodes, edges] = ConvertCurvilinearToNodesAndEdges();
+    m_nodes = nodes;
+    m_edges = edges;
+    Mesh::SetFlatCopies();
 }
 
 void meshkernel::CurvilinearGrid::BuildTree()
 {
-    m_flattenNodes.resize(m_nodes.size() * m_nodes[0].size(), {doubleMissingValue, doubleMissingValue, sizetMissingValue, sizetMissingValue});
+    m_flattenNodes.resize(m_gridNodes.size() * m_gridNodes[0].size(), {doubleMissingValue, doubleMissingValue, sizetMissingValue, sizetMissingValue});
 
     size_t index = 0;
-    for (auto n = 0; n < m_nodes[0].size(); ++n)
+    for (auto n = 0; n < m_gridNodes[0].size(); ++n)
     {
-        for (auto m = 0; m < m_nodes.size(); ++m)
+        for (auto m = 0; m < m_gridNodes.size(); ++m)
         {
-            m_flattenNodes[index].x = m_nodes[m][n].x;
-            m_flattenNodes[index].y = m_nodes[m][n].y;
+            m_flattenNodes[index].x = m_gridNodes[m][n].x;
+            m_flattenNodes[index].y = m_gridNodes[m][n].y;
             m_flattenNodes[index].m = m;
             m_flattenNodes[index].n = n;
             index++;

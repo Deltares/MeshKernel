@@ -57,9 +57,5 @@ namespace meshkernel
         /// @param[in] node The node index
         /// @return If the node is on boundary
         [[nodiscard]] bool IsNodeOnBoundary(size_t node) const { return m_nodesNumEdges[node] == 1; }
-
-        /// @brief Set internal flat copies of nodes and edges,
-        /// so the pointer to the first entry is communicated with the front-end
-        void SetFlatCopies();
     };
 } // namespace meshkernel

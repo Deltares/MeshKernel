@@ -92,10 +92,10 @@ void meshkernel::CurvilinearGridRefinement::Compute()
             }
 
             // Only if all grid nodes of the face are valid, perform transfinite interpolation
-            if (m_grid->m_nodes[currentM][currentN].IsValid() &&
-                m_grid->m_nodes[currentM + 1][currentN].IsValid() &&
-                m_grid->m_nodes[currentM][currentN + 1].IsValid() &&
-                m_grid->m_nodes[currentM + 1][currentN + 1].IsValid())
+            if (m_grid->m_gridNodes[currentM][currentN].IsValid() &&
+                m_grid->m_gridNodes[currentM + 1][currentN].IsValid() &&
+                m_grid->m_gridNodes[currentM][currentN + 1].IsValid() &&
+                m_grid->m_gridNodes[currentM + 1][currentN + 1].IsValid())
             {
                 // Calculate m-direction spline points
                 bottomRefinement.clear();
@@ -157,7 +157,7 @@ meshkernel::CurvilinearGridRefinement::ComputeGridLinesAndSplinesDerivatives() c
     {
         for (auto m = 0; m < m_grid->m_numM; ++m)
         {
-            mGridLines[n][m] = m_grid->m_nodes[m][n];
+            mGridLines[n][m] = m_grid->m_gridNodes[m][n];
         }
         mGridLineDerivates[n] = ComputeSplineDerivatesAlongGridLine(mGridLines[n]);
     }
@@ -167,7 +167,7 @@ meshkernel::CurvilinearGridRefinement::ComputeGridLinesAndSplinesDerivatives() c
     std::vector<std::vector<Point>> nGridLinesDerivatives(m_grid->m_numM, std::vector<Point>(m_grid->m_numN));
     for (auto m = 0; m < m_grid->m_numM; ++m)
     {
-        nGridLines[m] = m_grid->m_nodes[m];
+        nGridLines[m] = m_grid->m_gridNodes[m];
         nGridLinesDerivatives[m] = ComputeSplineDerivatesAlongGridLine(nGridLines[m]);
     }
 

@@ -84,6 +84,13 @@ namespace meshkernel
     class Mesh
     {
     public:
+        /// Enumerator describing the different options to administrate a mesh
+        enum class AdministrationOptions
+        {
+            AdministrateMeshEdges,
+            AdministrateMeshEdgesAndFaces
+        };
+
         /// @brief Default constructor
         Mesh() = default;
 
@@ -241,6 +248,9 @@ namespace meshkernel
         /// @return The index of the closest location.
         [[nodiscard]] size_t GetNearestNeighborIndex(size_t index, MeshLocations meshLocation);
 
+        /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
+        void SetFlatCopies();
+
         // nodes
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
         std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
@@ -279,5 +289,10 @@ namespace meshkernel
         std::vector<double> m_nodex;  ///< The nodes x-coordinate
         std::vector<double> m_nodey;  ///< The nodes y-coordinate
         std::vector<double> m_nodez;  ///< The nodes z-coordinate
+
+        std::vector<int> m_faceNodes;              ///< For each face, the nodes
+        std::vector<double> m_facesCircumcentersx; ///< The circumcenters x-coordinate
+        std::vector<double> m_facesCircumcentersy; ///< The circumcenters y-coordinate
+        std::vector<double> m_facesCircumcentersz; ///< The circumcenters z-coordinate
     };
 } // namespace meshkernel

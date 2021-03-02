@@ -30,12 +30,13 @@
 #include <vector>
 
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/RTree.hpp>
 
 namespace meshkernel
 {
     /// @brief A class representing a curvilinear grid
-    class CurvilinearGrid
+    class CurvilinearGrid : public Mesh
     {
     public:
         /// @brief Default constructor
@@ -52,17 +53,25 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         CurvilinearGrid(const std::vector<std::vector<Point>>& grid, Projection projection);
 
+        /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
+        /// @param[in] curvilinearGrid The curvilinear grid to create the mesh from
+        /// @param[in] projection The \ref Projection to use
+        std::tuple<std::vector<Point>, std::vector<Edge>> ConvertCurvilinearToNodesAndEdges();
+
+        /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
+        void SetFlatCopies();
+
         /// @brief Builds the node three to find nodes on the curvilinear grid
         void BuildTree();
 
         /// @brief Get the m and n indices of the closest cu
         std::tuple<int, int> GetNodeIndices(Point point);
 
-        Projection m_projection;                 ///< The projection used
-        std::vector<std::vector<Point>> m_nodes; ///< Member variable storing the grid
-        RTree m_nodesRTree;                      ///< Spatial R-Tree used to inquire nodes
-        size_t m_numM = 0;                       ///< The number of m coordinates (vertical lines)
-        size_t m_numN = 0;                       ///< The number of n coordinates (horizontal lines)
+        Projection m_projection;                     ///< The projection used
+        std::vector<std::vector<Point>> m_gridNodes; ///< Member variable storing the grid
+        RTree m_nodesRTree;                          ///< Spatial R-Tree used to inquire nodes
+        size_t m_numM = 0;                           ///< The number of m coordinates (vertical lines)
+        size_t m_numN = 0;                           ///< The number of n coordinates (horizontal lines)
 
     private:
         /// @brief A customized type used for searching the closest m and n indices closest to a point
