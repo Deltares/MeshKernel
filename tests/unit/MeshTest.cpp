@@ -2,9 +2,6 @@
 #include <gtest/gtest.h>
 #include <random>
 
-#include "MeshKernel/CurvilinearGrid.hpp"
-#include "MeshKernel/CurvilinearGridCreateUniform.hpp"
-
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
