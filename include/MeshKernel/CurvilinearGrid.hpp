@@ -43,11 +43,6 @@ namespace meshkernel
         /// @returns
         CurvilinearGrid() = default;
 
-        /// @brief Create a new (empty) curvilinear grid
-        /// @param[in] m Number of columns (horizontal direction)
-        /// @param[in] n Number of rows (vertical direction)
-        CurvilinearGrid(size_t m, size_t n);
-
         /// @brief Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use

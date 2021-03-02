@@ -1490,53 +1490,54 @@ TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError
     ASSERT_EQ(static_cast<int>(meshkernel::MeshLocations::Nodes), type);
     ASSERT_EQ(478, invalidIndex);
 }
-//
-//TEST(ApiStatelessTests, Compute_OnCurvilinearGrid_ShouldRefine)
-//{
-//    // Prepare
-//    int meshKernelId;
-//    meshkernelapi::mkernel_allocate_state(meshKernelId);
-//
-//    auto errorCode = mkernel_set_mesh2d(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
-//    DeleteRectangularMeshForApiTesting(std::get<0>(meshData));
-//    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-//
-//    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
-//    orthogonalizationParameters.OuterIterations = 1;
-//    orthogonalizationParameters.BoundaryIterations = 25;
-//    orthogonalizationParameters.InnerIterations = 25;
-//    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
-//
-//    meshkernelapi::GeometryList geometryList{};
-//    meshkernelapi::GeometryList landBoundaries{};
-//
-//    // Execute
-//    errorCode = mkernel_initialize_orthogonalization_mesh2d(meshKernelId,
-//                                                            1,
-//                                                            orthogonalizationParameters,
-//                                                            landBoundaries,
-//                                                            geometryList);
-//
-//    // Assert
-//    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-//
-//    // Assert there is a geometry error
-//    errorCode = meshkernelapi::mkernel_prepare_outer_iteration_orthogonalization_mesh2d(meshKernelId);
-//    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::InvalidGeometry, errorCode);
-//
-//    //Delete orthogonalization instance
-//    errorCode = meshkernelapi::mkernel_delete_orthogonalization_mesh2d(meshKernelId);
-//    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-//
-//    // Get the message
-//    const char* exceptionMessage;
-//    errorCode = meshkernelapi::mkernel_get_error(exceptionMessage);
-//    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-//
-//    // Get the index of the invalid location
-//    int invalidIndex;
-//    int type;
-//    errorCode = meshkernelapi::mkernel_get_geometry_error(invalidIndex, type);
-//    ASSERT_EQ(static_cast<int>(meshkernel::MeshLocations::Nodes), type);
-//    ASSERT_EQ(478, invalidIndex);
-//}
+
+TEST_F(ApiTests, Compute_OnCurvilinearGrid_ShouldRefine)
+{
+    // Prepare
+    auto meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::MakeMeshParameters makeMeshParameters{};
+    meshkernelapi::GeometryList geometryList{};
+
+    makeMeshParameters.GridType = 0;
+    makeMeshParameters.NumberOfColumns = 3;
+    makeMeshParameters.NumberOfRows = 3;
+    makeMeshParameters.GridAngle = 0.0;
+    makeMeshParameters.GridBlockSize = 0.0;
+    makeMeshParameters.OriginXCoordinate = 0.0;
+    makeMeshParameters.OriginYCoordinate = 0.0;
+    makeMeshParameters.OriginZCoordinate = 0.0;
+    makeMeshParameters.XGridBlockSize = 10.0;
+    makeMeshParameters.YGridBlockSize = 10.0;
+
+    // Execute
+    auto errorCode = mkernel_make_uniform_curvilinear(meshKernelId,
+                                                      makeMeshParameters,
+                                                      geometryList,
+                                                      false);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::GeometryList firstPoint{};
+    std::unique_ptr<double> xCoordinatesFirstPoint(new double[1]{10.0});
+    std::unique_ptr<double> yCoordinatesFirstPoint(new double[1]{20.0});
+    firstPoint.xCoordinates = xCoordinatesFirstPoint.get();
+    firstPoint.yCoordinates = yCoordinatesFirstPoint.get();
+    firstPoint.numberOfCoordinates = 1;
+
+    meshkernelapi::GeometryList secondPoint{};
+    std::unique_ptr<double> xCoordinateSecondPoint(new double[1]{20.0});
+    std::unique_ptr<double> yCoordinatesSecondPoint(new double[1]{20.0});
+    secondPoint.xCoordinates = xCoordinateSecondPoint.get();
+    secondPoint.yCoordinates = yCoordinatesSecondPoint.get();
+    secondPoint.numberOfCoordinates = 1;
+
+    errorCode = mkernel_refine_curvilinear(meshKernelId, firstPoint, secondPoint, 10);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    meshkernelapi::MeshGeometryDimensions meshGeometryDimensions;
+    meshkernelapi::MeshGeometry meshGeometry;
+    errorCode = mkernel_get_curvilinear(meshKernelId, meshGeometryDimensions, meshGeometry);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    ASSERT_EQ(52, meshGeometryDimensions.numnode);
+    ASSERT_EQ(87, meshGeometryDimensions.numedge);
+}

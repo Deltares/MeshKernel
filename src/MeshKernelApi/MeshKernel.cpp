@@ -1683,8 +1683,7 @@ namespace meshkernelapi
             meshkernel::CurvilinearGridFromSplinesTransfinite curvilinearGridFromSplinesTransfinite(meshKernelSplines, curvilinearParameters);
 
             // Compute the curvilinear grid
-            meshkernel::CurvilinearGrid curvilinearGrid;
-            curvilinearGridFromSplinesTransfinite.Compute(curvilinearGrid);
+            const auto curvilinearGrid = curvilinearGridFromSplinesTransfinite.Compute();
 
             // Set the state
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGrid);

@@ -54,7 +54,7 @@ namespace meshkernel
 
         /// Computes the curvilinear grid from the splines using transfinite interpolation
         /// @param curvilinearGrid
-        void Compute(CurvilinearGrid& curvilinearGrid);
+        CurvilinearGrid Compute();
 
         std::shared_ptr<Splines> m_splines; ///< A pointer to spline
 
