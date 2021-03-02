@@ -411,7 +411,7 @@ namespace meshkernel
                                            const std::vector<T>& coordinatesDerivatives,
                                            double pointAdimensionalCoordinate)
     {
-        T pointCoordinate;
+        T pointCoordinate{};
         if (pointAdimensionalCoordinate < 0)
         {
             return pointCoordinate;

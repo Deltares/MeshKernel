@@ -112,11 +112,12 @@ void meshkernel::CurvilinearGrid::BuildTree()
 
 std::tuple<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
 {
-    m_nodesRTree.NearestNeighbors(point);
-    if (m_nodesRTree.GetQueryResultSize() <= 0)
+    SearchNearestNeighbors(point, MeshLocations::Nodes);
+    if (GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
     {
         return {sizetMissingValue, sizetMissingValue};
     }
-    const auto nodeIndex = m_nodesRTree.GetQueryResult(0);
+
+    const auto nodeIndex = GetNearestNeighborIndex(0, MeshLocations::Nodes);
     return {m_gridIndices[nodeIndex].first, m_gridIndices[nodeIndex].second};
 }

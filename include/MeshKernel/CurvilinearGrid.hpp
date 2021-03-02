@@ -58,10 +58,10 @@ namespace meshkernel
         /// @brief Builds the node three to find nodes on the curvilinear grid
         void BuildTree();
 
-        /// @brief Get the m and n indices of the closest cu
+        /// @brief Get the m and n indices of the node closest to the point
+        /// @param[in] point       The input grid points
         std::tuple<int, int> GetNodeIndices(Point point);
 
-        RTree m_nodesRTree;                          ///< Spatial R-Tree used to inquire nodes
         size_t m_numM = 0;                           ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                           ///< The number of n coordinates (horizontal lines)
         Projection m_projection;                     ///< The projection used
