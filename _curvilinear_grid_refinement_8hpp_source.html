@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MeshKernel: /home/runner/work/MeshKernel/MeshKernel/include/MeshKernel/Orthogonalizer.hpp Source File</title>
+<title>MeshKernel: /home/runner/work/MeshKernel/MeshKernel/include/MeshKernel/CurvilinearGridRefinement.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -74,7 +74,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">Orthogonalizer.hpp</div>  </div>
+<div class="title">CurvilinearGridRefinement.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">//---- GPL ---------------------------------------------------------------------</span></div>
@@ -105,47 +105,45 @@ $(function() {
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">//------------------------------------------------------------------------------</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">class </span>Mesh2D;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_orthogonalizer.html">   38</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_orthogonalizer.html">Orthogonalizer</a></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Entities.hpp&gt;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernel.html">meshkernel</a></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;{</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">class </span>CurvilinearGrid;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_curvilinear_grid_refinement.html">   38</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classmeshkernel_1_1_curvilinear_grid_refinement.html">CurvilinearGridRefinement</a></div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keyword">explicit</span> <a class="code" href="classmeshkernel_1_1_orthogonalizer.html#acd99ddcdd4306525b8e085aea71247cb">Orthogonalizer</a>(std::shared_ptr&lt;Mesh2D&gt; mesh);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_orthogonalizer.html#a383a65ef501b86da252785cbe0521339">Compute</a>();</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_orthogonalizer.html#a42cab47f64df494c323cc82767723b1b">   53</a></span>&#160;        [[nodiscard]] <span class="keywordtype">double</span> <a class="code" href="classmeshkernel_1_1_orthogonalizer.html#a42cab47f64df494c323cc82767723b1b">GetWeight</a>(<span class="keywordtype">size_t</span> node, <span class="keywordtype">size_t</span> connectedNode)</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keywordflow">return</span> m_weights[node][connectedNode];</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        }</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="classmeshkernel_1_1_orthogonalizer.html#a9e3e5a5c27ac6c2878117ed578ab55bb">   62</a></span>&#160;        [[nodiscard]] <span class="keywordtype">double</span> <a class="code" href="classmeshkernel_1_1_orthogonalizer.html#a9e3e5a5c27ac6c2878117ed578ab55bb">GetRightHandSide</a>(<span class="keywordtype">size_t</span> node, <span class="keywordtype">size_t</span> connectedNode)</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            <span class="keywordflow">return</span> m_rhs[node][connectedNode];</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        }</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordtype">bool</span> AspectRatio(<span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; mesh);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        std::shared_ptr&lt;Mesh2D&gt; m_mesh;             </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        std::vector&lt;double&gt; m_aspectRatios;         </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_weights; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        std::vector&lt;std::vector&lt;double&gt;&gt; m_rhs;     </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    };</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <a class="code" href="classmeshkernel_1_1_curvilinear_grid_refinement.html#ac443f01d92a048f16ddb50d4fe9d474a">CurvilinearGridRefinement</a>(<span class="keyword">const</span> std::shared_ptr&lt;CurvilinearGrid&gt;&amp; grid,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                  <span class="keyword">const</span> <a class="code" href="structmeshkernel_1_1_point.html">Point</a>&amp; firstPoint,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                                  <span class="keyword">const</span> <a class="code" href="structmeshkernel_1_1_point.html">Point</a>&amp; secondPoint,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                  <span class="keywordtype">size_t</span> refinement);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_curvilinear_grid_refinement.html#a61a68fcb34ff175845a8d36500c8ff36">Compute</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        [[nodiscard]] std::tuple&lt;std::vector&lt;std::vector&lt;Point&gt;&gt;,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                                 std::vector&lt;std::vector&lt;Point&gt;&gt;,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                                 std::vector&lt;std::vector&lt;Point&gt;&gt;,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                                 std::vector&lt;std::vector&lt;Point&gt;&gt;&gt;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        ComputeGridLinesAndSplinesDerivatives() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        std::vector&lt;Point&gt; ComputeSplineDerivatesAlongGridLine(<span class="keyword">const</span> std::vector&lt;Point&gt;&amp; gridLine) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        std::shared_ptr&lt;CurvilinearGrid&gt; m_grid; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <a class="code" href="structmeshkernel_1_1_point.html">Point</a> m_firstPoint;                      </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <a class="code" href="structmeshkernel_1_1_point.html">Point</a> m_secondPoint;                     </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordtype">size_t</span> m_refinement;                     </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    };</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassmeshkernel_1_1_orthogonalizer_html_a42cab47f64df494c323cc82767723b1b"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalizer.html#a42cab47f64df494c323cc82767723b1b">meshkernel::Orthogonalizer::GetWeight</a></div><div class="ttdeci">double GetWeight(size_t node, size_t connectedNode)</div><div class="ttdoc">Gets the weight for a certain node and connected node.</div><div class="ttdef"><b>Definition:</b> Orthogonalizer.hpp:53</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html">meshkernel::Mesh2D</a></div><div class="ttdoc">A class derived from Mesh, which describes unstructures 2d meshes.</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:50</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_orthogonalizer_html_acd99ddcdd4306525b8e085aea71247cb"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalizer.html#acd99ddcdd4306525b8e085aea71247cb">meshkernel::Orthogonalizer::Orthogonalizer</a></div><div class="ttdeci">Orthogonalizer(std::shared_ptr&lt; Mesh2D &gt; mesh)</div><div class="ttdoc">Ctor.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_orthogonalizer_html_a9e3e5a5c27ac6c2878117ed578ab55bb"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalizer.html#a9e3e5a5c27ac6c2878117ed578ab55bb">meshkernel::Orthogonalizer::GetRightHandSide</a></div><div class="ttdeci">double GetRightHandSide(size_t node, size_t connectedNode)</div><div class="ttdoc">Gets the weight for a certain node and connected node.</div><div class="ttdef"><b>Definition:</b> Orthogonalizer.hpp:62</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_orthogonalizer_html"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalizer.html">meshkernel::Orthogonalizer</a></div><div class="ttdoc">Orthogonalizion (optimize the aspect ratios) and mesh smoothing (optimize internal face angles or are...</div><div class="ttdef"><b>Definition:</b> Orthogonalizer.hpp:38</div></div>
+<div class="ttc" id="astructmeshkernel_1_1_point_html"><div class="ttname"><a href="structmeshkernel_1_1_point.html">meshkernel::Point</a></div><div class="ttdoc">A struct describing a point in a two-dimensional space.</div><div class="ttdef"><b>Definition:</b> Entities.hpp:66</div></div>
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:34</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_orthogonalizer_html_a383a65ef501b86da252785cbe0521339"><div class="ttname"><a href="classmeshkernel_1_1_orthogonalizer.html#a383a65ef501b86da252785cbe0521339">meshkernel::Orthogonalizer::Compute</a></div><div class="ttdeci">void Compute()</div><div class="ttdoc">Computes the smoother weights and the right hans side.</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_refinement_html"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_refinement.html">meshkernel::CurvilinearGridRefinement</a></div><div class="ttdoc">A class implementing the curvilinear grid refinement algorithm.</div><div class="ttdef"><b>Definition:</b> CurvilinearGridRefinement.hpp:38</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_refinement_html_ac443f01d92a048f16ddb50d4fe9d474a"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_refinement.html#ac443f01d92a048f16ddb50d4fe9d474a">meshkernel::CurvilinearGridRefinement::CurvilinearGridRefinement</a></div><div class="ttdeci">CurvilinearGridRefinement(const std::shared_ptr&lt; CurvilinearGrid &gt; &amp;grid, const Point &amp;firstPoint, const Point &amp;secondPoint, size_t refinement)</div><div class="ttdoc">Class constructor.</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_curvilinear_grid_refinement_html_a61a68fcb34ff175845a8d36500c8ff36"><div class="ttname"><a href="classmeshkernel_1_1_curvilinear_grid_refinement.html#a61a68fcb34ff175845a8d36500c8ff36">meshkernel::CurvilinearGridRefinement::Compute</a></div><div class="ttdeci">void Compute() const</div><div class="ttdoc">Refine the curvilinear grid.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -74,6 +74,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classmeshkernel_1_1_mesh-members.html">List of all members</a>  </div>
@@ -92,11 +93,20 @@ Inheritance diagram for meshkernel::Mesh:</div>
  <div class="center">
   <img src="classmeshkernel_1_1_mesh.png" usemap="#meshkernel::Mesh_map" alt=""/>
   <map id="meshkernel::Mesh_map" name="meshkernel::Mesh_map">
-<area href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes." alt="meshkernel::Mesh1D" shape="rect" coords="0,56,129,80"/>
-<area href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes." alt="meshkernel::Mesh2D" shape="rect" coords="139,56,268,80"/>
+<area href="classmeshkernel_1_1_curvilinear_grid.html" title="A class representing a curvilinear grid." alt="meshkernel::CurvilinearGrid" shape="rect" coords="0,56,169,80"/>
+<area href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes." alt="meshkernel::Mesh1D" shape="rect" coords="179,56,348,80"/>
+<area href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes." alt="meshkernel::Mesh2D" shape="rect" coords="358,56,527,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:abcb2d5ea13c60da537fa5b94bb1f8a1b"><td class="memItemLeft" align="right" valign="top"><a id="abcb2d5ea13c60da537fa5b94bb1f8a1b"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#abcb2d5ea13c60da537fa5b94bb1f8a1b">AdministrationOptions</a> { <b>AdministrateMeshEdges</b>, 
+<b>AdministrateMeshEdgesAndFaces</b>
+ }</td></tr>
+<tr class="memdesc:abcb2d5ea13c60da537fa5b94bb1f8a1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerator describing the different options to administrate a mesh. <br /></td></tr>
+<tr class="separator:abcb2d5ea13c60da537fa5b94bb1f8a1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a05bc04f7af254a40598f8b9627da6e60"><td class="memItemLeft" align="right" valign="top"><a id="a05bc04f7af254a40598f8b9627da6e60"></a>
@@ -203,6 +213,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:acace8827e1760ce5a87696956125ac1b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#acace8827e1760ce5a87696956125ac1b">GetNearestNeighborIndex</a> (size_t index, <a class="el" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">MeshLocations</a> meshLocation)</td></tr>
 <tr class="memdesc:acace8827e1760ce5a87696956125ac1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the index of the location, sorted by proximity. To be used after SearchNearestNeighbors or SearchNearestNeighboursOnSquaredDistance.  <a href="classmeshkernel_1_1_mesh.html#acace8827e1760ce5a87696956125ac1b">More...</a><br /></td></tr>
 <tr class="separator:acace8827e1760ce5a87696956125ac1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94b7f2390e53e28dde311a4b018cb421"><td class="memItemLeft" align="right" valign="top"><a id="a94b7f2390e53e28dde311a4b018cb421"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a94b7f2390e53e28dde311a4b018cb421">SetFlatCopies</a> ()</td></tr>
+<tr class="memdesc:a94b7f2390e53e28dde311a4b018cb421"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end. <br /></td></tr>
+<tr class="separator:a94b7f2390e53e28dde311a4b018cb421"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -318,6 +332,22 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a0cf2f2ba8c0a5cfd23a231f6fc0e925e">m_nodez</a></td></tr>
 <tr class="memdesc:a0cf2f2ba8c0a5cfd23a231f6fc0e925e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nodes z-coordinate. <br /></td></tr>
 <tr class="separator:a0cf2f2ba8c0a5cfd23a231f6fc0e925e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7af71710a714b0de9dc561f69979040"><td class="memItemLeft" align="right" valign="top"><a id="ad7af71710a714b0de9dc561f69979040"></a>
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ad7af71710a714b0de9dc561f69979040">m_faceNodes</a></td></tr>
+<tr class="memdesc:ad7af71710a714b0de9dc561f69979040"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each face, the nodes. <br /></td></tr>
+<tr class="separator:ad7af71710a714b0de9dc561f69979040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a632c1cbfd06a5bb806aa14f36fcfc07c"><td class="memItemLeft" align="right" valign="top"><a id="a632c1cbfd06a5bb806aa14f36fcfc07c"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a632c1cbfd06a5bb806aa14f36fcfc07c">m_facesCircumcentersx</a></td></tr>
+<tr class="memdesc:a632c1cbfd06a5bb806aa14f36fcfc07c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The circumcenters x-coordinate. <br /></td></tr>
+<tr class="separator:a632c1cbfd06a5bb806aa14f36fcfc07c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab51ab3153221ed69296c6dd20e409eb8"><td class="memItemLeft" align="right" valign="top"><a id="ab51ab3153221ed69296c6dd20e409eb8"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ab51ab3153221ed69296c6dd20e409eb8">m_facesCircumcentersy</a></td></tr>
+<tr class="memdesc:ab51ab3153221ed69296c6dd20e409eb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The circumcenters y-coordinate. <br /></td></tr>
+<tr class="separator:ab51ab3153221ed69296c6dd20e409eb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae78c48f0f1c9a07f784f4e051c6fdb40"><td class="memItemLeft" align="right" valign="top"><a id="ae78c48f0f1c9a07f784f4e051c6fdb40"></a>
+std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ae78c48f0f1c9a07f784f4e051c6fdb40">m_facesCircumcentersz</a></td></tr>
+<tr class="memdesc:ae78c48f0f1c9a07f784f4e051c6fdb40"><td class="mdescLeft">&#160;</td><td class="mdescRight">The circumcenters z-coordinate. <br /></td></tr>
+<tr class="separator:ae78c48f0f1c9a07f784f4e051c6fdb40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2d meshes. </p>

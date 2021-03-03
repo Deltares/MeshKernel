@@ -100,6 +100,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class representing a curvilinear grid.  <a href="classmeshkernel_1_1_curvilinear_grid.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_create_uniform.html">CurvilinearGridCreateUniform</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class implementing the generation of a uniform curvilinear grid.  <a href="classmeshkernel_1_1_curvilinear_grid_create_uniform.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_from_polygon.html">CurvilinearGridFromPolygon</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class used to compute a <a class="el" href="classmeshkernel_1_1_curvilinear_grid.html" title="A class representing a curvilinear grid.">CurvilinearGrid</a> from a polygon.  <a href="classmeshkernel_1_1_curvilinear_grid_from_polygon.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -108,6 +111,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_from_splines_transfinite.html">CurvilinearGridFromSplinesTransfinite</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class used to create a curvilinear grid from 4 splines in blocks.  <a href="classmeshkernel_1_1_curvilinear_grid_from_splines_transfinite.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_refinement.html">CurvilinearGridRefinement</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class implementing the curvilinear grid refinement algorithm.  <a href="classmeshkernel_1_1_curvilinear_grid_refinement.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_flip_edges.html">FlipEdges</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class used to flip edges in order to minimise the number of edges connected to a node.  <a href="classmeshkernel_1_1_flip_edges.html#details">More...</a><br /></td></tr>
@@ -326,24 +332,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:ae353b37ec8a3310333d27f76109fb183"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ae353b37ec8a3310333d27f76109fb183">FaceAreaAndCenterOfMass</a> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, double &amp;area, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;centerOfMass, bool &amp;isCounterClockWise)</td></tr>
 <tr class="memdesc:ae353b37ec8a3310333d27f76109fb183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened.  <a href="namespacemeshkernel.html#ae353b37ec8a3310333d27f76109fb183">More...</a><br /></td></tr>
 <tr class="separator:ae353b37ec8a3310333d27f76109fb183"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8d65ed377e7d797ad5fc860a59325f0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:af8d65ed377e7d797ad5fc860a59325f0"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#af8d65ed377e7d797ad5fc860a59325f0">InterpolateSplinePoint</a> (const std::vector&lt; T &gt; &amp;coordinates, const std::vector&lt; T &gt; &amp;coordinatesDerivatives, double pointAdimensionalCoordinate, T &amp;pointCoordinate)</td></tr>
-<tr class="memdesc:af8d65ed377e7d797ad5fc860a59325f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point.  <a href="namespacemeshkernel.html#af8d65ed377e7d797ad5fc860a59325f0">More...</a><br /></td></tr>
-<tr class="separator:af8d65ed377e7d797ad5fc860a59325f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32bbb85c8d86468386cd94eb1d2b991b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a32bbb85c8d86468386cd94eb1d2b991b"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a32bbb85c8d86468386cd94eb1d2b991b">InterpolateSplinePoint</a> (const std::vector&lt; T &gt; &amp;coordinates, const std::vector&lt; T &gt; &amp;coordinatesDerivatives, double pointAdimensionalCoordinate)</td></tr>
+<tr class="memdesc:a32bbb85c8d86468386cd94eb1d2b991b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)  <a href="namespacemeshkernel.html#a32bbb85c8d86468386cd94eb1d2b991b">More...</a><br /></td></tr>
+<tr class="separator:a32bbb85c8d86468386cd94eb1d2b991b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0d8a446f5a4bc200ffd72f5a5809ae1"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
 <tr class="memitem:ad0d8a446f5a4bc200ffd72f5a5809ae1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1">SwapVectorElements</a> (std::vector&lt; T &gt; &amp;v)</td></tr>
 <tr class="memdesc:ad0d8a446f5a4bc200ffd72f5a5809ae1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap the elements of a vector, such as the last elements becomes the first elements.  <a href="namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1">More...</a><br /></td></tr>
 <tr class="separator:ad0d8a446f5a4bc200ffd72f5a5809ae1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad3bd931e1b564679e23e3e0d5921225"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aad3bd931e1b564679e23e3e0d5921225">ComputeAdimensionalDistancesFromPointSerie</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;v, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, std::vector&lt; double &gt; &amp;result, double &amp;totalDistance)</td></tr>
-<tr class="memdesc:aad3bd931e1b564679e23e3e0d5921225"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes dimensionless distances of a vector of points such as the first entry has distance 0 and the last entry has distance 1.  <a href="namespacemeshkernel.html#aad3bd931e1b564679e23e3e0d5921225">More...</a><br /></td></tr>
-<tr class="separator:aad3bd931e1b564679e23e3e0d5921225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab494e044742959e1ed0a317f026735e7"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; double &gt;, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ab494e044742959e1ed0a317f026735e7">ComputeAdimensionalDistancesFromPointSerie</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;v, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
+<tr class="memdesc:ab494e044742959e1ed0a317f026735e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes dimensionless distances of a vector of points such as the first entry has distance 0 and the last entry has distance 1.  <a href="namespacemeshkernel.html#ab494e044742959e1ed0a317f026735e7">More...</a><br /></td></tr>
+<tr class="separator:ab494e044742959e1ed0a317f026735e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f0c68fd74f7232f452d77bac69696e2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5f0c68fd74f7232f452d77bac69696e2"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2">sgn</a> (T val)</td></tr>
 <tr class="memdesc:a5f0c68fd74f7232f452d77bac69696e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the sign of a type.  <a href="namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2">More...</a><br /></td></tr>
 <tr class="separator:a5f0c68fd74f7232f452d77bac69696e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08a412768c6fec89197a6198117fad35"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a08a412768c6fec89197a6198117fad35">DiscretizeTransfinite</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;sideOne, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;sideTwo, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;sideThree, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;sideFour, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, size_t numM, size_t numN)</td></tr>
-<tr class="memdesc:a08a412768c6fec89197a6198117fad35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the transfinite discretization inside the area defined by 4 sides, each one discretized with a series of points (tranfn2).  <a href="namespacemeshkernel.html#a08a412768c6fec89197a6198117fad35">More...</a><br /></td></tr>
-<tr class="separator:a08a412768c6fec89197a6198117fad35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b46788110c04d50ad20ca866320838d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a3b46788110c04d50ad20ca866320838d">DiscretizeTransfinite</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;leftDiscretization, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;rightDiscretization, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;bottomDiscretization, const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;upperDiscretization, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, size_t numM, size_t numN)</td></tr>
+<tr class="memdesc:a3b46788110c04d50ad20ca866320838d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the transfinite discretization inside the area defined by 4 sides, each one discretized with a series of points (tranfn2).  <a href="namespacemeshkernel.html#a3b46788110c04d50ad20ca866320838d">More...</a><br /></td></tr>
+<tr class="separator:a3b46788110c04d50ad20ca866320838d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac58dc9b0bbb628400d4e88cdd9be75e1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ac58dc9b0bbb628400d4e88cdd9be75e1">ComputeEdgeCenters</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;nodes, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a7fda31b0d2488c53f4b00c5d2e764fb7">Edge</a> &gt; &amp;edges)</td></tr>
 <tr class="memdesc:ac58dc9b0bbb628400d4e88cdd9be75e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the edge centers.  <a href="namespacemeshkernel.html#ac58dc9b0bbb628400d4e88cdd9be75e1">More...</a><br /></td></tr>
 <tr class="separator:ac58dc9b0bbb628400d4e88cdd9be75e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -561,9 +567,9 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>Moves a point by adding an increment vector to it. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">normal</td><td>normal The increment direction. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">normal</td><td>The increment direction. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">increment</td><td>The increment to use. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">referencePoint</td><td>the reference point containing the reference latitude to use. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">referencePoint</td><td>The reference point containing the reference latitude to use. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>The coordinate system projection. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">point</td><td>The point to be incremented. </td></tr>
   </table>
@@ -756,14 +762,14 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 </div>
 </div>
-<a id="aad3bd931e1b564679e23e3e0d5921225"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad3bd931e1b564679e23e3e0d5921225">&#9670;&nbsp;</a></span>ComputeAdimensionalDistancesFromPointSerie()</h2>
+<a id="ab494e044742959e1ed0a317f026735e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab494e044742959e1ed0a317f026735e7">&#9670;&nbsp;</a></span>ComputeAdimensionalDistancesFromPointSerie()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void meshkernel::ComputeAdimensionalDistancesFromPointSerie </td>
+          <td class="memname">std::tuple&lt;std::vector&lt;double&gt;, double&gt; meshkernel::ComputeAdimensionalDistancesFromPointSerie </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>v</em>, </td>
@@ -772,19 +778,7 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;&#160;</td>
-          <td class="paramname"><em>projection</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
-          <td class="paramname"><em>result</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double &amp;&#160;</td>
-          <td class="paramname"><em>totalDistance</em>&#160;</td>
+          <td class="paramname"><em>projection</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -799,11 +793,10 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>The vector of points </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>The projection to use. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">result</td><td>the resulting containing the dimensionless distances. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">totalDistance</td><td>The dimensional total distance (used for normalization). </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>The dimensionless distances and the dimensional total distance (used for normalization) </dd></dl>
 
 </div>
 </div>
@@ -1122,8 +1115,8 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 
 </div>
 </div>
-<a id="a08a412768c6fec89197a6198117fad35"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08a412768c6fec89197a6198117fad35">&#9670;&nbsp;</a></span>DiscretizeTransfinite()</h2>
+<a id="a3b46788110c04d50ad20ca866320838d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b46788110c04d50ad20ca866320838d">&#9670;&nbsp;</a></span>DiscretizeTransfinite()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1132,25 +1125,25 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
           <td class="memname">std::vector&lt;std::vector&lt;<a class="el" href="structmeshkernel_1_1_point.html">Point</a>&gt; &gt; meshkernel::DiscretizeTransfinite </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>sideOne</em>, </td>
+          <td class="paramname"><em>leftDiscretization</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>sideTwo</em>, </td>
+          <td class="paramname"><em>rightDiscretization</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>sideThree</em>, </td>
+          <td class="paramname"><em>bottomDiscretization</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>sideFour</em>, </td>
+          <td class="paramname"><em>upperDiscretization</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1181,10 +1174,10 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <p>Computes the transfinite discretization inside the area defined by 4 sides, each one discretized with a series of points (tranfn2). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">sideOne</td><td>The first side of the area. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sideTwo</td><td>The second side of the area. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sideThree</td><td>The third side of the area. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sideFour</td><td>The fourth side of the area. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">leftDiscretization</td><td>The first side of the area. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rightDiscretization</td><td>The second side of the area. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">bottomDiscretization</td><td>The third side of the area. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">upperDiscretization</td><td>The fourth side of the area. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>The projection to use. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">numM</td><td>The number of columns to generate (horizontal direction). </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">numN</td><td>The number of rows to generate (vertical direction). </td></tr>
@@ -1764,8 +1757,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="af8d65ed377e7d797ad5fc860a59325f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8d65ed377e7d797ad5fc860a59325f0">&#9670;&nbsp;</a></span>InterpolateSplinePoint()</h2>
+<a id="a32bbb85c8d86468386cd94eb1d2b991b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32bbb85c8d86468386cd94eb1d2b991b">&#9670;&nbsp;</a></span>InterpolateSplinePoint()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1773,7 +1766,7 @@ template&lt;typename T &gt; </div>
 template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">bool meshkernel::InterpolateSplinePoint </td>
+          <td class="memname">T meshkernel::InterpolateSplinePoint </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
           <td class="paramname"><em>coordinates</em>, </td>
@@ -1788,13 +1781,7 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>pointAdimensionalCoordinate</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">T &amp;&#160;</td>
-          <td class="paramname"><em>pointCoordinate</em>&#160;</td>
+          <td class="paramname"><em>pointAdimensionalCoordinate</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1804,17 +1791,16 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point. </p>
+<p>Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">coordinates</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">coordinatesDerivatives</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pointAdimensionalCoordinate</td><td></td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">pointCoordinate</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">coordinates</td><td>The spline node coordinates </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">coordinatesDerivatives</td><td>The spline nodal derivatives </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pointAdimensionalCoordinate</td><td>The adimensinal coordinate where to perform the interpolation </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>False if an error occurs </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The interpolated point </dd></dl>
 
 </div>
 </div>

@@ -149,6 +149,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a1ebb07701e66b8be07bdf040b7d87f64"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1ebb07701e66b8be07bdf040b7d87f64">mkernel_get_mesh2d</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh_geometry_dimensions.html">MeshGeometryDimensions</a> &amp;meshGeometryDimensions, <a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html">MeshGeometry</a> &amp;meshGeometry)</td></tr>
 <tr class="memdesc:a1ebb07701e66b8be07bdf040b7d87f64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">meshkernel::Mesh2D</a> state as a <a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html" title="A struct used to describe the values of an unstructured mesh in a C-compatible manner.">MeshGeometry</a> struct.  <a href="namespacemeshkernelapi.html#a1ebb07701e66b8be07bdf040b7d87f64">More...</a><br /></td></tr>
 <tr class="separator:a1ebb07701e66b8be07bdf040b7d87f64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3aa30b9a4a5a09bee50d1bc2c7c7c5d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab3aa30b9a4a5a09bee50d1bc2c7c7c5d">mkernel_get_curvilinear</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh_geometry_dimensions.html">MeshGeometryDimensions</a> &amp;meshGeometryDimensions, <a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html">MeshGeometry</a> &amp;meshGeometry)</td></tr>
+<tr class="memdesc:ab3aa30b9a4a5a09bee50d1bc2c7c7c5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the meshkernel::Curvilinear state as a <a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html" title="A struct used to describe the values of an unstructured mesh in a C-compatible manner.">MeshGeometry</a> struct (converted as set of edges and nodes)  <a href="namespacemeshkernelapi.html#ab3aa30b9a4a5a09bee50d1bc2c7c7c5d">More...</a><br /></td></tr>
+<tr class="separator:ab3aa30b9a4a5a09bee50d1bc2c7c7c5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81cdfe0c19099b14699938417d8431bf"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a81cdfe0c19099b14699938417d8431bf">mkernel_get_mesh1d</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html">Mesh1D</a> &amp;mesh1d)</td></tr>
 <tr class="memdesc:a81cdfe0c19099b14699938417d8431bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">meshkernel::Mesh1D</a> state as a <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">meshkernelapi::Mesh1D</a> struct.  <a href="namespacemeshkernelapi.html#a81cdfe0c19099b14699938417d8431bf">More...</a><br /></td></tr>
 <tr class="separator:a81cdfe0c19099b14699938417d8431bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -200,24 +203,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a7b3e250aa961a01671595b8a795a3d34"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a7b3e250aa961a01671595b8a795a3d34">mkernel_get_closest_node_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, double searchRadius, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut)</td></tr>
 <tr class="memdesc:a7b3e250aa961a01671595b8a795a3d34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the coordinates of the closest existing node.  <a href="namespacemeshkernelapi.html#a7b3e250aa961a01671595b8a795a3d34">More...</a><br /></td></tr>
 <tr class="separator:a7b3e250aa961a01671595b8a795a3d34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a849d6701d302ebe3e963c8fbe2e6cc52"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a849d6701d302ebe3e963c8fbe2e6cc52">mkernel_compute_orthogonal_curvilinear_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters)</td></tr>
-<tr class="memdesc:a849d6701d302ebe3e963c8fbe2e6cc52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes curvilinear grid from splines with an advancing front.  <a href="namespacemeshkernelapi.html#a849d6701d302ebe3e963c8fbe2e6cc52">More...</a><br /></td></tr>
-<tr class="separator:a849d6701d302ebe3e963c8fbe2e6cc52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab061f90d68eb0786352b8d9eda99266a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab061f90d68eb0786352b8d9eda99266a">mkernel_initialize_orthogonal_curvilinear_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters)</td></tr>
-<tr class="memdesc:ab061f90d68eb0786352b8d9eda99266a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a curvilinear grid from splines with the advancing front method. Initialization step (interactive)  <a href="namespacemeshkernelapi.html#ab061f90d68eb0786352b8d9eda99266a">More...</a><br /></td></tr>
-<tr class="separator:ab061f90d68eb0786352b8d9eda99266a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a798f86d3095cbfca395123e9a5181461"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a798f86d3095cbfca395123e9a5181461">mkernel_iterate_orthogonal_curvilinear_mesh2d</a> (int meshKernelId, int layer)</td></tr>
-<tr class="memdesc:a798f86d3095cbfca395123e9a5181461"><td class="mdescLeft">&#160;</td><td class="mdescRight">One advancement of the front in curvilinear grid from splines (interactive)  <a href="namespacemeshkernelapi.html#a798f86d3095cbfca395123e9a5181461">More...</a><br /></td></tr>
-<tr class="separator:a798f86d3095cbfca395123e9a5181461"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae86972e94e20b3bc94070d7a55a954b1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae86972e94e20b3bc94070d7a55a954b1">mkernel_refresh_orthogonal_curvilinear_mesh2d</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:ae86972e94e20b3bc94070d7a55a954b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts curvilinear grid to mesh and refreshes the state (interactive)  <a href="namespacemeshkernelapi.html#ae86972e94e20b3bc94070d7a55a954b1">More...</a><br /></td></tr>
-<tr class="separator:ae86972e94e20b3bc94070d7a55a954b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7fe301ed2210420831e1730ec6ff602"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa7fe301ed2210420831e1730ec6ff602">mkernel_delete_orthogonal_curvilinear_mesh2d</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:aa7fe301ed2210420831e1730ec6ff602"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalizes curvilinear grid from splines algorithm.  <a href="namespacemeshkernelapi.html#aa7fe301ed2210420831e1730ec6ff602">More...</a><br /></td></tr>
-<tr class="separator:aa7fe301ed2210420831e1730ec6ff602"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d20cd2a6d8f7976986b22f4a849231d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8d20cd2a6d8f7976986b22f4a849231d">mkernel_make_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_make_mesh_parameters.html">MakeMeshParameters</a> &amp;makeGridParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
-<tr class="memdesc:a8d20cd2a6d8f7976986b22f4a849231d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new mesh.  <a href="namespacemeshkernelapi.html#a8d20cd2a6d8f7976986b22f4a849231d">More...</a><br /></td></tr>
-<tr class="separator:a8d20cd2a6d8f7976986b22f4a849231d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa0621058a0583f069a5c957286e9f5"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0fa0621058a0583f069a5c957286e9f5">mkernel_make_mesh_from_polygon_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
 <tr class="memdesc:a0fa0621058a0583f069a5c957286e9f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a triangular grid in a polygon.  <a href="namespacemeshkernelapi.html#a0fa0621058a0583f069a5c957286e9f5">More...</a><br /></td></tr>
 <tr class="separator:a0fa0621058a0583f069a5c957286e9f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -287,15 +272,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a8a88c8745472aeebb657219a050fb04c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8a88c8745472aeebb657219a050fb04c">mkernel_flip_edges_mesh2d</a> (int meshKernelId, int isTriangulationRequired, int projectToLandBoundaryOption)</td></tr>
 <tr class="memdesc:a8a88c8745472aeebb657219a050fb04c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flips the edges.  <a href="namespacemeshkernelapi.html#a8a88c8745472aeebb657219a050fb04c">More...</a><br /></td></tr>
 <tr class="separator:a8a88c8745472aeebb657219a050fb04c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeae007c5c02b521546e842df2532b8e1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aeae007c5c02b521546e842df2532b8e1">mkernel_compute_transfinite_curvilinear_from_splines_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;splines, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters)</td></tr>
-<tr class="memdesc:aeae007c5c02b521546e842df2532b8e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates curvilinear grid from splines with transfinite interpolation.  <a href="namespacemeshkernelapi.html#aeae007c5c02b521546e842df2532b8e1">More...</a><br /></td></tr>
-<tr class="separator:aeae007c5c02b521546e842df2532b8e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fa53fb47a56efc1a41f734075757dd1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5fa53fb47a56efc1a41f734075757dd1">mkernel_compute_transfinite_curvilinear_from_polygon_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygons, int firstNode, int secondNode, int thirdNode, bool useFourthSide)</td></tr>
-<tr class="memdesc:a5fa53fb47a56efc1a41f734075757dd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a curvilinear mesh in a polygon. 3 separate polygon nodes need to be selected.  <a href="namespacemeshkernelapi.html#a5fa53fb47a56efc1a41f734075757dd1">More...</a><br /></td></tr>
-<tr class="separator:a5fa53fb47a56efc1a41f734075757dd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58701618cf72c41b7bb0d9a6d20c5f63"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a58701618cf72c41b7bb0d9a6d20c5f63">mkernel_compute_transfinite_curvilinear_from_triangle_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygon, int firstNode, int secondNode, int thirdNode)</td></tr>
-<tr class="memdesc:a58701618cf72c41b7bb0d9a6d20c5f63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a curvilinear mesh in a triangle. 3 separate polygon nodes need to be selected.  <a href="namespacemeshkernelapi.html#a58701618cf72c41b7bb0d9a6d20c5f63">More...</a><br /></td></tr>
-<tr class="separator:a58701618cf72c41b7bb0d9a6d20c5f63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40422236cefe92baf917ba09dc460ba7"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a40422236cefe92baf917ba09dc460ba7">mkernel_count_obtuse_triangles_mesh2d</a> (int meshKernelId, int &amp;numObtuseTriangles)</td></tr>
 <tr class="memdesc:a40422236cefe92baf917ba09dc460ba7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of obtuse triangles (those having one edge longer than the sum of the other two)  <a href="namespacemeshkernelapi.html#a40422236cefe92baf917ba09dc460ba7">More...</a><br /></td></tr>
 <tr class="separator:a40422236cefe92baf917ba09dc460ba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -326,6 +302,40 @@ Functions</h2></td></tr>
 <tr class="memitem:aea7e4b3097ead2e873b8dc441091bfe6"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aea7e4b3097ead2e873b8dc441091bfe6">mkernel_compute_boundary_contacts</a> (int meshKernelId, const int *oneDNodeMask, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygons, double searchRadius)</td></tr>
 <tr class="memdesc:aea7e4b3097ead2e873b8dc441091bfe6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)  <a href="namespacemeshkernelapi.html#aea7e4b3097ead2e873b8dc441091bfe6">More...</a><br /></td></tr>
 <tr class="separator:aea7e4b3097ead2e873b8dc441091bfe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe230fe37417df9e581d874206ed8246"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#abe230fe37417df9e581d874206ed8246">mkernel_refine_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListFirstPoint, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListSecondPoint, int refinement)</td></tr>
+<tr class="memdesc:abe230fe37417df9e581d874206ed8246"><td class="mdescLeft">&#160;</td><td class="mdescRight">Curvilinear grid refinement.  <a href="namespacemeshkernelapi.html#abe230fe37417df9e581d874206ed8246">More...</a><br /></td></tr>
+<tr class="separator:abe230fe37417df9e581d874206ed8246"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a363dac3e1a837532860f457c1ad98b95"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a363dac3e1a837532860f457c1ad98b95">mkernel_compute_transfinite_from_splines_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;splines, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters, bool isGeographic)</td></tr>
+<tr class="memdesc:a363dac3e1a837532860f457c1ad98b95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates curvilinear grid from splines with transfinite interpolation.  <a href="namespacemeshkernelapi.html#a363dac3e1a837532860f457c1ad98b95">More...</a><br /></td></tr>
+<tr class="separator:a363dac3e1a837532860f457c1ad98b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a865019819f6599f9173aa1a36496347f"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a865019819f6599f9173aa1a36496347f">mkernel_compute_transfinite_from_polygon_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygons, int firstNode, int secondNode, int thirdNode, bool useFourthSide, bool isGeographic)</td></tr>
+<tr class="memdesc:a865019819f6599f9173aa1a36496347f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a curvilinear mesh in a polygon. 3 separate polygon nodes need to be selected.  <a href="namespacemeshkernelapi.html#a865019819f6599f9173aa1a36496347f">More...</a><br /></td></tr>
+<tr class="separator:a865019819f6599f9173aa1a36496347f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a637a049429ebf1f4a1667a0254b2bedb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a637a049429ebf1f4a1667a0254b2bedb">mkernel_compute_transfinite_from_triangle_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygon, int firstNode, int secondNode, int thirdNode, bool isGeographic)</td></tr>
+<tr class="memdesc:a637a049429ebf1f4a1667a0254b2bedb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a curvilinear mesh in a triangle. 3 separate polygon nodes need to be selected.  <a href="namespacemeshkernelapi.html#a637a049429ebf1f4a1667a0254b2bedb">More...</a><br /></td></tr>
+<tr class="separator:a637a049429ebf1f4a1667a0254b2bedb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53a9fb6252421eff75ba382461faeba3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a53a9fb6252421eff75ba382461faeba3">mkernel_compute_orthogonal_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters, bool isGeographic)</td></tr>
+<tr class="memdesc:a53a9fb6252421eff75ba382461faeba3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes curvilinear grid from splines with an advancing front.  <a href="namespacemeshkernelapi.html#a53a9fb6252421eff75ba382461faeba3">More...</a><br /></td></tr>
+<tr class="separator:a53a9fb6252421eff75ba382461faeba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34da81fc430cd9e31885816ee98e993e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a34da81fc430cd9e31885816ee98e993e">mkernel_initialize_orthogonal_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters, const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;splinesToCurvilinearParameters, bool isGeographic)</td></tr>
+<tr class="memdesc:a34da81fc430cd9e31885816ee98e993e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a curvilinear grid from splines with the advancing front method. Initialization step (interactive)  <a href="namespacemeshkernelapi.html#a34da81fc430cd9e31885816ee98e993e">More...</a><br /></td></tr>
+<tr class="separator:a34da81fc430cd9e31885816ee98e993e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b1d00e523658ac4e1fa2d2474084e04"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8b1d00e523658ac4e1fa2d2474084e04">mkernel_iterate_orthogonal_curvilinear</a> (int meshKernelId, int layer)</td></tr>
+<tr class="memdesc:a8b1d00e523658ac4e1fa2d2474084e04"><td class="mdescLeft">&#160;</td><td class="mdescRight">One advancement of the front in curvilinear grid from splines (interactive)  <a href="namespacemeshkernelapi.html#a8b1d00e523658ac4e1fa2d2474084e04">More...</a><br /></td></tr>
+<tr class="separator:a8b1d00e523658ac4e1fa2d2474084e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6a966b665a31185c3e57ba97f65ab19"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa6a966b665a31185c3e57ba97f65ab19">mkernel_refresh_orthogonal_curvilinear</a> (int meshKernelId)</td></tr>
+<tr class="memdesc:aa6a966b665a31185c3e57ba97f65ab19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts curvilinear grid to mesh and refreshes the state (interactive)  <a href="namespacemeshkernelapi.html#aa6a966b665a31185c3e57ba97f65ab19">More...</a><br /></td></tr>
+<tr class="separator:aa6a966b665a31185c3e57ba97f65ab19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dcf952f4f80b30eecb8e5b602afcc43"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9dcf952f4f80b30eecb8e5b602afcc43">mkernel_delete_orthogonal_curvilinear</a> (int meshKernelId)</td></tr>
+<tr class="memdesc:a9dcf952f4f80b30eecb8e5b602afcc43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalizes curvilinear grid from splines algorithm.  <a href="namespacemeshkernelapi.html#a9dcf952f4f80b30eecb8e5b602afcc43">More...</a><br /></td></tr>
+<tr class="separator:a9dcf952f4f80b30eecb8e5b602afcc43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adca2d998657d6527e4799ccf5692d9a2"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#adca2d998657d6527e4799ccf5692d9a2">mkernel_make_uniform_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_make_mesh_parameters.html">MakeMeshParameters</a> &amp;makeGridParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, bool isGeographic)</td></tr>
+<tr class="memdesc:adca2d998657d6527e4799ccf5692d9a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new mesh.  <a href="namespacemeshkernelapi.html#adca2d998657d6527e4799ccf5692d9a2">More...</a><br /></td></tr>
+<tr class="separator:adca2d998657d6527e4799ccf5692d9a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c8a7a9f99cd5feedadca9b03aae4e4d"><td class="memItemLeft" align="right" valign="top"><a id="a0c8a7a9f99cd5feedadca9b03aae4e4d"></a>
+MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0c8a7a9f99cd5feedadca9b03aae4e4d">mkernel_convert_curvilinear_to_mesh2d</a> (int meshKernelId)</td></tr>
+<tr class="memdesc:a0c8a7a9f99cd5feedadca9b03aae4e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a curvilinear grid to an unstructured mesh. <br /></td></tr>
+<tr class="separator:a0c8a7a9f99cd5feedadca9b03aae4e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a> ()</td></tr>
 <tr class="memdesc:a0fa4028baafe51cdd5e87fe898b4a426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used in the back-end library as separator and missing value.  <a href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">More...</a><br /></td></tr>
 <tr class="separator:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -623,14 +633,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a849d6701d302ebe3e963c8fbe2e6cc52"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a849d6701d302ebe3e963c8fbe2e6cc52">&#9670;&nbsp;</a></span>mkernel_compute_orthogonal_curvilinear_mesh2d()</h2>
+<a id="a53a9fb6252421eff75ba382461faeba3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53a9fb6252421eff75ba382461faeba3">&#9670;&nbsp;</a></span>mkernel_compute_orthogonal_curvilinear()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_compute_orthogonal_curvilinear_mesh2d </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_compute_orthogonal_curvilinear </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -651,7 +661,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;&#160;</td>
-          <td class="paramname"><em>splinesToCurvilinearParameters</em>&#160;</td>
+          <td class="paramname"><em>splinesToCurvilinearParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isGeographic</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -668,6 +684,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryList</td><td>The input splines corners </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">curvilinearParameters</td><td>The input parameters to generate the curvilinear grid </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">splinesToCurvilinearParameters</td><td>The parameters of the advancing front algorithm </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">isGeographic</td><td>Generate a curvilinear grid in a Cartesian system (false) or spherical system (true) </td></tr>
   </table>
   </dd>
 </dl>
@@ -780,14 +797,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a5fa53fb47a56efc1a41f734075757dd1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5fa53fb47a56efc1a41f734075757dd1">&#9670;&nbsp;</a></span>mkernel_compute_transfinite_curvilinear_from_polygon_mesh2d()</h2>
+<a id="a865019819f6599f9173aa1a36496347f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a865019819f6599f9173aa1a36496347f">&#9670;&nbsp;</a></span>mkernel_compute_transfinite_from_polygon_curvilinear()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_compute_transfinite_curvilinear_from_polygon_mesh2d </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_compute_transfinite_from_polygon_curvilinear </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -820,7 +837,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>useFourthSide</em>&#160;</td>
+          <td class="paramname"><em>useFourthSide</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isGeographic</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -839,6 +862,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">secondNode</td><td>The second selected node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thirdNode</td><td>The third node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">useFourthSide</td><td>Use (true/false) the fourth polygon side to compute the curvilinear grid </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">isGeographic</td><td>Generate a curvilinear grid in a Cartesian system (false) or spherical system (true) </td></tr>
   </table>
   </dd>
 </dl>
@@ -846,14 +870,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aeae007c5c02b521546e842df2532b8e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeae007c5c02b521546e842df2532b8e1">&#9670;&nbsp;</a></span>mkernel_compute_transfinite_curvilinear_from_splines_mesh2d()</h2>
+<a id="a363dac3e1a837532860f457c1ad98b95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a363dac3e1a837532860f457c1ad98b95">&#9670;&nbsp;</a></span>mkernel_compute_transfinite_from_splines_curvilinear()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_compute_transfinite_curvilinear_from_splines_mesh2d </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_compute_transfinite_from_splines_curvilinear </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -868,7 +892,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;&#160;</td>
-          <td class="paramname"><em>curvilinearParameters</em>&#160;</td>
+          <td class="paramname"><em>curvilinearParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isGeographic</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -884,6 +914,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">splines</td><td>The splines </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">curvilinearParameters</td><td>The curvilinear parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">isGeographic</td><td>Generate a curvilinear grid in a Cartesian system (false) or spherical system (true) </td></tr>
   </table>
   </dd>
 </dl>
@@ -891,14 +922,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a58701618cf72c41b7bb0d9a6d20c5f63"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a58701618cf72c41b7bb0d9a6d20c5f63">&#9670;&nbsp;</a></span>mkernel_compute_transfinite_curvilinear_from_triangle_mesh2d()</h2>
+<a id="a637a049429ebf1f4a1667a0254b2bedb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a637a049429ebf1f4a1667a0254b2bedb">&#9670;&nbsp;</a></span>mkernel_compute_transfinite_from_triangle_curvilinear()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_compute_transfinite_curvilinear_from_triangle_mesh2d </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_compute_transfinite_from_triangle_curvilinear </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -925,7 +956,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>thirdNode</em>&#160;</td>
+          <td class="paramname"><em>thirdNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isGeographic</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -943,6 +980,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">firstNode</td><td>The first selected node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">secondNode</td><td>The second selected node </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">thirdNode</td><td>The third node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">isGeographic</td><td>Generate a curvilinear grid in a Cartesian system (false) or spherical system (true) </td></tr>
   </table>
   </dd>
 </dl>
@@ -1598,14 +1636,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa7fe301ed2210420831e1730ec6ff602"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa7fe301ed2210420831e1730ec6ff602">&#9670;&nbsp;</a></span>mkernel_delete_orthogonal_curvilinear_mesh2d()</h2>
+<a id="a9dcf952f4f80b30eecb8e5b602afcc43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dcf952f4f80b30eecb8e5b602afcc43">&#9670;&nbsp;</a></span>mkernel_delete_orthogonal_curvilinear()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_delete_orthogonal_curvilinear_mesh2d </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_delete_orthogonal_curvilinear </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em></td><td>)</td>
@@ -1897,6 +1935,51 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">contacts</td><td><a class="el" href="structmeshkernelapi_1_1_contacts.html" title="A struct used to describe contacts between a 1d and a 2d mesh.">Contacts</a> data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ab3aa30b9a4a5a09bee50d1bc2c7c7c5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3aa30b9a4a5a09bee50d1bc2c7c7c5d">&#9670;&nbsp;</a></span>mkernel_get_curvilinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_curvilinear </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_mesh_geometry_dimensions.html">MeshGeometryDimensions</a> &amp;&#160;</td>
+          <td class="paramname"><em>meshGeometryDimensions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html">MeshGeometry</a> &amp;&#160;</td>
+          <td class="paramname"><em>meshGeometry</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the meshkernel::Curvilinear state as a <a class="el" href="structmeshkernelapi_1_1_mesh_geometry.html" title="A struct used to describe the values of an unstructured mesh in a C-compatible manner.">MeshGeometry</a> struct (converted as set of edges and nodes) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">meshGeometryDimensions</td><td>Mesh2D dimensions </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">meshGeometry</td><td>Mesh2D data </td></tr>
   </table>
   </dd>
 </dl>
@@ -2235,9 +2318,9 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input point </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The search radius </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">nodeIndex</td><td>The index of the closest node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input point from where starting the search </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The search radius to use for the search </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">nodeIndex</td><td>The index of the found node </td></tr>
   </table>
   </dd>
 </dl>
@@ -2632,14 +2715,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab061f90d68eb0786352b8d9eda99266a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab061f90d68eb0786352b8d9eda99266a">&#9670;&nbsp;</a></span>mkernel_initialize_orthogonal_curvilinear_mesh2d()</h2>
+<a id="a34da81fc430cd9e31885816ee98e993e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34da81fc430cd9e31885816ee98e993e">&#9670;&nbsp;</a></span>mkernel_initialize_orthogonal_curvilinear()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_initialize_orthogonal_curvilinear_mesh2d </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_initialize_orthogonal_curvilinear </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -2660,7 +2743,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_splines_to_curvilinear_parameters.html">SplinesToCurvilinearParameters</a> &amp;&#160;</td>
-          <td class="paramname"><em>splinesToCurvilinearParameters</em>&#160;</td>
+          <td class="paramname"><em>splinesToCurvilinearParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isGeographic</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2677,6 +2766,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryList</td><td>The input splines corners </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">curvilinearParameters</td><td>The input parameters to generate the curvilinear grid </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">splinesToCurvilinearParameters</td><td>The parameters of the advancing front algorithm </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">isGeographic</td><td>Generate a curvilinear grid in a Cartesian system (false) or spherical system (true) </td></tr>
   </table>
   </dd>
 </dl>
@@ -2847,14 +2937,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a798f86d3095cbfca395123e9a5181461"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a798f86d3095cbfca395123e9a5181461">&#9670;&nbsp;</a></span>mkernel_iterate_orthogonal_curvilinear_mesh2d()</h2>
+<a id="a8b1d00e523658ac4e1fa2d2474084e04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b1d00e523658ac4e1fa2d2474084e04">&#9670;&nbsp;</a></span>mkernel_iterate_orthogonal_curvilinear()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_iterate_orthogonal_curvilinear_mesh2d </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_iterate_orthogonal_curvilinear </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -2878,51 +2968,6 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">layer</td><td>The layer index </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
-
-</div>
-</div>
-<a id="a8d20cd2a6d8f7976986b22f4a849231d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d20cd2a6d8f7976986b22f4a849231d">&#9670;&nbsp;</a></span>mkernel_make_mesh2d()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_make_mesh2d </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>meshKernelId</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_make_mesh_parameters.html">MakeMeshParameters</a> &amp;&#160;</td>
-          <td class="paramname"><em>makeGridParameters</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
-          <td class="paramname"><em>geometryList</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Makes a new mesh. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">makeGridParameters</td><td>The structure containing the make grid parameters </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometryList</td><td>The polygon to account for </td></tr>
   </table>
   </dd>
 </dl>
@@ -2999,6 +3044,58 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryList</td><td>The samples where to triangulate </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="adca2d998657d6527e4799ccf5692d9a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adca2d998657d6527e4799ccf5692d9a2">&#9670;&nbsp;</a></span>mkernel_make_uniform_curvilinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_make_uniform_curvilinear </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_make_mesh_parameters.html">MakeMeshParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>makeGridParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometryList</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isGeographic</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Makes a new mesh. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">makeGridParameters</td><td>The structure containing the make grid parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryList</td><td>The polygon to account for </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">isGeographic</td><td>Generate a curvilinear grid in a Cartesian system (false) or spherical system (true) </td></tr>
   </table>
   </dd>
 </dl>
@@ -3258,6 +3355,58 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="abe230fe37417df9e581d874206ed8246"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe230fe37417df9e581d874206ed8246">&#9670;&nbsp;</a></span>mkernel_refine_curvilinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_refine_curvilinear </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometryListFirstPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometryListSecondPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>refinement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Curvilinear grid refinement. </p>
+<p><code>geometryListFirstPoint</code> and <code>geometryListSecondPoint</code> must lie on the same gridline </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
+    <tr><td class="paramname">geometryListFirstPoint</td><td>The geometry list containing the first node of the segment defining the refinement zone. </td></tr>
+    <tr><td class="paramname">geometryListSecondPoint</td><td>The geometry list containing the second node of the segment defining the refinement zone. </td></tr>
+    <tr><td class="paramname">refinement</td><td>The number of refinement lines between <code>geometryListFirstPoint</code> and <code>geometryListSecondPoint</code> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code (0 Successful) </dd></dl>
+
+</div>
+</div>
 <a id="a757cb24349b7a6c3df27e64a08ece938"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a757cb24349b7a6c3df27e64a08ece938">&#9670;&nbsp;</a></span>mkernel_refine_polygon()</h2>
 
@@ -3324,14 +3473,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae86972e94e20b3bc94070d7a55a954b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae86972e94e20b3bc94070d7a55a954b1">&#9670;&nbsp;</a></span>mkernel_refresh_orthogonal_curvilinear_mesh2d()</h2>
+<a id="aa6a966b665a31185c3e57ba97f65ab19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6a966b665a31185c3e57ba97f65ab19">&#9670;&nbsp;</a></span>mkernel_refresh_orthogonal_curvilinear()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_refresh_orthogonal_curvilinear_mesh2d </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_refresh_orthogonal_curvilinear </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em></td><td>)</td>
