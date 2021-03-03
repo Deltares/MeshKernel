@@ -34,7 +34,9 @@ namespace meshkernel
 {
     class CurvilinearGrid;
 
-    /// @brief A class implementing the curvilinear grid de-refinement algorithm
+    /// @brief A class implementing the curvilinear grid de-refinement algorithm.
+    /// A segment is defined by the first and second point.
+    /// The grid lines crossed by the segment are eliminated from the curvilinear grid.
     class CurvilinearGridDeRefinement
     {
     public:
