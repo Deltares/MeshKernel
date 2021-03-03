@@ -42,8 +42,8 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        /// @param[in] firstPoint The first vertex of the segment defining the derefinement zone
-        /// @param[in] secondPoint The second vertex of the segment defining the derefinement zone
+        /// @param[in] firstPoint The first node of the segment defining the derefinement zone
+        /// @param[in] secondPoint The second node of the segment defining the derefinement zone
         CurvilinearGridDeRefinement(std::shared_ptr<CurvilinearGrid> grid,
                                     const Point& firstPoint,
                                     const Point& secondPoint);
@@ -53,7 +53,7 @@ namespace meshkernel
 
     private:
         std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
-        Point m_firstPoint;                      ///< The first vertex of the segment defining the derefinement zone
-        Point m_secondPoint;                     ///< The second vertex of the segment defining the derefinement zone
+        Point m_firstPoint;                      ///< The first node of the segment defining the derefinement zone
+        Point m_secondPoint;                     ///< The second node of the segment defining the derefinement zone
     };
 } // namespace meshkernel

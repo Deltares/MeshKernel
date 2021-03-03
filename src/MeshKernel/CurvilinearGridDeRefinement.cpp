@@ -54,8 +54,8 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridDeRefinement::Compute()
     }
 
     /// estimate the dimension of the refined grid
-    const auto numMToDeRefine = mSecondNode - mFirstNode == 0 ? 1 : mSecondNode - mFirstNode;
-    const auto numNToDeRefine = nSecondNode - nFirstNode == 0 ? 1 : nSecondNode - nFirstNode;
+    const auto numMToDeRefine = std::max(1, mSecondNode - mFirstNode);
+    const auto numNToDeRefine = std::max(1, nSecondNode - nFirstNode);
 
     // the de-refined grid
     std::vector<std::vector<Point>> deRefinedGrid;

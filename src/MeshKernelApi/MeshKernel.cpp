@@ -1634,19 +1634,19 @@ namespace meshkernelapi
         {
             if (meshKernelState.count(meshKernelId) == 0)
             {
-                throw std::invalid_argument("mkernel_refine_curvilineargrid: The selected mesh kernel id does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
             const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
 
             if (firstPoint.empty())
             {
-                throw std::invalid_argument("mkernel_refine_curvilineargrid: No first node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
             }
 
             const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
             if (secondPoint.empty())
             {
-                throw std::invalid_argument("mkernel_refine_curvilineargrid: No second node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
             }
 
             // Execute
@@ -1669,19 +1669,19 @@ namespace meshkernelapi
         {
             if (meshKernelState.count(meshKernelId) == 0)
             {
-                throw std::invalid_argument("mkernel_derefine_curvilinear: The selected mesh kernel id does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
             const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
 
             if (firstPoint.empty())
             {
-                throw std::invalid_argument("mkernel_derefine_curvilinear: No first node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
             }
 
             const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
             if (secondPoint.empty())
             {
-                throw std::invalid_argument("mkernel_derefine_curvilinear: No second node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
             }
 
             // Execute
@@ -1706,7 +1706,7 @@ namespace meshkernelapi
         {
             if (meshKernelState.count(meshKernelId) == 0)
             {
-                throw std::invalid_argument("mkernel_compute_transfinite_from_splines_curvilinear: The selected mesh kernel id does not exist.");
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
             meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
