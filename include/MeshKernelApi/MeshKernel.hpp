@@ -567,6 +567,17 @@ namespace meshkernelapi
                                                    const GeometryList& geometryListSecondPoint,
                                                    int refinement);
 
+        /// @brief Curvilinear grid derefinement
+        ///
+        /// \p geometryListFirstPoint and \p geometryListSecondPoint must lie on the same gridline
+        /// @param meshKernelId            The id of the mesh state.
+        /// @param geometryListFirstPoint  The geometry list containing the first node of the segment defining the derefinement zone.
+        /// @param geometryListSecondPoint The geometry list containing the second node of the segment defining the derefinement zone.
+        /// @return Error code (0 Successful)
+        MKERNEL_API int mkernel_derefine_curvilinear(int meshKernelId,
+                                                     const GeometryList& geometryListFirstPoint,
+                                                     const GeometryList& geometryListSecondPoint);
+
         /// @brief Generates curvilinear grid from splines with transfinite interpolation
         /// @param[in] meshKernelId          The id of the mesh state
         /// @param[in] splines               The splines
