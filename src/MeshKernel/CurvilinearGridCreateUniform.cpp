@@ -179,5 +179,5 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridCreateUniform::Compute() 
             }
         }
     }
-    return CurvilinearGrid(gridNodes, m_polygons->m_projection);
+    return CurvilinearGrid(std::move(gridNodes), m_polygons->m_projection);
 }

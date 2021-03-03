@@ -234,7 +234,7 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromSplinesTransfinite::C
         }
     }
 
-    return CurvilinearGrid(gridNodes, m_splines->m_projection);
+    return CurvilinearGrid(std::move(gridNodes), m_splines->m_projection);
 }
 
 void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations(size_t numIntersections,

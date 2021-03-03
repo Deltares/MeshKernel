@@ -550,7 +550,7 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromSplines::ComputeCurvi
         startGridLine = endGridlineIndex + 2;
     }
 
-    return CurvilinearGrid(curvilinearMeshPoints, m_splines->m_projection);
+    return CurvilinearGrid(std::move(curvilinearMeshPoints), m_splines->m_projection);
 }
 
 std::tuple<size_t, size_t> meshkernel::CurvilinearGridFromSplines::ComputeGridLayerAndSubLayer(size_t layerIndex)

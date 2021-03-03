@@ -213,8 +213,7 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size
             gridNodes[i][j] = result[i][j];
         }
     }
-    CurvilinearGrid curvilinearGrid(gridNodes, m_polygon->m_projection);
-    return curvilinearGrid;
+    return CurvilinearGrid(std::move(gridNodes), m_polygon->m_projection);
 }
 
 meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
@@ -426,6 +425,5 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size
         }
     }
 
-    CurvilinearGrid curvilinearGrid(gridNodes, m_polygon->m_projection);
-    return curvilinearGrid;
+    return CurvilinearGrid(std::move(gridNodes), m_polygon->m_projection);
 }

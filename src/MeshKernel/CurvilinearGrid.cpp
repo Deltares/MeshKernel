@@ -29,7 +29,7 @@
 
 #include <MeshKernel/CurvilinearGrid.hpp>
 
-meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> grid, Projection projection) : m_gridNodes(std::move(grid))
+meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection) : m_gridNodes(std::move(grid))
 {
     if (m_gridNodes.empty())
     {
