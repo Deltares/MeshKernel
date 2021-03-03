@@ -124,41 +124,40 @@ namespace meshkernelapi
         }
     }
 
-    /// @brief Sets a meshkernelapi::MeshGeometry instance from a meshkernel::Mesh2D instance
-    /// @param[in]  mesh2d                 The input meshkernel::Mesh2D instance
+    /// @brief Sets a meshkernelapi::MeshGeometry instance from a meshkernel::Mesh instance
+    /// @param[in]  mesh                   The input meshkernel::Mesh instance
     /// @param[in]  meshKernelId           The id to the mesh which should be set
     /// @param[out] meshGeometryDimensions The dimensions of the mesh geometry
     /// @param[out] meshGeometry           The output meshkernelapi::MeshGeometry instance
-    static void SetMesh2DGeometry(std::shared_ptr<meshkernel::Mesh2D> mesh2d,
-                                  int meshKernelId,
-                                  MeshGeometryDimensions& meshGeometryDimensions,
-                                  MeshGeometry& meshGeometry)
+    static void SetMesh(std::shared_ptr<meshkernel::Mesh> mesh,
+                        MeshGeometryDimensions& meshGeometryDimensions,
+                        MeshGeometry& meshGeometry)
     {
 
-        meshGeometry.nodex = &(mesh2d->m_nodex[0]);
-        meshGeometry.nodey = &(mesh2d->m_nodey[0]);
-        meshGeometry.nodez = &(mesh2d->m_nodez[0]);
-        meshGeometry.edge_nodes = &(mesh2d->m_edgeNodes[0]);
+        meshGeometry.nodex = &(mesh->m_nodex[0]);
+        meshGeometry.nodey = &(mesh->m_nodey[0]);
+        meshGeometry.nodez = &(mesh->m_nodez[0]);
+        meshGeometry.edge_nodes = &(mesh->m_edgeNodes[0]);
 
         meshGeometryDimensions.maxnumfacenodes = meshkernel::maximumNumberOfNodesPerFace;
-        meshGeometryDimensions.numface = static_cast<int>(mesh2d->GetNumFaces());
+        meshGeometryDimensions.numface = static_cast<int>(mesh->GetNumFaces());
         if (meshGeometryDimensions.numface > 0)
         {
-            meshGeometry.face_nodes = &(mesh2d->m_faceNodes[0]);
-            meshGeometry.facex = &(mesh2d->m_facesCircumcentersx[0]);
-            meshGeometry.facey = &(mesh2d->m_facesCircumcentersy[0]);
-            meshGeometry.facez = &(mesh2d->m_facesCircumcentersz[0]);
+            meshGeometry.face_nodes = &(mesh->m_faceNodes[0]);
+            meshGeometry.facex = &(mesh->m_facesCircumcentersx[0]);
+            meshGeometry.facey = &(mesh->m_facesCircumcentersy[0]);
+            meshGeometry.facez = &(mesh->m_facesCircumcentersz[0]);
         }
 
-        if (mesh2d->GetNumNodes() == 1)
+        if (mesh->GetNumNodes() == 1)
         {
             meshGeometryDimensions.numnode = 0;
             meshGeometryDimensions.numedge = 0;
         }
         else
         {
-            meshGeometryDimensions.numnode = static_cast<int>(mesh2d->GetNumNodes());
-            meshGeometryDimensions.numedge = static_cast<int>(mesh2d->GetNumEdges());
+            meshGeometryDimensions.numnode = static_cast<int>(mesh->GetNumNodes());
+            meshGeometryDimensions.numedge = static_cast<int>(mesh->GetNumEdges());
         }
     }
 
@@ -166,9 +165,8 @@ namespace meshkernelapi
     /// @param[in]  mesh1d           The input meshkernel::Mesh1D instance
     /// @param[in]  meshKernelId     The id to the mesh which should be set
     /// @param[out] mesh1dApi        The output meshkernelapi::Mesh1D instance
-    static void SetGeometryMesh1D(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
-                                  int meshKernelId,
-                                  meshkernelapi::Mesh1D& mesh1dApi)
+    static void SetMesh1D(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
+                          Mesh1D& mesh1dApi)
     {
         mesh1dApi.nodex = &(mesh1d->m_nodex[0]);
         mesh1dApi.nodey = &(mesh1d->m_nodey[0]);

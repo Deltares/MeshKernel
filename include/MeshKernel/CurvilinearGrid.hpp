@@ -30,34 +30,43 @@
 #include <vector>
 
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/RTree.hpp>
 
 namespace meshkernel
 {
     /// @brief A class representing a curvilinear grid
-    class CurvilinearGrid
+    class CurvilinearGrid : public Mesh
     {
-
     public:
         /// @brief Default constructor
         /// @returns
         CurvilinearGrid() = default;
 
-        /// @brief Create a new curvilinear grid
-        /// @param[in] m Number of columns (horizontal direction)
-        /// @param[in] n Number of rows (vertical direction)
-        CurvilinearGrid(size_t m, size_t n)
-        {
-            m_grid.resize(m + 1, std::vector<Point>(n + 1, {doubleMissingValue, doubleMissingValue}));
-        }
+        /// @brief Creates a new curvilinear grid from a given set of points
+        /// @param[in] grid       The input grid points
+        /// @param[in] projection The projection to use
+        CurvilinearGrid(std::vector<std::vector<Point>> grid, Projection projection);
 
-        /// @brief Sets the point to the curvilinear grid
-        /// @param[in] grid Input grid points
-        CurvilinearGrid(const std::vector<std::vector<Point>>& grid)
-        {
-            CurvilinearGrid(grid.size(), grid[0].size());
-            m_grid = grid;
-        }
+        /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
+        /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
+        std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<std::pair<size_t, size_t>>> ConvertCurvilinearToNodesAndEdges();
 
-        std::vector<std::vector<Point>> m_grid; ///< Member variable storing the grid
+        /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
+        void SetFlatCopies();
+
+        /// @brief Builds the node three to find nodes on the curvilinear grid
+        void BuildTree();
+
+        /// @brief Get the m and n indices of the node closest to the point
+        /// @param[in] point       The input grid points
+        std::tuple<int, int> GetNodeIndices(Point point);
+
+        size_t m_numM = 0;                           ///< The number of m coordinates (vertical lines)
+        size_t m_numN = 0;                           ///< The number of n coordinates (horizontal lines)
+        std::vector<std::vector<Point>> m_gridNodes; ///< Member variable storing the grid
+
+    private:
+        std::vector<std::pair<size_t, size_t>> m_gridIndices; ///< the original mapping of the flatten nodes in the curvilinear grid
     };
 } // namespace meshkernel

@@ -52,7 +52,7 @@ void meshkernel::Splines::AddSpline(const std::vector<Point>& splines, size_t st
 
     // compute basic properties
     m_splineDerivatives.emplace_back();
-    SecondOrderDerivative(m_splineNodes.back(), size, m_splineDerivatives.back());
+    m_splineDerivatives.back() = SecondOrderDerivative(m_splineNodes.back(), 0, m_splineNodes.back().size() - 1);
     m_splinesLength.emplace_back(GetSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
 }
 
@@ -181,30 +181,26 @@ bool meshkernel::Splines::GetSplinesIntersection(size_t first,
         firstRatioIterations = firstRight - firstLeft;
         secondRatioIterations = secondRight - secondLeft;
 
-        Point firstLeftSplinePoint{doubleMissingValue, doubleMissingValue};
-        bool successful = InterpolateSplinePoint(m_splineNodes[first], m_splineDerivatives[first], firstLeft, firstLeftSplinePoint);
-        if (!successful)
+        const auto firstLeftSplinePoint = InterpolateSplinePoint(m_splineNodes[first], m_splineDerivatives[first], firstLeft);
+        if (!firstLeftSplinePoint.IsValid())
         {
             return false;
         }
 
-        Point firstRightSplinePoint{doubleMissingValue, doubleMissingValue};
-        successful = InterpolateSplinePoint(m_splineNodes[first], m_splineDerivatives[first], firstRight, firstRightSplinePoint);
-        if (!successful)
+        const auto firstRightSplinePoint = InterpolateSplinePoint(m_splineNodes[first], m_splineDerivatives[first], firstRight);
+        if (!firstRightSplinePoint.IsValid())
         {
             return false;
         }
 
-        Point secondLeftSplinePoint{doubleMissingValue, doubleMissingValue};
-        successful = InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondLeft, secondLeftSplinePoint);
-        if (!successful)
+        const auto secondLeftSplinePoint = InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondLeft);
+        if (!secondLeftSplinePoint.IsValid())
         {
             return false;
         }
 
-        Point secondRightSplinePoint{doubleMissingValue, doubleMissingValue};
-        successful = InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondRight, secondRightSplinePoint);
-        if (!successful)
+        const auto secondRightSplinePoint = InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondRight);
+        if (!secondRightSplinePoint.IsValid())
         {
             return false;
         }
@@ -292,9 +288,8 @@ double meshkernel::Splines::GetSplineLength(size_t index,
     }
 
     // first point
-    Point leftPoint{doubleMissingValue, doubleMissingValue};
-    bool successful = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], startIndex, leftPoint);
-    if (!successful)
+    auto leftPoint = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], startIndex);
+    if (!leftPoint.IsValid())
     {
         throw AlgorithmError("Splines::GetSplineLength: Could not interpolate spline points.");
     }
@@ -309,9 +304,8 @@ double meshkernel::Splines::GetSplineLength(size_t index,
             rightPointCoordinateOnSpline = endIndex;
         }
 
-        Point rightPoint{doubleMissingValue, doubleMissingValue};
-        successful = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], rightPointCoordinateOnSpline, rightPoint);
-        if (!successful)
+        const auto rightPoint = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], rightPointCoordinateOnSpline);
+        if (!rightPoint.IsValid())
         {
             throw AlgorithmError("Splines::GetSplineLength: Could not interpolate spline points.");
         }
@@ -348,9 +342,8 @@ void meshkernel::Splines::ComputeCurvatureOnSplinePoint(size_t splineIndex,
     const auto leftSegment = static_cast<double>(rightCornerPoint) - adimensionalPointCoordinate;
     const auto rightSegment = adimensionalPointCoordinate - static_cast<double>(leftCornerPoint);
 
-    Point pointCoordinate;
-    const auto successful = InterpolateSplinePoint(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate, pointCoordinate);
-    if (!successful)
+    const auto pointCoordinate = InterpolateSplinePoint(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate);
+    if (!pointCoordinate.IsValid())
     {
         curvatureFactor = 0.0;
         throw AlgorithmError("Splines::ComputeCurvatureOnSplinePoint: Could not interpolate spline points.");
@@ -383,43 +376,48 @@ void meshkernel::Splines::ComputeCurvatureOnSplinePoint(size_t splineIndex,
     tangentialVector.y = dy / distance;
 }
 
-void meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline, size_t numNodes, std::vector<Point>& coordinatesDerivatives)
+std::vector<meshkernel::Point> meshkernel::Splines::SecondOrderDerivative(const std::vector<Point>& spline, size_t startIndex, size_t endIndex)
 {
-    std::vector<Point> u(numNodes);
-    u[0] = {0.0, 0.0};
-    coordinatesDerivatives.resize(spline.size(), {0.0, 0.0});
-    coordinatesDerivatives.front() = {0.0, 0.0};
+    const auto numNodes = endIndex - startIndex + 1;
+    std::vector<Point> u(numNodes, {0.0, 0.0});
+    std::vector<Point> coordinatesDerivative(numNodes, {0.0, 0.0});
 
-    for (auto i = 1; i < numNodes - 1; i++)
+    size_t index = 1;
+    for (auto i = startIndex + 1; i < numNodes - 1; i++)
     {
-        const Point p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
-        coordinatesDerivatives[i].x = -0.5 / p.x;
-        coordinatesDerivatives[i].y = -0.5 / p.y;
+        const Point p = coordinatesDerivative[index - 1] * 0.5 + 2.0;
+        coordinatesDerivative[index].x = -0.5 / p.x;
+        coordinatesDerivative[index].y = -0.5 / p.y;
 
         const Point delta = spline[i + 1] - spline[i] - (spline[i] - spline[i - 1]);
-        u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
+        u[index] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
+        index++;
     }
     // TODO: C++ 20 for(auto& i :  views::reverse(vec))
-    coordinatesDerivatives.back() = {0.0, 0.0};
+    coordinatesDerivative.back() = {0.0, 0.0};
     for (auto i = numNodes - 2; i < numNodes; --i)
     {
-        coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
+        coordinatesDerivative[i] = coordinatesDerivative[i] * coordinatesDerivative[i + 1] + u[i];
     }
+
+    return coordinatesDerivative;
 }
 
-void meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, size_t numNodes, std::vector<double>& coordinatesDerivatives)
+std::vector<double> meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coordinates, size_t startIndex, size_t endIndex)
 {
-    std::vector<double> u(numNodes);
-    u[0] = 0.0;
-    coordinatesDerivatives.front() = 0.0;
+    const auto numNodes = endIndex - startIndex + 1;
+    std::vector<double> u(numNodes, 0.0);
+    std::vector<double> coordinatesDerivatives(numNodes, 0.0);
 
-    for (auto i = 1; i < numNodes - 1; i++)
+    size_t index = 1;
+    for (auto i = startIndex + 1; i < numNodes - 1; i++)
     {
-        const double p = coordinatesDerivatives[i - 1] * 0.5 + 2.0;
-        coordinatesDerivatives[i] = -0.5 / p;
+        const double p = coordinatesDerivatives[index - 1] * 0.5 + 2.0;
+        coordinatesDerivatives[index] = -0.5 / p;
 
         const double delta = coordinates[i + 1] - coordinates[i] - (coordinates[i] - coordinates[i - 1]);
-        u[i] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
+        u[index] = (delta * 6.0 / 2.0 - u[i - 1] * 0.5) / p;
+        index++;
     }
 
     // TODO: C++ 20 for(auto& i :  views::reverse(vec))
@@ -428,6 +426,8 @@ void meshkernel::Splines::SecondOrderDerivative(const std::vector<double>& coord
     {
         coordinatesDerivatives[i] = coordinatesDerivatives[i] * coordinatesDerivatives[i + 1] + u[i];
     }
+
+    return coordinatesDerivatives;
 }
 
 void meshkernel::Splines::InterpolatePointsOnSpline(size_t index,
@@ -443,8 +443,8 @@ void meshkernel::Splines::InterpolatePointsOnSpline(size_t index,
     {
         func.SetDimensionalDistance(distances[i]);
         adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, static_cast<double>(numNodes) - 1.0);
-        const auto successful = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i], points[i]);
-        if (!successful)
+        points[i] = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i]);
+        if (!points[i].IsValid())
         {
             throw AlgorithmError("Splines::InterpolatePointsOnSpline: Could not interpolate spline points.");
         }

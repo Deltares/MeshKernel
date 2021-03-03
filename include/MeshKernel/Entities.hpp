@@ -172,7 +172,7 @@ namespace meshkernel
             y = y * degrad_hp * earth_radius;
         }
 
-        /// @brief Determines if the point instance has valid coordinates
+        /// @brief Determines if one of the point coordinates equals to \p missingValue
         [[nodiscard]] bool IsValid(const double missingValue = doubleMissingValue) const
         {
             const bool isInvalid = IsEqual(x, missingValue) ||

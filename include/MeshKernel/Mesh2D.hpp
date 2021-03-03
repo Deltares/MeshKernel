@@ -32,7 +32,6 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/RTree.hpp>
-#include <MeshKernelApi/MakeMeshParameters.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -58,12 +57,6 @@ namespace meshkernel
             FacesWithIncludedCircumcenters = 1,
             FacesCompletelyIncluded = 2
         };
-        /// Enumerator describing the different options to administrate a mesh
-        enum class AdministrationOptions
-        {
-            AdministrateMeshEdges,
-            AdministrateMeshEdgesAndFaces
-        };
 
         /// Enumerator describing the different node types
         enum class NodeTypes
@@ -85,11 +78,6 @@ namespace meshkernel
         /// @param[in] administration Type of administration to perform
         Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
 
-        /// @brief Converting constructor, from curvilinear grid to mesh (gridtonet)
-        /// @param[in] curvilinearGrid The curvilinear grid to create the mesh from
-        /// @param[in] projection The \ref Projection to use
-        Mesh2D(const CurvilinearGrid& curvilinearGrid, Projection projection);
-
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
         /// @param[in] nodes Input nodes
         /// @param[in] polygons Selection polygon
@@ -101,10 +89,6 @@ namespace meshkernel
         /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
         Mesh2D& operator+=(Mesh2D const& rhs);
-
-        /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
-        /// @param administrationOption Type of administration to perform
-        void SetFlatCopies(AdministrationOptions administrationOption);
 
         /// @brief Perform mesh administration
         /// @param administrationOption Type of administration to perform
@@ -124,11 +108,6 @@ namespace meshkernel
         /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
         /// @param[in] polygons Polygon where to perform the merging
         void MergeNodesInPolygon(const Polygons& polygons);
-
-        /// @brief Make a new rectangular mesh, composed of quads (makenet)
-        /// @param[in] MakeMeshParameters The structure containing the make grid parameters
-        /// @param[in] polygons The polygon to account for
-        void MakeMesh(const meshkernelapi::MakeMeshParameters& MakeMeshParameters, const Polygons& polygons);
 
         /// @brief Masks the edges of all faces included in a polygon
         /// @param polygons The selection polygon
@@ -304,12 +283,6 @@ namespace meshkernel
         size_t m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
         std::vector<Point> m_polygonNodesCache; ///< Cache to store the face nodes
-
-        // vectors for communicating with the client
-        std::vector<int> m_faceNodes;              ///< For each face, the nodes
-        std::vector<double> m_facesCircumcentersx; ///< The circumcenters x-coordinate
-        std::vector<double> m_facesCircumcentersy; ///< The circumcenters y-coordinate
-        std::vector<double> m_facesCircumcentersz; ///< The circumcenters z-coordinate
 
     private:
         /// @brief Find cells recursive, works with an arbitrary number of edges
