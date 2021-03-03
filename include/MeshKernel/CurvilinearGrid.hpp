@@ -55,9 +55,6 @@ namespace meshkernel
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         void SetFlatCopies();
 
-        /// @brief Builds the node three to find nodes on the curvilinear grid
-        void BuildTree();
-
         /// @brief Get the m and n indices of the node closest to the point
         /// @param[in] point       The input grid points
         std::tuple<int, int> GetNodeIndices(Point point);
