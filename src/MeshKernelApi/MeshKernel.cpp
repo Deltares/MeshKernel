@@ -90,10 +90,11 @@ namespace meshkernelapi
         }
     }
 
-    MKERNEL_API int mkernel_allocate_state(int& meshKernelId)
+    MKERNEL_API int mkernel_allocate_state(int isGeographic, int& meshKernelId)
     {
         meshKernelId = meshKernelStateCounter++;
-        meshKernelState.insert({meshKernelId, MeshKernelState()});
+        meshkernel::Projection projection = isGeographic == 0 ? meshkernel::Projection::cartesian : meshkernel::Projection::spherical;
+        meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
         return Success;
     };
 
@@ -143,8 +144,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_set_mesh2d(int meshKernelId,
                                        const MeshGeometryDimensions& meshGeometryDimensions,
-                                       const MeshGeometry& meshGeometry,
-                                       bool isGeographic)
+                                       const MeshGeometry& meshGeometry)
     {
         int exitCode = Success;
         try
@@ -160,11 +160,9 @@ namespace meshkernelapi
                                                                   meshGeometry.nodex,
                                                                   meshGeometry.nodey);
 
-            // spherical or cartesian
-            meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
             *(meshKernelState[meshKernelId].m_mesh2d) = meshkernel::Mesh2D(edges2d,
                                                                            nodes2d,
-                                                                           projection);
+                                                                           meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -174,8 +172,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_mesh1d(int meshKernelId,
-                                       const Mesh1D& mesh1d,
-                                       bool isGeographic)
+                                       const Mesh1D& mesh1d)
     {
         int exitCode = Success;
         try
@@ -190,12 +187,10 @@ namespace meshkernelapi
             const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.num_nodes,
                                                                   mesh1d.nodex,
                                                                   mesh1d.nodey);
-            // spherical or cartesian
-            meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
 
             *meshKernelState[meshKernelId].m_mesh1d = meshkernel::Mesh1D(edges1d,
                                                                          nodes1d,
-                                                                         projection);
+                                                                         meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
@@ -1662,8 +1657,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_compute_transfinite_from_splines_curvilinear(int meshKernelId,
                                                                          const GeometryList& splines,
-                                                                         const CurvilinearParameters& curvilinearParameters,
-                                                                         bool isGeographic)
+                                                                         const CurvilinearParameters& curvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -1673,10 +1667,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
-
             // Use the default constructor, no instance present
-            const auto meshKernelSplines = std::make_shared<meshkernel::Splines>(projection);
+            const auto meshKernelSplines = std::make_shared<meshkernel::Splines>(meshKernelState[meshKernelId].m_projection);
             SetSplines(splines, *meshKernelSplines);
 
             // Create algorithm and set the splines
@@ -1700,8 +1692,7 @@ namespace meshkernelapi
                                                                          int firstNode,
                                                                          int secondNode,
                                                                          int thirdNode,
-                                                                         bool useFourthSide,
-                                                                         bool isGeographic)
+                                                                         bool useFourthSide)
     {
         int exitCode = Success;
         try
@@ -1711,11 +1702,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
-
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
 
-            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, projection);
+            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshKernelState[meshKernelId].m_projection);
 
             const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
 
@@ -1735,8 +1724,7 @@ namespace meshkernelapi
                                                                           const GeometryList& polygon,
                                                                           int firstNode,
                                                                           int secondNode,
-                                                                          int thirdNode,
-                                                                          bool isGeographic)
+                                                                          int thirdNode)
     {
         int exitCode = Success;
         try
@@ -1746,11 +1734,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
-
             auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
-            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, projection);
+            const auto localPolygon = std::make_shared<meshkernel::Polygons>(polygonPoints, meshKernelState[meshKernelId].m_projection);
 
             const meshkernel::CurvilinearGridFromPolygon curvilinearGridFromPolygon(localPolygon);
 
@@ -1769,8 +1755,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_compute_orthogonal_curvilinear(int meshKernelId,
                                                            const GeometryList& geometryListIn,
                                                            const CurvilinearParameters& curvilinearParameters,
-                                                           const SplinesToCurvilinearParameters& splinesToCurvilinearParameters,
-                                                           bool isGeographic)
+                                                           const SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -1780,10 +1765,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
-
             // use the default constructor, no instance present
-            const auto spline = std::make_shared<meshkernel::Splines>(projection);
+            const auto spline = std::make_shared<meshkernel::Splines>(meshKernelState[meshKernelId].m_projection);
             SetSplines(geometryListIn, *spline);
 
             meshkernel::CurvilinearGridFromSplines curvilinearGridFromSplines(spline, curvilinearParameters, splinesToCurvilinearParameters);
@@ -1801,8 +1784,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_initialize_orthogonal_curvilinear(int meshKernelId,
                                                               const GeometryList& geometryList,
                                                               const CurvilinearParameters& curvilinearParameters,
-                                                              const SplinesToCurvilinearParameters& splinesToCurvilinearParameters,
-                                                              bool isGeographic)
+                                                              const SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -1812,9 +1794,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
-
-            auto spline = std::make_shared<meshkernel::Splines>(projection);
+            auto spline = std::make_shared<meshkernel::Splines>(meshKernelState[meshKernelId].m_projection);
             SetSplines(geometryList, *spline);
 
             meshKernelState[meshKernelId].m_curvilinearGridFromSplines = std::make_shared<meshkernel::CurvilinearGridFromSplines>(spline, curvilinearParameters, splinesToCurvilinearParameters);
@@ -1887,8 +1867,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_make_uniform_curvilinear(int meshKernelId, const MakeMeshParameters& makeGridParameters,
-                                                     const GeometryList& geometryList,
-                                                     bool isGeographic)
+                                                     const GeometryList& geometryList)
     {
         int exitCode = Success;
         try
@@ -1898,11 +1877,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            meshkernel::Projection projection = isGeographic ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
-
             auto polygonNodes = ConvertGeometryListToPointVector(geometryList);
 
-            const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, projection);
+            const auto polygon = std::make_shared<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_projection);
 
             meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeGridParameters, polygon);
 
