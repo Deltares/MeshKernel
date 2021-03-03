@@ -721,3 +721,80 @@ double meshkernel::Mesh::ComputeMaxLengthSurroundingEdges(size_t node)
 
     return maxEdgeLength;
 }
+
+void meshkernel::Mesh::SetFlatCopies()
+{
+    m_nodex.resize(GetNumNodes());
+    m_nodey.resize(GetNumNodes());
+    m_nodez.resize(GetNumNodes());
+    for (auto n = 0; n < GetNumNodes(); n++)
+    {
+        m_nodex[n] = m_nodes[n].x;
+        m_nodey[n] = m_nodes[n].y;
+        m_nodez[n] = 0.0;
+    }
+
+    size_t edgeIndex = 0;
+    m_edgeNodes.resize(GetNumEdges() * 2);
+    for (auto e = 0; e < GetNumEdges(); e++)
+    {
+        m_edgeNodes[edgeIndex] = static_cast<int>(m_edges[e].first);
+        edgeIndex++;
+        m_edgeNodes[edgeIndex] = static_cast<int>(m_edges[e].second);
+        edgeIndex++;
+    }
+
+    m_faceNodes.resize(GetNumFaces() * maximumNumberOfNodesPerFace, intMissingValue);
+    m_facesCircumcentersx.resize(GetNumFaces());
+    m_facesCircumcentersy.resize(GetNumFaces());
+    m_facesCircumcentersz.resize(GetNumFaces());
+    size_t faceIndex = 0;
+    for (auto f = 0; f < GetNumFaces(); f++)
+    {
+        for (auto n = 0; n < maximumNumberOfNodesPerFace; ++n)
+        {
+            if (n < m_facesNodes[f].size())
+            {
+                m_faceNodes[faceIndex] = static_cast<int>(m_facesNodes[f][n]);
+            }
+            faceIndex++;
+        }
+        m_facesCircumcentersx[f] = m_facesCircumcenters[f].x;
+        m_facesCircumcentersy[f] = m_facesCircumcenters[f].y;
+        m_facesCircumcentersz[f] = 0.0;
+    }
+
+    // we always need to provide pointers to not empty memory
+    if (m_nodex.empty())
+    {
+        m_nodex.resize(1);
+    }
+    if (m_nodey.empty())
+    {
+        m_nodey.resize(1);
+    }
+    if (m_nodez.empty())
+    {
+        m_nodez.resize(1);
+    }
+    if (m_edgeNodes.empty())
+    {
+        m_edgeNodes.resize(1);
+    }
+    if (m_faceNodes.empty())
+    {
+        m_faceNodes.resize(1, intMissingValue);
+    }
+    if (m_facesCircumcentersx.empty())
+    {
+        m_facesCircumcentersx.resize(1);
+    }
+    if (m_facesCircumcentersy.empty())
+    {
+        m_facesCircumcentersy.resize(1);
+    }
+    if (m_facesCircumcentersz.empty())
+    {
+        m_facesCircumcentersz.resize(1);
+    }
+}

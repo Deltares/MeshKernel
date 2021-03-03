@@ -25,11 +25,32 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/Mesh1D.hpp"
+#pragma once
 
-#include <MeshKernel/Entities.hpp>
-#include <vector>
+#include <MeshKernelApi/MakeMeshParameters.hpp>
 
-meshkernel::Mesh1D::Mesh1D(const std::vector<Edge>& edges,
-                           const std::vector<Point>& nodes,
-                           Projection projection) : Mesh(edges, nodes, projection){};
+#include <memory>
+
+namespace meshkernel
+{
+    class Polygons;
+    class CurvilinearGrid;
+
+    /// @brief A class implementing the generation of a uniform curvilinear grid
+    class CurvilinearGridCreateUniform
+    {
+    public:
+        /// @brief Class constructor
+        ///
+        /// @param[in] MakeMeshParameters The structure containing the make grid parameters
+        /// @param[in] polygons The polygon to account for
+        CurvilinearGridCreateUniform(const meshkernelapi::MakeMeshParameters& MakeMeshParameters, std::shared_ptr<Polygons> polygons);
+
+        /// @brief Compute an uniform curvilinear grid
+        CurvilinearGrid Compute() const;
+
+    private:
+        meshkernelapi::MakeMeshParameters m_makeMeshParameters; ///< A copy of the structure containing the parameters used for making the grid
+        std::shared_ptr<Polygons> m_polygons;                   ///< A pointer to the polygon to use
+    };
+} // namespace meshkernel
