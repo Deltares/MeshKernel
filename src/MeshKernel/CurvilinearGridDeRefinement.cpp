@@ -61,28 +61,29 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridDeRefinement::Compute()
     std::vector<std::vector<Point>> deRefinedGrid;
     deRefinedGrid.reserve(m_grid->m_numM);
 
-    size_t localMDeRefinement;
-    for (auto mIndexOriginalGrid = 0; mIndexOriginalGrid < m_grid->m_numM; mIndexOriginalGrid += localMDeRefinement)
+    size_t mIndexOriginalGrid = 0;
+    while (mIndexOriginalGrid < m_grid->m_numM)
     {
-        localMDeRefinement = 1;
+        size_t localMDeRefinement = 1;
         if (mIndexOriginalGrid >= mFirstNode && mIndexOriginalGrid < mSecondNode)
         {
             localMDeRefinement = numMToDeRefine;
         }
-
         deRefinedGrid.emplace_back(std::vector<Point>());
         deRefinedGrid.back().reserve(m_grid->m_numN);
-        size_t localNDeRefinement;
-        for (auto nIndexOriginalGrid = 0; nIndexOriginalGrid < m_grid->m_numN; nIndexOriginalGrid += localNDeRefinement)
-        {
 
-            localNDeRefinement = 1;
+        size_t nIndexOriginalGrid = 0;
+        while (nIndexOriginalGrid < m_grid->m_numN)
+        {
+            size_t localNDeRefinement = 1;
             if (nIndexOriginalGrid >= nFirstNode && nIndexOriginalGrid < nSecondNode)
             {
                 localNDeRefinement = numNToDeRefine;
             }
             deRefinedGrid.back().emplace_back(m_grid->m_gridNodes[mIndexOriginalGrid][nIndexOriginalGrid]);
+            nIndexOriginalGrid += localNDeRefinement;
         }
+        mIndexOriginalGrid += localMDeRefinement;
     }
     // substitute original grid with the derefined one
     return CurvilinearGrid(std::move(deRefinedGrid), m_grid->m_projection);
