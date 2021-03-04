@@ -24,8 +24,4 @@ TEST(CurvilinearGridOrthogonalization, Compute_Orthogonalization)
 
     // Execute
     curvilinearGridOrthogonalization.Compute();
-
-    // Assert
-    ASSERT_EQ(13, curvilinearGrid->m_numM);
-    ASSERT_EQ(4, curvilinearGrid->m_numN);
 }

@@ -38,7 +38,7 @@ meshkernel::CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(s
                                                                                const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters,
                                                                                const Point& firstPoint,
                                                                                const Point& secondPoint)
-    : m_grid(std::move(grid)),
+    : m_grid(grid),
       m_orthogonalizationParameters(orthogonalizationParameters),
       m_firstPoint(firstPoint),
       m_secondPoint(secondPoint)
@@ -62,8 +62,8 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
     /// define the orthogonalization bounding box
     m_minM = std::max(0, mFirstNode - 1);
     m_minN = std::max(0, nFirstNode - 1);
-    m_maxM = std::min(int(m_grid->m_numM - 1), mSecondNode);
-    m_maxN = std::min(int(m_grid->m_numN - 1), nSecondNode);
+    m_maxM = std::min(static_cast<int>(m_grid->m_numM - 1), mSecondNode);
+    m_maxN = std::min(static_cast<int>(m_grid->m_numN - 1), nSecondNode);
 
     /// Compute the masks
     m_grid->ComputeGridMasks();
@@ -106,15 +106,103 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
         }
     }
 
-    ComputeMatrixCoefficents();
-
-    // sum up
-
-    // substitute original grid with the derefined one
-    //*m_grid = CurvilinearGrid(deRefinedGrid, m_grid->m_projection);
+    ComputeHorizontalMatrixCoefficients();
+    ComputeHorizontalVerticalCoefficients();
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::ComputeMatrixCoefficents()
+void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalVerticalCoefficients()
+{
+    for (auto m = m_minM + 1; m < m_maxM; ++m)
+    {
+        for (auto n = m_minN + 1; n < m_maxN; ++n)
+        {
+            int step = 0;
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::BottomLeft)
+            {
+                step = -1;
+            }
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::BottomRight)
+            {
+                step = -1;
+            }
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::UpperRight)
+            {
+                step = 1;
+            }
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::UpperLeft)
+            {
+                step = 1;
+            }
+            if (step == 0)
+            {
+                continue;
+            }
+            auto lastValidN = n;
+            while (m_grid->m_gridNodesMask[m][lastValidN] == CurvilinearGrid::NodeTypes::Valid)
+            {
+                lastValidN += step;
+            }
+            const auto start = std::min(n, lastValidN);
+            const auto end = std::max(n, lastValidN);
+            for (auto k = start; k < end; k += step)
+            {
+                m_grid->m_gridNodesMask[m][k] = CurvilinearGrid::NodeTypes::OrthogonalizationNodes;
+            }
+        }
+    }
+
+    // store the counter
+    std::vector<std::vector<size_t>> counter(m_grid->m_numM, std::vector<size_t>(m_grid->m_numN, 0));
+
+    // Perform left sum
+    for (auto n = m_minN; n < m_maxN; ++n)
+    {
+        for (auto m = m_minM + 1; m < m_maxM; ++m)
+        {
+
+            if (m_grid->IsValidFace(m, n) &&
+                !IsEqual(m_a[m][n], doubleMissingValue) &&
+                !IsEqual(m_a[m - 1][n], doubleMissingValue) &&
+                m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeTypes::OrthogonalizationNodes)
+            {
+                m_a[m][n] += m_a[m - 1][n];
+                m_c[m][n] += m_c[m - 1][n];
+                counter[m][n] = counter[m - 1][n] + 1;
+            }
+        }
+    }
+
+    // Perform right sum
+    for (auto n = m_minN; n < m_maxN; ++n)
+    {
+        for (auto m = m_minM - 1; m >= m_maxM; --m)
+        {
+            if (m_grid->IsValidFace(m, n) &&
+                !IsEqual(m_a[m][n], doubleMissingValue) &&
+                !IsEqual(m_a[m + 1][n], doubleMissingValue) &&
+                m_grid->m_gridNodesMask[m + 1][n] != CurvilinearGrid::NodeTypes::OrthogonalizationNodes)
+            {
+                m_a[m][n] = m_a[m + 1][n];
+                m_c[m][n] = m_c[m + 1][n];
+                counter[m][n] = counter[m + 1][n];
+            }
+        }
+    }
+    // make the average
+    for (auto m = m_minM; m < m_maxM; ++m)
+    {
+        for (auto n = m_minN; n < m_maxN; ++n)
+        {
+            if (m_grid->IsValidFace(m, n))
+            {
+                m_a[m][n] /= static_cast<double>(counter[m][n] + 1);
+                m_c[m][n] /= static_cast<double>(counter[m][n] + 1);
+            }
+        }
+    }
+}
+
+void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalMatrixCoefficients()
 {
 
     for (auto m = m_minM + 1; m < m_maxM; ++m)
@@ -156,9 +244,9 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeMatrixCoefficents()
         }
     }
 
-    std::vector<std::vector<size_t>> counter(m_grid->m_numM, std::vector<size_t>(m_grid->m_numN));
+    std::vector<std::vector<size_t>> counter(m_grid->m_numM, std::vector<size_t>(m_grid->m_numN, 0));
 
-    // Perform the vertical sum
+    // Perform bottom sum
     for (auto m = m_minM; m < m_maxM; ++m)
     {
         for (auto n = m_minN + 1; n < m_maxN; ++n)
@@ -175,7 +263,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeMatrixCoefficents()
         }
     }
 
-    // sum down
+    // Perform upper sum
     for (auto m = m_minM; m < m_maxM; ++m)
     {
         for (auto n = m_maxN - 1; n >= m_minN; --n)

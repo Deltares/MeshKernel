@@ -160,7 +160,7 @@ bool meshkernel::CurvilinearGrid::IsValidFace(size_t m, size_t n) const
 void meshkernel::CurvilinearGrid::ComputeGridFacesMask()
 {
     // flag valid faces
-    m_gridFacesMask.resize(-m_numM - 1, std::vector<bool>(m_numN - 1, false));
+    m_gridFacesMask.resize(m_numM - 1, std::vector<bool>(m_numN - 1, false));
     for (auto m = 0; m < m_numM - 1; ++m)
     {
         for (auto n = 0; n < m_numN - 1; ++n)

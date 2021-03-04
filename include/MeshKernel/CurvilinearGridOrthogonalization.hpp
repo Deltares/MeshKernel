@@ -52,8 +52,12 @@ namespace meshkernel
         void Compute();
 
     private:
-        /// @brief (SOMDIST)
-        void ComputeMatrixCoefficents();
+
+        /// @brief Computes the horizontal matrix coefficients (SOMDIST)
+        void ComputeHorizontalMatrixCoefficients();
+
+        /// @brief Computes the vertical matrix coefficients
+        void ComputeHorizontalVerticalCoefficients();
 
         std::shared_ptr<CurvilinearGrid> m_grid;                                  ///< A pointer to the curvilinear grid to modify
         meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
