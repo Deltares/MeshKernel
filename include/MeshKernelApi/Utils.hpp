@@ -35,6 +35,7 @@
 #include <MeshKernel/Splines.hpp>
 
 #include <MeshKernelApi/GeometryList.hpp>
+#include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 
 #include <stdexcept>

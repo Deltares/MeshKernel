@@ -7,9 +7,8 @@
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
-
 #include <MeshKernelApi/MeshKernel.hpp>
-#include <MeshKernelApi/Utils.hpp>
+
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
