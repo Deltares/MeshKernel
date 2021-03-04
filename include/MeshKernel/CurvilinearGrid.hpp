@@ -39,6 +39,22 @@ namespace meshkernel
     class CurvilinearGrid : public Mesh
     {
     public:
+        /// @brief An enum for curvilinear node types
+        enum class NodeTypes
+        {
+            BottomLeft,             //(11)
+            UpperLeft,              //14)
+            BottomRight,            //(12)
+            UpperRight,             //(13)
+            Left,                   //(4)
+            Right,                  //(2)
+            Bottom,                 //(1)
+            Up,                     //(3)
+            Valid,                  //(10)
+            OrthogonalizationNodes, //(21)
+            Invalid
+        };
+
         /// @brief Default constructor
         /// @returns
         CurvilinearGrid() = default;
@@ -59,11 +75,41 @@ namespace meshkernel
         /// @param[in] point       The input grid points
         std::tuple<int, int> GetNodeIndices(Point point);
 
-        size_t m_numM = 0;                           ///< The number of m coordinates (vertical lines)
-        size_t m_numN = 0;                           ///< The number of n coordinates (horizontal lines)
-        std::vector<std::vector<Point>> m_gridNodes; ///< Member variable storing the grid
+        /// @brief Computes the grid nodes types and the faces masks
+        void ComputeGridMasks();
+
+        /// @brief Computes the m and n grid lines and spline derivatives in separate vectors
+        /// @return The m grid lines and the spline derivatives, the n grid lines and the splines derivatives
+        [[nodiscard]] std::tuple<std::vector<std::vector<Point>>,
+                                 std::vector<std::vector<Point>>,
+                                 std::vector<std::vector<Point>>,
+                                 std::vector<std::vector<Point>>>
+        ComputeGridLinesAndSplinesDerivatives() const;
+
+        /// @brief If the face is valid. A face is valid if all its nodes are valid.
+        /// @param[in] m the m coordinate
+        /// @param[in] n the n coordinate
+        /// @return true if theface is valid, false otherwise
+        bool IsValidFace(size_t m, size_t n) const;
+
+        size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
+        size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)
+        std::vector<std::vector<Point>> m_gridNodes;          ///< Member variable storing the grid
+        std::vector<std::vector<bool>> m_gridFacesMask;       ///< The mask of the grid faces (true/false)
+        std::vector<std::vector<NodeTypes>> m_gridNodesMask;  ///< The grid nodes types
+        std::vector<std::pair<size_t, size_t>> m_gridIndices; ///< the original mapping of the flatten nodes in the curvilinear grid
 
     private:
-        std::vector<std::pair<size_t, size_t>> m_gridIndices; ///< the original mapping of the flatten nodes in the curvilinear grid
+        /// @brief Remove invalid nodes. Is a recursive function
+        /// @param[in] invalidNodesToRemove If there are still invalid nodes to remove
+        void RemoveInvalidNodes(bool invalidNodesToRemove);
+
+        /// @brief Computes the valid grid faces
+        void ComputeGridFacesMask();
+
+        /// @brief Compute spline derivatives along a gridline, also accounting for missing values
+        /// @param[in] gridLine The input gridline
+        /// @returns The spline derivatives
+        std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
     };
 } // namespace meshkernel

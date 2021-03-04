@@ -54,19 +54,6 @@ namespace meshkernel
         void Compute() const;
 
     private:
-        /// @brief Computes the m and n grid lines and spline derivatives in separate vectors
-        /// @return The m grid lines and the spline derivatives, the n grid lines and the splines derivatives
-        [[nodiscard]] std::tuple<std::vector<std::vector<Point>>,
-                                 std::vector<std::vector<Point>>,
-                                 std::vector<std::vector<Point>>,
-                                 std::vector<std::vector<Point>>>
-        ComputeGridLinesAndSplinesDerivatives() const;
-
-        /// @brief Compute spline derivatives along a gridline, also accounting for missing values
-        /// @param[in] gridLine The input gridline
-        /// @returns The spline derivatives
-        std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
-
         std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
         Point m_firstPoint;                      ///< The first node of the segment defining the refinement zone
         Point m_secondPoint;                     ///< The second node of the segment defining the refinement zone

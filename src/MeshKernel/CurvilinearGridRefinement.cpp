@@ -60,7 +60,7 @@ void meshkernel::CurvilinearGridRefinement::Compute() const
     size_t maxN = m_grid->m_numN + numNToRefine * (m_refinement - 1);
 
     // Store the m and n grid lines in separate vectors, and compute the spline derivatives for each gridline
-    const auto [mGridLines, mGridLineDerivates, nGridLines, nGridLinesDerivatives] = ComputeGridLinesAndSplinesDerivatives();
+    const auto [mGridLines, mGridLineDerivates, nGridLines, nGridLinesDerivatives] = m_grid->ComputeGridLinesAndSplinesDerivatives();
 
     // Local vector for each curvilinear grid face
     std::vector<Point> bottomRefinement(m_refinement);
@@ -140,52 +140,4 @@ void meshkernel::CurvilinearGridRefinement::Compute() const
 
     // Substitute original grid with the refined one
     *m_grid = CurvilinearGrid(std::move(refinedGrid), m_grid->m_projection);
-}
-
-std::tuple<std::vector<std::vector<meshkernel::Point>>,
-           std::vector<std::vector<meshkernel::Point>>,
-           std::vector<std::vector<meshkernel::Point>>,
-           std::vector<std::vector<meshkernel::Point>>>
-meshkernel::CurvilinearGridRefinement::ComputeGridLinesAndSplinesDerivatives() const
-{
-
-    // m-gridlines
-    std::vector<std::vector<Point>> mGridLines(m_grid->m_numN, std::vector<Point>(m_grid->m_numM));
-    std::vector<std::vector<Point>> mGridLineDerivates(m_grid->m_numN, std::vector<Point>(m_grid->m_numM));
-    for (auto n = 0; n < m_grid->m_numN; ++n)
-    {
-        for (auto m = 0; m < m_grid->m_numM; ++m)
-        {
-            mGridLines[n][m] = m_grid->m_gridNodes[m][n];
-        }
-        mGridLineDerivates[n] = ComputeSplineDerivatesAlongGridLine(mGridLines[n]);
-    }
-
-    // n-gridlines
-    std::vector<std::vector<Point>> nGridLines(m_grid->m_numM, std::vector<Point>(m_grid->m_numN));
-    std::vector<std::vector<Point>> nGridLinesDerivatives(m_grid->m_numM, std::vector<Point>(m_grid->m_numN));
-    for (auto m = 0; m < m_grid->m_numM; ++m)
-    {
-        nGridLines[m] = m_grid->m_gridNodes[m];
-        nGridLinesDerivatives[m] = ComputeSplineDerivatesAlongGridLine(nGridLines[m]);
-    }
-
-    return {mGridLines, mGridLineDerivates, nGridLines, nGridLinesDerivatives};
-}
-
-std::vector<meshkernel::Point> meshkernel::CurvilinearGridRefinement::ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const
-{
-    std::vector<Point> gridlineDerivatives(gridLine.size());
-    const auto indices = FindIndices(gridLine, 0, gridLine.size(), doubleMissingValue);
-    for (auto index : indices)
-    {
-        auto startIndex = index[0];
-        auto endIndex = index[1];
-        const auto derivatives = Splines::SecondOrderDerivative(gridLine, startIndex, endIndex);
-        for (auto j = startIndex; j <= endIndex; ++j)
-        {
-            gridlineDerivatives[j] = derivatives[j - startIndex];
-        }
-    }
-    return gridlineDerivatives;
 }

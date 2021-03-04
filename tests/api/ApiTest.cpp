@@ -1560,8 +1560,8 @@ TEST_F(ApiTests, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine)
     // Execute
     auto errorCode = mkernel_make_uniform_curvilinear(meshKernelId,
                                                       makeMeshParameters,
-                                                      geometryList,
-                                                      false);
+                                                      geometryList);
+
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList firstPoint{};
