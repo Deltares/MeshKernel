@@ -19,7 +19,8 @@ public:
     /// Constructor for allocating state
     ApiTests()
     {
-        const auto errorCode = meshkernelapi::mkernel_allocate_state(m_meshKernelId);
+        int isGeographic = 0;
+        const auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, m_meshKernelId);
         if (errorCode != 0)
         {
             throw std::runtime_error("Could not allocate state");
@@ -40,7 +41,7 @@ public:
     {
         // Set-up new mesh
         auto meshData = MakeRectangularMeshForApiTesting(n, m, delta);
-        auto errorCode = mkernel_set_mesh2d(m_meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
+        auto errorCode = mkernel_set_mesh2d(m_meshKernelId, std::get<1>(meshData), std::get<0>(meshData));
         if (errorCode != 0)
         {
             throw std::runtime_error("Could not set mesh2d");
@@ -232,8 +233,7 @@ TEST_F(ApiTests, MakeCurvilinearGridThroughApi)
     // Execute
     auto errorCode = mkernel_make_uniform_curvilinear(meshKernelId,
                                                       makeMeshParameters,
-                                                      geometryList,
-                                                      false);
+                                                      geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
@@ -282,8 +282,7 @@ TEST_F(ApiTests, GenerateTransfiniteCurvilinearGridThroughApi)
     // Execute
     auto errorCode = mkernel_compute_transfinite_from_splines_curvilinear(meshKernelId,
                                                                           geometryListIn,
-                                                                          curvilinearParameters,
-                                                                          false);
+                                                                          curvilinearParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
@@ -339,8 +338,7 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     auto errorCode = mkernel_initialize_orthogonal_curvilinear(meshKernelId,
                                                                geometryListIn,
                                                                curvilinearParameters,
-                                                               splinesToCurvilinearParameters,
-                                                               false);
+                                                               splinesToCurvilinearParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Grow grid, from the second layer
@@ -850,8 +848,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromPolygonThroughApi)
                                                                           0,
                                                                           2,
                                                                           4,
-                                                                          true,
-                                                                          false);
+                                                                          true);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
@@ -952,8 +949,7 @@ TEST_F(ApiTests, MakeCurvilinearGridFromTriangleThroughApi)
                                                                            geometryListIn,
                                                                            0,
                                                                            3,
-                                                                           6,
-                                                                           false);
+                                                                           6);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::MeshGeometryDimensions meshGeometryDimensions{};
@@ -1000,7 +996,7 @@ TEST_F(ApiTests, ComputeSingleContactsThroughApi)
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
 
-    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d, false);
+    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
@@ -1085,7 +1081,7 @@ TEST_F(ApiTests, ComputeMultipleContactsThroughApi)
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
 
-    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d, false);
+    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
@@ -1159,7 +1155,7 @@ TEST_F(ApiTests, ComputeContactsWithPolygonsThroughApi)
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
 
-    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d, false);
+    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
@@ -1246,7 +1242,7 @@ TEST_F(ApiTests, ComputeContactsWithPointsThroughApi)
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 6;
 
-    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d, false);
+    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
@@ -1340,7 +1336,7 @@ TEST_F(ApiTests, ComputeBoundaryContactsThroughApi)
     mesh1d.edge_nodes = edge_nodes.get();
     mesh1d.num_edges = 7;
 
-    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d, false);
+    auto errorCode = mkernel_set_mesh1d(meshKernelId, mesh1d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Init 1d mask
@@ -1444,10 +1440,11 @@ TEST(ApiStatelessTests, OrthogonalizingAnInvaliMeshShouldThrowAMeshGeometryError
 {
     // Prepare
     int meshKernelId;
-    meshkernelapi::mkernel_allocate_state(meshKernelId);
+    int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
 
     auto meshData = ReadLegacyMeshFromFileForApiTesting(TEST_FOLDER + "/data/InvalidMeshes/invalid_orthogonalization_net.nc");
-    auto errorCode = mkernel_set_mesh2d(meshKernelId, std::get<1>(meshData), std::get<0>(meshData), false);
+    auto errorCode = mkernel_set_mesh2d(meshKernelId, std::get<1>(meshData), std::get<0>(meshData));
     DeleteRectangularMeshForApiTesting(std::get<0>(meshData));
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -1513,8 +1510,7 @@ TEST_F(ApiTests, Compute_OnCurvilinearGrid_ShouldRefine)
     // Execute
     auto errorCode = mkernel_make_uniform_curvilinear(meshKernelId,
                                                       makeMeshParameters,
-                                                      geometryList,
-                                                      false);
+                                                      geometryList);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList firstPoint{};

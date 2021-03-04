@@ -64,10 +64,10 @@ namespace meshkernelapi
     {
 #endif
         /// @brief Creates a new mesh state and returns the generated \p meshKernelId
-
+        /// @param[in] isGeographic  Cartesian (0) or spherical (1) mesh
         /// @param[out] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_allocate_state(int& meshKernelId);
+        MKERNEL_API int mkernel_allocate_state(int isGeographic, int& meshKernelId);
 
         /// @brief Deallocates mesh state
         /// @param[in] meshKernelId The id of the mesh state
@@ -89,21 +89,17 @@ namespace meshkernelapi
         /// @param[in] meshKernelId           The id of the mesh state
         /// @param[in] meshGeometryDimensions The mesh dimensions
         /// @param[in] meshGeometry           The mesh data
-        /// @param[in] isGeographic           Cartesian (false) or spherical (true) mesh
         /// @returns                          Error code
         MKERNEL_API int mkernel_set_mesh2d(int meshKernelId,
                                            const MeshGeometryDimensions& meshGeometryDimensions,
-                                           const MeshGeometry& meshGeometry,
-                                           bool isGeographic);
+                                           const MeshGeometry& meshGeometry);
 
         /// @brief Sets the meshkernel::Mesh1D state
         /// @param[in] meshKernelId           The id of the mesh state
         /// @param[in] mesh1d                 The Mesh1D data
-        /// @param[in] isGeographic           Cartesian (false) or spherical (true) mesh
         /// @returns                          Error code
         MKERNEL_API int mkernel_set_mesh1d(int meshKernelId,
-                                           const Mesh1D& mesh1d,
-                                           bool isGeographic);
+                                           const Mesh1D& mesh1d);
 
         /// @brief Gets the meshkernel::Mesh2D state as a MeshGeometry struct
         /// @param[in]  meshKernelId           The id of the mesh state
@@ -571,12 +567,10 @@ namespace meshkernelapi
         /// @param[in] meshKernelId          The id of the mesh state
         /// @param[in] splines               The splines
         /// @param[in] curvilinearParameters The curvilinear parameters
-        /// @param[in] isGeographic           Generate a curvilinear grid in a Cartesian system (false) or spherical system (true)
         /// @returns                         Error code
         MKERNEL_API int mkernel_compute_transfinite_from_splines_curvilinear(int meshKernelId,
                                                                              const GeometryList& splines,
-                                                                             const CurvilinearParameters& curvilinearParameters,
-                                                                             bool isGeographic);
+                                                                             const CurvilinearParameters& curvilinearParameters);
 
         /// @brief Computes a curvilinear mesh in a polygon. 3 separate polygon nodes need to be selected.
         /// @param[in] meshKernelId  The id of the mesh state
@@ -585,15 +579,13 @@ namespace meshkernelapi
         /// @param[in] secondNode    The second selected node
         /// @param[in] thirdNode     The third node
         /// @param[in] useFourthSide Use (true/false) the fourth polygon side to compute the curvilinear grid
-        /// @param[in] isGeographic   Generate a curvilinear grid in a Cartesian system (false) or spherical system (true)
         /// @returns Error code
         MKERNEL_API int mkernel_compute_transfinite_from_polygon_curvilinear(int meshKernelId,
                                                                              const GeometryList& polygons,
                                                                              int firstNode,
                                                                              int secondNode,
                                                                              int thirdNode,
-                                                                             bool useFourthSide,
-                                                                             bool isGeographic);
+                                                                             bool useFourthSide);
 
         /// @brief Computes a curvilinear mesh in a triangle. 3 separate polygon nodes need to be selected.
         /// @param[in] meshKernelId The id of the mesh state
@@ -601,40 +593,34 @@ namespace meshkernelapi
         /// @param[in] firstNode    The first selected node
         /// @param[in] secondNode   The second selected node
         /// @param[in] thirdNode    The third node
-        /// @param[in] isGeographic Generate a curvilinear grid in a Cartesian system (false) or spherical system (true)
         /// @returns Error code
         MKERNEL_API int mkernel_compute_transfinite_from_triangle_curvilinear(int meshKernelId,
                                                                               const GeometryList& polygon,
                                                                               int firstNode,
                                                                               int secondNode,
-                                                                              int thirdNode,
-                                                                              bool isGeographic);
+                                                                              int thirdNode);
 
         /// @brief Makes curvilinear grid from splines with an advancing front.
         /// @param[in] meshKernelId                   The id of the mesh state
         /// @param[in] geometryList                   The input splines corners
         /// @param[in] curvilinearParameters          The input parameters to generate the curvilinear grid
         /// @param[in] splinesToCurvilinearParameters The parameters of the advancing front algorithm
-        /// @param[in] isGeographic                   Generate a curvilinear grid in a Cartesian system (false) or spherical system (true)
         /// @returns Error code
         MKERNEL_API int mkernel_compute_orthogonal_curvilinear(int meshKernelId,
                                                                const GeometryList& geometryList,
                                                                const CurvilinearParameters& curvilinearParameters,
-                                                               const SplinesToCurvilinearParameters& splinesToCurvilinearParameters,
-                                                               bool isGeographic);
+                                                               const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
         /// @brief Generates a curvilinear grid from splines with the advancing front method. Initialization step (interactive)
         /// @param[in] meshKernelId                    The id of the mesh state
         /// @param[in] geometryList                    The input splines corners
         /// @param[in] curvilinearParameters           The input parameters to generate the curvilinear grid
         /// @param[in] splinesToCurvilinearParameters  The parameters of the advancing front algorithm
-        /// @param[in] isGeographic                    Generate a curvilinear grid in a Cartesian system (false) or spherical system (true)
         /// @returns Error code
         MKERNEL_API int mkernel_initialize_orthogonal_curvilinear(int meshKernelId,
                                                                   const GeometryList& geometryList,
                                                                   const CurvilinearParameters& curvilinearParameters,
-                                                                  const SplinesToCurvilinearParameters& splinesToCurvilinearParameters,
-                                                                  bool isGeographic);
+                                                                  const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
         /// @brief One advancement of the front in curvilinear grid from splines (interactive)
         /// @param[in] meshKernelId The id of the mesh state
@@ -656,12 +642,10 @@ namespace meshkernelapi
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] makeGridParameters The structure containing the make grid parameters
         /// @param[in] geometryList       The polygon to account for
-        /// @param[in] isGeographic       Generate a curvilinear grid in a Cartesian system (false) or spherical system (true)
         /// @returns Error code
         MKERNEL_API int mkernel_make_uniform_curvilinear(int meshKernelId,
                                                          const MakeMeshParameters& makeGridParameters,
-                                                         const GeometryList& geometryList,
-                                                         bool isGeographic);
+                                                         const GeometryList& geometryList);
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);

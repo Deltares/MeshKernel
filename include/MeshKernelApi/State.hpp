@@ -42,8 +42,13 @@ namespace meshkernelapi
     class MeshKernelState
     {
     public:
+        /// @brief Default constructor
+        /// @returns
+        MeshKernelState() = default;
+
         /// @brief Constructor initializing mesh and contacts classes
-        MeshKernelState()
+        /// @param[in] projection The projection to use
+        MeshKernelState(meshkernel::Projection projection) : m_projection(projection)
         {
             m_mesh1d = std::make_shared<meshkernel::Mesh1D>();
             m_mesh2d = std::make_shared<meshkernel::Mesh2D>();
@@ -60,6 +65,9 @@ namespace meshkernelapi
         // For interactivity
         std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_orthogonalization;       ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
         std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines; ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
+
+        // Exclusively owned state
+        meshkernel::Projection m_projection; ///< Projection used by the meshes
     };
 
 } // namespace meshkernelapi
