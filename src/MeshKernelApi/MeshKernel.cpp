@@ -93,7 +93,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_allocate_state(int isGeographic, int& meshKernelId)
     {
         meshKernelId = meshKernelStateCounter++;
-        meshkernel::Projection projection = isGeographic == 0 ? meshkernel::Projection::cartesian : meshkernel::Projection::spherical;
+        meshkernel::Projection projection = isGeographic == 1 ? meshkernel::Projection::spherical : meshkernel::Projection::cartesian;
         meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
         return Success;
     };
