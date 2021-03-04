@@ -101,9 +101,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a64951d35399d943c7d7315890f2b8198"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html#a64951d35399d943c7d7315890f2b8198">CurvilinearGrid</a> ()=default</td></tr>
 <tr class="memdesc:a64951d35399d943c7d7315890f2b8198"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classmeshkernel_1_1_curvilinear_grid.html#a64951d35399d943c7d7315890f2b8198">More...</a><br /></td></tr>
 <tr class="separator:a64951d35399d943c7d7315890f2b8198"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a936b29d2f78dbb69dd57cce2bc8ae702"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html#a936b29d2f78dbb69dd57cce2bc8ae702">CurvilinearGrid</a> (std::vector&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&gt; grid, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
-<tr class="memdesc:a936b29d2f78dbb69dd57cce2bc8ae702"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new curvilinear grid from a given set of points.  <a href="classmeshkernel_1_1_curvilinear_grid.html#a936b29d2f78dbb69dd57cce2bc8ae702">More...</a><br /></td></tr>
-<tr class="separator:a936b29d2f78dbb69dd57cce2bc8ae702"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a958fec3a9ff1e270e1fef58ef36be30e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html#a958fec3a9ff1e270e1fef58ef36be30e">CurvilinearGrid</a> (std::vector&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&gt; &amp;&amp;grid, <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="memdesc:a958fec3a9ff1e270e1fef58ef36be30e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new curvilinear grid from a given set of points.  <a href="classmeshkernel_1_1_curvilinear_grid.html#a958fec3a9ff1e270e1fef58ef36be30e">More...</a><br /></td></tr>
+<tr class="separator:a958fec3a9ff1e270e1fef58ef36be30e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c15ff5d57e8e9d0acdbef291ddaad31"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;, std::vector&lt; <a class="el" href="namespacemeshkernel.html#a7fda31b0d2488c53f4b00c5d2e764fb7">Edge</a> &gt;, std::vector&lt; std::pair&lt; size_t, size_t &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html#a0c15ff5d57e8e9d0acdbef291ddaad31">ConvertCurvilinearToNodesAndEdges</a> ()</td></tr>
 <tr class="memdesc:a0c15ff5d57e8e9d0acdbef291ddaad31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)  <a href="classmeshkernel_1_1_curvilinear_grid.html#a0c15ff5d57e8e9d0acdbef291ddaad31">More...</a><br /></td></tr>
 <tr class="separator:a0c15ff5d57e8e9d0acdbef291ddaad31"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -111,10 +111,6 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html#ae098a6214cb14ffc66966fedc1035115">SetFlatCopies</a> ()</td></tr>
 <tr class="memdesc:ae098a6214cb14ffc66966fedc1035115"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end. <br /></td></tr>
 <tr class="separator:ae098a6214cb14ffc66966fedc1035115"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc3a137a349871c0f6f2226bb12f6094"><td class="memItemLeft" align="right" valign="top"><a id="adc3a137a349871c0f6f2226bb12f6094"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html#adc3a137a349871c0f6f2226bb12f6094">BuildTree</a> ()</td></tr>
-<tr class="memdesc:adc3a137a349871c0f6f2226bb12f6094"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds the node three to find nodes on the curvilinear grid. <br /></td></tr>
-<tr class="separator:adc3a137a349871c0f6f2226bb12f6094"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7e3f3337fa04c12af00aeca3580657d"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid.html#ad7e3f3337fa04c12af00aeca3580657d">GetNodeIndices</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> point)</td></tr>
 <tr class="memdesc:ad7e3f3337fa04c12af00aeca3580657d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the m and n indices of the node closest to the point.  <a href="classmeshkernel_1_1_curvilinear_grid.html#ad7e3f3337fa04c12af00aeca3580657d">More...</a><br /></td></tr>
 <tr class="separator:ad7e3f3337fa04c12af00aeca3580657d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -412,8 +408,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a936b29d2f78dbb69dd57cce2bc8ae702"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a936b29d2f78dbb69dd57cce2bc8ae702">&#9670;&nbsp;</a></span>CurvilinearGrid() <span class="overload">[2/2]</span></h2>
+<a id="a958fec3a9ff1e270e1fef58ef36be30e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a958fec3a9ff1e270e1fef58ef36be30e">&#9670;&nbsp;</a></span>CurvilinearGrid() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -421,7 +417,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">meshkernel::CurvilinearGrid::CurvilinearGrid </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&gt;&#160;</td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&gt; &amp;&amp;&#160;</td>
           <td class="paramname"><em>grid</em>, </td>
         </tr>
         <tr>

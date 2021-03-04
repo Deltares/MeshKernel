@@ -305,6 +305,9 @@ Functions</h2></td></tr>
 <tr class="memitem:abe230fe37417df9e581d874206ed8246"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#abe230fe37417df9e581d874206ed8246">mkernel_refine_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListFirstPoint, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListSecondPoint, int refinement)</td></tr>
 <tr class="memdesc:abe230fe37417df9e581d874206ed8246"><td class="mdescLeft">&#160;</td><td class="mdescRight">Curvilinear grid refinement.  <a href="namespacemeshkernelapi.html#abe230fe37417df9e581d874206ed8246">More...</a><br /></td></tr>
 <tr class="separator:abe230fe37417df9e581d874206ed8246"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf0c1ab1fc7664ab6b5fa28dffcdd127"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aaf0c1ab1fc7664ab6b5fa28dffcdd127">mkernel_derefine_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListFirstPoint, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListSecondPoint)</td></tr>
+<tr class="memdesc:aaf0c1ab1fc7664ab6b5fa28dffcdd127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Curvilinear grid derefinement.  <a href="namespacemeshkernelapi.html#aaf0c1ab1fc7664ab6b5fa28dffcdd127">More...</a><br /></td></tr>
+<tr class="separator:aaf0c1ab1fc7664ab6b5fa28dffcdd127"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58af33cde930464cd397d2ec3cf20d97"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a58af33cde930464cd397d2ec3cf20d97">mkernel_compute_transfinite_from_splines_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;splines, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a> &amp;curvilinearParameters)</td></tr>
 <tr class="memdesc:a58af33cde930464cd397d2ec3cf20d97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates curvilinear grid from splines with transfinite interpolation.  <a href="namespacemeshkernelapi.html#a58af33cde930464cd397d2ec3cf20d97">More...</a><br /></td></tr>
 <tr class="separator:a58af33cde930464cd397d2ec3cf20d97"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1711,6 +1714,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">smallFlowEdgesThreshold</td><td>The configurable threshold for detecting the small flow edges </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">minFractionalAreaTriangles</td><td>The ratio of the face area to the average area of neighboring non triangular faces </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code (0 Successful) </dd></dl>
+
+</div>
+</div>
+<a id="aaf0c1ab1fc7664ab6b5fa28dffcdd127"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf0c1ab1fc7664ab6b5fa28dffcdd127">&#9670;&nbsp;</a></span>mkernel_derefine_curvilinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_derefine_curvilinear </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometryListFirstPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometryListSecondPoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Curvilinear grid derefinement. </p>
+<p><code>geometryListFirstPoint</code> and <code>geometryListSecondPoint</code> must lie on the same gridline </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
+    <tr><td class="paramname">geometryListFirstPoint</td><td>The geometry list containing the first node of the segment defining the derefinement zone. </td></tr>
+    <tr><td class="paramname">geometryListSecondPoint</td><td>The geometry list containing the second node of the segment defining the derefinement zone. </td></tr>
   </table>
   </dd>
 </dl>
@@ -3365,10 +3413,10 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <p>Curvilinear grid refinement. </p>
 <p><code>geometryListFirstPoint</code> and <code>geometryListSecondPoint</code> must lie on the same gridline </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
-    <tr><td class="paramname">geometryListFirstPoint</td><td>The geometry list containing the first node of the segment defining the refinement zone. </td></tr>
-    <tr><td class="paramname">geometryListSecondPoint</td><td>The geometry list containing the second node of the segment defining the refinement zone. </td></tr>
-    <tr><td class="paramname">refinement</td><td>The number of refinement lines between <code>geometryListFirstPoint</code> and <code>geometryListSecondPoint</code> </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListFirstPoint</td><td>The geometry list containing the first node of the segment defining the refinement zone. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListSecondPoint</td><td>The geometry list containing the second node of the segment defining the refinement zone. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">refinement</td><td>The number of refinement lines between <code>geometryListFirstPoint</code> and <code>geometryListSecondPoint</code> </td></tr>
   </table>
   </dd>
 </dl>
