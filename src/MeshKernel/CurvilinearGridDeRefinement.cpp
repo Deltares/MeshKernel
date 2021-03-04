@@ -62,7 +62,7 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridDeRefinement::Compute()
     deRefinedGrid.reserve(m_grid->m_numM);
 
     size_t localMDeRefinement;
-    for (auto m = 0, mIndexOriginalGrid = 0; mIndexOriginalGrid < m_grid->m_numM; ++m, mIndexOriginalGrid += localMDeRefinement)
+    for (auto mIndexOriginalGrid = 0; mIndexOriginalGrid < m_grid->m_numM; mIndexOriginalGrid += localMDeRefinement)
     {
         localMDeRefinement = 1;
         if (mIndexOriginalGrid >= mFirstNode && mIndexOriginalGrid < mSecondNode)
@@ -73,7 +73,7 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridDeRefinement::Compute()
         deRefinedGrid.emplace_back(std::vector<Point>());
         deRefinedGrid.back().reserve(m_grid->m_numN);
         size_t localNDeRefinement;
-        for (auto n = 0, nIndexOriginalGrid = 0; nIndexOriginalGrid < m_grid->m_numN; ++n, nIndexOriginalGrid += localNDeRefinement)
+        for (auto nIndexOriginalGrid = 0; nIndexOriginalGrid < m_grid->m_numN; nIndexOriginalGrid += localNDeRefinement)
         {
 
             localNDeRefinement = 1;
