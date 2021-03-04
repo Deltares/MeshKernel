@@ -44,7 +44,6 @@ meshkernel::CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shar
 void meshkernel::CurvilinearGridRefinement::Compute() const
 {
     // Get the m and n indices from the point coordinates
-    m_grid->BuildTree();
     auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(m_firstPoint);
     auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(m_secondPoint);
 
@@ -140,7 +139,7 @@ void meshkernel::CurvilinearGridRefinement::Compute() const
     }
 
     // Substitute original grid with the refined one
-    *m_grid = CurvilinearGrid(refinedGrid, m_grid->m_projection);
+    *m_grid = CurvilinearGrid(std::move(refinedGrid), m_grid->m_projection);
 }
 
 std::tuple<std::vector<std::vector<meshkernel::Point>>,

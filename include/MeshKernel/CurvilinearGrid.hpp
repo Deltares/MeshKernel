@@ -46,7 +46,7 @@ namespace meshkernel
         /// @brief Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
-        CurvilinearGrid(std::vector<std::vector<Point>> grid, Projection projection);
+        CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection);
 
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
         /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
@@ -54,9 +54,6 @@ namespace meshkernel
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         void SetFlatCopies();
-
-        /// @brief Builds the node three to find nodes on the curvilinear grid
-        void BuildTree();
 
         /// @brief Get the m and n indices of the node closest to the point
         /// @param[in] point       The input grid points
