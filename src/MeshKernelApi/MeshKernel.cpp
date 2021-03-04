@@ -25,8 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/CurvilinearGridCreateUniform.hpp"
-
 #include <map>
 #include <stdexcept>
 #include <string.h>
@@ -36,6 +34,8 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridCreateUniform.hpp>
+#include <MeshKernel/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
@@ -1635,18 +1635,54 @@ namespace meshkernelapi
 
             if (firstPoint.empty())
             {
-                throw std::invalid_argument("mkernel_refine_curvilineargrid: No first node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
             }
 
             const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
             if (secondPoint.empty())
             {
-                throw std::invalid_argument("mkernel_refine_curvilineargrid: No second node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
             }
 
             // Execute
             meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, firstPoint[0], secondPoint[0], refinement);
             curvilinearGridRefinement.Compute();
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_derefine_curvilinear(int meshKernelId,
+                                                 const GeometryList& geometryListFirstPoint,
+                                                 const GeometryList& geometryListSecondPoint)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+
+            if (firstPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
+            }
+
+            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
+            if (secondPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
+            }
+
+            // Execute
+            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, firstPoint[0], secondPoint[0]);
+
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridDeRefinement.Compute());
         }
         catch (...)
         {

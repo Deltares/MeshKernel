@@ -29,7 +29,7 @@
 
 #include <MeshKernel/CurvilinearGrid.hpp>
 
-meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> grid, Projection projection) : m_gridNodes(std::move(grid))
+meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection) : m_gridNodes(std::move(grid))
 {
     if (m_gridNodes.empty())
     {
@@ -51,6 +51,17 @@ meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> gri
     m_projection = projection;
     m_numM = m_gridNodes.size();
     m_numN = m_gridNodes[0].size();
+
+    SetFlatCopies();
+}
+
+void meshkernel::CurvilinearGrid::SetFlatCopies()
+{
+    const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
+    m_nodes = nodes;
+    m_edges = edges;
+    m_gridIndices = gridIndices;
+    Mesh::SetFlatCopies();
 }
 
 std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>> meshkernel::CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
@@ -122,21 +133,6 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     edges.resize(ind);
 
     return {nodes, edges, gridIndices};
-}
-
-void meshkernel::CurvilinearGrid::SetFlatCopies()
-{
-    const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
-    m_nodes = nodes;
-    m_edges = edges;
-    m_gridIndices = gridIndices;
-    Mesh::SetFlatCopies();
-}
-
-void meshkernel::CurvilinearGrid::BuildTree()
-{
-    SetFlatCopies();
-    m_nodesRTree.BuildTree(m_nodes);
 }
 
 std::tuple<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
