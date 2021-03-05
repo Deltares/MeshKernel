@@ -55,14 +55,14 @@ cmake --build build --target docs
 
 1. Creating a triangular mesh inside a polygon
 
-In this example a mesh is created by discretizing the polygon perimeter with the desired edge length
+In this example a mesh is created by discretizing the polygon perimeter with the desired edge length.
 
 ![alt tag](docs/images/TriangularMeshInPolygon.jpg)
 
 2. Mesh orthogonalization
 
 Finite volume staggered flow solvers require the mesh to be as much orthogonal as possible. 
-MeshKernel provides an algorithm to adapt the mesh and achieve a good balance between mesh orthogonality and smothness.
+MeshKernel provides an algorithm to adapt the mesh and achieve a good balance between mesh orthogonality and smoothness.
 
 ![alt tag](docs/images/MeshOrthogonalization.jpg)
 
@@ -74,6 +74,6 @@ Curvilinear meshes for rivers can be generated using splines.
 
 4. Mesh refinement
 
-A mesh can be refined in areas based on samples or polygon selections 
+A mesh can be refined in areas based on samples or polygon selections. 
 
 ![alt tag](docs/images/GridRefinement.jpg)
