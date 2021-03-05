@@ -42,17 +42,16 @@ namespace meshkernel
         /// @brief An enum for curvilinear node types
         enum class NodeTypes
         {
-            BottomLeft,             //(11)
-            UpperLeft,              //14)
-            BottomRight,            //(12)
-            UpperRight,             //(13)
-            Left,                   //(4)
-            Right,                  //(2)
-            Bottom,                 //(1)
-            Up,                     //(3)
-            Valid,                  //(10)
-            OrthogonalizationNodes, //(21)
-            Invalid
+            BottomLeft,  //(11)
+            UpperLeft,   //(14)
+            BottomRight, //(12)
+            UpperRight,  //(13)
+            Left,        //(4)
+            Right,       //(2)
+            Bottom,      //(1)
+            Up,          //(3)
+            Valid,       //(10)
+            Invalid      //(0)
         };
 
         /// @brief Default constructor

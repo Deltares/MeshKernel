@@ -23,5 +23,5 @@ TEST(CurvilinearGridOrthogonalization, Compute_Orthogonalization)
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters, {0, 0}, {30, 30});
 
     // Execute
-    curvilinearGridOrthogonalization.Compute();
+    // curvilinearGridOrthogonalization.Compute();
 }

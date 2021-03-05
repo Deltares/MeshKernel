@@ -52,12 +52,23 @@ namespace meshkernel
         void Compute();
 
     private:
+        /// @brief Matrix solve (BNDSMT)
+        void TreatBoundaryConditions();
 
-        /// @brief Computes the horizontal matrix coefficients (SOMDIST)
+        /// @brief Matrix solve (ORTSOR)
+        void Solve();
+
+        /// @brief Computes matrix coefficients (FIXDDBOUNDARIES)
+        void ApplyBoundaryConditions();
+
+        /// @brief Computes matrix coefficients (ATPPAR)
         void ComputeHorizontalMatrixCoefficients();
 
-        /// @brief Computes the vertical matrix coefficients
-        void ComputeHorizontalVerticalCoefficients();
+        /// @brief Computes the horizontal matrix coefficients (SOMDIST)
+        void ComputeHorizontalCoefficients();
+
+        /// @brief Computes the vertical matrix coefficients (SOMDIST)
+        void ComputeVerticalCoefficients();
 
         std::shared_ptr<CurvilinearGrid> m_grid;                                  ///< A pointer to the curvilinear grid to modify
         meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
@@ -77,5 +88,13 @@ namespace meshkernel
         std::vector<std::vector<double>> m_d;
         std::vector<std::vector<double>> m_e;
         std::vector<std::vector<double>> m_atp;
+
+        // grid lines
+        std::vector<std::vector<Point>> m_mGridLines;
+        std::vector<std::vector<Point>> m_nGridLines;
+
+        // derivatives
+        std::vector<std::vector<Point>> m_nGridLinesDerivatives;
+        std::vector<std::vector<Point>> m_mGridLineDerivates;
     };
 } // namespace meshkernel

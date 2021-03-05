@@ -155,7 +155,7 @@ namespace meshkernel
         void AllocateSplinesProperties();
     };
 
-    /// @brief This struct is used to create a function for converting an adimensional distance to a dimensional one
+    /// @brief This structure is used to create a function for converting an adimensional distance to a dimensional one
     struct FuncAdimensionalToDimensionalDistance
     {
         /// @brief Constructor

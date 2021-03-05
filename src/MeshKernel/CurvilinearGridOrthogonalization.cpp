@@ -68,8 +68,154 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
     /// Compute the masks
     m_grid->ComputeGridMasks();
     /// store the m and n grid lines in separate vectors, and compute the spline derivatives for each gridline
-    const auto [mGridLines, mGridLineDerivates, nGridLines, nGridLinesDerivatives] = m_grid->ComputeGridLinesAndSplinesDerivatives();
+    auto [mGridLines, mGridLineDerivates, nGridLines, nGridLinesDerivatives] = m_grid->ComputeGridLinesAndSplinesDerivatives();
 
+    m_mGridLines = std::move(mGridLines);
+    m_mGridLineDerivates = std::move(mGridLineDerivates);
+    m_nGridLines = std::move(nGridLines);
+    m_nGridLinesDerivatives = std::move(nGridLinesDerivatives);
+
+    // Compute the matrix coefficients
+    for (auto outerIterations = 0; outerIterations < m_orthogonalizationParameters.OuterIterations; ++outerIterations)
+    {
+        ComputeHorizontalMatrixCoefficients();
+        ApplyBoundaryConditions();
+        for (auto boundaryIterations = 0; boundaryIterations < m_orthogonalizationParameters.BoundaryIterations; ++boundaryIterations)
+        {
+            Solve();
+            TreatBoundaryConditions();
+        }
+    }
+}
+
+void meshkernel::CurvilinearGridOrthogonalization::TreatBoundaryConditions()
+{
+    // horizontal lines
+    for (auto n = 0; n < m_grid->m_numN; ++n)
+    {
+        int in = 0;
+        int init = 0;
+        int j = n;
+        size_t leftIndex;
+        size_t rightIndex;
+        size_t nextVertical = 0;
+        for (auto m = 0; m < m_grid->m_numM; ++m)
+        {
+
+            const auto nodeType = m_grid->m_gridNodesMask[m][n];
+            if (nodeType == CurvilinearGrid::NodeTypes::BottomLeft || nodeType == CurvilinearGrid::NodeTypes::UpperLeft)
+            {
+                leftIndex = m;
+                continue;
+            }
+            if (nodeType == CurvilinearGrid::NodeTypes::Bottom)
+            {
+                nextVertical = 1;
+                continue;
+            }
+            if (nodeType == CurvilinearGrid::NodeTypes::Up)
+            {
+                nextVertical = -1;
+                continue;
+            }
+            if ((nodeType == CurvilinearGrid::NodeTypes::BottomRight || nodeType == CurvilinearGrid::NodeTypes::UpperRight) && nextVertical != 0)
+            {
+                rightIndex = m;
+
+                for (int mm = leftIndex + 1; mm < rightIndex - 1; ++mm)
+                {
+
+                    if (mm < m_minM || mm > m_maxM || n < m_minN || n > m_maxN)
+                    {
+                        continue;
+                    }
+                    if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::Invalid)
+                    {
+                        continue;
+                    }
+                    const auto leftNode = m_grid->m_gridNodes[m - 1][n];
+                    const auto upperNode = m_grid->m_gridNodes[m][n + nextVertical];
+                    const auto rightNode = m_grid->m_gridNodes[m + 1][n];
+                    double qb;
+                    double qc;
+
+                    if (nextVertical == 1)
+                    {
+                        qb = m_atp[m - 1][n];
+                        qc = m_atp[m][n];
+                    }
+
+                    if (nextVertical == -1)
+                    {
+                        qb = m_atp[m - 1][n - 1];
+                        qc = m_atp[m][n - 1];
+                    }
+                    const auto qbc = 1.0 / qb + 1.0 / qc;
+                    const auto rn = qb + qc + qbc;
+                    Point searhNode = (leftNode * qb +
+                                       upperNode * qbc +
+                                       rightNode * qc + rightNode - leftNode) /
+                                      rn;
+                }
+
+                //    m_mGridLines
+                //m_mGridLineDerivates
+                //m_nGridLines
+                //m_nGridLinesDerivatives
+
+                continue;
+            }
+        }
+    }
+}
+
+void meshkernel::CurvilinearGridOrthogonalization::Solve()
+{
+
+    double relaxationFactor = 1.0;
+    const double relaxationCoefficientOne = 1.0;
+    const double relaxationCoefficientTwo = 0.5;
+    const double relaxationCoefficientThree = 0.9 * 0.9;
+    const double relaxationCoefficientFour = 0.25;
+    for (auto innerIterations = 0; innerIterations < m_orthogonalizationParameters.InnerIterations; ++innerIterations)
+    {
+        for (auto m = m_minM; m < m_maxM; ++m)
+        {
+            for (auto n = m_minN; n < m_maxN; ++n)
+            {
+                if (m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeTypes::Valid)
+                {
+                    continue;
+                }
+
+                const auto residual =
+                    m_grid->m_gridNodes[m][n] * m_a[m][n] +
+                    m_grid->m_gridNodes[m][n] * m_b[m][n] +
+                    m_grid->m_gridNodes[m][n] * m_c[m][n] +
+                    m_grid->m_gridNodes[m][n] * m_d[m][n] +
+                    m_grid->m_gridNodes[m][n] * m_e[m][n];
+                m_grid->m_gridNodes[m][n] = m_grid->m_gridNodes[m][n] - residual / m_e[m][n] * relaxationFactor;
+            }
+        }
+
+        if (innerIterations == 1)
+        {
+            relaxationFactor = relaxationCoefficientOne / (relaxationCoefficientOne - relaxationCoefficientTwo * relaxationCoefficientThree);
+        }
+        else
+        {
+            relaxationFactor = relaxationCoefficientOne / (relaxationCoefficientOne - relaxationFactor * relaxationCoefficientFour * relaxationCoefficientThree);
+        }
+    }
+}
+
+void meshkernel::CurvilinearGridOrthogonalization::ApplyBoundaryConditions()
+{
+    // To verify
+}
+
+void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalMatrixCoefficients()
+{
     /// allocate matrix coefficients
     m_a.resize(m_grid->m_numM, std::vector<double>(m_grid->m_numN, doubleMissingValue));
     m_b.resize(m_grid->m_numM, std::vector<double>(m_grid->m_numN, doubleMissingValue));
@@ -78,40 +224,91 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
     m_e.resize(m_grid->m_numM, std::vector<double>(m_grid->m_numN, doubleMissingValue));
     m_atp.resize(m_grid->m_numM, std::vector<double>(m_grid->m_numN, doubleMissingValue));
 
-    for (auto outerIterations = 0; outerIterations < m_orthogonalizationParameters.OuterIterations; ++outerIterations)
+    for (auto m = m_minM; m < m_maxM; ++m)
     {
-        for (auto m = m_minM; m < m_maxM; ++m)
+        for (auto n = m_minN; n < m_maxN; ++n)
         {
-            for (auto n = m_minN; n < m_maxN; ++n)
+            if (!m_grid->m_gridFacesMask[m][n])
             {
-                if (!m_grid->m_gridFacesMask[m][n])
-                {
-                    continue;
-                }
-
-                const auto bottom = ComputeDistance(m_grid->m_gridNodes[m][n], m_grid->m_gridNodes[m + 1][n], Projection::cartesian);
-                const auto upper = ComputeDistance(m_grid->m_gridNodes[m][n + 1], m_grid->m_gridNodes[m + 1][n + 1], Projection::cartesian);
-                const auto left = ComputeDistance(m_grid->m_gridNodes[m][n], m_grid->m_gridNodes[m][n + 1], Projection::cartesian);
-                const auto right = ComputeDistance(m_grid->m_gridNodes[m + 1][n], m_grid->m_gridNodes[m + 1][n + 1], Projection::cartesian);
-
-                m_a[m][n] = (bottom + upper) * 0.5;
-                m_b[m][n] = (left + right) * 0.5;
-
-                m_atp[m][n] = m_a[m][n];
-                m_e[m][n] = m_b[m][n];
-
-                m_c[m][n] = m_atp[m][n];
-                m_d[m][n] = m_e[m][n];
+                continue;
             }
+
+            const auto bottom = ComputeDistance(m_grid->m_gridNodes[m][n], m_grid->m_gridNodes[m + 1][n], Projection::cartesian);
+            const auto upper = ComputeDistance(m_grid->m_gridNodes[m][n + 1], m_grid->m_gridNodes[m + 1][n + 1], Projection::cartesian);
+            const auto left = ComputeDistance(m_grid->m_gridNodes[m][n], m_grid->m_gridNodes[m][n + 1], Projection::cartesian);
+            const auto right = ComputeDistance(m_grid->m_gridNodes[m + 1][n], m_grid->m_gridNodes[m + 1][n + 1], Projection::cartesian);
+
+            m_a[m][n] = (bottom + upper) * 0.5;
+            m_b[m][n] = (left + right) * 0.5;
+
+            m_atp[m][n] = m_a[m][n];
+            m_e[m][n] = m_b[m][n];
+
+            m_c[m][n] = m_atp[m][n];
+            m_d[m][n] = m_e[m][n];
         }
     }
 
-    ComputeHorizontalMatrixCoefficients();
-    ComputeHorizontalVerticalCoefficients();
+    ComputeHorizontalCoefficients();
+    ComputeVerticalCoefficients();
+
+    // Normalize
+    const auto smoothingFactor = 1.0 - m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor;
+    for (auto m = m_minM; m < m_maxM; ++m)
+    {
+        for (auto n = m_minN; n < m_maxN; ++n)
+        {
+            if (!m_grid->m_gridFacesMask[m][n])
+            {
+                continue;
+            }
+            m_atp[m][n] = m_atp[m][n] * m_a[m][n] / m_c[m][n];
+            m_atp[m][n] = m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor * m_atp[m][n] + smoothingFactor * m_a[m][n];
+            m_e[m][n] = m_e[m][n] * m_b[m][n] / m_d[m][n];
+            m_e[m][n] = m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor * m_e[m][n] + smoothingFactor * m_b[m][n];
+
+            m_a[m][n] = m_atp[m][n];
+            m_b[m][n] = m_e[m][n];
+        }
+    }
+
+    // calculate m_atp
+    for (auto m = m_minM; m < m_maxM; ++m)
+    {
+        for (auto n = m_minN; n < m_maxN; ++n)
+        {
+            if (!m_grid->m_gridFacesMask[m][n])
+            {
+                m_atp[m][n] = doubleMissingValue;
+                continue;
+            }
+            m_atp[m][n] = m_b[m][n] / m_a[m][n];
+        }
+    }
+
+    // re-set coefficents
+
+    for (auto m = m_minM + 1; m < m_maxM; ++m)
+    {
+        for (auto n = m_minN + 1; n < m_maxN; ++n)
+        {
+            if (!m_grid->m_gridFacesMask[m][n])
+            {
+                continue;
+            }
+            m_a[m][n] = m_atp[m][n - 1] + m_atp[m][n];
+            m_b[m][n] = m_atp[m - 1][n - 1] + m_atp[m - 1][n];
+            m_c[m][n] = 1.0 / m_atp[m - 1][n] + 1.0 / m_atp[m][n];
+            m_d[m][n] = 1.0 / m_atp[m - 1][n - 1] + 1.0 / m_atp[m][n - 1];
+
+            m_e[m][n] = -m_a[m][n] - m_b[m][n] - m_c[m][n] - m_d[m][n];
+        }
+    }
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalVerticalCoefficients()
+void meshkernel::CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
 {
+    std::vector<std::vector<bool>> invalidBoundaryNodes(m_grid->m_numM, std::vector<bool>(m_grid->m_numN, false));
     for (auto m = m_minM + 1; m < m_maxM; ++m)
     {
         for (auto n = m_minN + 1; n < m_maxN; ++n)
@@ -137,7 +334,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalVerticalCoef
             {
                 continue;
             }
-            auto lastValidN = n;
+            auto lastValidN = n + step;
             while (m_grid->m_gridNodesMask[m][lastValidN] == CurvilinearGrid::NodeTypes::Valid)
             {
                 lastValidN += step;
@@ -146,7 +343,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalVerticalCoef
             const auto end = std::max(n, lastValidN);
             for (auto k = start; k < end; k += step)
             {
-                m_grid->m_gridNodesMask[m][k] = CurvilinearGrid::NodeTypes::OrthogonalizationNodes;
+                invalidBoundaryNodes[m][k] = true;
             }
         }
     }
@@ -163,7 +360,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalVerticalCoef
             if (m_grid->IsValidFace(m, n) &&
                 !IsEqual(m_a[m][n], doubleMissingValue) &&
                 !IsEqual(m_a[m - 1][n], doubleMissingValue) &&
-                m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeTypes::OrthogonalizationNodes)
+                !invalidBoundaryNodes[m][n])
             {
                 m_a[m][n] += m_a[m - 1][n];
                 m_c[m][n] += m_c[m - 1][n];
@@ -180,7 +377,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalVerticalCoef
             if (m_grid->IsValidFace(m, n) &&
                 !IsEqual(m_a[m][n], doubleMissingValue) &&
                 !IsEqual(m_a[m + 1][n], doubleMissingValue) &&
-                m_grid->m_gridNodesMask[m + 1][n] != CurvilinearGrid::NodeTypes::OrthogonalizationNodes)
+                !invalidBoundaryNodes[m + 1][n])
             {
                 m_a[m][n] = m_a[m + 1][n];
                 m_c[m][n] = m_c[m + 1][n];
@@ -188,7 +385,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalVerticalCoef
             }
         }
     }
-    // make the average
+    // average contributions
     for (auto m = m_minM; m < m_maxM; ++m)
     {
         for (auto n = m_minN; n < m_maxN; ++n)
@@ -202,9 +399,9 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalVerticalCoef
     }
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalMatrixCoefficients()
+void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
 {
-
+    std::vector<std::vector<bool>> invalidBoundaryNodes(m_grid->m_numM, std::vector<bool>(m_grid->m_numN, false));
     for (auto m = m_minM + 1; m < m_maxM; ++m)
     {
         for (auto n = m_minN + 1; n < m_maxN; ++n)
@@ -230,7 +427,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalMatrixCoeffi
             {
                 continue;
             }
-            auto lastValidM = m;
+            auto lastValidM = m + step;
             while (m_grid->m_gridNodesMask[lastValidM][n] == CurvilinearGrid::NodeTypes::Valid)
             {
                 lastValidM += step;
@@ -239,7 +436,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalMatrixCoeffi
             const auto end = std::max(m, lastValidM);
             for (auto k = start; k < end; k += step)
             {
-                m_grid->m_gridNodesMask[k][n] = CurvilinearGrid::NodeTypes::OrthogonalizationNodes;
+                invalidBoundaryNodes[k][n] = true;
             }
         }
     }
@@ -254,7 +451,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalMatrixCoeffi
             if (m_grid->IsValidFace(m, n) &&
                 !IsEqual(m_b[m][n], doubleMissingValue) &&
                 !IsEqual(m_b[m][n - 1], doubleMissingValue) &&
-                m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeTypes::OrthogonalizationNodes)
+                !invalidBoundaryNodes[m][n])
             {
                 m_b[m][n] += m_b[m][n - 1];
                 m_d[m][n] += m_d[m][n - 1];
@@ -271,7 +468,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalMatrixCoeffi
             if (m_grid->IsValidFace(m, n) &&
                 !IsEqual(m_b[m][n], doubleMissingValue) &&
                 !IsEqual(m_b[m][n + 1], doubleMissingValue) &&
-                m_grid->m_gridNodesMask[m][n + 1] != CurvilinearGrid::NodeTypes::OrthogonalizationNodes)
+                !invalidBoundaryNodes[m][n + 1])
             {
                 m_b[m][n] = m_b[m][n + 1];
                 m_d[m][n] = m_d[m][n + 1];
@@ -279,7 +476,8 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalMatrixCoeffi
             }
         }
     }
-    // make the average
+
+    // average contributions
     for (auto m = m_minM; m < m_maxM; ++m)
     {
         for (auto n = m_minN; n < m_maxN; ++n)
