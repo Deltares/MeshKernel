@@ -158,6 +158,11 @@ void meshkernel::CurvilinearGridOrthogonalization::TreatBoundaryConditions()
                                       rn;
                 }
 
+                //ComputeClosestPointOnSpline(size_t index,
+                //                            double maximumGridHeight,
+                //                            bool isSpacingCurvatureAdapted,
+                //                            meshkernel::Point point)
+
                 //    m_mGridLines
                 //m_mGridLineDerivates
                 //m_nGridLines

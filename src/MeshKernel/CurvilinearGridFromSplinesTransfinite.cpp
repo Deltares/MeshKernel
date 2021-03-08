@@ -142,12 +142,10 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromSplinesTransfinite::C
                                intersectionDistances,
                                distances);
 
-        m_splines->InterpolatePointsOnSpline(splineIndex,
-                                             doubleMissingValue,
-                                             false,
-                                             distances,
-                                             points,
-                                             adimensionalDistances);
+        const auto [points, adimensionalDistances] = m_splines->InterpolatePointsOnSpline(splineIndex,
+                                                                                          doubleMissingValue,
+                                                                                          false,
+                                                                                          distances);
 
         // Start filling curvilinear grid
         size_t index = 0;

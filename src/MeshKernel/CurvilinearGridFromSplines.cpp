@@ -1648,8 +1648,6 @@ size_t meshkernel::CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
 
     auto currentMaxWidth = std::numeric_limits<double>::max();
     std::vector<double> distances(numM);
-    std::vector<double> adimensionalDistances(numM);
-    std::vector<Point> points(numM, {0.0, 0.0});
     while (currentMaxWidth > m_splinesToCurvilinearParameters.AverageWidth)
     {
         currentMaxWidth = 0.0;
@@ -1658,12 +1656,10 @@ size_t meshkernel::CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
             distances[n] = splineLength * (n + 1.0) / static_cast<double>(numM);
         }
 
-        m_splines->InterpolatePointsOnSpline(splineIndex,
-                                             m_maximumGridHeights[splineIndex],
-                                             m_splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing,
-                                             distances,
-                                             points,
-                                             adimensionalDistances);
+        auto [points, adimensionalDistances] = m_splines->InterpolatePointsOnSpline(splineIndex,
+                                                                                    m_maximumGridHeights[splineIndex],
+                                                                                    m_splinesToCurvilinearParameters.CurvatureAdaptedGridSpacing,
+                                                                                    distances);
 
         for (auto n = 0; n < numM; ++n)
         {
