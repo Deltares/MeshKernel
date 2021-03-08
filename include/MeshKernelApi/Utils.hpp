@@ -110,7 +110,7 @@ namespace meshkernelapi
             return;
         }
 
-        auto splineCornerPoints = ConvertGeometryListToPointVector(geometryListIn);
+        const auto splineCornerPoints = ConvertGeometryListToPointVector(geometryListIn);
 
         const auto indices = FindIndices(splineCornerPoints, 0, splineCornerPoints.size(), meshkernel::doubleMissingValue);
 

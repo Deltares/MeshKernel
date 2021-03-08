@@ -51,9 +51,13 @@ namespace meshkernel
         Splines() = default;
 
         /// @brief Ctor, set projection
-        /// @brief projection The map projection
+        /// @brief[in] projection The map projection
         /// @returns
         explicit Splines(Projection projection);
+
+        /// @brief Ctor from grids, each gridline is converted to spline, first  the first n horizontal lines then the m vertical lines
+        /// @brief[in] The curvilinear grid
+        explicit Splines(std::shared_ptr<CurvilinearGrid> grid);
 
         /// @brief Adds a new spline to m_splineCornerPoints
         /// @param[in] splines The spline corner points
@@ -91,21 +95,21 @@ namespace meshkernel
                                     double& secondSplineRatio);
 
         /// @brief Computes the spline length in s coordinates (GETDIS)
-        /// @brief index The spline index
-        /// @brief startIndex Adimensional start spline
-        /// @brief endIndex Adimensional end spline
-        /// @brief numSamples How many intervals to use between the startIndex and endIndex
-        /// @brief accountForCurvature Accounting for curvature
-        /// @brief height When accounting for curvature, the height to use
-        /// @brief assignedDelta When larger than zero, the number of intervals the spline is divided when computing the length
+        /// @param[in] index The spline index
+        /// @param[in] startAdimensionalCoordinate Adimensional start spline
+        /// @param[in] endAdimensionalCoordinate Adimensional end spline
+        /// @param[in] numSamples How many intervals to use between the startAdimensionalCoordinate and endAdimensionalCoordinate
+        /// @param[in] accountForCurvature Accounting for curvature
+        /// @param[in] height When accounting for curvature, the height to use
+        /// @param[in] assignedDelta When larger than zero, the number of intervals the spline is divided when computing the length
         /// @returns The computed length
-        [[nodiscard]] double GetSplineLength(size_t index,
-                                             double startIndex,
-                                             double endIndex,
-                                             size_t numSamples = 100,
-                                             bool accountForCurvature = false,
-                                             double height = 1.0,
-                                             double assignedDelta = -1.0);
+        [[nodiscard]] double ComputeSplineLength(size_t index,
+                                                 double startAdimensionalCoordinate,
+                                                 double endAdimensionalCoordinate,
+                                                 size_t numSamples = 100,
+                                                 bool accountForCurvature = false,
+                                                 double height = 1.0,
+                                                 double assignedDelta = -1.0) const;
 
         /// @brief Compute the points on a spline lying at certain distance
         /// @param[in] index The spline index
@@ -149,7 +153,7 @@ namespace meshkernel
         /// @param[in] adimensionalPointCoordinate The adimensional coordinate of the point along the spline
         /// @returns The computed curvatureFactor, normal vector and tangential vector
         std::tuple<Point, Point, double> ComputeCurvatureOnSplinePoint(size_t splineIndex,
-                                                                       double adimensionalPointCoordinate);
+                                                                       double adimensionalPointCoordinate) const;
 
         /// @brief Delete a spline
         /// @param[in] splineIndex The index of the spline to delete
@@ -191,7 +195,7 @@ namespace meshkernel
         /// @brief This is the function we want to find the root of
         double operator()(double adimensionalDistanceReferencePoint) const
         {
-            auto distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0.0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
+            auto distanceFromReferencePoint = m_spline->ComputeSplineLength(m_splineIndex, 0.0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
             distanceFromReferencePoint = std::abs(distanceFromReferencePoint - m_DimensionalDistance);
             return distanceFromReferencePoint;
         }
@@ -232,7 +236,7 @@ namespace meshkernel
         /// @brief This is the function we want to find the root of
         double operator()(double adimensionalDistanceReferencePoint) const
         {
-            const auto distanceFromReferencePoint = m_spline->GetSplineLength(m_splineIndex, 0.0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
+            const auto distanceFromReferencePoint = m_spline->ComputeSplineLength(m_splineIndex, 0.0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
             const auto pointOnSpline = InterpolateSplinePoint(m_spline->m_splineNodes[m_splineIndex], m_spline->m_splineDerivatives[m_splineIndex], distanceFromReferencePoint);
             return ComputeSquaredDistance(m_point, pointOnSpline, Projection::cartesian);
         }

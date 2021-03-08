@@ -77,14 +77,6 @@ namespace meshkernel
         /// @brief Computes the grid nodes types and the faces masks
         void ComputeGridMasks();
 
-        /// @brief Computes the m and n grid lines and spline derivatives in separate vectors
-        /// @return The m grid lines and the spline derivatives, the n grid lines and the splines derivatives
-        [[nodiscard]] std::tuple<std::vector<std::vector<Point>>,
-                                 std::vector<std::vector<Point>>,
-                                 std::vector<std::vector<Point>>,
-                                 std::vector<std::vector<Point>>>
-        ComputeGridLinesAndSplinesDerivatives() const;
-
         /// @brief If the face is valid. A face is valid if all its nodes are valid.
         /// @param[in] m the m coordinate
         /// @param[in] n the n coordinate

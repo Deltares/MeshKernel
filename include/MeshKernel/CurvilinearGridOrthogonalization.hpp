@@ -29,6 +29,7 @@
 #include <memory>
 
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Splines.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
 
 namespace meshkernel
@@ -89,12 +90,6 @@ namespace meshkernel
         std::vector<std::vector<double>> m_e;
         std::vector<std::vector<double>> m_atp;
 
-        // grid lines
-        std::vector<std::vector<Point>> m_mGridLines;
-        std::vector<std::vector<Point>> m_nGridLines;
-
-        // derivatives
-        std::vector<std::vector<Point>> m_nGridLinesDerivatives;
-        std::vector<std::vector<Point>> m_mGridLineDerivates;
+        Splines m_splines;
     };
 } // namespace meshkernel

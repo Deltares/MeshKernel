@@ -44,6 +44,8 @@ meshkernel::CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(s
       m_secondPoint(secondPoint)
 
 {
+    /// Store the grid lines as splines
+    m_splines = Splines(m_grid);
 }
 
 void meshkernel::CurvilinearGridOrthogonalization::Compute()
@@ -67,13 +69,6 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
 
     /// Compute the masks
     m_grid->ComputeGridMasks();
-    /// store the m and n grid lines in separate vectors, and compute the spline derivatives for each gridline
-    auto [mGridLines, mGridLineDerivates, nGridLines, nGridLinesDerivatives] = m_grid->ComputeGridLinesAndSplinesDerivatives();
-
-    m_mGridLines = std::move(mGridLines);
-    m_mGridLineDerivates = std::move(mGridLineDerivates);
-    m_nGridLines = std::move(nGridLines);
-    m_nGridLinesDerivatives = std::move(nGridLinesDerivatives);
 
     // Compute the matrix coefficients
     for (auto outerIterations = 0; outerIterations < m_orthogonalizationParameters.OuterIterations; ++outerIterations)

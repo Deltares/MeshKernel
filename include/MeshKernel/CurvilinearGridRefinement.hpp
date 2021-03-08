@@ -27,8 +27,10 @@
 
 #pragma once
 
-#include <MeshKernel/Entities.hpp>
 #include <memory>
+
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Splines.hpp>
 
 namespace meshkernel
 {
@@ -58,5 +60,6 @@ namespace meshkernel
         Point m_firstPoint;                      ///< The first node of the segment defining the refinement zone
         Point m_secondPoint;                     ///< The second node of the segment defining the refinement zone
         size_t m_refinement;                     ///< The selected number of refinement lines
+        Splines m_splines;                       ///< An instance of the spline class storing the individual grid lines as splines
     };
 } // namespace meshkernel

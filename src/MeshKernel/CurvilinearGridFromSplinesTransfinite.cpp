@@ -98,7 +98,7 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromSplinesTransfinite::C
         {
             if (std::abs(value) > 0.0)
             {
-                intersectionDistances[numIntersections] = m_splines->GetSplineLength(splineIndex, 0.0, value, 10, false);
+                intersectionDistances[numIntersections] = m_splines->ComputeSplineLength(splineIndex, 0.0, value, 10, false);
                 numIntersections++;
             }
         }
