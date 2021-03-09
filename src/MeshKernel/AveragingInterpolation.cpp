@@ -250,20 +250,21 @@ namespace meshkernel
         return result;
     }
 
-    bool HasQueryResults(RTree const& samplesRTree)
+    [[nodiscard]] bool HasQueryResults(RTree const& samplesRTree)
     {
         return samplesRTree.GetQueryResultSize() > 0;
     }
 
-    double GetSampleTreeValue(RTree const& samplesRTree,
-                              std::vector<Sample> const& samples,
-                              size_t const index)
+    [[nodiscard]] double GetSampleTreeValue(
+        RTree const& samplesRTree,
+        std::vector<Sample> const& samples,
+        size_t const index)
     {
         auto const sample_index = samplesRTree.GetQueryResult(index);
         return samples[sample_index].value;
     }
 
-    std::unique_ptr<averaging::AveragingStrategy> GetAveragingStrategy(
+    [[nodiscard]] std::unique_ptr<averaging::AveragingStrategy> GetAveragingStrategy(
         AveragingInterpolation::Method const averagingMethod,
         double const missingValue,
         Point const& interpolationPoint,
