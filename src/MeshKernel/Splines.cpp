@@ -221,25 +221,25 @@ bool meshkernel::Splines::GetSplinesIntersection(size_t first,
         firstRatioIterations = firstRight - firstLeft;
         secondRatioIterations = secondRight - secondLeft;
 
-        const auto firstLeftSplinePoint = InterpolateSplinePoint(m_splineNodes[first], m_splineDerivatives[first], firstLeft);
+        const auto firstLeftSplinePoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[first], m_splineDerivatives[first], firstLeft);
         if (!firstLeftSplinePoint.IsValid())
         {
             return false;
         }
 
-        const auto firstRightSplinePoint = InterpolateSplinePoint(m_splineNodes[first], m_splineDerivatives[first], firstRight);
+        const auto firstRightSplinePoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[first], m_splineDerivatives[first], firstRight);
         if (!firstRightSplinePoint.IsValid())
         {
             return false;
         }
 
-        const auto secondLeftSplinePoint = InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondLeft);
+        const auto secondLeftSplinePoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[second], m_splineDerivatives[second], secondLeft);
         if (!secondLeftSplinePoint.IsValid())
         {
             return false;
         }
 
-        const auto secondRightSplinePoint = InterpolateSplinePoint(m_splineNodes[second], m_splineDerivatives[second], secondRight);
+        const auto secondRightSplinePoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[second], m_splineDerivatives[second], secondRight);
         if (!secondRightSplinePoint.IsValid())
         {
             return false;
@@ -327,7 +327,7 @@ double meshkernel::Splines::ComputeSplineLength(size_t index,
     }
 
     // first point
-    auto leftPoint = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], startAdimensionalCoordinate);
+    auto leftPoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], startAdimensionalCoordinate);
     double splineLength = 0.0;
 
     auto rightPointCoordinateOnSpline = startAdimensionalCoordinate;
@@ -340,7 +340,7 @@ double meshkernel::Splines::ComputeSplineLength(size_t index,
             rightPointCoordinateOnSpline = endAdimensionalCoordinate;
         }
 
-        const auto rightPoint = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], rightPointCoordinateOnSpline);
+        const auto rightPoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], rightPointCoordinateOnSpline);
         if (!rightPoint.IsValid())
         {
             continue;
@@ -373,7 +373,7 @@ std::tuple<meshkernel::Point, meshkernel::Point, double> meshkernel::Splines::Co
     const auto leftSegment = static_cast<double>(rightCornerPoint) - adimensionalPointCoordinate;
     const auto rightSegment = adimensionalPointCoordinate - static_cast<double>(leftCornerPoint);
 
-    const auto pointCoordinate = InterpolateSplinePoint(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate);
+    const auto pointCoordinate = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[splineIndex], m_splineDerivatives[splineIndex], adimensionalPointCoordinate);
     if (!pointCoordinate.IsValid())
     {
         throw AlgorithmError("Splines::ComputeCurvatureOnSplinePoint: Could not interpolate spline points.");
@@ -463,10 +463,10 @@ std::vector<double> meshkernel::Splines::SecondOrderDerivative(const std::vector
     return coordinatesDerivatives;
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<double>> meshkernel::Splines::InterpolatePointsOnSpline(size_t index,
-                                                                                                               double maximumGridHeight,
-                                                                                                               bool isSpacingCurvatureAdapted,
-                                                                                                               const std::vector<double>& distances)
+std::tuple<std::vector<meshkernel::Point>, std::vector<double>> meshkernel::Splines::ComputePointOnSplineFromAdimensionalDistance(size_t index,
+                                                                                                                                  double maximumGridHeight,
+                                                                                                                                  bool isSpacingCurvatureAdapted,
+                                                                                                                                  const std::vector<double>& distances)
 {
 
     std::vector<Point> points(distances.size());
@@ -478,22 +478,19 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<double>> meshkernel::Spli
     {
         func.SetDimensionalDistance(distances[i]);
         adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, static_cast<double>(numNodes) - 1.0);
-        points[i] = InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i]);
+        points[i] = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i]);
         if (!points[i].IsValid())
         {
-            throw AlgorithmError("Splines::InterpolatePointsOnSpline: Could not interpolate spline points.");
+            throw AlgorithmError("Splines::ComputePointOnSplineFromAdimensionalDistance: Could not interpolate spline points.");
         }
     }
     return {points, adimensionalDistances};
 }
 
-meshkernel::Point meshkernel::Splines::ComputeClosestPointOnSpline(size_t index,
-                                                                   double maximumGridHeight,
-                                                                   bool isSpacingCurvatureAdapted,
-                                                                   meshkernel::Point point)
+meshkernel::Point meshkernel::Splines::ComputeClosestPointOnSpline(size_t index, Point point)
 {
-    FuncDistanceFromAPoint func(this, index, point, isSpacingCurvatureAdapted, maximumGridHeight);
+    FuncDistanceFromAPoint func(this, index, point);
     const auto numNodes = m_splineNodes[index].size();
     const auto adimensionalDistance = FindFunctionRootWithGoldenSectionSearch(func, 0, static_cast<double>(numNodes) - 1.0);
-    return InterpolateSplinePoint(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistance);
+    return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistance);
 }

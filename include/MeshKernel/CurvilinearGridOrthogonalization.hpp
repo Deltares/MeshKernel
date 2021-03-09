@@ -60,7 +60,7 @@ namespace meshkernel
         void Solve();
 
         /// @brief Computes matrix coefficients (FIXDDBOUNDARIES)
-        void ApplyBoundaryConditions();
+        void FreezeBoundaries();
 
         /// @brief Computes matrix coefficients (ATPPAR)
         void ComputeHorizontalMatrixCoefficients();

@@ -101,8 +101,8 @@ void meshkernel::CurvilinearGridRefinement::Compute() const
                 {
                     const auto splineIndex = currentN;
                     const auto interpolationPoint = static_cast<double>(currentM) + static_cast<double>(m) / static_cast<double>(localMRefinement);
-                    bottomRefinement.emplace_back(InterpolateSplinePoint(m_splines.m_splineNodes[splineIndex], m_splines.m_splineDerivatives[splineIndex], interpolationPoint));
-                    topRefinement.emplace_back(InterpolateSplinePoint(m_splines.m_splineNodes[splineIndex + 1], m_splines.m_splineDerivatives[splineIndex + 1], interpolationPoint));
+                    bottomRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex], m_splines.m_splineDerivatives[splineIndex], interpolationPoint));
+                    topRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex + 1], m_splines.m_splineDerivatives[splineIndex + 1], interpolationPoint));
                 }
 
                 // Calculate n-direction spline points
@@ -112,8 +112,8 @@ void meshkernel::CurvilinearGridRefinement::Compute() const
                 {
                     const auto splineIndex = m_grid->m_numN + currentM;
                     const auto interpolationPoint = static_cast<double>(currentN) + static_cast<double>(n) / static_cast<double>(localNRefinement);
-                    leftRefinement.emplace_back(InterpolateSplinePoint(m_splines.m_splineNodes[splineIndex], m_splines.m_splineDerivatives[splineIndex], interpolationPoint));
-                    rightRefinement.emplace_back(InterpolateSplinePoint(m_splines.m_splineNodes[splineIndex + 1], m_splines.m_splineDerivatives[splineIndex + 1], interpolationPoint));
+                    leftRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex], m_splines.m_splineDerivatives[splineIndex], interpolationPoint));
+                    rightRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex + 1], m_splines.m_splineDerivatives[splineIndex + 1], interpolationPoint));
                 }
 
                 // Perform transfinite interpolation on the current curvilinear face

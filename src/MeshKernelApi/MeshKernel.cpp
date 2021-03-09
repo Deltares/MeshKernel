@@ -693,7 +693,7 @@ namespace meshkernelapi
                     for (auto p = 0; p <= numberOfPointsBetweenNodes; p++)
                     {
                         const double pointAdimensionalCoordinate = n + double(p) / double(numberOfPointsBetweenNodes);
-                        const auto pointCoordinate = InterpolateSplinePoint(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate);
+                        const auto pointCoordinate = ComputePointOnSplineAtAdimensionalDistance(coordinates, coordinatesDerivatives, pointAdimensionalCoordinate);
                         if (!pointCoordinate.IsValid())
                         {
                             break;

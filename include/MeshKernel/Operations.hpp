@@ -407,9 +407,9 @@ namespace meshkernel
     /// @param[in] pointAdimensionalCoordinate The adimensinal coordinate where to perform the interpolation
     /// @returns The interpolated point
     template <typename T>
-    [[nodiscard]] T InterpolateSplinePoint(const std::vector<T>& coordinates,
-                                           const std::vector<T>& coordinatesDerivatives,
-                                           double pointAdimensionalCoordinate)
+    [[nodiscard]] T ComputePointOnSplineAtAdimensionalDistance(const std::vector<T>& coordinates,
+                                                               const std::vector<T>& coordinatesDerivatives,
+                                                               double pointAdimensionalCoordinate)
     {
         T pointCoordinate{};
         if (pointAdimensionalCoordinate < 0)
