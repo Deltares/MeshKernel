@@ -3,24 +3,24 @@
 
 namespace meshkernel::averaging
 {
-    ClosestAveragingStrategy::ClosestAveragingStrategy(double const missing_value,
-                                                       Point const& interpolation_point,
-                                                       Projection const projection) : result_(missing_value),
-                                                                                      interpolationPoint_(interpolation_point),
-                                                                                      proj_(projection) {}
+    ClosestAveragingStrategy::ClosestAveragingStrategy(double const missingValue,
+                                                       Point const& interpolationPoint,
+                                                       Projection const projection) : m_result(missingValue),
+                                                                                      m_interpolationPoint(interpolationPoint),
+                                                                                      m_projection(projection) {}
 
     void ClosestAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
     {
-        if (const auto squaredDistance = ComputeSquaredDistance(interpolationPoint_, samplePoint, proj_);
-            squaredDistance < closestSquaredValue_)
+        if (const auto squaredDistance = ComputeSquaredDistance(m_interpolationPoint, samplePoint, m_projection);
+            squaredDistance < m_closestSquaredValue)
         {
-            closestSquaredValue_ = squaredDistance;
-            result_ = sampleValue;
+            m_closestSquaredValue = squaredDistance;
+            m_result = sampleValue;
         }
     }
 
     double ClosestAveragingStrategy::Calculate() const
     {
-        return result_;
+        return m_result;
     }
 } // namespace meshkernel::averaging

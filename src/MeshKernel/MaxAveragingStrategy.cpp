@@ -2,15 +2,15 @@
 
 namespace meshkernel::averaging
 {
-    MaxAveragingStrategy::MaxAveragingStrategy(double const missingValue) : missingValue_(missingValue) {}
+    MaxAveragingStrategy::MaxAveragingStrategy(double const missingValue) : m_missingValue(missingValue) {}
 
     void MaxAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
     {
-        result_ = std::max(result_, sampleValue);
+        m_result = std::max(m_result, sampleValue);
     }
 
     double MaxAveragingStrategy::Calculate() const
     {
-        return result_ != std::numeric_limits<double>::lowest() ? result_ : missingValue_;
+        return m_result != std::numeric_limits<double>::lowest() ? m_result : m_missingValue;
     }
 } // namespace meshkernel::averaging

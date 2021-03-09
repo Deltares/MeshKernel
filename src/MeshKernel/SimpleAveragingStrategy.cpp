@@ -2,16 +2,16 @@
 
 namespace meshkernel::averaging
 {
-    SimpleAveragingStrategy::SimpleAveragingStrategy(double const missingValue) : missingValue_(missingValue) {}
+    SimpleAveragingStrategy::SimpleAveragingStrategy(double const missingValue) : m_missingValue(missingValue) {}
 
     void SimpleAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
     {
-        result_ += sampleValue;
-        nAdds_ += 1;
+        m_result += sampleValue;
+        m_nAdds += 1;
     }
 
     double SimpleAveragingStrategy::Calculate() const
     {
-        return nAdds_ > 0 ? result_ / static_cast<double>(nAdds_) : missingValue_;
+        return m_nAdds > 0 ? m_result / static_cast<double>(m_nAdds) : m_missingValue;
     }
 } // namespace meshkernel::averaging

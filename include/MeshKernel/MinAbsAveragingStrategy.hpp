@@ -17,9 +17,9 @@ namespace meshkernel::averaging
 
     private:
         /// @brief The current result returned in Calculate
-        double result_ = std::numeric_limits<double>::max();
+        double m_result = std::numeric_limits<double>::max();
 
         /// @brief The value returned when no valid value can be returned.
-        double const missingValue_;
+        double const m_missingValue;
     };
 } // namespace meshkernel::averaging
