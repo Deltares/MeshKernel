@@ -16,7 +16,10 @@ namespace meshkernel::averaging
         [[nodiscard]] double Calculate() const override;
 
     private:
+        /// @brief The current result returned in Calculate.
         double result_ = std::numeric_limits<double>::lowest();
+
+        /// @brief The value returned when no valid value can be returned.
         double const missingValue_;
     };
-}
+} // namespace meshkernel::averaging

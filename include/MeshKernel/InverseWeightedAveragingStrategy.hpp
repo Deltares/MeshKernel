@@ -19,11 +19,19 @@ namespace meshkernel::averaging
         [[nodiscard]] double Calculate() const override;
 
     private:
+        /// @brief The current result used in Calculate to calculate the final value.
         double result_ = 0.0;
+
+        /// @brief The value returned when no valid value can be returned.
         double const missingValue_;
+
+        /// @brief The wall
         double wall_ = 0.0;
 
+        /// @brief The interpolation point from which the inverse weight is calculated.
         Point const& interpolationPoint_;
+
+        /// @brief The projection used to calculate the distance.
         Projection const proj_;
     };
-}
+} // namespace meshkernel::averaging

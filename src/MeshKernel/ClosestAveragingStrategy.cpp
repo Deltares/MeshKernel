@@ -5,10 +5,9 @@ namespace meshkernel::averaging
 {
     ClosestAveragingStrategy::ClosestAveragingStrategy(double const missing_value,
                                                        Point const& interpolation_point,
-                                                       Projection const projection) :
-        result_(missing_value),
-        interpolationPoint_(interpolation_point),
-        proj_(projection) {}
+                                                       Projection const projection) : result_(missing_value),
+                                                                                      interpolationPoint_(interpolation_point),
+                                                                                      proj_(projection) {}
 
     void ClosestAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
     {
@@ -24,4 +23,4 @@ namespace meshkernel::averaging
     {
         return result_;
     }
-}
+} // namespace meshkernel::averaging
