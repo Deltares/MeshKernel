@@ -11,10 +11,10 @@ These structures must be mirrored in the client application and filled with appr
 ## Build
 
 The requirements are:
-- CMake 3.14 or higher
+- CMake 3.19 or higher
 - A C++17 compatible compiler
 - The Boost libraries
-- Git
+- Git (with Git LFS)
 - Doxygen (optional)
 
 
@@ -24,8 +24,8 @@ https://sourceforge.net/projects/boost/files/boost-binaries/
 
 Once installed, modify boost environmental variables accordingly. For example:
 ```powershell
-BOOST_INCLUDEDIR=C:\Apps\boost_1_70_0
-BOOST_LIBRARYDIR=C:\Apps\boost_1_70_0\lib64-msvc-14.1
+BOOST_INCLUDEDIR=C:\Apps\boost_1_74_0
+BOOST_LIBRARYDIR=C:\Apps\boost_1_74_0\lib64-msvc-14.2
 ```
 ### IDE
 To use an IDE, such as Visual Studio:
