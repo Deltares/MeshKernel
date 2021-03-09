@@ -19,6 +19,6 @@ namespace meshkernel::averaging
 
     double InverseWeightedAveragingStrategy::Calculate() const
     {
-        return wall_ >= 0.0 ? result_ / wall_ : missingValue_;
+        return wall_ > 0.0 ? result_ / wall_ : missingValue_;
     }
 } // namespace meshkernel::averaging
