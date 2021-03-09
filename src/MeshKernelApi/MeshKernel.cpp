@@ -199,7 +199,6 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_get_mesh2d(int meshKernelId,
-
                                        Mesh2D& mesh2d)
     {
         int exitCode = Success;
@@ -222,7 +221,6 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_get_curvilinear(int meshKernelId,
-
                                             Mesh2D& mesh2d)
     {
         int exitCode = Success;
