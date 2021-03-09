@@ -58,14 +58,14 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
     /// The points must lie on the same GridLine
     if (mFirstNode == mSecondNode && nFirstNode == nSecondNode)
     {
-        throw std::invalid_argument("CurvilinearGridDeRefinement::Compute: bottom left and upper right selection corners coincides");
+        throw std::invalid_argument("CurvilinearGridDeRefinement::Compute: bottom left and upper right selection corners coincides, invalid block selection");
     }
 
-    /// define the orthogonalization bounding box
-    m_minM = std::max(0, mFirstNode - 1);
-    m_minN = std::max(0, nFirstNode - 1);
-    m_maxM = std::min(static_cast<int>(m_grid->m_numM - 1), mSecondNode);
-    m_maxN = std::min(static_cast<int>(m_grid->m_numN - 1), nSecondNode);
+    /// compute orthogonalization bounding box
+    m_minM = std::min(mFirstNode, mSecondNode);
+    m_minN = std::min(nFirstNode, nSecondNode);
+    m_maxM = std::max(mFirstNode, mSecondNode);
+    m_maxN = std::max(nFirstNode, nSecondNode);
 
     /// Compute the masks
     m_grid->ComputeGridMasks();
@@ -231,11 +231,19 @@ void meshkernel::CurvilinearGridOrthogonalization::Solve()
     const double relaxationCoefficientTwo = 0.5;
     const double relaxationCoefficientThree = 0.9 * 0.9;
     const double relaxationCoefficientFour = 0.25;
+
+    // bounding box, only internal nodes
+    const auto minMInternal = std::max(size_t(1), m_minM);
+    const auto minNInternal = std::max(size_t(1), m_minN);
+
+    const auto maxMInternal = std::min(m_maxM, m_grid->m_numM - 1);
+    const auto maxNInternal = std::min(m_maxN, m_grid->m_numN - 1);
+
     for (auto innerIterations = 0; innerIterations < m_orthogonalizationParameters.InnerIterations; ++innerIterations)
     {
-        for (auto m = m_minM; m < m_maxM; ++m)
+        for (auto m = minMInternal; m < maxMInternal; ++m)
         {
-            for (auto n = m_minN; n < m_maxN; ++n)
+            for (auto n = minNInternal; n < maxNInternal; ++n)
             {
                 if (m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeTypes::Valid)
                 {
@@ -243,16 +251,16 @@ void meshkernel::CurvilinearGridOrthogonalization::Solve()
                 }
 
                 const auto residual =
-                    m_grid->m_gridNodes[m][n] * m_a[m][n] +
-                    m_grid->m_gridNodes[m][n] * m_b[m][n] +
-                    m_grid->m_gridNodes[m][n] * m_c[m][n] +
-                    m_grid->m_gridNodes[m][n] * m_d[m][n] +
+                    m_grid->m_gridNodes[m + 1][n] * m_a[m][n] +
+                    m_grid->m_gridNodes[m - 1][n] * m_b[m][n] +
+                    m_grid->m_gridNodes[m][n + 1] * m_c[m][n] +
+                    m_grid->m_gridNodes[m][n - 1] * m_d[m][n] +
                     m_grid->m_gridNodes[m][n] * m_e[m][n];
                 m_grid->m_gridNodes[m][n] = m_grid->m_gridNodes[m][n] - residual / m_e[m][n] * relaxationFactor;
             }
         }
 
-        if (innerIterations == 1)
+        if (innerIterations == 0)
         {
             relaxationFactor = relaxationCoefficientOne / (relaxationCoefficientOne - relaxationCoefficientTwo * relaxationCoefficientThree);
         }
@@ -341,12 +349,25 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalMatrixCoeffi
     }
 
     // re-set coefficents
+    for (auto m = 0; m < m_a.size(); ++m)
+    {
+        for (auto n = 0; n < m_a[0].size(); ++n)
+        {
+            {
+                m_a[m][n] = 0.0;
+                m_b[m][n] = 0.0;
+                m_c[m][n] = 0.0;
+                m_d[m][n] = 0.0;
+                m_e[m][n] = 0.0;
+            }
+        }
+    }
 
     for (auto m = m_minM + 1; m < m_maxM; ++m)
     {
         for (auto n = m_minN + 1; n < m_maxN; ++n)
         {
-            if (!m_grid->m_gridFacesMask[m][n])
+            if (m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeTypes::Valid)
             {
                 continue;
             }
@@ -426,7 +447,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
     // Perform right sum
     for (auto n = m_minN; n < m_maxN; ++n)
     {
-        for (auto m = m_minM - 1; m >= m_maxM; --m)
+        for (auto m = int(m_maxM) - 1; m >= int(m_minM); --m)
         {
             if (m_grid->IsValidFace(m, n) &&
                 !IsEqual(m_a[m][n], doubleMissingValue) &&
@@ -517,7 +538,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients
     // Perform upper sum
     for (auto m = m_minM; m < m_maxM; ++m)
     {
-        for (auto n = m_maxN - 1; n >= m_minN; --n)
+        for (auto n = int(m_maxN) - 1; n >= int(m_minN); --n)
         {
             if (m_grid->IsValidFace(m, n) &&
                 !IsEqual(m_b[m][n], doubleMissingValue) &&

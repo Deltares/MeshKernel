@@ -77,10 +77,10 @@ namespace meshkernel
         Point m_secondPoint;                                                      ///< The second vertex of the segment defining the derefinement zone
 
         // the node indices
-        int m_minM;
-        int m_minN;
-        int m_maxM;
-        int m_maxN;
+        size_t m_minM;
+        size_t m_minN;
+        size_t m_maxM;
+        size_t m_maxN;
 
         /// matrix coefficients
         std::vector<std::vector<double>> m_a;
