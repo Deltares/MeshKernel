@@ -11,6 +11,6 @@ namespace meshkernel::averaging
 
     double MaxAveragingStrategy::Calculate() const
     {
-        return result_ != std::numeric_limits<double>::min() ? result_ : missingValue_;
+        return result_ != std::numeric_limits<double>::lowest() ? result_ : missingValue_;
     }
 }
