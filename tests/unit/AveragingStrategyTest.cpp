@@ -78,7 +78,7 @@ namespace meshkernel::averaging
     class CalculateWithAddedValuesData
     {
     public:
-        CalculateWithAddedValuesData(AveragingInterpolation::Method method, std::vector<std::pair<Point, double>> const addData, double expectedResult) : method_(method), addData_(std::move(addData)), expectedResult(expectedResult) {}
+        CalculateWithAddedValuesData(AveragingInterpolation::Method const method, std::vector<std::pair<Point, double>> const& addData, double const expectedResult) : method_(method), addData_(addData), expectedResult(expectedResult) {}
 
         AveragingInterpolation::Method const method_;
         std::vector<std::pair<Point, double>> const addData_;
