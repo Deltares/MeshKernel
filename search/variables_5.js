@@ -1,9 +1,7 @@
 var searchData=
 [
-  ['face_5fedges_852',['face_edges',['../structmeshkernelapi_1_1_mesh_geometry.html#a77ae0a86089284b70a1ded5cd6c665b2',1,'meshkernelapi::MeshGeometry']]],
-  ['face_5flinks_853',['face_links',['../structmeshkernelapi_1_1_mesh_geometry.html#af4cf6c466ab177454f43ac5c7b89e0a9',1,'meshkernelapi::MeshGeometry']]],
-  ['face_5fnodes_854',['face_nodes',['../structmeshkernelapi_1_1_mesh_geometry.html#a9708f3e3c7d1e7df4d41355dcf8936f4',1,'meshkernelapi::MeshGeometry']]],
-  ['facex_855',['facex',['../structmeshkernelapi_1_1_mesh_geometry.html#af8c4b15b036865f67ca32df1f9399efe',1,'meshkernelapi::MeshGeometry']]],
-  ['facey_856',['facey',['../structmeshkernelapi_1_1_mesh_geometry.html#a1da48a3ca360e668e726a8173b80d2d9',1,'meshkernelapi::MeshGeometry']]],
-  ['facez_857',['facez',['../structmeshkernelapi_1_1_mesh_geometry.html#af42c029f20c96cdb1d8644099f408cd7',1,'meshkernelapi::MeshGeometry']]]
+  ['face_5fedges_818',['face_edges',['../structmeshkernelapi_1_1_mesh2_d.html#a0722342bc15bd3f834c4c7cee91ec44f',1,'meshkernelapi::Mesh2D']]],
+  ['face_5fnodes_819',['face_nodes',['../structmeshkernelapi_1_1_mesh2_d.html#afbbd9607736441d2d6a8a4d4550757b9',1,'meshkernelapi::Mesh2D']]],
+  ['face_5fx_820',['face_x',['../structmeshkernelapi_1_1_mesh2_d.html#a9987288b1fbedc937b21399f23154c92',1,'meshkernelapi::Mesh2D']]],
+  ['face_5fy_821',['face_y',['../structmeshkernelapi_1_1_mesh2_d.html#afd84a2fa9021d8232cefb4a0d449bf24',1,'meshkernelapi::Mesh2D']]]
 ];
