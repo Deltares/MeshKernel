@@ -763,38 +763,4 @@ void meshkernel::Mesh::SetFlatCopies()
         m_facesCircumcentersy[f] = m_facesCircumcenters[f].y;
         m_facesCircumcentersz[f] = 0.0;
     }
-
-    // we always need to provide pointers to not empty memory
-    if (m_nodex.empty())
-    {
-        m_nodex.resize(1);
-    }
-    if (m_nodey.empty())
-    {
-        m_nodey.resize(1);
-    }
-    if (m_nodez.empty())
-    {
-        m_nodez.resize(1);
-    }
-    if (m_edgeNodes.empty())
-    {
-        m_edgeNodes.resize(1);
-    }
-    if (m_faceNodes.empty())
-    {
-        m_faceNodes.resize(1, intMissingValue);
-    }
-    if (m_facesCircumcentersx.empty())
-    {
-        m_facesCircumcentersx.resize(1);
-    }
-    if (m_facesCircumcentersy.empty())
-    {
-        m_facesCircumcentersy.resize(1);
-    }
-    if (m_facesCircumcentersz.empty())
-    {
-        m_facesCircumcentersz.resize(1);
-    }
 }

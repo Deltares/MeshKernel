@@ -98,12 +98,26 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_set_mesh1d(int meshKernelId,
                                            const Mesh1D& mesh1d);
 
-        /// @brief Gets the meshkernel::Mesh2D state as a MeshGeometry struct
+        /// @brief Gets the Mesh2D dimensions
+        ///
+        /// The integer parameters of the Mesh2D struct are set to the corresponding dimensions
+        /// The pointers are set to null, and must be set to correctly sized memory
+        /// before passing the struct to `mkernel_get_mesh2d_data`
         /// @param[in]  meshKernelId The id of the mesh state
-        /// @param[out] mesh2d       The Mesh2D data
+        /// @param[out] mesh2d       The Mesh2D dimensions
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh2d(int meshKernelId,
-                                           Mesh2D& mesh2d);
+        MKERNEL_API int mkernel_get_mesh2d_dimensions(int meshKernelId,
+                                                      Mesh2D& mesh2d);
+
+        /// @brief Gets the Mesh2D dimensions data
+        ///
+        /// This function ought to be called after `mkernel_get_mesh2d_dimensions` has been called
+        /// and the pointers have been set to correctly sized memory
+        /// @param[in]     meshKernelId The id of the mesh state
+        /// @param[in,out] mesh2d       The Mesh2D data
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_mesh2d_data(int meshKernelId,
+                                                Mesh2D& mesh2d);
 
         /// @brief Gets the meshkernel::Curvilinear state as a MeshGeometry struct (converted as set of edges and nodes)
         /// @param[in]  meshKernelId The id of the mesh state
@@ -112,12 +126,26 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_get_curvilinear(int meshKernelId,
                                                 Mesh2D& mesh2d);
 
-        /// @brief Gets the meshkernel::Mesh1D state as a meshkernelapi::Mesh1D struct
-        /// @param[in]  meshKernelId           The id of the mesh state
-        /// @param[out] mesh1d                 Mesh1D data
+        /// @brief Gets the Mesh1D dimensions
+        ///
+        /// The integer parameters of the Mesh1D struct are set to the corresponding dimensions
+        /// The pointers are set to null, and must be set to correctly sized memory
+        /// before passing the struct to `mkernel_get_mesh1d_data`
+        /// @param[in]  meshKernelId The id of the mesh state
+        /// @param[out] mesh1d       The Mesh1D dimensions
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh1d(int meshKernelId,
-                                           Mesh1D& mesh1d);
+        MKERNEL_API int mkernel_get_mesh1d_dimensions(int meshKernelId,
+                                                      Mesh1D& mesh1d);
+
+        /// @brief Gets the Mesh1D dimensions data
+        ///
+        /// This function ought to be called after `mkernel_get_mesh1d_dimensions` has been called
+        /// and the pointers have been set to correctly sized memory
+        /// @param[in]     meshKernelId The id of the mesh state
+        /// @param[in,out] mesh1d       The Mesh1D data
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_mesh1d_data(int meshKernelId,
+                                                Mesh1D& mesh1d);
 
         /// @brief Gets the meshkernel::Contacts size as a meshkernelapi::Contacts struct
         /// @param[in]  meshKernelId           The id of the mesh state

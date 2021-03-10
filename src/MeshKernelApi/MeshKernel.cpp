@@ -184,8 +184,8 @@ namespace meshkernelapi
             const auto edges1d = meshkernel::ConvertToEdgeNodesVector(mesh1d.num_edges,
                                                                       mesh1d.edge_nodes);
             const auto nodes1d = meshkernel::ConvertToNodesVector(mesh1d.num_nodes,
-                                                                  mesh1d.nodex,
-                                                                  mesh1d.nodey);
+                                                                  mesh1d.node_x,
+                                                                  mesh1d.node_y);
 
             *meshKernelState[meshKernelId].m_mesh1d = meshkernel::Mesh1D(edges1d,
                                                                          nodes1d,
@@ -198,8 +198,30 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh2d(int meshKernelId,
-                                       Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_get_mesh2d_dimensions(int meshKernelId,
+                                                  Mesh2D& mesh2d)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+            mesh2d.max_num_face_nodes = meshkernel::maximumNumberOfNodesPerFace;
+            mesh2d.num_faces = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumFaces());
+            mesh2d.num_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumNodes());
+            mesh2d.num_edges = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_get_mesh2d_data(int meshKernelId,
+                                            Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -210,8 +232,49 @@ namespace meshkernelapi
             }
 
             meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
-            meshKernelState[meshKernelId].m_mesh2d->SetFlatCopies();
-            SetMesh(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
+            // TODO: Add face_edges and edge_faces
+            SetMesh2D(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_get_mesh1d_dimensions(int meshKernelId,
+                                                  Mesh1D& mesh1d)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            mesh1d.num_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumNodes());
+            mesh1d.num_edges = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumEdges());
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_get_mesh1d_data(int meshKernelId,
+                                            Mesh1D& mesh1d)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            SetMesh1D(meshKernelState[meshKernelId].m_mesh1d, mesh1d);
         }
         catch (...)
         {
@@ -234,8 +297,8 @@ namespace meshkernelapi
 
             // cast the curvilinear grid to mesh, because an unstructured mesh is communicated
             const auto mesh = std::dynamic_pointer_cast<meshkernel::Mesh>(meshKernelState[meshKernelId].m_curvilinearGrid);
-
-            SetMesh(mesh, mesh2d);
+            // TODO: Use correct function
+            //SetMesh(mesh, mesh2d);
         }
         catch (...)
         {
@@ -287,27 +350,6 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh1d(int meshKernelId,
-                                       Mesh1D& mesh1d)
-    {
-        int exitCode = Success;
-        try
-        {
-            if (meshKernelState.count(meshKernelId) == 0)
-            {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
-            }
-
-            meshKernelState[meshKernelId].m_mesh1d->SetFlatCopies();
-            SetMesh1D(meshKernelState[meshKernelId].m_mesh1d, mesh1d);
-        }
-        catch (...)
-        {
-            exitCode = HandleExceptions(std::current_exception());
-        }
-        return exitCode;
-    }
-
     MKERNEL_API int mkernel_get_faces_mesh2d(int meshKernelId, Mesh2D& mesh2d)
     {
         int exitCode = Success;
@@ -319,8 +361,8 @@ namespace meshkernelapi
             }
             meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
             meshKernelState[meshKernelId].m_mesh2d->SetFlatCopies();
-
-            SetMesh(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
+            // TODO: Call correct function
+            //SetMesh(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {

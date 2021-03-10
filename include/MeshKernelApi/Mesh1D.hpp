@@ -35,9 +35,9 @@ namespace meshkernelapi
         /// @brief The nodes composing each mesh 1d edge
         int* edge_nodes = nullptr;
         /// @brief The x-coordinates of the mesh nodes
-        double* nodex = nullptr;
+        double* node_x = nullptr;
         /// @brief The y-coordinates of the mesh nodes
-        double* nodey = nullptr;
+        double* node_y = nullptr;
         /// @brief The number of 1d nodes
         int num_nodes;
         /// @brief The number of 1d edges

@@ -124,33 +124,37 @@ namespace meshkernelapi
         }
     }
 
-    /// @brief Sets a meshkernelapi::MeshGeometry instance from a meshkernel::Mesh instance
-    /// @param[in]  mesh      The input meshkernel::Mesh instance
-    /// @param[out] mesh2d    The output meshkernelapi::Mesh2D instance
-    static void SetMesh(std::shared_ptr<meshkernel::Mesh> mesh, Mesh2D& mesh2d)
+    /// @brief Sets a meshkernelapi::Mesh2D instance from a meshkernel::Mesh2D instance
+    /// @param[in]  mesh2d    The  meshkernel::Mesh2D instance
+    /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
+    static void SetMesh2D(std::shared_ptr<meshkernel::Mesh> mesh2d, Mesh2D& mesh2dApi)
     {
-        mesh2d.node_x = &(mesh->m_nodex[0]);
-        mesh2d.node_y = &(mesh->m_nodey[0]);
-        mesh2d.edge_nodes = &(mesh->m_edgeNodes[0]);
-
-        mesh2d.max_num_face_nodes = meshkernel::maximumNumberOfNodesPerFace;
-        mesh2d.num_faces = static_cast<int>(mesh->GetNumFaces());
-        if (mesh2d.num_faces > 0)
+        for (auto n = 0; n < mesh2d->GetNumNodes(); n++)
         {
-            mesh2d.face_nodes = &(mesh->m_faceNodes[0]);
-            mesh2d.face_x = &(mesh->m_facesCircumcentersx[0]);
-            mesh2d.face_y = &(mesh->m_facesCircumcentersy[0]);
+            mesh2dApi.node_x[n] = mesh2d->m_nodes[n].x;
+            mesh2dApi.node_y[n] = mesh2d->m_nodes[n].y;
         }
 
-        if (mesh->GetNumNodes() == 1)
+        size_t edgeIndex = 0;
+        for (auto e = 0; e < mesh2d->GetNumEdges(); e++)
         {
-            mesh2d.num_nodes = 0;
-            mesh2d.num_edges = 0;
+            mesh2dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh2d->m_edges[e].first);
+            edgeIndex++;
+            mesh2dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh2d->m_edges[e].second);
+            edgeIndex++;
         }
-        else
+
+        size_t faceIndex = 0;
+        for (auto f = 0; f < mesh2d->GetNumFaces(); f++)
         {
-            mesh2d.num_nodes = static_cast<int>(mesh->GetNumNodes());
-            mesh2d.num_edges = static_cast<int>(mesh->GetNumEdges());
+            for (auto n = 0; n < meshkernel::maximumNumberOfNodesPerFace; ++n)
+            {
+                if (n < mesh2d->m_facesNodes[f].size())
+                {
+                    mesh2dApi.face_nodes[faceIndex] = static_cast<int>(mesh2d->m_facesNodes[f][n]);
+                }
+                faceIndex++;
+            }
         }
     }
 
@@ -160,19 +164,19 @@ namespace meshkernelapi
     static void SetMesh1D(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
                           Mesh1D& mesh1dApi)
     {
-        mesh1dApi.nodex = &(mesh1d->m_nodex[0]);
-        mesh1dApi.nodey = &(mesh1d->m_nodey[0]);
-        mesh1dApi.edge_nodes = &(mesh1d->m_edgeNodes[0]);
-
-        if (mesh1d->GetNumNodes() == 1)
+        for (auto n = 0; n < mesh1d->GetNumNodes(); n++)
         {
-            mesh1dApi.num_nodes = 0;
-            mesh1dApi.num_edges = 0;
+            mesh1dApi.node_x[n] = mesh1d->m_nodes[n].x;
+            mesh1dApi.node_y[n] = mesh1d->m_nodes[n].y;
         }
-        else
+
+        size_t edgeIndex = 0;
+        for (auto e = 0; e < mesh1d->GetNumEdges(); e++)
         {
-            mesh1dApi.num_nodes = static_cast<int>(mesh1d->GetNumNodes());
-            mesh1dApi.num_edges = static_cast<int>(mesh1d->GetNumEdges());
+            mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d->m_edges[e].first);
+            edgeIndex++;
+            mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d->m_edges[e].second);
+            edgeIndex++;
         }
     }
 
