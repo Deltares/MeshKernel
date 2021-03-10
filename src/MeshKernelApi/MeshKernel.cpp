@@ -143,8 +143,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_mesh2d(int meshKernelId,
-                                       const MeshGeometryDimensions& meshGeometryDimensions,
-                                       const MeshGeometry& meshGeometry)
+                                       const Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -154,11 +153,11 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
             // convert raw arrays to containers
-            const auto edges2d = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge,
-                                                                      meshGeometry.edge_nodes);
-            const auto nodes2d = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode,
-                                                                  meshGeometry.nodex,
-                                                                  meshGeometry.nodey);
+            const auto edges2d = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges,
+                                                                      mesh2d.edge_nodes);
+            const auto nodes2d = meshkernel::ConvertToNodesVector(mesh2d.num_nodes,
+                                                                  mesh2d.node_x,
+                                                                  mesh2d.node_y);
 
             *(meshKernelState[meshKernelId].m_mesh2d) = meshkernel::Mesh2D(edges2d,
                                                                            nodes2d,
@@ -200,8 +199,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_get_mesh2d(int meshKernelId,
-                                       MeshGeometryDimensions& meshGeometryDimensions,
-                                       MeshGeometry& meshGeometry)
+                                       Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -213,7 +211,7 @@ namespace meshkernelapi
 
             meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
             meshKernelState[meshKernelId].m_mesh2d->SetFlatCopies();
-            SetMesh(meshKernelState[meshKernelId].m_mesh2d, meshGeometryDimensions, meshGeometry);
+            SetMesh(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {
@@ -223,8 +221,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_get_curvilinear(int meshKernelId,
-                                            MeshGeometryDimensions& meshGeometryDimensions,
-                                            MeshGeometry& meshGeometry)
+                                            Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -238,7 +235,7 @@ namespace meshkernelapi
             // cast the curvilinear grid to mesh, because an unstructured mesh is communicated
             const auto mesh = std::dynamic_pointer_cast<meshkernel::Mesh>(meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            SetMesh(mesh, meshGeometryDimensions, meshGeometry);
+            SetMesh(mesh, mesh2d);
         }
         catch (...)
         {
@@ -311,7 +308,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_faces_mesh2d(int meshKernelId, MeshGeometryDimensions& meshGeometryDimensions, MeshGeometry& meshGeometry)
+    MKERNEL_API int mkernel_get_faces_mesh2d(int meshKernelId, Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -323,7 +320,7 @@ namespace meshkernelapi
             meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
             meshKernelState[meshKernelId].m_mesh2d->SetFlatCopies();
 
-            SetMesh(meshKernelState[meshKernelId].m_mesh2d, meshGeometryDimensions, meshGeometry);
+            SetMesh(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {
@@ -1902,7 +1899,8 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_make_uniform_curvilinear(int meshKernelId, const MakeMeshParameters& makeGridParameters,
+    MKERNEL_API int mkernel_make_uniform_curvilinear(int meshKernelId,
+                                                     const MakeMeshParameters& makeGridParameters,
                                                      const GeometryList& geometryList)
     {
         int exitCode = Success;
@@ -1964,8 +1962,7 @@ namespace meshkernelapi
         return meshkernel::innerOuterSeparator;
     }
 
-    MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
-                              const MeshGeometry& meshGeometry,
+    MKERNEL_API int averaging(const Mesh2D& mesh2d,
                               const int& startIndex,
                               const double** samplesXCoordinate,
                               const double** samplesYCoordinate,
@@ -1995,8 +1992,8 @@ namespace meshkernelapi
             }
 
             // Set the mesh
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
+            const auto edges = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges, mesh2d.edge_nodes);
+            const auto nodes = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);
             const auto mesh = std::make_shared<meshkernel::Mesh2D>(edges, nodes, projection);
 
             // Build the samples
@@ -2033,8 +2030,7 @@ namespace meshkernelapi
     }
 
     // ec_module dll (stateless)
-    MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
-                                  const MeshGeometry& meshGeometry,
+    MKERNEL_API int triangulation(const Mesh2D& mesh2d,
                                   const double** samplesXCoordinate,
                                   const double** samplesYCoordinate,
                                   const double** samplesValue,
@@ -2060,7 +2056,7 @@ namespace meshkernelapi
 
             // Locations
             const auto location = static_cast<meshkernel::MeshLocations>(locationType);
-            const auto locations = ComputeLocations(meshGeometryDimensions, meshGeometry, location);
+            const auto locations = ComputeLocations(mesh2d, location);
 
             // Build the samples
             const auto samples = meshkernel::Sample::ConvertToSamples(numSamples, samplesXCoordinate, samplesYCoordinate, samplesValue);
