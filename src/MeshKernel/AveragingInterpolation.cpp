@@ -298,15 +298,15 @@ namespace meshkernel
 
         for (auto i = 0; i < tree.GetQueryResultSize(); i++)
         {
-            auto const sample_index = tree.GetQueryResult(i);
-            auto const sampleValue = samples[sample_index].value;
+            auto const sampleIndex = tree.GetQueryResult(i);
+            auto const sampleValue = samples[sampleIndex].value;
 
             if (sampleValue <= doubleMissingValue)
             {
                 continue;
             }
 
-            Point samplePoint{samples[sample_index].x, samples[sample_index].y};
+            Point samplePoint{samples[sampleIndex].x, samples[sampleIndex].y};
             if (IsPointInPolygonNodes(samplePoint, searchPolygon, projection))
             {
                 strategy->Add(samplePoint, sampleValue);
