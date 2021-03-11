@@ -92,10 +92,10 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
 
 void meshkernel::CurvilinearGridOrthogonalization::ProjectOnHorizontalBoundaries()
 {
-    // n  m-gridlines (horizontal)
+    // m grid lines (horizontal)
     for (auto n = 0; n < m_grid->m_numN; ++n)
     {
-        size_t leftM;
+        size_t leftM = sizetMissingValue;
         int nextVertical = 0;
         for (auto m = 0; m < m_grid->m_numM; ++m)
         {
@@ -115,7 +115,9 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectOnHorizontalBoundaries
                 nextVertical = -1;
                 continue;
             }
-            if ((nodeType == CurvilinearGrid::NodeTypes::BottomRight || nodeType == CurvilinearGrid::NodeTypes::UpperRight) && nextVertical != 0)
+            if ((nodeType == CurvilinearGrid::NodeTypes::BottomRight || nodeType == CurvilinearGrid::NodeTypes::UpperRight) &&
+                nextVertical != 0 &&
+                leftM != sizetMissingValue)
             {
                 for (auto mm = leftM + 1; mm < m; ++mm)
                 {
@@ -163,10 +165,10 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectOnHorizontalBoundaries
 
 void meshkernel::CurvilinearGridOrthogonalization::ProjectOnVerticalBoundaries()
 {
-    // m  n-gridlines (vertical)
+    // n gridlines (vertical)
     for (auto m = 0; m < m_grid->m_numM; ++m)
     {
-        size_t bottomN;
+        size_t bottomN = sizetMissingValue;
         int nextHorizontal = 0;
         for (auto n = 0; n < m_grid->m_numN; ++n)
         {
@@ -186,7 +188,9 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectOnVerticalBoundaries()
                 nextHorizontal = -1;
                 continue;
             }
-            if ((nodeType == CurvilinearGrid::NodeTypes::UpperLeft || nodeType == CurvilinearGrid::NodeTypes::UpperRight) && nextHorizontal != 0)
+            if ((nodeType == CurvilinearGrid::NodeTypes::UpperLeft || nodeType == CurvilinearGrid::NodeTypes::UpperRight) &&
+                nextHorizontal != 0 &&
+                bottomN != sizetMissingValue)
             {
                 for (auto nn = bottomN + 1; nn < n; ++nn)
                 {
