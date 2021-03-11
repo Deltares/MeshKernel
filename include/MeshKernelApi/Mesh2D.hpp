@@ -38,11 +38,11 @@ namespace meshkernelapi
         /// @brief The nodes composing each mesh 2d face
         int* face_nodes = nullptr;
 
-        /// @brief The edges composing each mesh 2d face
-        int* edge_faces = nullptr;
-
         /// @brief The left and right face indices that an edge separates
         int* face_edges = nullptr;
+
+        /// @brief The number of nodes for each mesh 2d face
+        int* nodes_per_face = nullptr;
 
         /// @brief The x-coordinates of network1d nodes
         double* node_x = nullptr;
@@ -71,8 +71,8 @@ namespace meshkernelapi
         /// @brief The number of faces
         int num_faces;
 
-        /// @brief The maximum amount of nodes a face can have
-        int max_num_face_nodes;
+        /// @brief The total number of nodes composing the mesh 2d faces
+        int num_face_nodes;
     };
 
 } // namespace meshkernelapi

@@ -32,6 +32,28 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
 
+/// @brief This convenience struct collects the unique_ptr for \ref AllocateMesh2dData
+struct Mesh2dPointers
+{
+    std::unique_ptr<int> edge_nodes;
+    std::unique_ptr<int> face_nodes;
+    std::unique_ptr<int> face_edges;
+    std::unique_ptr<int> nodes_per_face;
+    std::unique_ptr<double> node_x;
+    std::unique_ptr<double> node_y;
+    std::unique_ptr<double> edge_x;
+    std::unique_ptr<double> edge_y;
+    std::unique_ptr<double> face_x;
+    std::unique_ptr<double> face_y;
+};
+
+/// @brief This function allocates the space reported by \ref meshkernelapi::mkernel_get_mesh2d_dimensions
+/// The function should be called between \ref meshkernelapi::mkernel_get_mesh2d_dimensions and \ref meshkernelapi::mkernel_get_mesh2d_data
+///
+/// @param[in,out] mesh2d The dimensions in the mesh2d are used to allocate memory for the pointers in the mesh2d
+/// @returns The Mesh2dPointers instance is only returned so that the allocated memory will be owned by the caller
+Mesh2dPointers AllocateMesh2dData(meshkernelapi::Mesh2D mesh2d);
+
 meshkernelapi::Mesh2D ReadLegacyMeshFromFileForApiTesting(std::string filePath);
 
 std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);

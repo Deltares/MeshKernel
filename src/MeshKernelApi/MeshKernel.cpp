@@ -208,10 +208,8 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            mesh2d.max_num_face_nodes = meshkernel::maximumNumberOfNodesPerFace;
-            mesh2d.num_faces = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumFaces());
-            mesh2d.num_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumNodes());
-            mesh2d.num_edges = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
+            meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
+            SetMesh2dDimensions(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {
@@ -231,9 +229,8 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
-            // TODO: Add face_edges and edge_faces
-            SetMesh2D(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
+            // TODO: Add face_edges
+            SetMesh2d(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {
@@ -274,7 +271,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            SetMesh1D(meshKernelState[meshKernelId].m_mesh1d, mesh1d);
+            SetMesh1d(meshKernelState[meshKernelId].m_mesh1d, mesh1d);
         }
         catch (...)
         {

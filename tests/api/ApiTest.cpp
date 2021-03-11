@@ -58,24 +58,28 @@ private:
     int m_meshKernelId;
 };
 
-// TEST_F(ApiTests, DeleteNodeThroughApi)
-// {
-//     // Prepare
-//     MakeMesh();
-//     auto meshKernelId = GetMeshKernelId();
+TEST_F(ApiTests, DeleteNodeThroughApi)
+{
+    // Prepare
+    MakeMesh();
+    auto meshKernelId = GetMeshKernelId();
 
-//     // Execute
-//     auto errorCode = meshkernelapi::mkernel_delete_node_mesh2d(meshKernelId, 0);
-//     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    // Execute
+    auto errorCode = meshkernelapi::mkernel_delete_node_mesh2d(meshKernelId, 0);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-//     meshkernelapi::Mesh2D mesh2d{};
-//     errorCode = mkernel_get_mesh2d_data(meshKernelId, mesh2d);
-//     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    // Get the results
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = meshkernelapi::mkernel_get_mesh2d_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    AllocateMesh2dData(mesh2d);
+    errorCode = meshkernelapi::mkernel_get_mesh2d_data(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-//     // Assert
-//     ASSERT_EQ(11, mesh2d.num_nodes);
-//     ASSERT_EQ(15, mesh2d.num_edges);
-// }
+    // Assert
+    ASSERT_EQ(11, mesh2d.num_nodes);
+    ASSERT_EQ(15, mesh2d.num_edges);
+}
 
 // TEST_F(ApiTests, FlipEdgesThroughApi)
 // {

@@ -124,10 +124,27 @@ namespace meshkernelapi
         }
     }
 
+    /// @brief Sets dimensions members of meshkernelapi::Mesh2D instance
+    /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
+    /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
+    static void SetMesh2dDimensions(std::shared_ptr<meshkernel::Mesh> mesh2d, Mesh2D& mesh2dApi)
+    {
+        size_t num_face_nodes = 0;
+        for (auto f = 0; f < mesh2d->GetNumFaces(); f++)
+        {
+            num_face_nodes += mesh2d->m_facesNodes[f].size();
+        }
+
+        mesh2dApi.num_face_nodes = static_cast<int>(num_face_nodes);
+        mesh2dApi.num_faces = static_cast<int>(mesh2d->GetNumFaces());
+        mesh2dApi.num_nodes = static_cast<int>(mesh2d->GetNumNodes());
+        mesh2dApi.num_edges = static_cast<int>(mesh2d->GetNumEdges());
+    }
+
     /// @brief Sets a meshkernelapi::Mesh2D instance from a meshkernel::Mesh2D instance
     /// @param[in]  mesh2d    The  meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
-    static void SetMesh2D(std::shared_ptr<meshkernel::Mesh> mesh2d, Mesh2D& mesh2dApi)
+    static void SetMesh2d(std::shared_ptr<meshkernel::Mesh> mesh2d, Mesh2D& mesh2dApi)
     {
         for (auto n = 0; n < mesh2d->GetNumNodes(); n++)
         {
@@ -144,15 +161,12 @@ namespace meshkernelapi
             edgeIndex++;
         }
 
-        size_t faceIndex = 0;
+        int faceIndex = 0;
         for (auto f = 0; f < mesh2d->GetNumFaces(); f++)
         {
-            for (auto n = 0; n < meshkernel::maximumNumberOfNodesPerFace; ++n)
+            for (auto n = 0; n < mesh2d->m_facesNodes[f].size(); ++n)
             {
-                if (n < mesh2d->m_facesNodes[f].size())
-                {
-                    mesh2dApi.face_nodes[faceIndex] = static_cast<int>(mesh2d->m_facesNodes[f][n]);
-                }
+                mesh2dApi.face_nodes[faceIndex] = static_cast<int>(mesh2d->m_facesNodes[f][n]);
                 faceIndex++;
             }
         }
@@ -161,7 +175,7 @@ namespace meshkernelapi
     /// @brief Sets a meshkernelapi::Mesh1D instance from a meshkernel::Mesh1D instance
     /// @param[in]  mesh1d           The input meshkernel::Mesh1D instance
     /// @param[out] mesh1dApi        The output meshkernelapi::Mesh1D instance
-    static void SetMesh1D(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
+    static void SetMesh1d(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
                           Mesh1D& mesh1dApi)
     {
         for (auto n = 0; n < mesh1d->GetNumNodes(); n++)
