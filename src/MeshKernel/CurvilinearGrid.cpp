@@ -232,7 +232,7 @@ void meshkernel::CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
     RemoveInvalidNodes(invalidNodesToRemove);
 }
 
-void meshkernel::CurvilinearGrid::ComputeGridMasks()
+void meshkernel::CurvilinearGrid::ComputeGridNodeTypes()
 {
     RemoveInvalidNodes(true);
     m_gridNodesMask.resize(m_numM, std::vector<NodeTypes>(m_numN, NodeTypes::Invalid));
@@ -245,7 +245,6 @@ void meshkernel::CurvilinearGrid::ComputeGridMasks()
 
             if (!m_gridNodes[m][n].IsValid())
             {
-                m_gridNodesMask[m][n] = NodeTypes::Invalid;
                 continue;
             }
 
@@ -334,8 +333,8 @@ void meshkernel::CurvilinearGrid::ComputeGridMasks()
                 continue;
             }
 
-            const auto isTopRightFaceValid = m_gridFacesMask[m][n];
             const auto isTopLeftFaceValid = m_gridFacesMask[m - 1][n];
+            const auto isTopRightFaceValid = m_gridFacesMask[m][n];
             const auto isBottomLeftFaceValid = m_gridFacesMask[m - 1][n - 1];
             const auto isBottomRightFaceValid = m_gridFacesMask[m][n - 1];
 
@@ -344,7 +343,7 @@ void meshkernel::CurvilinearGrid::ComputeGridMasks()
                 isBottomLeftFaceValid &&
                 isBottomRightFaceValid)
             {
-                m_gridNodesMask[m][n] = NodeTypes::Valid;
+                m_gridNodesMask[m][n] = NodeTypes::InternalValid;
                 continue;
             }
             if (!isTopRightFaceValid &&
@@ -383,7 +382,7 @@ void meshkernel::CurvilinearGrid::ComputeGridMasks()
             if (isTopRightFaceValid &&
                 isTopLeftFaceValid &&
                 !isBottomLeftFaceValid &&
-                !!isBottomRightFaceValid)
+                !isBottomRightFaceValid)
             {
                 m_gridNodesMask[m][n] = NodeTypes::Bottom;
                 continue;

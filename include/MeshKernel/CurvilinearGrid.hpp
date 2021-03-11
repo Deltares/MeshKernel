@@ -42,16 +42,16 @@ namespace meshkernel
         /// @brief An enum for curvilinear node types
         enum class NodeTypes
         {
-            BottomLeft,  //(11)
-            UpperLeft,   //(14)
-            BottomRight, //(12)
-            UpperRight,  //(13)
-            Left,        //(4)
-            Right,       //(2)
-            Bottom,      //(1)
-            Up,          //(3)
-            Valid,       //(10)
-            Invalid      //(0)
+            BottomLeft,    //(11)
+            UpperLeft,     //(14)
+            BottomRight,   //(12)
+            UpperRight,    //(13)
+            Left,          //(4)
+            Right,         //(2)
+            Bottom,        //(1)
+            Up,            //(3)
+            InternalValid, //(10)
+            Invalid        //(0)
         };
 
         /// @brief Default constructor
@@ -75,7 +75,7 @@ namespace meshkernel
         std::tuple<int, int> GetNodeIndices(Point point);
 
         /// @brief Computes the grid nodes types and the faces masks
-        void ComputeGridMasks();
+        void ComputeGridNodeTypes();
 
         /// @brief If the face is valid. A face is valid if all its nodes are valid.
         /// @param[in] m the m coordinate

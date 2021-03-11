@@ -226,7 +226,7 @@ namespace meshkernel
         double operator()(double adimensionalDistanceReferencePoint) const
         {
             const auto pointOnSpline = ComputePointOnSplineAtAdimensionalDistance(m_spline->m_splineNodes[m_splineIndex], m_spline->m_splineDerivatives[m_splineIndex], adimensionalDistanceReferencePoint);
-            return ComputeSquaredDistance(m_point, pointOnSpline, Projection::cartesian);
+            return ComputeDistance(m_point, pointOnSpline, Projection::cartesian);
         }
 
         Splines* m_spline;                  ///< Pointer to splines

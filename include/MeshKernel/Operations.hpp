@@ -141,7 +141,7 @@ namespace meshkernel
         //golden distance factors
         const double c = 0.38196602;
         const double r = 0.61803399;
-        const double tolerance = 0.00001;
+        const double tolerance = 1e-5;
 
         double left = min;
         double middle = (min + max) * 0.5;
@@ -154,13 +154,13 @@ namespace meshkernel
         if (std::abs(right - middle) > std::abs(middle - left))
         {
             x1 = middle;
-            x2 = middle + c * (middle - left);
+            x2 = middle + c * (right - left);
         }
 
         double f1 = func(x1);
         double f2 = func(x2);
 
-        while (std::abs(x3 - x0) > tolerance * std::max(std::abs(x1) + std::abs(x2), 1e-8))
+        while (std::abs(x3 - x0) > tolerance * std::max(std::abs(x1) + std::abs(x2), 1e-8)) // tolerance * std::max(std::abs(x1) + std::abs(x2), 1e-10)
         {
             if (f2 < f1)
             {

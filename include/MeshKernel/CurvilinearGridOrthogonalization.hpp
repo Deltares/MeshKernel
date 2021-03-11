@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+
 #include <memory>
 
 #include <MeshKernel/Entities.hpp>
@@ -36,7 +37,7 @@ namespace meshkernel
 {
     class CurvilinearGrid;
 
-    /// @brief A class implementing the curvilinear grid derefinement algorithm
+    /// @brief A class implementing the curvilinear grid orthogonalization algorithm
     class CurvilinearGridOrthogonalization
     {
     public:
@@ -49,47 +50,54 @@ namespace meshkernel
                                          const Point& firstPoint,
                                          const Point& secondPoint);
 
-        /// @brief Refine the curvilinear grid
+        /// @brief Orthogonalize the curvilinear grid
         void Compute();
 
     private:
-        /// @brief Matrix solve (BNDSMT)
-        void TreatBoundaryConditions();
-
-        /// @brief Matrix solve (ORTSOR)
+        /// @brief Dolve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)
         void Solve();
 
-        /// @brief Computes matrix coefficients (FIXDDBOUNDARIES)
+        /// @brief Project the m boundary nodes onto the original grid (BNDSMT)
+        void ProjectOnHorizontalBoundaries();
+
+        /// @brief Project the n boundary nodes onto the original grid (BNDSMT)
+        void ProjectOnVerticalBoundaries();
+
+        /// @brief Freeze nodes with a specific flag (FIXDDBOUNDARIES)
         void FreezeBoundaries();
 
-        /// @brief Computes matrix coefficients (ATPPAR)
-        void ComputeHorizontalMatrixCoefficients();
+        /// @brief Computes the matrix coefficients (ATPPAR)
+        void ComputeCoefficients();
 
-        /// @brief Computes the horizontal matrix coefficients (SOMDIST)
+        /// @brief Computes the matrix coefficients for m-gridlines (SOMDIST)
         void ComputeHorizontalCoefficients();
 
-        /// @brief Computes the vertical matrix coefficients (SOMDIST)
+        /// @brief Compute the matrix coefficients for n-gridlines (SOMDIST)
         void ComputeVerticalCoefficients();
+
+        /// @brief Some nodes on m boundary grid lines
+        std::vector<std::vector<bool>> ComputeInvalidHorizontalBoundaryNodes();
+
+        /// @brief Some nodes on n boundary grid lines
+        std::vector<std::vector<bool>> ComputeInvalidVerticalBoundaryNodes();
 
         std::shared_ptr<CurvilinearGrid> m_grid;                                  ///< A pointer to the curvilinear grid to modify
         meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
-        Point m_firstPoint;                                                       ///< The first vertex of the segment defining the derefinement zone
-        Point m_secondPoint;                                                      ///< The second vertex of the segment defining the derefinement zone
+        Point m_firstPoint;                                                       ///< The first point defining the orthogonalization bounding box
+        Point m_secondPoint;                                                      ///< The second point defining the orthogonalization bounding box
 
-        // the node indices
-        size_t m_minM;
-        size_t m_minN;
-        size_t m_maxM;
-        size_t m_maxN;
+        size_t m_minM; ///< The minimum m index of the orthogonalization bounding box
+        size_t m_minN; ///< The minimum n index of the orthogonalization bounding box
+        size_t m_maxM; ///< The maximum m index of the orthogonalization bounding box
+        size_t m_maxN; ///< The maximum n index of the orthogonalization bounding box
 
-        /// matrix coefficients
-        std::vector<std::vector<double>> m_a;
-        std::vector<std::vector<double>> m_b;
-        std::vector<std::vector<double>> m_c;
-        std::vector<std::vector<double>> m_d;
-        std::vector<std::vector<double>> m_e;
-        std::vector<std::vector<double>> m_atp;
+        std::vector<std::vector<double>> m_a;   ///< The a term of the orthogonalization equation
+        std::vector<std::vector<double>> m_b;   ///< The b term of the orthogonalization equation
+        std::vector<std::vector<double>> m_c;   ///< The c term of the orthogonalization equation
+        std::vector<std::vector<double>> m_d;   ///< The d term of the orthogonalization equation
+        std::vector<std::vector<double>> m_e;   ///< The e term of the orthogonalization equation
+        std::vector<std::vector<double>> m_atp; ///< The atp term of the orthogonalization equation
 
-        Splines m_splines;
+        Splines m_splines; ///< The grid lines stored as splines
     };
 } // namespace meshkernel
