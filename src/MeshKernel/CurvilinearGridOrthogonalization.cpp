@@ -95,14 +95,14 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectOnHorizontalBoundaries
     // m grid lines (horizontal)
     for (auto n = 0; n < m_grid->m_numN; ++n)
     {
-        size_t leftM = sizetMissingValue;
+        size_t startM = sizetMissingValue;
         int nextVertical = 0;
         for (auto m = 0; m < m_grid->m_numM; ++m)
         {
             const auto nodeType = m_grid->m_gridNodesMask[m][n];
             if (nodeType == CurvilinearGrid::NodeTypes::BottomLeft || nodeType == CurvilinearGrid::NodeTypes::UpperLeft)
             {
-                leftM = m;
+                startM = m;
                 continue;
             }
             if (nodeType == CurvilinearGrid::NodeTypes::Bottom)
@@ -115,11 +115,14 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectOnHorizontalBoundaries
                 nextVertical = -1;
                 continue;
             }
-            if ((nodeType == CurvilinearGrid::NodeTypes::BottomRight || nodeType == CurvilinearGrid::NodeTypes::UpperRight) &&
-                nextVertical != 0 &&
-                leftM != sizetMissingValue)
+
+            // Project the nodes at the boundary (Bottom and Up node types) if a valid interval has been found.
+            // The interval ranges from startM to the next BottomRight or UpperRight node.
+            if (startM != sizetMissingValue &&
+                (nodeType == CurvilinearGrid::NodeTypes::BottomRight || nodeType == CurvilinearGrid::NodeTypes::UpperRight) &&
+                nextVertical != 0)
             {
-                for (auto mm = leftM + 1; mm < m; ++mm)
+                for (auto mm = startM + 1; mm < m; ++mm)
                 {
 
                     if (mm < m_minM || mm > m_maxM || n < m_minN || n > m_maxN)
@@ -152,11 +155,14 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectOnHorizontalBoundaries
                         const double qc = m_atp[mm][n - 1];
                         const auto qbc = 1.0 / qb + 1.0 / qc;
                         const auto rn = qb + qc + qbc;
-                        boundaryNode.x = (leftNode.x * qb + verticalNode.x * qbc + rightNode.x * qc + leftNode.y - leftNode.y) / rn;
+                        boundaryNode.x = (leftNode.x * qb + verticalNode.x * qbc + rightNode.x * qc + leftNode.y - rightNode.y) / rn;
                         boundaryNode.y = (leftNode.y * qb + verticalNode.y * qbc + rightNode.y * qc + rightNode.x - leftNode.x) / rn;
                     }
 
-                    m_grid->m_gridNodes[mm][n] = m_splines.ComputeClosestPointOnSpline(n, boundaryNode);
+                    m_grid->m_gridNodes[mm][n] = m_splines.ComputeClosestPointOnSplineSegment(n,
+                                                                                              static_cast<double>(startM),
+                                                                                              static_cast<double>(m),
+                                                                                              boundaryNode);
                 }
             }
         }
@@ -168,14 +174,14 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectOnVerticalBoundaries()
     // n gridlines (vertical)
     for (auto m = 0; m < m_grid->m_numM; ++m)
     {
-        size_t bottomN = sizetMissingValue;
+        size_t startN = sizetMissingValue;
         int nextHorizontal = 0;
         for (auto n = 0; n < m_grid->m_numN; ++n)
         {
             const auto nodeType = m_grid->m_gridNodesMask[m][n];
             if (nodeType == CurvilinearGrid::NodeTypes::BottomLeft || nodeType == CurvilinearGrid::NodeTypes::BottomRight)
             {
-                bottomN = n;
+                startN = n;
                 continue;
             }
             if (nodeType == CurvilinearGrid::NodeTypes::Left)
@@ -188,11 +194,14 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectOnVerticalBoundaries()
                 nextHorizontal = -1;
                 continue;
             }
+
+            // Project the nodes at the boundary (Left and Left node types) if a valid interval has been found.
+            // The interval ranges from startN to the next UpperLeft or UpperRight node.
             if ((nodeType == CurvilinearGrid::NodeTypes::UpperLeft || nodeType == CurvilinearGrid::NodeTypes::UpperRight) &&
                 nextHorizontal != 0 &&
-                bottomN != sizetMissingValue)
+                startN != sizetMissingValue)
             {
-                for (auto nn = bottomN + 1; nn < n; ++nn)
+                for (auto nn = startN + 1; nn < n; ++nn)
                 {
 
                     if (m < m_minM || m > m_maxM || nn < m_minN || nn > m_maxN)
@@ -230,7 +239,10 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectOnVerticalBoundaries()
 
                     // vertical spline index
                     const auto splineIndex = m_grid->m_numN + m;
-                    m_grid->m_gridNodes[m][nn] = m_splines.ComputeClosestPointOnSpline(splineIndex, boundaryNode);
+                    m_grid->m_gridNodes[m][nn] = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
+                                                                                              static_cast<double>(startN),
+                                                                                              static_cast<double>(n),
+                                                                                              boundaryNode);
                 }
             }
         }
@@ -530,7 +542,7 @@ std::vector<std::vector<bool>> meshkernel::CurvilinearGridOrthogonalization::Com
             }
             const auto start = std::min(m, lastValidM);
             const auto end = std::max(m, lastValidM);
-            for (auto k = start; k < end; k += step)
+            for (auto k = start; k <= end; ++k)
             {
                 invalidBoundaryNodes[k][n] = true;
             }
@@ -577,7 +589,7 @@ std::vector<std::vector<bool>> meshkernel::CurvilinearGridOrthogonalization::Com
             }
             const auto start = std::min(n, lastValidN);
             const auto end = std::max(n, lastValidN);
-            for (auto k = start; k < end; k += step)
+            for (auto k = start; k <= end; ++k)
             {
                 invalidBoundaryNodes[m][k] = true;
             }

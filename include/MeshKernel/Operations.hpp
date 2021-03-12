@@ -419,7 +419,7 @@ namespace meshkernel
 
         const double eps = 1e-5;
         const double splFac = 1.0;
-        const auto intCoordinate = static_cast<size_t>(std::floor(pointAdimensionalCoordinate));
+        const auto intCoordinate = static_cast<double>(std::floor(pointAdimensionalCoordinate));
         if (pointAdimensionalCoordinate - intCoordinate < eps)
         {
             return pointCoordinate = coordinates[intCoordinate];

@@ -487,10 +487,10 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<double>> meshkernel::Spli
     return {points, adimensionalDistances};
 }
 
-meshkernel::Point meshkernel::Splines::ComputeClosestPointOnSpline(size_t index, Point point)
+meshkernel::Point meshkernel::Splines::ComputeClosestPointOnSplineSegment(size_t index, double startSplineSegment, double endSplineSegment, Point point)
 {
     FuncDistanceFromAPoint func(this, index, point);
     const auto numNodes = m_splineNodes[index].size();
-    const auto adimensionalDistance = FindFunctionRootWithGoldenSectionSearch(func, 0, static_cast<double>(numNodes) - 1.0);
+    const auto adimensionalDistance = FindFunctionRootWithGoldenSectionSearch(func, startSplineSegment, endSplineSegment);
     return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistance);
 }

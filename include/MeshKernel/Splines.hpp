@@ -122,11 +122,13 @@ namespace meshkernel
                                                                                                          bool isSpacingCurvatureAdapted,
                                                                                                          const std::vector<double>& distances);
 
-        /// @brief Computes the point on a spline closest to another point
+        /// @brief Computes the point on a spline segment which is the closest to another point
         /// @param[in] index The spline index
-        /// @param[in] point The other point (can be on the spline or not)
-        /// @returns The closest point on the spline
-        Point ComputeClosestPointOnSpline(size_t index, Point point);
+        /// @param[in] startSplineSegment The begin of the spline segment to consider
+        /// @param[in] endSplineSegment The end of the spline segment to consider
+        /// @param[in] point The point to account for in the calculation
+        /// @returns The point on a spline segment which is the closest to the input point
+        Point ComputeClosestPointOnSplineSegment(size_t index, double startSplineSegment, double endSplineSegment, Point point);
 
         /// @brief Get the number of splines
         /// @return the number of splines

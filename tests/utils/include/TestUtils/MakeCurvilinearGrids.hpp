@@ -30,4 +30,10 @@
 
 #include <MeshKernel/CurvilinearGrid.hpp>
 
+/// @brief Makes a small, real world curvi grid
+/// @return A pointer to a curvilinear grid
 std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGrid();
+
+/// @brief Makes a small, real world curvi grid, with missing faces
+/// @return A pointer to a curvilinear grid
+std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissingFaces();
