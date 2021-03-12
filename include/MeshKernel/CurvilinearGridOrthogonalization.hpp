@@ -43,14 +43,14 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        /// @param[in] firstPoint The first vertex of the segment defining the derefinement zone
-        /// @param[in] secondPoint The second vertex of the segment defining the refinement zone
+        /// @param[in] firstCornerPoint The first vertex of the segment defining the derefinement zone
+        /// @param[in] secondCornerPoint The second vertex of the segment defining the refinement zone
         CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
                                          const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters,
-                                         const Point& firstPoint,
-                                         const Point& secondPoint);
+                                         const Point& firstCornerPoint,
+                                         const Point& secondCornerPoint);
 
-        /// @brief Orthogonalize the curvilinear grid
+        /// @brief Orthogonalize the curvilinear grid (modifies the grid point by m_grid)
         void Compute();
 
     private:
@@ -83,13 +83,13 @@ namespace meshkernel
 
         std::shared_ptr<CurvilinearGrid> m_grid;                                  ///< A pointer to the curvilinear grid to modify
         meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
-        Point m_firstPoint;                                                       ///< The first point defining the orthogonalization bounding box
-        Point m_secondPoint;                                                      ///< The second point defining the orthogonalization bounding box
+        Point m_firstCornerPoint;                                                 ///< The first point defining the orthogonalization bounding box
+        Point m_secondCornerPoint;                                                ///< The second point defining the orthogonalization bounding box
 
-        size_t m_minM; ///< The minimum m index of the orthogonalization bounding box
-        size_t m_minN; ///< The minimum n index of the orthogonalization bounding box
-        size_t m_maxM; ///< The maximum m index of the orthogonalization bounding box
-        size_t m_maxN; ///< The maximum n index of the orthogonalization bounding box
+        size_t m_minM; ///< The minimum m grid index of the orthogonalization bounding box
+        size_t m_minN; ///< The minimum n grid index of the orthogonalization bounding box
+        size_t m_maxM; ///< The maximum m grid index of the orthogonalization bounding box
+        size_t m_maxN; ///< The maximum n grid index of the orthogonalization bounding box
 
         std::vector<std::vector<double>> m_a;   ///< The a term of the orthogonalization equation
         std::vector<std::vector<double>> m_b;   ///< The b term of the orthogonalization equation

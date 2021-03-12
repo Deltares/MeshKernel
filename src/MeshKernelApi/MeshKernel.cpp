@@ -39,6 +39,7 @@
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
+#include <MeshKernel/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -1920,6 +1921,46 @@ namespace meshkernelapi
             meshkernel::CurvilinearGridCreateUniform curvilinearGridCreateUniform(makeGridParameters, polygon);
 
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridCreateUniform.Compute());
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId,
+                                                      const OrthogonalizationParameters& orthogonalizationParameters,
+                                                      const GeometryList& geometryListFirstPoint,
+                                                      const GeometryList& geometryListSecondPoint)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+
+            if (firstPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
+            }
+
+            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
+            if (secondPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
+            }
+
+            // Execute
+            meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(meshKernelState[meshKernelId].m_curvilinearGrid,
+                                                                                          orthogonalizationParameters,
+                                                                                          firstPoint[0],
+                                                                                          secondPoint[0]);
+
+            curvilinearGridOrthogonalization.Compute();
         }
         catch (...)
         {
