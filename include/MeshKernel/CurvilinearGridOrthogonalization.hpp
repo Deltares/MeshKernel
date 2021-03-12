@@ -58,10 +58,10 @@ namespace meshkernel
         void Solve();
 
         /// @brief Project the m boundary nodes onto the original grid (BNDSMT)
-        void ProjectOnHorizontalBoundaries();
+        void ProjectHorizontalBoundaryGridNodes();
 
         /// @brief Project the n boundary nodes onto the original grid (BNDSMT)
-        void ProjectOnVerticalBoundaries();
+        void ProjectVerticalBoundariesGridNodes();
 
         /// @brief Freeze nodes with a specific flag (FIXDDBOUNDARIES)
         void FreezeBoundaries();

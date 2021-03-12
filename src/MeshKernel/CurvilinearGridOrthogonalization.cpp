@@ -84,13 +84,13 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
         for (auto boundaryIterations = 0; boundaryIterations < m_orthogonalizationParameters.BoundaryIterations; ++boundaryIterations)
         {
             Solve();
-            ProjectOnHorizontalBoundaries();
-            ProjectOnVerticalBoundaries();
+            ProjectHorizontalBoundaryGridNodes();
+            ProjectVerticalBoundariesGridNodes();
         }
     }
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::ProjectOnHorizontalBoundaries()
+void meshkernel::CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
     // m grid lines (horizontal)
     for (auto n = 0; n < m_grid->m_numN; ++n)
@@ -169,7 +169,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectOnHorizontalBoundaries
     }
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::ProjectOnVerticalBoundaries()
+void meshkernel::CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 {
     // n gridlines (vertical)
     for (auto m = 0; m < m_grid->m_numM; ++m)
