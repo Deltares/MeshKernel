@@ -64,7 +64,7 @@ namespace meshkernel
         void ProjectVerticalBoundariesGridNodes();
 
         /// @brief Freeze nodes with a specific flag (FIXDDBOUNDARIES)
-        void FreezeBoundaries();
+        void FreezeBoundaries() const;
 
         /// @brief Computes the matrix coefficients (ATPPAR)
         void ComputeCoefficients();
@@ -76,10 +76,10 @@ namespace meshkernel
         void ComputeVerticalCoefficients();
 
         /// @brief Some nodes on m boundary grid lines
-        std::vector<std::vector<bool>> ComputeInvalidHorizontalBoundaryNodes();
+        [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidHorizontalBoundaryNodes() const;
 
         /// @brief Some nodes on n boundary grid lines
-        std::vector<std::vector<bool>> ComputeInvalidVerticalBoundaryNodes();
+        [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidVerticalBoundaryNodes() const;
 
         std::shared_ptr<CurvilinearGrid> m_grid;                                  ///< A pointer to the curvilinear grid to modify
         meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
