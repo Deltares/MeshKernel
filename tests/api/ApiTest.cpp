@@ -68,99 +68,125 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     auto errorCode = meshkernelapi::mkernel_delete_node_mesh2d(meshKernelId, 0);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-    // Get the results
+    // Get the dimensions
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = meshkernelapi::mkernel_get_mesh2d_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-    AllocateMesh2dData(mesh2d);
+
+    // Assert dimensions
+    ASSERT_EQ(11, mesh2d.num_nodes);
+    ASSERT_EQ(15, mesh2d.num_edges);
+
+    // Allocate memory and get data
+    auto mesh2dPointers = AllocateMesh2dData(mesh2d);
+    mesh2d.edge_nodes = mesh2dPointers.edge_nodes.get();
+    mesh2d.face_nodes = mesh2dPointers.face_nodes.get();
+    mesh2d.face_edges = mesh2dPointers.face_edges.get();
+    mesh2d.nodes_per_face = mesh2dPointers.nodes_per_face.get();
+    mesh2d.node_x = mesh2dPointers.node_x.get();
+    mesh2d.node_y = mesh2dPointers.node_y.get();
+    mesh2d.edge_x = mesh2dPointers.edge_x.get();
+    mesh2d.edge_y = mesh2dPointers.edge_y.get();
+    mesh2d.face_x = mesh2dPointers.face_x.get();
+    mesh2d.face_y = mesh2dPointers.face_y.get();
     errorCode = meshkernelapi::mkernel_get_mesh2d_data(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
+    // Assert data
+    const double tolerance = 1e-6;
+    // First node {0, 0} has been removed so we expect {0, 1}
+    ASSERT_NEAR(0.0, mesh2d.node_x[0], tolerance);
+    ASSERT_NEAR(1.0, mesh2d.node_y[0], tolerance);
+    // Edges
+    ASSERT_EQ(0, mesh2d.edge_nodes[0]);
+    ASSERT_EQ(3, mesh2d.edge_nodes[1]);
+    // Faces (Face on bottom-left is gone -> top-left is now the first one)
+    ASSERT_EQ(0, mesh2d.face_nodes[0]);
+    ASSERT_EQ(3, mesh2d.face_nodes[1]);
+    ASSERT_EQ(4, mesh2d.face_nodes[2]);
+    ASSERT_EQ(1, mesh2d.face_nodes[3]);
+}
+
+TEST_F(ApiTests, FlipEdgesThroughApi)
+{
+    // Prepare
+    MakeMesh();
+    auto meshKernelId = GetMeshKernelId();
+
+    // Execute
+    const int isTriangulationRequired = 1;
+    const int projectToLandBoundaryOption = 1;
+    auto errorCode = meshkernelapi::mkernel_flip_edges_mesh2d(meshKernelId, isTriangulationRequired, projectToLandBoundaryOption);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = meshkernelapi::mkernel_get_mesh2d_dimensions(meshKernelId, mesh2d);
+
     // Assert
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(12, mesh2d.num_nodes);
+    ASSERT_EQ(23, mesh2d.num_edges);
+}
+
+TEST_F(ApiTests, InsertEdgeThroughApi)
+{
+    // Prepare
+    MakeMesh();
+    auto meshKernelId = GetMeshKernelId();
+
+    // Execute
+    int newEdgeIndex;
+    auto errorCode = meshkernelapi::mkernel_insert_edge_mesh2d(meshKernelId, 0, 4, newEdgeIndex);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(17, newEdgeIndex);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = meshkernelapi::mkernel_get_mesh2d_dimensions(meshKernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(12, mesh2d.num_nodes);
+    ASSERT_EQ(18, mesh2d.num_edges);
+}
+
+TEST_F(ApiTests, MergeTwoNodesThroughApi)
+{
+    // Prepare
+    MakeMesh();
+    auto meshKernelId = GetMeshKernelId();
+
+    // Execute
+    auto errorCode = meshkernelapi::mkernel_merge_two_nodes_mesh2d(meshKernelId, 0, 4);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = meshkernelapi::mkernel_get_mesh2d_dimensions(meshKernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     ASSERT_EQ(11, mesh2d.num_nodes);
     ASSERT_EQ(15, mesh2d.num_edges);
 }
 
-// TEST_F(ApiTests, FlipEdgesThroughApi)
-// {
-//     // Prepare
-//     MakeMesh();
-//     auto meshKernelId = GetMeshKernelId();
+TEST_F(ApiTests, MergeNodesThroughApi)
+{
+    // Prepare
+    MakeMesh();
+    auto meshKernelId = GetMeshKernelId();
+    meshkernelapi::GeometryList geometry_list{};
 
-//     // Execute
-//     const int isTriangulationRequired = 1;
-//     const int projectToLandBoundaryOption = 1;
-//     auto errorCode = meshkernelapi::mkernel_flip_edges_mesh2d(meshKernelId, isTriangulationRequired, projectToLandBoundaryOption);
-//     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    // Execute
+    auto errorCode = mkernel_merge_nodes_mesh2d(meshKernelId, geometry_list);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
-//     meshkernelapi::Mesh2D mesh2d{};
-//     errorCode = mkernel_get_mesh2d(meshKernelId, mesh2d);
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = meshkernelapi::mkernel_get_mesh2d_dimensions(meshKernelId, mesh2d);
 
-//     // Assert
-//     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-//     ASSERT_EQ(12, mesh2d.num_nodes);
-//     ASSERT_EQ(23, mesh2d.num_edges);
-// }
-
-// TEST_F(ApiTests, InsertEdgeThroughApi)
-// {
-//     // Prepare
-//     MakeMesh();
-//     auto meshKernelId = GetMeshKernelId();
-
-//     // Execute
-//     int newEdgeIndex;
-//     auto errorCode = meshkernelapi::mkernel_insert_edge_mesh2d(meshKernelId, 0, 4, newEdgeIndex);
-//     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-//     ASSERT_EQ(17, newEdgeIndex);
-
-//     meshkernelapi::Mesh2D mesh2d{};
-//     errorCode = mkernel_get_mesh2d(meshKernelId, mesh2d);
-
-//     // Assert
-//     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-//     ASSERT_EQ(12, mesh2d.num_nodes);
-//     ASSERT_EQ(18, mesh2d.num_edges);
-// }
-
-// TEST_F(ApiTests, MergeTwoNodesThroughApi)
-// {
-//     // Prepare
-//     MakeMesh();
-//     auto meshKernelId = GetMeshKernelId();
-
-//     // Execute
-//     auto errorCode = meshkernelapi::mkernel_merge_two_nodes_mesh2d(meshKernelId, 0, 4);
-//     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-
-//     meshkernelapi::Mesh2D mesh2d{};
-//     errorCode = mkernel_get_mesh2d(meshKernelId, mesh2d);
-
-//     // Assert
-//     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-//     ASSERT_EQ(11, mesh2d.num_nodes);
-//     ASSERT_EQ(15, mesh2d.num_edges);
-// }
-
-// TEST_F(ApiTests, MergeNodesThroughApi)
-// {
-//     // Prepare
-//     MakeMesh();
-//     auto meshKernelId = GetMeshKernelId();
-//     meshkernelapi::GeometryList geometry_list{};
-
-//     // Execute
-//     auto errorCode = mkernel_merge_nodes_mesh2d(meshKernelId, geometry_list);
-//     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-
-//     meshkernelapi::Mesh2D mesh2d{};
-//     errorCode = mkernel_get_mesh2d(meshKernelId, mesh2d);
-
-//     // Assert (nothing is done, just check that the api communication works)
-//     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
-//     ASSERT_EQ(12, mesh2d.num_nodes);
-//     ASSERT_EQ(17, mesh2d.num_edges);
-// }
+    // Assert (nothing is done, just check that the api communication works)
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    ASSERT_EQ(12, mesh2d.num_nodes);
+    ASSERT_EQ(17, mesh2d.num_edges);
+}
 
 // TEST_F(ApiTests, OrthogonalizationThroughApi)
 // {

@@ -22,30 +22,16 @@ Mesh2dPointers AllocateMesh2dData(meshkernelapi::Mesh2D mesh2d)
     std::unique_ptr<double> face_x(new double[mesh2d.num_faces]);
     std::unique_ptr<double> face_y(new double[mesh2d.num_faces]);
 
-    mesh2d.edge_nodes = edge_nodes.get();
-    mesh2d.face_nodes = face_nodes.get();
-    mesh2d.face_edges = face_edges.get();
-    mesh2d.nodes_per_face = nodes_per_face.get();
-    mesh2d.node_x = node_x.get();
-    mesh2d.node_y = node_y.get();
-    mesh2d.edge_x = edge_x.get();
-    mesh2d.edge_y = edge_y.get();
-    mesh2d.face_x = face_x.get();
-    mesh2d.face_y = face_y.get();
-
-    Mesh2dPointers mesh2dPointers = {
-        std::move(edge_nodes),
-        std::move(face_nodes),
-        std::move(face_edges),
-        std::move(nodes_per_face),
-        std::move(node_x),
-        std::move(node_y),
-        std::move(edge_x),
-        std::move(edge_y),
-        std::move(face_x),
-        std::move(face_y)};
-
-    return mesh2dPointers;
+    return {std::move(edge_nodes),
+            std::move(face_nodes),
+            std::move(face_edges),
+            std::move(nodes_per_face),
+            std::move(node_x),
+            std::move(node_y),
+            std::move(edge_x),
+            std::move(edge_y),
+            std::move(face_x),
+            std::move(face_y)};
 }
 
 meshkernelapi::Mesh2D ReadLegacyMeshFromFileForApiTesting(std::string filePath)
