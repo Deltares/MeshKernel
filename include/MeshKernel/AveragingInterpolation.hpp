@@ -114,10 +114,9 @@ namespace meshkernel
         /// @brief Compute the averaging results in polygon
         /// @param[in]  polygon            The bounding polygon where the samples are included
         /// @param[in]  interpolationPoint The interpolation point
-        /// @param[out] result             The resulting value
-        void ComputeOnPolygon(const std::vector<Point>& polygon,
-                              Point interpolationPoint,
-                              double& result);
+        /// @returns The resulting value
+        double ComputeOnPolygon(const std::vector<Point>& polygon,
+                                Point interpolationPoint);
 
         /// @brief Compute the interpolated results on designed location
         /// @return The interpolated results

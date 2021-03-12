@@ -120,12 +120,9 @@ namespace meshkernel
             }
             polygonNodesCache.emplace_back(polygonNodesCache[0]);
 
-            double result = 0.0;
-            ComputeOnPolygon(polygonNodesCache, m_mesh->m_facesMassCenters[f], result);
+            interpolatedResults[f] = ComputeOnPolygon(polygonNodesCache, m_mesh->m_facesMassCenters[f]);
 
-            interpolatedResults[f] = result;
-
-            if (m_transformSamples && result > 0)
+            if (m_transformSamples && interpolatedResults[f] > 0)
             {
                 // for certain algorithms we want to decrease the values of the samples (e.g. refinement)
                 // it is difficult to do it otherwise without sharing or caching the query result
@@ -152,8 +149,7 @@ namespace meshkernel
         {
             m_mesh->MakeDualFace(n, m_relativeSearchRadius, dualFacePolygon);
 
-            double result = 0.0;
-            ComputeOnPolygon(dualFacePolygon, m_mesh->m_nodes[n], result);
+            const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh->m_nodes[n]);
 
             // flag the visited samples
             for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
@@ -298,15 +294,15 @@ namespace meshkernel
 
         for (auto i = 0; i < tree.GetQueryResultSize(); i++)
         {
-            auto const sample_index = tree.GetQueryResult(i);
-            auto const sampleValue = samples[sample_index].value;
+            auto const sampleIndex = tree.GetQueryResult(i);
+            auto const sampleValue = samples[sampleIndex].value;
 
             if (sampleValue <= doubleMissingValue)
             {
                 continue;
             }
 
-            Point samplePoint{samples[sample_index].x, samples[sample_index].y};
+            Point samplePoint{samples[sampleIndex].x, samples[sampleIndex].y};
             if (IsPointInPolygonNodes(samplePoint, searchPolygon, projection))
             {
                 strategy->Add(samplePoint, sampleValue);
@@ -316,10 +312,11 @@ namespace meshkernel
         return strategy->Calculate();
     }
 
-    void AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygon,
-                                                  Point const interpolationPoint,
-                                                  double& result)
+    double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygon,
+                                                    Point const interpolationPoint)
     {
+        double result = doubleMissingValue;
+
         ValidateInterpolationPoint(interpolationPoint);
 
         std::vector<Point> const searchPolygon =
@@ -335,8 +332,6 @@ namespace meshkernel
         {
             throw std::invalid_argument("AveragingInterpolation::ComputeOnPolygon search radius <= 0");
         }
-
-        result = doubleMissingValue;
 
         m_samplesRtree.NearestNeighborsOnSquaredDistance(interpolationPoint, searchRadiusSquared);
 
@@ -354,5 +349,7 @@ namespace meshkernel
             std::unique_ptr<averaging::AveragingStrategy> strategy = GetAveragingStrategy(m_method, doubleMissingValue, interpolationPoint, m_mesh->m_projection);
             result = AverageFromNearestNeighbours(std::move(strategy), m_samplesRtree, m_samples, searchPolygon, m_mesh->m_projection);
         }
+
+        return result;
     }
 } // namespace meshkernel
