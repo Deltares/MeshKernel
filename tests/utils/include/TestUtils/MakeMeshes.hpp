@@ -37,7 +37,6 @@ struct Mesh2dPointers
 {
     std::unique_ptr<int> edge_nodes;
     std::unique_ptr<int> face_nodes;
-    std::unique_ptr<int> face_edges;
     std::unique_ptr<int> nodes_per_face;
     std::unique_ptr<double> node_x;
     std::unique_ptr<double> node_y;

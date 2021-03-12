@@ -142,28 +142,30 @@ namespace meshkernelapi
     }
 
     /// @brief Sets a meshkernelapi::Mesh2D instance from a meshkernel::Mesh2D instance
-    /// @param[in]  mesh2d    The  meshkernel::Mesh2D instance
+    /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
     static void SetMesh2d(std::shared_ptr<meshkernel::Mesh> mesh2d, Mesh2D& mesh2dApi)
     {
+        mesh2d->ComputeEdgesCenters();
         for (auto n = 0; n < mesh2d->GetNumNodes(); n++)
         {
             mesh2dApi.node_x[n] = mesh2d->m_nodes[n].x;
             mesh2dApi.node_y[n] = mesh2d->m_nodes[n].y;
         }
 
-        size_t edgeIndex = 0;
-        for (auto e = 0; e < mesh2d->GetNumEdges(); e++)
+        for (auto edgeIndex = 0; edgeIndex < mesh2d->GetNumEdges(); edgeIndex++)
         {
-            mesh2dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh2d->m_edges[e].first);
-            edgeIndex++;
-            mesh2dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh2d->m_edges[e].second);
-            edgeIndex++;
+            mesh2dApi.edge_x[edgeIndex] = static_cast<double>(mesh2d->m_edgesCenters[edgeIndex].x);
+            mesh2dApi.edge_y[edgeIndex] = static_cast<double>(mesh2d->m_edgesCenters[edgeIndex].y);
+            mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d->m_edges[edgeIndex].first);
+            mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d->m_edges[edgeIndex].second);
         }
 
         int faceIndex = 0;
         for (auto f = 0; f < mesh2d->GetNumFaces(); f++)
         {
+            mesh2dApi.face_x[f] = static_cast<double>(mesh2d->m_facesMassCenters[f].x);
+            mesh2dApi.face_y[f] = static_cast<double>(mesh2d->m_facesMassCenters[f].y);
             for (auto n = 0; n < mesh2d->m_facesNodes[f].size(); ++n)
             {
                 mesh2dApi.face_nodes[faceIndex] = static_cast<int>(mesh2d->m_facesNodes[f][n]);

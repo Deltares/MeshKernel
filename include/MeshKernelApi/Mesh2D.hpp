@@ -38,9 +38,6 @@ namespace meshkernelapi
         /// @brief The nodes composing each mesh 2d face
         int* face_nodes = nullptr;
 
-        /// @brief The left and right face indices that an edge separates
-        int* face_edges = nullptr;
-
         /// @brief The number of nodes for each mesh 2d face
         int* nodes_per_face = nullptr;
 

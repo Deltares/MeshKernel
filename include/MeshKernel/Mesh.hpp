@@ -285,6 +285,7 @@ namespace meshkernel
         RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
 
         // vectors for communicating with the client
+        // TODO: Remove them
         std::vector<int> m_edgeNodes; ///< For each edge, the index to the nodes
         std::vector<double> m_nodex;  ///< The nodes x-coordinate
         std::vector<double> m_nodey;  ///< The nodes y-coordinate
