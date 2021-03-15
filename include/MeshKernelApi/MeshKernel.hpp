@@ -28,6 +28,7 @@
 #pragma once
 
 #include <MeshKernelApi/Contacts.hpp>
+#include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <MeshKernelApi/CurvilinearParameters.hpp>
 #include <MeshKernelApi/GeometryList.hpp>
 #include <MeshKernelApi/InterpolationParameters.hpp>
@@ -119,26 +120,26 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_get_mesh2d_data(int meshKernelId,
                                                 Mesh2D& mesh2d);
 
-        /// @brief Gets the curvilinear grid dimensions as a Mesh2D dimensions struct (converted as set of edges and nodes)
+        /// @brief Gets the curvilinear grid dimensions as a CurvilinearGrid struct (converted as set of edges and nodes)
         ///
-        /// The integer parameters of the Mesh2D struct are set to the corresponding dimensions
+        /// The integer parameters of the CurvilinearGrid struct are set to the corresponding dimensions
         /// The pointers are set to null, and must be set to correctly sized memory
         /// before passing the struct to `mkernel_get_curvilinear_data`.
-        /// @param[in]  meshKernelId The id of the mesh state
-        /// @param[out] mesh2d       The Mesh2D data
+        /// @param[in]  meshKernelId    The id of the mesh state
+        /// @param[out] curvilinearGrid The CurvilinearGrid data
         /// @returns Error code
         MKERNEL_API int mkernel_get_curvilinear_dimensions(int meshKernelId,
-                                                           Mesh2D& mesh2d);
+                                                           CurvilinearGrid& curvilinearGrid);
 
-        /// @brief Gets the curvilinear grid data as a Mesh2D dimensions struct (converted as set of edges and nodes)
+        /// @brief Gets the curvilinear grid data as a CurvilinearGrid struct (converted as set of edges and nodes)
         ///
         /// This function ought to be called after `mkernel_get_curvilinear_dimension` has been called
         /// and the pointers have been set to correctly sized memory.
-        /// @param[in]  meshKernelId The id of the mesh state
-        /// @param[out] mesh2d       The Mesh2D data
+        /// @param[in]  meshKernelId    The id of the mesh state
+        /// @param[out] curvilinearGrid The CurvilinearGrid data
         /// @returns Error code
         MKERNEL_API int mkernel_get_curvilinear_data(int meshKernelId,
-                                                     Mesh2D& mesh2d);
+                                                     CurvilinearGrid& curvilinearGrid);
 
         /// @brief Gets the Mesh1D dimensions
         ///

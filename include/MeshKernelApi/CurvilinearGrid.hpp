@@ -26,22 +26,32 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <memory>
-#include <string>
 
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernelApi/Mesh2D.hpp>
+namespace meshkernelapi
+{
+    /// @brief A struct used to describe the values of a curvilinear grid in a C-compatible manner
+    struct CurvilinearGrid
+    {
+        /// @brief The nodes composing each mesh 2d edge
+        int* edge_nodes = nullptr;
 
-meshkernelapi::Mesh2D ReadLegacyMeshFromFileForApiTesting(std::string filePath);
+        /// @brief The x-coordinates of network1d nodes
+        double* node_x = nullptr;
 
-std::shared_ptr<meshkernel::Mesh2D> ReadLegacyMeshFromFile(std::string filePath, meshkernel::Projection projection = meshkernel::Projection::cartesian);
+        /// @brief The y-coordinates of network1d nodes
+        double* node_y = nullptr;
 
-std::shared_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(int n, int m, double delta, meshkernel::Projection projection, meshkernel::Point origin = {0.0, 0.0});
+        /// @brief The x-coordinates of the mesh edges middle points
+        double* edge_x = nullptr;
 
-meshkernelapi::Mesh2D MakeRectangularMeshForApiTesting(int n, int m, double delta);
+        /// @brief The y-coordinates of the mesh edges middle points
+        double* edge_y = nullptr;
 
-void DeleteRectangularMeshForApiTesting(const meshkernelapi::Mesh2D& mesh2d);
+        /// @brief The number of mesh nodes
+        int num_nodes;
 
-std::shared_ptr<meshkernel::Mesh2D> MakeSmallSizeTriangularMeshForTestingAsNcFile();
+        /// @brief The number of edges
+        int num_edges;
+    };
 
-std::shared_ptr<meshkernel::Mesh2D> MakeCurvilinearGridForTesting();
+} // namespace meshkernelapi

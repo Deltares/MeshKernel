@@ -28,6 +28,7 @@
 #pragma once
 
 #include <MeshKernel/Constants.hpp>
+#include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -144,7 +145,7 @@ namespace meshkernelapi
     /// @brief Sets a meshkernelapi::Mesh2D instance from a meshkernel::Mesh2D instance
     /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
-    static void SetMesh2d(std::shared_ptr<meshkernel::Mesh> mesh2d, Mesh2D& mesh2dApi)
+    static void SetMesh2d(std::shared_ptr<meshkernel::Mesh2D> mesh2d, Mesh2D& mesh2dApi)
     {
         mesh2d->ComputeEdgesCenters();
         for (auto n = 0; n < mesh2d->GetNumNodes(); n++)
@@ -172,6 +173,28 @@ namespace meshkernelapi
                 mesh2dApi.face_nodes[faceIndex] = static_cast<int>(mesh2d->m_facesNodes[f][n]);
                 faceIndex++;
             }
+        }
+    }
+
+    /// @brief Sets a meshkernelapi::CurvilinearGrid instance from a meshkernel::CurvilinearGrid instance
+    /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
+    /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
+    static void SetCurvilinear(std::shared_ptr<meshkernel::CurvilinearGrid> curvilinearGrid,
+                               CurvilinearGrid& curvilinearGridApi)
+    {
+        curvilinearGrid->ComputeEdgesCenters();
+        for (auto n = 0; n < curvilinearGrid->GetNumNodes(); n++)
+        {
+            curvilinearGridApi.node_x[n] = curvilinearGrid->m_nodes[n].x;
+            curvilinearGridApi.node_y[n] = curvilinearGrid->m_nodes[n].y;
+        }
+
+        for (auto edgeIndex = 0; edgeIndex < curvilinearGrid->GetNumEdges(); edgeIndex++)
+        {
+            curvilinearGridApi.edge_x[edgeIndex] = static_cast<double>(curvilinearGrid->m_edgesCenters[edgeIndex].x);
+            curvilinearGridApi.edge_y[edgeIndex] = static_cast<double>(curvilinearGrid->m_edgesCenters[edgeIndex].y);
+            curvilinearGridApi.edge_nodes[edgeIndex * 2] = static_cast<int>(curvilinearGrid->m_edges[edgeIndex].first);
+            curvilinearGridApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(curvilinearGrid->m_edges[edgeIndex].second);
         }
     }
 
