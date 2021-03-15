@@ -279,8 +279,29 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_curvilinear(int meshKernelId,
-                                            Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_get_curvilinear_dimensions(int meshKernelId,
+                                                       Mesh2D& mesh2d)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+            // cast the curvilinear grid to mesh, because an unstructured mesh is communicated
+            const auto mesh = std::dynamic_pointer_cast<meshkernel::Mesh>(meshKernelState[meshKernelId].m_curvilinearGrid);
+            SetMesh2dDimensions(mesh, mesh2d);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_get_curvilinear_data(int meshKernelId,
+                                                 Mesh2D& mesh2d)
     {
         int exitCode = Success;
         try
@@ -293,8 +314,7 @@ namespace meshkernelapi
 
             // cast the curvilinear grid to mesh, because an unstructured mesh is communicated
             const auto mesh = std::dynamic_pointer_cast<meshkernel::Mesh>(meshKernelState[meshKernelId].m_curvilinearGrid);
-            // TODO: Use correct function
-            //SetMesh(mesh, mesh2d);
+            SetMesh2d(mesh, mesh2d);
         }
         catch (...)
         {
