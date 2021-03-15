@@ -134,19 +134,29 @@ namespace meshkernel
         /// @brief Decreases the values of samples
         void DecreaseValueOfSamples();
 
-        /// @brief Generate the bounding polygon from an input polygon
+        /// @brief Generate the search polygon from an input polygon
         /// @param[in]  polygon            The input polygon
         /// @param[in]  interpolationPoint The interpolation point
-        std::vector<Point> GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint);
+        /// @return The search polygon
+        [[nodiscard]] std::vector<Point> GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint);
 
         /// @brief Computes the average value from the neighbors using a strategy
         /// param[in]  strategy            The input strategy
         /// param[in] searchPolygon        The bounding polygon
-        double ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy, std::vector<Point> const& searchPolygon);
+        /// @return The interpolated result
+        [[nodiscard]] double ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy, std::vector<Point> const& searchPolygon);
 
         /// @brief Gets the sample value from an r-tree query
         /// param[in] index            The query index
+        /// @return The sample value
         [[nodiscard]] double GetSampleValueFromRTree(size_t index);
+
+        /// @brief Compute a search radius from a point and a polygon
+        /// @param searchPolygon The input polygon
+        /// @param interpolationPoint The input point
+        /// @return the search radius including the polygon from the input point
+        [[nodiscard]] double GetSearchRadiusSquared(std::vector<Point> const& searchPolygon,
+                                                    Point const& interpolationPoint);
 
         const std::shared_ptr<Mesh2D> m_mesh;           ///< Pointer to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples

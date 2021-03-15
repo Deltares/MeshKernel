@@ -36,9 +36,9 @@
 #include <MeshKernel/AveragingStrategies/MinAveragingStrategy.hpp>
 #include <MeshKernel/AveragingStrategies/SimpleAveragingStrategy.hpp>
 
-[[nodiscard]] std::unique_ptr<meshkernel::averaging::AveragingStrategy> meshkernel::averaging::AveragingStrategyFactory::GetAveragingStrategy(AveragingInterpolation::Method averagingMethod,
-                                                                                                                                              Point const& interpolationPoint,
-                                                                                                                                              Projection projection)
+std::unique_ptr<meshkernel::averaging::AveragingStrategy> meshkernel::averaging::AveragingStrategyFactory::GetAveragingStrategy(AveragingInterpolation::Method averagingMethod,
+                                                                                                                                Point const& interpolationPoint,
+                                                                                                                                Projection projection)
 {
     switch (averagingMethod)
     {

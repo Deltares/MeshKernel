@@ -176,37 +176,6 @@ namespace meshkernel
         }
     }
 
-    void ValidateInterpolationPoint(Point const& interpolationPoint)
-    {
-        if (!interpolationPoint.IsValid())
-        {
-            throw std::invalid_argument("AveragingInterpolation::ComputeOnPolygon invalid interpolation point");
-        }
-    }
-
-    void AdjustForSpherical(std::vector<Point>& searchPolygon)
-    {
-        auto [lowerLeft, upperRight] = GetBoundingBox(searchPolygon);
-
-        if (upperRight.x - lowerLeft.x <= 180.0)
-            return;
-
-        auto const x_mean = 0.5 * (upperRight.x + lowerLeft.x);
-
-        lowerLeft.x = std::numeric_limits<double>::max();
-        upperRight.x = std::numeric_limits<double>::lowest();
-
-        for (auto& value : searchPolygon)
-        {
-            if (value.x < x_mean)
-            {
-                value.x = value.x + 360.0;
-                lowerLeft.x = std::min(lowerLeft.x, value.x);
-                upperRight.x = std::max(upperRight.x, value.x);
-            }
-        }
-    }
-
     std::vector<Point> AveragingInterpolation::GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint)
     {
         std::vector<Point> searchPolygon(polygon.size());
@@ -217,21 +186,33 @@ namespace meshkernel
 
         if (m_mesh->m_projection == Projection::spherical)
         {
-            AdjustForSpherical(searchPolygon);
+            auto [lowerLeft, upperRight] = GetBoundingBox(searchPolygon);
+
+            if (upperRight.x - lowerLeft.x <= 180.0)
+                return searchPolygon;
+
+            auto const x_mean = 0.5 * (upperRight.x + lowerLeft.x);
+
+            for (auto& value : searchPolygon)
+            {
+                if (value.x < x_mean)
+                {
+                    value.x = value.x + 360.0;
+                }
+            }
         }
 
         return searchPolygon;
     }
 
-    double getSearchRadiusSquared(std::vector<Point> const& searchPolygon,
-                                  Point const& interpolationPoint,
-                                  Projection meshProjection)
+    double AveragingInterpolation::GetSearchRadiusSquared(std::vector<Point> const& searchPolygon,
+                                                          Point const& interpolationPoint)
     {
         double result = std::numeric_limits<double>::lowest();
 
         for (const auto& value : searchPolygon)
         {
-            auto const squaredDistance = ComputeSquaredDistance(interpolationPoint, value, meshProjection);
+            auto const squaredDistance = ComputeSquaredDistance(interpolationPoint, value, m_mesh->m_projection);
             result = std::max(result, squaredDistance);
         }
 
@@ -278,7 +259,7 @@ namespace meshkernel
 
         std::vector<Point> const searchPolygon = GetSearchPolygon(polygon, interpolationPoint);
 
-        double const searchRadiusSquared = getSearchRadiusSquared(searchPolygon, interpolationPoint, m_mesh->m_projection);
+        double const searchRadiusSquared = GetSearchRadiusSquared(searchPolygon, interpolationPoint);
 
         if (searchRadiusSquared <= 0.0)
         {
