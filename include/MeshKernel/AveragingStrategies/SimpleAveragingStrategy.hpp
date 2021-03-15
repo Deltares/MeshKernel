@@ -1,5 +1,7 @@
 ﻿#pragma once
-#include "AveragingStrategy.hpp"
+#include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
+#include <MeshKernel/AveragingStrategies/SimpleAveragingStrategy.hpp>
+#include <MeshKernel/Entities.hpp>
 
 namespace meshkernel::averaging
 {
@@ -7,8 +9,6 @@ namespace meshkernel::averaging
     class SimpleAveragingStrategy final : public AveragingStrategy
     {
     public:
-        SimpleAveragingStrategy() = default;
-
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;
 

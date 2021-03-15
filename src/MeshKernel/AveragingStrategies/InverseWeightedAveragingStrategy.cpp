@@ -1,5 +1,5 @@
-﻿#include "MeshKernel/InverseWeightedAveragingStrategy.hpp"
-#include "MeshKernel/Operations.hpp"
+﻿#include <MeshKernel/AveragingStrategies/InverseWeightedAveragingStrategy.hpp>
+#include <MeshKernel/Operations.hpp>
 
 namespace meshkernel::averaging
 {

@@ -1,11 +1,14 @@
 # Set library files
-file(GLOB HEADER_LIST CONFIGURE_DEPENDS
-     "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.hpp")
-file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
-     "${PROJECT_SOURCE_DIR}/src/MeshKernel/*.cpp")
+file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/MeshKernel/*.hpp")
+ 
+file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/MeshKernel/*.cpp")
+
+file(GLOB AVERAGING_STRATEGIES_HEADER_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/MeshKernel/AveragingStrategies/*.hpp")
+ 
+file(GLOB AVERAGING_STRATEGIES_SOURCE_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/src/MeshKernel/AveragingStrategies/*.cpp")
 
 # Create the static lib
-add_library(MeshKernel STATIC ${SOURCE_LIST} ${HEADER_LIST})
+add_library(MeshKernel STATIC ${SOURCE_LIST} ${HEADER_LIST} ${AVERAGING_STRATEGIES_HEADER_LIST} ${AVERAGING_STRATEGIES_SOURCE_LIST})
 
 # Make sure that coverage information is produced when using gcc
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -30,3 +33,13 @@ source_group(
   TREE "${PROJECT_SOURCE_DIR}/include/MeshKernel"
   PREFIX "Header Files"
   FILES ${HEADER_LIST})
+  
+source_group(
+  TREE "${PROJECT_SOURCE_DIR}/include/MeshKernel/AveragingStrategies"
+  PREFIX "Header Files/AveragingStrategies"
+  FILES ${AVERAGING_STRATEGIES_HEADER_LIST})
+  
+source_group(
+  TREE "${PROJECT_SOURCE_DIR}/src/MeshKernel/AveragingStrategies"
+  PREFIX "Source Files/AveragingStrategies"
+  FILES ${AVERAGING_STRATEGIES_SOURCE_LIST})

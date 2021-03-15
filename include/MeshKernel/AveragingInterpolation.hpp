@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include <MeshKernel/AveragingStrategy.hpp>
+#include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/RTree.hpp>

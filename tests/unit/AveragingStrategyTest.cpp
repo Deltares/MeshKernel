@@ -1,16 +1,14 @@
-﻿#include "MeshKernel/AveragingInterpolation.hpp"
-
+﻿#include <memory>
+#include <utility>
 #include <gtest/gtest.h>
 
-#include <memory>
-#include <utility>
-
-#include "MeshKernel/ClosestAveragingStrategy.hpp"
-#include "MeshKernel/InverseWeightedAveragingStrategy.hpp"
-#include "MeshKernel/MaxAveragingStrategy.hpp"
-#include "MeshKernel/MinAbsAveragingStrategy.hpp"
-#include "MeshKernel/MinAveragingStrategy.hpp"
-#include "MeshKernel/SimpleAveragingStrategy.hpp"
+#include "MeshKernel/AveragingInterpolation.hpp"
+#include "MeshKernel/AveragingStrategies/ClosestAveragingStrategy.hpp"
+#include "MeshKernel/AveragingStrategies/InverseWeightedAveragingStrategy.hpp"
+#include "MeshKernel/AveragingStrategies/MaxAveragingStrategy.hpp"
+#include "MeshKernel/AveragingStrategies/MinAbsAveragingStrategy.hpp"
+#include "MeshKernel/AveragingStrategies/MinAveragingStrategy.hpp"
+#include "MeshKernel/AveragingStrategies/SimpleAveragingStrategy.hpp"
 
 namespace meshkernel::averaging
 {
