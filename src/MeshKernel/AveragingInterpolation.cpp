@@ -176,7 +176,7 @@ namespace meshkernel
         }
     }
 
-    std::vector<Point> AveragingInterpolation::GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint)
+    std::vector<Point> AveragingInterpolation::GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint) const
     {
         std::vector<Point> searchPolygon(polygon.size());
         std::transform(std::begin(polygon),

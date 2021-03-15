@@ -138,7 +138,7 @@ namespace meshkernel
         /// @param[in]  polygon            The input polygon
         /// @param[in]  interpolationPoint The interpolation point
         /// @return The search polygon
-        [[nodiscard]] std::vector<Point> GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint);
+        [[nodiscard]] std::vector<Point> GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint) const;
 
         /// @brief Computes the average value from the neighbors using a strategy
         /// param[in]  strategy            The input strategy
