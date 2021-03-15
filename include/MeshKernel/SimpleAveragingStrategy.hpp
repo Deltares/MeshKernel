@@ -7,9 +7,7 @@ namespace meshkernel::averaging
     class SimpleAveragingStrategy final : public AveragingStrategy
     {
     public:
-        /// @brief Construct a new SimpleAveragingStrategy implements the simple averaging strategy.
-        /// @param[in] missingValue The value used to indicate a missing value.
-        explicit SimpleAveragingStrategy(double missingValue);
+        SimpleAveragingStrategy() = default;
 
         void Add(Point const& samplePoint, double sampleValue) override;
         [[nodiscard]] double Calculate() const override;
@@ -20,8 +18,5 @@ namespace meshkernel::averaging
 
         /// @brief The number of times a value has been added to this strategy.
         size_t m_nAdds = 0;
-
-        /// @brief The current result returned in Calculate
-        double const m_missingValue;
     };
 } // namespace meshkernel::averaging

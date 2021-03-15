@@ -24,7 +24,7 @@ namespace meshkernel::averaging
         switch (averagingMethod)
         {
         case AveragingInterpolation::Method::SimpleAveraging:
-            return std::make_unique<SimpleAveragingStrategy>(missingValue);
+            return std::make_unique<SimpleAveragingStrategy>();
         case AveragingInterpolation::Method::Closest:
             return std::make_unique<ClosestAveragingStrategy>(missingValue, interpolationPoint, projection);
         case AveragingInterpolation::Method::Max:

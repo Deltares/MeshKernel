@@ -212,18 +212,15 @@ namespace meshkernel
         }
     }
 
-    std::vector<Point> GetSearchPolygon(std::vector<Point> const& polygon,
-                                        Point const& interpolationPoint,
-                                        double const relativeSearchRadius,
-                                        Projection const projection)
+    std::vector<Point> AveragingInterpolation::GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint)
     {
         std::vector<Point> searchPolygon(polygon.size());
         std::transform(std::begin(polygon),
                        std::end(polygon),
                        begin(searchPolygon),
-                       [&](Point const& p) { return p * relativeSearchRadius + interpolationPoint * (1.0 - relativeSearchRadius); });
+                       [&](Point const& p) { return p * m_relativeSearchRadius + interpolationPoint * (1.0 - m_relativeSearchRadius); });
 
-        if (projection == Projection::spherical)
+        if (m_mesh->m_projection == Projection::spherical)
         {
             AdjustForSpherical(searchPolygon);
         }
@@ -246,18 +243,10 @@ namespace meshkernel
         return result;
     }
 
-    [[nodiscard]] bool HasQueryResults(RTree const& samplesRTree)
+    double AveragingInterpolation::GetSampleValueFromRTree(size_t const index)
     {
-        return samplesRTree.GetQueryResultSize() > 0;
-    }
-
-    [[nodiscard]] double GetSampleTreeValue(
-        RTree const& samplesRTree,
-        std::vector<Sample> const& samples,
-        size_t const index)
-    {
-        auto const sample_index = samplesRTree.GetQueryResult(index);
-        return samples[sample_index].value;
+        auto const sample_index = m_samplesRtree.GetQueryResult(index);
+        return m_samples[sample_index].value;
     }
 
     [[nodiscard]] std::unique_ptr<averaging::AveragingStrategy> GetAveragingStrategy(
@@ -269,7 +258,7 @@ namespace meshkernel
         switch (averagingMethod)
         {
         case AveragingInterpolation::Method::SimpleAveraging:
-            return std::make_unique<averaging::SimpleAveragingStrategy>(missingValue);
+            return std::make_unique<averaging::SimpleAveragingStrategy>();
         case AveragingInterpolation::Method::Closest:
             return std::make_unique<averaging::ClosestAveragingStrategy>(missingValue, interpolationPoint, projection);
         case AveragingInterpolation::Method::Max:
@@ -285,25 +274,21 @@ namespace meshkernel
         }
     }
 
-    double AverageFromNearestNeighbours(std::unique_ptr<averaging::AveragingStrategy> strategy,
-                                        RTree const& tree,
-                                        std::vector<Sample> const& samples,
-                                        std::vector<Point> const& searchPolygon,
-                                        Projection const projection)
+    double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy, std::vector<Point> const& searchPolygon)
     {
 
-        for (auto i = 0; i < tree.GetQueryResultSize(); i++)
+        for (auto i = 0; i < m_samplesRtree.GetQueryResultSize(); i++)
         {
-            auto const sampleIndex = tree.GetQueryResult(i);
-            auto const sampleValue = samples[sampleIndex].value;
+            auto const sampleIndex = m_samplesRtree.GetQueryResult(i);
+            auto const sampleValue = m_samples[sampleIndex].value;
 
             if (sampleValue <= doubleMissingValue)
             {
                 continue;
             }
 
-            Point samplePoint{samples[sampleIndex].x, samples[sampleIndex].y};
-            if (IsPointInPolygonNodes(samplePoint, searchPolygon, projection))
+            Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
+            if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh->m_projection))
             {
                 strategy->Add(samplePoint, sampleValue);
             }
@@ -315,18 +300,15 @@ namespace meshkernel
     double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygon,
                                                     Point const interpolationPoint)
     {
-        double result = doubleMissingValue;
 
-        ValidateInterpolationPoint(interpolationPoint);
+        if (!interpolationPoint.IsValid())
+        {
+            throw std::invalid_argument("AveragingInterpolation::ComputeOnPolygon invalid interpolation point");
+        }
 
-        std::vector<Point> const searchPolygon =
-            GetSearchPolygon(polygon,
-                             interpolationPoint,
-                             m_relativeSearchRadius,
-                             m_mesh->m_projection);
+        std::vector<Point> const searchPolygon = GetSearchPolygon(polygon, interpolationPoint);
 
-        double const searchRadiusSquared =
-            getSearchRadiusSquared(searchPolygon, interpolationPoint, m_mesh->m_projection);
+        double const searchRadiusSquared = getSearchRadiusSquared(searchPolygon, interpolationPoint, m_mesh->m_projection);
 
         if (searchRadiusSquared <= 0.0)
         {
@@ -334,22 +316,18 @@ namespace meshkernel
         }
 
         m_samplesRtree.NearestNeighborsOnSquaredDistance(interpolationPoint, searchRadiusSquared);
-
-        if (!HasQueryResults(m_samplesRtree))
+        if (!m_samplesRtree.HasQueryResults() && m_useClosestSampleIfNoneAvailable)
         {
-            if (m_useClosestSampleIfNoneAvailable)
-            {
-                m_samplesRtree.NearestNeighbors(interpolationPoint);
-                result = HasQueryResults(m_samplesRtree) ? GetSampleTreeValue(m_samplesRtree, m_samples, 0) : result;
-            }
+            m_samplesRtree.NearestNeighbors(interpolationPoint);
+            return m_samplesRtree.HasQueryResults() ? GetSampleValueFromRTree(0) : doubleMissingValue;
         }
-        else
+        if (m_samplesRtree.HasQueryResults())
         {
 
-            std::unique_ptr<averaging::AveragingStrategy> strategy = GetAveragingStrategy(m_method, doubleMissingValue, interpolationPoint, m_mesh->m_projection);
-            result = AverageFromNearestNeighbours(std::move(strategy), m_samplesRtree, m_samples, searchPolygon, m_mesh->m_projection);
+            auto strategy = GetAveragingStrategy(m_method, doubleMissingValue, interpolationPoint, m_mesh->m_projection);
+            return ComputeInterpolationResultFromNeighbors(std::move(strategy), searchPolygon);
         }
 
-        return result;
+        return doubleMissingValue;
     }
 } // namespace meshkernel

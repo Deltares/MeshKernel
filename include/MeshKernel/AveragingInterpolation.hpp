@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <MeshKernel/AveragingStrategy.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/RTree.hpp>
@@ -132,6 +133,20 @@ namespace meshkernel
 
         /// @brief Decreases the values of samples
         void DecreaseValueOfSamples();
+
+        /// @brief Generate the bounding polygon from an input polygon
+        /// @param[in]  polygon            The input polygon
+        /// @param[in]  interpolationPoint The interpolation point
+        std::vector<Point> GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint);
+
+        /// @brief Computes the average value from the neighbors using a strategy
+        /// param[in]  strategy            The input strategy
+        /// param[in] searchPolygon        The bounding polygon
+        double ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy, std::vector<Point> const& searchPolygon);
+
+        /// @brief Gets the sample value from an r-tree query
+        /// param[in] index            The query index
+        [[nodiscard]] double GetSampleValueFromRTree(size_t index);
 
         const std::shared_ptr<Mesh2D> m_mesh;           ///< Pointer to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
