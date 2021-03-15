@@ -1,42 +1,13 @@
-﻿#include <memory>
+﻿#include <gtest/gtest.h>
+#include <memory>
 #include <utility>
-#include <gtest/gtest.h>
 
-#include "MeshKernel/AveragingInterpolation.hpp"
-#include "MeshKernel/AveragingStrategies/ClosestAveragingStrategy.hpp"
-#include "MeshKernel/AveragingStrategies/InverseWeightedAveragingStrategy.hpp"
-#include "MeshKernel/AveragingStrategies/MaxAveragingStrategy.hpp"
-#include "MeshKernel/AveragingStrategies/MinAbsAveragingStrategy.hpp"
-#include "MeshKernel/AveragingStrategies/MinAveragingStrategy.hpp"
-#include "MeshKernel/AveragingStrategies/SimpleAveragingStrategy.hpp"
+#include <MeshKernel/AveragingInterpolation.hpp>
+#include <MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp>
+#include <MeshKernel/AveragingStrategies/ClosestAveragingStrategy.hpp>
 
 namespace meshkernel::averaging
 {
-
-    std::unique_ptr<AveragingStrategy> GetAveragingStrategy(
-        AveragingInterpolation::Method const averagingMethod,
-        double const missingValue,
-        Point const& interpolationPoint,
-        Projection const projection)
-    {
-        switch (averagingMethod)
-        {
-        case AveragingInterpolation::Method::SimpleAveraging:
-            return std::make_unique<SimpleAveragingStrategy>();
-        case AveragingInterpolation::Method::Closest:
-            return std::make_unique<ClosestAveragingStrategy>(missingValue, interpolationPoint, projection);
-        case AveragingInterpolation::Method::Max:
-            return std::make_unique<MaxAveragingStrategy>(missingValue);
-        case AveragingInterpolation::Method::Min:
-            return std::make_unique<MinAveragingStrategy>(missingValue);
-        case AveragingInterpolation::Method::InverseWeightedDistance:
-            return std::make_unique<InverseWeightedAveragingStrategy>(missingValue, interpolationPoint, projection);
-        case AveragingInterpolation::Method::MinAbsValue:
-            return std::make_unique<MinAbsAveragingStrategy>(missingValue);
-        default:
-            throw std::invalid_argument("Unsupported averagingMethod");
-        }
-    }
 
     class MissingValueIsReturnedWhenNoValueIsAddedTest : public ::testing::TestWithParam<std::pair<AveragingInterpolation::Method, double>>
     {
@@ -58,9 +29,8 @@ namespace meshkernel::averaging
     {
         // Setup
         Point p = Point(0.0, 0.0);
-        std::unique_ptr<AveragingStrategy> pStrategy = GetAveragingStrategy(GetParam().first,
-                                                                            GetParam().second,
-                                                                            p, Projection::cartesian);
+        std::unique_ptr<AveragingStrategy> pStrategy = AveragingStrategyFactory::GetAveragingStrategy(GetParam().first,
+                                                                                                      p, Projection::cartesian);
 
         // Call
         double result = pStrategy->Calculate();
@@ -125,9 +95,8 @@ namespace meshkernel::averaging
     {
         // Setup
         Point p = Point(0.0, 0.0);
-        std::unique_ptr<AveragingStrategy> pStrategy = GetAveragingStrategy(GetParam().method_,
-                                                                            doubleMissingValue,
-                                                                            p, Projection::cartesian);
+        std::unique_ptr<AveragingStrategy> pStrategy = AveragingStrategyFactory::GetAveragingStrategy(GetParam().method_,
+                                                                                                      p, Projection::cartesian);
 
         for (auto const p : GetParam().addData_)
         {

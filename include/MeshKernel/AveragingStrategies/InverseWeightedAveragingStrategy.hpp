@@ -37,11 +37,9 @@ namespace meshkernel::averaging
     {
     public:
         /// @brief Construct a new InverseWeightedAveragingStrategy.
-        /// @param[in] missingValue       The value used to indicate a missing value.
         /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] projection         The projection used in calculating the distance.
-        InverseWeightedAveragingStrategy(double missingValue,
-                                         Point const& interpolationPoint,
+        InverseWeightedAveragingStrategy(Point const& interpolationPoint,
                                          Projection projection);
 
         void Add(Point const& samplePoint, double sampleValue) override;
@@ -50,9 +48,6 @@ namespace meshkernel::averaging
     private:
         /// @brief The current result used in Calculate to calculate the final value.
         double m_result = 0.0;
-
-        /// @brief The value returned when no valid value can be returned.
-        double const m_missingValue;
 
         /// @brief The wall
         double m_wall = 0.0;

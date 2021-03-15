@@ -3,10 +3,8 @@
 
 namespace meshkernel::averaging
 {
-    InverseWeightedAveragingStrategy::InverseWeightedAveragingStrategy(double const missingValue,
-                                                                       Point const& interpolation_point,
-                                                                       Projection const projection) : m_missingValue(missingValue),
-                                                                                                      m_interpolationPoint(interpolation_point),
+    InverseWeightedAveragingStrategy::InverseWeightedAveragingStrategy(Point const& interpolation_point,
+                                                                       Projection const projection) : m_interpolationPoint(interpolation_point),
                                                                                                       m_projection(projection) {}
 
     void InverseWeightedAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
@@ -19,6 +17,6 @@ namespace meshkernel::averaging
 
     double InverseWeightedAveragingStrategy::Calculate() const
     {
-        return m_wall > 0.0 ? m_result / m_wall : m_missingValue;
+        return m_wall > 0.0 ? m_result / m_wall : doubleMissingValue;
     }
 } // namespace meshkernel::averaging

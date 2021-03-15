@@ -38,11 +38,9 @@ namespace meshkernel::averaging
     {
     public:
         /// @brief Construct a new ClosestAveragingStrategy.
-        /// @param[in] missingValue       The value used to indicate a missing value.
         /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] projection         The projection used to calculate distances with.
-        ClosestAveragingStrategy(double missingValue,
-                                 Point const& interpolationPoint,
+        ClosestAveragingStrategy(Point const& interpolationPoint,
                                  Projection projection);
 
         void Add(Point const& samplePoint, double sampleValue) override;
@@ -50,7 +48,7 @@ namespace meshkernel::averaging
 
     private:
         /// @brief The result used to calculate the final value in Calculate.
-        double m_result;
+        double m_result =doubleMissingValue;
 
         /// @brief The closest squared value currently found.
         double m_closestSquaredValue = std::numeric_limits<double>::max();

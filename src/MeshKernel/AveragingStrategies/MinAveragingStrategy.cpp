@@ -29,8 +29,6 @@
 
 namespace meshkernel::averaging
 {
-    MinAveragingStrategy::MinAveragingStrategy(double const missingValue) : m_missingValue(missingValue) {}
-
     void MinAveragingStrategy::Add(Point const& samplePoint, double const sampleValue)
     {
         m_result = std::min(m_result, sampleValue);
@@ -38,6 +36,6 @@ namespace meshkernel::averaging
 
     double MinAveragingStrategy::Calculate() const
     {
-        return m_result != std::numeric_limits<double>::max() ? m_result : m_missingValue;
+        return m_result != std::numeric_limits<double>::max() ? m_result : doubleMissingValue;
     }
 } // namespace meshkernel::averaging

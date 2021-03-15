@@ -29,17 +29,11 @@
 #include <tuple>
 
 #include <MeshKernel/AveragingInterpolation.hpp>
+#include <MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/RTree.hpp>
-
-#include <MeshKernel/AveragingStrategies/ClosestAveragingStrategy.hpp>
-#include <MeshKernel/AveragingStrategies/InverseWeightedAveragingStrategy.hpp>
-#include <MeshKernel/AveragingStrategies/MaxAveragingStrategy.hpp>
-#include <MeshKernel/AveragingStrategies/MinAbsAveragingStrategy.hpp>
-#include <MeshKernel/AveragingStrategies/MinAveragingStrategy.hpp>
-#include <MeshKernel/AveragingStrategies/SimpleAveragingStrategy.hpp>
 
 namespace meshkernel
 {
@@ -68,7 +62,8 @@ namespace meshkernel
         }
 
         m_visitedSamples.resize(m_samples.size());
-        // build sample rtree for searches
+
+        // build sample r-tree for searches
         m_samplesRtree.BuildTree(m_samples);
 
         auto interpolatedResults = ComputeOnLocations();
@@ -249,31 +244,6 @@ namespace meshkernel
         return m_samples[sample_index].value;
     }
 
-    [[nodiscard]] std::unique_ptr<averaging::AveragingStrategy> GetAveragingStrategy(
-        AveragingInterpolation::Method const averagingMethod,
-        double const missingValue,
-        Point const& interpolationPoint,
-        Projection const projection)
-    {
-        switch (averagingMethod)
-        {
-        case AveragingInterpolation::Method::SimpleAveraging:
-            return std::make_unique<averaging::SimpleAveragingStrategy>();
-        case AveragingInterpolation::Method::Closest:
-            return std::make_unique<averaging::ClosestAveragingStrategy>(missingValue, interpolationPoint, projection);
-        case AveragingInterpolation::Method::Max:
-            return std::make_unique<averaging::MaxAveragingStrategy>(missingValue);
-        case AveragingInterpolation::Method::Min:
-            return std::make_unique<averaging::MinAveragingStrategy>(missingValue);
-        case AveragingInterpolation::Method::InverseWeightedDistance:
-            return std::make_unique<averaging::InverseWeightedAveragingStrategy>(missingValue, interpolationPoint, projection);
-        case AveragingInterpolation::Method::MinAbsValue:
-            return std::make_unique<averaging::MinAbsAveragingStrategy>(missingValue);
-        default:
-            throw std::invalid_argument("Unsupported averagingMethod");
-        }
-    }
-
     double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy, std::vector<Point> const& searchPolygon)
     {
 
@@ -324,7 +294,7 @@ namespace meshkernel
         if (m_samplesRtree.HasQueryResults())
         {
 
-            auto strategy = GetAveragingStrategy(m_method, doubleMissingValue, interpolationPoint, m_mesh->m_projection);
+            auto strategy = averaging::AveragingStrategyFactory::GetAveragingStrategy(m_method, interpolationPoint, m_mesh->m_projection);
             return ComputeInterpolationResultFromNeighbors(std::move(strategy), searchPolygon);
         }
 
