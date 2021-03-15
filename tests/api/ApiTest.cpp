@@ -91,9 +91,15 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     errorCode = meshkernelapi::mkernel_get_mesh2d_data(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
+    /*  1---4---7---10
+        |   |   |   |
+        0---3---6---9
+            |   |   | 
+            2---5---8
+    */
     // Assert data
     const double tolerance = 1e-6;
-    // First node {0, 0} has been removed so we expect {0, 1}
+    // Nodes
     ASSERT_NEAR(0.0, mesh2d.node_x[0], tolerance);
     ASSERT_NEAR(1.0, mesh2d.node_y[0], tolerance);
     // Edges
@@ -101,11 +107,22 @@ TEST_F(ApiTests, DeleteNodeThroughApi)
     ASSERT_EQ(3, mesh2d.edge_nodes[1]);
     ASSERT_NEAR(0.5, mesh2d.edge_x[0], tolerance);
     ASSERT_NEAR(1.0, mesh2d.edge_y[0], tolerance);
-    // Faces (Face on bottom-left is gone -> top-left is now the first one)
+    // First face
     ASSERT_EQ(0, mesh2d.face_nodes[0]);
     ASSERT_EQ(3, mesh2d.face_nodes[1]);
     ASSERT_EQ(4, mesh2d.face_nodes[2]);
     ASSERT_EQ(1, mesh2d.face_nodes[3]);
+    ASSERT_EQ(4, mesh2d.nodes_per_face[0]);
+    ASSERT_NEAR(0.5, mesh2d.face_x[0], tolerance);
+    ASSERT_NEAR(1.5, mesh2d.face_y[0], tolerance);
+    // Second Face
+    ASSERT_EQ(2, mesh2d.face_nodes[4]);
+    ASSERT_EQ(5, mesh2d.face_nodes[5]);
+    ASSERT_EQ(6, mesh2d.face_nodes[6]);
+    ASSERT_EQ(3, mesh2d.face_nodes[7]);
+    ASSERT_EQ(4, mesh2d.nodes_per_face[1]);
+    ASSERT_NEAR(1.5, mesh2d.face_x[1], tolerance);
+    ASSERT_NEAR(0.5, mesh2d.face_y[1], tolerance);
 }
 
 TEST_F(ApiTests, FlipEdgesThroughApi)

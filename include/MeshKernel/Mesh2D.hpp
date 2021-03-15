@@ -76,7 +76,7 @@ namespace meshkernel
         /// @param[in] nodes The input nodes
         /// @param[in] projection The projection to use
         /// @param[in] administration Type of administration to perform
-        Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOptions administration = AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        Mesh2D(const std::vector<Edge>& edges, const std::vector<Point>& nodes, Projection projection, AdministrationOption administration = AdministrationOption::AdministrateMeshEdgesAndFaces);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
         /// @param[in] nodes Input nodes
@@ -92,7 +92,7 @@ namespace meshkernel
 
         /// @brief Perform mesh administration
         /// @param administrationOption Type of administration to perform
-        void Administrate(AdministrationOptions administrationOption);
+        void Administrate(AdministrationOption administrationOption);
 
         /// @brief Compute face circumcenters
         void ComputeFaceCircumcentersMassCentersAndAreas(bool computeMassCenters = false);

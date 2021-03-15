@@ -208,7 +208,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdges);
+            meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
             SetMesh2dDimensions(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
@@ -229,7 +229,6 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            // TODO: Add face_edges
             SetMesh2d(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
@@ -356,7 +355,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+            meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
             meshKernelState[meshKernelId].m_mesh2d->SetFlatCopies();
             // TODO: Call correct function
             //SetMesh(meshKernelState[meshKernelId].m_mesh2d, mesh2d);

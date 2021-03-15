@@ -44,7 +44,7 @@
 meshkernel::Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                            const std::vector<Point>& nodes,
                            Projection projection,
-                           AdministrationOptions administration) : Mesh(edges, nodes, projection)
+                           AdministrationOption administration) : Mesh(edges, nodes, projection)
 {
 
     Administrate(administration);
@@ -54,11 +54,11 @@ meshkernel::Mesh2D::Mesh2D(const std::vector<Edge>& edges,
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 1);
 };
 
-void meshkernel::Mesh2D::Administrate(AdministrationOptions administrationOption)
+void meshkernel::Mesh2D::Administrate(AdministrationOption administrationOption)
 {
     AdministrateNodesEdges();
 
-    if (administrationOption == AdministrationOptions::AdministrateMeshEdges)
+    if (administrationOption == AdministrationOption::AdministrateMeshEdges)
     {
         return;
     }
@@ -156,7 +156,7 @@ meshkernel::Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons&
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    *this = Mesh2D(edges, inputNodes, projection, AdministrationOptions::AdministrateMeshEdges);
+    *this = Mesh2D(edges, inputNodes, projection, AdministrationOption::AdministrateMeshEdges);
 }
 
 bool meshkernel::Mesh2D::CheckTriangle(const std::vector<size_t>& faceNodes, const std::vector<Point>& nodes) const
@@ -190,7 +190,7 @@ bool meshkernel::Mesh2D::CheckTriangle(const std::vector<size_t>& faceNodes, con
 
 void meshkernel::Mesh2D::DeleteDegeneratedTriangles()
 {
-    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     // assume the max amount of degenerated triangles is 10% of the actual faces
     std::vector<size_t> degeneratedTriangles;
@@ -248,7 +248,7 @@ void meshkernel::Mesh2D::DeleteDegeneratedTriangles()
         MergeTwoNodes(thirdNode, firstNode);
     }
 
-    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
 }
 
 void meshkernel::Mesh2D::FindFacesRecursive(size_t startingNode,
@@ -599,7 +599,7 @@ void meshkernel::Mesh2D::MergeNodesInPolygon(const Polygons& polygon)
         }
     }
 
-    Administrate(AdministrationOptions::AdministrateMeshEdges);
+    Administrate(AdministrationOption::AdministrateMeshEdges);
 }
 
 void meshkernel::Mesh2D::ComputeFaceClosedPolygonWithLocalMappings(size_t faceIndex,
@@ -691,7 +691,7 @@ void meshkernel::Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
 
 void meshkernel::Mesh2D::MaskFaceEdgesInPolygon(const Polygons& polygons, bool invertSelection, bool includeIntersected)
 {
-    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     // mark all nodes in polygon with 1
     std::fill(m_nodeMask.begin(), m_nodeMask.end(), 0);
@@ -814,7 +814,7 @@ meshkernel::Mesh2D& meshkernel::Mesh2D::operator+=(Mesh2D const& rhs)
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     //no polygon involved, so node mask is 1 everywhere
     m_nodeMask.resize(m_nodes.size());
@@ -954,7 +954,7 @@ meshkernel::Point meshkernel::Mesh2D::ComputeFaceCircumenter(std::vector<Point>&
 
 std::vector<meshkernel::Point> meshkernel::Mesh2D::GetObtuseTrianglesCenters()
 {
-    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
     std::vector<Point> result;
     result.reserve(GetNumFaces());
     for (auto f = 0; f < GetNumFaces(); ++f)
@@ -983,7 +983,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh2D::GetObtuseTrianglesCenters()
 
 std::vector<size_t> meshkernel::Mesh2D::GetEdgesCrossingSmallFlowEdges(double smallFlowEdgesThreshold)
 {
-    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
     std::vector<size_t> result;
     result.reserve(GetNumEdges());
     for (auto e = 0; e < GetNumEdges(); ++e)
@@ -1031,7 +1031,7 @@ void meshkernel::Mesh2D::DeleteSmallFlowEdges(double smallFlowEdgesThreshold)
         {
             m_edges[e] = {sizetMissingValue, sizetMissingValue};
         }
-        Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
     }
 }
 
@@ -1147,7 +1147,7 @@ void meshkernel::Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAr
 
     if (nodesMerged)
     {
-        Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
     }
 }
 
@@ -1508,7 +1508,7 @@ std::vector<meshkernel::Point> meshkernel::Mesh2D::MeshBoundaryToPolygon(const s
 {
 
     // Find faces
-    Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
     std::vector<bool> isVisited(GetNumEdges(), false);
     std::vector<Point> meshBoundaryPolygon;
     meshBoundaryPolygon.reserve(GetNumNodes());
@@ -1655,7 +1655,7 @@ void meshkernel::Mesh2D::DeleteMesh(const Polygons& polygons, int deletionOption
 
     if (deletionOption == FacesWithIncludedCircumcenters)
     {
-        Administrate(AdministrationOptions::AdministrateMeshEdgesAndFaces);
+        Administrate(AdministrationOption::AdministrateMeshEdgesAndFaces);
 
         for (auto e = 0; e < GetNumEdges(); ++e)
         {
@@ -1728,7 +1728,7 @@ void meshkernel::Mesh2D::DeleteMesh(const Polygons& polygons, int deletionOption
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    Administrate(AdministrationOptions::AdministrateMeshEdges);
+    Administrate(AdministrationOption::AdministrateMeshEdges);
 }
 
 void meshkernel::Mesh2D::DeleteHangingEdges()

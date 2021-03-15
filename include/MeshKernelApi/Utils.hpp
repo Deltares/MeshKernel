@@ -166,6 +166,7 @@ namespace meshkernelapi
         {
             mesh2dApi.face_x[f] = static_cast<double>(mesh2d->m_facesMassCenters[f].x);
             mesh2dApi.face_y[f] = static_cast<double>(mesh2d->m_facesMassCenters[f].y);
+            mesh2dApi.nodes_per_face[f] = static_cast<int>(mesh2d->m_facesNodes[f].size());
             for (auto n = 0; n < mesh2d->m_facesNodes[f].size(); ++n)
             {
                 mesh2dApi.face_nodes[faceIndex] = static_cast<int>(mesh2d->m_facesNodes[f][n]);
