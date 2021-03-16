@@ -61,7 +61,6 @@ void meshkernel::CurvilinearGrid::SetFlatCopies()
     m_nodes = nodes;
     m_edges = edges;
     m_gridIndices = gridIndices;
-    Mesh::SetFlatCopies();
 }
 
 std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>> meshkernel::CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()

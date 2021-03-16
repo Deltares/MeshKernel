@@ -248,9 +248,6 @@ namespace meshkernel
         /// @return The index of the closest location.
         [[nodiscard]] size_t GetNearestNeighborIndex(size_t index, MeshLocations meshLocation);
 
-        /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
-        void SetFlatCopies();
-
         // nodes
         std::vector<Point> m_nodes;                    ///< The mesh nodes (xk, yk)
         std::vector<std::vector<size_t>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
@@ -283,17 +280,5 @@ namespace meshkernel
         RTree m_nodesRTree;                     ///< Spatial R-Tree used to inquire node nodes
         RTree m_edgesRTree;                     ///< Spatial R-Tree used to inquire edges centers
         RTree m_facesRTree;                     ///< Spatial R-Tree used to inquire face circumcenters
-
-        // vectors for communicating with the client
-        // TODO: Remove them
-        std::vector<int> m_edgeNodes; ///< For each edge, the index to the nodes
-        std::vector<double> m_nodex;  ///< The nodes x-coordinate
-        std::vector<double> m_nodey;  ///< The nodes y-coordinate
-        std::vector<double> m_nodez;  ///< The nodes z-coordinate
-
-        std::vector<int> m_faceNodes;              ///< For each face, the nodes
-        std::vector<double> m_facesCircumcentersx; ///< The circumcenters x-coordinate
-        std::vector<double> m_facesCircumcentersy; ///< The circumcenters y-coordinate
-        std::vector<double> m_facesCircumcentersz; ///< The circumcenters z-coordinate
     };
 } // namespace meshkernel
