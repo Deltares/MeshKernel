@@ -33,8 +33,7 @@
 #include <MeshKernelApi/InterpolationParameters.hpp>
 #include <MeshKernelApi/MakeMeshParameters.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
-#include <MeshKernelApi/MeshGeometry.hpp>
-#include <MeshKernelApi/MeshGeometryDimensions.hpp>
+#include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/OrthogonalizationParameters.hpp>
 #include <MeshKernelApi/SampleRefineParameters.hpp>
 #include <MeshKernelApi/SplinesToCurvilinearParameters.hpp>
@@ -86,43 +85,37 @@ namespace meshkernelapi
                                               bool invertDeletion);
 
         /// @brief Sets the meshkernel::Mesh2D state
-        /// @param[in] meshKernelId           The id of the mesh state
-        /// @param[in] meshGeometryDimensions The mesh dimensions
-        /// @param[in] meshGeometry           The mesh data
-        /// @returns                          Error code
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] mesh2d       The Mesh2D data
+        /// @returns Error code
         MKERNEL_API int mkernel_set_mesh2d(int meshKernelId,
-                                           const MeshGeometryDimensions& meshGeometryDimensions,
-                                           const MeshGeometry& meshGeometry);
+                                           const Mesh2D& mesh2d);
 
         /// @brief Sets the meshkernel::Mesh1D state
-        /// @param[in] meshKernelId           The id of the mesh state
-        /// @param[in] mesh1d                 The Mesh1D data
-        /// @returns                          Error code
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] mesh1d       The Mesh1D data
+        /// @returns Error code
         MKERNEL_API int mkernel_set_mesh1d(int meshKernelId,
                                            const Mesh1D& mesh1d);
 
         /// @brief Gets the meshkernel::Mesh2D state as a MeshGeometry struct
-        /// @param[in]  meshKernelId           The id of the mesh state
-        /// @param[out] meshGeometryDimensions Mesh2D dimensions
-        /// @param[out] meshGeometry           Mesh2D data
-        /// @returns                           Error code
+        /// @param[in]  meshKernelId The id of the mesh state
+        /// @param[out] mesh2d       The Mesh2D data
+        /// @returns Error code
         MKERNEL_API int mkernel_get_mesh2d(int meshKernelId,
-                                           MeshGeometryDimensions& meshGeometryDimensions,
-                                           MeshGeometry& meshGeometry);
+                                           Mesh2D& mesh2d);
 
         /// @brief Gets the meshkernel::Curvilinear state as a MeshGeometry struct (converted as set of edges and nodes)
-        /// @param[in]  meshKernelId           The id of the mesh state
-        /// @param[out] meshGeometryDimensions Mesh2D dimensions
-        /// @param[out] meshGeometry           Mesh2D data
-        /// @returns                           Error code
+        /// @param[in]  meshKernelId The id of the mesh state
+        /// @param[out] mesh2d       The Mesh2D data
+        /// @returns Error code
         MKERNEL_API int mkernel_get_curvilinear(int meshKernelId,
-                                                MeshGeometryDimensions& meshGeometryDimensions,
-                                                MeshGeometry& meshGeometry);
+                                                Mesh2D& mesh2d);
 
         /// @brief Gets the meshkernel::Mesh1D state as a meshkernelapi::Mesh1D struct
         /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] mesh1d                 Mesh1D data
-        /// @returns                           Error code
+        /// @returns Error code
         MKERNEL_API int mkernel_get_mesh1d(int meshKernelId,
                                            Mesh1D& mesh1d);
 
@@ -141,13 +134,11 @@ namespace meshkernelapi
                                              Contacts& contacts);
 
         /// @brief Gets the mesh faces
-        /// @param[in] meshKernelId The id of the mesh state
-        /// @param[out] meshGeometryDimensions Grid dimensions
-        /// @param[out] meshGeometry Mesh2D data (including face information)
+        /// @param[in]  meshKernelId The id of the mesh state
+        /// @param[out] mesh2d       The Mesh2D data
         /// @returns Error code
         MKERNEL_API int mkernel_get_faces_mesh2d(int meshKernelId,
-                                                 MeshGeometryDimensions& meshGeometryDimensions,
-                                                 MeshGeometry& meshGeometry);
+                                                 Mesh2D& mesh2d);
 
         /// @brief Count the number of hanging edges
         /// @param[in] meshKernelId The id of the mesh state
@@ -681,19 +672,17 @@ namespace meshkernelapi
         MKERNEL_API double mkernel_get_inner_outer_separator();
 
         /// @brief Triangle interpolation (ec_module)
-        /// @param[in]  meshGeometryDimensions Mesh2D dimensions
-        /// @param[in]  meshGeometry           Mesh2D data
-        /// @param[in]  samplesXCoordinate     The sample x-coordinates
-        /// @param[in]  samplesYCoordinate     The sample y-coordinates
-        /// @param[in]  samplesValue           The sample values
-        /// @param[in]  numSamples             The number of samples
-        /// @param[in]  locationType           The location type
-        /// @param[in]  spherical              Current projection (0 cartesian, 1 spherical)
-        /// @param[in]  sphericalAccurate      Accurate spherical projection (0 default spherical, 1 spherical accurate)
-        /// @param[out] results                The interpolation results
+        /// @param[in]  mesh2d             The Mesh2D data
+        /// @param[in]  samplesXCoordinate The sample x-coordinates
+        /// @param[in]  samplesYCoordinate The sample y-coordinates
+        /// @param[in]  samplesValue       The sample values
+        /// @param[in]  numSamples         The number of samples
+        /// @param[in]  locationType       The location type
+        /// @param[in]  spherical          Current projection (0 cartesian, 1 spherical)
+        /// @param[in]  sphericalAccurate  Accurate spherical projection (0 default spherical, 1 spherical accurate)
+        /// @param[out] results            The interpolation results
         /// @return Error code (0 Successful)
-        MKERNEL_API int triangulation(const MeshGeometryDimensions& meshGeometryDimensions,
-                                      const MeshGeometry& meshGeometry,
+        MKERNEL_API int triangulation(const Mesh2D& mesh2d,
                                       const double** samplesXCoordinate,
                                       const double** samplesYCoordinate,
                                       const double** samplesValue,
@@ -704,24 +693,22 @@ namespace meshkernelapi
                                       double** results);
 
         /// @brief AveragingInterpolation interpolation (ec_module)
-        /// @param[in] meshGeometryDimensions Mesh2D dimensions
-        /// @param[in] meshGeometry           Mesh2D data
-        /// @param[in] startIndex             Mesh2D data start index (not used)
-        /// @param[in] samplesXCoordinate     The sample x-coordinates
-        /// @param[in] samplesYCoordinate     The sample y-coordinates
-        /// @param[in] samplesValue           The sample values
-        /// @param[in] numSamples             The number of samples
-        /// @param[out] results               The interpolation results
-        /// @param[in] locationType           The location type (see MeshLocations enum)
-        /// @param[in] Wu1Duni                A setting for 1d meshes (not used)
-        /// @param[in] averagingMethod        The averaging method (see Method enum)
-        /// @param[in] minNumberOfSamples     The minimum amount of samples (not used)
-        /// @param[in] relativeSearchSize     The relative search size around the location (larger increases the number of samples considered)
-        /// @param[in] spherical              Current projection (0 cartesian, 1 spherical)
-        /// @param[in] sphericalAccurate      Accurate spherical computations (0 default spherical, 1 spherical accurate)
+        /// @param[in] mesh2d             Mesh2D data
+        /// @param[in] startIndex         Mesh2D data start index (not used)
+        /// @param[in] samplesXCoordinate The sample x-coordinates
+        /// @param[in] samplesYCoordinate The sample y-coordinates
+        /// @param[in] samplesValue       The sample values
+        /// @param[in] numSamples         The number of samples
+        /// @param[out] results           The interpolation results
+        /// @param[in] locationType       The location type (see MeshLocations enum)
+        /// @param[in] Wu1Duni            A setting for 1d meshes (not used)
+        /// @param[in] averagingMethod    The averaging method (see Method enum)
+        /// @param[in] minNumberOfSamples The minimum amount of samples (not used)
+        /// @param[in] relativeSearchSize The relative search size around the location (larger increases the number of samples considered)
+        /// @param[in] spherical          Current projection (0 cartesian, 1 spherical)
+        /// @param[in] sphericalAccurate  Accurate spherical computations (0 default spherical, 1 spherical accurate)
         /// @return Error code (0 Successful)
-        MKERNEL_API int averaging(const MeshGeometryDimensions& meshGeometryDimensions,
-                                  const MeshGeometry& meshGeometry,
+        MKERNEL_API int averaging(const Mesh2D& mesh2d,
                                   const int& startIndex,
                                   const double** samplesXCoordinate,
                                   const double** samplesYCoordinate,

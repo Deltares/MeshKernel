@@ -35,8 +35,8 @@
 #include <MeshKernel/Splines.hpp>
 
 #include <MeshKernelApi/GeometryList.hpp>
-#include <MeshKernelApi/MeshGeometry.hpp>
-#include <MeshKernelApi/MeshGeometryDimensions.hpp>
+#include <MeshKernelApi/Mesh1D.hpp>
+#include <MeshKernelApi/Mesh2D.hpp>
 
 #include <stdexcept>
 #include <vector>
@@ -125,45 +125,37 @@ namespace meshkernelapi
     }
 
     /// @brief Sets a meshkernelapi::MeshGeometry instance from a meshkernel::Mesh instance
-    /// @param[in]  mesh                   The input meshkernel::Mesh instance
-    /// @param[in]  meshKernelId           The id to the mesh which should be set
-    /// @param[out] meshGeometryDimensions The dimensions of the mesh geometry
-    /// @param[out] meshGeometry           The output meshkernelapi::MeshGeometry instance
-    static void SetMesh(std::shared_ptr<meshkernel::Mesh> mesh,
-                        MeshGeometryDimensions& meshGeometryDimensions,
-                        MeshGeometry& meshGeometry)
+    /// @param[in]  mesh      The input meshkernel::Mesh instance
+    /// @param[out] mesh2d    The output meshkernelapi::Mesh2D instance
+    static void SetMesh(std::shared_ptr<meshkernel::Mesh> mesh, Mesh2D& mesh2d)
     {
+        mesh2d.node_x = &(mesh->m_nodex[0]);
+        mesh2d.node_y = &(mesh->m_nodey[0]);
+        mesh2d.edge_nodes = &(mesh->m_edgeNodes[0]);
 
-        meshGeometry.nodex = &(mesh->m_nodex[0]);
-        meshGeometry.nodey = &(mesh->m_nodey[0]);
-        meshGeometry.nodez = &(mesh->m_nodez[0]);
-        meshGeometry.edge_nodes = &(mesh->m_edgeNodes[0]);
-
-        meshGeometryDimensions.maxnumfacenodes = meshkernel::maximumNumberOfNodesPerFace;
-        meshGeometryDimensions.numface = static_cast<int>(mesh->GetNumFaces());
-        if (meshGeometryDimensions.numface > 0)
+        mesh2d.max_num_face_nodes = meshkernel::maximumNumberOfNodesPerFace;
+        mesh2d.num_faces = static_cast<int>(mesh->GetNumFaces());
+        if (mesh2d.num_faces > 0)
         {
-            meshGeometry.face_nodes = &(mesh->m_faceNodes[0]);
-            meshGeometry.facex = &(mesh->m_facesCircumcentersx[0]);
-            meshGeometry.facey = &(mesh->m_facesCircumcentersy[0]);
-            meshGeometry.facez = &(mesh->m_facesCircumcentersz[0]);
+            mesh2d.face_nodes = &(mesh->m_faceNodes[0]);
+            mesh2d.face_x = &(mesh->m_facesCircumcentersx[0]);
+            mesh2d.face_y = &(mesh->m_facesCircumcentersy[0]);
         }
 
         if (mesh->GetNumNodes() == 1)
         {
-            meshGeometryDimensions.numnode = 0;
-            meshGeometryDimensions.numedge = 0;
+            mesh2d.num_nodes = 0;
+            mesh2d.num_edges = 0;
         }
         else
         {
-            meshGeometryDimensions.numnode = static_cast<int>(mesh->GetNumNodes());
-            meshGeometryDimensions.numedge = static_cast<int>(mesh->GetNumEdges());
+            mesh2d.num_nodes = static_cast<int>(mesh->GetNumNodes());
+            mesh2d.num_edges = static_cast<int>(mesh->GetNumEdges());
         }
     }
 
     /// @brief Sets a meshkernelapi::Mesh1D instance from a meshkernel::Mesh1D instance
     /// @param[in]  mesh1d           The input meshkernel::Mesh1D instance
-    /// @param[in]  meshKernelId     The id to the mesh which should be set
     /// @param[out] mesh1dApi        The output meshkernelapi::Mesh1D instance
     static void SetMesh1D(std::shared_ptr<meshkernel::Mesh1D> mesh1d,
                           Mesh1D& mesh1dApi)
@@ -185,27 +177,25 @@ namespace meshkernelapi
     }
 
     /// @brief Computes locations from the given mesh geometry
-    /// @param[in]  meshGeometryDimensions The dimensions of the mesh geometry
-    /// @param[in]  meshGeometry           The mesh geometry
+    /// @param[in]  mesh2d                 The input meshkernelapi::Mesh2D instance
     /// @param[out] interpolationLocation  The computed interpolation location
-    static std::vector<meshkernel::Point> ComputeLocations(const MeshGeometryDimensions& meshGeometryDimensions,
-                                                           const MeshGeometry& meshGeometry,
+    static std::vector<meshkernel::Point> ComputeLocations(const Mesh2D& mesh2d,
                                                            meshkernel::MeshLocations interpolationLocation)
     {
         std::vector<meshkernel::Point> locations;
         if (interpolationLocation == meshkernel::MeshLocations::Nodes)
         {
-            locations = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
+            locations = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);
         }
         if (interpolationLocation == meshkernel::MeshLocations::Edges)
         {
-            const auto edges = meshkernel::ConvertToEdgeNodesVector(meshGeometryDimensions.numedge, meshGeometry.edge_nodes);
-            const auto nodes = meshkernel::ConvertToNodesVector(meshGeometryDimensions.numnode, meshGeometry.nodex, meshGeometry.nodey);
+            const auto edges = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges, mesh2d.edge_nodes);
+            const auto nodes = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);
             locations = ComputeEdgeCenters(nodes, edges);
         }
         if (interpolationLocation == meshkernel::MeshLocations::Faces)
         {
-            locations = meshkernel::ConvertToFaceCentersVector(meshGeometryDimensions.numface, meshGeometry.facex, meshGeometry.facey);
+            locations = meshkernel::ConvertToFaceCentersVector(mesh2d.num_faces, mesh2d.face_x, mesh2d.face_y);
         }
 
         return locations;
