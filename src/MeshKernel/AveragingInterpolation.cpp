@@ -206,7 +206,7 @@ namespace meshkernel
     }
 
     double AveragingInterpolation::GetSearchRadiusSquared(std::vector<Point> const& searchPolygon,
-                                                          Point const& interpolationPoint)
+                                                          Point const& interpolationPoint) const
     {
         double result = std::numeric_limits<double>::lowest();
 

@@ -156,7 +156,7 @@ namespace meshkernel
         /// @param interpolationPoint The input point
         /// @return the search radius including the polygon from the input point
         [[nodiscard]] double GetSearchRadiusSquared(std::vector<Point> const& searchPolygon,
-                                                    Point const& interpolationPoint);
+                                                    Point const& interpolationPoint) const;
 
         const std::shared_ptr<Mesh2D> m_mesh;           ///< Pointer to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
