@@ -263,7 +263,6 @@ void meshkernel::Mesh2D::FindFacesRecursive(size_t startingNode,
                                             std::vector<Point>& nodalValues)
 {
     // The selected edge does not exist.
-    // TODO: It would make to throw an exception here, but then the test cases fail
     if (index >= numClosingEdges)
         return;
 

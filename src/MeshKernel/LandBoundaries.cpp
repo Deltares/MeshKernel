@@ -121,7 +121,6 @@ namespace meshkernel
 
         // find the start/end node of the land boundaries.
         // Emplace back them in m_validLandBoundaries if the land-boundary segment is close to a mesh node
-        // TODO:  Why is splitting in two segments required?
         const auto indices = FindIndices(m_nodes, 0, m_nodes.size(), doubleMissingValue);
         m_validLandBoundaries.reserve(indices.size());
         for (const auto& index : indices)

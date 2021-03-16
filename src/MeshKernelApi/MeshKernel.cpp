@@ -362,27 +362,6 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_faces_mesh2d(int meshKernelId, Mesh2D& mesh2d)
-    {
-        int exitCode = Success;
-        try
-        {
-            if (meshKernelState.count(meshKernelId) == 0)
-            {
-                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
-            }
-            meshKernelState[meshKernelId].m_mesh2d->Administrate(meshkernel::Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
-            meshKernelState[meshKernelId].m_mesh2d->SetFlatCopies();
-            // TODO: Call correct function
-            //SetMesh(meshKernelState[meshKernelId].m_mesh2d, mesh2d);
-        }
-        catch (...)
-        {
-            exitCode = HandleExceptions(std::current_exception());
-        }
-        return exitCode;
-    }
-
     MKERNEL_API int mkernel_count_hanging_edges_mesh2d(int meshKernelId, int& numHangingEdges)
     {
         int exitCode = Success;

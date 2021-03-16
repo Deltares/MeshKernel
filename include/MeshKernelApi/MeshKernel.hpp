@@ -176,13 +176,6 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_get_contacts(int meshKernelId,
                                              Contacts& contacts);
 
-        /// @brief Gets the mesh faces
-        /// @param[in]  meshKernelId The id of the mesh state
-        /// @param[out] mesh2d       The Mesh2D data
-        /// @returns Error code
-        MKERNEL_API int mkernel_get_faces_mesh2d(int meshKernelId,
-                                                 Mesh2D& mesh2d);
-
         /// @brief Count the number of hanging edges
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[out] numHangingEdgesIndices
