@@ -27,7 +27,7 @@ void meshkernel::Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNo
         throw std::invalid_argument("meshkernel::Contacts::ComputeSingleContacts: oneDNodeMask and m_mesh1d do not have the same number of nodes");
     }
 
-    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh2d->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
     m_mesh1d->AdministrateNodesEdges();
 
     const auto node1dFaceIndices = m_mesh2d->PointFaceIndices(m_mesh1d->m_nodes);
@@ -163,7 +163,7 @@ void meshkernel::Contacts::ComputeMultipleContacts(const std::vector<bool>& oneD
     }
 
     // perform mesh2d administration
-    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh2d->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     // perform mesh1d administration
     m_mesh1d->AdministrateNodesEdges();
@@ -262,7 +262,7 @@ void meshkernel::Contacts::ComputeContactsWithPolygons(const std::vector<bool>& 
     }
 
     // perform mesh2d administration
-    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh2d->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     // perform mesh1d administration
     m_mesh1d->AdministrateNodesEdges();
@@ -321,7 +321,7 @@ void meshkernel::Contacts::ComputeContactsWithPoints(const std::vector<bool>& on
     }
 
     // perform mesh2d administration
-    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh2d->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     // perform mesh1d administration (m_nodesRTree will also be build if necessary)
     m_mesh1d->AdministrateNodesEdges();
@@ -364,7 +364,7 @@ void meshkernel::Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneD
     }
 
     // perform mesh2d administration
-    m_mesh2d->Administrate(Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    m_mesh2d->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     // perform mesh1d administration
     m_mesh1d->AdministrateNodesEdges();

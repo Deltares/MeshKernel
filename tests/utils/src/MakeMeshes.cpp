@@ -6,6 +6,7 @@
 #include "../../../extern/netcdf/netCDF 4.6.1/include/netcdf.h"
 
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernelApi/Mesh2D.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
 meshkernelapi::Mesh2D ReadLegacyMeshFromFileForApiTesting(std::string filePath)

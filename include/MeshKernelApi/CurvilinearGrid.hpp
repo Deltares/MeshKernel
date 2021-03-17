@@ -29,17 +29,11 @@
 
 namespace meshkernelapi
 {
-    /// @brief A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manner
-    struct Mesh2D
+    /// @brief A struct used to describe the values of a curvilinear grid in a C-compatible manner
+    struct CurvilinearGrid
     {
         /// @brief The nodes composing each mesh 2d edge
         int* edge_nodes = nullptr;
-
-        /// @brief The nodes composing each mesh 2d face
-        int* face_nodes = nullptr;
-
-        /// @brief The number of nodes for each mesh 2d face
-        int* nodes_per_face = nullptr;
 
         /// @brief The x-coordinates of network1d nodes
         double* node_x = nullptr;
@@ -53,23 +47,11 @@ namespace meshkernelapi
         /// @brief The y-coordinates of the mesh edges middle points
         double* edge_y = nullptr;
 
-        /// @brief The x-coordinates of the mesh faces mass centers
-        double* face_x = nullptr;
-
-        /// @brief The y-coordinates of the mesh faces mass centers
-        double* face_y = nullptr;
-
         /// @brief The number of mesh nodes
         int num_nodes;
 
         /// @brief The number of edges
         int num_edges;
-
-        /// @brief The number of faces
-        int num_faces;
-
-        /// @brief The total number of nodes composing the mesh 2d faces
-        int num_face_nodes;
     };
 
 } // namespace meshkernelapi

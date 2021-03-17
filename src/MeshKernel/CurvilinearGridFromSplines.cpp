@@ -625,7 +625,7 @@ void meshkernel::CurvilinearGridFromSplines::GrowLayer(size_t layerIndex)
 
         if (m_splinesToCurvilinearParameters.CheckFrontCollisions)
         {
-            //TODO: implement front collisions
+            // TODO: implement front collisions
             otherTimeStep = 0;
         }
         localTimeStep = std::min(localTimeStep, otherTimeStep);

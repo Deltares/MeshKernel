@@ -76,7 +76,6 @@ namespace meshkernel
                      double averageTriangleArea,
                      size_t estimatedNumberOfTriangles)
         {
-            // TODO: move implementation to source files as soon as we can use modules (c++20)
 
             std::vector<double> xLocalPolygon(inputNodes.size());
             std::vector<double> yLocalPolygon(inputNodes.size());
