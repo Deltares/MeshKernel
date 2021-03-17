@@ -1,8 +1,18 @@
 var searchData=
 [
-  ['transformglobalvectortolocal_779',['TransformGlobalVectorToLocal',['../namespacemeshkernel.html#ae0627229f0f4bf223d00001cc39b8686',1,'meshkernel']]],
-  ['transformsphericaltocartesian_780',['TransformSphericalToCartesian',['../structmeshkernel_1_1_point.html#aa5944c99e57cc73b5c8b13d25e65e2d3',1,'meshkernel::Point']]],
-  ['triangulatefaces_781',['TriangulateFaces',['../classmeshkernel_1_1_mesh2_d.html#a4836ba2335da505e7c952bbc8706873b',1,'meshkernel::Mesh2D']]],
-  ['triangulation_782',['triangulation',['../namespacemeshkernelapi.html#a154b32f4b2c4d460047b477a46625334',1,'meshkernelapi::triangulation()'],['../namespacemeshkernel.html#a5a4e91c351aad4f859d9ac69f026d29e',1,'meshkernel::Triangulation()']]],
-  ['triangulationinterpolation_783',['TriangulationInterpolation',['../classmeshkernel_1_1_triangulation_interpolation.html#a6b346ed9279976a221de5e4903fffc1c',1,'meshkernel::TriangulationInterpolation']]]
+  ['searchnearestneighbors_766',['SearchNearestNeighbors',['../classmeshkernel_1_1_mesh.html#afc0dcbb20f890cee3aac4be53967bdd7',1,'meshkernel::Mesh']]],
+  ['searchnearestneighboursonsquareddistance_767',['SearchNearestNeighboursOnSquaredDistance',['../classmeshkernel_1_1_mesh.html#a438f80fbcf9bad01d1c761605a275e7a',1,'meshkernel::Mesh']]],
+  ['secondorderderivative_768',['SecondOrderDerivative',['../classmeshkernel_1_1_splines.html#aab7d41efa05019f403ed2f5ce22b2b01',1,'meshkernel::Splines::SecondOrderDerivative(const std::vector&lt; Point &gt; &amp;splines, size_t startIndex, size_t endIndex)'],['../classmeshkernel_1_1_splines.html#aa774a586c219bf3d9423266ea883e4c4',1,'meshkernel::Splines::SecondOrderDerivative(const std::vector&lt; double &gt; &amp;coordinates, size_t startIndex, size_t endIndex)']]],
+  ['setdimensionaldistance_769',['SetDimensionalDistance',['../structmeshkernel_1_1_func_adimensional_to_dimensional_distance.html#a4718dd46093c58f6e4de94073459240c',1,'meshkernel::FuncAdimensionalToDimensionalDistance']]],
+  ['setflatcopies_770',['SetFlatCopies',['../classmeshkernel_1_1_curvilinear_grid.html#ae098a6214cb14ffc66966fedc1035115',1,'meshkernel::CurvilinearGrid']]],
+  ['sgn_771',['sgn',['../namespacemeshkernel.html#a5f0c68fd74f7232f452d77bac69696e2',1,'meshkernel']]],
+  ['size_772',['Size',['../classmeshkernel_1_1_r_tree.html#a8ff27cb7bdd80f818ad6286a225f20f3',1,'meshkernel::RTree']]],
+  ['smoother_773',['Smoother',['../classmeshkernel_1_1_smoother.html#a511ed02aa48b4d3ac9b2fa57215aae2e',1,'meshkernel::Smoother']]],
+  ['snapmeshtolandboundaries_774',['SnapMeshToLandBoundaries',['../classmeshkernel_1_1_land_boundaries.html#a02db80d7314b1a24236e3150a0f64ee6',1,'meshkernel::LandBoundaries']]],
+  ['sortedfacesaroundnode_775',['SortedFacesAroundNode',['../classmeshkernel_1_1_mesh2_d.html#a4d5245c9e158f76dfbbd1cf12366cc98',1,'meshkernel::Mesh2D']]],
+  ['sortedgesincounterclockwiseorder_776',['SortEdgesInCounterClockWiseOrder',['../classmeshkernel_1_1_mesh.html#ab1f4c1ea798428e4f4291ef836e3d965',1,'meshkernel::Mesh']]],
+  ['sortedindices_777',['SortedIndices',['../namespacemeshkernel.html#addc034baff4660617d88a46aae221a99',1,'meshkernel']]],
+  ['sphericaltocartesian3d_778',['SphericalToCartesian3D',['../namespacemeshkernel.html#a944e964e1a4685a90a492513c11f2905',1,'meshkernel']]],
+  ['splines_779',['Splines',['../classmeshkernel_1_1_splines.html#a6ed9b96c0050da7a707c00700eb583eb',1,'meshkernel::Splines::Splines()=default'],['../classmeshkernel_1_1_splines.html#ae3aa3c94c536863a5114303e142333ee',1,'meshkernel::Splines::Splines(Projection projection)']]],
+  ['swapvectorelements_780',['SwapVectorElements',['../namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1',1,'meshkernel']]]
 ];

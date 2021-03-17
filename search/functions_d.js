@@ -1,6 +1,9 @@
 var searchData=
 [
-  ['referencepoint_761',['ReferencePoint',['../namespacemeshkernel.html#a6b51fd6ec7c6cae101277d85e7a29f5c',1,'meshkernel']]],
-  ['refinefirstpolygon_762',['RefineFirstPolygon',['../classmeshkernel_1_1_polygons.html#a54e732f1c9ea29133459404f86581100',1,'meshkernel::Polygons']]],
-  ['reordervector_763',['ReorderVector',['../namespacemeshkernel.html#a646ed9a7bd91f6f1bfb614977d686d94',1,'meshkernel']]]
+  ['point_757',['Point',['../structmeshkernel_1_1_point.html#a2384ebe5ded0c09fdfb3554a11b9c456',1,'meshkernel::Point::Point()'],['../structmeshkernel_1_1_point.html#ad9e87c3c0fb5d00e7d7c6f85a56a43aa',1,'meshkernel::Point::Point(double x, double y)']]],
+  ['pointfaceindices_758',['PointFaceIndices',['../classmeshkernel_1_1_mesh2_d.html#a97bc195a366c88af68ab87b9d2a5f032',1,'meshkernel::Mesh2D']]],
+  ['polygonindex_759',['PolygonIndex',['../classmeshkernel_1_1_polygons.html#a895a057cfebfc90ddb05cc5e3654502f',1,'meshkernel::Polygons']]],
+  ['polygonindices_760',['PolygonIndices',['../classmeshkernel_1_1_polygons.html#a5222671c35a596240dcdf2bdb1d6e53e',1,'meshkernel::Polygons']]],
+  ['polygons_761',['Polygons',['../classmeshkernel_1_1_polygons.html#a2b6c5d883cc74192c9aecc92bfe3aecf',1,'meshkernel::Polygons::Polygons()=default'],['../classmeshkernel_1_1_polygons.html#a140506286f9ea3796c9e1b5e357edd04',1,'meshkernel::Polygons::Polygons(const std::vector&lt; Point &gt; &amp;polygon, Projection projection)']]],
+  ['prepareouteriteration_762',['PrepareOuterIteration',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html#ad54c20c22842692c9aa098eee4808d53',1,'meshkernel::OrthogonalizationAndSmoothing']]]
 ];
