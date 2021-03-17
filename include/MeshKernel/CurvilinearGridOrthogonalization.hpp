@@ -44,8 +44,8 @@ namespace meshkernel
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
         /// @param[in] orthogonalizationParameters The orthogonalization parameters
-        /// @param[in] firstCornerPoint            The first vertex of the segment defining the derefinement zone
-        /// @param[in] secondCornerPoint           The second vertex of the segment defining the refinement zone
+        /// @param[in] firstCornerPoint            The first point defining the orthogonalization bounding box
+        /// @param[in] secondCornerPoint           The second point defining the orthogonalization bounding box
         CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
                                          const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters,
                                          const Point& firstCornerPoint,
