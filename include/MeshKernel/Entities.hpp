@@ -250,13 +250,13 @@ namespace meshkernel
     }
 
     /// @brief Converts array of nodes to corresponding vector
-    static std::vector<Point> ConvertToNodesVector(int numNodes, const double* nodex, const double* nodey)
+    static std::vector<Point> ConvertToNodesVector(int numNodes, const double* node_x, const double* node_y)
     {
         std::vector<Point> nodes(numNodes);
         for (auto n = 0; n < numNodes; n++)
         {
-            nodes[n].x = nodex[n];
-            nodes[n].y = nodey[n];
+            nodes[n].x = node_x[n];
+            nodes[n].y = node_y[n];
         }
         return nodes;
     }

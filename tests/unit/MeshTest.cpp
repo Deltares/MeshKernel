@@ -366,7 +366,7 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->ConnectNodes(0, newNodeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
-    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     ASSERT_EQ(5, mesh->m_nodesRTree.Size());
 
@@ -387,7 +387,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->DeleteNode(0);
 
     // when m_nodesRTreeRequiresUpdate = true and m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
-    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     ASSERT_EQ(3, mesh->m_nodesRTree.Size());
 }
@@ -406,7 +406,7 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->ConnectNodes(0, newNodeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
-    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
     ASSERT_EQ(0, mesh->m_nodesRTree.Size());
@@ -424,7 +424,7 @@ TEST(Mesh, DeleteEdgeeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->DeleteEdge(0);
 
     // when m_edgesRTreeRequiresUpdate = true the mesh.m_edgesRTree is re-build with one less edge
-    mesh->Administrate(meshkernel::Mesh2D::AdministrationOptions::AdministrateMeshEdgesAndFaces);
+    mesh->Administrate(meshkernel::Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
 
     ASSERT_EQ(3, mesh->m_edgesRTree.Size());
 }
