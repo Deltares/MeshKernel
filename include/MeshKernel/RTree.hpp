@@ -119,6 +119,9 @@ namespace meshkernel
         /// @brief Gets the index of a sample in the query
         [[nodiscard]] size_t GetQueryResult(size_t index) const { return m_queryIndices[index]; }
 
+        /// @brief True if a query has results, false otherwise
+        [[nodiscard]] bool HasQueryResults() const { return GetQueryResultSize() > 0; }
+
     private:
         RTree2D m_rtree2D;                                ///< The 2D RTree
         std::vector<std::pair<Point2D, size_t>> m_points; ///< The points
