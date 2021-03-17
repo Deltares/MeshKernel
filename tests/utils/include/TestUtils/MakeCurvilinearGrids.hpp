@@ -31,6 +31,7 @@
 #include <MeshKernel/CurvilinearGrid.hpp>
 
 /// @brief Makes a small, real world curvi grid
+/// See tests/CurvilinearGrids/Orthogonalization/small_curvi_grid.png for a plot of the grid
 /// @return A pointer to a curvilinear grid
 std::shared_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGrid();
 
