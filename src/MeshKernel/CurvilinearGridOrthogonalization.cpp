@@ -60,19 +60,19 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
     auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(m_firstCornerPoint);
     auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(m_secondCornerPoint);
 
-    /// Coinciding corner nodes, no valid area, nothing to do
+    // Coinciding corner nodes, no valid area, nothing to do
     if (mFirstNode == mSecondNode && nFirstNode == nSecondNode)
     {
         return;
     }
 
-    /// compute orthogonalization bounding box
+    // Compute orthogonalization bounding box
     m_minM = std::min(mFirstNode, mSecondNode);
     m_minN = std::min(nFirstNode, nSecondNode);
     m_maxM = std::max(mFirstNode, mSecondNode);
     m_maxN = std::max(nFirstNode, nSecondNode);
 
-    /// Compute the grid node types
+    // Compute the grid node types
     m_grid->ComputeGridNodeTypes();
 
     // Compute the matrix coefficients
@@ -236,7 +236,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGrid
                         boundaryNode.y = (bottomNode.y * qb + horizontalNode.y * qbc + upperNode.y * qc + bottomNode.x - upperNode.x) / rn;
                     }
 
-                    // vertical spline index
+                    // Vertical spline index
                     const auto splineIndex = m_grid->m_numN + m;
                     m_grid->m_gridNodes[m][nn] = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
                                                                                               static_cast<double>(startN),
@@ -357,7 +357,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeCoefficients()
         }
     }
 
-    // calculate m_atp
+    // Calculate m_atp
     for (auto m = m_minM; m < m_maxM; ++m)
     {
         for (auto n = m_minN; n < m_maxN; ++n)
@@ -371,7 +371,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeCoefficients()
         }
     }
 
-    // re-set coefficients
+    // Re-set coefficients
     std::fill(m_a.begin(), m_a.end(), std::vector<double>(m_grid->m_numN, 0.0));
     std::fill(m_b.begin(), m_b.end(), std::vector<double>(m_grid->m_numN, 0.0));
     std::fill(m_c.begin(), m_c.end(), std::vector<double>(m_grid->m_numN, 0.0));
@@ -399,7 +399,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeCoefficients()
 void meshkernel::CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
 {
     const auto invalidBoundaryNodes = ComputeInvalidVerticalBoundaryNodes();
-    // store the counter
+    // Store the counter
     std::vector<std::vector<size_t>> counter(m_grid->m_numM, std::vector<size_t>(m_grid->m_numN, 0));
 
     // Perform left sum
@@ -436,7 +436,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
             }
         }
     }
-    // average contributions
+    // Average contributions
     for (auto m = m_minM; m < m_maxM; ++m)
     {
         for (auto n = m_minN; n < m_maxN; ++n)
@@ -489,7 +489,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients
         }
     }
 
-    // average contributions
+    // Average contributions
     for (auto m = m_minM; m < m_maxM; ++m)
     {
         for (auto n = m_minN; n < m_maxN; ++n)
