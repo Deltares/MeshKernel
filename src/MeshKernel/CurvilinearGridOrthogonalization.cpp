@@ -371,7 +371,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeCoefficients()
         }
     }
 
-    // re-set coefficents
+    // re-set coefficients
     std::fill(m_a.begin(), m_a.end(), std::vector<double>(m_grid->m_numN, 0.0));
     std::fill(m_b.begin(), m_b.end(), std::vector<double>(m_grid->m_numN, 0.0));
     std::fill(m_c.begin(), m_c.end(), std::vector<double>(m_grid->m_numN, 0.0));
