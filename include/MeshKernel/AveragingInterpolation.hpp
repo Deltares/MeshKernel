@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <MeshKernel/AveragingStrategies/AveragingStrategy.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/RTree.hpp>
@@ -114,10 +115,9 @@ namespace meshkernel
         /// @brief Compute the averaging results in polygon
         /// @param[in]  polygon            The bounding polygon where the samples are included
         /// @param[in]  interpolationPoint The interpolation point
-        /// @param[out] result             The resulting value
-        void ComputeOnPolygon(const std::vector<Point>& polygon,
-                              Point interpolationPoint,
-                              double& result);
+        /// @returns The resulting value
+        double ComputeOnPolygon(const std::vector<Point>& polygon,
+                                Point interpolationPoint);
 
         /// @brief Compute the interpolated results on designed location
         /// @return The interpolated results
@@ -133,6 +133,30 @@ namespace meshkernel
 
         /// @brief Decreases the values of samples
         void DecreaseValueOfSamples();
+
+        /// @brief Generate the search polygon from an input polygon
+        /// @param[in]  polygon            The input polygon
+        /// @param[in]  interpolationPoint The interpolation point
+        /// @return The search polygon
+        [[nodiscard]] std::vector<Point> GetSearchPolygon(std::vector<Point> const& polygon, Point const& interpolationPoint) const;
+
+        /// @brief Computes the average value from the neighbors using a strategy
+        /// param[in]  strategy            The input strategy
+        /// param[in] searchPolygon        The bounding polygon
+        /// @return The interpolated result
+        [[nodiscard]] double ComputeInterpolationResultFromNeighbors(std::unique_ptr<averaging::AveragingStrategy> strategy, std::vector<Point> const& searchPolygon);
+
+        /// @brief Gets the sample value from an r-tree query
+        /// param[in] index            The query index
+        /// @return The sample value
+        [[nodiscard]] double GetSampleValueFromRTree(size_t index);
+
+        /// @brief Compute a search radius from a point and a polygon
+        /// @param searchPolygon The input polygon
+        /// @param interpolationPoint The input point
+        /// @return the search radius including the polygon from the input point
+        [[nodiscard]] double GetSearchRadiusSquared(std::vector<Point> const& searchPolygon,
+                                                    Point const& interpolationPoint) const;
 
         const std::shared_ptr<Mesh2D> m_mesh;           ///< Pointer to the mesh
         std::vector<Sample>& m_samples;                 ///< The samples
