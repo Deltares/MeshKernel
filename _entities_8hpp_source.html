@@ -297,13 +297,13 @@ $(function() {
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        <span class="keywordflow">return</span> edges;</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    }</div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160; </div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="keyword">static</span> std::vector&lt;Point&gt; ConvertToNodesVector(<span class="keywordtype">int</span> numNodes, <span class="keyword">const</span> <span class="keywordtype">double</span>* nodex, <span class="keyword">const</span> <span class="keywordtype">double</span>* nodey)</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="keyword">static</span> std::vector&lt;Point&gt; ConvertToNodesVector(<span class="keywordtype">int</span> numNodes, <span class="keyword">const</span> <span class="keywordtype">double</span>* node_x, <span class="keyword">const</span> <span class="keywordtype">double</span>* node_y)</div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    {</div>
 <div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        std::vector&lt;Point&gt; nodes(numNodes);</div>
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> n = 0; n &lt; numNodes; n++)</div>
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        {</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            nodes[n].x = nodex[n];</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;            nodes[n].y = nodey[n];</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            nodes[n].x = node_x[n];</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;            nodes[n].y = node_y[n];</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        }</div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        <span class="keywordflow">return</span> nodes;</div>
 <div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    }</div>

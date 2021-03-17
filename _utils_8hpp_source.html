@@ -107,199 +107,236 @@ $(function() {
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Constants.hpp&gt;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Entities.hpp&gt;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Mesh1D.hpp&gt;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Mesh2D.hpp&gt;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Operations.hpp&gt;</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Splines.hpp&gt;</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#include &lt;MeshKernelApi/GeometryList.hpp&gt;</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#include &lt;MeshKernelApi/Mesh1D.hpp&gt;</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#include &lt;MeshKernelApi/Mesh2D.hpp&gt;</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernelapi.html">meshkernelapi</a></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;{</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">static</span> std::vector&lt;meshkernel::Point&gt; ConvertGeometryListToPointVector(<span class="keyword">const</span> GeometryList&amp; geometryListIn)</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        std::vector&lt;meshkernel::Point&gt; result;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordflow">if</span> (geometryListIn.numberOfCoordinates == 0)</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        }</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        result.resize(geometryListIn.numberOfCoordinates);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; geometryListIn.numberOfCoordinates; i++)</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i]};</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    }</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keyword">static</span> std::vector&lt;meshkernel::Sample&gt; ConvertGeometryListToSampleVector(<span class="keyword">const</span> GeometryList&amp; geometryListIn)</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    {</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keywordflow">if</span> (geometryListIn.numberOfCoordinates == 0)</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;MeshKernel: The samples are empty.&quot;</span>);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        }</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        std::vector&lt;meshkernel::Sample&gt; result;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        result.resize(geometryListIn.numberOfCoordinates);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; geometryListIn.numberOfCoordinates; i++)</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        {</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;            result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i], geometryListIn.zCoordinates[i]};</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        }</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    }</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> ConvertPointVectorToGeometryList(std::vector&lt;meshkernel::Point&gt; pointVector, GeometryList&amp; result)</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    {</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        <span class="keywordflow">if</span> (pointVector.size() &lt; result.numberOfCoordinates)</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates.&quot;</span>);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        }</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; result.numberOfCoordinates; i++)</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        {</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;            result.xCoordinates[i] = pointVector[i].x;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;            result.yCoordinates[i] = pointVector[i].y;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        }</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    }</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> SetSplines(<span class="keyword">const</span> GeometryList&amp; geometryListIn, <a class="code" href="classmeshkernel_1_1_splines.html">meshkernel::Splines</a>&amp; spline)</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    {</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        <span class="keywordflow">if</span> (geometryListIn.numberOfCoordinates == 0)</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        {</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;            <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;        }</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        <span class="keyword">auto</span> splineCornerPoints = ConvertGeometryListToPointVector(geometryListIn);</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> indices = <a class="code" href="namespacemeshkernel.html#a5b994233de718f8c272ca3bdb62ddcf2">FindIndices</a>(splineCornerPoints, 0, splineCornerPoints.size(), <a class="code" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">meshkernel::doubleMissingValue</a>);</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; index : indices)</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> size = index[1] - index[0] + 1;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            <span class="keywordflow">if</span> (size &gt; 0)</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;            {</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;                spline.<a class="code" href="classmeshkernel_1_1_splines.html#a318cf3fb67eb9743982542926d7760de">AddSpline</a>(splineCornerPoints, index[0], size);</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;            }</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        }</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    }</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160; </div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> SetMesh(std::shared_ptr&lt;meshkernel::Mesh&gt; mesh, Mesh2D&amp; mesh2d)</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    {</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        mesh2d.node_x = &amp;(mesh-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a540a5560c998e255f9abdf9f2dd68e3a">m_nodex</a>[0]);</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        mesh2d.node_y = &amp;(mesh-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#ac4cbe014918d494c518761e92569a802">m_nodey</a>[0]);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        mesh2d.edge_nodes = &amp;(mesh-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#ae3d5fba25fc219e55b190750406ecba7">m_edgeNodes</a>[0]);</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160; </div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        mesh2d.max_num_face_nodes = <a class="code" href="namespacemeshkernel.html#adc3746b061ba782b37a0f9eb09c30e96">meshkernel::maximumNumberOfNodesPerFace</a>;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        mesh2d.num_faces = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a50abbc0382968330e4a530e84f093194">GetNumFaces</a>());</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        <span class="keywordflow">if</span> (mesh2d.num_faces &gt; 0)</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        {</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;            mesh2d.face_nodes = &amp;(mesh-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#ad7af71710a714b0de9dc561f69979040">m_faceNodes</a>[0]);</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;            mesh2d.face_x = &amp;(mesh-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a632c1cbfd06a5bb806aa14f36fcfc07c">m_facesCircumcentersx</a>[0]);</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;            mesh2d.face_y = &amp;(mesh-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#ab51ab3153221ed69296c6dd20e409eb8">m_facesCircumcentersy</a>[0]);</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        }</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/CurvilinearGrid.hpp&gt;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Entities.hpp&gt;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Mesh1D.hpp&gt;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Mesh2D.hpp&gt;</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Operations.hpp&gt;</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;MeshKernel/Splines.hpp&gt;</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#include &lt;MeshKernelApi/GeometryList.hpp&gt;</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#include &lt;MeshKernelApi/Mesh1D.hpp&gt;</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#include &lt;MeshKernelApi/Mesh2D.hpp&gt;</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernelapi.html">meshkernelapi</a></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;{</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">static</span> std::vector&lt;meshkernel::Point&gt; ConvertGeometryListToPointVector(<span class="keyword">const</span> GeometryList&amp; geometryListIn)</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        std::vector&lt;meshkernel::Point&gt; result;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordflow">if</span> (geometryListIn.numberOfCoordinates == 0)</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        result.resize(geometryListIn.numberOfCoordinates);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; geometryListIn.numberOfCoordinates; i++)</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i]};</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keyword">static</span> std::vector&lt;meshkernel::Sample&gt; ConvertGeometryListToSampleVector(<span class="keyword">const</span> GeometryList&amp; geometryListIn)</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordflow">if</span> (geometryListIn.numberOfCoordinates == 0)</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;MeshKernel: The samples are empty.&quot;</span>);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        }</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        std::vector&lt;meshkernel::Sample&gt; result;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        result.resize(geometryListIn.numberOfCoordinates);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; geometryListIn.numberOfCoordinates; i++)</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;            result[i] = {geometryListIn.xCoordinates[i], geometryListIn.yCoordinates[i], geometryListIn.zCoordinates[i]};</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        }</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    }</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> ConvertPointVectorToGeometryList(std::vector&lt;meshkernel::Point&gt; pointVector, GeometryList&amp; result)</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    {</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keywordflow">if</span> (pointVector.size() &lt; result.numberOfCoordinates)</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        {</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;MeshKernel: Invalid memory allocation, the point-vector size is smaller than the number of coordinates.&quot;</span>);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        }</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; result.numberOfCoordinates; i++)</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        {</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;            result.xCoordinates[i] = pointVector[i].x;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            result.yCoordinates[i] = pointVector[i].y;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        }</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    }</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> SetSplines(<span class="keyword">const</span> GeometryList&amp; geometryListIn, <a class="code" href="classmeshkernel_1_1_splines.html">meshkernel::Splines</a>&amp; spline)</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    {</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        <span class="keywordflow">if</span> (geometryListIn.numberOfCoordinates == 0)</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        {</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;            <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        }</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160; </div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        <span class="keyword">auto</span> splineCornerPoints = ConvertGeometryListToPointVector(geometryListIn);</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> indices = <a class="code" href="namespacemeshkernel.html#a5b994233de718f8c272ca3bdb62ddcf2">FindIndices</a>(splineCornerPoints, 0, splineCornerPoints.size(), <a class="code" href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">meshkernel::doubleMissingValue</a>);</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; index : indices)</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        {</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> size = index[1] - index[0] + 1;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;            <span class="keywordflow">if</span> (size &gt; 0)</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            {</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                spline.<a class="code" href="classmeshkernel_1_1_splines.html#a318cf3fb67eb9743982542926d7760de">AddSpline</a>(splineCornerPoints, index[0], size);</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;            }</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        }</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    }</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> SetMesh2dDimensions(std::shared_ptr&lt;meshkernel::Mesh&gt; mesh2d, Mesh2D&amp; mesh2dApi)</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    {</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        <span class="keywordtype">size_t</span> num_face_nodes = 0;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> f = 0; f &lt; mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a50abbc0382968330e4a530e84f093194">GetNumFaces</a>(); f++)</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        {</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;            num_face_nodes += mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a83e91901c65f4ee1962d2be971f5a815">m_facesNodes</a>[f].size();</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        }</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        mesh2dApi.num_face_nodes = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(num_face_nodes);</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        mesh2dApi.num_faces = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a50abbc0382968330e4a530e84f093194">GetNumFaces</a>());</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        mesh2dApi.num_nodes = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#aacdde73c3f0dd734948065fc83bb7a61">GetNumNodes</a>());</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        mesh2dApi.num_edges = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a5150280bdba56884de15211a34e64155">GetNumEdges</a>());</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    }</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160; </div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        <span class="keywordflow">if</span> (mesh-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#aacdde73c3f0dd734948065fc83bb7a61">GetNumNodes</a>() == 1)</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        {</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;            mesh2d.num_nodes = 0;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;            mesh2d.num_edges = 0;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        }</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        {</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;            mesh2d.num_nodes = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#aacdde73c3f0dd734948065fc83bb7a61">GetNumNodes</a>());</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;            mesh2d.num_edges = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a5150280bdba56884de15211a34e64155">GetNumEdges</a>());</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        }</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    }</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> SetMesh2d(std::shared_ptr&lt;meshkernel::Mesh2D&gt; mesh2d, Mesh2D&amp; mesh2dApi)</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    {</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a48b2912121a8b224b96f3f8e15397884">ComputeEdgesCenters</a>();</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> n = 0; n &lt; mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#aacdde73c3f0dd734948065fc83bb7a61">GetNumNodes</a>(); n++)</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        {</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;            mesh2dApi.node_x[n] = mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a130c483ec12ccfc11cddc0b1162a318e">m_nodes</a>[n].x;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;            mesh2dApi.node_y[n] = mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a130c483ec12ccfc11cddc0b1162a318e">m_nodes</a>[n].y;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        }</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; </div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> SetMesh1D(std::shared_ptr&lt;meshkernel::Mesh1D&gt; mesh1d,</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;                          Mesh1D&amp; mesh1dApi)</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    {</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        mesh1dApi.nodex = &amp;(mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a540a5560c998e255f9abdf9f2dd68e3a">m_nodex</a>[0]);</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        mesh1dApi.nodey = &amp;(mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#ac4cbe014918d494c518761e92569a802">m_nodey</a>[0]);</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        mesh1dApi.edge_nodes = &amp;(mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#ae3d5fba25fc219e55b190750406ecba7">m_edgeNodes</a>[0]);</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160; </div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        <span class="keywordflow">if</span> (mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#aacdde73c3f0dd734948065fc83bb7a61">GetNumNodes</a>() == 1)</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        {</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;            mesh1dApi.num_nodes = 0;</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;            mesh1dApi.num_edges = 0;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        }</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        {</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;            mesh1dApi.num_nodes = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#aacdde73c3f0dd734948065fc83bb7a61">GetNumNodes</a>());</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;            mesh1dApi.num_edges = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a5150280bdba56884de15211a34e64155">GetNumEdges</a>());</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> edgeIndex = 0; edgeIndex &lt; mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a5150280bdba56884de15211a34e64155">GetNumEdges</a>(); edgeIndex++)</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        {</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;            mesh2dApi.edge_x[edgeIndex] = mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a231d2889405c66b1b5e4db91d86a6ee8">m_edgesCenters</a>[edgeIndex].x;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;            mesh2dApi.edge_y[edgeIndex] = mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a231d2889405c66b1b5e4db91d86a6ee8">m_edgesCenters</a>[edgeIndex].y;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;            mesh2dApi.edge_nodes[edgeIndex * 2] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a84b337f739ad083ffe320366f6e9dc0e">m_edges</a>[edgeIndex].first);</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;            mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a84b337f739ad083ffe320366f6e9dc0e">m_edges</a>[edgeIndex].second);</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        }</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160; </div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        <span class="keywordtype">int</span> faceIndex = 0;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> f = 0; f &lt; mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a50abbc0382968330e4a530e84f093194">GetNumFaces</a>(); f++)</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;            mesh2dApi.face_x[f] = mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a79821f2e74e22834dcfce0ce0a326e2e">m_facesMassCenters</a>[f].x;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;            mesh2dApi.face_y[f] = mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a79821f2e74e22834dcfce0ce0a326e2e">m_facesMassCenters</a>[f].y;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;            mesh2dApi.nodes_per_face[f] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a83e91901c65f4ee1962d2be971f5a815">m_facesNodes</a>[f].size());</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">auto</span> n = 0; n &lt; mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a83e91901c65f4ee1962d2be971f5a815">m_facesNodes</a>[f].size(); ++n)</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;            {</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;                mesh2dApi.face_nodes[faceIndex] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a83e91901c65f4ee1962d2be971f5a815">m_facesNodes</a>[f][n]);</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;                faceIndex++;</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;            }</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        }</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    }</div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160; </div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    <span class="keyword">static</span> std::vector&lt;meshkernel::Point&gt; ComputeLocations(<span class="keyword">const</span> Mesh2D&amp; mesh2d,</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;                                                           <a class="code" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">meshkernel::MeshLocations</a> interpolationLocation)</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> SetCurvilinear(std::shared_ptr&lt;meshkernel::CurvilinearGrid&gt; curvilinearGrid,</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;                               CurvilinearGrid&amp; curvilinearGridApi)</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    {</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;        std::vector&lt;meshkernel::Point&gt; locations;</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;        <span class="keywordflow">if</span> (interpolationLocation == <a class="code" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016a187c6ad3a74cc93ac6c2229d398e383e">meshkernel::MeshLocations::Nodes</a>)</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;        curvilinearGrid-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a48b2912121a8b224b96f3f8e15397884">ComputeEdgesCenters</a>();</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> n = 0; n &lt; curvilinearGrid-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#aacdde73c3f0dd734948065fc83bb7a61">GetNumNodes</a>(); n++)</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;            locations = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        }</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        <span class="keywordflow">if</span> (interpolationLocation == <a class="code" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016a484afb8d54ec549700b1fe96417519a9">meshkernel::MeshLocations::Edges</a>)</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        {</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> edges = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges, mesh2d.edge_nodes);</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> nodes = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;            locations = <a class="code" href="namespacemeshkernel.html#ac58dc9b0bbb628400d4e88cdd9be75e1">ComputeEdgeCenters</a>(nodes, edges);</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        }</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        <span class="keywordflow">if</span> (interpolationLocation == <a class="code" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016a4f93ea0836ba76b6f9b81e3eee53a3af">meshkernel::MeshLocations::Faces</a>)</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        {</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;            locations = meshkernel::ConvertToFaceCentersVector(mesh2d.num_faces, mesh2d.face_x, mesh2d.face_y);</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        }</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;            curvilinearGridApi.node_x[n] = curvilinearGrid-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a130c483ec12ccfc11cddc0b1162a318e">m_nodes</a>[n].x;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;            curvilinearGridApi.node_y[n] = curvilinearGrid-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a130c483ec12ccfc11cddc0b1162a318e">m_nodes</a>[n].y;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        }</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160; </div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> edgeIndex = 0; edgeIndex &lt; curvilinearGrid-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a5150280bdba56884de15211a34e64155">GetNumEdges</a>(); edgeIndex++)</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        {</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;            curvilinearGridApi.edge_x[edgeIndex] = curvilinearGrid-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a231d2889405c66b1b5e4db91d86a6ee8">m_edgesCenters</a>[edgeIndex].x;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;            curvilinearGridApi.edge_y[edgeIndex] = curvilinearGrid-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a231d2889405c66b1b5e4db91d86a6ee8">m_edgesCenters</a>[edgeIndex].y;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;            curvilinearGridApi.edge_nodes[edgeIndex * 2] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(curvilinearGrid-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a84b337f739ad083ffe320366f6e9dc0e">m_edges</a>[edgeIndex].first);</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;            curvilinearGridApi.edge_nodes[edgeIndex * 2 + 1] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(curvilinearGrid-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a84b337f739ad083ffe320366f6e9dc0e">m_edges</a>[edgeIndex].second);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        }</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    }</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160; </div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;        <span class="keywordflow">return</span> locations;</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    }</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    <span class="keyword">static</span> std::vector&lt;bool&gt; ConvertIntegerArrayToBoolVector(<span class="keyword">const</span> <span class="keywordtype">int</span> inputArray[],</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;                                                             <span class="keywordtype">size_t</span> inputSize)</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    {</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        std::vector&lt;bool&gt; result(inputSize);</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; inputSize; ++i)</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;        {</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;            <span class="keywordflow">switch</span> (inputArray[i])</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;            {</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;            <span class="keywordflow">case</span> 0:</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;                result[i] = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;                <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;            <span class="keywordflow">case</span> 1:</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;                result[i] = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;                <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;            <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;                <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;MeshKernel: Invalid 1D mask.&quot;</span>);</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;            }</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        }</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    }</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; </div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;} <span class="comment">// namespace meshkernelapi</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> SetMesh1d(std::shared_ptr&lt;meshkernel::Mesh1D&gt; mesh1d,</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                          Mesh1D&amp; mesh1dApi)</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    {</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> n = 0; n &lt; mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#aacdde73c3f0dd734948065fc83bb7a61">GetNumNodes</a>(); n++)</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        {</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;            mesh1dApi.node_x[n] = mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a130c483ec12ccfc11cddc0b1162a318e">m_nodes</a>[n].x;</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;            mesh1dApi.node_y[n] = mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a130c483ec12ccfc11cddc0b1162a318e">m_nodes</a>[n].y;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        }</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160; </div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;        <span class="keywordtype">size_t</span> edgeIndex = 0;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> e = 0; e &lt; mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a5150280bdba56884de15211a34e64155">GetNumEdges</a>(); e++)</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;        {</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;            mesh1dApi.edge_nodes[edgeIndex] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a84b337f739ad083ffe320366f6e9dc0e">m_edges</a>[e].first);</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;            edgeIndex++;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;            mesh1dApi.edge_nodes[edgeIndex] = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(mesh1d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a84b337f739ad083ffe320366f6e9dc0e">m_edges</a>[e].second);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;            edgeIndex++;</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        }</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    }</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160; </div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <span class="keyword">static</span> std::vector&lt;meshkernel::Point&gt; ComputeLocations(<span class="keyword">const</span> Mesh2D&amp; mesh2d,</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;                                                           <a class="code" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">meshkernel::MeshLocations</a> interpolationLocation)</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    {</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        std::vector&lt;meshkernel::Point&gt; locations;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        <span class="keywordflow">if</span> (interpolationLocation == <a class="code" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016a187c6ad3a74cc93ac6c2229d398e383e">meshkernel::MeshLocations::Nodes</a>)</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        {</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;            locations = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        }</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;        <span class="keywordflow">if</span> (interpolationLocation == <a class="code" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016a484afb8d54ec549700b1fe96417519a9">meshkernel::MeshLocations::Edges</a>)</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;        {</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> edges = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges, mesh2d.edge_nodes);</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> nodes = meshkernel::ConvertToNodesVector(mesh2d.num_nodes, mesh2d.node_x, mesh2d.node_y);</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;            locations = <a class="code" href="namespacemeshkernel.html#ac58dc9b0bbb628400d4e88cdd9be75e1">ComputeEdgeCenters</a>(nodes, edges);</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        }</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        <span class="keywordflow">if</span> (interpolationLocation == <a class="code" href="namespacemeshkernel.html#acb97240557899a7564683794daab5016a4f93ea0836ba76b6f9b81e3eee53a3af">meshkernel::MeshLocations::Faces</a>)</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        {</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;            locations = meshkernel::ConvertToFaceCentersVector(mesh2d.num_faces, mesh2d.face_x, mesh2d.face_y);</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        }</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160; </div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        <span class="keywordflow">return</span> locations;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    }</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160; </div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    <span class="keyword">static</span> std::vector&lt;bool&gt; ConvertIntegerArrayToBoolVector(<span class="keyword">const</span> <span class="keywordtype">int</span> inputArray[],</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;                                                             <span class="keywordtype">size_t</span> inputSize)</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    {</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        std::vector&lt;bool&gt; result(inputSize);</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; inputSize; ++i)</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        {</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;            <span class="keywordflow">switch</span> (inputArray[i])</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            {</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;            <span class="keywordflow">case</span> 0:</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;                result[i] = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;            <span class="keywordflow">case</span> 1:</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;                result[i] = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;            <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;                <span class="keywordflow">throw</span> std::invalid_argument(<span class="stringliteral">&quot;MeshKernel: Invalid 1D mask.&quot;</span>);</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;            }</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        }</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    }</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160; </div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;} <span class="comment">// namespace meshkernelapi</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_ac4cbe014918d494c518761e92569a802"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#ac4cbe014918d494c518761e92569a802">meshkernel::Mesh::m_nodey</a></div><div class="ttdeci">std::vector&lt; double &gt; m_nodey</div><div class="ttdoc">The nodes y-coordinate.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:290</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_ae3d5fba25fc219e55b190750406ecba7"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#ae3d5fba25fc219e55b190750406ecba7">meshkernel::Mesh::m_edgeNodes</a></div><div class="ttdeci">std::vector&lt; int &gt; m_edgeNodes</div><div class="ttdoc">For each edge, the index to the nodes.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:288</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a231d2889405c66b1b5e4db91d86a6ee8"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a231d2889405c66b1b5e4db91d86a6ee8">meshkernel::Mesh::m_edgesCenters</a></div><div class="ttdeci">std::vector&lt; Point &gt; m_edgesCenters</div><div class="ttdoc">The edges centers.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:265</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_acb97240557899a7564683794daab5016a484afb8d54ec549700b1fe96417519a9"><div class="ttname"><a href="namespacemeshkernel.html#acb97240557899a7564683794daab5016a484afb8d54ec549700b1fe96417519a9">meshkernel::MeshLocations::Edges</a></div><div class="ttdeci">@ Edges</div><div class="ttdoc">Edges.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_ab51ab3153221ed69296c6dd20e409eb8"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#ab51ab3153221ed69296c6dd20e409eb8">meshkernel::Mesh::m_facesCircumcentersy</a></div><div class="ttdeci">std::vector&lt; double &gt; m_facesCircumcentersy</div><div class="ttdoc">The circumcenters y-coordinate.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:295</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a84b337f739ad083ffe320366f6e9dc0e"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a84b337f739ad083ffe320366f6e9dc0e">meshkernel::Mesh::m_edges</a></div><div class="ttdeci">std::vector&lt; Edge &gt; m_edges</div><div class="ttdoc">The edges, defined as first and second node(kn)</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:260</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_splines_html_a318cf3fb67eb9743982542926d7760de"><div class="ttname"><a href="classmeshkernel_1_1_splines.html#a318cf3fb67eb9743982542926d7760de">meshkernel::Splines::AddSpline</a></div><div class="ttdeci">void AddSpline(const std::vector&lt; Point &gt; &amp;splines, size_t start, size_t size)</div><div class="ttdoc">Adds a new spline to m_splineCornerPoints.</div></div>
-<div class="ttc" id="anamespacemeshkernel_html_adc3746b061ba782b37a0f9eb09c30e96"><div class="ttname"><a href="namespacemeshkernel.html#adc3746b061ba782b37a0f9eb09c30e96">meshkernel::maximumNumberOfNodesPerFace</a></div><div class="ttdeci">const std::size_t maximumNumberOfNodesPerFace</div><div class="ttdoc">Maximum number of nodes per face.</div><div class="ttdef"><b>Definition:</b> Constants.hpp:60</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_acb97240557899a7564683794daab5016a187c6ad3a74cc93ac6c2229d398e383e"><div class="ttname"><a href="namespacemeshkernel.html#acb97240557899a7564683794daab5016a187c6ad3a74cc93ac6c2229d398e383e">meshkernel::MeshLocations::Nodes</a></div><div class="ttdeci">@ Nodes</div><div class="ttdoc">Nodes.</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_html_aacdde73c3f0dd734948065fc83bb7a61"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#aacdde73c3f0dd734948065fc83bb7a61">meshkernel::Mesh::GetNumNodes</a></div><div class="ttdeci">auto GetNumNodes() const</div><div class="ttdoc">Get the number of valid nodes.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:112</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_acb97240557899a7564683794daab5016a4f93ea0836ba76b6f9b81e3eee53a3af"><div class="ttname"><a href="namespacemeshkernel.html#acb97240557899a7564683794daab5016a4f93ea0836ba76b6f9b81e3eee53a3af">meshkernel::MeshLocations::Faces</a></div><div class="ttdeci">@ Faces</div><div class="ttdoc">Faces.</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a48b2912121a8b224b96f3f8e15397884"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a48b2912121a8b224b96f3f8e15397884">meshkernel::Mesh::ComputeEdgesCenters</a></div><div class="ttdeci">void ComputeEdgesCenters()</div><div class="ttdoc">Computes the edges centers in one go.</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_ac58dc9b0bbb628400d4e88cdd9be75e1"><div class="ttname"><a href="namespacemeshkernel.html#ac58dc9b0bbb628400d4e88cdd9be75e1">meshkernel::ComputeEdgeCenters</a></div><div class="ttdeci">std::vector&lt; Point &gt; ComputeEdgeCenters(const std::vector&lt; Point &gt; &amp;nodes, const std::vector&lt; Edge &gt; &amp;edges)</div><div class="ttdoc">Computes the edge centers.</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a540a5560c998e255f9abdf9f2dd68e3a"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a540a5560c998e255f9abdf9f2dd68e3a">meshkernel::Mesh::m_nodex</a></div><div class="ttdeci">std::vector&lt; double &gt; m_nodex</div><div class="ttdoc">The nodes x-coordinate.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:289</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a5b994233de718f8c272ca3bdb62ddcf2"><div class="ttname"><a href="namespacemeshkernel.html#a5b994233de718f8c272ca3bdb62ddcf2">meshkernel::FindIndices</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; size_t &gt; &gt; FindIndices(const std::vector&lt; Point &gt; &amp;vec, size_t start, size_t end, double separator)</div><div class="ttdoc">Find all start-end positions in a vector separated by a separator.</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_acb97240557899a7564683794daab5016"><div class="ttname"><a href="namespacemeshkernel.html#acb97240557899a7564683794daab5016">meshkernel::MeshLocations</a></div><div class="ttdeci">MeshLocations</div><div class="ttdoc">MeshLocations locations.</div><div class="ttdef"><b>Definition:</b> Constants.hpp:92</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a632c1cbfd06a5bb806aa14f36fcfc07c"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a632c1cbfd06a5bb806aa14f36fcfc07c">meshkernel::Mesh::m_facesCircumcentersx</a></div><div class="ttdeci">std::vector&lt; double &gt; m_facesCircumcentersx</div><div class="ttdoc">The circumcenters x-coordinate.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:294</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a79821f2e74e22834dcfce0ce0a326e2e"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a79821f2e74e22834dcfce0ce0a326e2e">meshkernel::Mesh::m_facesMassCenters</a></div><div class="ttdeci">std::vector&lt; Point &gt; m_facesMassCenters</div><div class="ttdoc">The faces centers of mass (xzw, yzw)</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:272</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a50abbc0382968330e4a530e84f093194"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a50abbc0382968330e4a530e84f093194">meshkernel::Mesh::GetNumFaces</a></div><div class="ttdeci">auto GetNumFaces() const</div><div class="ttdoc">Get the number of valid faces.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:120</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_ad7af71710a714b0de9dc561f69979040"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#ad7af71710a714b0de9dc561f69979040">meshkernel::Mesh::m_faceNodes</a></div><div class="ttdeci">std::vector&lt; int &gt; m_faceNodes</div><div class="ttdoc">For each face, the nodes.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:293</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a83e91901c65f4ee1962d2be971f5a815"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a83e91901c65f4ee1962d2be971f5a815">meshkernel::Mesh::m_facesNodes</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; size_t &gt; &gt; m_facesNodes</div><div class="ttdoc">The nodes composing the faces, in ccw order (netcellNod)</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:268</div></div>
 <div class="ttc" id="anamespacemeshkernelapi_html"><div class="ttname"><a href="namespacemeshkernelapi.html">meshkernelapi</a></div><div class="ttdoc">Contains all structs and functions exposed at the API level.</div><div class="ttdef"><b>Definition:</b> Contacts.hpp:30</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a11e1b580035fb3f55f5bf185afe69671"><div class="ttname"><a href="namespacemeshkernel.html#a11e1b580035fb3f55f5bf185afe69671">meshkernel::doubleMissingValue</a></div><div class="ttdeci">const double doubleMissingValue</div><div class="ttdoc">Double value used as missing value.</div><div class="ttdef"><b>Definition:</b> Constants.hpp:40</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a130c483ec12ccfc11cddc0b1162a318e"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a130c483ec12ccfc11cddc0b1162a318e">meshkernel::Mesh::m_nodes</a></div><div class="ttdeci">std::vector&lt; Point &gt; m_nodes</div><div class="ttdoc">The mesh nodes (xk, yk)</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:252</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_splines_html"><div class="ttname"><a href="classmeshkernel_1_1_splines.html">meshkernel::Splines</a></div><div class="ttdoc">A class describing splines.</div><div class="ttdef"><b>Definition:</b> Splines.hpp:44</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a5150280bdba56884de15211a34e64155"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a5150280bdba56884de15211a34e64155">meshkernel::Mesh::GetNumEdges</a></div><div class="ttdeci">auto GetNumEdges() const</div><div class="ttdoc">Get the number of valid edges.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:116</div></div>
 <!-- start footer part -->

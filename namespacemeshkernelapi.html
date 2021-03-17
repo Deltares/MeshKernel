@@ -86,6 +86,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_contacts.html">Contacts</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe contacts between a 1d and a 2d mesh.  <a href="structmeshkernelapi_1_1_contacts.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html">CurvilinearGrid</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe the values of a curvilinear grid in a C-compatible manner.  <a href="structmeshkernelapi_1_1_curvilinear_grid.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_curvilinear_parameters.html">CurvilinearParameters</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner.  <a href="structmeshkernelapi_1_1_curvilinear_parameters.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,24 +146,30 @@ Functions</h2></td></tr>
 <tr class="memitem:a4d17e2e5e58e7cee09cbd6bfcb5cd370"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a4d17e2e5e58e7cee09cbd6bfcb5cd370">mkernel_set_mesh1d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html">Mesh1D</a> &amp;mesh1d)</td></tr>
 <tr class="memdesc:a4d17e2e5e58e7cee09cbd6bfcb5cd370"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">meshkernel::Mesh1D</a> state.  <a href="namespacemeshkernelapi.html#a4d17e2e5e58e7cee09cbd6bfcb5cd370">More...</a><br /></td></tr>
 <tr class="separator:a4d17e2e5e58e7cee09cbd6bfcb5cd370"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af062946592506d0057214221f96bd2fa"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af062946592506d0057214221f96bd2fa">mkernel_get_mesh2d</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
-<tr class="memdesc:af062946592506d0057214221f96bd2fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">meshkernel::Mesh2D</a> state as a MeshGeometry struct.  <a href="namespacemeshkernelapi.html#af062946592506d0057214221f96bd2fa">More...</a><br /></td></tr>
-<tr class="separator:af062946592506d0057214221f96bd2fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d63cdb3a1c98e856adef4172eada599"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1d63cdb3a1c98e856adef4172eada599">mkernel_get_curvilinear</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
-<tr class="memdesc:a1d63cdb3a1c98e856adef4172eada599"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the meshkernel::Curvilinear state as a MeshGeometry struct (converted as set of edges and nodes)  <a href="namespacemeshkernelapi.html#a1d63cdb3a1c98e856adef4172eada599">More...</a><br /></td></tr>
-<tr class="separator:a1d63cdb3a1c98e856adef4172eada599"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81cdfe0c19099b14699938417d8431bf"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a81cdfe0c19099b14699938417d8431bf">mkernel_get_mesh1d</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html">Mesh1D</a> &amp;mesh1d)</td></tr>
-<tr class="memdesc:a81cdfe0c19099b14699938417d8431bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">meshkernel::Mesh1D</a> state as a <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">meshkernelapi::Mesh1D</a> struct.  <a href="namespacemeshkernelapi.html#a81cdfe0c19099b14699938417d8431bf">More...</a><br /></td></tr>
-<tr class="separator:a81cdfe0c19099b14699938417d8431bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a1c8181c025cd37ea84f19ad1670ef8"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a6a1c8181c025cd37ea84f19ad1670ef8">mkernel_get_mesh2d_dimensions</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
+<tr class="memdesc:a6a1c8181c025cd37ea84f19ad1670ef8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> dimensions.  <a href="namespacemeshkernelapi.html#a6a1c8181c025cd37ea84f19ad1670ef8">More...</a><br /></td></tr>
+<tr class="separator:a6a1c8181c025cd37ea84f19ad1670ef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06108e984e96b90db9253505a441d911"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a06108e984e96b90db9253505a441d911">mkernel_get_mesh2d_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
+<tr class="memdesc:a06108e984e96b90db9253505a441d911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> dimensions data.  <a href="namespacemeshkernelapi.html#a06108e984e96b90db9253505a441d911">More...</a><br /></td></tr>
+<tr class="separator:a06108e984e96b90db9253505a441d911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d3074af0eeeb554b0ae0298ff20ef30"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2d3074af0eeeb554b0ae0298ff20ef30">mkernel_get_curvilinear_dimensions</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html">CurvilinearGrid</a> &amp;curvilinearGrid)</td></tr>
+<tr class="memdesc:a2d3074af0eeeb554b0ae0298ff20ef30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the curvilinear grid dimensions as a <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html" title="A struct used to describe the values of a curvilinear grid in a C-compatible manner.">CurvilinearGrid</a> struct (converted as set of edges and nodes)  <a href="namespacemeshkernelapi.html#a2d3074af0eeeb554b0ae0298ff20ef30">More...</a><br /></td></tr>
+<tr class="separator:a2d3074af0eeeb554b0ae0298ff20ef30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a572767753b27b325370657e0ae7d3bc0"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a572767753b27b325370657e0ae7d3bc0">mkernel_get_curvilinear_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html">CurvilinearGrid</a> &amp;curvilinearGrid)</td></tr>
+<tr class="memdesc:a572767753b27b325370657e0ae7d3bc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the curvilinear grid data as a <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html" title="A struct used to describe the values of a curvilinear grid in a C-compatible manner.">CurvilinearGrid</a> struct (converted as set of edges and nodes)  <a href="namespacemeshkernelapi.html#a572767753b27b325370657e0ae7d3bc0">More...</a><br /></td></tr>
+<tr class="separator:a572767753b27b325370657e0ae7d3bc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b66e0087d834527b87e1929cd11ae22"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5b66e0087d834527b87e1929cd11ae22">mkernel_get_mesh1d_dimensions</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html">Mesh1D</a> &amp;mesh1d)</td></tr>
+<tr class="memdesc:a5b66e0087d834527b87e1929cd11ae22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> dimensions.  <a href="namespacemeshkernelapi.html#a5b66e0087d834527b87e1929cd11ae22">More...</a><br /></td></tr>
+<tr class="separator:a5b66e0087d834527b87e1929cd11ae22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac890547c17702fade66c09365ae0cc62"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac890547c17702fade66c09365ae0cc62">mkernel_get_mesh1d_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html">Mesh1D</a> &amp;mesh1d)</td></tr>
+<tr class="memdesc:ac890547c17702fade66c09365ae0cc62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> dimensions data.  <a href="namespacemeshkernelapi.html#ac890547c17702fade66c09365ae0cc62">More...</a><br /></td></tr>
+<tr class="separator:ac890547c17702fade66c09365ae0cc62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd4b53652ee7dbe0797463235db8b6df"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#abd4b53652ee7dbe0797463235db8b6df">mkernel_count_contacts</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_contacts.html">Contacts</a> &amp;contacts)</td></tr>
 <tr class="memdesc:abd4b53652ee7dbe0797463235db8b6df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="classmeshkernel_1_1_contacts.html" title="A class describing an 1d-2d contacts.">meshkernel::Contacts</a> size as a <a class="el" href="structmeshkernelapi_1_1_contacts.html" title="A struct used to describe contacts between a 1d and a 2d mesh.">meshkernelapi::Contacts</a> struct.  <a href="namespacemeshkernelapi.html#abd4b53652ee7dbe0797463235db8b6df">More...</a><br /></td></tr>
 <tr class="separator:abd4b53652ee7dbe0797463235db8b6df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0b82f6dab11a0f061a8abcd8a2b9e56"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac0b82f6dab11a0f061a8abcd8a2b9e56">mkernel_get_contacts</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_contacts.html">Contacts</a> &amp;contacts)</td></tr>
 <tr class="memdesc:ac0b82f6dab11a0f061a8abcd8a2b9e56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="classmeshkernel_1_1_contacts.html" title="A class describing an 1d-2d contacts.">meshkernel::Contacts</a> data as a <a class="el" href="structmeshkernelapi_1_1_contacts.html" title="A struct used to describe contacts between a 1d and a 2d mesh.">meshkernelapi::Contacts</a> struct.  <a href="namespacemeshkernelapi.html#ac0b82f6dab11a0f061a8abcd8a2b9e56">More...</a><br /></td></tr>
 <tr class="separator:ac0b82f6dab11a0f061a8abcd8a2b9e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0f418758019ff91d46e2458ae9e2229"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac0f418758019ff91d46e2458ae9e2229">mkernel_get_faces_mesh2d</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
-<tr class="memdesc:ac0f418758019ff91d46e2458ae9e2229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mesh faces.  <a href="namespacemeshkernelapi.html#ac0f418758019ff91d46e2458ae9e2229">More...</a><br /></td></tr>
-<tr class="separator:ac0f418758019ff91d46e2458ae9e2229"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5cb7b0c4c0ab96f4c2ae740b2bb74af2"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5cb7b0c4c0ab96f4c2ae740b2bb74af2">mkernel_count_hanging_edges_mesh2d</a> (int meshKernelId, int &amp;numHangingEdgesIndices)</td></tr>
 <tr class="memdesc:a5cb7b0c4c0ab96f4c2ae740b2bb74af2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of hanging edges.  <a href="namespacemeshkernelapi.html#a5cb7b0c4c0ab96f4c2ae740b2bb74af2">More...</a><br /></td></tr>
 <tr class="separator:a5cb7b0c4c0ab96f4c2ae740b2bb74af2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1963,14 +1972,14 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a1d63cdb3a1c98e856adef4172eada599"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d63cdb3a1c98e856adef4172eada599">&#9670;&nbsp;</a></span>mkernel_get_curvilinear()</h2>
+<a id="a572767753b27b325370657e0ae7d3bc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a572767753b27b325370657e0ae7d3bc0">&#9670;&nbsp;</a></span>mkernel_get_curvilinear_data()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_curvilinear </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_curvilinear_data </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -1978,8 +1987,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
-          <td class="paramname"><em>mesh2d</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html">CurvilinearGrid</a> &amp;&#160;</td>
+          <td class="paramname"><em>curvilinearGrid</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1989,11 +1998,49 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the meshkernel::Curvilinear state as a MeshGeometry struct (converted as set of edges and nodes) </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Gets the curvilinear grid data as a <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html" title="A struct used to describe the values of a curvilinear grid in a C-compatible manner.">CurvilinearGrid</a> struct (converted as set of edges and nodes) </p>
+<p>This function ought to be called after <code>mkernel_get_curvilinear_dimension</code> has been called and the pointers have been set to correctly sized memory. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">curvilinearGrid</td><td>The <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html" title="A struct used to describe the values of a curvilinear grid in a C-compatible manner.">CurvilinearGrid</a> data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a2d3074af0eeeb554b0ae0298ff20ef30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d3074af0eeeb554b0ae0298ff20ef30">&#9670;&nbsp;</a></span>mkernel_get_curvilinear_dimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_curvilinear_dimensions </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html">CurvilinearGrid</a> &amp;&#160;</td>
+          <td class="paramname"><em>curvilinearGrid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the curvilinear grid dimensions as a <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html" title="A struct used to describe the values of a curvilinear grid in a C-compatible manner.">CurvilinearGrid</a> struct (converted as set of edges and nodes) </p>
+<p>The integer parameters of the <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html" title="A struct used to describe the values of a curvilinear grid in a C-compatible manner.">CurvilinearGrid</a> struct are set to the corresponding dimensions The pointers are set to null, and must be set to correctly sized memory before passing the struct to <code>mkernel_get_curvilinear_data</code>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">curvilinearGrid</td><td>The <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html" title="A struct used to describe the values of a curvilinear grid in a C-compatible manner.">CurvilinearGrid</a> data </td></tr>
   </table>
   </dd>
 </dl>
@@ -2021,44 +2068,6 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">error_message</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
-
-</div>
-</div>
-<a id="ac0f418758019ff91d46e2458ae9e2229"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0f418758019ff91d46e2458ae9e2229">&#9670;&nbsp;</a></span>mkernel_get_faces_mesh2d()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_faces_mesh2d </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>meshKernelId</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
-          <td class="paramname"><em>mesh2d</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gets the mesh faces. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data </td></tr>
   </table>
   </dd>
 </dl>
@@ -2162,14 +2171,14 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a81cdfe0c19099b14699938417d8431bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81cdfe0c19099b14699938417d8431bf">&#9670;&nbsp;</a></span>mkernel_get_mesh1d()</h2>
+<a id="ac890547c17702fade66c09365ae0cc62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac890547c17702fade66c09365ae0cc62">&#9670;&nbsp;</a></span>mkernel_get_mesh1d_data()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_mesh1d </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_mesh1d_data </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -2188,11 +2197,11 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">meshkernel::Mesh1D</a> state as a <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">meshkernelapi::Mesh1D</a> struct. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Gets the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> dimensions data. </p>
+<p>This function ought to be called after <code>mkernel_get_mesh1d_dimensions</code> has been called and the pointers have been set to correctly sized memory </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">mesh1d</td><td><a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> data </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">mesh1d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> data </td></tr>
   </table>
   </dd>
 </dl>
@@ -2200,14 +2209,52 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="af062946592506d0057214221f96bd2fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af062946592506d0057214221f96bd2fa">&#9670;&nbsp;</a></span>mkernel_get_mesh2d()</h2>
+<a id="a5b66e0087d834527b87e1929cd11ae22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b66e0087d834527b87e1929cd11ae22">&#9670;&nbsp;</a></span>mkernel_get_mesh1d_dimensions()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_mesh2d </td>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_mesh1d_dimensions </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_mesh1_d.html">Mesh1D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh1d</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> dimensions. </p>
+<p>The integer parameters of the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> struct are set to the corresponding dimensions The pointers are set to null, and must be set to correctly sized memory before passing the struct to <code>mkernel_get_mesh1d_data</code> </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">mesh1d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> dimensions </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a06108e984e96b90db9253505a441d911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06108e984e96b90db9253505a441d911">&#9670;&nbsp;</a></span>mkernel_get_mesh2d_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_mesh2d_data </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
@@ -2226,11 +2273,49 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">meshkernel::Mesh2D</a> state as a MeshGeometry struct. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> dimensions data. </p>
+<p>This function ought to be called after <code>mkernel_get_mesh2d_dimensions</code> has been called and the pointers have been set to correctly sized memory. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a6a1c8181c025cd37ea84f19ad1670ef8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a1c8181c025cd37ea84f19ad1670ef8">&#9670;&nbsp;</a></span>mkernel_get_mesh2d_dimensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_get_mesh2d_dimensions </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh2d</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> dimensions. </p>
+<p>The integer parameters of the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> struct are set to the corresponding dimensions The pointers are set to null, and must be set to correctly sized memory before passing the struct to <code>mkernel_get_mesh2d_data</code>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> dimensions </td></tr>
   </table>
   </dd>
 </dl>

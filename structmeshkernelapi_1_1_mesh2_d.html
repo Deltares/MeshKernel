@@ -96,14 +96,10 @@ int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="str
 int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html#afbbd9607736441d2d6a8a4d4550757b9">face_nodes</a> = nullptr</td></tr>
 <tr class="memdesc:afbbd9607736441d2d6a8a4d4550757b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nodes composing each mesh 2d face. <br /></td></tr>
 <tr class="separator:afbbd9607736441d2d6a8a4d4550757b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6d3c23de07de8724ea5c8f576dc1658"><td class="memItemLeft" align="right" valign="top"><a id="ac6d3c23de07de8724ea5c8f576dc1658"></a>
-int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html#ac6d3c23de07de8724ea5c8f576dc1658">edge_faces</a> = nullptr</td></tr>
-<tr class="memdesc:ac6d3c23de07de8724ea5c8f576dc1658"><td class="mdescLeft">&#160;</td><td class="mdescRight">The edges composing each mesh 2d face. <br /></td></tr>
-<tr class="separator:ac6d3c23de07de8724ea5c8f576dc1658"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0722342bc15bd3f834c4c7cee91ec44f"><td class="memItemLeft" align="right" valign="top"><a id="a0722342bc15bd3f834c4c7cee91ec44f"></a>
-int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html#a0722342bc15bd3f834c4c7cee91ec44f">face_edges</a> = nullptr</td></tr>
-<tr class="memdesc:a0722342bc15bd3f834c4c7cee91ec44f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The left and right face indices that an edge separates. <br /></td></tr>
-<tr class="separator:a0722342bc15bd3f834c4c7cee91ec44f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e057108b3d686304472e14bda5bb2d7"><td class="memItemLeft" align="right" valign="top"><a id="a8e057108b3d686304472e14bda5bb2d7"></a>
+int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html#a8e057108b3d686304472e14bda5bb2d7">nodes_per_face</a> = nullptr</td></tr>
+<tr class="memdesc:a8e057108b3d686304472e14bda5bb2d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of nodes for each mesh 2d face. <br /></td></tr>
+<tr class="separator:a8e057108b3d686304472e14bda5bb2d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfc825d66e9fe09ee30d0f526b81a8c4"><td class="memItemLeft" align="right" valign="top"><a id="adfc825d66e9fe09ee30d0f526b81a8c4"></a>
 double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html#adfc825d66e9fe09ee30d0f526b81a8c4">node_x</a> = nullptr</td></tr>
 <tr class="memdesc:adfc825d66e9fe09ee30d0f526b81a8c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The x-coordinates of network1d nodes. <br /></td></tr>
@@ -140,10 +136,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html#a1723f757aa2c6fb59cef5f7e44bc5086">num_faces</a></td></tr>
 <tr class="memdesc:a1723f757aa2c6fb59cef5f7e44bc5086"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of faces. <br /></td></tr>
 <tr class="separator:a1723f757aa2c6fb59cef5f7e44bc5086"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f1b3acf64bc2bcb8a0ce1e862119e5e"><td class="memItemLeft" align="right" valign="top"><a id="a4f1b3acf64bc2bcb8a0ce1e862119e5e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html#a4f1b3acf64bc2bcb8a0ce1e862119e5e">max_num_face_nodes</a></td></tr>
-<tr class="memdesc:a4f1b3acf64bc2bcb8a0ce1e862119e5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The maximum amount of nodes a face can have. <br /></td></tr>
-<tr class="separator:a4f1b3acf64bc2bcb8a0ce1e862119e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9fe8b14088f7d71d6100cfd14c3edbc"><td class="memItemLeft" align="right" valign="top"><a id="ad9fe8b14088f7d71d6100cfd14c3edbc"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html#ad9fe8b14088f7d71d6100cfd14c3edbc">num_face_nodes</a></td></tr>
+<tr class="memdesc:ad9fe8b14088f7d71d6100cfd14c3edbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">The total number of nodes composing the mesh 2d faces. <br /></td></tr>
+<tr class="separator:ad9fe8b14088f7d71d6100cfd14c3edbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manner. </p>
