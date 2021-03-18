@@ -80,7 +80,7 @@ namespace meshkernel
         /// @brief If the face is valid. A face is valid if all its nodes are valid.
         /// @param[in] m the m coordinate
         /// @param[in] n the n coordinate
-        /// @return true if theface is valid, false otherwise
+        /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
 
         size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
