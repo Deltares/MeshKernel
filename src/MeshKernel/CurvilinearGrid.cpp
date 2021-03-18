@@ -158,7 +158,7 @@ bool meshkernel::CurvilinearGrid::IsValidFace(size_t m, size_t n) const
 
 void meshkernel::CurvilinearGrid::ComputeGridFacesMask()
 {
-    // flag valid faces
+    // Flag valid faces
     m_gridFacesMask.resize(m_numM - 1, std::vector<bool>(m_numN - 1, false));
     for (auto m = 0; m < m_numM - 1; ++m)
     {
@@ -236,7 +236,7 @@ void meshkernel::CurvilinearGrid::ComputeGridNodeTypes()
     RemoveInvalidNodes(true);
     m_gridNodesMask.resize(m_numM, std::vector<NodeType>(m_numN, NodeType::Invalid));
 
-    // flag faces based on boundaries
+    // Flag faces based on boundaries
     for (size_t m = 0; m < m_numM; ++m)
     {
         for (size_t n = 0; n < m_numN; ++n)
@@ -247,7 +247,7 @@ void meshkernel::CurvilinearGrid::ComputeGridNodeTypes()
                 continue;
             }
 
-            // left side
+            // Left side
             if (m == 0 && n == 0)
             {
                 m_gridNodesMask[m][n] = NodeType::BottomLeft;
@@ -273,7 +273,7 @@ void meshkernel::CurvilinearGrid::ComputeGridNodeTypes()
                 m_gridNodesMask[m][n] = NodeType::Left;
                 continue;
             }
-            // right side
+            // Right side
             if (m == m_numM - 1 && n == 0)
             {
                 m_gridNodesMask[m][n] = NodeType::BottomRight;
@@ -299,7 +299,7 @@ void meshkernel::CurvilinearGrid::ComputeGridNodeTypes()
                 m_gridNodesMask[m][n] = NodeType::Right;
                 continue;
             }
-            // bottom side
+            // Bottom side
             if (n == 0 && !m_gridNodes[m - 1][n].IsValid())
             {
                 m_gridNodesMask[m][n] = NodeType::BottomLeft;
@@ -315,7 +315,7 @@ void meshkernel::CurvilinearGrid::ComputeGridNodeTypes()
                 m_gridNodesMask[m][n] = NodeType::Bottom;
                 continue;
             }
-            // upper side
+            // Upper side
             if (n == m_numN - 1 && !m_gridNodes[m - 1][n].IsValid())
             {
                 m_gridNodesMask[m][n] = NodeType::UpperLeft;
