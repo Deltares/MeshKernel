@@ -1638,10 +1638,10 @@ TEST_F(ApiTests, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine)
     makeMeshParameters.XGridBlockSize = 10.0;
     makeMeshParameters.YGridBlockSize = 10.0;
 
-    // Execute
     auto errorCode = mkernel_make_uniform_curvilinear(meshKernelId,
                                                       makeMeshParameters,
                                                       geometryList);
+
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     meshkernelapi::GeometryList firstPoint{};
@@ -1658,6 +1658,7 @@ TEST_F(ApiTests, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine)
     secondPoint.yCoordinates = yCoordinatesSecondPoint.get();
     secondPoint.numberOfCoordinates = 1;
 
+    // Execute
     errorCode = mkernel_derefine_curvilinear(meshKernelId, firstPoint, secondPoint);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
@@ -1667,4 +1668,61 @@ TEST_F(ApiTests, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine)
 
     ASSERT_EQ(20, curvilinearGrid.num_nodes);
     ASSERT_EQ(31, curvilinearGrid.num_edges);
+}
+
+TEST_F(ApiTests, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
+{
+    // Prepare
+    auto meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::MakeMeshParameters makeMeshParameters{};
+    meshkernelapi::GeometryList geometryList{};
+
+    makeMeshParameters.GridType = 0;
+    makeMeshParameters.NumberOfColumns = 4;
+    makeMeshParameters.NumberOfRows = 4;
+    makeMeshParameters.GridAngle = 0.0;
+    makeMeshParameters.GridBlockSize = 0.0;
+    makeMeshParameters.OriginXCoordinate = 0.0;
+    makeMeshParameters.OriginYCoordinate = 0.0;
+    makeMeshParameters.OriginZCoordinate = 0.0;
+    makeMeshParameters.XGridBlockSize = 10.0;
+    makeMeshParameters.YGridBlockSize = 10.0;
+
+    auto errorCode = mkernel_make_uniform_curvilinear(meshKernelId,
+                                                      makeMeshParameters,
+                                                      geometryList);
+
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    meshkernelapi::GeometryList firstPoint{};
+    std::unique_ptr<double> xCoordinatesFirstPoint(new double[1]{10.0});
+    std::unique_ptr<double> yCoordinatesFirstPoint(new double[1]{20.0});
+    firstPoint.xCoordinates = xCoordinatesFirstPoint.get();
+    firstPoint.yCoordinates = yCoordinatesFirstPoint.get();
+    firstPoint.numberOfCoordinates = 1;
+
+    meshkernelapi::GeometryList secondPoint{};
+    std::unique_ptr<double> xCoordinateSecondPoint(new double[1]{30.0});
+    std::unique_ptr<double> yCoordinatesSecondPoint(new double[1]{20.0});
+    secondPoint.xCoordinates = xCoordinateSecondPoint.get();
+    secondPoint.yCoordinates = yCoordinatesSecondPoint.get();
+    secondPoint.numberOfCoordinates = 1;
+
+    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters{};
+    orthogonalizationParameters.OuterIterations = 1;
+    orthogonalizationParameters.BoundaryIterations = 25;
+    orthogonalizationParameters.InnerIterations = 25;
+    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+
+    // Execute
+    errorCode = mkernel_orthogonalize_curvilinear(meshKernelId, orthogonalizationParameters, firstPoint, secondPoint);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = mkernel_get_curvilinear_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+
+    // Assert (nothing changed)
+    ASSERT_EQ(25, curvilinearGrid.num_nodes);
+    ASSERT_EQ(40, curvilinearGrid.num_edges);
 }

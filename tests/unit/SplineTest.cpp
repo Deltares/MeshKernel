@@ -37,7 +37,7 @@ TEST(Splines, CubicSplineInterpolation)
         for (auto p = 0; p <= pointsBetweenNodes; p++)
         {
             const double pointAdimensionalCoordinate = n + double(p) / double(pointsBetweenNodes);
-            auto pointCoordinate = InterpolateSplinePoint(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate);
+            auto pointCoordinate = ComputePointOnSplineAtAdimensionalDistance(splineNodes, coordinatesDerivatives, pointAdimensionalCoordinate);
             ASSERT_TRUE(pointCoordinate.IsValid());
 
             splineCoordinates.push_back({pointCoordinate.x, pointCoordinate.y});

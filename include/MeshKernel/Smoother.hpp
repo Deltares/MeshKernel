@@ -145,11 +145,11 @@ namespace meshkernel
         /// @brief Compute the matrix norm
         /// @brief x
         /// @brief y
-        /// @brief matCoefficents
+        /// @brief matCoefficients
         /// @returns
         [[nodiscard]] double MatrixNorm(const std::vector<double>& x,
                                         const std::vector<double>& y,
-                                        const std::vector<double>& matCoefficents) const;
+                                        const std::vector<double>& matCoefficients) const;
 
         // The mesh to smooth
         std::shared_ptr<Mesh2D> m_mesh; ///< Pointer to mesh

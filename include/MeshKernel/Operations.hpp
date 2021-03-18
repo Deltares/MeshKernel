@@ -141,7 +141,7 @@ namespace meshkernel
         //golden distance factors
         const double c = 0.38196602;
         const double r = 0.61803399;
-        const double tolerance = 0.00001;
+        const double tolerance = 1e-5;
 
         double left = min;
         double middle = (min + max) * 0.5;
@@ -154,13 +154,13 @@ namespace meshkernel
         if (std::abs(right - middle) > std::abs(middle - left))
         {
             x1 = middle;
-            x2 = middle + c * (middle - left);
+            x2 = middle + c * (right - left);
         }
 
         double f1 = func(x1);
         double f2 = func(x2);
 
-        while (std::abs(x3 - x0) > tolerance * std::max(std::abs(x1) + std::abs(x2), 1e-8))
+        while (std::abs(x3 - x0) > tolerance * std::max(std::abs(x1) + std::abs(x2), 1e-8)) // tolerance * std::max(std::abs(x1) + std::abs(x2), 1e-10)
         {
             if (f2 < f1)
             {
@@ -407,9 +407,9 @@ namespace meshkernel
     /// @param[in] pointAdimensionalCoordinate The adimensinal coordinate where to perform the interpolation
     /// @returns The interpolated point
     template <typename T>
-    [[nodiscard]] T InterpolateSplinePoint(const std::vector<T>& coordinates,
-                                           const std::vector<T>& coordinatesDerivatives,
-                                           double pointAdimensionalCoordinate)
+    [[nodiscard]] T ComputePointOnSplineAtAdimensionalDistance(const std::vector<T>& coordinates,
+                                                               const std::vector<T>& coordinatesDerivatives,
+                                                               double pointAdimensionalCoordinate)
     {
         T pointCoordinate{};
         if (pointAdimensionalCoordinate < 0)
@@ -419,7 +419,7 @@ namespace meshkernel
 
         const double eps = 1e-5;
         const double splFac = 1.0;
-        const auto intCoordinate = static_cast<size_t>(std::floor(pointAdimensionalCoordinate));
+        const auto intCoordinate = static_cast<double>(std::floor(pointAdimensionalCoordinate));
         if (pointAdimensionalCoordinate - intCoordinate < eps)
         {
             return pointCoordinate = coordinates[intCoordinate];

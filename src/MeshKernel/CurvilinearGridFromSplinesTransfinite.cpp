@@ -98,7 +98,7 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromSplinesTransfinite::C
         {
             if (std::abs(value) > 0.0)
             {
-                intersectionDistances[numIntersections] = m_splines->GetSplineLength(splineIndex, 0.0, value, 10, false);
+                intersectionDistances[numIntersections] = m_splines->ComputeSplineLength(splineIndex, 0.0, value, 10, false);
                 numIntersections++;
             }
         }
@@ -142,12 +142,10 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromSplinesTransfinite::C
                                intersectionDistances,
                                distances);
 
-        m_splines->InterpolatePointsOnSpline(splineIndex,
-                                             doubleMissingValue,
-                                             false,
-                                             distances,
-                                             points,
-                                             adimensionalDistances);
+        const auto [points, adimensionalDistances] = m_splines->ComputePointOnSplineFromAdimensionalDistance(splineIndex,
+                                                                                                             doubleMissingValue,
+                                                                                                             false,
+                                                                                                             distances);
 
         // Start filling curvilinear grid
         size_t index = 0;

@@ -310,7 +310,7 @@ namespace meshkernel
 
         //cache variables during iterations
         std::vector<double> m_edgeVelocities;                                         ///< Edge velocities
-        std::vector<size_t> m_validFrontNodes;                                        ///< Valid front nodes
+        std::vector<size_t> m_validFrontNodes;                                        ///< InternalValid front nodes
         std::vector<std::vector<Point>> m_gridPoints;                                 ///< Grid points
         double m_timeStep = 1.0;                                                      ///< Time step
         std::vector<size_t> m_subLayerGridPoints;                                     ///< Sublayer grid points

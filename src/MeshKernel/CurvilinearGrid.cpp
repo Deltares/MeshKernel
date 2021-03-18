@@ -28,6 +28,8 @@
 #include <vector>
 
 #include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Splines.hpp>
 
 meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection) : m_gridNodes(std::move(grid))
 {
@@ -144,4 +146,307 @@ std::tuple<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
 
     const auto nodeIndex = GetNearestNeighborIndex(0, MeshLocations::Nodes);
     return {m_gridIndices[nodeIndex].first, m_gridIndices[nodeIndex].second};
+}
+
+bool meshkernel::CurvilinearGrid::IsValidFace(size_t m, size_t n) const
+{
+    return m_gridNodes[m][n].IsValid() &&
+           m_gridNodes[m + 1][n].IsValid() &&
+           m_gridNodes[m][n + 1].IsValid() &&
+           m_gridNodes[m + 1][n + 1].IsValid();
+};
+
+void meshkernel::CurvilinearGrid::ComputeGridFacesMask()
+{
+    // Flag valid faces
+    m_gridFacesMask.resize(m_numM - 1, std::vector<bool>(m_numN - 1, false));
+    for (auto m = 0; m < m_numM - 1; ++m)
+    {
+        for (auto n = 0; n < m_numN - 1; ++n)
+        {
+            // Only if all grid nodes of the face are valid, the face is valid
+            if (!IsValidFace(m, n))
+            {
+                continue;
+            }
+            m_gridFacesMask[m][n] = true;
+        }
+    }
+}
+
+void meshkernel::CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
+{
+
+    if (!invalidNodesToRemove)
+    {
+        return;
+    }
+
+    // Compute the face mask
+    ComputeGridFacesMask();
+
+    invalidNodesToRemove = false;
+    // Flag nodes not connected to valid faces
+    for (auto m = 1; m < m_numM - 1; ++m)
+    {
+        for (auto n = 1; n < m_numN - 1; ++n)
+        {
+            if (m_gridNodes[m][n].IsValid() &&
+                !m_gridFacesMask[m][n] &&
+                !m_gridFacesMask[m - 1][n] &&
+                !m_gridFacesMask[m - 1][n - 1] &&
+                !m_gridFacesMask[m][n - 1])
+            {
+                m_gridNodes[m][n] = {doubleMissingValue, doubleMissingValue};
+                invalidNodesToRemove = true;
+            }
+        }
+    }
+
+    for (auto m = 1; m < m_numM - 1; ++m)
+    {
+        if (m_gridNodes[m][0].IsValid() &&
+            !m_gridFacesMask[m - 1][0] &&
+            !m_gridFacesMask[m][0])
+        {
+            m_gridNodes[m][0] = {doubleMissingValue, doubleMissingValue};
+        }
+    }
+
+    for (auto n = 1; n < m_numN - 1; ++n)
+    {
+        if (m_gridNodes[0][n].IsValid() &&
+            !m_gridFacesMask[0][n - 1] &&
+            !m_gridFacesMask[0][n])
+        {
+            m_gridNodes[0][n] = {doubleMissingValue, doubleMissingValue};
+        }
+    }
+
+    if (m_gridNodes[0][0].IsValid() && !m_gridFacesMask[0][0])
+    {
+        m_gridNodes[0][0] = {doubleMissingValue, doubleMissingValue};
+    }
+
+    RemoveInvalidNodes(invalidNodesToRemove);
+}
+
+void meshkernel::CurvilinearGrid::ComputeGridNodeTypes()
+{
+    RemoveInvalidNodes(true);
+    m_gridNodesMask.resize(m_numM, std::vector<NodeType>(m_numN, NodeType::Invalid));
+
+    // Flag faces based on boundaries
+    for (size_t m = 0; m < m_numM; ++m)
+    {
+        for (size_t n = 0; n < m_numN; ++n)
+        {
+
+            if (!m_gridNodes[m][n].IsValid())
+            {
+                continue;
+            }
+
+            // Left side
+            if (m == 0 && n == 0)
+            {
+                m_gridNodesMask[m][n] = NodeType::BottomLeft;
+                continue;
+            }
+            if (m == 0 && n == m_numN - 1)
+            {
+                m_gridNodesMask[m][n] = NodeType::UpperLeft;
+                continue;
+            }
+            if (m == 0 && !m_gridNodes[m][n - 1].IsValid())
+            {
+                m_gridNodesMask[m][n] = NodeType::BottomLeft;
+                continue;
+            }
+            if (m == 0 && !m_gridNodes[m][n + 1].IsValid())
+            {
+                m_gridNodesMask[m][n] = NodeType::UpperLeft;
+                continue;
+            }
+            if (m == 0)
+            {
+                m_gridNodesMask[m][n] = NodeType::Left;
+                continue;
+            }
+            // Right side
+            if (m == m_numM - 1 && n == 0)
+            {
+                m_gridNodesMask[m][n] = NodeType::BottomRight;
+                continue;
+            }
+            if (m == m_numM - 1 && n == m_numN - 1)
+            {
+                m_gridNodesMask[m][n] = NodeType::UpperRight;
+                continue;
+            }
+            if (m == m_numM - 1 && !m_gridNodes[m][n - 1].IsValid())
+            {
+                m_gridNodesMask[m][n] = NodeType::BottomRight;
+                continue;
+            }
+            if (m == m_numM - 1 && !m_gridNodes[m][n + 1].IsValid())
+            {
+                m_gridNodesMask[m][n] = NodeType::UpperRight;
+                continue;
+            }
+            if (m == m_numM - 1)
+            {
+                m_gridNodesMask[m][n] = NodeType::Right;
+                continue;
+            }
+            // Bottom side
+            if (n == 0 && !m_gridNodes[m - 1][n].IsValid())
+            {
+                m_gridNodesMask[m][n] = NodeType::BottomLeft;
+                continue;
+            }
+            if (n == 0 && !m_gridNodes[m + 1][n].IsValid())
+            {
+                m_gridNodesMask[m][n] = NodeType::BottomRight;
+                continue;
+            }
+            if (n == 0)
+            {
+                m_gridNodesMask[m][n] = NodeType::Bottom;
+                continue;
+            }
+            // Upper side
+            if (n == m_numN - 1 && !m_gridNodes[m - 1][n].IsValid())
+            {
+                m_gridNodesMask[m][n] = NodeType::UpperLeft;
+                continue;
+            }
+            if (n == m_numN - 1 && !m_gridNodes[m + 1][n].IsValid())
+            {
+                m_gridNodesMask[m][n] = NodeType::UpperRight;
+                continue;
+            }
+            if (n == m_numN - 1)
+            {
+                m_gridNodesMask[m][n] = NodeType::Up;
+                continue;
+            }
+
+            const auto isTopLeftFaceValid = m_gridFacesMask[m - 1][n];
+            const auto isTopRightFaceValid = m_gridFacesMask[m][n];
+            const auto isBottomLeftFaceValid = m_gridFacesMask[m - 1][n - 1];
+            const auto isBottomRightFaceValid = m_gridFacesMask[m][n - 1];
+
+            if (isTopRightFaceValid &&
+                isTopLeftFaceValid &&
+                isBottomLeftFaceValid &&
+                isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::InternalValid;
+                continue;
+            }
+            if (!isTopRightFaceValid &&
+                isTopLeftFaceValid &&
+                isBottomLeftFaceValid &&
+                isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::BottomLeft;
+                continue;
+            }
+            if (isTopRightFaceValid &&
+                !isTopLeftFaceValid &&
+                isBottomLeftFaceValid &&
+                isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::BottomRight;
+                continue;
+            }
+            if (isTopRightFaceValid &&
+                isTopLeftFaceValid &&
+                !isBottomLeftFaceValid &&
+                isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::UpperRight;
+                continue;
+            }
+            if (isTopRightFaceValid &&
+                isTopLeftFaceValid &&
+                isBottomLeftFaceValid &&
+                !isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::UpperLeft;
+                continue;
+            }
+
+            if (isTopRightFaceValid &&
+                isTopLeftFaceValid &&
+                !isBottomLeftFaceValid &&
+                !isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::Bottom;
+                continue;
+            }
+            if (isTopRightFaceValid &&
+                !isTopLeftFaceValid &&
+                !isBottomLeftFaceValid &&
+                isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::Left;
+                continue;
+            }
+
+            if (!isTopRightFaceValid &&
+                !isTopLeftFaceValid &&
+                isBottomLeftFaceValid &&
+                isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::Up;
+                continue;
+            }
+
+            if (!isTopRightFaceValid &&
+                isTopLeftFaceValid &&
+                isBottomLeftFaceValid &&
+                !isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::Right;
+                continue;
+            }
+
+            if (isTopRightFaceValid &&
+                !isTopLeftFaceValid &&
+                !isBottomLeftFaceValid &&
+                !isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::BottomLeft;
+                continue;
+            }
+
+            if (!isTopRightFaceValid &&
+                isTopLeftFaceValid &&
+                !isBottomLeftFaceValid &&
+                !isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::BottomRight;
+                continue;
+            }
+
+            if (!isTopRightFaceValid &&
+                !isTopLeftFaceValid &&
+                isBottomLeftFaceValid &&
+                !isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::UpperRight;
+                continue;
+            }
+
+            if (!isTopRightFaceValid &&
+                !isTopLeftFaceValid &&
+                !isBottomLeftFaceValid &&
+                isBottomRightFaceValid)
+            {
+                m_gridNodesMask[m][n] = NodeType::UpperLeft;
+            }
+        }
+    }
 }
