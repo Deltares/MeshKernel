@@ -40,7 +40,7 @@ namespace meshkernel
     {
     public:
         /// @brief An enum for curvilinear node types
-        enum class NodeTypes
+        enum class NodeType
         {
             BottomLeft,    //(11)
             UpperLeft,     //(14)
@@ -87,7 +87,7 @@ namespace meshkernel
         size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)
         std::vector<std::vector<Point>> m_gridNodes;          ///< Member variable storing the grid
         std::vector<std::vector<bool>> m_gridFacesMask;       ///< The mask of the grid faces (true/false)
-        std::vector<std::vector<NodeTypes>> m_gridNodesMask;  ///< The grid node types
+        std::vector<std::vector<NodeType>> m_gridNodesMask;   ///< The grid node types
         std::vector<std::pair<size_t, size_t>> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
 
     private:

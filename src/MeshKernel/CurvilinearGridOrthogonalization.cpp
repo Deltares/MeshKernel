@@ -99,17 +99,17 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGrid
         for (auto m = 0; m < m_grid->m_numM; ++m)
         {
             const auto nodeType = m_grid->m_gridNodesMask[m][n];
-            if (nodeType == CurvilinearGrid::NodeTypes::BottomLeft || nodeType == CurvilinearGrid::NodeTypes::UpperLeft)
+            if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::UpperLeft)
             {
                 startM = m;
                 continue;
             }
-            if (nodeType == CurvilinearGrid::NodeTypes::Bottom)
+            if (nodeType == CurvilinearGrid::NodeType::Bottom)
             {
                 nextVertical = 1;
                 continue;
             }
-            if (nodeType == CurvilinearGrid::NodeTypes::Up)
+            if (nodeType == CurvilinearGrid::NodeType::Up)
             {
                 nextVertical = -1;
                 continue;
@@ -118,7 +118,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGrid
             // Project the nodes at the boundary (Bottom and Up node types) if a valid interval has been found.
             // The interval ranges from startM to the next BottomRight or UpperRight node.
             if (startM != sizetMissingValue &&
-                (nodeType == CurvilinearGrid::NodeTypes::BottomRight || nodeType == CurvilinearGrid::NodeTypes::UpperRight) &&
+                (nodeType == CurvilinearGrid::NodeType::BottomRight || nodeType == CurvilinearGrid::NodeType::UpperRight) &&
                 nextVertical != 0)
             {
                 for (auto mm = startM + 1; mm < m; ++mm)
@@ -128,7 +128,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGrid
                     {
                         continue;
                     }
-                    if (m_grid->m_gridNodesMask[mm][n] == CurvilinearGrid::NodeTypes::Invalid)
+                    if (m_grid->m_gridNodesMask[mm][n] == CurvilinearGrid::NodeType::Invalid)
                     {
                         continue;
                     }
@@ -178,17 +178,17 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGrid
         for (auto n = 0; n < m_grid->m_numN; ++n)
         {
             const auto nodeType = m_grid->m_gridNodesMask[m][n];
-            if (nodeType == CurvilinearGrid::NodeTypes::BottomLeft || nodeType == CurvilinearGrid::NodeTypes::BottomRight)
+            if (nodeType == CurvilinearGrid::NodeType::BottomLeft || nodeType == CurvilinearGrid::NodeType::BottomRight)
             {
                 startN = n;
                 continue;
             }
-            if (nodeType == CurvilinearGrid::NodeTypes::Left)
+            if (nodeType == CurvilinearGrid::NodeType::Left)
             {
                 nextHorizontal = 1;
                 continue;
             }
-            if (nodeType == CurvilinearGrid::NodeTypes::Right)
+            if (nodeType == CurvilinearGrid::NodeType::Right)
             {
                 nextHorizontal = -1;
                 continue;
@@ -196,7 +196,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGrid
 
             // Project the nodes at the boundary (Left and Left node types) if a valid interval has been found.
             // The interval ranges from startN to the next UpperLeft or UpperRight node.
-            if ((nodeType == CurvilinearGrid::NodeTypes::UpperLeft || nodeType == CurvilinearGrid::NodeTypes::UpperRight) &&
+            if ((nodeType == CurvilinearGrid::NodeType::UpperLeft || nodeType == CurvilinearGrid::NodeType::UpperRight) &&
                 nextHorizontal != 0 &&
                 startN != sizetMissingValue)
             {
@@ -207,7 +207,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGrid
                     {
                         continue;
                     }
-                    if (m_grid->m_gridNodesMask[m][nn] == CurvilinearGrid::NodeTypes::Invalid)
+                    if (m_grid->m_gridNodesMask[m][nn] == CurvilinearGrid::NodeType::Invalid)
                     {
                         continue;
                     }
@@ -267,7 +267,7 @@ void meshkernel::CurvilinearGridOrthogonalization::Solve()
         {
             for (auto n = minNInternal; n < maxNInternal; ++n)
             {
-                if (m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeTypes::InternalValid)
+                if (m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::InternalValid)
                 {
                     continue;
                 }
@@ -382,7 +382,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeCoefficients()
     {
         for (auto n = m_minN + 1; n < m_maxN; ++n)
         {
-            if (m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeTypes::InternalValid)
+            if (m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::InternalValid)
             {
                 continue;
             }
@@ -511,19 +511,19 @@ std::vector<std::vector<bool>> meshkernel::CurvilinearGridOrthogonalization::Com
         for (auto n = m_minN + 1; n < m_maxN; ++n)
         {
             int step = 0;
-            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::BottomLeft)
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::BottomLeft)
             {
                 step = -1;
             }
-            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::BottomRight)
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::BottomRight)
             {
                 step = 1;
             }
-            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::UpperRight)
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::UpperRight)
             {
                 step = 1;
             }
-            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::UpperLeft)
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::UpperLeft)
             {
                 step = -1;
             }
@@ -535,7 +535,7 @@ std::vector<std::vector<bool>> meshkernel::CurvilinearGridOrthogonalization::Com
             auto lastValidM = m + step;
             while (lastValidM > 0 &&
                    lastValidM < m_grid->m_numM &&
-                   m_grid->m_gridNodesMask[lastValidM][n] == CurvilinearGrid::NodeTypes::InternalValid)
+                   m_grid->m_gridNodesMask[lastValidM][n] == CurvilinearGrid::NodeType::InternalValid)
             {
                 lastValidM += step;
             }
@@ -559,19 +559,19 @@ std::vector<std::vector<bool>> meshkernel::CurvilinearGridOrthogonalization::Com
         for (auto n = m_minN + 1; n < m_maxN; ++n)
         {
             int step = 0;
-            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::BottomLeft)
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::BottomLeft)
             {
                 step = -1;
             }
-            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::BottomRight)
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::BottomRight)
             {
                 step = -1;
             }
-            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::UpperRight)
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::UpperRight)
             {
                 step = 1;
             }
-            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeTypes::UpperLeft)
+            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::UpperLeft)
             {
                 step = 1;
             }
@@ -582,7 +582,7 @@ std::vector<std::vector<bool>> meshkernel::CurvilinearGridOrthogonalization::Com
             auto lastValidN = n + step;
             while (lastValidN > 0 &&
                    lastValidN < m_grid->m_numN &&
-                   m_grid->m_gridNodesMask[m][lastValidN] == CurvilinearGrid::NodeTypes::InternalValid)
+                   m_grid->m_gridNodesMask[m][lastValidN] == CurvilinearGrid::NodeType::InternalValid)
             {
                 lastValidN += step;
             }
