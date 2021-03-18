@@ -55,7 +55,7 @@ namespace meshkernel
         void Compute();
 
     private:
-        /// @brief Dolve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)
+        /// @brief Solve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)
         void Solve();
 
         /// @brief Project the m boundary nodes onto the original grid (BNDSMT)

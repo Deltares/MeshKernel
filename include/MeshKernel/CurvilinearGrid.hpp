@@ -91,8 +91,9 @@ namespace meshkernel
         std::vector<std::pair<size_t, size_t>> m_gridIndices; ///< the original mapping of the flatten nodes in the curvilinear grid
 
     private:
-        /// @brief Remove invalid nodes. Is a recursive function
-        /// @param[in] invalidNodesToRemove If there are still invalid nodes to remove
+        /// @brief Remove invalid nodes.
+        /// This function is recursive
+        /// @param[in] invalidNodesToRemove Whether there are still invalid nodes to remove
         void RemoveInvalidNodes(bool invalidNodesToRemove);
 
         /// @brief Computes the valid grid faces
