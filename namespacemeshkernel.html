@@ -115,14 +115,20 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_from_splines_transfinite.html">CurvilinearGridFromSplinesTransfinite</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class used to create a curvilinear grid from 4 splines in blocks.  <a href="classmeshkernel_1_1_curvilinear_grid_from_splines_transfinite.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html">CurvilinearGridOrthogonalization</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class implementing the curvilinear grid orthogonalization algorithm.  <a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_refinement.html">CurvilinearGridRefinement</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class implementing the curvilinear grid refinement algorithm.  <a href="classmeshkernel_1_1_curvilinear_grid_refinement.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_flip_edges.html">FlipEdges</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class used to flip edges in order to minimise the number of edges connected to a node.  <a href="classmeshkernel_1_1_flip_edges.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_func_adimensional_to_dimensional_distance.html">FuncAdimensionalToDimensionalDistance</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This struct is used to create a function for converting an adimensional distance to a dimensional one.  <a href="structmeshkernel_1_1_func_adimensional_to_dimensional_distance.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_func_adimensional_to_dimensional_distance_on_spline.html">FuncAdimensionalToDimensionalDistanceOnSpline</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This structure is used to create a function for converting an adimensional distance on a spline to a dimensional one.  <a href="structmeshkernel_1_1_func_adimensional_to_dimensional_distance_on_spline.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_func_distance_from_a_point.html">FuncDistanceFromAPoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This structure is used to compute the point on a spline closest to another point.  <a href="structmeshkernel_1_1_func_distance_from_a_point.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html">LandBoundaries</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class describing land boundaries. These are used to visualise the land-water interface.  <a href="classmeshkernel_1_1_land_boundaries.html#details">More...</a><br /></td></tr>
@@ -335,10 +341,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:ae353b37ec8a3310333d27f76109fb183"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ae353b37ec8a3310333d27f76109fb183">FaceAreaAndCenterOfMass</a> (std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, double &amp;area, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;centerOfMass, bool &amp;isCounterClockWise)</td></tr>
 <tr class="memdesc:ae353b37ec8a3310333d27f76109fb183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the area of a polygon, its center of mass, and the orientation of the edges (comp_masscenter2D). Polygon is assumed opened.  <a href="namespacemeshkernel.html#ae353b37ec8a3310333d27f76109fb183">More...</a><br /></td></tr>
 <tr class="separator:ae353b37ec8a3310333d27f76109fb183"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32bbb85c8d86468386cd94eb1d2b991b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a32bbb85c8d86468386cd94eb1d2b991b"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a32bbb85c8d86468386cd94eb1d2b991b">InterpolateSplinePoint</a> (const std::vector&lt; T &gt; &amp;coordinates, const std::vector&lt; T &gt; &amp;coordinatesDerivatives, double pointAdimensionalCoordinate)</td></tr>
-<tr class="memdesc:a32bbb85c8d86468386cd94eb1d2b991b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)  <a href="namespacemeshkernel.html#a32bbb85c8d86468386cd94eb1d2b991b">More...</a><br /></td></tr>
-<tr class="separator:a32bbb85c8d86468386cd94eb1d2b991b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d3640a26ce227c47cc0dc382e1174c3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a8d3640a26ce227c47cc0dc382e1174c3"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a8d3640a26ce227c47cc0dc382e1174c3">ComputePointOnSplineAtAdimensionalDistance</a> (const std::vector&lt; T &gt; &amp;coordinates, const std::vector&lt; T &gt; &amp;coordinatesDerivatives, double pointAdimensionalCoordinate)</td></tr>
+<tr class="memdesc:a8d3640a26ce227c47cc0dc382e1174c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)  <a href="namespacemeshkernel.html#a8d3640a26ce227c47cc0dc382e1174c3">More...</a><br /></td></tr>
+<tr class="separator:a8d3640a26ce227c47cc0dc382e1174c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0d8a446f5a4bc200ffd72f5a5809ae1"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
 <tr class="memitem:ad0d8a446f5a4bc200ffd72f5a5809ae1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1">SwapVectorElements</a> (std::vector&lt; T &gt; &amp;v)</td></tr>
 <tr class="memdesc:ad0d8a446f5a4bc200ffd72f5a5809ae1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap the elements of a vector, such as the last elements becomes the first elements.  <a href="namespacemeshkernel.html#ad0d8a446f5a4bc200ffd72f5a5809ae1">More...</a><br /></td></tr>
@@ -1011,6 +1017,53 @@ const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The middle point. </dd></dl>
+
+</div>
+</div>
+<a id="a8d3640a26ce227c47cc0dc382e1174c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d3640a26ce227c47cc0dc382e1174c3">&#9670;&nbsp;</a></span>ComputePointOnSplineAtAdimensionalDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T meshkernel::ComputePointOnSplineAtAdimensionalDistance </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>coordinates</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>coordinatesDerivatives</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>pointAdimensionalCoordinate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">coordinates</td><td>The spline node coordinates </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">coordinatesDerivatives</td><td>The spline nodal derivatives </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pointAdimensionalCoordinate</td><td>The adimensinal coordinate where to perform the interpolation </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The interpolated point </dd></dl>
 
 </div>
 </div>
@@ -1757,53 +1810,6 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The resulting inner product </dd></dl>
-
-</div>
-</div>
-<a id="a32bbb85c8d86468386cd94eb1d2b991b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a32bbb85c8d86468386cd94eb1d2b991b">&#9670;&nbsp;</a></span>InterpolateSplinePoint()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">T meshkernel::InterpolateSplinePoint </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>coordinates</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
-          <td class="paramname"><em>coordinatesDerivatives</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>pointAdimensionalCoordinate</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint) </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">coordinates</td><td>The spline node coordinates </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">coordinatesDerivatives</td><td>The spline nodal derivatives </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pointAdimensionalCoordinate</td><td>The adimensinal coordinate where to perform the interpolation </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The interpolated point </dd></dl>
 
 </div>
 </div>
