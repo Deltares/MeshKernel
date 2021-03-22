@@ -110,6 +110,8 @@ namespace meshkernel
         /// @returns The spline derivatives
         std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
 
+        /// @brief Get the indices of the two closest nodes to a given point
+        /// @param[in] point Point, where the closest nodes are wanted
         std::pair<std::pair<int, int>, std::pair<int, int>> GetTwoClosestNodeIndices(Point point);
     };
 } // namespace meshkernel
