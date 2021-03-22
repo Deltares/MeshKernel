@@ -458,8 +458,21 @@ void meshkernel::CurvilinearGrid::InsertFace(Point firstPoint, Point secondPoint
     ComputeGridNodeTypes();
 
     // Get the indices of the two closest nodes to `point`
-    auto [mFirstNode, nFirstNode] = GetNodeIndices(firstPoint);
-    auto [mSecondNode, nSecondNode] = GetNodeIndices(secondPoint);
+    auto firstNode = GetNodeIndices(firstPoint);
+    auto secondNode = GetNodeIndices(secondPoint);
+
+    // Check if the nodes are neighbors
+    if (!AreNeighbors(firstNode, secondNode))
+    {
+        throw std::invalid_argument("CurvilinearGrid::InsertFace: The given nodes are not neighbors.");
+    }
+
+    // Check if both nodes are valid
+    if (m_gridNodesMask[firstNode.m][firstNode.n] == NodeType::Invalid ||
+        m_gridNodesMask[secondNode.m][secondNode.n] == NodeType::Invalid)
+    {
+        throw std::invalid_argument("CurvilinearGrid::InsertFace: At least one of the two given nodes is invalid.");
+    }
 }
 
 bool meshkernel::CurvilinearGrid::AreNeighbors(meshkernel::CurvilinearGrid::NodeIndices firstNode,
