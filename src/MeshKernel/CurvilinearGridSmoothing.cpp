@@ -132,44 +132,50 @@ void meshkernel::CurvilinearGridSmoothing::Solve()
                 p = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m + 1][n]) * oneThird * b;
             }
 
-            // Then project the new position on the original boundary segment
-            Point previousNode;
-            Point nextNode;
-            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Bottom || m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Up)
-            {
-                previousNode = m_gridNodesCache[m - 1][n];
-                nextNode = m_gridNodesCache[m + 1][n];
-            }
-            if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Right || m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Left)
-            {
-                previousNode = m_gridNodesCache[m][n - 1];
-                nextNode = m_gridNodesCache[m][n + 1];
-            }
-
-            const auto [firstProjectedPoint, firstRatio, firstProjectedPointOnSegment] = OrthogonalProjectionOnSegment(m_gridNodesCache[m][n], previousNode, p);
-            const auto [secondProjectedPoint, secondRatio, secondProjectedPointOnSegment] = OrthogonalProjectionOnSegment(m_gridNodesCache[m][n], nextNode, p);
-
-            if (firstProjectedPointOnSegment && secondProjectedPointOnSegment && secondRatio > firstRatio)
-            {
-                m_grid->m_gridNodes[m][n] = secondProjectedPoint;
-                continue;
-            }
-            if (firstProjectedPointOnSegment && secondProjectedPointOnSegment && secondRatio <= firstRatio)
-            {
-                m_grid->m_gridNodes[m][n] = firstProjectedPoint;
-                continue;
-            }
-            if (firstProjectedPointOnSegment)
-            {
-                m_grid->m_gridNodes[m][n] = firstProjectedPoint;
-                continue;
-            }
-            if (secondProjectedPointOnSegment)
-            {
-                m_grid->m_gridNodes[m][n] = secondProjectedPoint;
-                continue;
-            }
-            m_grid->m_gridNodes[m][n] = (firstProjectedPoint + secondProjectedPoint) * 0.5;
+            ProjectPointOnClosestGridBoundary(p, m, n);
         }
     }
+}
+
+void meshkernel::CurvilinearGridSmoothing::ProjectPointOnClosestGridBoundary(Point const& point, size_t m, size_t n)
+{
+    // Project the new position on the original boundary segment
+    Point previousNode;
+    Point nextNode;
+    if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Bottom || m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Up)
+    {
+        previousNode = m_gridNodesCache[m - 1][n];
+        nextNode = m_gridNodesCache[m + 1][n];
+    }
+    if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Right || m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Left)
+    {
+        previousNode = m_gridNodesCache[m][n - 1];
+        nextNode = m_gridNodesCache[m][n + 1];
+    }
+
+    const auto [firstProjectedPoint, firstRatio, firstProjectedPointOnSegment] = OrthogonalProjectionOnSegment(m_gridNodesCache[m][n], previousNode, point);
+    const auto [secondProjectedPoint, secondRatio, secondProjectedPointOnSegment] = OrthogonalProjectionOnSegment(m_gridNodesCache[m][n], nextNode, point);
+
+    if (firstProjectedPointOnSegment && secondProjectedPointOnSegment && secondRatio > firstRatio)
+    {
+        m_grid->m_gridNodes[m][n] = secondProjectedPoint;
+        return;
+    }
+    if (firstProjectedPointOnSegment && secondProjectedPointOnSegment && secondRatio <= firstRatio)
+    {
+        m_grid->m_gridNodes[m][n] = firstProjectedPoint;
+        return;
+    }
+    if (firstProjectedPointOnSegment)
+    {
+        m_grid->m_gridNodes[m][n] = firstProjectedPoint;
+        return;
+    }
+    if (secondProjectedPointOnSegment)
+    {
+        m_grid->m_gridNodes[m][n] = secondProjectedPoint;
+        return;
+    }
+
+    m_grid->m_gridNodes[m][n] = (firstProjectedPoint + secondProjectedPoint) * 0.5;
 }

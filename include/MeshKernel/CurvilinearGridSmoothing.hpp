@@ -55,6 +55,12 @@ namespace meshkernel
         /// @brief Solve one smoothing iteration
         void Solve();
 
+        /// @brief Projects a point on the closest grid boundary
+        /// @param point The point to project
+        /// @param m The current m coordinate on the boundary of the curvilinear grid
+        /// @param n The current n coordinate on the boundary of the curvilinear grid
+        void ProjectPointOnClosestGridBoundary(Point const& point, size_t m, size_t n);
+
         std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
         size_t m_smoothingIterations;            ///< The orthogonalization parameters
         Point m_firstCornerPoint;                ///< The first point defining the orthogonalization bounding box
