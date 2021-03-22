@@ -1490,4 +1490,9 @@ namespace meshkernel
         return result;
     }
 
+    size_t AbsoluteDifference(size_t number_1, size_t number_2)
+    {
+        return number_1 > number_2 ? number_1 - number_2 : number_2 - number_1;
+    }
+
 } // namespace meshkernel

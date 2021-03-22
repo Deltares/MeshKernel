@@ -25,12 +25,12 @@
 //
 //------------------------------------------------------------------------------
 
+#include <stdexcept>
 #include <vector>
 
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
-#include <stdexcept>
 
 meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection) : m_gridNodes(std::move(grid))
 {
@@ -465,5 +465,19 @@ void meshkernel::CurvilinearGrid::InsertFace(Point firstPoint, Point secondPoint
 bool meshkernel::CurvilinearGrid::AreNeighbors(meshkernel::CurvilinearGrid::NodeIndices firstNode,
                                                meshkernel::CurvilinearGrid::NodeIndices secondNode) const
 {
+    if (firstNode.m == secondNode.m)
+    {
+        if (AbsoluteDifference(firstNode.n, secondNode.n) == 1)
+        {
+            return true;
+        }
+    }
+    if (firstNode.n == secondNode.n)
+    {
+        if (AbsoluteDifference(firstNode.m, secondNode.m) == 1)
+        {
+            return true;
+        }
+    }
     return false;
 }
