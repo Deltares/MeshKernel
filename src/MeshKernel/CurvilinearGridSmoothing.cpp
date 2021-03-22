@@ -114,25 +114,25 @@ void meshkernel::CurvilinearGridSmoothing::Solve()
             }
 
             // For the point on the boundaries first computed the new position
-            Point p;
+            Point newNodePosition;
             if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Bottom)
             {
-                p = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n] + m_gridNodesCache[m][n + 1]) * oneThird * b;
+                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n] + m_gridNodesCache[m][n + 1]) * oneThird * b;
             }
             if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Up)
             {
-                p = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n] + m_gridNodesCache[m][n - 1]) * oneThird * b;
+                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m - 1][n] + m_gridNodesCache[m + 1][n] + m_gridNodesCache[m][n - 1]) * oneThird * b;
             }
             if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Right)
             {
-                p = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m - 1][n]) * oneThird * b;
+                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m - 1][n]) * oneThird * b;
             }
             if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::Left)
             {
-                p = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m + 1][n]) * oneThird * b;
+                newNodePosition = m_gridNodesCache[m][n] * a + (m_gridNodesCache[m][n - 1] + m_gridNodesCache[m][n + 1] + m_gridNodesCache[m + 1][n]) * oneThird * b;
             }
 
-            ProjectPointOnClosestGridBoundary(p, m, n);
+            ProjectPointOnClosestGridBoundary(newNodePosition, m, n);
         }
     }
 }
