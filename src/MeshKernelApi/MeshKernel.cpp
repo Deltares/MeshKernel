@@ -41,6 +41,7 @@
 #include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
 #include <MeshKernel/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/CurvilinearGridRefinement.hpp>
+#include <MeshKernel/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -1992,6 +1993,46 @@ namespace meshkernelapi
                                                                                           secondPoint[0]);
 
             curvilinearGridOrthogonalization.Compute();
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_smoothing_curvilinear(int meshKernelId,
+                                                  int smoothingIterations,
+                                                  const GeometryList& geometryListFirstPoint,
+                                                  const GeometryList& geometryListSecondPoint)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+
+            if (firstPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
+            }
+
+            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
+            if (secondPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
+            }
+
+            // Execute
+            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid,
+                                                                          static_cast<size_t>(smoothingIterations),
+                                                                          firstPoint[0],
+                                                                          secondPoint[0]);
+
+            curvilinearGridSmoothing.Compute();
         }
         catch (...)
         {

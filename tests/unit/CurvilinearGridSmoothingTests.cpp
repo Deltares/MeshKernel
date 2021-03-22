@@ -21,7 +21,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnSmoothCurvilinearGrid_ShouldNotSmoothGr
     // Execute
     curvilinearGridSmoothing.Compute();
 
-    // Assert nodes are on the same location because the grid is already orthogonal
+    // Assert nodes are on the same location because the grid is already smooth
     constexpr double tolerance = 1e-6;
 
     ASSERT_NEAR(0.0, curvilinearGrid->m_gridNodes[0][0].x, tolerance);
@@ -64,8 +64,6 @@ TEST(CurvilinearGridSmoothing, Compute_OnSmoothCurvilinearGrid_ShouldNotSmoothGr
     ASSERT_NEAR(20.0, curvilinearGrid->m_gridNodes[3][2].y, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid->m_gridNodes[3][3].y, tolerance);
 }
-
-// test these two
 TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGrid_ShouldSmoothGrid)
 {
     // Set-up

@@ -688,13 +688,24 @@ namespace meshkernelapi
         /// @brief Orthogonalize a curvilinear grid
         /// @param[in] meshKernelId       The id of the mesh state
         /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters
-        /// @param[in] geometryListFirstPoint  The geometry list containing the lower left corner of the block to orthogonalize.
-        /// @param[in] geometryListSecondPoint The geometry list containing the upper left corner of the block to orthogonalize.
+        /// @param[in] geometryListFirstPoint  The geometry list containing the lower left corner of the block to orthogonalize
+        /// @param[in] geometryListSecondPoint The geometry list containing the upper right corner of the block to orthogonalize
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId,
                                                           const OrthogonalizationParameters& orthogonalizationParameters,
                                                           const GeometryList& geometryListFirstPoint,
                                                           const GeometryList& geometryListSecondPoint);
+
+        /// @brief Smooth a curvilinear grid
+        /// @param meshKernelId The id of the mesh state
+        /// @param smoothingIterations The number of smoothing iterations to perform
+        /// @param geometryListFirstPoint The geometry list containing the lower left corner of the block to smooth
+        /// @param geometryListSecondPoint The geometry list containing the upper right corner of the block to smooth
+        /// @return Error code
+        MKERNEL_API int mkernel_smoothing_curvilinear(int meshKernelId,
+                                                      int smoothingIterations,
+                                                      const GeometryList& geometryListFirstPoint,
+                                                      const GeometryList& geometryListSecondPoint);
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);
