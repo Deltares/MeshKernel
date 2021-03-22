@@ -30,6 +30,7 @@
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
+#include <stdexcept>
 
 meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection) : m_gridNodes(std::move(grid))
 {
@@ -136,7 +137,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     return {nodes, edges, gridIndices};
 }
 
-std::tuple<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
+std::pair<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
 {
     SearchNearestNeighbors(point, MeshLocations::Nodes);
     if (GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
@@ -146,6 +147,20 @@ std::tuple<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
 
     const auto nodeIndex = GetNearestNeighborIndex(0, MeshLocations::Nodes);
     return {m_gridIndices[nodeIndex].first, m_gridIndices[nodeIndex].second};
+}
+
+std::pair<std::pair<int, int>, std::pair<int, int>> meshkernel::CurvilinearGrid::GetTwoClosestNodeIndices(Point point)
+{
+    SearchNearestNeighbors(point, MeshLocations::Nodes);
+    if (GetNumNearestNeighbors(MeshLocations::Nodes) < 2)
+    {
+        throw std::invalid_argument("CurvilinearGrid::GetTwoClosestNodeIndices: Could not find two close nodes to given point");
+    }
+
+    const auto nodeIndex_0 = GetNearestNeighborIndex(0, MeshLocations::Nodes);
+    const auto nodeIndex_1 = GetNearestNeighborIndex(1, MeshLocations::Nodes);
+    return {{m_gridIndices[nodeIndex_0].first, m_gridIndices[nodeIndex_0].second},
+            {m_gridIndices[nodeIndex_1].first, m_gridIndices[nodeIndex_1].second}};
 }
 
 bool meshkernel::CurvilinearGrid::IsValidFace(size_t m, size_t n) const
@@ -449,4 +464,8 @@ void meshkernel::CurvilinearGrid::ComputeGridNodeTypes()
             }
         }
     }
+}
+
+void meshkernel::CurvilinearGrid::InsertFace(Point point)
+{
 }

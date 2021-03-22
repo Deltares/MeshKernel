@@ -72,16 +72,22 @@ namespace meshkernel
 
         /// @brief Get the m and n indices of the node closest to the point
         /// @param[in] point       The input grid points
-        std::tuple<int, int> GetNodeIndices(Point point);
+        std::pair<int, int> GetNodeIndices(Point point);
 
         /// @brief Computes the grid nodes types and the faces masks
         void ComputeGridNodeTypes();
 
-        /// @brief If the face is valid. A face is valid if all its nodes are valid.
+        /// @brief Determines if a face is valid.
+        /// A face is valid if all its nodes are valid.
         /// @param[in] m the m coordinate
         /// @param[in] n the n coordinate
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
+
+        /// @brief Inserts a new face.
+        /// The two nodes closest to \p point determine properties of the new face.
+        /// @param[in] point The input point for setting where to put the new face
+        void InsertFace(Point point);
 
         size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)
@@ -103,5 +109,7 @@ namespace meshkernel
         /// @param[in] gridLine The input gridline
         /// @returns The spline derivatives
         std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
+
+        std::pair<std::pair<int, int>, std::pair<int, int>> GetTwoClosestNodeIndices(Point point);
     };
 } // namespace meshkernel
