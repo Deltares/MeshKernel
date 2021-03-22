@@ -66,7 +66,7 @@ void meshkernel::CurvilinearGrid::SetFlatCopies()
     m_gridIndices = gridIndices;
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>> meshkernel::CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<meshkernel::CurvilinearGrid::NodeIndices>> meshkernel::CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
 {
     if (m_gridNodes.empty())
     {
@@ -88,12 +88,12 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     std::vector<Point> nodes(m_gridNodes.size() * m_gridNodes[0].size());
     std::vector<Edge> edges(m_gridNodes.size() * (m_gridNodes[0].size() - 1) + (m_gridNodes.size() - 1) * m_gridNodes[0].size());
     std::vector<std::vector<size_t>> nodeIndices(m_gridNodes.size(), std::vector<size_t>(m_gridNodes[0].size(), sizetMissingValue));
-    std::vector<std::pair<size_t, size_t>> gridIndices(nodes.size(), std::pair<size_t, size_t>(sizetMissingValue, sizetMissingValue));
+    std::vector<meshkernel::CurvilinearGrid::NodeIndices> gridIndices(nodes.size(), meshkernel::CurvilinearGrid::NodeIndices{sizetMissingValue, sizetMissingValue});
 
     size_t ind = 0;
-    for (auto m = 0; m < m_gridNodes.size(); m++)
+    for (size_t m = 0; m < m_gridNodes.size(); m++)
     {
-        for (auto n = 0; n < m_gridNodes[0].size(); n++)
+        for (size_t n = 0; n < m_gridNodes[0].size(); n++)
         {
             if (m_gridNodes[m][n].IsValid())
             {
@@ -137,7 +137,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     return {nodes, edges, gridIndices};
 }
 
-std::pair<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
+meshkernel::CurvilinearGrid::NodeIndices meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
 {
     SearchNearestNeighbors(point, MeshLocations::Nodes);
     if (GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
@@ -146,21 +146,7 @@ std::pair<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
     }
 
     const auto nodeIndex = GetNearestNeighborIndex(0, MeshLocations::Nodes);
-    return {m_gridIndices[nodeIndex].first, m_gridIndices[nodeIndex].second};
-}
-
-std::pair<std::pair<int, int>, std::pair<int, int>> meshkernel::CurvilinearGrid::GetTwoClosestNodeIndices(Point point)
-{
-    SearchNearestNeighbors(point, MeshLocations::Nodes);
-    if (GetNumNearestNeighbors(MeshLocations::Nodes) < 2)
-    {
-        throw std::invalid_argument("CurvilinearGrid::GetTwoClosestNodeIndices: Could not find two close nodes to given point");
-    }
-
-    const auto nodeIndex_0 = GetNearestNeighborIndex(0, MeshLocations::Nodes);
-    const auto nodeIndex_1 = GetNearestNeighborIndex(1, MeshLocations::Nodes);
-    return {{m_gridIndices[nodeIndex_0].first, m_gridIndices[nodeIndex_0].second},
-            {m_gridIndices[nodeIndex_1].first, m_gridIndices[nodeIndex_1].second}};
+    return m_gridIndices[nodeIndex];
 }
 
 bool meshkernel::CurvilinearGrid::IsValidFace(size_t m, size_t n) const
@@ -466,6 +452,18 @@ void meshkernel::CurvilinearGrid::ComputeGridNodeTypes()
     }
 }
 
-void meshkernel::CurvilinearGrid::InsertFace(Point point)
+void meshkernel::CurvilinearGrid::InsertFace(Point firstPoint, Point secondPoint)
 {
+    // Compute the grid node types
+    ComputeGridNodeTypes();
+
+    // Get the indices of the two closest nodes to `point`
+    auto [mFirstNode, nFirstNode] = GetNodeIndices(firstPoint);
+    auto [mSecondNode, nSecondNode] = GetNodeIndices(secondPoint);
+}
+
+bool meshkernel::CurvilinearGrid::AreNeighbors(meshkernel::CurvilinearGrid::NodeIndices firstNode,
+                                               meshkernel::CurvilinearGrid::NodeIndices secondNode) const
+{
+    return false;
 }

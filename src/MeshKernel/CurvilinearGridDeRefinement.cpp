@@ -44,8 +44,8 @@ meshkernel::CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(std::shared
 meshkernel::CurvilinearGrid meshkernel::CurvilinearGridDeRefinement::Compute()
 {
     // Get the m and n indices from the point coordinates
-    auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(m_firstPoint);
-    auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(m_secondPoint);
+    const auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(m_firstPoint);
+    const auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(m_secondPoint);
 
     /// The points must lie on the same gridline
     if (mSecondNode - mFirstNode != 0 && nSecondNode - nFirstNode != 0)
@@ -54,8 +54,8 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridDeRefinement::Compute()
     }
 
     /// estimate the dimension of the refined grid
-    const auto numMToDeRefine = std::max(1, mSecondNode - mFirstNode);
-    const auto numNToDeRefine = std::max(1, nSecondNode - nFirstNode);
+    const auto numMToDeRefine = std::max(static_cast<size_t>(1), mSecondNode - mFirstNode);
+    const auto numNToDeRefine = std::max(static_cast<size_t>(1), nSecondNode - nFirstNode);
 
     // the de-refined grid
     std::vector<std::vector<Point>> deRefinedGrid;

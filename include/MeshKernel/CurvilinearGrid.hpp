@@ -54,6 +54,15 @@ namespace meshkernel
             Invalid        //(0)
         };
 
+        /// @brief A struct describing the column and row indices of a node
+        struct NodeIndices
+        {
+            /// Columns
+            size_t m;
+            /// Rows
+            size_t n;
+        };
+
         /// @brief Default constructor
         /// @returns
         CurvilinearGrid() = default;
@@ -65,14 +74,14 @@ namespace meshkernel
 
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
         /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
-        std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<std::pair<size_t, size_t>>> ConvertCurvilinearToNodesAndEdges();
+        std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<NodeIndices>> ConvertCurvilinearToNodesAndEdges();
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         void SetFlatCopies();
 
         /// @brief Get the m and n indices of the node closest to the point
         /// @param[in] point       The input grid points
-        std::pair<int, int> GetNodeIndices(Point point);
+        NodeIndices GetNodeIndices(Point point);
 
         /// @brief Computes the grid nodes types and the faces masks
         void ComputeGridNodeTypes();
@@ -85,16 +94,18 @@ namespace meshkernel
         bool IsValidFace(size_t m, size_t n) const;
 
         /// @brief Inserts a new face.
-        /// The two nodes closest to \p point determine properties of the new face.
-        /// @param[in] point The input point for setting where to put the new face
-        void InsertFace(Point point);
+        /// \p firstPoint and \p secondPoint are required to be neighbors
+        /// and to be located at the boundary of the curvilinear grid.
+        /// @param[in] firstPoint  The first point spanning up the new face
+        /// @param[in] secondPoint The second point spanning up the new face
+        void InsertFace(Point firstPoint, Point secondPoint);
 
-        size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
-        size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)
-        std::vector<std::vector<Point>> m_gridNodes;          ///< Member variable storing the grid
-        std::vector<std::vector<bool>> m_gridFacesMask;       ///< The mask of the grid faces (true/false)
-        std::vector<std::vector<NodeType>> m_gridNodesMask;   ///< The grid node types
-        std::vector<std::pair<size_t, size_t>> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
+        size_t m_numM = 0;                                  ///< The number of m coordinates (vertical lines)
+        size_t m_numN = 0;                                  ///< The number of n coordinates (horizontal lines)
+        std::vector<std::vector<Point>> m_gridNodes;        ///< Member variable storing the grid
+        std::vector<std::vector<bool>> m_gridFacesMask;     ///< The mask of the grid faces (true/false)
+        std::vector<std::vector<NodeType>> m_gridNodesMask; ///< The grid node types
+        std::vector<NodeIndices> m_gridIndices;             ///< The original mapping of the flatten nodes in the curvilinear grid
 
     private:
         /// @brief Remove invalid nodes.
@@ -110,8 +121,10 @@ namespace meshkernel
         /// @returns The spline derivatives
         std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
 
-        /// @brief Get the indices of the two closest nodes to a given point
-        /// @param[in] point Point, where the closest nodes are wanted
-        std::pair<std::pair<int, int>, std::pair<int, int>> GetTwoClosestNodeIndices(Point point);
+        /// @brief Determines whether to nodes are next to each other
+        /// @param[in] firstNode  The first node
+        /// @param[in] secondNode The second node
+        /// @returns Whether \p firstNode and \p secondNode are neighbors
+        [[nodiscard]] bool AreNeighbors(NodeIndices firstNode, NodeIndices secondNode) const;
     };
 } // namespace meshkernel
