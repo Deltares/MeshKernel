@@ -130,6 +130,15 @@ namespace meshkernel
             return point;
         }
 
+        /// @brief Overloads multiplication with a double
+        Point operator*(int const& rhs) const
+        {
+            Point point{
+                x * rhs,
+                y * rhs};
+            return point;
+        }
+
         /// @brief Overloads division with another Point
         Point operator/(Point const& rhs) const
         {

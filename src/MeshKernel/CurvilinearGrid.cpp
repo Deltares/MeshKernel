@@ -494,3 +494,23 @@ bool meshkernel::CurvilinearGrid::AreNeighbors(meshkernel::CurvilinearGrid::Node
     }
     return false;
 }
+
+bool meshkernel::CurvilinearGrid::AddNodeAtBoundary(meshkernel::CurvilinearGrid::NodeIndices node)
+{
+    if (m_gridNodesMask[node.m][node.n] == NodeType::Left)
+    {
+        std::vector<Point> newColumn(m_gridNodes[node.m].size(), {doubleMissingValue, doubleMissingValue});
+        newColumn[node.n] = m_gridNodes[node.m][node.n] * 2 - m_gridNodes[node.m + 1][node.n];
+        m_gridNodes.emplace(m_gridNodes.begin(), newColumn);
+    }
+
+    // TODO: Add Bottom, Top and Right cases
+    // Bottom has to be treated special again (unlike Left with a loop)
+
+    if (m_gridNodesMask[node.m][node.n] == NodeType::Bottom ||
+        m_gridNodesMask[node.m][node.n] == NodeType::Left)
+    {
+        return true;
+    }
+    return false;
+}

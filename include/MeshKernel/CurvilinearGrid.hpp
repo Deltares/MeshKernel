@@ -88,8 +88,8 @@ namespace meshkernel
 
         /// @brief Determines if a face is valid.
         /// A face is valid if all its nodes are valid.
-        /// @param[in] m the m coordinate
-        /// @param[in] n the n coordinate
+        /// @param[in] m The m coordinate
+        /// @param[in] n The n coordinate
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
 
@@ -126,5 +126,12 @@ namespace meshkernel
         /// @param[in] secondNode The second node
         /// @returns Whether \p firstNode and \p secondNode are neighbors
         [[nodiscard]] bool AreNeighbors(NodeIndices firstNode, NodeIndices secondNode) const;
+
+        /// @brief Adds node at boundary
+        /// The position of the new node depends on the \ref NodeType of \p node.
+        /// For example, if \ref NodeType of \p node is `Left`, the new node will be inserted left of it.
+        /// @param[in] node A node with \ref NodeType `Left`, `Right`, `Bottom` or `Up`
+        /// @returns Whether member variables need to be recalculated
+        [[nodiscard]] bool AddNodeAtBoundary(NodeIndices node);
     };
 } // namespace meshkernel
