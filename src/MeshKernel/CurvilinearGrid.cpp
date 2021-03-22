@@ -33,21 +33,9 @@
 
 meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection) : m_gridNodes(std::move(grid))
 {
-    if (m_gridNodes.empty())
+    if (!IsValid())
     {
-        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: m_gridNodes is empty. ");
-    }
-    if (m_gridNodes[0].empty())
-    {
-        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: m_gridNodes[0] is empty");
-    }
-    if (m_gridNodes.size() < 2)
-    {
-        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: m_gridNodes.size() < 2");
-    }
-    if (m_gridNodes[0].size() < 2)
-    {
-        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: m_gridNodes[0].size() < 2");
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid ");
     }
 
     m_projection = projection;
@@ -67,21 +55,9 @@ void meshkernel::CurvilinearGrid::SetFlatCopies()
 
 std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>> meshkernel::CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
 {
-    if (m_gridNodes.empty())
+    if (!IsValid())
     {
-        throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: m_gridNodes is empty ");
-    }
-    if (m_gridNodes[0].empty())
-    {
-        throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: m_gridNodes[0] is empty");
-    }
-    if (m_gridNodes.size() < 2)
-    {
-        throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: m_gridNodes.size() < 2");
-    }
-    if (m_gridNodes[0].size() < 2)
-    {
-        throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: m_gridNodes[0].size() < 2");
+        throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: Invalid curvilinear grid ");
     }
 
     std::vector<Point> nodes(m_gridNodes.size() * m_gridNodes[0].size());
@@ -134,6 +110,28 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     edges.resize(ind);
 
     return {nodes, edges, gridIndices};
+}
+
+bool meshkernel::CurvilinearGrid::IsValid() const
+{
+    if (m_gridNodes.empty())
+    {
+        return false;
+    }
+    if (m_gridNodes[0].empty())
+    {
+        return false;
+    }
+    if (m_gridNodes.size() < 2)
+    {
+        return false;
+    }
+    if (m_gridNodes[0].size() < 2)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 std::tuple<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)

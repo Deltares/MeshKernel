@@ -63,6 +63,10 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection);
 
+        /// @brief Check if current curvilinear grid instance is valid
+        /// @return True if valid, false otherwise
+        bool IsValid() const;
+
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
         /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
         std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<std::pair<size_t, size_t>>> ConvertCurvilinearToNodesAndEdges();
