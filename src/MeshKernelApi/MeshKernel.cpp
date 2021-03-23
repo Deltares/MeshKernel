@@ -520,14 +520,14 @@ namespace meshkernelapi
             auto polygon = std::make_shared<meshkernel::Polygons>(nodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             auto landBoundary = std::make_shared<meshkernel::LandBoundaries>(landBoundaries, meshKernelState[meshKernelId].m_mesh2d, polygon);
 
-            meshKernelState[meshKernelId].m_orthogonalization = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                                            smoother,
-                                                                                                                            orthogonalizer,
-                                                                                                                            polygon,
-                                                                                                                            landBoundary,
-                                                                                                                            static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
-                                                                                                                            orthogonalizationParameters);
-            meshKernelState[meshKernelId].m_orthogonalization->Initialize();
+            meshKernelState[meshKernelId].m_meshOrthogonalization = std::make_shared<meshkernel::OrthogonalizationAndSmoothing>(meshKernelState[meshKernelId].m_mesh2d,
+                                                                                                                                smoother,
+                                                                                                                                orthogonalizer,
+                                                                                                                                polygon,
+                                                                                                                                landBoundary,
+                                                                                                                                static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
+                                                                                                                                orthogonalizationParameters);
+            meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize();
         }
         catch (...)
         {
@@ -551,7 +551,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            meshKernelState[meshKernelId].m_orthogonalization->PrepareOuterIteration();
+            meshKernelState[meshKernelId].m_meshOrthogonalization->PrepareOuterIteration();
         }
         catch (...)
         {
@@ -575,7 +575,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            meshKernelState[meshKernelId].m_orthogonalization->InnerIteration();
+            meshKernelState[meshKernelId].m_meshOrthogonalization->InnerIteration();
         }
         catch (...)
         {
@@ -599,7 +599,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            meshKernelState[meshKernelId].m_orthogonalization->FinalizeOuterIteration();
+            meshKernelState[meshKernelId].m_meshOrthogonalization->FinalizeOuterIteration();
         }
         catch (...)
         {
@@ -623,7 +623,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            meshKernelState[meshKernelId].m_orthogonalization.reset();
+            meshKernelState[meshKernelId].m_meshOrthogonalization.reset();
         }
         catch (...)
         {
@@ -1819,10 +1819,10 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_compute_orthogonal_curvilinear(int meshKernelId,
-                                                           const GeometryList& geometryListIn,
-                                                           const CurvilinearParameters& curvilinearParameters,
-                                                           const SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
+    MKERNEL_API int mkernel_compute_orthogonal_grid_from_splines_curvilinear(int meshKernelId,
+                                                                             const GeometryList& geometryListIn,
+                                                                             const CurvilinearParameters& curvilinearParameters,
+                                                                             const SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -1848,10 +1848,10 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_initialize_orthogonal_curvilinear(int meshKernelId,
-                                                              const GeometryList& geometryList,
-                                                              const CurvilinearParameters& curvilinearParameters,
-                                                              const SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
+    MKERNEL_API int mkernel_initialize_orthogonal_grid_from_splines_curvilinear(int meshKernelId,
+                                                                                const GeometryList& geometryList,
+                                                                                const CurvilinearParameters& curvilinearParameters,
+                                                                                const SplinesToCurvilinearParameters& splinesToCurvilinearParameters)
     {
         int exitCode = Success;
         try
@@ -1875,7 +1875,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_iterate_orthogonal_curvilinear(int meshKernelId, int layer)
+    MKERNEL_API int mkernel_iterate_orthogonal_grid_from_splines_curvilinear(int meshKernelId, int layer)
     {
         int exitCode = Success;
         try
@@ -1894,7 +1894,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refresh_orthogonal_curvilinear(int meshKernelId)
+    MKERNEL_API int mkernel_refresh_orthogonal_grid_from_splines_curvilinear(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -1915,7 +1915,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_orthogonal_curvilinear(int meshKernelId)
+    MKERNEL_API int mkernel_delete_orthogonal_grid_from_splines_curvilinear(int meshKernelId)
     {
         int exitCode = Success;
         try
@@ -1960,10 +1960,30 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId,
-                                                      const OrthogonalizationParameters& orthogonalizationParameters,
-                                                      const GeometryList& geometryListFirstPoint,
-                                                      const GeometryList& geometryListSecondPoint)
+    MKERNEL_API int mkernel_initialize_orthogonalize_curvilinear(int meshKernelId,
+                                                                 const OrthogonalizationParameters& orthogonalizationParameters)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization = std::make_shared<meshkernel::CurvilinearGridOrthogonalization>(meshKernelState[meshKernelId].m_curvilinearGrid,
+                                                                                                                                              orthogonalizationParameters);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_set_block_orthogonalize_curvilinear(int meshKernelId,
+                                                                const GeometryList& geometryListFirstPoint,
+                                                                const GeometryList& geometryListSecondPoint)
     {
         int exitCode = Success;
         try
@@ -1972,6 +1992,12 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
+            {
+                throw std::invalid_argument("MeshKernel: No valid curvilinear grid orthogonalization algorithm instance found.");
+            }
+
             const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
 
             if (firstPoint.empty())
@@ -1986,12 +2012,66 @@ namespace meshkernelapi
             }
 
             // Execute
-            meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                                                          orthogonalizationParameters,
-                                                                                          firstPoint[0],
-                                                                                          secondPoint[0]);
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetBlock(firstPoint[0], secondPoint[0]);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
 
-            curvilinearGridOrthogonalization.Compute();
+    MKERNEL_API int mkernel_add_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
+                                                                       const GeometryList& geometryListFirstPoint,
+                                                                       const GeometryList& geometryListSecondPoint)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
+            {
+                throw std::invalid_argument("MeshKernel: No valid curvilinear grid orthogonalization algorithm instance found.");
+            }
+
+            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+
+            if (firstPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
+            }
+
+            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
+            if (secondPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
+            }
+
+            // Execute
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+
+            // Execute
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute();
         }
         catch (...)
         {

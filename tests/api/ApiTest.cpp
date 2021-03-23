@@ -1537,25 +1537,25 @@ TEST_F(ApiTests, GenerateOrthogonalCurvilinearGridThroughApi)
     splinesToCurvilinearParameters.GrowGridOutside = 0;
 
     // Execute
-    auto errorCode = mkernel_initialize_orthogonal_curvilinear(meshKernelId,
-                                                               geometryListIn,
-                                                               curvilinearParameters,
-                                                               splinesToCurvilinearParameters);
+    auto errorCode = mkernel_initialize_orthogonal_grid_from_splines_curvilinear(meshKernelId,
+                                                                                 geometryListIn,
+                                                                                 curvilinearParameters,
+                                                                                 splinesToCurvilinearParameters);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Grow grid, from the second layer
     for (auto layer = 1; layer <= curvilinearParameters.NRefinement; ++layer)
     {
-        errorCode = meshkernelapi::mkernel_iterate_orthogonal_curvilinear(meshKernelId, layer);
+        errorCode = meshkernelapi::mkernel_iterate_orthogonal_grid_from_splines_curvilinear(meshKernelId, layer);
         ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     }
 
     // Puts the computed curvilinear mesh into the mesh state (unstructured mesh)
-    errorCode = meshkernelapi::mkernel_refresh_orthogonal_curvilinear(meshKernelId);
+    errorCode = meshkernelapi::mkernel_refresh_orthogonal_grid_from_splines_curvilinear(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Delete the mesh curvilinearGridFromSplinesInstances vector entry
-    errorCode = meshkernelapi::mkernel_delete_orthogonal_curvilinear(meshKernelId);
+    errorCode = meshkernelapi::mkernel_delete_orthogonal_grid_from_splines_curvilinear(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
 
     // Get the new state
@@ -1716,7 +1716,11 @@ TEST_F(ApiTests, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
     orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
 
     // Execute
-    errorCode = mkernel_orthogonalize_curvilinear(meshKernelId, orthogonalizationParameters, firstPoint, secondPoint);
+    errorCode = mkernel_initialize_orthogonalize_curvilinear(meshKernelId, orthogonalizationParameters);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    errorCode = mkernel_set_block_orthogonalize_curvilinear(meshKernelId, firstPoint, secondPoint);
+    ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_orthogonalize_curvilinear(meshKernelId);
     ASSERT_EQ(meshkernelapi::MeshKernelApiErrors::Success, errorCode);
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
     errorCode = mkernel_get_curvilinear_dimensions(meshKernelId, curvilinearGrid);

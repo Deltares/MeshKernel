@@ -644,10 +644,10 @@ namespace meshkernelapi
         /// @param[in] curvilinearParameters          The input parameters to generate the curvilinear grid
         /// @param[in] splinesToCurvilinearParameters The parameters of the advancing front algorithm
         /// @returns Error code
-        MKERNEL_API int mkernel_compute_orthogonal_curvilinear(int meshKernelId,
-                                                               const GeometryList& geometryList,
-                                                               const CurvilinearParameters& curvilinearParameters,
-                                                               const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
+        MKERNEL_API int mkernel_compute_orthogonal_grid_from_splines_curvilinear(int meshKernelId,
+                                                                                 const GeometryList& geometryList,
+                                                                                 const CurvilinearParameters& curvilinearParameters,
+                                                                                 const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
         /// @brief Generates a curvilinear grid from splines with the advancing front method. Initialization step (interactive)
         /// @param[in] meshKernelId                    The id of the mesh state
@@ -655,26 +655,26 @@ namespace meshkernelapi
         /// @param[in] curvilinearParameters           The input parameters to generate the curvilinear grid
         /// @param[in] splinesToCurvilinearParameters  The parameters of the advancing front algorithm
         /// @returns Error code
-        MKERNEL_API int mkernel_initialize_orthogonal_curvilinear(int meshKernelId,
-                                                                  const GeometryList& geometryList,
-                                                                  const CurvilinearParameters& curvilinearParameters,
-                                                                  const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
+        MKERNEL_API int mkernel_initialize_orthogonal_grid_from_splines_curvilinear(int meshKernelId,
+                                                                                    const GeometryList& geometryList,
+                                                                                    const CurvilinearParameters& curvilinearParameters,
+                                                                                    const SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
         /// @brief One advancement of the front in curvilinear grid from splines (interactive)
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] layer        The layer index
         /// @returns Error code
-        MKERNEL_API int mkernel_iterate_orthogonal_curvilinear(int meshKernelId, int layer);
+        MKERNEL_API int mkernel_iterate_orthogonal_grid_from_splines_curvilinear(int meshKernelId, int layer);
 
         /// @brief Converts curvilinear grid to mesh and refreshes the state (interactive)
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_refresh_orthogonal_curvilinear(int meshKernelId);
+        MKERNEL_API int mkernel_refresh_orthogonal_grid_from_splines_curvilinear(int meshKernelId);
 
         /// @brief Finalizes curvilinear grid from splines algorithm
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_delete_orthogonal_curvilinear(int meshKernelId);
+        MKERNEL_API int mkernel_delete_orthogonal_grid_from_splines_curvilinear(int meshKernelId);
 
         /// @brief Makes a new mesh
         /// @param[in] meshKernelId       The id of the mesh state
@@ -685,16 +685,31 @@ namespace meshkernelapi
                                                          const MakeMeshParameters& makeGridParameters,
                                                          const GeometryList& geometryList);
 
+        MKERNEL_API int mkernel_initialize_orthogonalize_curvilinear(int meshKernelId,
+                                                                     const OrthogonalizationParameters& orthogonalizationParameters);
+
+        /// @brief Freezes a line in the curvilinear orthogonalization process
+        /// @param meshKernelId[in] The id of the mesh state
+        /// @param geometryListFirstPoint[in] The geometry list containing the first point of the line to freeze
+        /// @param geometryListSecondPoint[in] The geometry list containing the second point of the line to freeze
+        /// @return  Error code
+        MKERNEL_API int mkernel_add_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
+                                                                           const GeometryList& geometryListFirstPoint,
+                                                                           const GeometryList& geometryListSecondPoint);
+
+        /// @brief Define a block on the curvilinear grid where to perform orthogonalization
+        /// @param meshKernelId The id of the mesh state
+        /// @param[in] geometryListFirstPoint  The geometry list containing the lower left corner of the block to orthogonalize
+        /// @param[in] geometryListSecondPoint The geometry list containing the upper left corner of the block to orthogonalize
+        /// @return  Error code
+        MKERNEL_API int mkernel_set_block_orthogonalize_curvilinear(int meshKernelId,
+                                                                    const GeometryList& geometryListFirstPoint,
+                                                                    const GeometryList& geometryListSecondPoint);
+
         /// @brief Orthogonalize a curvilinear grid
         /// @param[in] meshKernelId       The id of the mesh state
-        /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters
-        /// @param[in] geometryListFirstPoint  The geometry list containing the lower left corner of the block to orthogonalize.
-        /// @param[in] geometryListSecondPoint The geometry list containing the upper left corner of the block to orthogonalize.
         /// @returns Error code
-        MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId,
-                                                          const OrthogonalizationParameters& orthogonalizationParameters,
-                                                          const GeometryList& geometryListFirstPoint,
-                                                          const GeometryList& geometryListSecondPoint);
+        MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId);
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);

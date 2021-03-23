@@ -21,7 +21,8 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_Shoul
     orthogonalizationParameters.BoundaryIterations = 25;
     orthogonalizationParameters.InnerIterations = 25;
     orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
-    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters, {0, 0}, {30, 30});
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
 
     // Execute
     curvilinearGridOrthogonalization.Compute();
@@ -80,8 +81,8 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGrid_S
     orthogonalizationParameters.BoundaryIterations = 25;
     orthogonalizationParameters.InnerIterations = 25;
     orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
-    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters, {80154, 366530}, {80610, 367407});
-
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
     // Execute
     curvilinearGridOrthogonalization.Compute();
 
@@ -139,7 +140,8 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     orthogonalizationParameters.BoundaryIterations = 25;
     orthogonalizationParameters.InnerIterations = 25;
     orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
-    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters, {80154, 366530}, {80610, 367407});
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
 
     // Execute
     curvilinearGridOrthogonalization.Compute();

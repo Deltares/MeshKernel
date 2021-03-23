@@ -33,13 +33,9 @@
 #include <MeshKernel/Splines.hpp>
 
 meshkernel::CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
-                                                                               const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters,
-                                                                               const Point& firstCornerPoint,
-                                                                               const Point& secondCornerPoint)
+                                                                               const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters)
     : m_grid(grid),
-      m_orthogonalizationParameters(orthogonalizationParameters),
-      m_firstCornerPoint(firstCornerPoint),
-      m_secondCornerPoint(secondCornerPoint)
+      m_orthogonalizationParameters(orthogonalizationParameters)
 
 {
     /// Store the grid lines of the curvilinear grid as splines
@@ -54,11 +50,11 @@ meshkernel::CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(s
     m_atp.resize(m_grid->m_numM, std::vector<double>(m_grid->m_numN, doubleMissingValue));
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::Compute()
+void meshkernel::CurvilinearGridOrthogonalization::SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint)
 {
     // Get the m and n indices from the point coordinates
-    auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(m_firstCornerPoint);
-    auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(m_secondCornerPoint);
+    auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(firstCornerPoint);
+    auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(secondCornerPoint);
 
     // Coinciding corner nodes, no valid area, nothing to do
     if (mFirstNode == mSecondNode && nFirstNode == nSecondNode)
@@ -71,7 +67,10 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
     m_minN = std::min(nFirstNode, nSecondNode);
     m_maxM = std::max(mFirstNode, mSecondNode);
     m_maxN = std::max(nFirstNode, nSecondNode);
+}
 
+void meshkernel::CurvilinearGridOrthogonalization::Compute()
+{
     // Compute the grid node types
     m_grid->ComputeGridNodeTypes();
 
