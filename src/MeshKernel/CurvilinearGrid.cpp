@@ -504,8 +504,23 @@ bool meshkernel::CurvilinearGrid::AddNodeAtBoundary(meshkernel::CurvilinearGrid:
         m_gridNodes.emplace(m_gridNodes.begin(), newColumn);
     }
 
-    // TODO: Add Bottom, Top and Right cases
-    // Bottom has to be treated special again (unlike Left with a loop)
+    if (m_gridNodesMask[node.m][node.n] == NodeType::Bottom)
+    {
+        for (size_t m = 0; m < m_gridNodes.size(); ++m)
+        {
+            if (m == node.m)
+            {
+                auto newNode = m_gridNodes[node.m][node.n] * 2 - m_gridNodes[node.m][node.n + 1];
+                m_gridNodes[m]
+                    .emplace(m_gridNodes[m].begin(), newNode);
+                continue;
+            }
+            m_gridNodes[m]
+                .emplace(m_gridNodes[m].begin(), Point{doubleMissingValue, doubleMissingValue});
+        }
+    }
+
+    // TODO: Add Top and Right cases
 
     if (m_gridNodesMask[node.m][node.n] == NodeType::Bottom ||
         m_gridNodesMask[node.m][node.n] == NodeType::Left)
