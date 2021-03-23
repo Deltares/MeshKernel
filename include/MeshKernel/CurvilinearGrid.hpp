@@ -130,6 +130,7 @@ namespace meshkernel
         /// @brief Adds node at boundary
         /// The position of the new node depends on the \ref NodeType of \p node.
         /// For example, if \ref NodeType of \p node is `Left`, the new node will be inserted left of it.
+        /// The new node will be calculated by a first order approximation: x2 = x1 + (x1 - x0) = 2*x1 - x0
         /// @param[in] node A node with \ref NodeType `Left`, `Right`, `Bottom` or `Up`
         /// @returns Whether member variables need to be recalculated
         [[nodiscard]] bool AddNodeAtBoundary(NodeIndices node);

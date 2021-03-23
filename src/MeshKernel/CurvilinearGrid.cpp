@@ -473,6 +473,25 @@ void meshkernel::CurvilinearGrid::InsertFace(Point firstPoint, Point secondPoint
     {
         throw std::invalid_argument("CurvilinearGrid::InsertFace: At least one of the two given nodes is invalid.");
     }
+
+    // Add first node
+    auto firstNodeNeedsRecalculation = AddNodeAtBoundary(firstNode);
+    if (firstNodeNeedsRecalculation)
+    {
+        ComputeGridNodeTypes();
+    }
+
+    // Add second node
+    auto secondNodeNeedsRecalculation = AddNodeAtBoundary(secondNode);
+    if (secondNodeNeedsRecalculation)
+    {
+        ComputeGridNodeTypes();
+    }
+
+    if (firstNodeNeedsRecalculation || secondNodeNeedsRecalculation)
+    {
+        SetFlatCopies();
+    }
 }
 
 bool meshkernel::CurvilinearGrid::AreNeighbors(meshkernel::CurvilinearGrid::NodeIndices firstNode,
@@ -504,6 +523,13 @@ bool meshkernel::CurvilinearGrid::AddNodeAtBoundary(meshkernel::CurvilinearGrid:
         m_gridNodes.emplace(m_gridNodes.begin(), newColumn);
     }
 
+    if (m_gridNodesMask[node.m][node.n] == NodeType::Right)
+    {
+        std::vector<Point> newColumn(m_gridNodes[node.m].size(), {doubleMissingValue, doubleMissingValue});
+        newColumn[node.n] = m_gridNodes[node.m][node.n] * 2 - m_gridNodes[node.m + 1][node.n];
+        m_gridNodes.emplace_back(newColumn);
+    }
+
     if (m_gridNodesMask[node.m][node.n] == NodeType::Bottom)
     {
         for (size_t m = 0; m < m_gridNodes.size(); ++m)
@@ -511,16 +537,29 @@ bool meshkernel::CurvilinearGrid::AddNodeAtBoundary(meshkernel::CurvilinearGrid:
             if (m == node.m)
             {
                 auto newNode = m_gridNodes[node.m][node.n] * 2 - m_gridNodes[node.m][node.n + 1];
-                m_gridNodes[m]
-                    .emplace(m_gridNodes[m].begin(), newNode);
+                m_gridNodes[m].emplace(m_gridNodes[m].begin(), newNode);
                 continue;
             }
-            m_gridNodes[m]
-                .emplace(m_gridNodes[m].begin(), Point{doubleMissingValue, doubleMissingValue});
+            m_gridNodes[m].emplace(m_gridNodes[m].begin(), Point{doubleMissingValue, doubleMissingValue});
         }
     }
 
-    // TODO: Add Top and Right cases
+    if (m_gridNodesMask[node.m][node.n] == NodeType::Up)
+    {
+        for (size_t m = 0; m < m_gridNodes.size(); ++m)
+        {
+            if (m == node.m)
+            {
+                auto newNode = m_gridNodes[node.m][node.n] * 2 - m_gridNodes[node.m][node.n + 1];
+                m_gridNodes[m].emplace_back(newNode);
+                continue;
+            }
+            m_gridNodes[m].emplace_back(Point{doubleMissingValue, doubleMissingValue});
+        }
+    }
+
+    // If NodeType is BottomLeft, UpperLeft, BottomRight or UpperRight
+    // then we don't add a node
 
     if (m_gridNodesMask[node.m][node.n] == NodeType::Bottom ||
         m_gridNodesMask[node.m][node.n] == NodeType::Left)
