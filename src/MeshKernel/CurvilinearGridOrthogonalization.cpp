@@ -128,7 +128,7 @@ void meshkernel::CurvilinearGridOrthogonalization::SetFrozenLine(Point const& fi
     m_frozenLines.emplace_back(minM, minN, maxM, maxN);
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::AccountForFrozenLines()
+void meshkernel::CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
 {
     for (auto const& frozenLine : m_frozenLines)
     {
@@ -150,7 +150,7 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
     m_grid->ComputeGridNodeTypes();
 
     // Set the frozen node mask
-    AccountForFrozenLines();
+    ComputeFrozenGridPoints();
 
     // Compute the matrix coefficients
     for (auto outerIterations = 0; outerIterations < m_orthogonalizationParameters.OuterIterations; ++outerIterations)

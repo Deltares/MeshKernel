@@ -210,7 +210,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     ASSERT_NEAR(366996.07892524434, curvilinearGrid->m_gridNodes[2][8].y, tolerance);
 }
 
-TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalGrid_WithCrossingFrozenLines_ShouldThrowAnStdException)
+TEST(CurvilinearGridOrthogonalization, SetFrozenLine_OnONonOrthogonalGrid_WithCrossingFrozenLines_ShouldThrowAnStdException)
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
@@ -226,4 +226,65 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalGrid_WithCrossing
 
     // Execute and assert
     ASSERT_THROW(curvilinearGridOrthogonalization.SetFrozenLine({80052, 366824}, {80774, 367186}), std::exception);
+}
+
+TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWithFrozenLines_ShouldOrthogonalizeGrid)
+{
+    // Set-up
+    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
+
+    meshkernelapi::OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.OuterIterations = 2;
+    orthogonalizationParameters.BoundaryIterations = 25;
+    orthogonalizationParameters.InnerIterations = 25;
+    orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
+    curvilinearGridOrthogonalization.SetFrozenLine({80144, 367046}, {80329, 366550});
+
+    // Execute
+    curvilinearGridOrthogonalization.Compute();
+
+    // Assert
+    constexpr double tolerance = 1e-6;
+
+    ASSERT_NEAR(79983.796374595549, curvilinearGrid->m_gridNodes[0][0].x, tolerance);
+    ASSERT_NEAR(80069.479272425073, curvilinearGrid->m_gridNodes[0][1].x, tolerance);
+    ASSERT_NEAR(80153.235772058310, curvilinearGrid->m_gridNodes[0][2].x, tolerance);
+    ASSERT_NEAR(80234.211288098682, curvilinearGrid->m_gridNodes[0][3].x, tolerance);
+    ASSERT_NEAR(80314.661153602894, curvilinearGrid->m_gridNodes[0][4].x, tolerance);
+    ASSERT_NEAR(80392.150195938390, curvilinearGrid->m_gridNodes[0][5].x, tolerance);
+    ASSERT_NEAR(80467.771942028790, curvilinearGrid->m_gridNodes[0][6].x, tolerance);
+    ASSERT_NEAR(80540.898431866168, curvilinearGrid->m_gridNodes[0][7].x, tolerance);
+    ASSERT_NEAR(80611.260660513333, curvilinearGrid->m_gridNodes[0][8].x, tolerance);
+
+    ASSERT_NEAR(80055.196755132944, curvilinearGrid->m_gridNodes[1][0].x, tolerance);
+    ASSERT_NEAR(80143.960692327732, curvilinearGrid->m_gridNodes[1][1].x, tolerance);
+    ASSERT_NEAR(80234.924195000407, curvilinearGrid->m_gridNodes[1][2].x, tolerance);
+    ASSERT_NEAR(80324.849820521486, curvilinearGrid->m_gridNodes[1][3].x, tolerance);
+    ASSERT_NEAR(80416.240608373060, curvilinearGrid->m_gridNodes[1][4].x, tolerance);
+    ASSERT_NEAR(80507.596543850144, curvilinearGrid->m_gridNodes[1][5].x, tolerance);
+    ASSERT_NEAR(80595.526594976516, curvilinearGrid->m_gridNodes[1][6].x, tolerance);
+    ASSERT_NEAR(80680.087189144266, curvilinearGrid->m_gridNodes[1][7].x, tolerance);
+    ASSERT_NEAR(80760.998582117099, curvilinearGrid->m_gridNodes[1][8].x, tolerance);
+
+    ASSERT_NEAR(366936.89538054139, curvilinearGrid->m_gridNodes[0][0].y, tolerance);
+    ASSERT_NEAR(366994.21866791911, curvilinearGrid->m_gridNodes[0][1].y, tolerance);
+    ASSERT_NEAR(367052.51483841456, curvilinearGrid->m_gridNodes[0][2].y, tolerance);
+    ASSERT_NEAR(367110.61675055756, curvilinearGrid->m_gridNodes[0][3].y, tolerance);
+    ASSERT_NEAR(367170.31164987158, curvilinearGrid->m_gridNodes[0][4].y, tolerance);
+    ASSERT_NEAR(367232.48168405943, curvilinearGrid->m_gridNodes[0][5].y, tolerance);
+    ASSERT_NEAR(367292.78650072071, curvilinearGrid->m_gridNodes[0][6].y, tolerance);
+    ASSERT_NEAR(367351.20135266299, curvilinearGrid->m_gridNodes[0][7].y, tolerance);
+    ASSERT_NEAR(367407.38541954994, curvilinearGrid->m_gridNodes[0][8].y, tolerance);
+
+    ASSERT_NEAR(366824.96156769694, curvilinearGrid->m_gridNodes[1][0].y, tolerance);
+    ASSERT_NEAR(366872.12740536616, curvilinearGrid->m_gridNodes[1][1].y, tolerance);
+    ASSERT_NEAR(366919.18816119258, curvilinearGrid->m_gridNodes[1][2].y, tolerance);
+    ASSERT_NEAR(366964.42115637776, curvilinearGrid->m_gridNodes[1][3].y, tolerance);
+    ASSERT_NEAR(367010.41102564143, curvilinearGrid->m_gridNodes[1][4].y, tolerance);
+    ASSERT_NEAR(367057.91817534604, curvilinearGrid->m_gridNodes[1][5].y, tolerance);
+    ASSERT_NEAR(367106.12547266396, curvilinearGrid->m_gridNodes[1][6].y, tolerance);
+    ASSERT_NEAR(367155.26906854485, curvilinearGrid->m_gridNodes[1][7].y, tolerance);
+    ASSERT_NEAR(367205.43327878905, curvilinearGrid->m_gridNodes[1][8].y, tolerance);
 }

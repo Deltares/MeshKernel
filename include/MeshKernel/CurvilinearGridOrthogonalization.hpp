@@ -70,8 +70,8 @@ namespace meshkernel
         /// @brief Project the n boundary nodes onto the original grid (BNDSMT)
         void ProjectVerticalBoundariesGridNodes();
 
-        /// @brief Account for frozen lines (FIXDDBOUNDARIES)
-        void AccountForFrozenLines();
+        /// @brief Compute frozen grid points (FIXDDBOUNDARIES)
+        void ComputeFrozenGridPoints();
 
         /// @brief Computes the matrix coefficients (ATPPAR)
         void ComputeCoefficients();
