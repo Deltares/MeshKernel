@@ -693,7 +693,7 @@ namespace meshkernelapi
         /// @param geometryListFirstPoint[in] The geometry list containing the first point of the line to freeze
         /// @param geometryListSecondPoint[in] The geometry list containing the second point of the line to freeze
         /// @return  Error code
-        MKERNEL_API int mkernel_add_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
+        MKERNEL_API int mkernel_set_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
                                                                            const GeometryList& geometryListFirstPoint,
                                                                            const GeometryList& geometryListSecondPoint);
 
@@ -710,6 +710,11 @@ namespace meshkernelapi
         /// @param[in] meshKernelId       The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId);
+
+        /// @brief Resets the CurvilinearGridOrthogonalization instance in MeshKernelState
+        /// @param meshKernelId[in] The id of the mesh state
+        /// @return  Error code
+        MKERNEL_API int mkernel_finalize_orthogonalize_curvilinear(int meshKernelId);
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);

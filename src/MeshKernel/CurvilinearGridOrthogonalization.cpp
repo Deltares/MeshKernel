@@ -63,10 +63,61 @@ void meshkernel::CurvilinearGridOrthogonalization::SetBlock(Point const& firstCo
     }
 
     // Compute orthogonalization bounding box
-    m_minM = std::min(mFirstNode, mSecondNode);
-    m_minN = std::min(nFirstNode, nSecondNode);
-    m_maxM = std::max(mFirstNode, mSecondNode);
-    m_maxN = std::max(nFirstNode, nSecondNode);
+    const auto [minM, minN, maxM, maxN] = OrderCoordinates(mFirstNode, nFirstNode, mSecondNode, nSecondNode);
+    m_minM = minM;
+    m_minN = minN;
+    m_maxM = maxM;
+    m_maxN = maxN;
+}
+
+std::tuple<size_t, size_t, size_t, size_t> meshkernel::CurvilinearGridOrthogonalization::OrderCoordinates(size_t firstPointM, size_t firstPointN, size_t secondPointM, size_t secondPointN)
+{
+    return {std::min(firstPointM, secondPointM), std::min(firstPointN, secondPointN), std::max(firstPointM, secondPointM), std::max(firstPointN, secondPointN)};
+}
+
+void meshkernel::CurvilinearGridOrthogonalization::SetLineToFreeze(Point const& firstPoint, Point const& secondPoint)
+{
+    // Get the m and n indices from the point coordinates
+    auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(firstPoint);
+    auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(secondPoint);
+
+    // Coinciding nodes, no valid line, nothing to do
+    if (mFirstNode == mSecondNode && nFirstNode == nSecondNode)
+    {
+        return;
+    }
+
+    // The selected nodes must be on the vertical or horizontal line
+    const auto [minM, minN, maxM, maxN] = OrderCoordinates(mFirstNode, nFirstNode, mSecondNode, nSecondNode);
+    auto const deltaMNewLine = maxM - minM;
+    auto const deltaNNewLine = maxN - minN;
+    if (deltaMNewLine != 0 && deltaNNewLine != 0)
+    {
+        throw std::invalid_argument("CurvilinearGridOrthogonalization::SetLineToFreeze points must lie on the same grid line");
+    }
+    // The m or n coordinate of the line
+    const auto lineCoordinate = deltaMNewLine == 0 ? minM : minN;
+
+    // Frozen lines cannot cross
+    for (auto const& frozenLine : m_frozenLines)
+    {
+        auto const& [minMLine, minNLine, maxMLine, maxNLine] = frozenLine;
+
+        auto const deltaMLine = maxMLine - minMLine;
+        const auto startLine = deltaMLine == 0 ? minNLine : minMLine;
+        const auto endLine = deltaMLine == 0 ? maxNLine : maxMLine;
+        for (auto i = startLine; i <= endLine; ++i)
+        {
+            if (i == lineCoordinate)
+            {
+                // Curvilinear grid lines are crossing
+                throw std::invalid_argument("line are crossing");
+            }
+        }
+    }
+
+    // Now a frozen line can be stored
+    m_frozenLines.emplace_back(minM, minN, maxM, maxN);
 }
 
 void meshkernel::CurvilinearGridOrthogonalization::Compute()
@@ -78,7 +129,7 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
     for (auto outerIterations = 0; outerIterations < m_orthogonalizationParameters.OuterIterations; ++outerIterations)
     {
         ComputeCoefficients();
-        FreezeBoundaries();
+        AccountForFrozenLines();
         for (auto boundaryIterations = 0; boundaryIterations < m_orthogonalizationParameters.BoundaryIterations; ++boundaryIterations)
         {
             Solve();
@@ -293,7 +344,7 @@ void meshkernel::CurvilinearGridOrthogonalization::Solve()
     }
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::FreezeBoundaries() const
+void meshkernel::CurvilinearGridOrthogonalization::AccountForFrozenLines() const
 {
     // To complete
 }

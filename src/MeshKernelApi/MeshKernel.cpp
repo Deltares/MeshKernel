@@ -1884,6 +1884,10 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
+            if (meshKernelState[meshKernelId].m_curvilinearGridFromSplines == nullptr)
+            {
+                throw std::invalid_argument("MeshKernel: CurvilinearGridFromSplines not instantiated.");
+            }
 
             meshKernelState[meshKernelId].m_curvilinearGridFromSplines->Iterate(layer);
         }
@@ -1902,6 +1906,11 @@ namespace meshkernelapi
             if (meshKernelState.count(meshKernelId) == 0)
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGridFromSplines == nullptr)
+            {
+                throw std::invalid_argument("MeshKernel: CurvilinearGridFromSplines not instantiated.");
             }
 
             const auto curvilinearGrid = meshKernelState[meshKernelId].m_curvilinearGridFromSplines->ComputeCurvilinearGridFromGridPoints();
@@ -1924,6 +1933,12 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGridFromSplines == nullptr)
+            {
+                throw std::invalid_argument("MeshKernel: CurvilinearGridFromSplines not instantiated.");
+            }
+
             meshKernelState[meshKernelId].m_curvilinearGridFromSplines.reset();
         }
         catch (...)
@@ -1995,7 +2010,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: No valid curvilinear grid orthogonalization algorithm instance found.");
+                throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
             }
 
             const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
@@ -2021,7 +2036,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_add_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
+    MKERNEL_API int mkernel_set_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
                                                                        const GeometryList& geometryListFirstPoint,
                                                                        const GeometryList& geometryListSecondPoint)
     {
@@ -2035,7 +2050,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
             {
-                throw std::invalid_argument("MeshKernel: No valid curvilinear grid orthogonalization algorithm instance found.");
+                throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
             }
 
             const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
@@ -2052,6 +2067,7 @@ namespace meshkernelapi
             }
 
             // Execute
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetLineToFreeze(firstPoint[0], secondPoint[0]);
         }
         catch (...)
         {
@@ -2070,8 +2086,37 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
 
+            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
+            {
+                throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
+            }
+
             // Execute
             meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute();
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_finalize_orthogonalize_curvilinear(int meshKernelId)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
+            {
+                throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization.reset();
         }
         catch (...)
         {

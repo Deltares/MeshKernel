@@ -55,6 +55,11 @@ namespace meshkernel
         /// @param[in] secondCornerPoint           The second point defining the orthogonalization bounding box
         void SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint);
 
+        /// @brief Sets a line in the grid that will not move during the orthogonalization process
+        /// @param[in] firstPoint The geometry list containing the first point of the line to freeze
+        /// @param[in] secondPoint The geometry list containing the second point of the line to freeze
+        void SetLineToFreeze(Point const& firstPoint, Point const& secondPoint);
+
     private:
         /// @brief Solve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)
         void Solve();
@@ -65,8 +70,8 @@ namespace meshkernel
         /// @brief Project the n boundary nodes onto the original grid (BNDSMT)
         void ProjectVerticalBoundariesGridNodes();
 
-        /// @brief Freeze nodes with a specific flag (FIXDDBOUNDARIES)
-        void FreezeBoundaries() const;
+        /// @brief Account for frozen lines (FIXDDBOUNDARIES)
+        void AccountForFrozenLines() const;
 
         /// @brief Computes the matrix coefficients (ATPPAR)
         void ComputeCoefficients();
@@ -76,6 +81,14 @@ namespace meshkernel
 
         /// @brief Compute the matrix coefficients for n-gridlines (SOMDIST)
         void ComputeVerticalCoefficients();
+
+        /// @brief Orders the m and n coordinates of the points on the grid
+        /// @param firstPointM The m coordinate of the first point
+        /// @param firstPointN The n coordinate of the first point
+        /// @param secondPointM The m coordinate of the second point
+        /// @param secondPointN The n coordinate of the second point
+        /// @return The min m, min n, max m and max n of the input points
+        std::tuple<size_t, size_t, size_t, size_t> OrderCoordinates(size_t firstPointM, size_t firstPointN, size_t secondPointM, size_t secondPointN);
 
         /// @brief Some nodes on m boundary grid lines
         [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidHorizontalBoundaryNodes() const;
@@ -97,6 +110,8 @@ namespace meshkernel
         std::vector<std::vector<double>> m_d;   ///< The d term of the orthogonalization equation
         std::vector<std::vector<double>> m_e;   ///< The e term of the orthogonalization equation
         std::vector<std::vector<double>> m_atp; ///< The atp term of the orthogonalization equation
+
+        std::vector<std::tuple<size_t, size_t, size_t, size_t>> m_frozenLines; ///< The frozen lines, expresse as start point and end point m and n corrdinates
 
         Splines m_splines; ///< The grid lines stored as splines
     };
