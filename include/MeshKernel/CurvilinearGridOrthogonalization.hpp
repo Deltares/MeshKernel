@@ -58,7 +58,7 @@ namespace meshkernel
         /// @brief Sets a line in the grid that will not move during the orthogonalization process
         /// @param[in] firstPoint The geometry list containing the first point of the line to freeze
         /// @param[in] secondPoint The geometry list containing the second point of the line to freeze
-        void SetLineToFreeze(Point const& firstPoint, Point const& secondPoint);
+        void SetFrozenLine(Point const& firstPoint, Point const& secondPoint);
 
     private:
         /// @brief Solve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)
@@ -71,7 +71,7 @@ namespace meshkernel
         void ProjectVerticalBoundariesGridNodes();
 
         /// @brief Account for frozen lines (FIXDDBOUNDARIES)
-        void AccountForFrozenLines() const;
+        void AccountForFrozenLines();
 
         /// @brief Computes the matrix coefficients (ATPPAR)
         void ComputeCoefficients();
@@ -111,7 +111,8 @@ namespace meshkernel
         std::vector<std::vector<double>> m_e;   ///< The e term of the orthogonalization equation
         std::vector<std::vector<double>> m_atp; ///< The atp term of the orthogonalization equation
 
-        std::vector<std::tuple<size_t, size_t, size_t, size_t>> m_frozenLines; ///< The frozen lines, expresse as start point and end point m and n corrdinates
+        std::vector<std::tuple<size_t, size_t, size_t, size_t>> m_frozenLines; ///< The frozen lines, expressed as m and n starting points
+        std::vector<std::vector<bool>> m_isGridNodeFrozen;                     ///< A mask for setting some of the grid nodes frozen
 
         Splines m_splines; ///< The grid lines stored as splines
     };

@@ -2067,7 +2067,7 @@ namespace meshkernelapi
             }
 
             // Execute
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetLineToFreeze(firstPoint[0], secondPoint[0]);
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetFrozenLine(firstPoint[0], secondPoint[0]);
         }
         catch (...)
         {
