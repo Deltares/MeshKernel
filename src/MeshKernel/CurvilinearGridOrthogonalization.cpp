@@ -29,6 +29,7 @@
 #include <MeshKernel/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
@@ -118,7 +119,7 @@ void meshkernel::CurvilinearGridOrthogonalization::SetFrozenLine(Point const& fi
             {
                 if (j == constantCoordinateCurrentLine && i == constantCoordinateLine)
                 {
-                    throw std::exception("CurvilinearGridOrthogonalization::SetFrozenLine the new line to freeze is crossing an existing line");
+                    throw AlgorithmError("CurvilinearGridOrthogonalization::SetFrozenLine the new line to freeze is crossing an existing line");
                 }
             }
         }
