@@ -694,8 +694,8 @@ namespace meshkernelapi
 
         /// @brief Freezes a line in the curvilinear orthogonalization process
         /// @param[in] meshKernelId[in] The id of the mesh state
-        /// @param[in] geometryListFirstPoint[in] The geometry list containing the first point of the line to freeze
-        /// @param[in] geometryListSecondPoint[in] The geometry list containing the second point of the line to freeze
+        /// @param[in] geometryListFirstPoint The geometry list containing the first point of the line to freeze
+        /// @param[in] geometryListSecondPoint The geometry list containing the second point of the line to freeze
         /// @returns  Error code
         MKERNEL_API int mkernel_set_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
                                                                            const GeometryList& geometryListFirstPoint,
