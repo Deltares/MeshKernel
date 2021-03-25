@@ -685,14 +685,18 @@ namespace meshkernelapi
                                                          const MakeMeshParameters& makeGridParameters,
                                                          const GeometryList& geometryList);
 
+        /// @brief Initializes the orthogonal curvilinear algorithm
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] orthogonalizationParameters The orthogonalization parameters to use in the algorithm
+        /// @returns Error code
         MKERNEL_API int mkernel_initialize_orthogonalize_curvilinear(int meshKernelId,
                                                                      const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Freezes a line in the curvilinear orthogonalization process
-        /// @param meshKernelId[in] The id of the mesh state
-        /// @param geometryListFirstPoint[in] The geometry list containing the first point of the line to freeze
-        /// @param geometryListSecondPoint[in] The geometry list containing the second point of the line to freeze
-        /// @return  Error code
+        /// @param[in] meshKernelId[in] The id of the mesh state
+        /// @param[in] geometryListFirstPoint[in] The geometry list containing the first point of the line to freeze
+        /// @param[in] geometryListSecondPoint[in] The geometry list containing the second point of the line to freeze
+        /// @returns  Error code
         MKERNEL_API int mkernel_set_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
                                                                            const GeometryList& geometryListFirstPoint,
                                                                            const GeometryList& geometryListSecondPoint);
@@ -712,7 +716,7 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId);
 
         /// @brief Resets the CurvilinearGridOrthogonalization instance in MeshKernelState
-        /// @param meshKernelId[in] The id of the mesh state
+        /// @param[in] meshKernelId The id of the mesh state
         /// @return  Error code
         MKERNEL_API int mkernel_finalize_orthogonalize_curvilinear(int meshKernelId);
 
