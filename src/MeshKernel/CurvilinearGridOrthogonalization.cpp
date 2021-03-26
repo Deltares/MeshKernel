@@ -72,7 +72,7 @@ void meshkernel::CurvilinearGridOrthogonalization::SetBlock(Point const& firstCo
     m_maxN = maxN;
 }
 
-std::tuple<size_t, size_t, size_t, size_t> meshkernel::CurvilinearGridOrthogonalization::OrderCoordinates(size_t firstPointM, size_t firstPointN, size_t secondPointM, size_t secondPointN)
+std::tuple<size_t, size_t, size_t, size_t> meshkernel::CurvilinearGridOrthogonalization::OrderCoordinates(size_t firstPointM, size_t firstPointN, size_t secondPointM, size_t secondPointN) const
 {
     return {std::min(firstPointM, secondPointM), std::min(firstPointN, secondPointN), std::max(firstPointM, secondPointM), std::max(firstPointN, secondPointN)};
 }
@@ -92,8 +92,7 @@ void meshkernel::CurvilinearGridOrthogonalization::SetFrozenLine(Point const& fi
     // The selected nodes must be on the vertical or horizontal line
     const auto [minM, minN, maxM, maxN] = OrderCoordinates(mFirstNode, nFirstNode, mSecondNode, nSecondNode);
     auto const deltaMNewLine = maxM - minM;
-    auto const deltaNNewLine = maxN - minN;
-    if (deltaMNewLine != 0 && deltaNNewLine != 0)
+    if (auto const deltaNNewLine = maxN - minN; deltaMNewLine != 0 && deltaNNewLine != 0)
     {
         throw std::invalid_argument("CurvilinearGridOrthogonalization::SetFrozenLine the points of the line to freeze must lie on the same grid line");
     }
@@ -135,9 +134,9 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
     {
         auto const& [minMCurrentLine, minNCurrentLine, maxMCurrentLine, maxNCurrentLine] = frozenLine;
 
-        for (int m = minMCurrentLine; m <= maxMCurrentLine; ++m)
+        for (auto m = minMCurrentLine; m <= maxMCurrentLine; ++m)
         {
-            for (int n = minNCurrentLine; n <= maxNCurrentLine; ++n)
+            for (auto n = minNCurrentLine; n <= maxNCurrentLine; ++n)
             {
                 m_isGridNodeFrozen[m][n] = true;
             }

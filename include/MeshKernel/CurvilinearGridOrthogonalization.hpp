@@ -88,7 +88,7 @@ namespace meshkernel
         /// @param secondPointM The m coordinate of the second point
         /// @param secondPointN The n coordinate of the second point
         /// @return The min m, min n, max m and max n of the input points
-        std::tuple<size_t, size_t, size_t, size_t> OrderCoordinates(size_t firstPointM, size_t firstPointN, size_t secondPointM, size_t secondPointN);
+        std::tuple<size_t, size_t, size_t, size_t> OrderCoordinates(size_t firstPointM, size_t firstPointN, size_t secondPointM, size_t secondPointN) const;
 
         /// @brief Some nodes on m boundary grid lines
         [[nodiscard]] std::vector<std::vector<bool>> ComputeInvalidHorizontalBoundaryNodes() const;
