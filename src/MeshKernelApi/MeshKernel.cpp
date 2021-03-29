@@ -2028,10 +2028,9 @@ namespace meshkernelapi
 
             // Execute
             meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                                          static_cast<size_t>(smoothingIterations),
-                                                                          firstPoint[0],
-                                                                          secondPoint[0]);
+                                                                          static_cast<size_t>(smoothingIterations));
 
+            curvilinearGridSmoothing.SetBlock(firstPoint[0], secondPoint[0]);
             curvilinearGridSmoothing.Compute();
         }
         catch (...)

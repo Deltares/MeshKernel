@@ -16,9 +16,10 @@ TEST(CurvilinearGridSmoothing, Compute_OnSmoothCurvilinearGrid_ShouldNotSmoothGr
 
     const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
 
-    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10, {0, 0}, {30, 30});
+    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
 
     // Execute
+    curvilinearGridSmoothing.SetBlock({0, 0}, {30, 30});
     curvilinearGridSmoothing.Compute();
 
     // Assert nodes are on the same location because the grid is already smooth
@@ -69,9 +70,10 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGrid_ShouldSmoothG
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
-    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10, {80154, 366530}, {80610, 367407});
+    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
 
     // Execute
+    curvilinearGridSmoothing.SetBlock({80154, 366530}, {80610, 367407});
     curvilinearGridSmoothing.Compute();
 
     // Assert
@@ -123,9 +125,10 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGridWithMissingEle
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGridWithMissingFaces();
 
-    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10, {80154, 366530}, {80610, 367407});
+    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
 
     // Execute
+    curvilinearGridSmoothing.SetBlock({80154, 366530}, {80610, 367407});
     curvilinearGridSmoothing.Compute();
 
     // Assert

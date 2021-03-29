@@ -29,7 +29,6 @@
 
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/Splines.hpp>
 
 meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection) : m_gridNodes(std::move(grid))
 {
@@ -134,7 +133,7 @@ bool meshkernel::CurvilinearGrid::IsValid() const
     return true;
 }
 
-std::tuple<int, int> meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
+meshkernel::CurvilinearGrid::NodeIndices meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
 {
     SearchNearestNeighbors(point, MeshLocations::Nodes);
     if (GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
@@ -153,6 +152,12 @@ bool meshkernel::CurvilinearGrid::IsValidFace(size_t m, size_t n) const
            m_gridNodes[m][n + 1].IsValid() &&
            m_gridNodes[m + 1][n + 1].IsValid();
 };
+
+std::tuple<meshkernel::CurvilinearGrid::NodeIndices, meshkernel::CurvilinearGrid::NodeIndices>
+meshkernel::CurvilinearGrid::ComputeBoundingBoxCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const
+{
+    return {{std::min(firstNode.m, secondNode.m), std::max(firstNode.n, secondNode.n)}, {std::max(firstNode.m, secondNode.m), std::min(firstNode.n, secondNode.n)}};
+}
 
 void meshkernel::CurvilinearGrid::ComputeGridFacesMask()
 {

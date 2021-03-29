@@ -28,11 +28,11 @@
 #pragma once
 #include <memory>
 
+#include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 
 namespace meshkernel
 {
-    class CurvilinearGrid;
 
     /// @brief A class implementing the curvilinear grid smoothing algorithm
     class CurvilinearGridSmoothing
@@ -41,15 +41,18 @@ namespace meshkernel
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
         /// @param[in] smoothingIterations         The number of smoothing iterations to perform
-        /// @param[in] firstCornerPoint            The first point defining the smoothing bounding box
-        /// @param[in] secondCornerPoint           The second point defining the smoothing bounding box
         CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid,
-                                 size_t smoothingIterations,
-                                 const Point& firstCornerPoint,
-                                 const Point& secondCornerPoint);
+                                 size_t smoothingIterations);
 
         /// @brief Compute curvilinear grid smoothing (modifies the m_grid nodal values)
         void Compute();
+
+        void ComputeLineSmooth(Point const& firstLinePoint, Point const& secondLinePoint, Point const& leftPointInfluenceZone, Point const& rightPointInfluenceZone);
+
+        /// @brief Sets the orthogonalization block (TODO: Create base class for curvi orthogonalization and smoothing)
+        /// @param[in] firstCornerPoint            The first point defining the orthogonalization bounding box
+        /// @param[in] secondCornerPoint           The second point defining the orthogonalization bounding box
+        void SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint);
 
     private:
         /// @brief Solve one smoothing iteration
@@ -61,15 +64,26 @@ namespace meshkernel
         /// @param n The current n coordinate on the boundary of the curvilinear grid
         void ProjectPointOnClosestGridBoundary(Point const& point, size_t m, size_t n);
 
+        /// @brief Function for computing the smoothing factor at the current location given a line and an area of influence (SMEERFUNCTIE)
+        /// @param currentPoint
+        /// @param firstLinePointIndices
+        /// @param secondLinePointIndices
+        /// @param leftPointInfluenceZone
+        /// @param rightPointInfluenceZone
+        /// @return
+        std::tuple<double, double, double> ComputeSmoothingFactors(CurvilinearGrid::NodeIndices const& currentPoint,
+                                                                   const CurvilinearGrid::NodeIndices& firstLinePointIndices,
+                                                                   const CurvilinearGrid::NodeIndices& secondLinePointIndices,
+                                                                   const CurvilinearGrid::NodeIndices& leftPointInfluenceZone,
+                                                                   const CurvilinearGrid::NodeIndices& rightPointInfluenceZone) const;
+
         std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
         size_t m_smoothingIterations;            ///< The orthogonalization parameters
-        Point m_firstCornerPoint;                ///< The first point defining the orthogonalization bounding box
-        Point m_secondCornerPoint;               ///< The second point defining the orthogonalization bounding box
 
-        size_t m_minM; ///< The minimum m grid index of the orthogonalization bounding box
-        size_t m_minN; ///< The minimum n grid index of the orthogonalization bounding box
-        size_t m_maxM; ///< The maximum m grid index of the orthogonalization bounding box
-        size_t m_maxN; ///< The maximum n grid index of the orthogonalization bounding box
+        size_t m_minM; ///< The minimum m grid index of the smoothing block
+        size_t m_minN; ///< The minimum n grid index of the smoothing block
+        size_t m_maxM; ///< The maximum m grid index of the smoothing block
+        size_t m_maxN; ///< The maximum n grid index of the smoothing block
 
         std::vector<std::vector<Point>> m_gridNodesCache; ///< A cache for storing current iteration node positions
     };

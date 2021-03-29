@@ -54,6 +54,25 @@ namespace meshkernel
             Invalid        //(0)
         };
 
+        /// @brief A struct describing the column and row indices of a node
+        struct NodeIndices
+        {
+            bool operator==(const NodeIndices& rhs) const
+            {
+                return m == rhs.m && n == rhs.n;
+            }
+
+            bool operator!=(const NodeIndices& rhs) const
+            {
+                return !(*this == rhs);
+            }
+
+            /// Columns
+            size_t m;
+            /// Rows
+            size_t n;
+        };
+
         /// @brief Default constructor
         /// @returns
         CurvilinearGrid() = default;
@@ -76,7 +95,7 @@ namespace meshkernel
 
         /// @brief Get the m and n indices of the node closest to the point
         /// @param[in] point       The input grid points
-        std::tuple<int, int> GetNodeIndices(Point point);
+        NodeIndices GetNodeIndices(Point point);
 
         /// @brief Computes the grid nodes types and the faces masks
         void ComputeGridNodeTypes();
@@ -86,6 +105,12 @@ namespace meshkernel
         /// @param[in] n the n coordinate
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
+
+        /// @brief Compute bounding box from two points on the curvilinear grid
+        /// @param[in] firstNode The node indices of the first node
+        /// @param[in] secondNode The node indices of the second node
+        /// @return The upper left and lower right of the box defined by the two points
+        [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBoundingBoxCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const;
 
         size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)

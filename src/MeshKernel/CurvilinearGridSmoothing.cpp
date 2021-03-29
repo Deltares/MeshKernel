@@ -33,46 +33,150 @@
 #include <MeshKernel/Operations.hpp>
 
 meshkernel::CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid,
-                                                               size_t smoothingIterations,
-                                                               const Point& firstCornerPoint,
-                                                               const Point& secondCornerPoint)
+                                                               size_t smoothingIterations)
     : m_grid(grid),
-      m_smoothingIterations(smoothingIterations),
-      m_firstCornerPoint(firstCornerPoint),
-      m_secondCornerPoint(secondCornerPoint)
+      m_smoothingIterations(smoothingIterations)
 
 {
 }
 
-void meshkernel::CurvilinearGridSmoothing::Compute()
+void meshkernel::CurvilinearGridSmoothing::SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint)
 {
     // Get the m and n indices from the point coordinates
-    auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(m_firstCornerPoint);
-    auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(m_secondCornerPoint);
+    auto const firstNode = m_grid->GetNodeIndices(firstCornerPoint);
+    auto const secondNode = m_grid->GetNodeIndices(secondCornerPoint);
 
     // Coinciding corner nodes, no valid area, nothing to do
-    if (mFirstNode == mSecondNode && nFirstNode == nSecondNode)
+    if (firstNode == secondNode)
     {
         return;
     }
 
     // Compute orthogonalization bounding box
-    m_minM = std::min(mFirstNode, mSecondNode);
-    m_minN = std::min(nFirstNode, nSecondNode);
-    m_maxM = std::max(mFirstNode, mSecondNode);
-    m_maxN = std::max(nFirstNode, nSecondNode);
+    auto const [upperLeft, lowerRight] = m_grid->ComputeBoundingBoxCornerPoints(firstNode, secondNode);
+    m_minM = upperLeft.m;
+    m_maxM = lowerRight.m;
+    m_minN = lowerRight.n;
+    m_maxN = upperLeft.n;
+}
 
+void meshkernel::CurvilinearGridSmoothing::Compute()
+{
     // Compute the grid node types
     m_grid->ComputeGridNodeTypes();
 
     // Allocate cache for storing grid nodes values
     m_gridNodesCache.resize(m_grid->m_gridNodes.size(), std::vector<Point>(m_grid->m_gridNodes[0].size()));
 
-    // Compute the matrix coefficients
+    // Perform smoothing iterations
     for (auto smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
     {
         Solve();
     }
+}
+
+void meshkernel::CurvilinearGridSmoothing::ComputeLineSmooth(Point const& firstLinePoint,
+                                                             Point const& secondLinePoint,
+                                                             Point const& leftPointInfluenceZone,
+                                                             Point const& rightPointInfluenceZone)
+{
+    // Get the m and n indices from the point coordinates
+    auto const firstLinePointIndices = m_grid->GetNodeIndices(firstLinePoint);
+    auto const secondLinePointIndices = m_grid->GetNodeIndices(secondLinePoint);
+    auto const leftPointIndices = m_grid->GetNodeIndices(leftPointInfluenceZone);
+    auto const rightPointIndices = m_grid->GetNodeIndices(rightPointInfluenceZone);
+    // Points are coinciding, this no influence area
+    if (leftPointIndices == rightPointIndices)
+    {
+        return;
+    }
+
+    // Determine if an m-grid line is used
+    bool const isMGridLine = firstLinePointIndices.n == secondLinePointIndices.n;
+
+    auto const [upperLeft, lowerRight] = m_grid->ComputeBoundingBoxCornerPoints(leftPointIndices, rightPointIndices);
+    const double smoothingFactor = 0.2;
+
+    // Perform smoothing iterations
+    for (auto smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
+    {
+
+        // assign current nodal values to the m_gridNodesCache
+        for (auto m = 0; m < m_grid->m_gridNodes.size(); ++m)
+        {
+            for (auto n = 0; n < m_grid->m_gridNodes[0].size(); ++n)
+            {
+                m_gridNodesCache[m][n] = m_grid->m_gridNodes[m][n];
+            }
+        }
+
+        // Apply smoothing
+        for (auto m = m_minM; m <= m_maxM; ++m)
+        {
+            for (auto n = m_minN; n <= m_maxN; ++n)
+            {
+                // Apply line smoothing only in internal nodes
+                if (m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::InternalValid)
+                {
+                    continue;
+                }
+
+                // Calculate influence radius
+                Point firstDelta;
+                Point secondDelta;
+                if (isMGridLine)
+                {
+                    firstDelta = m_grid->m_gridNodes[m][n] - m_grid->m_gridNodes[m - 1][n];
+                    secondDelta = m_grid->m_gridNodes[m][n] - m_grid->m_gridNodes[m + 1][n];
+                }
+                else
+                {
+                    firstDelta = m_grid->m_gridNodes[m][n] - m_grid->m_gridNodes[m][n - 1];
+                    secondDelta = m_grid->m_gridNodes[m][n] - m_grid->m_gridNodes[m][n + 1];
+                }
+
+                const auto firstLengthSquared = firstDelta.x * firstDelta.x + firstDelta.y * firstDelta.y;
+                const auto secondLengthSquared = secondDelta.x * secondDelta.x + secondDelta.y * secondDelta.y;
+                const auto maxlength = std::max(firstLengthSquared, secondLengthSquared);
+                const auto carateristicLength = std::abs(secondLengthSquared - firstLengthSquared) * 0.5;
+                const auto [mSmoothing, nSmoothing, mixedSmoothing] = ComputeSmoothingFactors({m, n}, firstLinePointIndices, secondLinePointIndices, upperLeft, lowerRight);
+                const auto a = maxlength < 1e-8 ? 0.5 : mSmoothing * smoothingFactor * carateristicLength / maxlength;
+
+                // smooth
+                if (isMGridLine)
+                {
+                    m_grid->m_gridNodes[m][n] = m_gridNodesCache[m][n] + (m_gridNodesCache[m + 1][n] - m_gridNodesCache[m][n]) * a;
+                }
+                else
+                {
+                    m_grid->m_gridNodes[m][n] = m_gridNodesCache[m][n] + (m_gridNodesCache[m][n + 1] - m_gridNodesCache[m][n]) * a;
+                }
+            }
+        }
+    }
+}
+
+std::tuple<double, double, double> meshkernel::CurvilinearGridSmoothing::ComputeSmoothingFactors(CurvilinearGrid::NodeIndices const& gridpoint,
+                                                                                                 const CurvilinearGrid::NodeIndices& firstLinePointIndices,
+                                                                                                 const CurvilinearGrid::NodeIndices& secondLinePointIndices,
+                                                                                                 const CurvilinearGrid::NodeIndices& leftPointInfluenceZone,
+                                                                                                 const CurvilinearGrid::NodeIndices& rightPointInfluenceZone) const
+{
+
+    // horizontal smoothing factor
+    const auto horizontalDelta = gridpoint.m > firstLinePointIndices.m ? gridpoint.m - firstLinePointIndices.m : firstLinePointIndices.m - gridpoint.m;
+    const auto maxHorizontalDelta = gridpoint.m > firstLinePointIndices.m ? rightPointInfluenceZone.m - firstLinePointIndices.m : firstLinePointIndices.m - leftPointInfluenceZone.m;
+    const auto horizontalSmoothingFactor = (1.0 + std::cos(M_PI * static_cast<double>(horizontalDelta) / static_cast<double>(maxHorizontalDelta))) * 0.5;
+
+    // vertical smoothing factor
+    const auto verticalDelta = gridpoint.n > firstLinePointIndices.n ? gridpoint.n - firstLinePointIndices.n : firstLinePointIndices.n - gridpoint.n;
+    const auto maxVerticalDelta = gridpoint.n > firstLinePointIndices.n ? rightPointInfluenceZone.n - firstLinePointIndices.n : firstLinePointIndices.n - leftPointInfluenceZone.n;
+    const auto verticalSmoothingFactor = (1.0 + std::cos(M_PI * static_cast<double>(verticalDelta) / static_cast<double>(maxVerticalDelta))) * 0.5;
+
+    // mixed smoothing factor
+    const auto mixedSmoothingFactor = std::sqrt(verticalSmoothingFactor * horizontalSmoothingFactor);
+
+    return {horizontalSmoothingFactor, verticalSmoothingFactor, mixedSmoothingFactor};
 }
 
 void meshkernel::CurvilinearGridSmoothing::Solve()
