@@ -156,7 +156,7 @@ bool meshkernel::CurvilinearGrid::IsValidFace(size_t m, size_t n) const
 std::tuple<meshkernel::CurvilinearGrid::NodeIndices, meshkernel::CurvilinearGrid::NodeIndices>
 meshkernel::CurvilinearGrid::ComputeBoundingBoxCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const
 {
-    return {{std::min(firstNode.m, secondNode.m), std::max(firstNode.n, secondNode.n)}, {std::max(firstNode.m, secondNode.m), std::min(firstNode.n, secondNode.n)}};
+    return {{std::min(firstNode.m, secondNode.m), std::min(firstNode.n, secondNode.n)}, {std::max(firstNode.m, secondNode.m), std::max(firstNode.n, secondNode.n)}};
 }
 
 void meshkernel::CurvilinearGrid::ComputeGridFacesMask()

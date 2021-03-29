@@ -53,7 +53,7 @@ namespace meshkernel
         /// @param[in] secondLinePoint The first point of the line
         /// @param[in] leftPointRegion The left point of the smoothing region
         /// @param[in] rightPointRegion The right point of the smoothing region
-        void ComputeLineSmoothOnRegion(Point const& firstLinePoint, Point const& secondLinePoint, Point const& leftPointRegion, Point const& rightPointRegion);
+        void ComputeLineSmooth(Point const& firstLinePoint, Point const& secondLinePoint, Point const& leftPointRegion, Point const& rightPointRegion);
 
         /// @brief Sets the orthogonalization block (TODO: Create base class for curvi orthogonalization and smoothing)
         /// @param[in] firstCornerPoint            The first point defining the orthogonalization bounding box
@@ -73,15 +73,13 @@ namespace meshkernel
         /// @brief Function for computing the smoothing factor at the current location given a line and an area of influence (SMEERFUNCTIE)
         /// @param currentPoint
         /// @param firstLinePointIndices
-        /// @param secondLinePointIndices
-        /// @param leftPointInfluenceZone
-        /// @param rightPointInfluenceZone
+        /// @param lowerLeft
+        /// @param upperRight
         /// @return
         std::tuple<double, double, double> ComputeSmoothingFactors(CurvilinearGrid::NodeIndices const& currentPoint,
                                                                    const CurvilinearGrid::NodeIndices& firstLinePointIndices,
-                                                                   const CurvilinearGrid::NodeIndices& secondLinePointIndices,
-                                                                   const CurvilinearGrid::NodeIndices& leftPointInfluenceZone,
-                                                                   const CurvilinearGrid::NodeIndices& rightPointInfluenceZone) const;
+                                                                   const CurvilinearGrid::NodeIndices& lowerLeft,
+                                                                   const CurvilinearGrid::NodeIndices& upperRight) const;
 
         std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
         size_t m_smoothingIterations;            ///< The orthogonalization parameters

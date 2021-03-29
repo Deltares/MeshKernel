@@ -194,3 +194,17 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGridWithMissingEle
     ASSERT_NEAR(366948.34436165588, curvilinearGrid->m_gridNodes[2][7].y, tolerance);
     ASSERT_NEAR(366996.75152488949, curvilinearGrid->m_gridNodes[2][8].y, tolerance);
 }
+
+TEST(CurvilinearGridSmoothing, ComputeLineSmooth_OnONonSmoothCurvilinearGrid_ShouldSmoothGrid)
+{
+    // Set-up
+    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
+
+    meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
+
+    // Execute
+    curvilinearGridSmoothing.ComputeLineSmooth({80143, 367041}, {80333, 366553}, {80199, 366749}, {80388, 366830});
+
+    // Assert
+    constexpr double tolerance = 1e-6;
+}
