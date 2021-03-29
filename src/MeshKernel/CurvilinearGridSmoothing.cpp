@@ -75,16 +75,16 @@ void meshkernel::CurvilinearGridSmoothing::Compute()
     }
 }
 
-void meshkernel::CurvilinearGridSmoothing::ComputeLineSmooth(Point const& firstLinePoint,
-                                                             Point const& secondLinePoint,
-                                                             Point const& leftPointInfluenceZone,
-                                                             Point const& rightPointInfluenceZone)
+void meshkernel::CurvilinearGridSmoothing::ComputeLineSmoothOnRegion(Point const& firstLinePoint,
+                                                                     Point const& secondLinePoint,
+                                                                     Point const& leftPointRegion,
+                                                                     Point const& rightPointRegion)
 {
     // Get the m and n indices from the point coordinates
     auto const firstLinePointIndices = m_grid->GetNodeIndices(firstLinePoint);
     auto const secondLinePointIndices = m_grid->GetNodeIndices(secondLinePoint);
-    auto const leftPointIndices = m_grid->GetNodeIndices(leftPointInfluenceZone);
-    auto const rightPointIndices = m_grid->GetNodeIndices(rightPointInfluenceZone);
+    auto const leftPointIndices = m_grid->GetNodeIndices(leftPointRegion);
+    auto const rightPointIndices = m_grid->GetNodeIndices(rightPointRegion);
     // Points are coinciding, this no influence area
     if (leftPointIndices == rightPointIndices)
     {

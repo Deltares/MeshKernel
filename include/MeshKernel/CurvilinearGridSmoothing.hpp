@@ -44,10 +44,16 @@ namespace meshkernel
         CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid,
                                  size_t smoothingIterations);
 
-        /// @brief Compute curvilinear grid smoothing (modifies the m_grid nodal values)
+        /// @brief Compute curvilinear grid block smoothing (modifies the m_grid nodal values)
         void Compute();
 
-        void ComputeLineSmooth(Point const& firstLinePoint, Point const& secondLinePoint, Point const& leftPointInfluenceZone, Point const& rightPointInfluenceZone);
+        /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
+        /// The line must be an m or n grid line of the curvilinear grid. The grid is smoothed in the region (influence zone) specified by two corner points.
+        /// @param[in] firstLinePoint The first point of the line
+        /// @param[in] secondLinePoint The first point of the line
+        /// @param[in] leftPointRegion The left point of the smoothing region
+        /// @param[in] rightPointRegion The right point of the smoothing region
+        void ComputeLineSmoothOnRegion(Point const& firstLinePoint, Point const& secondLinePoint, Point const& leftPointRegion, Point const& rightPointRegion);
 
         /// @brief Sets the orthogonalization block (TODO: Create base class for curvi orthogonalization and smoothing)
         /// @param[in] firstCornerPoint            The first point defining the orthogonalization bounding box

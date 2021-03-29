@@ -57,20 +57,19 @@ namespace meshkernel
         /// @brief A struct describing the column and row indices of a node
         struct NodeIndices
         {
+            /// @brief Overloads equality with another NodeIndices
             bool operator==(const NodeIndices& rhs) const
             {
                 return m == rhs.m && n == rhs.n;
             }
-
+            /// @brief Overloads negation with another NodeIndices
             bool operator!=(const NodeIndices& rhs) const
             {
                 return !(*this == rhs);
             }
 
-            /// Columns
-            size_t m;
-            /// Rows
-            size_t n;
+            size_t m; ///< Columns
+            size_t n; ///< Rows
         };
 
         /// @brief Default constructor
