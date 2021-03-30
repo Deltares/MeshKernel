@@ -48,19 +48,20 @@ namespace meshkernel
         void Compute();
 
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
-        /// The line must be an m or n grid line of the curvilinear grid. The grid is smoothed in the region (influence zone) specified by two corner points.
-        /// @param[in] firstLinePoint The first point of the line
-        /// @param[in] secondLinePoint The second point of the line
+        /// The line must be an m or n grid line of the curvilinear grid.
+        /// The grid is smoothed in the area specified by the line in one direction and by the two corner points on the other direction.
+        /// @param[in] firstSegmentVertex The first point of the line
+        /// @param[in] secondSegmentVertex The second point of the line
         /// @param[in] lowerLeftCornerSmoothingArea The left point of the smoothing area
         /// @param[in] upperRightCornerSmootingArea The right point of the smoothing area
-        void ComputedDirectionalSmooth(Point const& firstLinePoint,
-                                       Point const& secondLinePoint,
+        void ComputedDirectionalSmooth(Point const& firstSegmentVertex,
+                                       Point const& secondSegmentVertex,
                                        Point const& lowerLeftCornerSmoothingArea,
                                        Point const& upperRightCornerSmootingArea);
 
-        /// @brief Sets the orthogonalization block (TODO: Create base class for curvi orthogonalization and smoothing)
-        /// @param[in] firstCornerPoint            The first point defining the orthogonalization bounding box
-        /// @param[in] secondCornerPoint           The second point defining the orthogonalization bounding box
+        /// @brief Sets the smoothing block (TODO: Create base class for curvi orthogonalization and smoothing)
+        /// @param[in] firstCornerPoint The first point defining the smoothing area
+        /// @param[in] secondCornerPoint The second point defining the smoothing area
         void SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint);
 
     private:

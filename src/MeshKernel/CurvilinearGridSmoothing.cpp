@@ -74,14 +74,14 @@ void meshkernel::CurvilinearGridSmoothing::Compute()
     }
 }
 
-void meshkernel::CurvilinearGridSmoothing::ComputedDirectionalSmooth(Point const& firstLinePoint,
-                                                                     Point const& secondLinePoint,
+void meshkernel::CurvilinearGridSmoothing::ComputedDirectionalSmooth(Point const& firstSegmentVertex,
+                                                                     Point const& secondSegmentVertex,
                                                                      Point const& lowerLeftCornerSmoothingArea,
                                                                      Point const& upperRightCornerSmootingArea)
 {
     // Get the m and n indices from the point coordinates
-    auto const firstLinePointIndices = m_grid->GetNodeIndices(firstLinePoint);
-    auto const secondLinePointIndices = m_grid->GetNodeIndices(secondLinePoint);
+    auto const firstLinePointIndices = m_grid->GetNodeIndices(firstSegmentVertex);
+    auto const secondLinePointIndices = m_grid->GetNodeIndices(secondSegmentVertex);
     auto const leftPointIndices = m_grid->GetNodeIndices(lowerLeftCornerSmoothingArea);
     auto const rightPointIndices = m_grid->GetNodeIndices(upperRightCornerSmootingArea);
 
