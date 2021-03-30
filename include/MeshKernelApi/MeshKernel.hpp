@@ -696,16 +696,31 @@ namespace meshkernelapi
                                                           const GeometryList& geometryListFirstPoint,
                                                           const GeometryList& geometryListSecondPoint);
 
-        /// @brief Smooth a curvilinear grid
-        /// @param meshKernelId The id of the mesh state
-        /// @param smoothingIterations The number of smoothing iterations to perform
-        /// @param geometryListFirstPoint The geometry list containing the lower left corner of the block to smooth
-        /// @param geometryListSecondPoint The geometry list containing the upper right corner of the block to smooth
+        /// @brief Smooths a curvilinear grid
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] smoothingIterations The number of smoothing iterations to perform
+        /// @param[in] lowerLeftCorner The geometry list containing the lower left corner of the block to smooth
+        /// @param[in] upperRightCorner The geometry list containing the upper right corner of the block to smooth
         /// @return Error code
         MKERNEL_API int mkernel_smoothing_curvilinear(int meshKernelId,
                                                       int smoothingIterations,
-                                                      const GeometryList& geometryListFirstPoint,
-                                                      const GeometryList& geometryListSecondPoint);
+                                                      const GeometryList& lowerLeftCorner,
+                                                      const GeometryList& upperRightCorner);
+
+        /// @brief Smooths a curvilinear grid along the direction specified a the line.
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] smoothingIterations The number of smoothing iterations to perform
+        /// @param[in] firstLinePoint The first point of the line
+        /// @param[in] secondLinePoint The second point of the line
+        /// @param[in] lowerLeftCorner The geometry list containing the lower left corner of the smoothing region
+        /// @param[in] upperRightCorner The geometry list containing the upper right corner of the smoothing region
+        /// @return Error code
+        MKERNEL_API int mkernel_smoothing_directional_curvilinear(int meshKernelId,
+                                                                  int smoothingIterations,
+                                                                  GeometryList const& firstLinePoint,
+                                                                  GeometryList const& secondLinePoint,
+                                                                  GeometryList const& lowerLeftCorner,
+                                                                  GeometryList const& upperRightCorner);
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);

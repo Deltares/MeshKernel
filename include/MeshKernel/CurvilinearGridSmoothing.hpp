@@ -50,13 +50,13 @@ namespace meshkernel
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
         /// The line must be an m or n grid line of the curvilinear grid. The grid is smoothed in the region (influence zone) specified by two corner points.
         /// @param[in] firstLinePoint The first point of the line
-        /// @param[in] secondLinePoint The first point of the line
-        /// @param[in] lowerLeftCornerRegion The left point of the smoothing region
-        /// @param[in] upperRightCornerRegion The right point of the smoothing region
+        /// @param[in] secondLinePoint The second point of the line
+        /// @param[in] lowerLeftCornerSmoothingArea The left point of the smoothing area
+        /// @param[in] upperRightCornerSmootingArea The right point of the smoothing area
         void ComputedDirectionalSmooth(Point const& firstLinePoint,
                                        Point const& secondLinePoint,
-                                       Point const& lowerLeftCornerRegion,
-                                       Point const& upperRightCornerRegion);
+                                       Point const& lowerLeftCornerSmoothingArea,
+                                       Point const& upperRightCornerSmootingArea);
 
         /// @brief Sets the orthogonalization block (TODO: Create base class for curvi orthogonalization and smoothing)
         /// @param[in] firstCornerPoint            The first point defining the orthogonalization bounding box
@@ -94,8 +94,6 @@ namespace meshkernel
         /// @param[in] m The current m coordinate on the boundary of the curvilinear grid
         /// @param[in] n The current n coordinate on the boundary of the curvilinear grid
         void ProjectPointOnClosestGridBoundary(Point const& point, size_t m, size_t n);
-
-
 
         std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
         size_t m_smoothingIterations;            ///< The orthogonalization parameters

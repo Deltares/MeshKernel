@@ -76,14 +76,14 @@ void meshkernel::CurvilinearGridSmoothing::Compute()
 
 void meshkernel::CurvilinearGridSmoothing::ComputedDirectionalSmooth(Point const& firstLinePoint,
                                                                      Point const& secondLinePoint,
-                                                                     Point const& lowerLeftCornerRegion,
-                                                                     Point const& upperRightCornerRegion)
+                                                                     Point const& lowerLeftCornerSmoothingArea,
+                                                                     Point const& upperRightCornerSmootingArea)
 {
     // Get the m and n indices from the point coordinates
     auto const firstLinePointIndices = m_grid->GetNodeIndices(firstLinePoint);
     auto const secondLinePointIndices = m_grid->GetNodeIndices(secondLinePoint);
-    auto const leftPointIndices = m_grid->GetNodeIndices(lowerLeftCornerRegion);
-    auto const rightPointIndices = m_grid->GetNodeIndices(upperRightCornerRegion);
+    auto const leftPointIndices = m_grid->GetNodeIndices(lowerLeftCornerSmoothingArea);
+    auto const rightPointIndices = m_grid->GetNodeIndices(upperRightCornerSmootingArea);
 
     // Determine if smoothing should occur in the m direction
     bool const isSmoothingAlongM = firstLinePointIndices.n == secondLinePointIndices.n;
