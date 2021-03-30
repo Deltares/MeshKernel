@@ -396,7 +396,7 @@ namespace meshkernelapi
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
             for (auto i = 0; i < hangingEdges.size(); ++i)
             {
-                *(hangingEdgesIndices)[i] = static_cast<int>(hangingEdges[i]);
+                *hangingEdgesIndices[i] = static_cast<int>(hangingEdges[i]);
             }
         }
         catch (...)
