@@ -110,7 +110,7 @@ void meshkernel::OrthogonalizationAndSmoothing::Compute()
         {
             for (auto innerIter = 0; innerIter < m_orthogonalizationParameters.InnerIterations; innerIter++)
             {
-                InnerIteration();
+                Solve();
 
             } // inner iteration
         }     // boundary iter
@@ -226,7 +226,7 @@ void meshkernel::OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
     }
 }
 
-void meshkernel::OrthogonalizationAndSmoothing::InnerIteration()
+void meshkernel::OrthogonalizationAndSmoothing::Solve()
 {
 #pragma omp parallel for
     for (auto n = 0; n < m_mesh->GetNumNodes(); n++)

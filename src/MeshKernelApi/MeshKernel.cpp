@@ -576,7 +576,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            meshKernelState[meshKernelId].m_orthogonalization->InnerIteration();
+            meshKernelState[meshKernelId].m_orthogonalization->Solve();
         }
         catch (...)
         {
