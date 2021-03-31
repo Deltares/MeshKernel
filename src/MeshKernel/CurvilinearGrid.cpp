@@ -162,7 +162,7 @@ std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices> Curviline
     auto const firstNode = GetNodeIndices(firstCornerPoint);
     auto const secondNode = GetNodeIndices(secondCornerPoint);
 
-    // Compute bounding box from corner points
+    // Compute bounding box as node indices from corner points
     return ComputeBlockFromCornerPoints(firstNode, secondNode);
 }
 

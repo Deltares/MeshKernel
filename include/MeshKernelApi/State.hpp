@@ -56,15 +56,16 @@ namespace meshkernelapi
             m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>();
         }
 
-        // Mesh instances
+        // Geometrical entities instances
         std::shared_ptr<meshkernel::Mesh1D> m_mesh1d;                   ///< Shared pointer to meshkernel::Mesh1D instance
         std::shared_ptr<meshkernel::Mesh2D> m_mesh2d;                   ///< Shared pointer to meshkernel::Mesh2D instance
         std::shared_ptr<meshkernel::Contacts> m_contacts;               ///< Shared pointer to meshkernel::Contacts instance
         std::shared_ptr<meshkernel::CurvilinearGrid> m_curvilinearGrid; ///< Shared pointer to meshkernel::CurvilinearGrid instance
 
-        // For interactivity
-        std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_orthogonalization;       ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
-        std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines; ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
+        // Algorithms instances (interactivity)
+        std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_meshOrthogonalization;                   ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
+        std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines;             ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
+        std::shared_ptr<meshkernel::CurvilinearGridOrthogonalization> m_curvilinearGridOrthogonalization; ///< Shared pointer to meshkernel::CurvilinearGridOrthogonalization instance
 
         // Exclusively owned state
         meshkernel::Projection m_projection; ///< Projection used by the meshes
