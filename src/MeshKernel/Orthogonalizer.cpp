@@ -35,8 +35,8 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 
-using meshkernel::Orthogonalizer;
 using meshkernel::Mesh2D;
+using meshkernel::Orthogonalizer;
 
 Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh2D> mesh) : m_mesh(mesh)
 {
