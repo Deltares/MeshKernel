@@ -88,19 +88,25 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a694b6953bc473d3f22ef60150f6a9acc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#a694b6953bc473d3f22ef60150f6a9acc">CurvilinearGridOrthogonalization</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a> &gt; grid, const <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">meshkernelapi::OrthogonalizationParameters</a> &amp;orthogonalizationParameters, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;firstCornerPoint, const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;secondCornerPoint)</td></tr>
-<tr class="memdesc:a694b6953bc473d3f22ef60150f6a9acc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#a694b6953bc473d3f22ef60150f6a9acc">More...</a><br /></td></tr>
-<tr class="separator:a694b6953bc473d3f22ef60150f6a9acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab21b0ef3e75c436c397c68849f208035"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ab21b0ef3e75c436c397c68849f208035">CurvilinearGridOrthogonalization</a> (std::shared_ptr&lt; <a class="el" href="classmeshkernel_1_1_curvilinear_grid.html">CurvilinearGrid</a> &gt; grid, const <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">meshkernelapi::OrthogonalizationParameters</a> &amp;orthogonalizationParameters)</td></tr>
+<tr class="memdesc:ab21b0ef3e75c436c397c68849f208035"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class constructor.  <a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ab21b0ef3e75c436c397c68849f208035">More...</a><br /></td></tr>
+<tr class="separator:ab21b0ef3e75c436c397c68849f208035"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4e8cc05e856b5f2ff7010b06a2433de"><td class="memItemLeft" align="right" valign="top"><a id="ac4e8cc05e856b5f2ff7010b06a2433de"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ac4e8cc05e856b5f2ff7010b06a2433de">Compute</a> ()</td></tr>
 <tr class="memdesc:ac4e8cc05e856b5f2ff7010b06a2433de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orthogonalize the curvilinear grid (modifies the grid point by m_grid) <br /></td></tr>
 <tr class="separator:ac4e8cc05e856b5f2ff7010b06a2433de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2cd0647c4ccbaaa6d47e1b8d1b10cde"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#af2cd0647c4ccbaaa6d47e1b8d1b10cde">SetBlock</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;firstCornerPoint, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;secondCornerPoint)</td></tr>
+<tr class="memdesc:af2cd0647c4ccbaaa6d47e1b8d1b10cde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the orthogonalization block.  <a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#af2cd0647c4ccbaaa6d47e1b8d1b10cde">More...</a><br /></td></tr>
+<tr class="separator:af2cd0647c4ccbaaa6d47e1b8d1b10cde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad52f08892a08a4fca051614961ff20c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ad52f08892a08a4fca051614961ff20c9">SetFrozenLine</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;firstPoint, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;secondPoint)</td></tr>
+<tr class="memdesc:ad52f08892a08a4fca051614961ff20c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a line in the grid that will not move during the orthogonalization process.  <a href="classmeshkernel_1_1_curvilinear_grid_orthogonalization.html#ad52f08892a08a4fca051614961ff20c9">More...</a><br /></td></tr>
+<tr class="separator:ad52f08892a08a4fca051614961ff20c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class implementing the curvilinear grid orthogonalization algorithm. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a694b6953bc473d3f22ef60150f6a9acc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a694b6953bc473d3f22ef60150f6a9acc">&#9670;&nbsp;</a></span>CurvilinearGridOrthogonalization()</h2>
+<a id="ab21b0ef3e75c436c397c68849f208035"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab21b0ef3e75c436c397c68849f208035">&#9670;&nbsp;</a></span>CurvilinearGridOrthogonalization()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -115,19 +121,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">meshkernelapi::OrthogonalizationParameters</a> &amp;&#160;</td>
-          <td class="paramname"><em>orthogonalizationParameters</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>firstCornerPoint</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>secondCornerPoint</em>&#160;</td>
+          <td class="paramname"><em>orthogonalizationParameters</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -142,8 +136,81 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">grid</td><td>The input curvilinear grid </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">orthogonalizationParameters</td><td>The orthogonalization parameters </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="af2cd0647c4ccbaaa6d47e1b8d1b10cde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2cd0647c4ccbaaa6d47e1b8d1b10cde">&#9670;&nbsp;</a></span>SetBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::CurvilinearGridOrthogonalization::SetBlock </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;&#160;</td>
+          <td class="paramname"><em>firstCornerPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;&#160;</td>
+          <td class="paramname"><em>secondCornerPoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the orthogonalization block. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">firstCornerPoint</td><td>The first point defining the orthogonalization bounding box </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">secondCornerPoint</td><td>The second point defining the orthogonalization bounding box </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad52f08892a08a4fca051614961ff20c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad52f08892a08a4fca051614961ff20c9">&#9670;&nbsp;</a></span>SetFrozenLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::CurvilinearGridOrthogonalization::SetFrozenLine </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;&#160;</td>
+          <td class="paramname"><em>firstPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;&#160;</td>
+          <td class="paramname"><em>secondPoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a line in the grid that will not move during the orthogonalization process. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">firstPoint</td><td>The geometry list containing the first point of the line to freeze </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondPoint</td><td>The geometry list containing the second point of the line to freeze </td></tr>
   </table>
   </dd>
 </dl>

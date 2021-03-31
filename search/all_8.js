@@ -18,12 +18,13 @@ var searchData=
   ['isfullfacenotinpolygon_179',['IsFullFaceNotInPolygon',['../classmeshkernel_1_1_mesh2_d.html#aa61a329e63eeaf3b5e8b8e3f1a2e9b2c',1,'meshkernel::Mesh2D']]],
   ['isleft_180',['IsLeft',['../namespacemeshkernel.html#a5dce9fe20343a37372cb4e442ae836c9',1,'meshkernel']]],
   ['isnodeonboundary_181',['IsNodeOnBoundary',['../classmeshkernel_1_1_mesh.html#a4954d57baf24b3792520bcb81b0d733a',1,'meshkernel::Mesh::IsNodeOnBoundary()'],['../classmeshkernel_1_1_mesh1_d.html#a65167bd7e5182e49b4f246166003672c',1,'meshkernel::Mesh1D::IsNodeOnBoundary()']]],
-  ['ispointinpolygon_182',['IsPointInPolygon',['../classmeshkernel_1_1_polygons.html#a3fea051e182c020f979000d139dcb1e7',1,'meshkernel::Polygons']]],
-  ['ispointinpolygonnodes_183',['IsPointInPolygonNodes',['../namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29',1,'meshkernel']]],
-  ['ispointonpole_184',['IsPointOnPole',['../namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71',1,'meshkernel']]],
-  ['issegmentcrossingaboundaryedge_185',['IsSegmentCrossingABoundaryEdge',['../classmeshkernel_1_1_mesh2_d.html#a5dc822de50acdf0f3cb964c1215a960a',1,'meshkernel::Mesh2D']]],
-  ['isvalid_186',['IsValid',['../classmeshkernel_1_1_curvilinear_grid.html#a7107f2933e944ece983b6df720569365',1,'meshkernel::CurvilinearGrid::IsValid()'],['../structmeshkernel_1_1_point.html#a268487f05fb9526027668d2cbdd3fbff',1,'meshkernel::Point::IsValid()'],['../structmeshkernel_1_1_sample.html#a5566cc0092522f8fc8a19a70cc335cf6',1,'meshkernel::Sample::IsValid()']]],
-  ['isvalidface_187',['IsValidFace',['../classmeshkernel_1_1_curvilinear_grid.html#ae61db04ec3687e5c2d35c08deb4dc39c',1,'meshkernel::CurvilinearGrid']]],
-  ['isvalueinboundingbox_188',['IsValueInBoundingBox',['../namespacemeshkernel.html#a0110cb34de6eada7abb0ef9d08793bd1',1,'meshkernel']]],
-  ['iterate_189',['Iterate',['../classmeshkernel_1_1_curvilinear_grid_from_splines.html#a293be64533b1849b727afafe57169240',1,'meshkernel::CurvilinearGridFromSplines']]]
+  ['isonthesamegridline_182',['IsOnTheSameGridLine',['../structmeshkernel_1_1_curvilinear_grid_1_1_node_indices.html#aeb03521fbe99e422e4822dad878511d9',1,'meshkernel::CurvilinearGrid::NodeIndices']]],
+  ['ispointinpolygon_183',['IsPointInPolygon',['../classmeshkernel_1_1_polygons.html#a3fea051e182c020f979000d139dcb1e7',1,'meshkernel::Polygons']]],
+  ['ispointinpolygonnodes_184',['IsPointInPolygonNodes',['../namespacemeshkernel.html#a0b00b39ebfe727bd035a36e774093d29',1,'meshkernel']]],
+  ['ispointonpole_185',['IsPointOnPole',['../namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71',1,'meshkernel']]],
+  ['issegmentcrossingaboundaryedge_186',['IsSegmentCrossingABoundaryEdge',['../classmeshkernel_1_1_mesh2_d.html#a5dc822de50acdf0f3cb964c1215a960a',1,'meshkernel::Mesh2D']]],
+  ['isvalid_187',['IsValid',['../classmeshkernel_1_1_curvilinear_grid.html#a7107f2933e944ece983b6df720569365',1,'meshkernel::CurvilinearGrid::IsValid()'],['../structmeshkernel_1_1_point.html#a268487f05fb9526027668d2cbdd3fbff',1,'meshkernel::Point::IsValid()'],['../structmeshkernel_1_1_sample.html#a5566cc0092522f8fc8a19a70cc335cf6',1,'meshkernel::Sample::IsValid()']]],
+  ['isvalidface_188',['IsValidFace',['../classmeshkernel_1_1_curvilinear_grid.html#ae61db04ec3687e5c2d35c08deb4dc39c',1,'meshkernel::CurvilinearGrid']]],
+  ['isvalueinboundingbox_189',['IsValueInBoundingBox',['../namespacemeshkernel.html#a0110cb34de6eada7abb0ef9d08793bd1',1,'meshkernel']]],
+  ['iterate_190',['Iterate',['../classmeshkernel_1_1_curvilinear_grid_from_splines.html#a293be64533b1849b727afafe57169240',1,'meshkernel::CurvilinearGridFromSplines']]]
 ];
