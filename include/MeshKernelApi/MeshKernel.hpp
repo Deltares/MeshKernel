@@ -702,7 +702,7 @@ namespace meshkernelapi
                                                                            const GeometryList& geometryListSecondPoint);
 
         /// @brief Define a block on the curvilinear grid where to perform orthogonalization
-        /// @param meshKernelId The id of the mesh state
+        /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] geometryListFirstPoint  The geometry list containing the lower left corner of the block to orthogonalize
         /// @param[in] geometryListSecondPoint The geometry list containing the upper left corner of the block to orthogonalize
         /// @return  Error code
@@ -712,9 +712,6 @@ namespace meshkernelapi
 
         /// @brief Orthogonalize a curvilinear grid
         /// @param[in] meshKernelId       The id of the mesh state
-        /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters
-        /// @param[in] geometryListFirstPoint  The geometry list containing the lower left corner of the block to orthogonalize
-        /// @param[in] geometryListSecondPoint The geometry list containing the upper right corner of the block to orthogonalize
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId);
 
