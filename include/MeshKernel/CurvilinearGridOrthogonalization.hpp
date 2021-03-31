@@ -109,8 +109,8 @@ namespace meshkernel
         std::vector<std::vector<double>> m_e;   ///< The e term of the orthogonalization equation
         std::vector<std::vector<double>> m_atp; ///< The atp term of the orthogonalization equation
 
-        std::vector<std::tuple<size_t, size_t, size_t, size_t>> m_frozenLines; ///< The frozen lines, expressed as m and n starting points
-        std::vector<std::vector<bool>> m_isGridNodeFrozen;                     ///< A mask for setting some of the grid nodes frozen
+        std::vector<std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices>> m_frozenLines; ///< The frozen lines, expressed as m and n starting points
+        std::vector<std::vector<bool>> m_isGridNodeFrozen;                                                 ///< A mask for setting some of the grid nodes frozen
 
         Splines m_splines; ///< The grid lines stored as splines
     };

@@ -78,41 +78,39 @@ CurvilinearGridOrthogonalization::OrderCoordinates(size_t firstPointM, size_t fi
 
 void CurvilinearGridOrthogonalization::SetFrozenLine(Point const& firstPoint, Point const& secondPoint)
 {
-    // Get the m and n indices from the point coordinates
-    auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(firstPoint);
-    auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(secondPoint);
-
-    // Coinciding nodes, no valid line, nothing to do
-    if (mFirstNode == mSecondNode && nFirstNode == nSecondNode)
-    {
-        return;
-    }
 
     // The selected nodes must be on the vertical or horizontal line
-    const auto [minM, minN, maxM, maxN] = OrderCoordinates(mFirstNode, nFirstNode, mSecondNode, nSecondNode);
-    auto const deltaMNewLine = maxM - minM;
-    if (auto const deltaNNewLine = maxN - minN; deltaMNewLine != 0 && deltaNNewLine != 0)
+    const auto [newLineLowerLeft, newLineUpperRight] = m_grid->ComputeBlockFromCornerPoints(firstPoint, secondPoint);
+
+    // Coinciding nodes, no valid line, nothing to do
+    if (newLineLowerLeft == newLineUpperRight)
+    {
+        throw std::invalid_argument("CurvilinearGridOrthogonalization::SetFrozenLine the points of the line to freeze are coinciding");
+    }
+
+    // The points of the frozen line, must be on the same grid-line
+    if (!newLineLowerLeft.IsOnTheSameGridLine(newLineUpperRight))
     {
         throw std::invalid_argument("CurvilinearGridOrthogonalization::SetFrozenLine the points of the line to freeze must lie on the same grid line");
     }
 
     // The start-end coordinates of the new line, along m or n direction
-    auto const startNewLine = deltaMNewLine == 0 ? minN : minM;
-    auto const endNewLine = deltaMNewLine == 0 ? maxN : maxM;
-    auto const constantCoordinateLine = deltaMNewLine == 0 ? minM : minN;
+    auto const isNewlineAnMLine = newLineUpperRight.m == newLineLowerLeft.m;
+    auto const startNewLine = isNewlineAnMLine ? newLineLowerLeft.n : newLineLowerLeft.m;
+    auto const endNewLine = isNewlineAnMLine ? newLineUpperRight.n : newLineUpperRight.m;
+    auto const constantCoordinateLine = isNewlineAnMLine ? newLineLowerLeft.m : newLineLowerLeft.n;
 
     // Frozen lines cannot cross existing frozen lines
     for (auto const& frozenLine : m_frozenLines)
     {
-        auto const& [minMCurrentLine, minNCurrentLine, maxMCurrentLine, maxNCurrentLine] = frozenLine;
+        auto const& [lowerLeft, upperRight] = frozenLine;
 
-        auto const deltaMCurrentLine = maxMCurrentLine - minMCurrentLine;
-        auto const startCurrentLine = deltaMCurrentLine == 0 ? minNCurrentLine : minMCurrentLine;
-        auto const endCurrentLine = deltaMCurrentLine == 0 ? maxNCurrentLine : maxMCurrentLine;
-        auto const constantCoordinateCurrentLine = deltaMCurrentLine == 0 ? minMCurrentLine : minNCurrentLine;
+        auto const deltaMCurrentLine = upperRight.m - lowerLeft.m;
+        auto const startCurrentLine = deltaMCurrentLine == 0 ? lowerLeft.n : lowerLeft.m;
+        auto const endCurrentLine = deltaMCurrentLine == 0 ? upperRight.n : upperRight.m;
+        auto const constantCoordinateCurrentLine = deltaMCurrentLine == 0 ? lowerLeft.m : lowerLeft.n;
         for (auto i = startCurrentLine; i <= endCurrentLine; ++i)
         {
-
             for (auto j = startNewLine; j <= endNewLine; ++j)
             {
                 if (j == constantCoordinateCurrentLine && i == constantCoordinateLine)
@@ -124,18 +122,18 @@ void CurvilinearGridOrthogonalization::SetFrozenLine(Point const& firstPoint, Po
     }
 
     // Now a frozen line can be stored
-    m_frozenLines.emplace_back(minM, minN, maxM, maxN);
+    m_frozenLines.emplace_back(newLineLowerLeft, newLineUpperRight);
 }
 
 void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
 {
     for (auto const& frozenLine : m_frozenLines)
     {
-        auto const& [minMCurrentLine, minNCurrentLine, maxMCurrentLine, maxNCurrentLine] = frozenLine;
+        auto const& [lowerLeft, upperRight] = frozenLine;
 
-        for (auto m = minMCurrentLine; m <= maxMCurrentLine; ++m)
+        for (auto m = lowerLeft.m; m <= upperRight.m; ++m)
         {
-            for (auto n = minNCurrentLine; n <= maxNCurrentLine; ++n)
+            for (auto n = lowerLeft.n; n <= upperRight.n; ++n)
             {
                 m_isGridNodeFrozen[m][n] = true;
             }
