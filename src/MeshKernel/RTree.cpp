@@ -27,7 +27,7 @@
 
 #include <MeshKernel/RTree.hpp>
 
-using  meshkernel::RTree;
+using meshkernel::RTree;
 
 void RTree::NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)
 {
