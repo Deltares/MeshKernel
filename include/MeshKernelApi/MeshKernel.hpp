@@ -712,6 +712,9 @@ namespace meshkernelapi
 
         /// @brief Orthogonalize a curvilinear grid
         /// @param[in] meshKernelId       The id of the mesh state
+        /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters
+        /// @param[in] geometryListFirstPoint  The geometry list containing the lower left corner of the block to orthogonalize
+        /// @param[in] geometryListSecondPoint The geometry list containing the upper right corner of the block to orthogonalize
         /// @returns Error code
         MKERNEL_API int mkernel_orthogonalize_curvilinear(int meshKernelId);
 
@@ -719,6 +722,32 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @return  Error code
         MKERNEL_API int mkernel_finalize_orthogonalize_curvilinear(int meshKernelId);
+
+        /// @brief Smooths a curvilinear grid
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] smoothingIterations The number of smoothing iterations to perform
+        /// @param[in] lowerLeftCorner The geometry list containing the lower left corner of the block to smooth
+        /// @param[in] upperRightCorner The geometry list containing the upper right corner of the block to smooth
+        /// @return Error code
+        MKERNEL_API int mkernel_smoothing_curvilinear(int meshKernelId,
+                                                      int smoothingIterations,
+                                                      const GeometryList& lowerLeftCorner,
+                                                      const GeometryList& upperRightCorner);
+
+        /// @brief Smooths a curvilinear grid along the direction specified by a segment
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] smoothingIterations The number of smoothing iterations to perform
+        /// @param[in] firstSegmentNode The first point of the segment
+        /// @param[in] secondSegmentNode The second point of the segment
+        /// @param[in] lowerLeftCornerSmoothingArea The geometry list containing the lower left corner of the smoothing area
+        /// @param[in] upperRightCornerSmootingArea The geometry list containing the upper right corner of the smoothing area
+        /// @return Error code
+        MKERNEL_API int mkernel_smoothing_directional_curvilinear(int meshKernelId,
+                                                                  int smoothingIterations,
+                                                                  GeometryList const& firstSegmentNode,
+                                                                  GeometryList const& secondSegmentNode,
+                                                                  GeometryList const& lowerLeftCornerSmoothingArea,
+                                                                  GeometryList const& upperRightCornerSmootingArea);
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);

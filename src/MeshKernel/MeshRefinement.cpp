@@ -39,24 +39,27 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/RTree.hpp>
 
-meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
-                                           std::shared_ptr<AveragingInterpolation> averaging,
-                                           const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
-                                           const meshkernelapi::InterpolationParameters& interpolationParameters) : m_mesh(mesh),
-                                                                                                                    m_averaging(averaging),
-                                                                                                                    m_sampleRefineParameters(sampleRefineParameters),
-                                                                                                                    m_interpolationParameters(interpolationParameters)
+using meshkernel::Mesh2D;
+using meshkernel::MeshRefinement;
+
+MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
+                               std::shared_ptr<AveragingInterpolation> averaging,
+                               const meshkernelapi::SampleRefineParameters& sampleRefineParameters,
+                               const meshkernelapi::InterpolationParameters& interpolationParameters) : m_mesh(mesh),
+                                                                                                        m_averaging(averaging),
+                                                                                                        m_sampleRefineParameters(sampleRefineParameters),
+                                                                                                        m_interpolationParameters(interpolationParameters)
 {
     m_refinementType = static_cast<RefinementType>(m_sampleRefineParameters.RefinementType);
 };
 
-meshkernel::MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
-                                           const Polygons& polygon,
-                                           const meshkernelapi::InterpolationParameters& interpolationParameters) : m_mesh(mesh),
-                                                                                                                    m_polygons(polygon),
-                                                                                                                    m_interpolationParameters(interpolationParameters){};
+MeshRefinement::MeshRefinement(std::shared_ptr<Mesh2D> mesh,
+                               const Polygons& polygon,
+                               const meshkernelapi::InterpolationParameters& interpolationParameters) : m_mesh(mesh),
+                                                                                                        m_polygons(polygon),
+                                                                                                        m_interpolationParameters(interpolationParameters){};
 
-void meshkernel::MeshRefinement::Compute()
+void MeshRefinement::Compute()
 {
     // administrate mesh once more
     m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
@@ -198,7 +201,7 @@ void meshkernel::MeshRefinement::Compute()
     }
 }
 
-size_t meshkernel::MeshRefinement::DeleteIsolatedHangingnodes()
+size_t MeshRefinement::DeleteIsolatedHangingnodes()
 {
 
     size_t numRemovedIsolatedHangingNodes = 0;
@@ -290,7 +293,7 @@ size_t meshkernel::MeshRefinement::DeleteIsolatedHangingnodes()
     return numRemovedIsolatedHangingNodes;
 }
 
-void meshkernel::MeshRefinement::ConnectHangingNodes()
+void MeshRefinement::ConnectHangingNodes()
 {
     std::vector<size_t> edgeEndNodeCache(maximumNumberOfNodesPerFace, sizetMissingValue);
     std::vector<size_t> hangingNodeCache(maximumNumberOfNodesPerFace, sizetMissingValue);
@@ -448,7 +451,7 @@ void meshkernel::MeshRefinement::ConnectHangingNodes()
     }
 }
 
-void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement)
+void MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBeforeRefinement)
 {
     //Add new nodes where required
     std::vector<size_t> notHangingFaceNodes;
@@ -685,7 +688,7 @@ void meshkernel::MeshRefinement::RefineFacesBySplittingEdges(size_t numEdgesBefo
     }
 }
 
-void meshkernel::MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
+void MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
 {
     for (auto f = 0; f < m_mesh->GetNumFaces(); f++)
     {
@@ -716,7 +719,7 @@ void meshkernel::MeshRefinement::ComputeNodeMaskAtPolygonPerimeter()
     }
 }
 
-void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
+void MeshRefinement::ComputeRefinementMasksFromSamples()
 {
     std::fill(m_edgeMask.begin(), m_edgeMask.end(), 0);
     std::fill(m_faceMask.begin(), m_faceMask.end(), 0);
@@ -760,10 +763,10 @@ void meshkernel::MeshRefinement::ComputeRefinementMasksFromSamples()
     }
 };
 
-void meshkernel::MeshRefinement::FindHangingNodes(size_t face,
-                                                  size_t& numHangingEdges,
-                                                  size_t& numHangingNodes,
-                                                  size_t& numEdgesToRefine)
+void MeshRefinement::FindHangingNodes(size_t face,
+                                      size_t& numHangingEdges,
+                                      size_t& numHangingNodes,
+                                      size_t& numEdgesToRefine)
 {
 
     numEdgesToRefine = 0;
@@ -836,9 +839,9 @@ void meshkernel::MeshRefinement::FindHangingNodes(size_t face,
     }
 }
 
-void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
-                                                                       std::vector<size_t>& refineEdgeCache,
-                                                                       size_t& numEdgesToBeRefined)
+void MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t face,
+                                                           std::vector<size_t>& refineEdgeCache,
+                                                           size_t& numEdgesToBeRefined)
 {
     numEdgesToBeRefined = 0;
     if (m_refinementType == RefinementType::RidgeRefinement)
@@ -925,7 +928,7 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMaskFromSamples(size_t fa
     }
 }
 
-void meshkernel::MeshRefinement::ComputeEdgesRefinementMask()
+void MeshRefinement::ComputeEdgesRefinementMask()
 {
     bool repeat = true;
     size_t iter = 0;
@@ -1073,7 +1076,7 @@ void meshkernel::MeshRefinement::ComputeEdgesRefinementMask()
     }
 }
 
-void meshkernel::MeshRefinement::ComputeIfFaceShouldBeSplit()
+void MeshRefinement::ComputeIfFaceShouldBeSplit()
 {
     const size_t maxiter = 1000;
     size_t num = 1;
@@ -1162,7 +1165,7 @@ void meshkernel::MeshRefinement::ComputeIfFaceShouldBeSplit()
     }
 }
 
-void meshkernel::MeshRefinement::FindBrotherEdges()
+void MeshRefinement::FindBrotherEdges()
 {
     m_brotherEdges.resize(m_mesh->GetNumEdges());
     std::fill(m_brotherEdges.begin(), m_brotherEdges.end(), sizetMissingValue);
@@ -1221,7 +1224,7 @@ void meshkernel::MeshRefinement::FindBrotherEdges()
     }
 }
 
-void meshkernel::MeshRefinement::SmoothEdgeRefinementMask() const
+void MeshRefinement::SmoothEdgeRefinementMask() const
 {
     throw AlgorithmError("MeshRefinement::SmoothEdgeRefinementMask: Not implemented yet.");
 }

@@ -35,386 +35,384 @@
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 
-namespace meshkernel
+using meshkernel::Polygons;
+
+Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m_nodes(polygon), m_projection(projection)
+{
+    // find the polygons in the current list of points
+    m_indices = FindIndices(polygon, 0, polygon.size(), doubleMissingValue);
+}
+
+std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() const
 {
 
-    Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m_nodes(polygon), m_projection(projection)
+    std::vector<std::vector<Point>> generatedPoints;
+    generatedPoints.reserve(GetNumPolygons());
+    std::vector<Point> localPolygon(GetNumNodes());
+
+    for (const auto& index : m_indices)
     {
-        // find the polygons in the current list of points
-        m_indices = FindIndices(polygon, 0, polygon.size(), doubleMissingValue);
+        localPolygon.clear();
+        for (auto j = index[0]; j <= index[1]; ++j)
+        {
+            localPolygon.emplace_back(m_nodes[j]);
+        }
+
+        // not a closed polygon
+        const auto numLocalPoints = localPolygon.size();
+        if (localPolygon[numLocalPoints - 1] != localPolygon[0] || localPolygon.size() < 4)
+        {
+            continue;
+        }
+
+        double localPolygonArea = 0.0;
+        Point centerOfMass;
+        bool isCounterClockWise;
+        FaceAreaAndCenterOfMass(localPolygon, m_projection, localPolygonArea, centerOfMass, isCounterClockWise);
+
+        const auto perimeter = PerimeterClosedPolygon(localPolygon);
+
+        // average triangle size
+        const auto averageEdgeLength = perimeter / static_cast<double>(numLocalPoints - 1);
+        const double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
+
+        // estimated number of triangles
+        const size_t SafetySize = 11;
+        const auto numberOfTriangles = static_cast<size_t>(SafetySize * localPolygonArea / averageTriangleArea);
+        if (numberOfTriangles == 0)
+        {
+            throw AlgorithmError("Polygons::ComputePointsInPolygons: The number of triangles is <= 0.");
+        }
+
+        TriangulationWrapper triangulationWrapper;
+        triangulationWrapper.Compute(localPolygon,
+                                     TriangulationWrapper::TriangulationOptions::GeneratePoints,
+                                     averageTriangleArea,
+                                     numberOfTriangles);
+
+        generatedPoints.emplace_back(triangulationWrapper.m_nodes);
     }
 
-    std::vector<std::vector<Point>> Polygons::ComputePointsInPolygons() const
+    return generatedPoints;
+}
+
+std::vector<meshkernel::Point> Polygons::RefineFirstPolygon(size_t startIndex,
+                                                            size_t endIndex,
+                                                            double refinementDistance) const
+{
+    if (m_indices.empty())
     {
-
-        std::vector<std::vector<Point>> generatedPoints;
-        generatedPoints.reserve(GetNumPolygons());
-        std::vector<Point> localPolygon(GetNumNodes());
-
-        for (const auto& index : m_indices)
-        {
-            localPolygon.clear();
-            for (auto j = index[0]; j <= index[1]; ++j)
-            {
-                localPolygon.emplace_back(m_nodes[j]);
-            }
-
-            // not a closed polygon
-            const auto numLocalPoints = localPolygon.size();
-            if (localPolygon[numLocalPoints - 1] != localPolygon[0] || localPolygon.size() < 4)
-            {
-                continue;
-            }
-
-            double localPolygonArea = 0.0;
-            Point centerOfMass;
-            bool isCounterClockWise;
-            FaceAreaAndCenterOfMass(localPolygon, m_projection, localPolygonArea, centerOfMass, isCounterClockWise);
-
-            const auto perimeter = PerimeterClosedPolygon(localPolygon);
-
-            // average triangle size
-            const auto averageEdgeLength = perimeter / static_cast<double>(numLocalPoints - 1);
-            const double averageTriangleArea = 0.25 * squareRootOfThree * averageEdgeLength * averageEdgeLength;
-
-            // estimated number of triangles
-            const size_t SafetySize = 11;
-            const auto numberOfTriangles = static_cast<size_t>(SafetySize * localPolygonArea / averageTriangleArea);
-            if (numberOfTriangles == 0)
-            {
-                throw AlgorithmError("Polygons::ComputePointsInPolygons: The number of triangles is <= 0.");
-            }
-
-            TriangulationWrapper triangulationWrapper;
-            triangulationWrapper.Compute(localPolygon,
-                                         TriangulationWrapper::TriangulationOptions::GeneratePoints,
-                                         averageTriangleArea,
-                                         numberOfTriangles);
-
-            generatedPoints.emplace_back(triangulationWrapper.m_nodes);
-        }
-
-        return generatedPoints;
+        throw std::invalid_argument("Polygons::RefineFirstPolygon: No nodes in polygon.");
     }
 
-    std::vector<Point> Polygons::RefineFirstPolygon(size_t startIndex,
-                                                    size_t endIndex,
-                                                    double refinementDistance) const
+    if (startIndex == 0 && endIndex == 0)
     {
-        if (m_indices.empty())
-        {
-            throw std::invalid_argument("Polygons::RefineFirstPolygon: No nodes in polygon.");
-        }
+        startIndex = m_indices[0][0];
+        endIndex = m_indices[0][1];
+    }
 
-        if (startIndex == 0 && endIndex == 0)
-        {
-            startIndex = m_indices[0][0];
-            endIndex = m_indices[0][1];
-        }
+    if (endIndex <= startIndex)
+    {
+        throw std::invalid_argument("Polygons::RefineFirstPolygon: The end index is smaller than the start index.");
+    }
 
-        if (endIndex <= startIndex)
+    bool areIndicesValid = false;
+    size_t polygonIndex;
+    for (auto i = 0; i < GetNumPolygons(); ++i)
+    {
+        if (startIndex >= m_indices[i][0] && endIndex <= m_indices[i][1])
         {
-            throw std::invalid_argument("Polygons::RefineFirstPolygon: The end index is smaller than the start index.");
+            areIndicesValid = true;
+            polygonIndex = i;
+            break;
         }
+    }
 
-        bool areIndicesValid = false;
-        size_t polygonIndex;
-        for (auto i = 0; i < GetNumPolygons(); ++i)
+    if (!areIndicesValid)
+    {
+        throw std::invalid_argument("Polygons::RefineFirstPolygon: The indices are not valid.");
+    }
+
+    const auto edgeLengths = PolygonEdgeLengths(m_nodes);
+    std::vector<double> nodeLengthCoordinate(edgeLengths.size());
+    nodeLengthCoordinate[0] = 0.0;
+    for (auto i = 1; i < edgeLengths.size(); ++i)
+    {
+        nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
+    }
+
+    const auto numNodesRefinedPart = size_t(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (double(endIndex) - double(startIndex)));
+    const auto numNodesNotRefinedPart = startIndex - m_indices[polygonIndex][0] + m_indices[polygonIndex][1] - endIndex;
+    const auto totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
+    std::vector<Point> refinedPolygon;
+    refinedPolygon.reserve(totalNumNodes);
+
+    // before refinement
+    for (auto i = m_indices[polygonIndex][0]; i <= startIndex; ++i)
+    {
+        refinedPolygon.emplace_back(m_nodes[i]);
+    }
+
+    // refined part
+    auto nodeIndex = startIndex;
+    auto nextNodeIndex = nodeIndex + 1;
+    Point p0 = m_nodes[nodeIndex];
+    Point p1 = m_nodes[nextNodeIndex];
+    double pointLengthCoordinate = nodeLengthCoordinate[startIndex];
+    bool snappedToLastPoint = false;
+    while (nodeIndex < endIndex)
+    {
+        // initial point already accounted for
+        pointLengthCoordinate += refinementDistance;
+        if (pointLengthCoordinate > nodeLengthCoordinate[nextNodeIndex])
         {
-            if (startIndex >= m_indices[i][0] && endIndex <= m_indices[i][1])
+            // if not snapped to the original last polygon point, snap it
+            if (!snappedToLastPoint)
             {
-                areIndicesValid = true;
-                polygonIndex = i;
-                break;
+                refinedPolygon.emplace_back(m_nodes[nextNodeIndex]);
             }
-        }
 
-        if (!areIndicesValid)
-        {
-            throw std::invalid_argument("Polygons::RefineFirstPolygon: The indices are not valid.");
-        }
-
-        const auto edgeLengths = PolygonEdgeLengths(m_nodes);
-        std::vector<double> nodeLengthCoordinate(edgeLengths.size());
-        nodeLengthCoordinate[0] = 0.0;
-        for (auto i = 1; i < edgeLengths.size(); ++i)
-        {
-            nodeLengthCoordinate[i] = nodeLengthCoordinate[i - 1] + edgeLengths[i - 1];
-        }
-
-        const auto numNodesRefinedPart = size_t(std::ceil((nodeLengthCoordinate[endIndex] - nodeLengthCoordinate[startIndex]) / refinementDistance) + (double(endIndex) - double(startIndex)));
-        const auto numNodesNotRefinedPart = startIndex - m_indices[polygonIndex][0] + m_indices[polygonIndex][1] - endIndex;
-        const auto totalNumNodes = numNodesRefinedPart + numNodesNotRefinedPart;
-        std::vector<Point> refinedPolygon;
-        refinedPolygon.reserve(totalNumNodes);
-
-        // before refinement
-        for (auto i = m_indices[polygonIndex][0]; i <= startIndex; ++i)
-        {
-            refinedPolygon.emplace_back(m_nodes[i]);
-        }
-
-        // refined part
-        auto nodeIndex = startIndex;
-        auto nextNodeIndex = nodeIndex + 1;
-        Point p0 = m_nodes[nodeIndex];
-        Point p1 = m_nodes[nextNodeIndex];
-        double pointLengthCoordinate = nodeLengthCoordinate[startIndex];
-        bool snappedToLastPoint = false;
-        while (nodeIndex < endIndex)
-        {
-            // initial point already accounted for
-            pointLengthCoordinate += refinementDistance;
-            if (pointLengthCoordinate > nodeLengthCoordinate[nextNodeIndex])
+            // find the next point
+            bool nextNodeFound = false;
+            for (auto i = nextNodeIndex + 1; i <= endIndex; ++i)
             {
-                // if not snapped to the original last polygon point, snap it
-                if (!snappedToLastPoint)
+                if (nodeLengthCoordinate[i] > pointLengthCoordinate)
                 {
-                    refinedPolygon.emplace_back(m_nodes[nextNodeIndex]);
-                }
-
-                // find the next point
-                bool nextNodeFound = false;
-                for (auto i = nextNodeIndex + 1; i <= endIndex; ++i)
-                {
-                    if (nodeLengthCoordinate[i] > pointLengthCoordinate)
-                    {
-                        nextNodeFound = true;
-                        nodeIndex = i - 1;
-                        nextNodeIndex = i;
-                        break;
-                    }
-                }
-                if (nextNodeIndex > endIndex || !nextNodeFound)
-                {
+                    nextNodeFound = true;
+                    nodeIndex = i - 1;
+                    nextNodeIndex = i;
                     break;
                 }
+            }
+            if (nextNodeIndex > endIndex || !nextNodeFound)
+            {
+                break;
+            }
 
-                p0 = m_nodes[nodeIndex];
-                p1 = m_nodes[nextNodeIndex];
-                pointLengthCoordinate = nodeLengthCoordinate[nodeIndex] + refinementDistance;
-                snappedToLastPoint = false;
-            }
-            double distanceFromLastNode = pointLengthCoordinate - nodeLengthCoordinate[nodeIndex];
-            const double factor = distanceFromLastNode / edgeLengths[nodeIndex];
-            Point p;
-            if (IsEqual(factor, 1.0))
-            {
-                snappedToLastPoint = true;
-                p = p1;
-            }
-            else
-            {
-                p = p0 + (p1 - p0) * distanceFromLastNode / edgeLengths[nodeIndex];
-            }
-            refinedPolygon.emplace_back(p);
+            p0 = m_nodes[nodeIndex];
+            p1 = m_nodes[nextNodeIndex];
+            pointLengthCoordinate = nodeLengthCoordinate[nodeIndex] + refinementDistance;
+            snappedToLastPoint = false;
         }
-
-        // after refinement
-        for (auto i = endIndex + 1; i <= m_indices[polygonIndex][1]; ++i)
+        double distanceFromLastNode = pointLengthCoordinate - nodeLengthCoordinate[nodeIndex];
+        const double factor = distanceFromLastNode / edgeLengths[nodeIndex];
+        Point p;
+        if (IsEqual(factor, 1.0))
         {
-            refinedPolygon.emplace_back(m_nodes[i]);
+            snappedToLastPoint = true;
+            p = p1;
         }
-
-        return refinedPolygon;
+        else
+        {
+            p = p0 + (p1 - p0) * distanceFromLastNode / edgeLengths[nodeIndex];
+        }
+        refinedPolygon.emplace_back(p);
     }
 
-    Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
+    // after refinement
+    for (auto i = endIndex + 1; i <= m_indices[polygonIndex][1]; ++i)
     {
-        auto sizenewPolygon = GetNumNodes();
-        if (innerAndOuter)
+        refinedPolygon.emplace_back(m_nodes[i]);
+    }
+
+    return refinedPolygon;
+}
+
+Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
+{
+    auto sizenewPolygon = GetNumNodes();
+    if (innerAndOuter)
+    {
+        sizenewPolygon += GetNumNodes() + 1;
+    }
+
+    std::vector<Point> normalVectors(sizenewPolygon);
+    double dxNormalPreviousEdge = 0.0;
+    double dyNormalPreviousEdge = 0.0;
+    double dxNormal = 0.0;
+    double dyNormal = 0.0;
+    for (auto n = 0; n < GetNumNodes(); n++)
+    {
+        if (n < GetNumNodes() - 1)
         {
-            sizenewPolygon += GetNumNodes() + 1;
+            const auto dx = GetDx(m_nodes[n], m_nodes[n + 1], m_projection);
+            const auto dy = GetDy(m_nodes[n], m_nodes[n + 1], m_projection);
+            const auto nodeDistance = std::sqrt(dx * dx + dy * dy);
+            dxNormal = -dy / nodeDistance;
+            dyNormal = dx / nodeDistance;
+        }
+        else
+        {
+            dxNormal = dxNormalPreviousEdge;
+            dyNormal = dyNormalPreviousEdge;
         }
 
-        std::vector<Point> normalVectors(sizenewPolygon);
-        double dxNormalPreviousEdge = 0.0;
-        double dyNormalPreviousEdge = 0.0;
-        double dxNormal = 0.0;
-        double dyNormal = 0.0;
-        for (auto n = 0; n < GetNumNodes(); n++)
+        if (n == 0)
         {
-            if (n < GetNumNodes() - 1)
-            {
-                const auto dx = GetDx(m_nodes[n], m_nodes[n + 1], m_projection);
-                const auto dy = GetDy(m_nodes[n], m_nodes[n + 1], m_projection);
-                const auto nodeDistance = std::sqrt(dx * dx + dy * dy);
-                dxNormal = -dy / nodeDistance;
-                dyNormal = dx / nodeDistance;
-            }
-            else
-            {
-                dxNormal = dxNormalPreviousEdge;
-                dyNormal = dyNormalPreviousEdge;
-            }
-
-            if (n == 0)
-            {
-                dxNormalPreviousEdge = dxNormal;
-                dyNormalPreviousEdge = dyNormal;
-            }
-
-            const double factor = 1.0 / (1.0 + dxNormalPreviousEdge * dxNormal + dyNormalPreviousEdge * dyNormal);
-            normalVectors[n].x = factor * (dxNormalPreviousEdge + dxNormal);
-            normalVectors[n].y = factor * (dyNormalPreviousEdge + dyNormal);
-
             dxNormalPreviousEdge = dxNormal;
             dyNormalPreviousEdge = dyNormal;
         }
 
-        // negative sign introduced because normal vector pointing inward
-        distance = -distance;
+        const double factor = 1.0 / (1.0 + dxNormalPreviousEdge * dxNormal + dyNormalPreviousEdge * dyNormal);
+        normalVectors[n].x = factor * (dxNormalPreviousEdge + dxNormal);
+        normalVectors[n].y = factor * (dyNormalPreviousEdge + dyNormal);
+
+        dxNormalPreviousEdge = dxNormal;
+        dyNormalPreviousEdge = dyNormal;
+    }
+
+    // negative sign introduced because normal vector pointing inward
+    distance = -distance;
+    if (m_projection == Projection::spherical)
+    {
+        distance = distance / (earth_radius * degrad_hp);
+    }
+
+    std::vector<Point> newPolygonPoints(sizenewPolygon, {doubleMissingValue, doubleMissingValue});
+    for (auto i = 0; i < GetNumNodes(); i++)
+    {
+        auto dx = normalVectors[i].x * distance;
+        const auto dy = normalVectors[i].y * distance;
         if (m_projection == Projection::spherical)
         {
-            distance = distance / (earth_radius * degrad_hp);
+            dx = dx / std::cos((m_nodes[i].y + 0.5 * dy) * degrad_hp);
         }
+        newPolygonPoints[i].x = m_nodes[i].x + dx;
+        newPolygonPoints[i].y = m_nodes[i].y + dy;
 
-        std::vector<Point> newPolygonPoints(sizenewPolygon, {doubleMissingValue, doubleMissingValue});
-        for (auto i = 0; i < GetNumNodes(); i++)
+        if (innerAndOuter)
         {
-            auto dx = normalVectors[i].x * distance;
-            const auto dy = normalVectors[i].y * distance;
-            if (m_projection == Projection::spherical)
-            {
-                dx = dx / std::cos((m_nodes[i].y + 0.5 * dy) * degrad_hp);
-            }
-            newPolygonPoints[i].x = m_nodes[i].x + dx;
-            newPolygonPoints[i].y = m_nodes[i].y + dy;
-
-            if (innerAndOuter)
-            {
-                newPolygonPoints[i + GetNumNodes() + 1].x = m_nodes[i].x - dx;
-                newPolygonPoints[i + GetNumNodes() + 1].y = m_nodes[i].y - dy;
-            }
+            newPolygonPoints[i + GetNumNodes() + 1].x = m_nodes[i].x - dx;
+            newPolygonPoints[i + GetNumNodes() + 1].y = m_nodes[i].y - dy;
         }
-
-        // set the new polygon
-        Polygons newPolygon{newPolygonPoints, m_projection};
-        return newPolygon;
     }
 
-    bool Polygons::IsPointInPolygon(Point point, size_t polygonIndex) const
+    // set the new polygon
+    Polygons newPolygon{newPolygonPoints, m_projection};
+    return newPolygon;
+}
+
+bool Polygons::IsPointInPolygon(Point point, size_t polygonIndex) const
+{
+    // empty polygon means everything is included
+    if (m_indices.empty())
     {
-        // empty polygon means everything is included
-        if (m_indices.empty())
-        {
-            return true;
-        }
-
-        if (polygonIndex >= GetNumPolygons())
-        {
-            throw std::invalid_argument("Polygons::IsPointInPolygon: Invalid polygon index.");
-        }
-
-        const auto inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), m_indices[polygonIndex][0], m_indices[polygonIndex][1]);
-        return inPolygon;
+        return true;
     }
 
-    size_t Polygons::GetNumPolygons() const
+    if (polygonIndex >= GetNumPolygons())
     {
-        return m_indices.size();
+        throw std::invalid_argument("Polygons::IsPointInPolygon: Invalid polygon index.");
     }
 
-    size_t Polygons::PolygonIndex(Point point) const
+    const auto inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), m_indices[polygonIndex][0], m_indices[polygonIndex][1]);
+    return inPolygon;
+}
+
+size_t Polygons::GetNumPolygons() const
+{
+    return m_indices.size();
+}
+
+size_t Polygons::PolygonIndex(Point point) const
+{
+    // empty polygon means everything is included
+    if (m_indices.empty())
     {
-        // empty polygon means everything is included
-        if (m_indices.empty())
-        {
-            return true;
-        }
-
-        bool inPolygon = false;
-        for (auto polygonIndex = 0; polygonIndex < GetNumPolygons(); ++polygonIndex)
-        {
-            auto polygonStartIndex = m_indices[polygonIndex][0];
-            auto polygonEndIndex = m_indices[polygonIndex][1];
-
-            // Calculate the bounding box
-            double XMin = std::numeric_limits<double>::max();
-            double XMax = std::numeric_limits<double>::lowest();
-            double YMin = std::numeric_limits<double>::max();
-            double YMax = std::numeric_limits<double>::lowest();
-
-            for (auto n = polygonStartIndex; n <= polygonEndIndex; n++)
-            {
-                XMin = std::min(XMin, m_nodes[n].x);
-                XMax = std::max(XMax, m_nodes[n].x);
-                YMin = std::min(YMin, m_nodes[n].y);
-                YMax = std::max(YMax, m_nodes[n].y);
-            }
-
-            if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
-            {
-                inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), polygonStartIndex, polygonEndIndex);
-            }
-
-            if (inPolygon)
-            {
-                return polygonIndex;
-            }
-        }
-
-        return sizetMissingValue;
+        return true;
     }
 
-    std::vector<size_t> Polygons::PolygonIndices(const std::vector<Point>& points) const
+    bool inPolygon = false;
+    for (auto polygonIndex = 0; polygonIndex < GetNumPolygons(); ++polygonIndex)
     {
-        std::vector<size_t> result(points.size(), sizetMissingValue);
-        for (auto i = 0; i < points.size(); ++i)
+        auto polygonStartIndex = m_indices[polygonIndex][0];
+        auto polygonEndIndex = m_indices[polygonIndex][1];
+
+        // Calculate the bounding box
+        double XMin = std::numeric_limits<double>::max();
+        double XMax = std::numeric_limits<double>::lowest();
+        double YMin = std::numeric_limits<double>::max();
+        double YMax = std::numeric_limits<double>::lowest();
+
+        for (auto n = polygonStartIndex; n <= polygonEndIndex; n++)
         {
-            result[i] = PolygonIndex(points[i]);
+            XMin = std::min(XMin, m_nodes[n].x);
+            XMax = std::max(XMax, m_nodes[n].x);
+            YMin = std::min(YMin, m_nodes[n].y);
+            YMax = std::max(YMax, m_nodes[n].y);
         }
-        return result;
+
+        if ((point.x >= XMin && point.x <= XMax) && (point.y >= YMin && point.y <= YMax))
+        {
+            inPolygon = IsPointInPolygonNodes(point, m_nodes, m_projection, Point(), polygonStartIndex, polygonEndIndex);
+        }
+
+        if (inPolygon)
+        {
+            return polygonIndex;
+        }
     }
 
-    bool Polygons::IsEmpty() const
+    return sizetMissingValue;
+}
+
+std::vector<size_t> Polygons::PolygonIndices(const std::vector<Point>& points) const
+{
+    std::vector<size_t> result(points.size(), sizetMissingValue);
+    for (auto i = 0; i < points.size(); ++i)
     {
-        return m_indices.empty();
+        result[i] = PolygonIndex(points[i]);
     }
+    return result;
+}
 
-    double Polygons::PerimeterClosedPolygon(const std::vector<Point>& polygonNodes) const
+bool Polygons::IsEmpty() const
+{
+    return m_indices.empty();
+}
+
+double Polygons::PerimeterClosedPolygon(const std::vector<Point>& polygonNodes) const
+{
+    if (polygonNodes.front() != polygonNodes.back())
     {
-        if (polygonNodes.front() != polygonNodes.back())
-        {
-            throw std::invalid_argument("Polygons::PerimeterClosedPolygon: The first and last point of the polygon is not the same.");
-        }
-
-        const auto edgeLengths = PolygonEdgeLengths(polygonNodes);
-        return std::accumulate(edgeLengths.begin(), edgeLengths.end(), 0.0);
+        throw std::invalid_argument("Polygons::PerimeterClosedPolygon: The first and last point of the polygon is not the same.");
     }
 
-    std::vector<double> Polygons::PolygonEdgeLengths(const std::vector<Point>& polygonNodes) const
+    const auto edgeLengths = PolygonEdgeLengths(polygonNodes);
+    return std::accumulate(edgeLengths.begin(), edgeLengths.end(), 0.0);
+}
+
+std::vector<double> Polygons::PolygonEdgeLengths(const std::vector<Point>& polygonNodes) const
+{
+    std::vector<double> edgeLengths;
+    edgeLengths.reserve(polygonNodes.size());
+
+    for (auto p = 0; p < polygonNodes.size(); ++p)
     {
-        std::vector<double> edgeLengths;
-        edgeLengths.reserve(polygonNodes.size());
-
-        for (auto p = 0; p < polygonNodes.size(); ++p)
+        const auto firstNode = p;
+        auto secondNode = p + 1;
+        if (secondNode == polygonNodes.size())
         {
-            const auto firstNode = p;
-            auto secondNode = p + 1;
-            if (secondNode == polygonNodes.size())
-            {
-                secondNode = 0;
-            }
-            edgeLengths.emplace_back(ComputeDistance(polygonNodes[firstNode], polygonNodes[secondNode], m_projection));
+            secondNode = 0;
         }
-        return edgeLengths;
+        edgeLengths.emplace_back(ComputeDistance(polygonNodes[firstNode], polygonNodes[secondNode], m_projection));
     }
+    return edgeLengths;
+}
 
-    double Polygons::MaximumEdgeLength(const std::vector<Point>& polygonNodes) const
+double Polygons::MaximumEdgeLength(const std::vector<Point>& polygonNodes) const
+{
+
+    if (polygonNodes.front() != polygonNodes.back())
     {
-
-        if (polygonNodes.front() != polygonNodes.back())
-        {
-            throw std::invalid_argument("Polygons::MaximumEdgeLength: The first and last point of the polygon is not the same.");
-        }
-
-        auto maximumEdgeLength = std::numeric_limits<double>::lowest();
-        for (auto p = 0; p < polygonNodes.size() - 1; ++p)
-        {
-            double edgeLength = ComputeDistance(m_nodes[p], m_nodes[p + 1], m_projection);
-            maximumEdgeLength = std::max(maximumEdgeLength, edgeLength);
-        }
-        return maximumEdgeLength;
+        throw std::invalid_argument("Polygons::MaximumEdgeLength: The first and last point of the polygon is not the same.");
     }
-}; // namespace meshkernel
+
+    auto maximumEdgeLength = std::numeric_limits<double>::lowest();
+    for (auto p = 0; p < polygonNodes.size() - 1; ++p)
+    {
+        double edgeLength = ComputeDistance(m_nodes[p], m_nodes[p + 1], m_projection);
+        maximumEdgeLength = std::max(maximumEdgeLength, edgeLength);
+    }
+    return maximumEdgeLength;
+}

@@ -35,12 +35,15 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 
-meshkernel::CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon){};
+using meshkernel::CurvilinearGrid;
+using meshkernel::CurvilinearGridFromPolygon;
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
-                                                                            size_t secondNode,
-                                                                            size_t thirdNode,
-                                                                            bool useFourthSide) const
+CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(std::shared_ptr<Polygons> polygon) : m_polygon(polygon){};
+
+CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
+                                                    size_t secondNode,
+                                                    size_t thirdNode,
+                                                    bool useFourthSide) const
 {
     if (m_polygon->IsEmpty())
     {
@@ -216,9 +219,9 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size
     return CurvilinearGrid(std::move(gridNodes), m_polygon->m_projection);
 }
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromPolygon::Compute(size_t firstNode,
-                                                                            size_t secondNode,
-                                                                            size_t thirdNode) const
+CurvilinearGrid CurvilinearGridFromPolygon::Compute(size_t firstNode,
+                                                    size_t secondNode,
+                                                    size_t thirdNode) const
 {
     if (m_polygon->IsEmpty())
     {

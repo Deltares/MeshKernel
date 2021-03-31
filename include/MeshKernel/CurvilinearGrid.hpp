@@ -54,6 +54,24 @@ namespace meshkernel
             Invalid        //(0)
         };
 
+        /// @brief A struct describing the column and row indices of a node
+        struct NodeIndices
+        {
+            /// @brief Overloads equality with another NodeIndices
+            bool operator==(const NodeIndices& rhs) const
+            {
+                return m == rhs.m && n == rhs.n;
+            }
+            /// @brief Overloads negation with another NodeIndices
+            bool operator!=(const NodeIndices& rhs) const
+            {
+                return !(*this == rhs);
+            }
+
+            size_t m; ///< Columns
+            size_t n; ///< Rows
+        };
+
         /// @brief Default constructor
         /// @returns
         CurvilinearGrid() = default;
@@ -62,6 +80,10 @@ namespace meshkernel
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
         CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection);
+
+        /// @brief Check if current curvilinear grid instance is valid
+        /// @return True if valid, false otherwise
+        [[nodiscard]] bool IsValid() const;
 
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
         /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
@@ -72,7 +94,7 @@ namespace meshkernel
 
         /// @brief Get the m and n indices of the node closest to the point
         /// @param[in] point       The input grid points
-        std::tuple<int, int> GetNodeIndices(Point point);
+        NodeIndices GetNodeIndices(Point point);
 
         /// @brief Computes the grid nodes types and the faces masks
         void ComputeGridNodeTypes();
@@ -82,6 +104,18 @@ namespace meshkernel
         /// @param[in] n the n coordinate
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
+
+        /// @brief From two points expressed as NodeIndices, gets the two corner points defining a block in m and n coordinates
+        /// @param[in] firstNode The node indices of the first node
+        /// @param[in] secondNode The node indices of the second node
+        /// @return The upper left and lower right of the box defined by the two points
+        [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const;
+
+        /// @brief From two points expressed in cartesian coordinates, gets the two corner points defining a block in m and n coordinates
+        /// @param[in] firstCornerPoint The first point
+        /// @param[in] secondCornerPoint The second point
+        /// @return The upper left and lower right of the box defined by the two points
+        [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint);
 
         size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)

@@ -517,6 +517,16 @@ namespace meshkernel
     /// @return The average coordinate.
     [[nodiscard]] Point ComputeAverageCoordinate(const std::vector<Point>& points, const Projection& projection);
 
+    /// @brief Cartesian projection of a point on a segment defined by other two points
+    /// @param firstNode The first node of the segment
+    /// @param secondNode The second node of the segment
+    /// @param pointToProject The point to project
+    /// @return The projected point, the distance of the projection from the first point (expressed as a ratio),
+    /// a boolean indicating if the projected point is within the first and second point.
+    std::tuple<Point, double, bool> OrthogonalProjectionOnSegment(Point const& firstNode,
+                                                                  Point const& secondNode,
+                                                                  Point const& pointToProject);
+
     /// @brief Given a vector of coordinates, get the lowest upper and right points
     /// @tparam T Requires IsCoordinate<T>
     /// @param[in] points The point values

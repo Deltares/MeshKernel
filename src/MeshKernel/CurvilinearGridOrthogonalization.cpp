@@ -33,8 +33,11 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
-meshkernel::CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
-                                                                               const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters)
+using meshkernel::CurvilinearGrid;
+using meshkernel::CurvilinearGridOrthogonalization;
+
+CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
+                                                                   const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters)
     : m_grid(grid),
       m_orthogonalizationParameters(orthogonalizationParameters)
 
@@ -165,7 +168,7 @@ void meshkernel::CurvilinearGridOrthogonalization::Compute()
     }
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
+void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
     // m grid lines (horizontal)
     for (auto n = 0; n < m_grid->m_numN; ++n)
@@ -244,7 +247,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGrid
     }
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
+void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 {
     // n gridlines (vertical)
     for (auto m = 0; m < m_grid->m_numM; ++m)
@@ -324,7 +327,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGrid
     }
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::Solve()
+void CurvilinearGridOrthogonalization::Solve()
 {
 
     double omega = 1.0;
@@ -472,7 +475,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeCoefficients()
     }
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
+void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
 {
     const auto invalidBoundaryNodes = ComputeInvalidVerticalBoundaryNodes();
     // Store the counter
@@ -526,7 +529,7 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
     }
 }
 
-void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
+void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
 {
     const auto invalidBoundaryNodes = ComputeInvalidHorizontalBoundaryNodes();
     std::vector<std::vector<size_t>> counter(m_grid->m_numM, std::vector<size_t>(m_grid->m_numN, 0));
@@ -579,7 +582,8 @@ void meshkernel::CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients
     }
 }
 
-std::vector<std::vector<bool>> meshkernel::CurvilinearGridOrthogonalization::ComputeInvalidHorizontalBoundaryNodes() const
+std::vector<std::vector<bool>>
+CurvilinearGridOrthogonalization::ComputeInvalidHorizontalBoundaryNodes() const
 {
     std::vector<std::vector<bool>> invalidBoundaryNodes(m_grid->m_numM, std::vector<bool>(m_grid->m_numN, false));
     for (auto m = m_minM + 1; m < m_maxM; ++m)
@@ -627,7 +631,8 @@ std::vector<std::vector<bool>> meshkernel::CurvilinearGridOrthogonalization::Com
     return invalidBoundaryNodes;
 }
 
-std::vector<std::vector<bool>> meshkernel::CurvilinearGridOrthogonalization::ComputeInvalidVerticalBoundaryNodes() const
+std::vector<std::vector<bool>>
+CurvilinearGridOrthogonalization::ComputeInvalidVerticalBoundaryNodes() const
 {
     std::vector<std::vector<bool>> invalidBoundaryNodes(m_grid->m_numM, std::vector<bool>(m_grid->m_numN, false));
     for (auto m = m_minM + 1; m < m_maxM; ++m)
