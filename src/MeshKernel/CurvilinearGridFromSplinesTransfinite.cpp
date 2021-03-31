@@ -35,15 +35,18 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
-meshkernel::CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines,
-                                                                                         const meshkernelapi::CurvilinearParameters& curvilinearParameters) : m_splines(splines),
-                                                                                                                                                              m_numM(curvilinearParameters.MRefinement),
-                                                                                                                                                              m_numN(curvilinearParameters.NRefinement)
+using meshkernel::CurvilinearGrid;
+using meshkernel::CurvilinearGridFromSplinesTransfinite;
+
+CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std::shared_ptr<Splines> splines,
+                                                                             const meshkernelapi::CurvilinearParameters& curvilinearParameters) : m_splines(splines),
+                                                                                                                                                  m_numM(curvilinearParameters.MRefinement),
+                                                                                                                                                  m_numN(curvilinearParameters.NRefinement)
 
 {
 }
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromSplinesTransfinite::Compute()
+CurvilinearGrid CurvilinearGridFromSplinesTransfinite::Compute()
 {
     if (m_numN == 0 || m_numM == 0)
     {
@@ -235,11 +238,11 @@ meshkernel::CurvilinearGrid meshkernel::CurvilinearGridFromSplinesTransfinite::C
     return CurvilinearGrid(std::move(gridNodes), m_splines->m_projection);
 }
 
-void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations(size_t numIntersections,
-                                                                               size_t numPoints,
-                                                                               size_t numDiscretizations,
-                                                                               const std::vector<double>& intersectionDistances,
-                                                                               std::vector<double>& distances) const
+void CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations(size_t numIntersections,
+                                                                   size_t numPoints,
+                                                                   size_t numDiscretizations,
+                                                                   const std::vector<double>& intersectionDistances,
+                                                                   std::vector<double>& distances) const
 {
 
     if (numIntersections == 2)
@@ -294,10 +297,10 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeDiscretizations(s
     }
 }
 
-void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistances(double factor,
-                                                                                    double leftDistance,
-                                                                                    double rightDistance,
-                                                                                    std::vector<double>& distances) const
+void CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistances(double factor,
+                                                                        double leftDistance,
+                                                                        double rightDistance,
+                                                                        std::vector<double>& distances) const
 {
     distances[0] = 0.0;
     double incrementRatio = 1.0;
@@ -315,7 +318,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeExponentialDistan
     }
 }
 
-void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
+void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
 {
     const auto numSplines = m_splines->GetNumSplines();
 
@@ -522,10 +525,10 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
     }
 }
 
-bool meshkernel::CurvilinearGridFromSplinesTransfinite::OrderSplines(size_t startFirst,
-                                                                     size_t endFirst,
-                                                                     size_t startSecond,
-                                                                     size_t endSecond)
+bool CurvilinearGridFromSplinesTransfinite::OrderSplines(size_t startFirst,
+                                                         size_t endFirst,
+                                                         size_t startSecond,
+                                                         size_t endSecond)
 {
     for (auto i = startFirst; i < endFirst; i++)
     {
@@ -561,7 +564,7 @@ bool meshkernel::CurvilinearGridFromSplinesTransfinite::OrderSplines(size_t star
 }
 
 template <typename T>
-void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std::vector<T>>& v, size_t firstRow, size_t secondRow) const
+void CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std::vector<T>>& v, size_t firstRow, size_t secondRow) const
 {
     auto minSize = std::min(v[firstRow].size(), v[secondRow].size());
     minSize = std::min(minSize, m_splines->GetNumSplines());
@@ -573,7 +576,7 @@ void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapRows(std::vector<std
 }
 
 template <typename T>
-void meshkernel::CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<std::vector<T>>& v, size_t firstColumn, size_t secondColumn) const
+void CurvilinearGridFromSplinesTransfinite::SwapColumns(std::vector<std::vector<T>>& v, size_t firstColumn, size_t secondColumn) const
 {
     for (auto i = 0; i < m_splines->GetNumSplines(); i++)
     {

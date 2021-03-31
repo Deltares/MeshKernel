@@ -34,14 +34,17 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Splines.hpp>
 
-meshkernel::CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(std::shared_ptr<CurvilinearGrid> grid, const Point& firstPoint, const Point& secondPoint)
+using meshkernel::CurvilinearGrid;
+using meshkernel::CurvilinearGridDeRefinement;
+
+CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(std::shared_ptr<CurvilinearGrid> grid, const Point& firstPoint, const Point& secondPoint)
     : m_grid(std::move(grid)),
       m_firstPoint(firstPoint),
       m_secondPoint(secondPoint)
 {
 }
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridDeRefinement::Compute()
+CurvilinearGrid CurvilinearGridDeRefinement::Compute()
 {
     // Get the m and n indices from the point coordinates
     auto const firstNode = m_grid->GetNodeIndices(m_firstPoint);

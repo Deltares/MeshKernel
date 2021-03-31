@@ -35,11 +35,14 @@
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 
-meshkernel::Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh2D> mesh) : m_mesh(mesh)
+using meshkernel::Orthogonalizer;
+using meshkernel::Mesh2D;
+
+Orthogonalizer::Orthogonalizer(std::shared_ptr<Mesh2D> mesh) : m_mesh(mesh)
 {
 }
 
-void meshkernel::Orthogonalizer::Compute()
+void Orthogonalizer::Compute()
 {
     m_mesh->ComputeNodeNeighbours();
     m_weights.resize(m_mesh->GetNumNodes(), std::vector<double>(m_mesh->m_maxNumNeighbours, 0.0));

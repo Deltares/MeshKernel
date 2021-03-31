@@ -31,10 +31,12 @@
 #include <MeshKernel/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <iostream>
 
-meshkernel::CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid,
-                                                               size_t smoothingIterations)
+using meshkernel::CurvilinearGrid;
+using meshkernel::CurvilinearGridSmoothing;
+
+CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid,
+                                                   size_t smoothingIterations)
     : m_grid(grid),
       m_smoothingIterations(smoothingIterations)
 
@@ -45,27 +47,22 @@ meshkernel::CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<C
     m_grid->ComputeGridNodeTypes();
 }
 
-void meshkernel::CurvilinearGridSmoothing::SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint)
+void CurvilinearGridSmoothing::SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint)
 {
     // Get the m and n indices from the point coordinates
-    auto const firstNode = m_grid->GetNodeIndices(firstCornerPoint);
-    auto const secondNode = m_grid->GetNodeIndices(secondCornerPoint);
+    auto const [lowerLeft, upperRight] = m_grid->ComputeBlockFromCornerPoints(firstCornerPoint, secondCornerPoint);
 
     // Coinciding corner nodes, no valid area, nothing to do
-    if (firstNode == secondNode)
+    if (lowerLeft == upperRight)
     {
         return;
     }
 
-    // Compute orthogonalization bounding box
-    auto const [lowerLeft, upperRight] = m_grid->ComputeBoundingBoxCornerPoints(firstNode, secondNode);
-    m_minM = lowerLeft.m;
-    m_maxM = upperRight.m;
-    m_minN = lowerLeft.n;
-    m_maxN = upperRight.n;
+    m_lowerLeft = lowerLeft;
+    m_upperRight = upperRight;
 }
 
-void meshkernel::CurvilinearGridSmoothing::Compute()
+void CurvilinearGridSmoothing::Compute()
 {
     // Perform smoothing iterations
     for (auto smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
@@ -74,14 +71,14 @@ void meshkernel::CurvilinearGridSmoothing::Compute()
     }
 }
 
-void meshkernel::CurvilinearGridSmoothing::ComputedDirectionalSmooth(Point const& firstSegmentVertex,
-                                                                     Point const& secondSegmentVertex,
-                                                                     Point const& lowerLeftCornerSmoothingArea,
-                                                                     Point const& upperRightCornerSmootingArea)
+void CurvilinearGridSmoothing::ComputedDirectionalSmooth(Point const& firstSegmentNode,
+                                                         Point const& secondSegmentNode,
+                                                         Point const& lowerLeftCornerSmoothingArea,
+                                                         Point const& upperRightCornerSmootingArea)
 {
     // Get the m and n indices from the point coordinates
-    auto const firstLinePointIndices = m_grid->GetNodeIndices(firstSegmentVertex);
-    auto const secondLinePointIndices = m_grid->GetNodeIndices(secondSegmentVertex);
+    auto const firstLinePointIndices = m_grid->GetNodeIndices(firstSegmentNode);
+    auto const secondLinePointIndices = m_grid->GetNodeIndices(secondSegmentNode);
     auto const leftPointIndices = m_grid->GetNodeIndices(lowerLeftCornerSmoothingArea);
     auto const rightPointIndices = m_grid->GetNodeIndices(upperRightCornerSmootingArea);
 
@@ -101,21 +98,17 @@ void meshkernel::CurvilinearGridSmoothing::ComputedDirectionalSmooth(Point const
     // Compute the smoothing area
     if (isSmoothingAlongM)
     {
-        m_minM = std::min(firstLinePointIndices.m, secondLinePointIndices.m);
-        m_maxM = std::max(firstLinePointIndices.m, secondLinePointIndices.m);
-        m_minN = std::min(leftPointIndices.n, rightPointIndices.n);
-        m_maxN = std::max(leftPointIndices.n, rightPointIndices.n);
+        m_lowerLeft = {std::min(firstLinePointIndices.m, secondLinePointIndices.m), std::min(leftPointIndices.n, rightPointIndices.n)};
+        m_upperRight = {std::max(firstLinePointIndices.m, secondLinePointIndices.m), std::max(leftPointIndices.n, rightPointIndices.n)};
     }
     else
     {
-        m_minM = std::min(leftPointIndices.m, rightPointIndices.m);
-        m_maxM = std::max(leftPointIndices.m, rightPointIndices.m);
-        m_minN = std::min(firstLinePointIndices.n, secondLinePointIndices.n);
-        m_maxN = std::max(firstLinePointIndices.n, secondLinePointIndices.n);
+        m_lowerLeft = {std::min(leftPointIndices.m, rightPointIndices.m), std::min(firstLinePointIndices.n, secondLinePointIndices.n)};
+        m_upperRight = {std::max(leftPointIndices.m, rightPointIndices.m), std::max(firstLinePointIndices.n, secondLinePointIndices.n)};
     }
 
     // compute the box of the smoothing zone, used to determine the smoothing factors
-    auto const [lowerLeft, upperRight] = m_grid->ComputeBoundingBoxCornerPoints(leftPointIndices, rightPointIndices);
+    auto const [lowerLeft, upperRight] = m_grid->ComputeBlockFromCornerPoints(leftPointIndices, rightPointIndices);
 
     // Perform smoothing iterations
     for (auto smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
@@ -124,10 +117,10 @@ void meshkernel::CurvilinearGridSmoothing::ComputedDirectionalSmooth(Point const
     }
 }
 
-void meshkernel::CurvilinearGridSmoothing::SolveDirectionalSmooth(bool isSmoothingAlongM,
-                                                                  CurvilinearGrid::NodeIndices const& pointOnLineIndices,
-                                                                  CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
-                                                                  CurvilinearGrid::NodeIndices const& upperRightCornerSmoothingRegion)
+void CurvilinearGridSmoothing::SolveDirectionalSmooth(bool isSmoothingAlongM,
+                                                      CurvilinearGrid::NodeIndices const& pointOnLineIndices,
+                                                      CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
+                                                      CurvilinearGrid::NodeIndices const& upperRightCornerSmoothingRegion)
 {
 
     // assign current nodal values to the m_gridNodesCache
@@ -154,9 +147,9 @@ void meshkernel::CurvilinearGridSmoothing::SolveDirectionalSmooth(bool isSmoothi
 
     // Apply smoothing
     const double smoothingFactor = 0.5;
-    for (auto m = m_minM; m <= m_maxM; ++m)
+    for (auto m = m_lowerLeft.m; m <= m_upperRight.m; ++m)
     {
-        for (auto n = m_minN; n <= m_maxN; ++n)
+        for (auto n = m_lowerLeft.n; n <= m_upperRight.n; ++n)
         {
             // Apply line smoothing only in internal nodes
             if (isInvalidValidNode(m, n))
@@ -202,10 +195,11 @@ void meshkernel::CurvilinearGridSmoothing::SolveDirectionalSmooth(bool isSmoothi
     }
 }
 
-std::tuple<double, double, double> meshkernel::CurvilinearGridSmoothing::ComputeDirectionalSmoothingFactors(CurvilinearGrid::NodeIndices const& gridpoint,
-                                                                                                            const CurvilinearGrid::NodeIndices& pointOnSmoothingLineIndices,
-                                                                                                            const CurvilinearGrid::NodeIndices& lowerLeftIndices,
-                                                                                                            const CurvilinearGrid::NodeIndices& upperRightIndices) const
+std::tuple<double, double, double>
+CurvilinearGridSmoothing::ComputeDirectionalSmoothingFactors(CurvilinearGrid::NodeIndices const& gridpoint,
+                                                             const CurvilinearGrid::NodeIndices& pointOnSmoothingLineIndices,
+                                                             const CurvilinearGrid::NodeIndices& lowerLeftIndices,
+                                                             const CurvilinearGrid::NodeIndices& upperRightIndices) const
 {
 
     // horizontal smoothing factor
@@ -224,7 +218,7 @@ std::tuple<double, double, double> meshkernel::CurvilinearGridSmoothing::Compute
     return {horizontalSmoothingFactor, verticalSmoothingFactor, mixedSmoothingFactor};
 }
 
-void meshkernel::CurvilinearGridSmoothing::Solve()
+void CurvilinearGridSmoothing::Solve()
 {
     double const a = 0.5;
     double const b = 1.0 - a;
@@ -239,9 +233,9 @@ void meshkernel::CurvilinearGridSmoothing::Solve()
     }
 
     // Apply smoothing
-    for (auto m = m_minM; m <= m_maxM; ++m)
+    for (auto m = m_lowerLeft.m; m <= m_upperRight.m; ++m)
     {
-        for (auto n = m_minN; n <= m_maxN; ++n)
+        for (auto n = m_lowerLeft.n; n <= m_upperRight.n; ++n)
         {
 
             // It is invalid or a corner point, skip smoothing
@@ -286,7 +280,7 @@ void meshkernel::CurvilinearGridSmoothing::Solve()
     }
 }
 
-void meshkernel::CurvilinearGridSmoothing::ProjectPointOnClosestGridBoundary(Point const& point, size_t m, size_t n)
+void CurvilinearGridSmoothing::ProjectPointOnClosestGridBoundary(Point const& point, size_t m, size_t n)
 {
     // Project the new position on the original boundary segment
     Point previousNode;

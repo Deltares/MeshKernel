@@ -27,7 +27,9 @@
 
 #include <MeshKernel/RTree.hpp>
 
-void meshkernel::RTree::NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)
+using  meshkernel::RTree;
+
+void RTree::NearestNeighborsOnSquaredDistance(Point node, double searchRadiusSquared)
 {
     const auto searchRadius = std::sqrt(searchRadiusSquared);
 
@@ -49,7 +51,7 @@ void meshkernel::RTree::NearestNeighborsOnSquaredDistance(Point node, double sea
     }
 }
 
-void meshkernel::RTree::NearestNeighbors(Point node)
+void RTree::NearestNeighbors(Point node)
 {
 
     m_queryCache.reserve(m_queryVectorCapacity);
@@ -64,7 +66,7 @@ void meshkernel::RTree::NearestNeighbors(Point node)
     }
 }
 
-void meshkernel::RTree::DeleteNode(size_t position)
+void RTree::DeleteNode(size_t position)
 {
     const auto numberRemoved = m_rtree2D.remove(m_points[position]);
     if (numberRemoved != 1)
@@ -74,7 +76,7 @@ void meshkernel::RTree::DeleteNode(size_t position)
     m_points[position] = {Point2D{doubleMissingValue, doubleMissingValue}, std::numeric_limits<size_t>::max()};
 }
 
-void meshkernel::RTree::InsertNode(const Point& node)
+void RTree::InsertNode(const Point& node)
 {
     m_points.emplace_back(Point2D{node.x, node.y}, m_points.size());
     m_rtree2D.insert(m_points.end() - 1, m_points.end());

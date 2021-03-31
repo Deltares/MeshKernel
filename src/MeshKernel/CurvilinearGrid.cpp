@@ -30,7 +30,9 @@
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/Operations.hpp>
 
-meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection) : m_gridNodes(std::move(grid))
+using meshkernel::CurvilinearGrid;
+
+CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection) : m_gridNodes(std::move(grid))
 {
     if (!IsValid())
     {
@@ -44,7 +46,7 @@ meshkernel::CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& g
     SetFlatCopies();
 }
 
-void meshkernel::CurvilinearGrid::SetFlatCopies()
+void CurvilinearGrid::SetFlatCopies()
 {
     const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
     m_nodes = nodes;
@@ -52,7 +54,8 @@ void meshkernel::CurvilinearGrid::SetFlatCopies()
     m_gridIndices = gridIndices;
 }
 
-std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>> meshkernel::CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
+std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::vector<std::pair<size_t, size_t>>>
+CurvilinearGrid::ConvertCurvilinearToNodesAndEdges()
 {
     if (!IsValid())
     {
@@ -111,7 +114,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>, std::v
     return {nodes, edges, gridIndices};
 }
 
-bool meshkernel::CurvilinearGrid::IsValid() const
+bool CurvilinearGrid::IsValid() const
 {
     if (m_gridNodes.empty())
     {
@@ -133,7 +136,7 @@ bool meshkernel::CurvilinearGrid::IsValid() const
     return true;
 }
 
-meshkernel::CurvilinearGrid::NodeIndices meshkernel::CurvilinearGrid::GetNodeIndices(Point point)
+CurvilinearGrid::NodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 {
     SearchNearestNeighbors(point, MeshLocations::Nodes);
     if (GetNumNearestNeighbors(MeshLocations::Nodes) == 0)
@@ -145,7 +148,7 @@ meshkernel::CurvilinearGrid::NodeIndices meshkernel::CurvilinearGrid::GetNodeInd
     return {m_gridIndices[nodeIndex].first, m_gridIndices[nodeIndex].second};
 }
 
-bool meshkernel::CurvilinearGrid::IsValidFace(size_t m, size_t n) const
+bool CurvilinearGrid::IsValidFace(size_t m, size_t n) const
 {
     return m_gridNodes[m][n].IsValid() &&
            m_gridNodes[m + 1][n].IsValid() &&
@@ -153,13 +156,23 @@ bool meshkernel::CurvilinearGrid::IsValidFace(size_t m, size_t n) const
            m_gridNodes[m + 1][n + 1].IsValid();
 };
 
-std::tuple<meshkernel::CurvilinearGrid::NodeIndices, meshkernel::CurvilinearGrid::NodeIndices>
-meshkernel::CurvilinearGrid::ComputeBoundingBoxCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const
+std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices> CurvilinearGrid::ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint)
+{
+    // Get the m and n indices from the point coordinates
+    auto const firstNode = GetNodeIndices(firstCornerPoint);
+    auto const secondNode = GetNodeIndices(secondCornerPoint);
+
+    // Compute bounding box from corner points
+    return ComputeBlockFromCornerPoints(firstNode, secondNode);
+}
+
+std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices>
+CurvilinearGrid::ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const
 {
     return {{std::min(firstNode.m, secondNode.m), std::min(firstNode.n, secondNode.n)}, {std::max(firstNode.m, secondNode.m), std::max(firstNode.n, secondNode.n)}};
 }
 
-void meshkernel::CurvilinearGrid::ComputeGridFacesMask()
+void CurvilinearGrid::ComputeGridFacesMask()
 {
     // Flag valid faces
     m_gridFacesMask.resize(m_numM - 1, std::vector<bool>(m_numN - 1, false));
@@ -177,7 +190,7 @@ void meshkernel::CurvilinearGrid::ComputeGridFacesMask()
     }
 }
 
-void meshkernel::CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
+void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
 {
 
     if (!invalidNodesToRemove)
@@ -234,7 +247,7 @@ void meshkernel::CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
     RemoveInvalidNodes(invalidNodesToRemove);
 }
 
-void meshkernel::CurvilinearGrid::ComputeGridNodeTypes()
+void CurvilinearGrid::ComputeGridNodeTypes()
 {
     RemoveInvalidNodes(true);
     m_gridNodesMask.resize(m_numM, std::vector<NodeType>(m_numN, NodeType::Invalid));

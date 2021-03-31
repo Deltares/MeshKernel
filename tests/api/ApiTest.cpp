@@ -1812,9 +1812,9 @@ TEST_F(ApiTests, ComputedDirectionalSmooth_CurvilinearGrid_ShouldSmooth)
 
     meshkernelapi::GeometryList secondPointOnTheLine{};
     std::unique_ptr<double> xCoordinateSecondSegmentVertex(new double[1]{10.0});
-    std::unique_ptr<double> yCoordinatesSecondSegmentvertex(new double[1]{30.0});
+    std::unique_ptr<double> yCoordinatesSecondSegmentVertex(new double[1]{30.0});
     secondPointOnTheLine.xCoordinates = xCoordinateSecondSegmentVertex.get();
-    secondPointOnTheLine.yCoordinates = yCoordinatesSecondSegmentvertex.get();
+    secondPointOnTheLine.yCoordinates = yCoordinatesSecondSegmentVertex.get();
     secondPointOnTheLine.numberOfCoordinates = 1;
 
     meshkernelapi::GeometryList lowerLeftCornerSmoothingArea{};

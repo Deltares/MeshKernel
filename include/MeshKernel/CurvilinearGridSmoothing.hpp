@@ -50,16 +50,16 @@ namespace meshkernel
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
         /// The line must be an m or n grid line of the curvilinear grid.
         /// The grid is smoothed in the area specified by the line in one direction and by the two corner points on the other direction.
-        /// @param[in] firstSegmentVertex The first point of the line
-        /// @param[in] secondSegmentVertex The second point of the line
+        /// @param[in] firstSegmentNode The first point of the line
+        /// @param[in] secondSegmentNode The second point of the line
         /// @param[in] lowerLeftCornerSmoothingArea The left point of the smoothing area
         /// @param[in] upperRightCornerSmootingArea The right point of the smoothing area
-        void ComputedDirectionalSmooth(Point const& firstSegmentVertex,
-                                       Point const& secondSegmentVertex,
+        void ComputedDirectionalSmooth(Point const& firstSegmentNode,
+                                       Point const& secondSegmentNode,
                                        Point const& lowerLeftCornerSmoothingArea,
                                        Point const& upperRightCornerSmootingArea);
 
-        /// @brief Sets the smoothing block (TODO: Create base class for curvi orthogonalization and smoothing)
+        /// @brief Sets the smoothing block
         /// @param[in] firstCornerPoint The first point defining the smoothing area
         /// @param[in] secondCornerPoint The second point defining the smoothing area
         void SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint);
@@ -99,10 +99,8 @@ namespace meshkernel
         std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
         size_t m_smoothingIterations;            ///< The orthogonalization parameters
 
-        size_t m_minM; ///< The minimum m grid index of the smoothing block
-        size_t m_minN; ///< The minimum n grid index of the smoothing block
-        size_t m_maxM; ///< The maximum m grid index of the smoothing block
-        size_t m_maxN; ///< The maximum n grid index of the smoothing block
+        CurvilinearGrid::NodeIndices m_lowerLeft;  ///< The lower left corner of the smoothing block, used in grid block smoothing
+        CurvilinearGrid::NodeIndices m_upperRight; ///< The upper right corner of the smoothing block, used in grid block smoothing
 
         std::vector<std::vector<Point>> m_gridNodesCache; ///< A cache for storing current iteration node positions
     };

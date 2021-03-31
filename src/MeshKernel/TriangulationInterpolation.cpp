@@ -33,13 +33,15 @@
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/TriangulationWrapper.hpp>
 
-meshkernel::TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>& m_locations,
-                                                                   const std::vector<Sample>& samples,
-                                                                   Projection projection) : m_locations(m_locations),
-                                                                                            m_samples(samples),
-                                                                                            m_projection(projection){};
+using meshkernel::TriangulationInterpolation;
 
-void meshkernel::TriangulationInterpolation::Compute()
+TriangulationInterpolation::TriangulationInterpolation(const std::vector<Point>& m_locations,
+                                                       const std::vector<Sample>& samples,
+                                                       Projection projection) : m_locations(m_locations),
+                                                                                m_samples(samples),
+                                                                                m_projection(projection){};
+
+void TriangulationInterpolation::Compute()
 {
     // allocate and initialize result vector
     m_results.resize(m_locations.size(), doubleMissingValue);

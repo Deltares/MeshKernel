@@ -2042,10 +2042,10 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_smoothing_directional_curvilinear(int meshKernelId,
                                                               int smoothingIterations,
-                                                              GeometryList const& firstLinePoint,
-                                                              GeometryList const& secondLinePoint,
-                                                              GeometryList const& lowerLeftCorner,
-                                                              GeometryList const& upperRightCorner)
+                                                              GeometryList const& firstSegmentNode,
+                                                              GeometryList const& secondSegmentNode,
+                                                              GeometryList const& lowerLeftCornerSmoothingArea,
+                                                              GeometryList const& upperRightCornerSmootingArea)
     {
         int exitCode = Success;
         try
@@ -2054,27 +2054,27 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
-            const auto firstGridLinePoint = ConvertGeometryListToPointVector(firstLinePoint);
+            const auto firstNode = ConvertGeometryListToPointVector(firstSegmentNode);
 
-            if (firstGridLinePoint.empty())
+            if (firstNode.empty())
             {
-                throw std::invalid_argument("MeshKernel: No first node of the line defining directional smoothing");
+                throw std::invalid_argument("MeshKernel: No first node of the segment defining directional smoothing");
             }
 
-            const auto secondGridLinePoint = ConvertGeometryListToPointVector(secondLinePoint);
-            if (secondGridLinePoint.empty())
+            const auto secondNode = ConvertGeometryListToPointVector(secondSegmentNode);
+            if (secondNode.empty())
             {
-                throw std::invalid_argument("MeshKernel: No second node of the line defining directional smoothing");
+                throw std::invalid_argument("MeshKernel: No second node of the segment defining directional smoothing");
             }
 
-            const auto lowerLeftPointSmoothingArea = ConvertGeometryListToPointVector(lowerLeftCorner);
-            if (lowerLeftPointSmoothingArea.empty())
+            const auto lowerLeft = ConvertGeometryListToPointVector(lowerLeftCornerSmoothingArea);
+            if (lowerLeft.empty())
             {
                 throw std::invalid_argument("MeshKernel: No first node of the smoothing area");
             }
 
-            const auto upperRightCornerSmoothingArea = ConvertGeometryListToPointVector(upperRightCorner);
-            if (upperRightCornerSmoothingArea.empty())
+            const auto upperRight = ConvertGeometryListToPointVector(upperRightCornerSmootingArea);
+            if (upperRight.empty())
             {
                 throw std::invalid_argument("MeshKernel: No second node of the smoothing area");
             }
@@ -2083,10 +2083,10 @@ namespace meshkernelapi
             meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid,
                                                                           static_cast<size_t>(smoothingIterations));
 
-            curvilinearGridSmoothing.ComputedDirectionalSmooth(firstGridLinePoint[0],
-                                                               secondGridLinePoint[0],
-                                                               lowerLeftPointSmoothingArea[0],
-                                                               upperRightCornerSmoothingArea[0]);
+            curvilinearGridSmoothing.ComputedDirectionalSmooth(firstNode[0],
+                                                               secondNode[0],
+                                                               lowerLeft[0],
+                                                               upperRight[0]);
         }
         catch (...)
         {

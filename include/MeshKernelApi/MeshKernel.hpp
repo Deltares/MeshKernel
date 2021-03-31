@@ -707,20 +707,20 @@ namespace meshkernelapi
                                                       const GeometryList& lowerLeftCorner,
                                                       const GeometryList& upperRightCorner);
 
-        /// @brief Smooths a curvilinear grid along the direction specified a the line.
+        /// @brief Smooths a curvilinear grid along the direction specified by a segment
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] smoothingIterations The number of smoothing iterations to perform
-        /// @param[in] firstLinePoint The first point of the line
-        /// @param[in] secondLinePoint The second point of the line
-        /// @param[in] lowerLeftCorner The geometry list containing the lower left corner of the smoothing region
-        /// @param[in] upperRightCorner The geometry list containing the upper right corner of the smoothing region
+        /// @param[in] firstSegmentNode The first point of the segment
+        /// @param[in] secondSegmentNode The second point of the segment
+        /// @param[in] lowerLeftCornerSmoothingArea The geometry list containing the lower left corner of the smoothing area
+        /// @param[in] upperRightCornerSmootingArea The geometry list containing the upper right corner of the smoothing area
         /// @return Error code
         MKERNEL_API int mkernel_smoothing_directional_curvilinear(int meshKernelId,
                                                                   int smoothingIterations,
-                                                                  GeometryList const& firstLinePoint,
-                                                                  GeometryList const& secondLinePoint,
-                                                                  GeometryList const& lowerLeftCorner,
-                                                                  GeometryList const& upperRightCorner);
+                                                                  GeometryList const& firstSegmentNode,
+                                                                  GeometryList const& secondSegmentNode,
+                                                                  GeometryList const& lowerLeftCornerSmoothingArea,
+                                                                  GeometryList const& upperRightCornerSmootingArea);
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);
