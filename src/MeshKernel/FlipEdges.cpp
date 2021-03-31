@@ -34,13 +34,16 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 
-meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh2D> mesh,
-                                 std::shared_ptr<LandBoundaries> landBoundary,
-                                 bool triangulateFaces,
-                                 bool projectToLandBoundary) : m_mesh(mesh),
-                                                               m_landBoundaries(landBoundary),
-                                                               m_triangulateFaces(triangulateFaces),
-                                                               m_projectToLandBoundary(projectToLandBoundary)
+using meshkernel::FlipEdges;
+using meshkernel::Mesh2D;
+
+FlipEdges::FlipEdges(std::shared_ptr<Mesh2D> mesh,
+                     std::shared_ptr<LandBoundaries> landBoundary,
+                     bool triangulateFaces,
+                     bool projectToLandBoundary) : m_mesh(mesh),
+                                                   m_landBoundaries(landBoundary),
+                                                   m_triangulateFaces(triangulateFaces),
+                                                   m_projectToLandBoundary(projectToLandBoundary)
 {
     if (m_projectToLandBoundary)
     {
@@ -48,7 +51,7 @@ meshkernel::FlipEdges::FlipEdges(std::shared_ptr<Mesh2D> mesh,
     }
 };
 
-void meshkernel::FlipEdges::Compute() const
+void FlipEdges::Compute() const
 {
 
     m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
@@ -243,7 +246,7 @@ void meshkernel::FlipEdges::Compute() const
     m_mesh->Administrate(Mesh2D::AdministrationOption::AdministrateMeshEdgesAndFaces);
 }
 
-void meshkernel::FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const
+void FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) const
 {
     // Update nod, delete edge from m_mesh->m_nodesEdges[firstNode]
     size_t kk = 0;
@@ -269,9 +272,9 @@ void meshkernel::FlipEdges::DeleteEdgeFromNode(size_t edge, size_t firstNode) co
     m_mesh->m_nodesEdges[firstNode].resize(m_mesh->m_nodesNumEdges[firstNode]);
 }
 
-int meshkernel::FlipEdges::ComputeTopologyFunctional(size_t edge,
-                                                     size_t& nodeLeft,
-                                                     size_t& nodeRight) const
+int FlipEdges::ComputeTopologyFunctional(size_t edge,
+                                         size_t& nodeLeft,
+                                         size_t& nodeRight) const
 {
     const int largeTopologyFunctionalValue = 1000;
 
@@ -382,7 +385,7 @@ int meshkernel::FlipEdges::ComputeTopologyFunctional(size_t edge,
     return topologyFunctional;
 }
 
-int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t secondNode) const
+int FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstNode, size_t secondNode) const
 {
     if (m_landBoundaries->m_meshNodesLandBoundarySegments[nodeIndex] == sizetMissingValue)
     {
@@ -505,7 +508,7 @@ int meshkernel::FlipEdges::DifferenceFromOptimum(size_t nodeIndex, size_t firstN
     return 6;
 };
 
-size_t meshkernel::FlipEdges::OptimalNumberOfConnectedNodes(size_t index) const
+size_t FlipEdges::OptimalNumberOfConnectedNodes(size_t index) const
 {
     size_t optimalNumber = 6;
     if (m_mesh->m_nodesTypes[index] == 2)

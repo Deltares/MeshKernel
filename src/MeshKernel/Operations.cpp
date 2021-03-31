@@ -1490,4 +1490,18 @@ namespace meshkernel
         return result;
     }
 
+    std::tuple<Point, double, bool> OrthogonalProjectionOnSegment(Point const& firstNode,
+                                                                  Point const& secondNode,
+                                                                  Point const& pointToProject)
+    {
+        const auto delta = secondNode - firstNode;
+        const auto squaredDelta = delta.x * delta.x + delta.y * delta.y;
+        auto segmentRatio = (pointToProject.x * delta.x + pointToProject.y * delta.y - firstNode.x * delta.x - firstNode.y * delta.y) / squaredDelta;
+
+        Point projectedPoint = firstNode + delta * segmentRatio;
+        auto projectionOnSegment = segmentRatio >= 0.0 && segmentRatio <= 1.0 ? true : false;
+        segmentRatio = segmentRatio * std::sqrt(squaredDelta);
+        return {projectedPoint, segmentRatio, projectionOnSegment};
+    }
+
 } // namespace meshkernel

@@ -25,20 +25,21 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/Mesh.hpp"
-
-#include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Operations.hpp>
-
-#include <MeshKernel/Entities.hpp>
 #include <stdexcept>
 #include <vector>
 
-meshkernel::Mesh::Mesh(const std::vector<Edge>& edges,
-                       const std::vector<Point>& nodes,
-                       Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection){};
+#include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
+#include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/Operations.hpp>
 
-void meshkernel::Mesh::NodeAdministration()
+using meshkernel::Mesh;
+
+Mesh::Mesh(const std::vector<Edge>& edges,
+           const std::vector<Point>& nodes,
+           Projection projection) : m_nodes(nodes), m_edges(edges), m_projection(projection){};
+
+void Mesh::NodeAdministration()
 {
     // assume no duplicated links
     for (auto e = 0; e < GetNumEdges(); e++)
@@ -96,7 +97,7 @@ void meshkernel::Mesh::NodeAdministration()
     }
 }
 
-void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
+void Mesh::DeleteInvalidNodesAndEdges()
 {
 
     // Mask nodes connected to valid edges
@@ -172,7 +173,7 @@ void meshkernel::Mesh::DeleteInvalidNodesAndEdges()
     m_edges.erase(endEdgeVector, m_edges.end());
 }
 
-void meshkernel::Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
+void Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeIndex)
 {
     if (firstNodeIndex >= GetNumNodes() || secondNodeIndex >= GetNumNodes())
     {
@@ -253,7 +254,7 @@ void meshkernel::Mesh::MergeTwoNodes(size_t firstNodeIndex, size_t secondNodeInd
     m_edgesRTreeRequiresUpdate = true;
 }
 
-size_t meshkernel::Mesh::ConnectNodes(size_t startNode, size_t endNode)
+size_t Mesh::ConnectNodes(size_t startNode, size_t endNode)
 {
     const auto edgeIndex = FindEdge(startNode, endNode);
 
@@ -272,7 +273,7 @@ size_t meshkernel::Mesh::ConnectNodes(size_t startNode, size_t endNode)
     return newEdgeIndex;
 }
 
-size_t meshkernel::Mesh::InsertNode(const Point& newPoint)
+size_t Mesh::InsertNode(const Point& newPoint)
 {
     const auto newSize = GetNumNodes() + 1;
     const auto newNodeIndex = GetNumNodes();
@@ -291,7 +292,7 @@ size_t meshkernel::Mesh::InsertNode(const Point& newPoint)
     return newNodeIndex;
 }
 
-void meshkernel::Mesh::DeleteNode(size_t node)
+void Mesh::DeleteNode(size_t node)
 {
     if (node >= GetNumNodes())
     {
@@ -308,7 +309,7 @@ void meshkernel::Mesh::DeleteNode(size_t node)
     m_nodesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::DeleteEdge(size_t edge)
+void Mesh::DeleteEdge(size_t edge)
 {
     if (edge == sizetMissingValue)
     {
@@ -321,7 +322,7 @@ void meshkernel::Mesh::DeleteEdge(size_t edge)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void meshkernel::Mesh::ComputeEdgesLengths()
+void Mesh::ComputeEdgesLengths()
 {
     auto const numEdges = GetNumEdges();
     m_edgeLengths.resize(numEdges, doubleMissingValue);
@@ -333,12 +334,12 @@ void meshkernel::Mesh::ComputeEdgesLengths()
     }
 }
 
-void meshkernel::Mesh::ComputeEdgesCenters()
+void Mesh::ComputeEdgesCenters()
 {
     m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
 }
 
-size_t meshkernel::Mesh::FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const
+size_t Mesh::FindCommonNode(size_t firstEdgeIndex, size_t secondEdgeIndex) const
 {
     const auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
     const auto firstEdgeEdgeSecondNode = m_edges[firstEdgeIndex].second;
@@ -362,7 +363,7 @@ size_t meshkernel::Mesh::FindCommonNode(size_t firstEdgeIndex, size_t secondEdge
     return sizetMissingValue;
 }
 
-size_t meshkernel::Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const
+size_t Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex) const
 {
     if (firstNodeIndex == sizetMissingValue || secondNodeIndex == sizetMissingValue)
     {
@@ -383,7 +384,7 @@ size_t meshkernel::Mesh::FindEdge(size_t firstNodeIndex, size_t secondNodeIndex)
     return edgeIndex;
 }
 
-size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
+size_t Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
 {
     if (GetNumNodes() <= 0)
     {
@@ -400,7 +401,7 @@ size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, double searchRadius)
     throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
 }
 
-size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool>& oneDNodeMask)
+size_t Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool>& oneDNodeMask)
 {
     if (GetNumNodes() <= 0)
     {
@@ -442,7 +443,7 @@ size_t meshkernel::Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bo
     throw AlgorithmError("Mesh::FindNodeCloseToAPoint: Could not find the node index close to a point.");
 }
 
-size_t meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
+size_t Mesh::FindEdgeCloseToAPoint(Point point)
 {
     if (GetNumEdges() == 0)
     {
@@ -459,7 +460,7 @@ size_t meshkernel::Mesh::FindEdgeCloseToAPoint(Point point)
     throw AlgorithmError("Mesh::FindEdgeCloseToAPoint: Could not find the closest edge to a point.");
 }
 
-void meshkernel::Mesh::MoveNode(Point newPoint, size_t nodeindex)
+void Mesh::MoveNode(Point newPoint, size_t nodeindex)
 {
     const Point nodeToMove = m_nodes[nodeindex];
 
@@ -483,7 +484,7 @@ void meshkernel::Mesh::MoveNode(Point newPoint, size_t nodeindex)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-bool meshkernel::Mesh::IsFaceOnBoundary(size_t face) const
+bool Mesh::IsFaceOnBoundary(size_t face) const
 {
     bool isFaceOnBoundary = false;
 
@@ -499,7 +500,7 @@ bool meshkernel::Mesh::IsFaceOnBoundary(size_t face) const
     return isFaceOnBoundary;
 }
 
-void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(size_t node)
+void Mesh::SortEdgesInCounterClockWiseOrder(size_t node)
 {
     if (!m_nodes[node].IsValid())
     {
@@ -568,7 +569,7 @@ void meshkernel::Mesh::SortEdgesInCounterClockWiseOrder(size_t node)
     }
 }
 
-void meshkernel::Mesh::BuildTree(MeshLocations meshLocation)
+void Mesh::BuildTree(MeshLocations meshLocation)
 {
     if (meshLocation == MeshLocations::Nodes && m_nodesRTree.Empty())
     {
@@ -589,7 +590,7 @@ void meshkernel::Mesh::BuildTree(MeshLocations meshLocation)
     }
 }
 
-void meshkernel::Mesh::SearchNearestNeighbors(Point point, MeshLocations meshLocation)
+void Mesh::SearchNearestNeighbors(Point point, MeshLocations meshLocation)
 {
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
@@ -608,7 +609,7 @@ void meshkernel::Mesh::SearchNearestNeighbors(Point point, MeshLocations meshLoc
     }
 }
 
-void meshkernel::Mesh::SearchNearestNeighboursOnSquaredDistance(Point point, double squaredRadius, MeshLocations meshLocation)
+void Mesh::SearchNearestNeighboursOnSquaredDistance(Point point, double squaredRadius, MeshLocations meshLocation)
 {
     BuildTree(meshLocation);
     if (meshLocation == MeshLocations::Nodes)
@@ -627,7 +628,7 @@ void meshkernel::Mesh::SearchNearestNeighboursOnSquaredDistance(Point point, dou
     }
 }
 
-size_t meshkernel::Mesh::GetNumNearestNeighbors(MeshLocations meshLocation) const
+size_t Mesh::GetNumNearestNeighbors(MeshLocations meshLocation) const
 {
     if (meshLocation == MeshLocations::Nodes)
     {
@@ -647,7 +648,7 @@ size_t meshkernel::Mesh::GetNumNearestNeighbors(MeshLocations meshLocation) cons
     return sizetMissingValue;
 }
 
-size_t meshkernel::Mesh::GetNearestNeighborIndex(size_t index, MeshLocations meshLocation)
+size_t Mesh::GetNearestNeighborIndex(size_t index, MeshLocations meshLocation)
 {
     if (meshLocation == MeshLocations::Nodes)
     {
@@ -667,7 +668,7 @@ size_t meshkernel::Mesh::GetNearestNeighborIndex(size_t index, MeshLocations mes
     return sizetMissingValue;
 }
 
-void meshkernel::Mesh::AdministrateNodesEdges()
+void Mesh::AdministrateNodesEdges()
 {
     DeleteInvalidNodesAndEdges();
 
@@ -704,7 +705,7 @@ void meshkernel::Mesh::AdministrateNodesEdges()
     }
 }
 
-double meshkernel::Mesh::ComputeMaxLengthSurroundingEdges(size_t node)
+double Mesh::ComputeMaxLengthSurroundingEdges(size_t node)
 {
 
     if (m_edgeLengths.empty())

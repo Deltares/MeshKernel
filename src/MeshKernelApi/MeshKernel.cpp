@@ -41,6 +41,7 @@
 #include <MeshKernel/CurvilinearGridFromSplinesTransfinite.hpp>
 #include <MeshKernel/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/CurvilinearGridRefinement.hpp>
+#include <MeshKernel/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
@@ -395,7 +396,7 @@ namespace meshkernelapi
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
             for (auto i = 0; i < hangingEdges.size(); ++i)
             {
-                *(hangingEdgesIndices)[i] = static_cast<int>(hangingEdges[i]);
+                *hangingEdgesIndices[i] = static_cast<int>(hangingEdges[i]);
             }
         }
         catch (...)
@@ -575,7 +576,7 @@ namespace meshkernelapi
                 return exitCode;
             }
 
-            meshKernelState[meshKernelId].m_orthogonalization->InnerIteration();
+            meshKernelState[meshKernelId].m_orthogonalization->Solve();
         }
         catch (...)
         {
@@ -1992,6 +1993,100 @@ namespace meshkernelapi
                                                                                           secondPoint[0]);
 
             curvilinearGridOrthogonalization.Compute();
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_smoothing_curvilinear(int meshKernelId,
+                                                  int smoothingIterations,
+                                                  const GeometryList& lowerLeftCorner,
+                                                  const GeometryList& upperRightCorner)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+            const auto firstPoint = ConvertGeometryListToPointVector(lowerLeftCorner);
+
+            if (firstPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
+            }
+
+            const auto secondPoint = ConvertGeometryListToPointVector(upperRightCorner);
+            if (secondPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
+            }
+
+            // Execute
+            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid,
+                                                                          static_cast<size_t>(smoothingIterations));
+
+            curvilinearGridSmoothing.SetBlock(firstPoint[0], secondPoint[0]);
+            curvilinearGridSmoothing.Compute();
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_smoothing_directional_curvilinear(int meshKernelId,
+                                                              int smoothingIterations,
+                                                              GeometryList const& firstSegmentNode,
+                                                              GeometryList const& secondSegmentNode,
+                                                              GeometryList const& lowerLeftCornerSmoothingArea,
+                                                              GeometryList const& upperRightCornerSmootingArea)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+            const auto firstNode = ConvertGeometryListToPointVector(firstSegmentNode);
+
+            if (firstNode.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No first node of the segment defining directional smoothing");
+            }
+
+            const auto secondNode = ConvertGeometryListToPointVector(secondSegmentNode);
+            if (secondNode.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No second node of the segment defining directional smoothing");
+            }
+
+            const auto lowerLeft = ConvertGeometryListToPointVector(lowerLeftCornerSmoothingArea);
+            if (lowerLeft.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No first node of the smoothing area");
+            }
+
+            const auto upperRight = ConvertGeometryListToPointVector(upperRightCornerSmootingArea);
+            if (upperRight.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No second node of the smoothing area");
+            }
+
+            // Execute
+            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid,
+                                                                          static_cast<size_t>(smoothingIterations));
+
+            curvilinearGridSmoothing.ComputedDirectionalSmooth(firstNode[0],
+                                                               secondNode[0],
+                                                               lowerLeft[0],
+                                                               upperRight[0]);
         }
         catch (...)
         {

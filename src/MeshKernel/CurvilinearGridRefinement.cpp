@@ -32,7 +32,10 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Operations.hpp>
 
-meshkernel::CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, const Point& firstPoint, const Point& secondPoint, size_t refinement)
+using meshkernel::CurvilinearGrid;
+using meshkernel::CurvilinearGridRefinement;
+
+CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, const Point& firstPoint, const Point& secondPoint, size_t refinement)
     : m_grid(grid),
       m_firstPoint(firstPoint),
       m_secondPoint(secondPoint),
@@ -42,21 +45,21 @@ meshkernel::CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shar
     m_splines = Splines(m_grid);
 }
 
-void meshkernel::CurvilinearGridRefinement::Compute() const
+void CurvilinearGridRefinement::Compute() const
 {
     // Get the m and n indices from the point coordinates
-    auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(m_firstPoint);
-    auto [mSecondNode, nSecondNode] = m_grid->GetNodeIndices(m_secondPoint);
+    auto const firstNode = m_grid->GetNodeIndices(m_firstPoint);
+    auto const secondNode = m_grid->GetNodeIndices(m_secondPoint);
 
-    // The points must lie on the same gridline
-    if (mSecondNode - mFirstNode != 0 && nSecondNode - nFirstNode != 0)
+    // The points must lie on the same grid line
+    if (firstNode.m != secondNode.m && firstNode.n != secondNode.n)
     {
         throw std::invalid_argument("CurvilinearGridRefinement::Compute: The selected curvilinear grid nodes are not on the same grid-line");
     }
 
     // Estimate the dimension of the refined grid
-    const auto numMToRefine = mSecondNode - mFirstNode;
-    const auto numNToRefine = nSecondNode - nFirstNode;
+    const auto numMToRefine = secondNode.m - firstNode.m;
+    const auto numNToRefine = secondNode.n - firstNode.n;
     const size_t maxM = m_grid->m_numM + numMToRefine * (m_refinement - 1);
     const size_t maxN = m_grid->m_numN + numNToRefine * (m_refinement - 1);
 
@@ -73,7 +76,7 @@ void meshkernel::CurvilinearGridRefinement::Compute() const
     for (auto currentM = 0; currentM < m_grid->m_numM - 1; ++currentM)
     {
         size_t localMRefinement = 1;
-        if (currentM >= mFirstNode && currentM < mSecondNode)
+        if (currentM >= firstNode.m && currentM < secondNode.m)
         {
             localMRefinement = m_refinement;
         }
@@ -83,7 +86,7 @@ void meshkernel::CurvilinearGridRefinement::Compute() const
         {
 
             size_t localNRefinement = 1;
-            if (currentN >= nFirstNode && currentN < nSecondNode)
+            if (currentN >= firstNode.n && currentN < secondNode.n)
             {
                 localNRefinement = m_refinement;
             }

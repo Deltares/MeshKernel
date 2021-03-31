@@ -78,7 +78,7 @@ namespace meshkernel
     ///     (`OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary`).
     ///     In case a projection to land boundary is requested, the mesh nodes are projected to the land
     ///     boundaries. An OpenMP parallelization is used in
-    ///     `OrthogonalizationAndSmoothing::InnerIteration` because the update
+    ///     `OrthogonalizationAndSmoothing::Solve` because the update
     ///     of the nodal coordinates is made iteration-independent.
     class OrthogonalizationAndSmoothing
     {
@@ -110,7 +110,7 @@ namespace meshkernel
         void PrepareOuterIteration();
 
         /// @brief Performs an inner iteration, update the mesh node positions
-        void InnerIteration();
+        void Solve();
 
         /// @brief Finalize the outer iteration, computes new mu and face areas, masscenters, circumcenters
         void FinalizeOuterIteration();
