@@ -68,6 +68,18 @@ namespace meshkernel
                 return !(*this == rhs);
             }
 
+            /// @brief Inquires if another node is on the same grid line of the current node
+            /// @param[in] rhs The node to inquire
+            /// @return True if on the same grid line, false otherwise
+            bool IsOnTheSameGridLine(const NodeIndices& rhs) const
+            {
+                if (m == rhs.m || n == rhs.n)
+                {
+                    return true;
+                }
+                return false;
+            }
+
             size_t m; ///< Columns
             size_t n; ///< Rows
         };

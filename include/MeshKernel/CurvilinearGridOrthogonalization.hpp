@@ -99,10 +99,8 @@ namespace meshkernel
         std::shared_ptr<CurvilinearGrid> m_grid;                                  ///< A pointer to the curvilinear grid to modify
         meshkernelapi::OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
 
-        size_t m_minM; ///< The minimum m grid index of the orthogonalization bounding box
-        size_t m_minN; ///< The minimum n grid index of the orthogonalization bounding box
-        size_t m_maxM; ///< The maximum m grid index of the orthogonalization bounding box
-        size_t m_maxN; ///< The maximum n grid index of the orthogonalization bounding box
+        CurvilinearGrid::NodeIndices m_lowerLeft;  ///< The lower left corner of the smoothing block, used in grid block orthogonalization
+        CurvilinearGrid::NodeIndices m_upperRight; ///< The upper right corner of the smoothing block, used in grid block orthogonalization
 
         std::vector<std::vector<double>> m_a;   ///< The a term of the orthogonalization equation
         std::vector<std::vector<double>> m_b;   ///< The b term of the orthogonalization equation

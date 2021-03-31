@@ -55,7 +55,7 @@ void CurvilinearGridSmoothing::SetBlock(Point const& firstCornerPoint, Point con
     // Coinciding corner nodes, no valid area, nothing to do
     if (lowerLeft == upperRight)
     {
-        return;
+        throw std::invalid_argument("CurvilinearGridSmoothing::SetBlock coinciding corner nodes, no valid area to smooth");
     }
 
     m_lowerLeft = lowerLeft;

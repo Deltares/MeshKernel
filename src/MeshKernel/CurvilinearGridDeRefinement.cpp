@@ -47,13 +47,12 @@ CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(std::shared_ptr<Curvili
 CurvilinearGrid CurvilinearGridDeRefinement::Compute()
 {
     // Get the m and n indices from the point coordinates
-    auto const firstNode = m_grid->GetNodeIndices(m_firstPoint);
-    auto const secondNode = m_grid->GetNodeIndices(m_secondPoint);
+    auto const [firstNode, secondNode] = m_grid->ComputeBlockFromCornerPoints(m_firstPoint, m_secondPoint);
 
     /// The points must lie on the same gridline
-    if (secondNode.m - firstNode.m != 0 && secondNode.n - firstNode.n != 0)
+    if (!firstNode.IsOnTheSameGridLine(secondNode))
     {
-        throw std::invalid_argument("CurvilinearGridDeRefinement::Compute: The selected curvilinear grid nodes are not on the same grid-line");
+        throw std::invalid_argument("CurvilinearGridDeRefinement::Compute: The selected curvilinear grid nodes are not on the same grid line");
     }
 
     /// estimate the dimension of the refined grid
