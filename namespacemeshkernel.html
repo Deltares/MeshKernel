@@ -121,6 +121,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_refinement.html">CurvilinearGridRefinement</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class implementing the curvilinear grid refinement algorithm.  <a href="classmeshkernel_1_1_curvilinear_grid_refinement.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_curvilinear_grid_smoothing.html">CurvilinearGridSmoothing</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class implementing the curvilinear grid smoothing algorithm.  <a href="classmeshkernel_1_1_curvilinear_grid_smoothing.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_flip_edges.html">FlipEdges</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class used to flip edges in order to minimise the number of edges connected to a node.  <a href="classmeshkernel_1_1_flip_edges.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -372,6 +375,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="name
 <tr class="memitem:a5bc073bd31e9bf69d55fe68daf469adb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5bc073bd31e9bf69d55fe68daf469adb">ComputeAverageCoordinate</a> (const std::vector&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt; &amp;points, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a5bc073bd31e9bf69d55fe68daf469adb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a series of point computes the average coordinate.  <a href="namespacemeshkernel.html#a5bc073bd31e9bf69d55fe68daf469adb">More...</a><br /></td></tr>
 <tr class="separator:a5bc073bd31e9bf69d55fe68daf469adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17b8986897c4bff8679ba8f205650450"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a>, double, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a17b8986897c4bff8679ba8f205650450">OrthogonalProjectionOnSegment</a> (<a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;firstNode, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;secondNode, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;pointToProject)</td></tr>
+<tr class="memdesc:a17b8986897c4bff8679ba8f205650450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cartesian projection of a point on a segment defined by other two points.  <a href="namespacemeshkernel.html#a17b8986897c4bff8679ba8f205650450">More...</a><br /></td></tr>
+<tr class="separator:a17b8986897c4bff8679ba8f205650450"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a732234767e8f5cae9f50ea3cad683350"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a732234767e8f5cae9f50ea3cad683350"><td class="memTemplItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="structmeshkernel_1_1_point.html">Point</a>, <a class="el" href="structmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a732234767e8f5cae9f50ea3cad683350">GetBoundingBox</a> (const std::vector&lt; T &gt; &amp;points)</td></tr>
 <tr class="memdesc:a732234767e8f5cae9f50ea3cad683350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a vector of coordinates, get the lowest upper and right points.  <a href="namespacemeshkernel.html#a732234767e8f5cae9f50ea3cad683350">More...</a><br /></td></tr>
@@ -2337,6 +2343,51 @@ template&lt;typename T &gt; </div>
 
 <p>Computes the normal vector outside (normalout) </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="namespacemeshkernel.html#ae04b6bc704df7891f149706c2bbd84e8" title="Computes the normal vector to a line 1-2, which is outward w.r.t. an &#39;inside&#39; point 3.">NormalVectorInside</a> </dd></dl>
+
+</div>
+</div>
+<a id="a17b8986897c4bff8679ba8f205650450"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17b8986897c4bff8679ba8f205650450">&#9670;&nbsp;</a></span>OrthogonalProjectionOnSegment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::tuple&lt;<a class="el" href="structmeshkernel_1_1_point.html">Point</a>, double, bool&gt; meshkernel::OrthogonalProjectionOnSegment </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;&#160;</td>
+          <td class="paramname"><em>firstNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;&#160;</td>
+          <td class="paramname"><em>secondNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernel_1_1_point.html">Point</a> const &amp;&#160;</td>
+          <td class="paramname"><em>pointToProject</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cartesian projection of a point on a segment defined by other two points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">firstNode</td><td>The first node of the segment </td></tr>
+    <tr><td class="paramname">secondNode</td><td>The second node of the segment </td></tr>
+    <tr><td class="paramname">pointToProject</td><td>The point to project </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The projected point, the distance of the projection from the first point (expressed as a ratio), a boolean indicating if the projected point is within the first and second point. </dd></dl>
 
 </div>
 </div>

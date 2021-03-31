@@ -344,6 +344,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ab39001538754c7d5c1026e7e1f1d6edb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab39001538754c7d5c1026e7e1f1d6edb">mkernel_orthogonalize_curvilinear</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">OrthogonalizationParameters</a> &amp;orthogonalizationParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListFirstPoint, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListSecondPoint)</td></tr>
 <tr class="memdesc:ab39001538754c7d5c1026e7e1f1d6edb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orthogonalize a curvilinear grid.  <a href="namespacemeshkernelapi.html#ab39001538754c7d5c1026e7e1f1d6edb">More...</a><br /></td></tr>
 <tr class="separator:ab39001538754c7d5c1026e7e1f1d6edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8390b9bd3c103a76f17f29803d4b68ad"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8390b9bd3c103a76f17f29803d4b68ad">mkernel_smoothing_curvilinear</a> (int meshKernelId, int smoothingIterations, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;lowerLeftCorner, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;upperRightCorner)</td></tr>
+<tr class="memdesc:a8390b9bd3c103a76f17f29803d4b68ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smooths a curvilinear grid.  <a href="namespacemeshkernelapi.html#a8390b9bd3c103a76f17f29803d4b68ad">More...</a><br /></td></tr>
+<tr class="separator:a8390b9bd3c103a76f17f29803d4b68ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecb3e04db4d916e7e993554b9ec0d303"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aecb3e04db4d916e7e993554b9ec0d303">mkernel_smoothing_directional_curvilinear</a> (int meshKernelId, int smoothingIterations, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> const &amp;firstSegmentNode, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> const &amp;secondSegmentNode, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> const &amp;lowerLeftCornerSmoothingArea, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> const &amp;upperRightCornerSmootingArea)</td></tr>
+<tr class="memdesc:aecb3e04db4d916e7e993554b9ec0d303"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smooths a curvilinear grid along the direction specified by a segment.  <a href="namespacemeshkernelapi.html#aecb3e04db4d916e7e993554b9ec0d303">More...</a><br /></td></tr>
+<tr class="separator:aecb3e04db4d916e7e993554b9ec0d303"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c8a7a9f99cd5feedadca9b03aae4e4d"><td class="memItemLeft" align="right" valign="top"><a id="a0c8a7a9f99cd5feedadca9b03aae4e4d"></a>
 MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0c8a7a9f99cd5feedadca9b03aae4e4d">mkernel_convert_curvilinear_to_mesh2d</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a0c8a7a9f99cd5feedadca9b03aae4e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a curvilinear grid to an unstructured mesh. <br /></td></tr>
@@ -3348,8 +3354,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">orthogonalizationParameters</td><td>The structure containing the orthogonalization parameters </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListFirstPoint</td><td>The geometry list containing the lower left corner of the block to orthogonalize. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListSecondPoint</td><td>The geometry list containing the upper left corner of the block to orthogonalize. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListFirstPoint</td><td>The geometry list containing the lower left corner of the block to orthogonalize </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListSecondPoint</td><td>The geometry list containing the upper right corner of the block to orthogonalize </td></tr>
   </table>
   </dd>
 </dl>
@@ -3695,6 +3701,124 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a8390b9bd3c103a76f17f29803d4b68ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8390b9bd3c103a76f17f29803d4b68ad">&#9670;&nbsp;</a></span>mkernel_smoothing_curvilinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_smoothing_curvilinear </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>smoothingIterations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>lowerLeftCorner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>upperRightCorner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Smooths a curvilinear grid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">smoothingIterations</td><td>The number of smoothing iterations to perform </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">lowerLeftCorner</td><td>The geometry list containing the lower left corner of the block to smooth </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">upperRightCorner</td><td>The geometry list containing the upper right corner of the block to smooth </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="aecb3e04db4d916e7e993554b9ec0d303"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecb3e04db4d916e7e993554b9ec0d303">&#9670;&nbsp;</a></span>mkernel_smoothing_directional_curvilinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_smoothing_directional_curvilinear </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>smoothingIterations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> const &amp;&#160;</td>
+          <td class="paramname"><em>firstSegmentNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> const &amp;&#160;</td>
+          <td class="paramname"><em>secondSegmentNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> const &amp;&#160;</td>
+          <td class="paramname"><em>lowerLeftCornerSmoothingArea</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> const &amp;&#160;</td>
+          <td class="paramname"><em>upperRightCornerSmootingArea</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Smooths a curvilinear grid along the direction specified by a segment. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">smoothingIterations</td><td>The number of smoothing iterations to perform </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">firstSegmentNode</td><td>The first point of the segment </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondSegmentNode</td><td>The second point of the segment </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">lowerLeftCornerSmoothingArea</td><td>The geometry list containing the lower left corner of the smoothing area </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">upperRightCornerSmootingArea</td><td>The geometry list containing the upper right corner of the smoothing area </td></tr>
   </table>
   </dd>
 </dl>
