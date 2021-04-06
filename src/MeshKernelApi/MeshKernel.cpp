@@ -1998,8 +1998,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_block_orthogonalize_curvilinear(int meshKernelId,
-                                                                const GeometryList& geometryListFirstPoint,
-                                                                const GeometryList& geometryListSecondPoint)
+                                                                const GeometryList& lowerLeftCorner,
+                                                                const GeometryList& upperRightCorner)
     {
         int exitCode = Success;
         try
@@ -2014,17 +2014,17 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
             }
 
-            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+            const auto firstPoint = ConvertGeometryListToPointVector(lowerLeftCorner);
 
             if (firstPoint.empty())
             {
-                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: lower left corner of the orthogonalization block not provided.");
             }
 
-            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
+            const auto secondPoint = ConvertGeometryListToPointVector(upperRightCorner);
             if (secondPoint.empty())
             {
-                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: upper right corner of the orthogonalization block not provided.");
             }
 
             // Execute
@@ -2038,8 +2038,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
-                                                                       const GeometryList& geometryListFirstPoint,
-                                                                       const GeometryList& geometryListSecondPoint)
+                                                                       const GeometryList& firstLineNode,
+                                                                       const GeometryList& secondLineNode)
     {
         int exitCode = Success;
         try
@@ -2054,17 +2054,17 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
             }
 
-            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+            const auto firstPoint = ConvertGeometryListToPointVector(firstLineNode);
 
             if (firstPoint.empty())
             {
-                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: first frozen line node not provided.");
             }
 
-            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
+            const auto secondPoint = ConvertGeometryListToPointVector(secondLineNode);
             if (secondPoint.empty())
             {
-                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: second frozen line node not provided.");
             }
 
             // Execute
@@ -2142,13 +2142,13 @@ namespace meshkernelapi
 
             if (firstPoint.empty())
             {
-                throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: lower left corner of the smoothing block not provided.");
             }
 
             const auto secondPoint = ConvertGeometryListToPointVector(upperRightCorner);
             if (secondPoint.empty())
             {
-                throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
+                throw std::invalid_argument("MeshKernel: upper right corner of the smoothing block not provided.");
             }
 
             // Execute
@@ -2183,25 +2183,25 @@ namespace meshkernelapi
 
             if (firstNode.empty())
             {
-                throw std::invalid_argument("MeshKernel: No first node of the segment defining directional smoothing");
+                throw std::invalid_argument("MeshKernel: First line node not provided.");
             }
 
             const auto secondNode = ConvertGeometryListToPointVector(secondSegmentNode);
             if (secondNode.empty())
             {
-                throw std::invalid_argument("MeshKernel: No second node of the segment defining directional smoothing");
+                throw std::invalid_argument("MeshKernel: Second line node not provided.");
             }
 
             const auto lowerLeft = ConvertGeometryListToPointVector(lowerLeftCornerSmoothingArea);
             if (lowerLeft.empty())
             {
-                throw std::invalid_argument("MeshKernel: No first node of the smoothing area");
+                throw std::invalid_argument("MeshKernel: Lower left corner of the smoothing block not provided.");
             }
 
             const auto upperRight = ConvertGeometryListToPointVector(upperRightCornerSmootingArea);
             if (upperRight.empty())
             {
-                throw std::invalid_argument("MeshKernel: No second node of the smoothing area");
+                throw std::invalid_argument("MeshKernel: Upper right corner of the smoothing block not provided.");
             }
 
             // Execute
