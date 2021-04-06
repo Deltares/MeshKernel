@@ -85,8 +85,8 @@ namespace meshkernel
 
         /// @brief Projects a point on the closest grid boundary
         /// @param[in] point The point to project
-        /// @param[in] m_m The current m_m coordinate on the boundary of the curvilinear grid
-        /// @param[in] m_n The current m_n coordinate on the boundary of the curvilinear grid
+        /// @param[in] m The current m coordinate on the boundary of the curvilinear grid
+        /// @param[in] n The current n coordinate on the boundary of the curvilinear grid
         void ProjectPointOnClosestGridBoundary(Point const& point, size_t m, size_t n);
 
         size_t m_smoothingIterations;                     ///< The orthogonalization parameters
