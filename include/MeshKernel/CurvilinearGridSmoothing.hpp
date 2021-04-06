@@ -26,43 +26,36 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+
 #include <memory>
 
 #include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridAlgorithm.hpp>
 #include <MeshKernel/Entities.hpp>
 
 namespace meshkernel
 {
 
     /// @brief A class implementing the curvilinear grid smoothing algorithm
-    class CurvilinearGridSmoothing
+    class CurvilinearGridSmoothing : public CurvilinearGridAlgorithm
     {
     public:
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
         /// @param[in] smoothingIterations         The number of smoothing iterations to perform
-        CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid,
-                                 size_t smoothingIterations);
+        CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid, size_t smoothingIterations);
 
         /// @brief Compute curvilinear grid block smoothing (modifies the m_grid nodal values)
-        void Compute();
+        /// @return The smoothed grid
+        std::shared_ptr<CurvilinearGrid> Compute() override;
 
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
-        /// The line must be an m or n grid line of the curvilinear grid.
-        /// The grid is smoothed in the area specified by the line in one direction and by the two corner points on the other direction.
-        /// @param[in] firstSegmentNode The first point of the line
-        /// @param[in] secondSegmentNode The second point of the line
+        /// The line must be an m_m or m_n grid line of the curvilinear grid.
         /// @param[in] lowerLeftCornerSmoothingArea The left point of the smoothing area
         /// @param[in] upperRightCornerSmootingArea The right point of the smoothing area
-        void ComputedDirectionalSmooth(Point const& firstSegmentNode,
-                                       Point const& secondSegmentNode,
-                                       Point const& lowerLeftCornerSmoothingArea,
-                                       Point const& upperRightCornerSmootingArea);
-
-        /// @brief Sets the smoothing block
-        /// @param[in] firstCornerPoint The first point defining the smoothing area
-        /// @param[in] secondCornerPoint The second point defining the smoothing area
-        void SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint);
+        /// @return The smoothed grid
+        std::shared_ptr<CurvilinearGrid> Compute(Point const& lowerLeftCornerSmoothingArea,
+                                                 Point const& upperRightCornerSmootingArea);
 
     private:
         /// @brief Solve one iteration of block smoothing
@@ -70,13 +63,13 @@ namespace meshkernel
 
         /// @brief Solve one iteration of directional smoothing
         /// @param[in] isSmoothingAlongM True if smoothing is along M, false otherwise
-        /// @param[in] pointOnLineIndices A point on the line defining the directional smooth
+        /// @param[in] pointOnLine A point on the line defining the directional smooth
         /// @param[in] lowerLeftCornerRegion The lower left corner of the smoothing region
         /// @param[in] upperRightCornerSmoothingRegion The upper right corner of the smoothing region
-        void SolveDirectionalSmooth(bool isSmoothingAlongM,
-                                    CurvilinearGrid::NodeIndices const& pointOnLineIndices,
-                                    CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
-                                    CurvilinearGrid::NodeIndices const& upperRightCornerSmoothingRegion);
+        void Solve(bool isSmoothingAlongM,
+                   CurvilinearGrid::NodeIndices const& pointOnLine,
+                   CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
+                   CurvilinearGrid::NodeIndices const& upperRightCornerSmoothingRegion);
 
         /// @brief Function for computing the smoothing factors at the current location given a line and a zone of influence (SMEERFUNCTIE)
         /// The smoothing factor is maximum at the line and 0 at the boundary of the smoothing zone.
@@ -92,16 +85,11 @@ namespace meshkernel
 
         /// @brief Projects a point on the closest grid boundary
         /// @param[in] point The point to project
-        /// @param[in] m The current m coordinate on the boundary of the curvilinear grid
-        /// @param[in] n The current n coordinate on the boundary of the curvilinear grid
+        /// @param[in] m_m The current m_m coordinate on the boundary of the curvilinear grid
+        /// @param[in] m_n The current m_n coordinate on the boundary of the curvilinear grid
         void ProjectPointOnClosestGridBoundary(Point const& point, size_t m, size_t n);
 
-        std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify
-        size_t m_smoothingIterations;            ///< The orthogonalization parameters
-
-        CurvilinearGrid::NodeIndices m_lowerLeft;  ///< The lower left corner of the smoothing block, used in grid block smoothing
-        CurvilinearGrid::NodeIndices m_upperRight; ///< The upper right corner of the smoothing block, used in grid block smoothing
-
+        size_t m_smoothingIterations;                     ///< The orthogonalization parameters
         std::vector<std::vector<Point>> m_gridNodesCache; ///< A cache for storing current iteration node positions
     };
 } // namespace meshkernel

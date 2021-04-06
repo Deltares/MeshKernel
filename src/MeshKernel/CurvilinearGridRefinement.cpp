@@ -35,31 +35,31 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridRefinement;
 
-CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, const Point& firstPoint, const Point& secondPoint, size_t refinement)
-    : m_grid(grid),
-      m_firstPoint(firstPoint),
-      m_secondPoint(secondPoint),
+CurvilinearGridRefinement::CurvilinearGridRefinement(const std::shared_ptr<CurvilinearGrid>& grid, size_t refinement)
+    : CurvilinearGridAlgorithm(grid),
       m_refinement(refinement)
 {
-    // Store the m and n grid lines in separate vectors, and compute the spline derivatives for each gridline
+    // Store the m_m and m_n grid lines in separate vectors, and compute the spline derivatives for each gridline
     m_splines = Splines(m_grid);
 }
 
-void CurvilinearGridRefinement::Compute() const
+std::shared_ptr<CurvilinearGrid> CurvilinearGridRefinement::Compute()
 {
-    // Get the m and n indices from the point coordinates
-    auto const firstNode = m_grid->GetNodeIndices(m_firstPoint);
-    auto const secondNode = m_grid->GetNodeIndices(m_secondPoint);
+
+    if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
+    {
+        throw std::invalid_argument("CurvilinearGridRefinement::Compute: lower left and upper right corners defining the curvilinear grid block are not set");
+    }
 
     // The points must lie on the same grid line
-    if (firstNode.m != secondNode.m && firstNode.n != secondNode.n)
+    if (m_lowerLeft.m_m != m_upperRight.m_m && m_lowerLeft.m_n != m_upperRight.m_n)
     {
         throw std::invalid_argument("CurvilinearGridRefinement::Compute: The selected curvilinear grid nodes are not on the same grid-line");
     }
 
     // Estimate the dimension of the refined grid
-    const auto numMToRefine = secondNode.m - firstNode.m;
-    const auto numNToRefine = secondNode.n - firstNode.n;
+    const auto numMToRefine = m_upperRight.m_m - m_lowerLeft.m_m;
+    const auto numNToRefine = m_upperRight.m_n - m_lowerLeft.m_n;
     const size_t maxM = m_grid->m_numM + numMToRefine * (m_refinement - 1);
     const size_t maxN = m_grid->m_numN + numNToRefine * (m_refinement - 1);
 
@@ -76,7 +76,7 @@ void CurvilinearGridRefinement::Compute() const
     for (auto currentM = 0; currentM < m_grid->m_numM - 1; ++currentM)
     {
         size_t localMRefinement = 1;
-        if (currentM >= firstNode.m && currentM < secondNode.m)
+        if (currentM >= m_lowerLeft.m_m && currentM < m_upperRight.m_m)
         {
             localMRefinement = m_refinement;
         }
@@ -86,7 +86,7 @@ void CurvilinearGridRefinement::Compute() const
         {
 
             size_t localNRefinement = 1;
-            if (currentN >= firstNode.n && currentN < secondNode.n)
+            if (currentN >= m_lowerLeft.m_n && currentN < m_upperRight.m_n)
             {
                 localNRefinement = m_refinement;
             }
@@ -97,7 +97,7 @@ void CurvilinearGridRefinement::Compute() const
                 m_grid->m_gridNodes[currentM][currentN + 1].IsValid() &&
                 m_grid->m_gridNodes[currentM + 1][currentN + 1].IsValid())
             {
-                // Calculate m-direction spline points
+                // Calculate m_m-direction spline points
                 bottomRefinement.clear();
                 topRefinement.clear();
                 for (auto m = 0; m < localMRefinement + 1; ++m)
@@ -108,7 +108,7 @@ void CurvilinearGridRefinement::Compute() const
                     topRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex + 1], m_splines.m_splineDerivatives[splineIndex + 1], interpolationPoint));
                 }
 
-                // Calculate n-direction spline points
+                // Calculate m_n-direction spline points
                 leftRefinement.clear();
                 rightRefinement.clear();
                 for (auto n = 0; n < localNRefinement + 1; ++n)
@@ -142,5 +142,5 @@ void CurvilinearGridRefinement::Compute() const
     }
 
     // Substitute original grid with the refined one
-    *m_grid = CurvilinearGrid(std::move(refinedGrid), m_grid->m_projection);
+    return std::make_shared<CurvilinearGrid>(std::move(refinedGrid), m_grid->m_projection);
 }

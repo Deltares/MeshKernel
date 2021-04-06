@@ -48,8 +48,8 @@ namespace meshkernel
     // geometric constants
     const double degrad_hp = M_PI / 180.0;                   ///< Conversion factor from degrees to radians(pi / 180)
     const double raddeg_hp = 180.0 / M_PI;                   ///< Conversion factor from radians to degrees(180 / pi)
-    const double earth_radius = 6378137.0;                   ///< Earth radius(m)
-    const double one_over_earth_radius = 1.0 / earth_radius; ///< One over earth_radius(m-1);
+    const double earth_radius = 6378137.0;                   ///< Earth radius(m_m)
+    const double one_over_earth_radius = 1.0 / earth_radius; ///< One over earth_radius(m_m-1);
     const double absLatitudeAtPoles = 0.0001;                ///< Pole tolerance in degrees
     const double nearlyZero = 1e-16;                         ///< Used to determine if a length is zero
 
@@ -74,7 +74,7 @@ namespace meshkernel
     const double mergingDistanceSquared = mergingDistance * mergingDistance; ///< Merging distance squared
 
     // physical constants
-    const double gravity = 9.81; ///< Gravitational acceleration on earth (m/s^2)
+    const double gravity = 9.81; ///< Gravitational acceleration on earth (m_m/s^2)
 
     ///@brief Operations averaging methods
     enum class AveragingMethod

@@ -34,6 +34,7 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridAlgorithm.hpp>
 #include <MeshKernel/CurvilinearGridCreateUniform.hpp>
 #include <MeshKernel/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGridFromPolygon.hpp>
@@ -1677,8 +1678,9 @@ namespace meshkernelapi
             }
 
             // Execute
-            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, firstPoint[0], secondPoint[0], refinement);
-            curvilinearGridRefinement.Compute();
+            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
+            curvilinearGridRefinement.SetBlock(firstPoint[0], secondPoint[0]);
+            meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridRefinement.Compute();
         }
         catch (...)
         {
@@ -1712,9 +1714,11 @@ namespace meshkernelapi
             }
 
             // Execute
-            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, firstPoint[0], secondPoint[0]);
+            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridDeRefinement.Compute());
+            curvilinearGridDeRefinement.SetBlock(firstPoint[0], secondPoint[0]);
+
+            meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridDeRefinement.Compute();
         }
         catch (...)
         {
@@ -2068,7 +2072,7 @@ namespace meshkernelapi
             }
 
             // Execute
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetFrozenLine(firstPoint[0], secondPoint[0]);
+            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetLine(firstPoint[0], secondPoint[0]);
         }
         catch (...)
         {
@@ -2205,13 +2209,12 @@ namespace meshkernelapi
             }
 
             // Execute
-            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                                          static_cast<size_t>(smoothingIterations));
+            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(meshKernelState[meshKernelId].m_curvilinearGrid, smoothingIterations);
 
-            curvilinearGridSmoothing.ComputedDirectionalSmooth(firstNode[0],
-                                                               secondNode[0],
-                                                               lowerLeft[0],
-                                                               upperRight[0]);
+            curvilinearGridSmoothing.SetLine(firstNode[0], secondNode[0]);
+
+            curvilinearGridSmoothing.Compute(lowerLeft[0],
+                                             upperRight[0]);
         }
         catch (...)
         {

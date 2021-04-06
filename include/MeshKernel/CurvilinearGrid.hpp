@@ -57,10 +57,22 @@ namespace meshkernel
         /// @brief A struct describing the column and row indices of a node
         struct NodeIndices
         {
+            /// @brief Default constructor sets the indices to invalid
+            NodeIndices() : m_m(sizetMissingValue), m_n(sizetMissingValue){};
+
+            NodeIndices(size_t m, size_t n) : m_m(m), m_n(n){};
+
+            /// @brief Determines if one of the indices  equals to \p missingValue
+            [[nodiscard]] bool IsValid(const double missingValue = sizetMissingValue) const
+            {
+                const bool isInvalid = m_m == missingValue || m_n == missingValue;
+                return !isInvalid;
+            }
+
             /// @brief Overloads equality with another NodeIndices
             bool operator==(const NodeIndices& rhs) const
             {
-                return m == rhs.m && n == rhs.n;
+                return m_m == rhs.m_m && m_n == rhs.m_n;
             }
             /// @brief Overloads negation with another NodeIndices
             bool operator!=(const NodeIndices& rhs) const
@@ -73,15 +85,15 @@ namespace meshkernel
             /// @return True if on the same grid line, false otherwise
             bool IsOnTheSameGridLine(const NodeIndices& rhs) const
             {
-                if (m == rhs.m || n == rhs.n)
+                if (m_m == rhs.m_m || m_n == rhs.m_n)
                 {
                     return true;
                 }
                 return false;
             }
 
-            size_t m; ///< Columns
-            size_t n; ///< Rows
+            size_t m_m; ///< Columns
+            size_t m_n; ///< Rows
         };
 
         /// @brief Default constructor
@@ -91,20 +103,20 @@ namespace meshkernel
         /// @brief Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
-        CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection);
+        explicit CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection);
 
         /// @brief Check if current curvilinear grid instance is valid
         /// @return True if valid, false otherwise
         [[nodiscard]] bool IsValid() const;
 
         /// @brief Converting a curvilinear mesh to a set of nodes, edges and returns the original mapping (gridtonet)
-        /// @returns The nodes, the edges, and the original mapping (m and n indices for each node)
+        /// @returns The nodes, the edges, and the original mapping (m_m and m_n indices for each node)
         std::tuple<std::vector<Point>, std::vector<Edge>, std::vector<std::pair<size_t, size_t>>> ConvertCurvilinearToNodesAndEdges();
 
         /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
         void SetFlatCopies();
 
-        /// @brief Get the m and n indices of the node closest to the point
+        /// @brief Get the m_m and m_n indices of the node closest to the point
         /// @param[in] point       The input grid points
         NodeIndices GetNodeIndices(Point point);
 
@@ -112,25 +124,25 @@ namespace meshkernel
         void ComputeGridNodeTypes();
 
         /// @brief If the face is valid. A face is valid if all its nodes are valid.
-        /// @param[in] m the m coordinate
-        /// @param[in] n the n coordinate
+        /// @param[in] m_m the m_m coordinate
+        /// @param[in] m_n the m_n coordinate
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
 
-        /// @brief From two points expressed as NodeIndices, gets the two corner points defining a block in m and n coordinates
+        /// @brief From two points expressed as NodeIndices, gets the two corner points defining a block in m_m and m_n coordinates
         /// @param[in] firstNode The node indices of the first node
         /// @param[in] secondNode The node indices of the second node
         /// @return The upper left and lower right of the box defined by the two points
         [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const;
 
-        /// @brief From two points expressed in cartesian coordinates, gets the two corner points defining a block in m and n coordinates
+        /// @brief From two points expressed in cartesian coordinates, gets the two corner points defining a block in m_m and m_n coordinates
         /// @param[in] firstCornerPoint The first point
         /// @param[in] secondCornerPoint The second point
         /// @return The upper left and lower right of the box defined by the two points
         [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint);
 
-        size_t m_numM = 0;                                    ///< The number of m coordinates (vertical lines)
-        size_t m_numN = 0;                                    ///< The number of n coordinates (horizontal lines)
+        size_t m_numM = 0;                                    ///< The number of m_m coordinates (vertical lines)
+        size_t m_numN = 0;                                    ///< The number of m_n coordinates (horizontal lines)
         std::vector<std::vector<Point>> m_gridNodes;          ///< Member variable storing the grid
         std::vector<std::vector<bool>> m_gridFacesMask;       ///< The mask of the grid faces (true/false)
         std::vector<std::vector<NodeType>> m_gridNodesMask;   ///< The grid node types

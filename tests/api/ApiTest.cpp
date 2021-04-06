@@ -34,8 +34,8 @@ public:
     }
 
     /// @brief Makes a mesh
-    /// @param[in]  n            Number of rows
-    /// @param[in]  m            Number of columns
+    /// @param[in]  m_n            Number of rows
+    /// @param[in]  m_m            Number of columns
     /// @param[in]  delta        Distance between neighboring nodes
     void MakeMesh(int n = 4, int m = 3, double delta = 1.0)
     {

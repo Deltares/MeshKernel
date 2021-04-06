@@ -35,10 +35,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridSmoothing;
 
-CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid,
-                                                   size_t smoothingIterations)
-    : m_grid(grid),
-      m_smoothingIterations(smoothingIterations)
+CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGrid> grid, size_t smoothingIterations) : CurvilinearGridAlgorithm(grid), m_smoothingIterations(smoothingIterations)
 
 {
     // Allocate cache for storing grid nodes values
@@ -47,64 +44,52 @@ CurvilinearGridSmoothing::CurvilinearGridSmoothing(std::shared_ptr<CurvilinearGr
     m_grid->ComputeGridNodeTypes();
 }
 
-void CurvilinearGridSmoothing::SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint)
-{
-    // Get the m and n indices from the point coordinates
-    auto const [lowerLeft, upperRight] = m_grid->ComputeBlockFromCornerPoints(firstCornerPoint, secondCornerPoint);
-
-    // Coinciding corner nodes, no valid area, nothing to do
-    if (lowerLeft == upperRight)
-    {
-        throw std::invalid_argument("CurvilinearGridSmoothing::SetBlock coinciding corner nodes, no valid area to smooth");
-    }
-
-    m_lowerLeft = lowerLeft;
-    m_upperRight = upperRight;
-}
-
-void CurvilinearGridSmoothing::Compute()
+std::shared_ptr<CurvilinearGrid> CurvilinearGridSmoothing::Compute()
 {
     // Perform smoothing iterations
     for (auto smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
     {
         Solve();
     }
+    return m_grid;
 }
 
-void CurvilinearGridSmoothing::ComputedDirectionalSmooth(Point const& firstSegmentNode,
-                                                         Point const& secondSegmentNode,
-                                                         Point const& lowerLeftCornerSmoothingArea,
-                                                         Point const& upperRightCornerSmootingArea)
+std::shared_ptr<CurvilinearGrid> CurvilinearGridSmoothing::Compute(Point const& lowerLeftCornerSmoothingArea, Point const& upperRightCornerSmootingArea)
 {
-    // Get the m and n indices from the point coordinates
-    auto const firstLinePointIndices = m_grid->GetNodeIndices(firstSegmentNode);
-    auto const secondLinePointIndices = m_grid->GetNodeIndices(secondSegmentNode);
+    if (m_lines.empty())
+    {
+        throw std::invalid_argument("CurvilinearGridSmoothing::Compute No line set for directional refinement.");
+    }
+
+    // the line to use for directional smoothing
+    auto const [firstLinePointIndices, secondLinePointIndices] = m_lines[0];
+
     auto const leftPointIndices = m_grid->GetNodeIndices(lowerLeftCornerSmoothingArea);
     auto const rightPointIndices = m_grid->GetNodeIndices(upperRightCornerSmootingArea);
 
-    // Determine if smoothing should occur in the m direction
-    bool const isSmoothingAlongM = firstLinePointIndices.n == secondLinePointIndices.n;
+    // Determine if smoothing should occur in the m_m direction
+    bool const isSmoothingAlongM = firstLinePointIndices.m_n == secondLinePointIndices.m_n;
 
     // Points are coinciding, this no smoothing zone
     if (leftPointIndices == rightPointIndices)
     {
-        throw std::invalid_argument("CurvilinearGridSmoothing::ComputedDirectionalSmooth The points defining the smoothing area coincides.");
+        throw std::invalid_argument("CurvilinearGridSmoothing::Compute The points defining the smoothing area coincides.");
     }
-    if (isSmoothingAlongM && leftPointIndices.n == rightPointIndices.n || !isSmoothingAlongM && leftPointIndices.m == rightPointIndices.m)
+    if (isSmoothingAlongM && leftPointIndices.m_n == rightPointIndices.m_n || !isSmoothingAlongM && leftPointIndices.m_m == rightPointIndices.m_m)
     {
-        throw std::invalid_argument("CurvilinearGridSmoothing::ComputedDirectionalSmooth The points defining the smoothing area have the same direction of the smoothing line.");
+        throw std::invalid_argument("CurvilinearGridSmoothing::Compute The points defining the smoothing area have the same direction of the smoothing line.");
     }
 
     // Compute the smoothing area
     if (isSmoothingAlongM)
     {
-        m_lowerLeft = {std::min(firstLinePointIndices.m, secondLinePointIndices.m), std::min(leftPointIndices.n, rightPointIndices.n)};
-        m_upperRight = {std::max(firstLinePointIndices.m, secondLinePointIndices.m), std::max(leftPointIndices.n, rightPointIndices.n)};
+        m_lowerLeft = {std::min(firstLinePointIndices.m_m, secondLinePointIndices.m_m), std::min(leftPointIndices.m_n, rightPointIndices.m_n)};
+        m_upperRight = {std::max(firstLinePointIndices.m_m, secondLinePointIndices.m_m), std::max(leftPointIndices.m_n, rightPointIndices.m_n)};
     }
     else
     {
-        m_lowerLeft = {std::min(leftPointIndices.m, rightPointIndices.m), std::min(firstLinePointIndices.n, secondLinePointIndices.n)};
-        m_upperRight = {std::max(leftPointIndices.m, rightPointIndices.m), std::max(firstLinePointIndices.n, secondLinePointIndices.n)};
+        m_lowerLeft = {std::min(leftPointIndices.m_m, rightPointIndices.m_m), std::min(firstLinePointIndices.m_n, secondLinePointIndices.m_n)};
+        m_upperRight = {std::max(leftPointIndices.m_m, rightPointIndices.m_m), std::max(firstLinePointIndices.m_n, secondLinePointIndices.m_n)};
     }
 
     // compute the box of the smoothing zone, used to determine the smoothing factors
@@ -113,14 +98,16 @@ void CurvilinearGridSmoothing::ComputedDirectionalSmooth(Point const& firstSegme
     // Perform smoothing iterations
     for (auto smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
     {
-        SolveDirectionalSmooth(isSmoothingAlongM, firstLinePointIndices, lowerLeft, upperRight);
+        Solve(isSmoothingAlongM, firstLinePointIndices, lowerLeft, upperRight);
     }
+
+    return m_grid;
 }
 
-void CurvilinearGridSmoothing::SolveDirectionalSmooth(bool isSmoothingAlongM,
-                                                      CurvilinearGrid::NodeIndices const& pointOnLineIndices,
-                                                      CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
-                                                      CurvilinearGrid::NodeIndices const& upperRightCornerSmoothingRegion)
+void CurvilinearGridSmoothing::Solve(bool isSmoothingAlongM,
+                                     CurvilinearGrid::NodeIndices const& pointOnLine,
+                                     CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
+                                     CurvilinearGrid::NodeIndices const& upperRightCornerSmoothingRegion)
 {
 
     // assign current nodal values to the m_gridNodesCache
@@ -147,9 +134,9 @@ void CurvilinearGridSmoothing::SolveDirectionalSmooth(bool isSmoothingAlongM,
 
     // Apply smoothing
     const double smoothingFactor = 0.5;
-    for (auto m = m_lowerLeft.m; m <= m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m; m <= m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n; n <= m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n; n <= m_upperRight.m_n; ++n)
         {
             // Apply line smoothing only in internal nodes
             if (isInvalidValidNode(m, n))
@@ -175,7 +162,7 @@ void CurvilinearGridSmoothing::SolveDirectionalSmooth(bool isSmoothingAlongM,
             const auto secondLengthSquared = secondDelta.x * secondDelta.x + secondDelta.y * secondDelta.y;
             const auto maxlength = std::max(firstLengthSquared, secondLengthSquared);
             const auto characteristicLength = std::abs(secondLengthSquared - firstLengthSquared) * 0.5;
-            const auto [mSmoothing, nSmoothing, mixedSmoothing] = ComputeDirectionalSmoothingFactors({m, n}, pointOnLineIndices, lowerLeftCornerRegion, upperRightCornerSmoothingRegion);
+            const auto [mSmoothing, nSmoothing, mixedSmoothing] = ComputeDirectionalSmoothingFactors({m, n}, pointOnLine, lowerLeftCornerRegion, upperRightCornerSmoothingRegion);
 
             if (isSmoothingAlongM)
             {
@@ -203,13 +190,13 @@ CurvilinearGridSmoothing::ComputeDirectionalSmoothingFactors(CurvilinearGrid::No
 {
 
     // horizontal smoothing factor
-    const auto horizontalDelta = gridpoint.m > pointOnSmoothingLineIndices.m ? gridpoint.m - pointOnSmoothingLineIndices.m : pointOnSmoothingLineIndices.m - gridpoint.m;
-    const auto maxHorizontalDelta = gridpoint.m > pointOnSmoothingLineIndices.m ? upperRightIndices.m - pointOnSmoothingLineIndices.m : pointOnSmoothingLineIndices.m - lowerLeftIndices.m;
+    const auto horizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? gridpoint.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - gridpoint.m_m;
+    const auto maxHorizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? upperRightIndices.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - lowerLeftIndices.m_m;
     const auto horizontalSmoothingFactor = (1.0 + std::cos(M_PI * static_cast<double>(horizontalDelta) / static_cast<double>(maxHorizontalDelta))) * 0.5;
 
     // vertical smoothing factor
-    const auto verticalDelta = gridpoint.n > pointOnSmoothingLineIndices.n ? gridpoint.n - pointOnSmoothingLineIndices.n : pointOnSmoothingLineIndices.n - gridpoint.n;
-    const auto maxVerticalDelta = gridpoint.n > pointOnSmoothingLineIndices.n ? upperRightIndices.n - pointOnSmoothingLineIndices.n : pointOnSmoothingLineIndices.n - lowerLeftIndices.n;
+    const auto verticalDelta = gridpoint.m_n > pointOnSmoothingLineIndices.m_n ? gridpoint.m_n - pointOnSmoothingLineIndices.m_n : pointOnSmoothingLineIndices.m_n - gridpoint.m_n;
+    const auto maxVerticalDelta = gridpoint.m_n > pointOnSmoothingLineIndices.m_n ? upperRightIndices.m_n - pointOnSmoothingLineIndices.m_n : pointOnSmoothingLineIndices.m_n - lowerLeftIndices.m_n;
     const auto verticalSmoothingFactor = (1.0 + std::cos(M_PI * static_cast<double>(verticalDelta) / static_cast<double>(maxVerticalDelta))) * 0.5;
 
     // mixed smoothing factor
@@ -233,9 +220,9 @@ void CurvilinearGridSmoothing::Solve()
     }
 
     // Apply smoothing
-    for (auto m = m_lowerLeft.m; m <= m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m; m <= m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n; n <= m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n; n <= m_upperRight.m_n; ++n)
         {
 
             // It is invalid or a corner point, skip smoothing

@@ -61,8 +61,8 @@ namespace meshkernel
         /// The figure below shows two 2d meshes, a 1d mesh between them, and the 1d-2d contacts (in red).
         /// The boundary nodes of the 1d mesh (those sharing only one 1d edge) are not connected to any 2d face.
         /// For the 1d nodes not overlapping a 2d mesh,
-        /// a ray starting from the current node n is computed (dashed blue ray).
-        /// This ray is normal to the segment connecting the previous (n-1) and next one 1d node (n+1),
+        /// a ray starting from the current node m_n is computed (dashed blue ray).
+        /// This ray is normal to the segment connecting the previous (m_n-1) and next one 1d node (m_n+1),
         /// the connecting segment is shown with a green dashed line.
         /// The ray is extended for 5 times the length of the connecting segment.
         /// The current 1d node is connected to the first boundary 2d face crossing the ray,
@@ -84,10 +84,10 @@ namespace meshkernel
         /// than the 2d mesh edges and generating a single contact for each 1d node is not representative.
         /// In this algorithm, only the internal 1d nodes are connected.
         /// The following figure shows a 1d mesh overlapping a 2d mesh.
-        /// For the node n, the closest 2d faces within a search radius are found
-        /// and it is determined if those faces cross are crossed by the current 1d edge starting at node n and ending at and n+1.
+        /// For the node m_n, the closest 2d faces within a search radius are found
+        /// and it is determined if those faces cross are crossed by the current 1d edge starting at node m_n and ending at and m_n+1.
         /// If the answer is positive, a contact is generated between the face
-        /// and the closest 1d node composing the current 1d edge (i.e. n or n+1).
+        /// and the closest 1d node composing the current 1d edge (i.e. m_n or m_n+1).
         /// The procedure is repeated for each 1d node.
         /// \image html ComputeMultipleContacts.jpg  "1d mesh connecting to 2d mesh using the ComputeMultipleContacts algorithm. Contacts are shown in red."
         ///

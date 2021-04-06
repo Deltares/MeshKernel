@@ -283,7 +283,7 @@ void CurvilinearGridFromSplines::Initialize()
             continue;
         }
 
-        // construct the cross splines through the edges, along m discretization
+        // construct the cross splines through the edges, along m_m discretization
         for (auto i = m_leftGridLineIndex[s]; i < m_leftGridLineIndex[s] + m_numMSplines[s]; ++i)
         {
             const auto normal = NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], m_splines->m_projection);
@@ -369,7 +369,7 @@ void CurvilinearGridFromSplines::Initialize()
     m_gridPoints.resize(numGridLayers + 1, std::vector<Point>(m_numM + 1, {doubleMissingValue, doubleMissingValue}));
     m_validFrontNodes.resize(m_numM, 1);
 
-    // Copy the first n in m_gridPoints
+    // Copy the first m_n in m_gridPoints
     for (auto n = 0; n < m_numM; ++n)
     {
         m_gridPoints[0][n] = m_gridLine[n];
@@ -1638,7 +1638,7 @@ void CurvilinearGridFromSplines::MakeAllGridLines()
 size_t CurvilinearGridFromSplines::MakeGridLine(size_t splineIndex,
                                                 size_t startingIndex)
 {
-    // first estimation of nodes along m
+    // first estimation of nodes along m_m
     auto numM = 1 + static_cast<size_t>(std::floor(m_splines->m_splinesLength[splineIndex] / m_splinesToCurvilinearParameters.AverageWidth));
     numM = std::min(numM, static_cast<size_t>(m_curvilinearParameters.MRefinement));
 

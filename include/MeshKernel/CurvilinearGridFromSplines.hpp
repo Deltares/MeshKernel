@@ -245,7 +245,7 @@ namespace meshkernel
         /// @brief Generate a gridline on a spline with a prescribed maximum mesh width (make_gridline)
         /// @param[in] splineIndex  The current spline index
         /// @param[in] startingIndex The start index in the gridline
-        /// @returns The number of m subdivisions
+        /// @returns The number of m_m subdivisions
         size_t MakeGridLine(size_t splineIndex,
                             size_t startingIndex);
 

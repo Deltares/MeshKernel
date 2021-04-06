@@ -37,9 +37,8 @@ using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridOrthogonalization;
 
 CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(std::shared_ptr<CurvilinearGrid> grid,
-                                                                   const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters)
-    : m_grid(grid),
-      m_orthogonalizationParameters(orthogonalizationParameters)
+                                                                   const meshkernelapi::OrthogonalizationParameters& orthogonalizationParameters) : CurvilinearGridAlgorithm(grid),
+                                                                                                                                                    m_orthogonalizationParameters(orthogonalizationParameters)
 
 {
     /// Store the grid lines of the grid as splines
@@ -55,85 +54,15 @@ CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(std::shared_p
     m_isGridNodeFrozen.resize(m_grid->m_numM, std::vector<bool>(m_grid->m_numN, false));
 }
 
-void CurvilinearGridOrthogonalization::SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint)
-{
-    // Compute orthogonalization bounding box
-    const auto [lowerLeft, upperRight] = m_grid->ComputeBlockFromCornerPoints(firstCornerPoint, secondCornerPoint);
-
-    // Coinciding corner nodes, no valid area, nothing to do
-    if (lowerLeft == upperRight)
-    {
-        throw std::invalid_argument("CurvilinearGridOrthogonalization::SetBlock coinciding corner nodes, no valid area to orthogonalize");
-    }
-
-    m_lowerLeft = lowerLeft;
-    m_upperRight = upperRight;
-}
-
-std::tuple<size_t, size_t, size_t, size_t>
-CurvilinearGridOrthogonalization::OrderCoordinates(size_t firstPointM, size_t firstPointN, size_t secondPointM, size_t secondPointN) const
-{
-    return {std::min(firstPointM, secondPointM), std::min(firstPointN, secondPointN), std::max(firstPointM, secondPointM), std::max(firstPointN, secondPointN)};
-}
-
-void CurvilinearGridOrthogonalization::SetFrozenLine(Point const& firstPoint, Point const& secondPoint)
-{
-
-    // The selected nodes must be on the vertical or horizontal line
-    const auto [newLineLowerLeft, newLineUpperRight] = m_grid->ComputeBlockFromCornerPoints(firstPoint, secondPoint);
-
-    // Coinciding nodes, no valid line, nothing to do
-    if (newLineLowerLeft == newLineUpperRight)
-    {
-        throw std::invalid_argument("CurvilinearGridOrthogonalization::SetFrozenLine the points of the line to freeze are coinciding");
-    }
-
-    // The points of the frozen line, must be on the same grid-line
-    if (!newLineLowerLeft.IsOnTheSameGridLine(newLineUpperRight))
-    {
-        throw std::invalid_argument("CurvilinearGridOrthogonalization::SetFrozenLine the points of the line to freeze must lie on the same grid line");
-    }
-
-    // The start-end coordinates of the new line, along m or n direction
-    auto const isNewlineAnMLine = newLineUpperRight.m == newLineLowerLeft.m;
-    auto const startNewLine = isNewlineAnMLine ? newLineLowerLeft.n : newLineLowerLeft.m;
-    auto const endNewLine = isNewlineAnMLine ? newLineUpperRight.n : newLineUpperRight.m;
-    auto const constantCoordinateLine = isNewlineAnMLine ? newLineLowerLeft.m : newLineLowerLeft.n;
-
-    // Frozen lines cannot cross existing frozen lines
-    for (auto const& frozenLine : m_frozenLines)
-    {
-        auto const& [lowerLeft, upperRight] = frozenLine;
-
-        auto const deltaMCurrentLine = upperRight.m - lowerLeft.m;
-        auto const startCurrentLine = deltaMCurrentLine == 0 ? lowerLeft.n : lowerLeft.m;
-        auto const endCurrentLine = deltaMCurrentLine == 0 ? upperRight.n : upperRight.m;
-        auto const constantCoordinateCurrentLine = deltaMCurrentLine == 0 ? lowerLeft.m : lowerLeft.n;
-        for (auto i = startCurrentLine; i <= endCurrentLine; ++i)
-        {
-            for (auto j = startNewLine; j <= endNewLine; ++j)
-            {
-                if (j == constantCoordinateCurrentLine && i == constantCoordinateLine)
-                {
-                    throw AlgorithmError("CurvilinearGridOrthogonalization::SetFrozenLine the new line to freeze is crossing an existing line");
-                }
-            }
-        }
-    }
-
-    // Now a frozen line can be stored
-    m_frozenLines.emplace_back(newLineLowerLeft, newLineUpperRight);
-}
-
 void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
 {
-    for (auto const& frozenLine : m_frozenLines)
+    for (auto const& frozenLine : m_lines)
     {
         auto const& [lowerLeft, upperRight] = frozenLine;
 
-        for (auto m = lowerLeft.m; m <= upperRight.m; ++m)
+        for (auto m = lowerLeft.m_m; m <= upperRight.m_m; ++m)
         {
-            for (auto n = lowerLeft.n; n <= upperRight.n; ++n)
+            for (auto n = lowerLeft.m_n; n <= upperRight.m_n; ++n)
             {
                 m_isGridNodeFrozen[m][n] = true;
             }
@@ -141,8 +70,13 @@ void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
     }
 }
 
-void CurvilinearGridOrthogonalization::Compute()
+std::shared_ptr<CurvilinearGrid> CurvilinearGridOrthogonalization::Compute()
 {
+    if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
+    {
+        throw std::invalid_argument("CurvilinearGridOrthogonalization::Compute: lower left and upper right corners defining the curvilinear grid block are not set");
+    }
+
     // Compute the grid node types
     m_grid->ComputeGridNodeTypes();
 
@@ -160,11 +94,13 @@ void CurvilinearGridOrthogonalization::Compute()
             ProjectVerticalBoundariesGridNodes();
         }
     }
+
+    return m_grid;
 }
 
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
-    // m grid lines (horizontal)
+    // m_m grid lines (horizontal)
     for (auto n = 0; n < m_grid->m_numN; ++n)
     {
         size_t startM = sizetMissingValue;
@@ -197,7 +133,7 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
                 for (auto mm = startM + 1; mm < m; ++mm)
                 {
 
-                    if (mm < m_lowerLeft.m || mm > m_upperRight.m || n < m_lowerLeft.n || n > m_upperRight.n)
+                    if (mm < m_lowerLeft.m_m || mm > m_upperRight.m_m || n < m_lowerLeft.m_n || n > m_upperRight.m_n)
                     {
                         continue;
                     }
@@ -243,7 +179,7 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 
 void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
 {
-    // n gridlines (vertical)
+    // m_n gridlines (vertical)
     for (auto m = 0; m < m_grid->m_numM; ++m)
     {
         size_t startN = sizetMissingValue;
@@ -276,7 +212,7 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
                 for (auto nn = startN + 1; nn < n; ++nn)
                 {
 
-                    if (m < m_lowerLeft.m || m > m_upperRight.m || nn < m_lowerLeft.n || nn > m_upperRight.n)
+                    if (m < m_lowerLeft.m_m || m > m_upperRight.m_m || nn < m_lowerLeft.m_n || nn > m_upperRight.m_n)
                     {
                         continue;
                     }
@@ -328,11 +264,11 @@ void CurvilinearGridOrthogonalization::Solve()
     const double factor = 0.9 * 0.9;
 
     // Only the internal nodes of the orthogonalization box
-    const auto minMInternal = std::max(static_cast<size_t>(1), m_lowerLeft.m);
-    const auto minNInternal = std::max(static_cast<size_t>(1), m_lowerLeft.n);
+    const auto minMInternal = std::max(static_cast<size_t>(1), m_lowerLeft.m_m);
+    const auto minNInternal = std::max(static_cast<size_t>(1), m_lowerLeft.m_n);
 
-    const auto maxMInternal = std::min(m_upperRight.m, m_grid->m_numM - 1);
-    const auto maxNInternal = std::min(m_upperRight.n, m_grid->m_numN - 1);
+    const auto maxMInternal = std::min(m_upperRight.m_m, m_grid->m_numM - 1);
+    const auto maxNInternal = std::min(m_upperRight.m_n, m_grid->m_numN - 1);
 
     for (auto innerIterations = 0; innerIterations < m_orthogonalizationParameters.InnerIterations; ++innerIterations)
     {
@@ -382,9 +318,9 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     std::fill(m_e.begin(), m_e.end(), std::vector<double>(m_grid->m_numN, doubleMissingValue));
     std::fill(m_atp.begin(), m_atp.end(), std::vector<double>(m_grid->m_numN, doubleMissingValue));
 
-    for (auto m = m_lowerLeft.m; m < m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n; n < m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
             if (!m_grid->m_gridFacesMask[m][n])
             {
@@ -412,9 +348,9 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
 
     // Normalize
     const auto smoothingFactor = 1.0 - m_orthogonalizationParameters.OrthogonalizationToSmoothingFactor;
-    for (auto m = m_lowerLeft.m; m < m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n; n < m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
             if (!m_grid->m_gridFacesMask[m][n])
             {
@@ -431,9 +367,9 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     }
 
     // Calculate m_atp
-    for (auto m = m_lowerLeft.m; m < m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n; n < m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
             if (!m_grid->m_gridFacesMask[m][n])
             {
@@ -451,9 +387,9 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     std::fill(m_d.begin(), m_d.end(), std::vector<double>(m_grid->m_numN, 0.0));
     std::fill(m_e.begin(), m_e.end(), std::vector<double>(m_grid->m_numN, 0.0));
 
-    for (auto m = m_lowerLeft.m + 1; m < m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m + 1; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n + 1; n < m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n + 1; n < m_upperRight.m_n; ++n)
         {
             if (m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::InternalValid)
             {
@@ -476,9 +412,9 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
     std::vector<std::vector<size_t>> counter(m_grid->m_numM, std::vector<size_t>(m_grid->m_numN, 0));
 
     // Perform left sum
-    for (auto n = m_lowerLeft.n; n < m_upperRight.n; ++n)
+    for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
     {
-        for (auto m = m_lowerLeft.m + 1; m < m_upperRight.m; ++m)
+        for (auto m = m_lowerLeft.m_m + 1; m < m_upperRight.m_m; ++m)
         {
 
             if (m_grid->IsValidFace(m, n) &&
@@ -494,9 +430,9 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
     }
 
     // Perform right sum
-    for (auto n = m_lowerLeft.n; n < m_upperRight.n; ++n)
+    for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
     {
-        for (auto m = int(m_upperRight.m) - 1; m >= int(m_lowerLeft.m); --m)
+        for (auto m = int(m_upperRight.m_m) - 1; m >= int(m_lowerLeft.m_m); --m)
         {
             if (m_grid->IsValidFace(m, n) &&
                 !IsEqual(m_a[m][n], doubleMissingValue) &&
@@ -510,9 +446,9 @@ void CurvilinearGridOrthogonalization::ComputeVerticalCoefficients()
         }
     }
     // Average contributions
-    for (auto m = m_lowerLeft.m; m < m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n; n < m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
             if (m_grid->IsValidFace(m, n))
             {
@@ -529,9 +465,9 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
     std::vector<std::vector<size_t>> counter(m_grid->m_numM, std::vector<size_t>(m_grid->m_numN, 0));
 
     // Perform bottom sum
-    for (auto m = m_lowerLeft.m; m < m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n + 1; n < m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n + 1; n < m_upperRight.m_n; ++n)
         {
             if (m_grid->IsValidFace(m, n) &&
                 !IsEqual(m_b[m][n], doubleMissingValue) &&
@@ -546,9 +482,9 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
     }
 
     // Perform upper sum
-    for (auto m = m_lowerLeft.m; m < m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = int(m_upperRight.n) - 1; n >= int(m_lowerLeft.n); --n)
+        for (auto n = int(m_upperRight.m_n) - 1; n >= int(m_lowerLeft.m_n); --n)
         {
             if (m_grid->IsValidFace(m, n) &&
                 !IsEqual(m_b[m][n], doubleMissingValue) &&
@@ -563,9 +499,9 @@ void CurvilinearGridOrthogonalization::ComputeHorizontalCoefficients()
     }
 
     // Average contributions
-    for (auto m = m_lowerLeft.m; m < m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n; n < m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
         {
             if (m_grid->IsValidFace(m, n))
             {
@@ -580,9 +516,9 @@ std::vector<std::vector<bool>>
 CurvilinearGridOrthogonalization::ComputeInvalidHorizontalBoundaryNodes() const
 {
     std::vector<std::vector<bool>> invalidBoundaryNodes(m_grid->m_numM, std::vector<bool>(m_grid->m_numN, false));
-    for (auto m = m_lowerLeft.m + 1; m < m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m + 1; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n + 1; n < m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n + 1; n < m_upperRight.m_n; ++n)
         {
             int step = 0;
             if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::BottomLeft)
@@ -629,9 +565,9 @@ std::vector<std::vector<bool>>
 CurvilinearGridOrthogonalization::ComputeInvalidVerticalBoundaryNodes() const
 {
     std::vector<std::vector<bool>> invalidBoundaryNodes(m_grid->m_numM, std::vector<bool>(m_grid->m_numN, false));
-    for (auto m = m_lowerLeft.m + 1; m < m_upperRight.m; ++m)
+    for (auto m = m_lowerLeft.m_m + 1; m < m_upperRight.m_m; ++m)
     {
-        for (auto n = m_lowerLeft.n + 1; n < m_upperRight.n; ++n)
+        for (auto n = m_lowerLeft.m_n + 1; n < m_upperRight.m_n; ++n)
         {
             int step = 0;
             if (m_grid->m_gridNodesMask[m][n] == CurvilinearGrid::NodeType::BottomLeft)

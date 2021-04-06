@@ -158,7 +158,7 @@ bool CurvilinearGrid::IsValidFace(size_t m, size_t n) const
 
 std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices> CurvilinearGrid::ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint)
 {
-    // Get the m and n indices from the point coordinates
+    // Get the m_m and m_n indices from the point coordinates
     auto const firstNode = GetNodeIndices(firstCornerPoint);
     auto const secondNode = GetNodeIndices(secondCornerPoint);
 
@@ -169,7 +169,7 @@ std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices> Curviline
 std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices>
 CurvilinearGrid::ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const
 {
-    return {{std::min(firstNode.m, secondNode.m), std::min(firstNode.n, secondNode.n)}, {std::max(firstNode.m, secondNode.m), std::max(firstNode.n, secondNode.n)}};
+    return {{std::min(firstNode.m_m, secondNode.m_m), std::min(firstNode.m_n, secondNode.m_n)}, {std::max(firstNode.m_m, secondNode.m_m), std::max(firstNode.m_n, secondNode.m_n)}};
 }
 
 void CurvilinearGrid::ComputeGridFacesMask()

@@ -15,14 +15,15 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineVertic
         {{30, 0}, {30, 10}, {30, 20}, {30, 30}}};
 
     const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
-    meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, {10, 20}, {20, 20});
+    meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
+    curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
     const auto derefinedGrid = curvilinearGridDeRefinement.Compute();
 
     // Assert (the vertical line at x=15 is removed)
-    ASSERT_EQ(4, derefinedGrid.m_numM);
-    ASSERT_EQ(4, derefinedGrid.m_numN);
+    ASSERT_EQ(4, derefinedGrid->m_numM);
+    ASSERT_EQ(4, derefinedGrid->m_numN);
 }
 
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_ShouldDeRefineVerticalGridLines)
@@ -40,14 +41,16 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_Shou
         {{50, 0}, {50, 10}, {50, 20}, {50, 30}}};
 
     const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
-    meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, {10, 20}, {20, 20});
+    meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
+    curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
+
     const auto derefinedGrid = curvilinearGridDeRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(6, derefinedGrid.m_numM);
-    ASSERT_EQ(4, derefinedGrid.m_numN);
+    ASSERT_EQ(6, derefinedGrid->m_numM);
+    ASSERT_EQ(4, derefinedGrid->m_numN);
 }
 
 TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizontalGridLines)
@@ -59,13 +62,14 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
         {{20, 0}, {20, 10}, {20, 11}, {20, 20}, {20, 30}},
         {{30, 0}, {30, 10}, {30, 11}, {30, 20}, {30, 30}}};
 
-    const auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
-    meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, {10, 10}, {10, 20});
+    auto curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(std::move(grid), meshkernel::Projection::cartesian);
+    meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
+    curvilinearGridDeRefinement.SetBlock({10, 10}, {10, 20});
 
     // Execute
     const auto derefinedGrid = curvilinearGridDeRefinement.Compute();
 
     // Assert (the vertical line at x=15 is removed)
-    ASSERT_EQ(4, derefinedGrid.m_numM);
-    ASSERT_EQ(4, derefinedGrid.m_numN);
+    ASSERT_EQ(4, derefinedGrid->m_numM);
+    ASSERT_EQ(4, derefinedGrid->m_numN);
 }

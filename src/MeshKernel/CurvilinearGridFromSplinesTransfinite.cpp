@@ -388,14 +388,14 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
         }
     }
 
-    // find the first non m spline
+    // find the first non m_m spline
     m_numMSplines = FindIndex(m_splineType, -1);
     m_numNSplines = numSplines - m_numMSplines;
 
     const size_t maxExternalIterations = 10;
     for (auto i = 0; i < maxExternalIterations; i++)
     {
-        // sort along m
+        // sort along m_m
         const size_t maxInternalIterations = 100;
         for (auto j = 0; j < maxInternalIterations; j++)
         {
@@ -406,7 +406,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
             }
         }
 
-        // sort along n
+        // sort along m_n
         bool nSplineSortingHasNotChanged = true;
         for (auto j = 0; j < maxInternalIterations; j++)
         {
@@ -430,7 +430,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
     // Now determine the start and end spline corner points for each spline
     m_splineGroupIndexAndFromToIntersections.resize(numSplines, std::vector<size_t>(3, 0));
 
-    // n direction
+    // m_n direction
     for (auto i = 0; i < m_numMSplines; i++)
     {
         for (auto j = m_numMSplines; j < numSplines; j++)
@@ -458,7 +458,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
         m_splineGroupIndexAndFromToIntersections[i][0] = maxIndex;
     }
 
-    // m direction
+    // m_m direction
     for (auto i = m_numMSplines; i < numSplines; i++)
     {
         for (auto j = 0; j < m_numMSplines; j++)
@@ -492,7 +492,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
         m_splineGroupIndexAndFromToIntersections[i][2] = 0;
     }
 
-    // n constant, spline start end end
+    // m_n constant, spline start end end
     for (auto i = 0; i < m_numMSplines; i++)
     {
         for (auto j = m_numMSplines; j < numSplines; j++)
@@ -508,7 +508,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeIntersections()
         }
     }
 
-    // m constant, spline start end end
+    // m_m constant, spline start end end
     for (auto i = m_numMSplines; i < numSplines; i++)
     {
         for (auto j = 0; j < m_numMSplines; j++)

@@ -222,10 +222,10 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_OnONonOrthogonalGrid_WithCr
     orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
     curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
-    curvilinearGridOrthogonalization.SetFrozenLine({80144, 367046}, {80329, 366550});
+    curvilinearGridOrthogonalization.SetLine({80144, 367046}, {80329, 366550});
 
     // Execute and assert
-    ASSERT_THROW(curvilinearGridOrthogonalization.SetFrozenLine({80052, 366824}, {80774, 367186}), std::exception);
+    ASSERT_THROW(curvilinearGridOrthogonalization.SetLine({80052, 366824}, {80774, 367186}), std::exception);
 }
 
 TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWithFrozenLines_ShouldOrthogonalizeGrid)
@@ -240,7 +240,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     orthogonalizationParameters.OrthogonalizationToSmoothingFactor = 0.975;
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
     curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
-    curvilinearGridOrthogonalization.SetFrozenLine({80144, 367046}, {80329, 366550});
+    curvilinearGridOrthogonalization.SetLine({80144, 367046}, {80329, 366550});
 
     // Execute
     curvilinearGridOrthogonalization.Compute();

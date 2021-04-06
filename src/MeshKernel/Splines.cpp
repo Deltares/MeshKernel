@@ -41,7 +41,7 @@ Splines::Splines(Projection projection) : m_projection(projection){};
 
 Splines::Splines(std::shared_ptr<CurvilinearGrid> grid)
 {
-    // first the n m-gridlines
+    // first the m_n m_m-gridlines
     std::vector<std::vector<Point>> mGridLines(grid->m_numN, std::vector<Point>(grid->m_numM));
     for (auto n = 0; n < grid->m_numN; ++n)
     {
@@ -52,7 +52,7 @@ Splines::Splines(std::shared_ptr<CurvilinearGrid> grid)
         AddSpline(mGridLines[n], 0, mGridLines[n].size());
     }
 
-    // then the m n-gridlines
+    // then the m_m m_n-gridlines
     std::vector<std::vector<Point>> nGridLines(grid->m_numM, std::vector<Point>(grid->m_numN));
     for (auto m = 0; m < grid->m_numM; ++m)
     {
