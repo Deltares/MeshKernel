@@ -42,8 +42,6 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        /// @param[in] firstPoint The first node of the segment defining the derefinement zone
-        /// @param[in] secondPoint The second node of the segment defining the derefinement zone
         CurvilinearGridDeRefinement(std::shared_ptr<CurvilinearGrid> grid);
 
         /// @brief Refine the curvilinear grid

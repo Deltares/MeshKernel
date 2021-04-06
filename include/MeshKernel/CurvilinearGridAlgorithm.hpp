@@ -43,7 +43,6 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
-        /// @param[in] orthogonalizationParameters The orthogonalization parameters
         CurvilinearGridAlgorithm(std::shared_ptr<CurvilinearGrid> grid);
 
         /// @brief Executes the algorithm, pure virtual

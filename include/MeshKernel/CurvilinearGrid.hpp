@@ -60,6 +60,9 @@ namespace meshkernel
             /// @brief Default constructor sets the indices to invalid
             NodeIndices() : m_m(sizetMissingValue), m_n(sizetMissingValue){};
 
+            /// @brief Constructor sets indices from values
+            /// @param[in] m The m index
+            /// @param[in] n The n index
             NodeIndices(size_t m, size_t n) : m_m(m), m_n(n){};
 
             /// @brief Determines if one of the indices  equals to \p missingValue
@@ -124,8 +127,8 @@ namespace meshkernel
         void ComputeGridNodeTypes();
 
         /// @brief If the face is valid. A face is valid if all its nodes are valid.
-        /// @param[in] m_m the m_m coordinate
-        /// @param[in] m_n the m_n coordinate
+        /// @param[in] m The m coordinate
+        /// @param[in] n The n coordinate
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
 
