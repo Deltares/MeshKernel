@@ -54,7 +54,7 @@ namespace meshkernel
             Invalid        //(0)
         };
 
-        /// @brief A struct describing the column and row indices of a node
+        /// @brief A struct describing a node in the curvilinear grid in terms of node indices
         struct NodeIndices
         {
             /// @brief Default constructor sets the indices to invalid
@@ -99,17 +99,22 @@ namespace meshkernel
             size_t m_n; ///< Rows
         };
 
+        /// @brief A struct describing a grid line in the curvilinear grid in terms of node indices
         struct GridLine
         {
+            /// @brief The type of grid line, if it is in m or n direction
             enum class GridLineType
             {
                 MGridLine,
                 NGridLine
             };
 
-            GridLine(NodeIndices const& m_startNode, NodeIndices const& m_endNode)
-                : m_startNode(m_startNode),
-                  m_endNode(m_endNode)
+            /// @brief GridLine constructor
+            /// @param[in] startNode The start node of the grid line
+            /// @param[in] endNode The end node of the grid line
+            GridLine(NodeIndices const& startNode, NodeIndices const& endNode)
+                : m_startNode(startNode),
+                  m_endNode(endNode)
             {
                 if (m_startNode == m_endNode)
                 {
@@ -122,12 +127,12 @@ namespace meshkernel
                 m_constantCoordinate = m_gridLineType == GridLineType::MGridLine ? m_startNode.m_m : m_startNode.m_n;
             }
 
-            NodeIndices m_startNode;
-            NodeIndices m_endNode;
-            size_t m_startCoordinate;
-            size_t m_endCoordinate;
-            size_t m_constantCoordinate;
-            GridLineType m_gridLineType;
+            NodeIndices m_startNode;     ///<The start node of the grid line
+            NodeIndices m_endNode;       ///<The end node of the grid line
+            size_t m_startCoordinate;    ///<The start coordinate. If it is an MGridLine, the start m otherwis the start n
+            size_t m_endCoordinate;      ///<The end coordinate. If it is an MGridLine, the end m otherwise the end n
+            size_t m_constantCoordinate; ///<The constant coordinate. If it is an MGridLine, the n coordinate, otherwise the m coordinate
+            GridLineType m_gridLineType; ///<The grid line type
         };
 
         /// @brief Default constructor
