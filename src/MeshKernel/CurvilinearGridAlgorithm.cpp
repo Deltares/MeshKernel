@@ -72,7 +72,7 @@ void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& sec
         throw std::invalid_argument("CurvilinearGridAlgorithm::SetLine the current line is intersection another line");
     }
 
-    GridLine const newGridline{newLineLowerLeft, newLineUpperRight};
+    CurvilinearGrid::GridLine const newGridline{newLineLowerLeft, newLineUpperRight};
 
     // Frozen lines cannot cross existing frozen lines
     for (auto const& frozenLine : m_lines)

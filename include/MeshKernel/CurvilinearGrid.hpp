@@ -121,10 +121,37 @@ namespace meshkernel
                     throw std::invalid_argument("GridLine::GridLine Cannot construct a grid line with coinciding nodes.");
                 }
 
-                m_gridLineType = m_startNode.m_m == m_startNode.m_m ? GridLineType::MGridLine : GridLineType::NGridLine;
+                m_gridLineType = m_startNode.m_m == m_endNode.m_m ? GridLineType::MGridLine : GridLineType::NGridLine;
                 m_startCoordinate = m_gridLineType == GridLineType::MGridLine ? m_startNode.m_n : m_startNode.m_m;
                 m_endCoordinate = m_gridLineType == GridLineType::MGridLine ? m_endNode.m_n : m_endNode.m_m;
                 m_constantCoordinate = m_gridLineType == GridLineType::MGridLine ? m_startNode.m_m : m_startNode.m_n;
+            }
+
+            /// @brief Inquire if a node is on a grid line
+            /// @param[in] node The node to inquire
+            /// @return True if the node belongs to the grid line, false otherwise
+            bool IsNodeOnLine(NodeIndices const& node) const
+            {
+                for (int i = m_startCoordinate; i < m_endCoordinate; ++i)
+                {
+                    if (m_gridLineType == GridLineType::MGridLine && node.m_m == i && node.m_n == m_constantCoordinate)
+                    {
+                        return true;
+                    }
+                    if (m_gridLineType == GridLineType::NGridLine && node.m_n == i && node.m_m == m_constantCoordinate)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            NodeIndices GetNodeindexFromCoordinate(size_t const& coordinate) const
+            {
+                auto const mCoordinate = m_gridLineType == GridLineType::NGridLine ? coordinate : m_constantCoordinate;
+                auto const nCoordinate = m_gridLineType == GridLineType::NGridLine ? m_constantCoordinate : coordinate;
+
+                return {mCoordinate, nCoordinate};
             }
 
             NodeIndices m_startNode;     ///<The start node of the grid line
@@ -139,10 +166,15 @@ namespace meshkernel
         /// @returns
         CurvilinearGrid() = default;
 
-        /// @brief Creates a new curvilinear grid from a given set of points
+        /// @brief Rvalue constructor. Creates a new curvilinear grid from a given set of points
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
         explicit CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Projection projection);
+
+        /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
+        /// @param[in] grid       The input grid points
+        /// @param[in] projection The projection to use
+        explicit CurvilinearGrid(std::vector<std::vector<Point>>& grid, Projection projection);
 
         /// @brief Check if current curvilinear grid instance is valid
         /// @return True if valid, false otherwise

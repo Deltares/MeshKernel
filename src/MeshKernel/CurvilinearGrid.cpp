@@ -46,6 +46,20 @@ CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Project
     SetFlatCopies();
 }
 
+CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>& grid, Projection projection) : m_gridNodes(grid)
+{
+    if (!IsValid())
+    {
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid ");
+    }
+
+    m_projection = projection;
+    m_numM = m_gridNodes.size();
+    m_numN = m_gridNodes[0].size();
+
+    SetFlatCopies();
+}
+
 void CurvilinearGrid::SetFlatCopies()
 {
     const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
