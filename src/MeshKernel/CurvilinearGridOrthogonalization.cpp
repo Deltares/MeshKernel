@@ -58,11 +58,9 @@ void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
 {
     for (auto const& frozenLine : m_lines)
     {
-        auto const& [lowerLeft, upperRight] = frozenLine;
-
-        for (auto m = lowerLeft.m_m; m <= upperRight.m_m; ++m)
+        for (auto m = frozenLine.m_startNode.m_m; m <= frozenLine.m_endNode.m_m; ++m)
         {
-            for (auto n = lowerLeft.m_n; n <= upperRight.m_n; ++n)
+            for (auto n = frozenLine.m_startNode.m_n; n <= frozenLine.m_endNode.m_n; ++n)
             {
                 m_isGridNodeFrozen[m][n] = true;
             }

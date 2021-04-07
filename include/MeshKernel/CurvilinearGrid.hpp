@@ -99,6 +99,37 @@ namespace meshkernel
             size_t m_n; ///< Rows
         };
 
+        struct GridLine
+        {
+            enum class GridLineType
+            {
+                MGridLine,
+                NGridLine
+            };
+
+            GridLine(NodeIndices const& m_startNode, NodeIndices const& m_endNode)
+                : m_startNode(m_startNode),
+                  m_endNode(m_endNode)
+            {
+                if (m_startNode == m_endNode)
+                {
+                    throw std::invalid_argument("GridLine::GridLine Cannot construct a grid line with coinciding nodes.");
+                }
+
+                m_gridLineType = m_startNode.m_m == m_startNode.m_m ? GridLineType::MGridLine : GridLineType::NGridLine;
+                m_startCoordinate = m_gridLineType == GridLineType::MGridLine ? m_startNode.m_n : m_startNode.m_m;
+                m_endCoordinate = m_gridLineType == GridLineType::MGridLine ? m_endNode.m_n : m_endNode.m_m;
+                m_constantCoordinate = m_gridLineType == GridLineType::MGridLine ? m_startNode.m_m : m_startNode.m_n;
+            }
+
+            NodeIndices m_startNode;
+            NodeIndices m_endNode;
+            size_t m_startCoordinate;
+            size_t m_endCoordinate;
+            size_t m_constantCoordinate;
+            GridLineType m_gridLineType;
+        };
+
         /// @brief Default constructor
         /// @returns
         CurvilinearGrid() = default;

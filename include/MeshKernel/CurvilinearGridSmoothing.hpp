@@ -66,9 +66,7 @@ namespace meshkernel
         /// @param[in] pointOnLine A point on the line defining the directional smooth
         /// @param[in] lowerLeftCornerRegion The lower left corner of the smoothing region
         /// @param[in] upperRightCornerSmoothingRegion The upper right corner of the smoothing region
-        void Solve(bool isSmoothingAlongM,
-                   CurvilinearGrid::NodeIndices const& pointOnLine,
-                   CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
+        void Solve(CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
                    CurvilinearGrid::NodeIndices const& upperRightCornerSmoothingRegion);
 
         /// @brief Function for computing the smoothing factors at the current location given a line and a zone of influence (SMEERFUNCTIE)
@@ -78,10 +76,10 @@ namespace meshkernel
         /// @param[in] lowerLeftIndices The lower left indices of the smoothing area
         /// @param[in] upperRightIndices The upper right indices of the smoothing area
         /// @return A tuple containing the horizontal, the vertical and mixed smoothing factors
-        std::tuple<double, double, double> ComputeDirectionalSmoothingFactors(CurvilinearGrid::NodeIndices const& currentPointIndices,
-                                                                              CurvilinearGrid::NodeIndices const& pointOnSmoothingLineIndices,
-                                                                              CurvilinearGrid::NodeIndices const& lowerLeftIndices,
-                                                                              CurvilinearGrid::NodeIndices const& upperRightIndices) const;
+        [[nodiscard]] std::tuple<double, double, double> ComputeDirectionalSmoothingFactors(CurvilinearGrid::NodeIndices const& currentPointIndices,
+                                                                                            CurvilinearGrid::NodeIndices const& pointOnSmoothingLineIndices,
+                                                                                            CurvilinearGrid::NodeIndices const& lowerLeftIndices,
+                                                                                            CurvilinearGrid::NodeIndices const& upperRightIndices) const;
 
         /// @brief Projects a point on the closest grid boundary
         /// @param[in] point The point to project

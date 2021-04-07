@@ -62,9 +62,36 @@ namespace meshkernel
         /// @brief Virtual destructor
         virtual ~CurvilinearGridAlgorithm() = default;
 
-        std::shared_ptr<CurvilinearGrid> m_grid;                                                     ///< A pointer to the curvilinear grid to modify
-        std::vector<std::tuple<CurvilinearGrid::NodeIndices, CurvilinearGrid::NodeIndices>> m_lines; ///< Selected grid lines
-        CurvilinearGrid::NodeIndices m_lowerLeft;                                                    ///< The lower left corner of the block
-        CurvilinearGrid::NodeIndices m_upperRight;                                                   ///< The upper right corner of the block
+        struct GridLine
+        {
+            enum class GridLineType
+            {
+                MGridLine,
+                NGridLine
+            };
+
+            GridLine(const CurvilinearGrid::NodeIndices& m_start_node, const CurvilinearGrid::NodeIndices& m_end_node)
+                : m_startNode(m_start_node),
+                  m_endNode(m_end_node)
+            {
+                // The start-end coordinates of the new line, along m_m or m_n direction
+                m_gridLineType = m_startNode.m_m == m_endNode.m_m ? GridLineType::MGridLine : GridLineType::NGridLine;
+                m_startCoordinate = m_gridLineType == GridLineType::MGridLine ? m_startNode.m_n : m_startNode.m_m;
+                m_endCoordinate = m_gridLineType == GridLineType::MGridLine ? m_endNode.m_n : m_endNode.m_m;
+                m_constantCoordinate = m_gridLineType == GridLineType::MGridLine ? m_startNode.m_m : m_startNode.m_n;
+            }
+
+            CurvilinearGrid::NodeIndices m_startNode;
+            CurvilinearGrid::NodeIndices m_endNode;
+            size_t m_startCoordinate;
+            size_t m_endCoordinate;
+            size_t m_constantCoordinate;
+            GridLineType m_gridLineType;
+        };
+
+        std::shared_ptr<CurvilinearGrid> m_grid;   ///< A pointer to the curvilinear grid to modify
+        std::vector<GridLine> m_lines;             ///< Selected grid lines
+        CurvilinearGrid::NodeIndices m_lowerLeft;  ///< The lower left corner of the block
+        CurvilinearGrid::NodeIndices m_upperRight; ///< The upper right corner of the block
     };
 } // namespace meshkernel

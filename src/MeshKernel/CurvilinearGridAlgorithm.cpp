@@ -72,26 +72,16 @@ void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& sec
         throw std::invalid_argument("CurvilinearGridAlgorithm::SetLine the current line is intersection another line");
     }
 
-    // The start-end coordinates of the new line, along m_m or m_n direction
-    auto const isNewlineAnMLine = newLineUpperRight.m_m == newLineLowerLeft.m_m;
-    auto const startNewLine = isNewlineAnMLine ? newLineLowerLeft.m_n : newLineLowerLeft.m_m;
-    auto const endNewLine = isNewlineAnMLine ? newLineUpperRight.m_n : newLineUpperRight.m_m;
-    auto const constantCoordinateLine = isNewlineAnMLine ? newLineLowerLeft.m_m : newLineLowerLeft.m_n;
+    GridLine const newGridline{newLineLowerLeft, newLineUpperRight};
 
     // Frozen lines cannot cross existing frozen lines
     for (auto const& frozenLine : m_lines)
     {
-        auto const& [lowerLeft, upperRight] = frozenLine;
-
-        auto const deltaMCurrentLine = upperRight.m_m - lowerLeft.m_m;
-        auto const startCurrentLine = deltaMCurrentLine == 0 ? lowerLeft.m_n : lowerLeft.m_m;
-        auto const endCurrentLine = deltaMCurrentLine == 0 ? upperRight.m_n : upperRight.m_m;
-        auto const constantCoordinateCurrentLine = deltaMCurrentLine == 0 ? lowerLeft.m_m : lowerLeft.m_n;
-        for (auto i = startCurrentLine; i <= endCurrentLine; ++i)
+        for (auto i = frozenLine.m_startCoordinate; i <= frozenLine.m_endCoordinate; ++i)
         {
-            for (auto j = startNewLine; j <= endNewLine; ++j)
+            for (auto j = newGridline.m_startCoordinate; j <= newGridline.m_endCoordinate; ++j)
             {
-                if (j == constantCoordinateCurrentLine && i == constantCoordinateLine)
+                if (j == frozenLine.m_constantCoordinate && i == newGridline.m_constantCoordinate)
                 {
                     throw AlgorithmError("CurvilinearGridOrthogonalization::SetFrozenLine the new line to freeze is crossing an existing line");
                 }
@@ -100,5 +90,5 @@ void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& sec
     }
 
     // Now a frozen line can be stored
-    m_lines.emplace_back(newLineLowerLeft, newLineUpperRight);
+    m_lines.emplace_back(newGridline);
 }
