@@ -58,29 +58,30 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
     {
         auto const currentNodeIndex = m_lines[0].GetNodeindexFromCoordinate(i);
 
-        auto currentDelta = m_grid->m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n] -
-                            m_gridModified->m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n];
+        auto const currentDelta = m_grid->m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n] -
+                                  m_gridModified->m_gridNodes[currentNodeIndex.m_m][currentNodeIndex.m_n];
 
-        if (std::abs(currentDelta.x) > eps || std::abs(currentDelta.y) > eps || i == m_lines[0].m_endCoordinate)
+        if (std::abs(currentDelta.x) < eps && std::abs(currentDelta.y) < eps && i != m_lines[0].m_endCoordinate)
+        {
+            continue;
+        }
+
+        for (auto j = previousCoordinate; j <= i; ++j)
         {
 
-            for (auto j = previousCoordinate; j <= i; ++j)
-            {
+            auto const nodeIndex = m_lines[0].GetNodeindexFromCoordinate(j);
 
-                auto const nodeIndex = m_lines[0].GetNodeindexFromCoordinate(j);
+            auto const firstFactor = static_cast<double>(j - previousCoordinate) / static_cast<double>(i - previousCoordinate);
+            auto const secondFactor = 1.0 - firstFactor;
 
-                auto const firstFactor = static_cast<double>(j - previousCoordinate) / static_cast<double>(i - previousCoordinate);
-                auto const secondFactor = 1.0 - firstFactor;
-
-                // now distribute the shifting
-                m_gridModified->m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = m_grid->m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] +
-                                                                            previousDelta * secondFactor + currentDelta * firstFactor;
-                // field transformation in the influence area
-                TransformGrid(nodeIndex);
-            }
-            previousCoordinate = i;
-            previousDelta = currentDelta;
+            // now distribute the shifting
+            m_gridModified->m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] = m_grid->m_gridNodes[nodeIndex.m_m][nodeIndex.m_n] +
+                                                                        previousDelta * secondFactor + currentDelta * firstFactor;
+            // field transformation in the influence area
+            TransformGrid(nodeIndex);
         }
+        previousCoordinate = i;
+        previousDelta = currentDelta;
     }
 
     return m_gridModified;
@@ -89,7 +90,7 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridLineShift::Compute()
 void CurvilinearGridLineShift::TransformGrid(CurvilinearGrid::NodeIndices const& node)
 {
     auto delta = m_gridModified->m_gridNodes[node.m_m][node.m_n] - m_grid->m_gridNodes[node.m_m][node.m_n];
-    delta = TransformDisplacements(delta, node, true);
+    delta = TransformDisplacement(delta, node, true);
 
     auto const start = m_lines[0].m_gridLineType == GridLineType::MGridLine ? m_lowerLeft.m_n : m_lowerLeft.m_m;
     auto const end = m_lines[0].m_gridLineType == GridLineType::MGridLine ? m_upperRight.m_n : m_upperRight.m_m;
@@ -115,12 +116,12 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGrid::NodeIndices const&
             currentDelta = delta * mSmoothing;
         }
 
-        currentDelta = TransformDisplacements(currentDelta, currentNode, false);
+        currentDelta = TransformDisplacement(currentDelta, currentNode, false);
         m_gridModified->m_gridNodes[currentNode.m_m][currentNode.m_n] = m_grid->m_gridNodes[currentNode.m_m][currentNode.m_n] + currentDelta;
     }
 }
 
-Point CurvilinearGridLineShift::TransformDisplacements(Point const& displacement, CurvilinearGrid::NodeIndices const& node, bool isLocal) const
+Point CurvilinearGridLineShift::TransformDisplacement(Point const& displacement, CurvilinearGrid::NodeIndices const& node, bool isLocal) const
 {
     Point left = m_grid->m_gridNodes[node.m_m][node.m_n];
     Point right = m_grid->m_gridNodes[node.m_m][node.m_n];
