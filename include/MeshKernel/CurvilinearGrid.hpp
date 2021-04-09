@@ -121,10 +121,10 @@ namespace meshkernel
                     throw std::invalid_argument("GridLine::GridLine Cannot construct a grid line with coinciding nodes.");
                 }
 
-                m_gridLineType = m_startNode.m_m == m_endNode.m_m ? GridLineType::MGridLine : GridLineType::NGridLine;
-                m_startCoordinate = m_gridLineType == GridLineType::MGridLine ? m_startNode.m_n : m_startNode.m_m;
-                m_endCoordinate = m_gridLineType == GridLineType::MGridLine ? m_endNode.m_n : m_endNode.m_m;
-                m_constantCoordinate = m_gridLineType == GridLineType::MGridLine ? m_startNode.m_m : m_startNode.m_n;
+                m_gridLineType = m_startNode.m_m == m_endNode.m_m ? GridLineType::NGridLine : GridLineType::MGridLine;
+                m_startCoordinate = m_gridLineType == GridLineType::NGridLine ? m_startNode.m_n : m_startNode.m_m;
+                m_endCoordinate = m_gridLineType == GridLineType::NGridLine ? m_endNode.m_n : m_endNode.m_m;
+                m_constantCoordinate = m_gridLineType == GridLineType::NGridLine ? m_startNode.m_m : m_startNode.m_n;
             }
 
             /// @brief Inquire if a node is on a grid line
@@ -148,8 +148,8 @@ namespace meshkernel
 
             NodeIndices GetNodeindexFromCoordinate(size_t const& coordinate) const
             {
-                auto const mCoordinate = m_gridLineType == GridLineType::NGridLine ? coordinate : m_constantCoordinate;
-                auto const nCoordinate = m_gridLineType == GridLineType::NGridLine ? m_constantCoordinate : coordinate;
+                auto const mCoordinate = m_gridLineType == GridLineType::MGridLine ? coordinate : m_constantCoordinate;
+                auto const nCoordinate = m_gridLineType == GridLineType::MGridLine ? m_constantCoordinate : coordinate;
 
                 return {mCoordinate, nCoordinate};
             }
@@ -207,10 +207,21 @@ namespace meshkernel
         [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const;
 
         /// @brief From two points expressed in cartesian coordinates, gets the two corner points defining a block in m_m and m_n coordinates
-        /// @param[in] firstCornerPoint The first point
         /// @param[in] secondCornerPoint The second point
         /// @return The upper left and lower right of the box defined by the two points
         [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint);
+
+        /// @brief Function for computing the smoothing factors at the current location given a line and a zone of influence (SMEERFUNCTIE)
+        /// The smoothing factor is maximum at the line and 0 at the boundary of the smoothing zone.
+        /// @param[in] currentPointIndices The indices of the current point
+        /// @param[in] pointOnSmoothingLineIndices The indices of a point on the smoothing line
+        /// @param[in] lowerLeftIndices The lower left indices of the smoothing area
+        /// @param[in] upperRightIndices The upper right indices of the smoothing area
+        /// @return A tuple containing the horizontal, the vertical and mixed smoothing factors
+        [[nodiscard]] static std::tuple<double, double, double> ComputeDirectionalSmoothingFactors(NodeIndices const& currentPointIndices,
+                                                                                                   NodeIndices const& pointOnSmoothingLineIndices,
+                                                                                                   NodeIndices const& lowerLeftIndices,
+                                                                                                   NodeIndices const& upperRightIndices);
 
         size_t m_numM = 0;                                    ///< The number of m_m coordinates (vertical lines)
         size_t m_numN = 0;                                    ///< The number of m_n coordinates (horizontal lines)

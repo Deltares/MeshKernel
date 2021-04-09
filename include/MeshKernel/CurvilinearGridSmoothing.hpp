@@ -69,18 +69,6 @@ namespace meshkernel
         void Solve(CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
                    CurvilinearGrid::NodeIndices const& upperRightCornerSmoothingRegion);
 
-        /// @brief Function for computing the smoothing factors at the current location given a line and a zone of influence (SMEERFUNCTIE)
-        /// The smoothing factor is maximum at the line and 0 at the boundary of the smoothing zone.
-        /// @param[in] currentPointIndices The indices of the current point
-        /// @param[in] pointOnSmoothingLineIndices The indices of a point on the smoothing line
-        /// @param[in] lowerLeftIndices The lower left indices of the smoothing area
-        /// @param[in] upperRightIndices The upper right indices of the smoothing area
-        /// @return A tuple containing the horizontal, the vertical and mixed smoothing factors
-        [[nodiscard]] std::tuple<double, double, double> ComputeDirectionalSmoothingFactors(CurvilinearGrid::NodeIndices const& currentPointIndices,
-                                                                                            CurvilinearGrid::NodeIndices const& pointOnSmoothingLineIndices,
-                                                                                            CurvilinearGrid::NodeIndices const& lowerLeftIndices,
-                                                                                            CurvilinearGrid::NodeIndices const& upperRightIndices) const;
-
         /// @brief Projects a point on the closest grid boundary
         /// @param[in] point The point to project
         /// @param[in] m The current m coordinate on the boundary of the curvilinear grid
