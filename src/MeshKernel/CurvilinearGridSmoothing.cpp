@@ -65,14 +65,14 @@ std::shared_ptr<CurvilinearGrid> CurvilinearGridSmoothing::Compute(Point const& 
     auto const rightPointIndices = m_grid->GetNodeIndices(upperRightCornerSmootingArea);
 
     // Points are coinciding, this no smoothing zone
-    if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLine::GridLineType::MGridLine && leftPointIndices.m_n == rightPointIndices.m_n ||
-        m_lines[0].m_gridLineType == CurvilinearGrid::GridLine::GridLineType::NGridLine && leftPointIndices.m_m == rightPointIndices.m_m)
+    if (m_lines[0].m_gridLineType == GridLineType::MGridLine && leftPointIndices.m_n == rightPointIndices.m_n ||
+        m_lines[0].m_gridLineType == GridLineType::NGridLine && leftPointIndices.m_m == rightPointIndices.m_m)
     {
         throw std::invalid_argument("CurvilinearGridSmoothing::Compute The points defining the smoothing area have the same direction of the smoothing line.");
     }
 
     // Compute the smoothing area
-    if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLine::GridLineType::MGridLine)
+    if (m_lines[0].m_gridLineType == GridLineType::MGridLine)
     {
         m_lowerLeft = {m_lines[0].m_startCoordinate, std::min(leftPointIndices.m_n, rightPointIndices.m_n)};
         m_upperRight = {m_lines[0].m_endCoordinate, std::max(leftPointIndices.m_n, rightPointIndices.m_n)};
@@ -109,7 +109,7 @@ void CurvilinearGridSmoothing::Solve(CurvilinearGrid::NodeIndices const& lowerLe
     }
 
     auto isInvalidValidNode = [this](auto const& m, auto const& n) {
-        if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLine::GridLineType::MGridLine)
+        if (m_lines[0].m_gridLineType == GridLineType::MGridLine)
         {
             return m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::InternalValid &&
                    m_grid->m_gridNodesMask[m][n] != CurvilinearGrid::NodeType::Bottom &&
@@ -136,7 +136,7 @@ void CurvilinearGridSmoothing::Solve(CurvilinearGrid::NodeIndices const& lowerLe
             // Calculate influence radius
             Point firstDelta;
             Point secondDelta;
-            if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLine::GridLineType::MGridLine)
+            if (m_lines[0].m_gridLineType == GridLineType::MGridLine)
             {
                 firstDelta = m_gridNodesCache[m][n] - m_gridNodesCache[m - 1][n];
                 secondDelta = m_gridNodesCache[m][n] - m_gridNodesCache[m + 1][n];
@@ -153,7 +153,7 @@ void CurvilinearGridSmoothing::Solve(CurvilinearGrid::NodeIndices const& lowerLe
             const auto characteristicLength = std::abs(secondLengthSquared - firstLengthSquared) * 0.5;
             const auto [mSmoothing, nSmoothing, mixedSmoothing] = CurvilinearGrid::ComputeDirectionalSmoothingFactors({m, n}, m_lines[0].m_startNode, lowerLeftCornerRegion, upperRightCornerSmoothingRegion);
 
-            if (m_lines[0].m_gridLineType == CurvilinearGrid::GridLine::GridLineType::MGridLine)
+            if (m_lines[0].m_gridLineType == GridLineType::MGridLine)
             {
                 // smooth along vertical
                 const auto a = maxlength < 1e-8 ? 0.5 : nSmoothing * smoothingFactor * characteristicLength / maxlength;

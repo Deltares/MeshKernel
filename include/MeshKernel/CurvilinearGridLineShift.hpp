@@ -68,6 +68,6 @@ namespace meshkernel
         /// @return The new displacement
         Point TransformDisplacement(Point const& displacement, CurvilinearGrid::NodeIndices const& node, bool toLocal) const;
 
-        std::shared_ptr<CurvilinearGrid> m_gridModified; ///< A cache for storing current iteration node positions
+        std::shared_ptr<CurvilinearGrid> m_gridModified; ///< The new grid, storing the new postions
     };
 } // namespace meshkernel

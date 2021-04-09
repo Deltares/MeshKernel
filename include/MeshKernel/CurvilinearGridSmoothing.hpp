@@ -40,6 +40,8 @@ namespace meshkernel
     class CurvilinearGridSmoothing : public CurvilinearGridAlgorithm
     {
     public:
+        typedef CurvilinearGrid::GridLine::GridLineType GridLineType;
+
         /// @brief Class constructor
         /// @param[in] grid                        The input curvilinear grid
         /// @param[in] smoothingIterations         The number of smoothing iterations to perform
