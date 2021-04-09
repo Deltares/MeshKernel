@@ -30,6 +30,7 @@
 #include <memory>
 
 #include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridLine.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Splines.hpp>
 
@@ -62,9 +63,9 @@ namespace meshkernel
         /// @brief Virtual destructor
         virtual ~CurvilinearGridAlgorithm() = default;
 
-        std::shared_ptr<CurvilinearGrid> m_grid;        ///< A pointer to the curvilinear grid to modify
-        std::vector<CurvilinearGrid::GridLine> m_lines; ///< Selected grid lines
-        CurvilinearGrid::NodeIndices m_lowerLeft;       ///< The lower left corner of the block
-        CurvilinearGrid::NodeIndices m_upperRight;      ///< The upper right corner of the block
+        std::shared_ptr<CurvilinearGrid> m_grid;   ///< A pointer to the curvilinear grid to modify
+        std::vector<CurvilinearGridLine> m_lines;  ///< Selected grid lines
+        CurvilinearGrid::NodeIndices m_lowerLeft;  ///< The lower left corner of the block
+        CurvilinearGrid::NodeIndices m_upperRight; ///< The upper right corner of the block
     };
 } // namespace meshkernel

@@ -41,8 +41,6 @@ namespace meshkernel
     class CurvilinearGridLineShift : public CurvilinearGridAlgorithm
     {
     public:
-        typedef CurvilinearGrid::GridLine::GridLineType GridLineType;
-
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
         CurvilinearGridLineShift(std::shared_ptr<CurvilinearGrid> grid);

@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <MeshKernel/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGridLineShift.hpp>
 #include <MeshKernel/Entities.hpp>
 
@@ -92,13 +93,13 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGrid::NodeIndices const&
     auto delta = m_gridModified->m_gridNodes[node.m_m][node.m_n] - m_grid->m_gridNodes[node.m_m][node.m_n];
     delta = TransformDisplacement(delta, node, true);
 
-    auto const start = m_lines[0].m_gridLineType == GridLineType::MGridLine ? m_lowerLeft.m_n : m_lowerLeft.m_m;
-    auto const end = m_lines[0].m_gridLineType == GridLineType::MGridLine ? m_upperRight.m_n : m_upperRight.m_m;
+    auto const start = m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? m_lowerLeft.m_n : m_lowerLeft.m_m;
+    auto const end = m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? m_upperRight.m_n : m_upperRight.m_m;
 
     for (int i = start; i <= end; ++i)
     {
-        CurvilinearGrid::NodeIndices currentNode{m_lines[0].m_gridLineType == GridLineType::MGridLine ? node.m_m : i,
-                                                 m_lines[0].m_gridLineType == GridLineType::MGridLine ? i : node.m_n};
+        CurvilinearGrid::NodeIndices currentNode{m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? node.m_m : i,
+                                                 m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? i : node.m_n};
 
         if (!m_grid->m_gridNodes[currentNode.m_m][currentNode.m_n].IsValid())
         {
@@ -106,12 +107,12 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGrid::NodeIndices const&
         }
         const auto [mSmoothing, nSmoothing, mixedSmoothing] = CurvilinearGrid::ComputeDirectionalSmoothingFactors(currentNode, m_lines[0].m_startNode, m_lowerLeft, m_upperRight);
         Point currentDelta{0.0, 0.0};
-        if (m_lines[0].m_gridLineType == GridLineType::MGridLine)
+        if (m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine)
         {
             currentDelta = delta * nSmoothing;
         }
 
-        if (m_lines[0].m_gridLineType == GridLineType::NGridLine)
+        if (m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::NGridLine)
         {
             currentDelta = delta * mSmoothing;
         }

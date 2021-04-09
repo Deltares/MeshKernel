@@ -29,10 +29,12 @@
 
 #include <MeshKernel/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGridAlgorithm.hpp>
+#include <MeshKernel/CurvilinearGridLine.hpp>
 #include <MeshKernel/Exceptions.hpp>
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridAlgorithm;
+using meshkernel::CurvilinearGridLine;
 
 CurvilinearGridAlgorithm::CurvilinearGridAlgorithm(std::shared_ptr<CurvilinearGrid> grid)
     : m_grid(grid)
@@ -72,7 +74,7 @@ void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& sec
         throw std::invalid_argument("CurvilinearGridAlgorithm::SetLine the current line is intersection another line");
     }
 
-    CurvilinearGrid::GridLine const newGridline{newLineLowerLeft, newLineUpperRight};
+    CurvilinearGridLine const newGridline{newLineLowerLeft, newLineUpperRight};
 
     // Frozen lines cannot cross existing frozen lines
     for (auto const& frozenLine : m_lines)

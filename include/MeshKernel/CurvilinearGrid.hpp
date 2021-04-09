@@ -99,69 +99,6 @@ namespace meshkernel
             size_t m_n; ///< Rows
         };
 
-        /// @brief A struct describing a grid line in the curvilinear grid in terms of node indices
-        struct GridLine
-        {
-            /// @brief The type of grid line, if it is in m or n direction
-            enum class GridLineType
-            {
-                MGridLine,
-                NGridLine
-            };
-
-            /// @brief GridLine constructor
-            /// @param[in] startNode The start node of the grid line
-            /// @param[in] endNode The end node of the grid line
-            GridLine(NodeIndices const& startNode, NodeIndices const& endNode)
-                : m_startNode(startNode),
-                  m_endNode(endNode)
-            {
-                if (m_startNode == m_endNode)
-                {
-                    throw std::invalid_argument("GridLine::GridLine Cannot construct a grid line with coinciding nodes.");
-                }
-
-                m_gridLineType = m_startNode.m_m == m_endNode.m_m ? GridLineType::NGridLine : GridLineType::MGridLine;
-                m_startCoordinate = m_gridLineType == GridLineType::NGridLine ? m_startNode.m_n : m_startNode.m_m;
-                m_endCoordinate = m_gridLineType == GridLineType::NGridLine ? m_endNode.m_n : m_endNode.m_m;
-                m_constantCoordinate = m_gridLineType == GridLineType::NGridLine ? m_startNode.m_m : m_startNode.m_n;
-            }
-
-            /// @brief Inquire if a node is on a grid line
-            /// @param[in] node The node to inquire
-            /// @return True if the node belongs to the grid line, false otherwise
-            bool IsNodeOnLine(NodeIndices const& node) const
-            {
-                for (int i = m_startCoordinate; i < m_endCoordinate; ++i)
-                {
-                    if (m_gridLineType == GridLineType::MGridLine && node.m_m == i && node.m_n == m_constantCoordinate)
-                    {
-                        return true;
-                    }
-                    if (m_gridLineType == GridLineType::NGridLine && node.m_n == i && node.m_m == m_constantCoordinate)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            NodeIndices GetNodeindexFromCoordinate(size_t const& coordinate) const
-            {
-                auto const mCoordinate = m_gridLineType == GridLineType::MGridLine ? coordinate : m_constantCoordinate;
-                auto const nCoordinate = m_gridLineType == GridLineType::MGridLine ? m_constantCoordinate : coordinate;
-
-                return {mCoordinate, nCoordinate};
-            }
-
-            NodeIndices m_startNode;     ///<The start node of the grid line
-            NodeIndices m_endNode;       ///<The end node of the grid line
-            size_t m_startCoordinate;    ///<The start coordinate. If it is an MGridLine, the start m otherwis the start n
-            size_t m_endCoordinate;      ///<The end coordinate. If it is an MGridLine, the end m otherwise the end n
-            size_t m_constantCoordinate; ///<The constant coordinate. If it is an MGridLine, the n coordinate, otherwise the m coordinate
-            GridLineType m_gridLineType; ///<The grid line type
-        };
-
         /// @brief Default constructor
         /// @returns
         CurvilinearGrid() = default;
