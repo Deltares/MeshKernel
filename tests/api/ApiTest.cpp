@@ -1742,31 +1742,31 @@ TEST_F(ApiTests, ComputedDirectionalSmooth_CurvilinearGrid_ShouldSmooth)
     MakeUniformCurvilinearGrid();
 
     meshkernelapi::GeometryList firstSegmentVertex{};
-    std::unique_ptr<double> xCoordinatesFirstSegmentVertex(new double[1]{10.0});
-    std::unique_ptr<double> yCoordinatesFirstSegmentVertex(new double[1]{0.0});
-    firstSegmentVertex.xCoordinates = xCoordinatesFirstSegmentVertex.get();
-    firstSegmentVertex.yCoordinates = yCoordinatesFirstSegmentVertex.get();
+    std::unique_ptr<double> xFirstSegmentVertexPtr(new double[1]{10.0});
+    std::unique_ptr<double> yFirstSegmentVertexPtr(new double[1]{0.0});
+    firstSegmentVertex.xCoordinates = xFirstSegmentVertexPtr.get();
+    firstSegmentVertex.yCoordinates = yFirstSegmentVertexPtr.get();
     firstSegmentVertex.numberOfCoordinates = 1;
 
     meshkernelapi::GeometryList secondPointOnTheLine{};
-    std::unique_ptr<double> xCoordinateSecondSegmentVertex(new double[1]{10.0});
-    std::unique_ptr<double> yCoordinatesSecondSegmentVertex(new double[1]{30.0});
-    secondPointOnTheLine.xCoordinates = xCoordinateSecondSegmentVertex.get();
-    secondPointOnTheLine.yCoordinates = yCoordinatesSecondSegmentVertex.get();
+    std::unique_ptr<double> xSecondPointOnTheLinePtr(new double[1]{10.0});
+    std::unique_ptr<double> ySecondPointOnTheLinePtr(new double[1]{30.0});
+    secondPointOnTheLine.xCoordinates = xSecondPointOnTheLinePtr.get();
+    secondPointOnTheLine.yCoordinates = ySecondPointOnTheLinePtr.get();
     secondPointOnTheLine.numberOfCoordinates = 1;
 
     meshkernelapi::GeometryList lowerLeftCornerSmoothingArea{};
-    std::unique_ptr<double> xCoordinatesLowerLeftCornerSmoothingArea(new double[1]{10.0});
-    std::unique_ptr<double> yCoordinatesLowerLeftCornerSmoothingArea(new double[1]{0.0});
-    lowerLeftCornerSmoothingArea.xCoordinates = xCoordinatesLowerLeftCornerSmoothingArea.get();
-    lowerLeftCornerSmoothingArea.yCoordinates = yCoordinatesLowerLeftCornerSmoothingArea.get();
+    std::unique_ptr<double> xLowerLeftCornerSmoothingAreaPtr(new double[1]{10.0});
+    std::unique_ptr<double> yLowerLeftCornerSmoothingAreaPtr(new double[1]{0.0});
+    lowerLeftCornerSmoothingArea.xCoordinates = xLowerLeftCornerSmoothingAreaPtr.get();
+    lowerLeftCornerSmoothingArea.yCoordinates = yLowerLeftCornerSmoothingAreaPtr.get();
     lowerLeftCornerSmoothingArea.numberOfCoordinates = 1;
 
     meshkernelapi::GeometryList upperRightCornerSmootingArea{};
-    std::unique_ptr<double> xCoordinateSecondUpperRightCornerSmoothingArea(new double[1]{30.0});
-    std::unique_ptr<double> yCoordinatesSecondUpperRightCornerSmoothingArea(new double[1]{0.0});
-    upperRightCornerSmootingArea.xCoordinates = xCoordinateSecondUpperRightCornerSmoothingArea.get();
-    upperRightCornerSmootingArea.yCoordinates = yCoordinatesSecondUpperRightCornerSmoothingArea.get();
+    std::unique_ptr<double> xUpperRightCornerSmootingAreaPtr(new double[1]{30.0});
+    std::unique_ptr<double> yUpperRightCornerSmootingAreaPtr(new double[1]{0.0});
+    upperRightCornerSmootingArea.xCoordinates = xUpperRightCornerSmootingAreaPtr.get();
+    upperRightCornerSmootingArea.yCoordinates = yUpperRightCornerSmootingAreaPtr.get();
     upperRightCornerSmootingArea.numberOfCoordinates = 1;
 
     // Execute
