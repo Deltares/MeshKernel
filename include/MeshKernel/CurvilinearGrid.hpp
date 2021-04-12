@@ -143,9 +143,10 @@ namespace meshkernel
         /// @return The upper left and lower right of the box defined by the two points
         [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(const NodeIndices& firstNode, const NodeIndices& secondNode) const;
 
-        /// @brief From two points expressed in cartesian coordinates, gets the two corner points defining a block in m_m and m_n coordinates
-        /// @param[in] secondCornerPoint The second point
-        /// @return The upper left and lower right of the box defined by the two points
+        /// @brief From two points expressed in cartesian coordinates, get the two corner nodes defining a block in m_m and m_n coordinates
+        /// @param[in] firstCornerPoint The first corner point
+        /// @param[in] secondCornerPoint The second corner point
+        /// @return The upper left and lower right nodes of the box
         [[nodiscard]] std::tuple<NodeIndices, NodeIndices> ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint);
 
         /// @brief Function for computing the smoothing factors at the current location given a line and a zone of influence (SMEERFUNCTIE)
