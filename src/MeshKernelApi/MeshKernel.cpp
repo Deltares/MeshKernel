@@ -2002,8 +2002,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_block_orthogonalize_curvilinear(int meshKernelId,
-                                                                const GeometryList& geometryListFirstPoint,
-                                                                const GeometryList& geometryListSecondPoint)
+                                                                const GeometryList& lowerLeftCorner,
+                                                                const GeometryList& upperRightCorner)
     {
         int exitCode = Success;
         try
@@ -2018,14 +2018,14 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
             }
 
-            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+            const auto firstPoint = ConvertGeometryListToPointVector(lowerLeftCorner);
 
             if (firstPoint.empty())
             {
                 throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
             }
 
-            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
+            const auto secondPoint = ConvertGeometryListToPointVector(upperRightCorner);
             if (secondPoint.empty())
             {
                 throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
@@ -2042,8 +2042,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
-                                                                       const GeometryList& geometryListFirstPoint,
-                                                                       const GeometryList& geometryListSecondPoint)
+                                                                       const GeometryList& firstGridLineNode,
+                                                                       const GeometryList& secondGridLineNode)
     {
         int exitCode = Success;
         try
@@ -2058,14 +2058,14 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: CurvilinearGridOrthogonalization not instantiated.");
             }
 
-            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+            const auto firstPoint = ConvertGeometryListToPointVector(firstGridLineNode);
 
             if (firstPoint.empty())
             {
                 throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
             }
 
-            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
+            const auto secondPoint = ConvertGeometryListToPointVector(secondGridLineNode);
             if (secondPoint.empty())
             {
                 throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
@@ -2171,8 +2171,8 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_smoothing_directional_curvilinear(int meshKernelId,
                                                               int smoothingIterations,
-                                                              GeometryList const& firstSegmentNode,
-                                                              GeometryList const& secondSegmentNode,
+                                                              GeometryList const& firstGridlineNode,
+                                                              GeometryList const& secondGridLineNode,
                                                               GeometryList const& lowerLeftCornerSmoothingArea,
                                                               GeometryList const& upperRightCornerSmootingArea)
     {
@@ -2183,14 +2183,14 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
-            const auto firstNode = ConvertGeometryListToPointVector(firstSegmentNode);
 
+            const auto firstNode = ConvertGeometryListToPointVector(firstGridlineNode);
             if (firstNode.empty())
             {
                 throw std::invalid_argument("MeshKernel: No first node of the segment defining directional smoothing");
             }
 
-            const auto secondNode = ConvertGeometryListToPointVector(secondSegmentNode);
+            const auto secondNode = ConvertGeometryListToPointVector(secondGridLineNode);
             if (secondNode.empty())
             {
                 throw std::invalid_argument("MeshKernel: No second node of the segment defining directional smoothing");
@@ -2213,8 +2213,166 @@ namespace meshkernelapi
 
             curvilinearGridSmoothing.SetLine(firstNode[0], secondNode[0]);
 
-            curvilinearGridSmoothing.Compute(lowerLeft[0],
-                                             upperRight[0]);
+            curvilinearGridSmoothing.Compute(lowerLeft[0], upperRight[0]);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_initialize_line_shift_curvilinear(int meshKernelId)
+    {
+
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift = std::make_shared<meshkernel::CurvilinearGridLineShift>(meshKernelState[meshKernelId].m_curvilinearGrid);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_set_line_line_shift_curvilinear(int meshKernelId,
+                                                            const GeometryList& firstGridLineNode,
+                                                            const GeometryList& secondGridLineNode)
+    {
+
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+            const auto firstNode = ConvertGeometryListToPointVector(firstGridLineNode);
+            if (firstNode.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No first grid line node");
+            }
+
+            const auto secondNode = ConvertGeometryListToPointVector(secondGridLineNode);
+            if (secondNode.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No second grid line node");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift->SetLine(firstNode[0], secondNode[0]);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_set_block_line_shift_curvilinear(int meshKernelId,
+                                                             const GeometryList& lowerLeftCorner,
+                                                             const GeometryList& upperRightCorner)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+            const auto lowerLeftPoint = ConvertGeometryListToPointVector(lowerLeftCorner);
+            if (lowerLeftPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No lower left corner of the influence area.");
+            }
+
+            const auto upperRightPoint = ConvertGeometryListToPointVector(upperRightCorner);
+            if (upperRightPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No upper right corner of the influence area.");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift->SetBlock(lowerLeftPoint[0], upperRightPoint[0]);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_move_node_line_shift_curvilinear(int meshKernelId,
+                                                             const GeometryList& fromCoordinate,
+                                                             const GeometryList& toCoordinate)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+            const auto fromPoint = ConvertGeometryListToPointVector(fromCoordinate);
+            if (fromPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No from point coordinate");
+            }
+            const auto toPoint = ConvertGeometryListToPointVector(toCoordinate);
+            if (toPoint.empty())
+            {
+                throw std::invalid_argument("MeshKernel: No end point coordinate");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift->MoveNode(fromPoint[0], toPoint[0]);
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_line_shift_curvilinear(int meshKernelId)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGridLineShift == nullptr)
+            {
+                throw std::invalid_argument("MeshKernel: Curvilinear grid line shift algorithm instance is null.");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute();
+        }
+        catch (...)
+        {
+            exitCode = HandleExceptions(std::current_exception());
+        }
+        return exitCode;
+    }
+
+    MKERNEL_API int mkernel_finalize_line_shift_curvilinear(int meshKernelId)
+    {
+        int exitCode = Success;
+        try
+        {
+            if (meshKernelState.count(meshKernelId) == 0)
+            {
+                throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGridLineShift.reset();
         }
         catch (...)
         {

@@ -71,7 +71,7 @@ void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& sec
     // The points of the frozen line, must be on the same grid-line
     if (!newLineLowerLeft.IsOnTheSameGridLine(newLineUpperRight))
     {
-        throw std::invalid_argument("CurvilinearGridAlgorithm::SetLine the current line is intersection another line");
+        throw std::invalid_argument("CurvilinearGridAlgorithm::SetLine the nodes do not define a grid line");
     }
 
     CurvilinearGridLine const newGridline{newLineLowerLeft, newLineUpperRight};
@@ -85,12 +85,12 @@ void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& sec
             {
                 if (j == frozenLine.m_constantCoordinate && i == newGridline.m_constantCoordinate)
                 {
-                    throw AlgorithmError("CurvilinearGridOrthogonalization::SetFrozenLine the new line to freeze is crossing an existing line");
+                    throw AlgorithmError("CurvilinearGridOrthogonalization::SetLine the new line is crossing an existing one");
                 }
             }
         }
     }
 
-    // Now a frozen line can be stored
+    // Now a new line can be stored
     m_lines.emplace_back(newGridline);
 }

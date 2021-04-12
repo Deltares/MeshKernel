@@ -694,21 +694,21 @@ namespace meshkernelapi
 
         /// @brief Freezes a line in the curvilinear orthogonalization process
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] geometryListFirstPoint The geometry list containing the first point of the line to freeze
-        /// @param[in] geometryListSecondPoint The geometry list containing the second point of the line to freeze
+        /// @param[in] firstGridLineNode The geometry list containing the first point of the line to freeze
+        /// @param[in] secondGridLineNode The geometry list containing the second point of the line to freeze
         /// @returns  Error code
         MKERNEL_API int mkernel_set_frozen_lines_orthogonalize_curvilinear(int meshKernelId,
-                                                                           const GeometryList& geometryListFirstPoint,
-                                                                           const GeometryList& geometryListSecondPoint);
+                                                                           const GeometryList& firstGridLineNode,
+                                                                           const GeometryList& secondGridLineNode);
 
         /// @brief Define a block on the curvilinear grid where to perform orthogonalization
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] geometryListFirstPoint  The geometry list containing the lower left corner of the block to orthogonalize
-        /// @param[in] geometryListSecondPoint The geometry list containing the upper left corner of the block to orthogonalize
+        /// @param[in] lowerLeftCorner  The geometry list containing the lower left corner of the block to orthogonalize
+        /// @param[in] upperRightCorner The geometry list containing the upper left corner of the block to orthogonalize
         /// @return  Error code
         MKERNEL_API int mkernel_set_block_orthogonalize_curvilinear(int meshKernelId,
-                                                                    const GeometryList& geometryListFirstPoint,
-                                                                    const GeometryList& geometryListSecondPoint);
+                                                                    const GeometryList& lowerLeftCorner,
+                                                                    const GeometryList& upperRightCorner);
 
         /// @brief Orthogonalize a curvilinear grid
         /// @param[in] meshKernelId       The id of the mesh state
@@ -734,17 +734,59 @@ namespace meshkernelapi
         /// @brief Smooths a curvilinear grid along the direction specified by a segment
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] smoothingIterations The number of smoothing iterations to perform
-        /// @param[in] firstSegmentNode The first point of the segment
-        /// @param[in] secondSegmentNode The second point of the segment
+        /// @param[in] firstGridlineNode The first point of the segment
+        /// @param[in] secondGridLineNode The second point of the segment
         /// @param[in] lowerLeftCornerSmoothingArea The geometry list containing the lower left corner of the smoothing area
         /// @param[in] upperRightCornerSmootingArea The geometry list containing the upper right corner of the smoothing area
         /// @return Error code
         MKERNEL_API int mkernel_smoothing_directional_curvilinear(int meshKernelId,
                                                                   int smoothingIterations,
-                                                                  GeometryList const& firstSegmentNode,
-                                                                  GeometryList const& secondSegmentNode,
+                                                                  GeometryList const& firstGridlineNode,
+                                                                  GeometryList const& secondGridLineNode,
                                                                   GeometryList const& lowerLeftCornerSmoothingArea,
                                                                   GeometryList const& upperRightCornerSmootingArea);
+
+        /// @brief Instantiates the curvilinear line shift algorithm
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @returns Error code
+        MKERNEL_API int mkernel_initialize_line_shift_curvilinear(int meshKernelId);
+
+        /// @brief Sets the start and end nodes of the line to shift
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] firstGridLineNode The geometry list containing the first point of the line to shift
+        /// @param[in] secondGridLineNode The geometry list containing the second point of the line to shift
+        /// @returns  Error code
+        MKERNEL_API int mkernel_set_line_line_shift_curvilinear(int meshKernelId,
+                                                                const GeometryList& firstGridLineNode,
+                                                                const GeometryList& secondGridLineNode);
+
+        /// @brief Defines a block on the curvilinear where the shifting is distributed
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] lowerLeftCorner  The geometry list containing the lower left corner of the block
+        /// @param[in] upperRightCorner The geometry list containing the upper right corner of the block
+        /// @return  Error code
+        MKERNEL_API int mkernel_set_block_line_shift_curvilinear(int meshKernelId,
+                                                                 const GeometryList& lowerLeftCorner,
+                                                                 const GeometryList& upperRightCorner);
+
+        /// @brief Moves a node of the line to shift
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] fromCoordinate The geometry list containing the Cartesian coordinates of the node to move (the closest curvilinear grid node will be found)
+        /// @param[in] toCoordinate  The geometry list containing the Cartesian coordinates of the new node position
+        /// @return  Error code
+        MKERNEL_API int mkernel_move_node_line_shift_curvilinear(int meshKernelId,
+                                                                 const GeometryList& fromCoordinate,
+                                                                 const GeometryList& toCoordinate);
+
+        /// @brief Computes the new grid, shifting the line towards the moved nodes and distributing the shifting in block specified before
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @return  Error code
+        MKERNEL_API int mkernel_line_shift_curvilinear(int meshKernelId);
+
+        /// @brief Resets the instance of the line shift algorithm in MeshKernelState
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @return  Error code
+        MKERNEL_API int mkernel_finalize_line_shift_curvilinear(int meshKernelId);
 
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_convert_curvilinear_to_mesh2d(int meshKernelId);

@@ -31,7 +31,7 @@
 
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGridFromSplines.hpp>
-#include <MeshKernel/CurvilinearGridRefinement.hpp>
+#include <MeshKernel/CurvilinearGridLineShift.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
@@ -63,9 +63,10 @@ namespace meshkernelapi
         std::shared_ptr<meshkernel::CurvilinearGrid> m_curvilinearGrid; ///< Shared pointer to meshkernel::CurvilinearGrid instance
 
         // Algorithms instances (interactivity)
-        std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_meshOrthogonalization;                   ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
+        std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_meshOrthogonalization;               ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
         std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines;             ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
         std::shared_ptr<meshkernel::CurvilinearGridOrthogonalization> m_curvilinearGridOrthogonalization; ///< Shared pointer to meshkernel::CurvilinearGridOrthogonalization instance
+        std::shared_ptr<meshkernel::CurvilinearGridLineShift> m_curvilinearGridLineShift;                 ///< Shared pointer to meshkernel::CurvilinearGridLineShift instance
 
         // Exclusively owned state
         meshkernel::Projection m_projection; ///< Projection used by the meshes
