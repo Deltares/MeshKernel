@@ -757,8 +757,8 @@ namespace meshkernelapi
         /// @param[in] secondGridLineNode The geometry list containing the second point of the line to shift
         /// @returns  Error code
         MKERNEL_API int mkernel_set_line_line_shift_curvilinear(int meshKernelId,
-                                                                const GeometryList& firstGridLineNode,
-                                                                const GeometryList& secondGridLineNode);
+                                                                GeometryList const& firstGridLineNode,
+                                                                GeometryList const& secondGridLineNode);
 
         /// @brief Defines a block on the curvilinear where the shifting is distributed
         /// @param[in] meshKernelId The id of the mesh state
@@ -766,8 +766,8 @@ namespace meshkernelapi
         /// @param[in] upperRightCorner The geometry list containing the upper right corner of the block
         /// @return  Error code
         MKERNEL_API int mkernel_set_block_line_shift_curvilinear(int meshKernelId,
-                                                                 const GeometryList& lowerLeftCorner,
-                                                                 const GeometryList& upperRightCorner);
+                                                                 GeometryList const& lowerLeftCorner,
+                                                                 GeometryList const& upperRightCorner);
 
         /// @brief Moves a node of the line to shift
         /// @param[in] meshKernelId The id of the mesh state
@@ -775,8 +775,8 @@ namespace meshkernelapi
         /// @param[in] toCoordinate  The geometry list containing the Cartesian coordinates of the new node position
         /// @return  Error code
         MKERNEL_API int mkernel_move_node_line_shift_curvilinear(int meshKernelId,
-                                                                 const GeometryList& fromCoordinate,
-                                                                 const GeometryList& toCoordinate);
+                                                                 GeometryList const& fromCoordinate,
+                                                                 GeometryList const& toCoordinate);
 
         /// @brief Computes the new grid, shifting the line towards the moved nodes and distributing the shifting in block specified before
         /// @param[in] meshKernelId The id of the mesh state

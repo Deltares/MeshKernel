@@ -2243,8 +2243,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_line_line_shift_curvilinear(int meshKernelId,
-                                                            const GeometryList& firstGridLineNode,
-                                                            const GeometryList& secondGridLineNode)
+                                                            GeometryList const& firstGridLineNode,
+                                                            GeometryList const& secondGridLineNode)
     {
 
         int exitCode = Success;
@@ -2276,8 +2276,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_set_block_line_shift_curvilinear(int meshKernelId,
-                                                             const GeometryList& lowerLeftCorner,
-                                                             const GeometryList& upperRightCorner)
+                                                             GeometryList const& lowerLeftCorner,
+                                                             GeometryList const& upperRightCorner)
     {
         int exitCode = Success;
         try
@@ -2308,8 +2308,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_move_node_line_shift_curvilinear(int meshKernelId,
-                                                             const GeometryList& fromCoordinate,
-                                                             const GeometryList& toCoordinate)
+                                                             GeometryList const& fromCoordinate,
+                                                             GeometryList const& toCoordinate)
     {
         int exitCode = Success;
         try
@@ -2353,7 +2353,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: Curvilinear grid line shift algorithm instance is null.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute();
+            meshKernelState[meshKernelId].m_curvilinearGrid = meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute();
         }
         catch (...)
         {
