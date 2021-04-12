@@ -37,7 +37,7 @@ namespace meshkernel
 {
 
     /// @brief A class implementing the curvilinear grid line shift. Line is shifted on the new locations.
-    /// and the displacement gets distributed on the influence zone, setted with SetBlock
+    /// and the displacement gets distributed on the influence zone, set with SetBlock
     class CurvilinearGridLineShift : public CurvilinearGridAlgorithm
     {
     public:
@@ -66,6 +66,6 @@ namespace meshkernel
         /// @return The new displacement
         Point TransformDisplacement(Point const& displacement, CurvilinearGrid::NodeIndices const& node, bool toLocal) const;
 
-        std::shared_ptr<CurvilinearGrid> m_gridModified; ///< The new grid, storing the new postions
+        std::shared_ptr<CurvilinearGrid> m_gridModified; ///< The new grid, storing the new positions
     };
 } // namespace meshkernel

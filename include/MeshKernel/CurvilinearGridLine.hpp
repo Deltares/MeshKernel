@@ -59,7 +59,7 @@ namespace meshkernel
 
         CurvilinearGrid::NodeIndices m_startNode; ///<The start node of the grid line
         CurvilinearGrid::NodeIndices m_endNode;   ///<The end node of the grid line
-        size_t m_startCoordinate;                 ///<The start coordinate. If it is an MGridLine, the start m otherwis the start n
+        size_t m_startCoordinate;                 ///<The start coordinate. If it is an MGridLine, the start m otherwise the start n
         size_t m_endCoordinate;                   ///<The end coordinate. If it is an MGridLine, the end m otherwise the end n
         size_t m_constantCoordinate;              ///<The constant coordinate. If it is an MGridLine, the n coordinate, otherwise the m coordinate
         GridLineType m_gridLineType;              ///<The grid line type
