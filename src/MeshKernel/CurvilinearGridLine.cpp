@@ -48,7 +48,7 @@ CurvilinearGridLine::CurvilinearGridLine(CurvilinearGrid::NodeIndices const& sta
 
 bool CurvilinearGridLine::IsNodeOnLine(CurvilinearGrid::NodeIndices const& node) const
 {
-    for (int i = m_startCoordinate; i < m_endCoordinate; ++i)
+    for (auto i = m_startCoordinate; i < m_endCoordinate; ++i)
     {
         if (m_gridLineType == GridLineType::MGridLine && node.m_m == i && node.m_n == m_constantCoordinate)
         {

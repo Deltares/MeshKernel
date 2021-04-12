@@ -99,7 +99,7 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGrid::NodeIndices const&
     auto const start = m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? m_lowerLeft.m_n : m_lowerLeft.m_m;
     auto const end = m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? m_upperRight.m_n : m_upperRight.m_m;
 
-    for (int i = start; i <= end; ++i)
+    for (auto i = start; i <= end; ++i)
     {
         CurvilinearGrid::NodeIndices currentNode{m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? node.m_m : i,
                                                  m_lines[0].m_gridLineType == CurvilinearGridLine::GridLineType::MGridLine ? i : node.m_n};

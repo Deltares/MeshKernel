@@ -46,7 +46,7 @@ CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>&& grid, Project
     SetFlatCopies();
 }
 
-CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>>& grid, Projection projection) : m_gridNodes(grid)
+CurvilinearGrid::CurvilinearGrid(std::vector<std::vector<Point>> const& grid, Projection projection) : m_gridNodes(grid)
 {
     if (!IsValid())
     {
@@ -490,12 +490,12 @@ CurvilinearGrid::ComputeDirectionalSmoothingFactors(NodeIndices const& gridpoint
     // horizontal smoothing factor
     const auto horizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? gridpoint.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - gridpoint.m_m;
     const auto maxHorizontalDelta = gridpoint.m_m > pointOnSmoothingLineIndices.m_m ? upperRightIndices.m_m - pointOnSmoothingLineIndices.m_m : pointOnSmoothingLineIndices.m_m - lowerLeftIndices.m_m;
-    const auto horizontalSmoothingFactor = maxHorizontalDelta == 0.0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(horizontalDelta) / static_cast<double>(maxHorizontalDelta))) * 0.5;
+    const auto horizontalSmoothingFactor = maxHorizontalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(horizontalDelta) / static_cast<double>(maxHorizontalDelta))) * 0.5;
 
     // vertical smoothing factor
     const auto verticalDelta = gridpoint.m_n > pointOnSmoothingLineIndices.m_n ? gridpoint.m_n - pointOnSmoothingLineIndices.m_n : pointOnSmoothingLineIndices.m_n - gridpoint.m_n;
     const auto maxVerticalDelta = gridpoint.m_n > pointOnSmoothingLineIndices.m_n ? upperRightIndices.m_n - pointOnSmoothingLineIndices.m_n : pointOnSmoothingLineIndices.m_n - lowerLeftIndices.m_n;
-    const auto verticalSmoothingFactor = maxVerticalDelta == 0.0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(verticalDelta) / static_cast<double>(maxVerticalDelta))) * 0.5;
+    const auto verticalSmoothingFactor = maxVerticalDelta == 0 ? 1.0 : (1.0 + std::cos(M_PI * static_cast<double>(verticalDelta) / static_cast<double>(maxVerticalDelta))) * 0.5;
 
     // mixed smoothing factor
     const auto mixedSmoothingFactor = std::sqrt(verticalSmoothingFactor * horizontalSmoothingFactor);
