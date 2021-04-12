@@ -62,8 +62,6 @@ namespace meshkernel
         void Solve();
 
         /// @brief Solve one iteration of directional smoothing
-        /// @param[in] isSmoothingAlongM True if smoothing is along M, false otherwise
-        /// @param[in] pointOnLine A point on the line defining the directional smooth
         /// @param[in] lowerLeftCornerRegion The lower left corner of the smoothing region
         /// @param[in] upperRightCornerSmoothingRegion The upper right corner of the smoothing region
         void Solve(CurvilinearGrid::NodeIndices const& lowerLeftCornerRegion,
