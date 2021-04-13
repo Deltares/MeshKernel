@@ -54,13 +54,49 @@ namespace meshkernel
             Invalid        //(0)
         };
 
-        /// @brief A struct describing the column and row indices of a node
+        /// @brief A struct describing a node in the curvilinear grid in terms of node indices
         struct NodeIndices
         {
-            /// Columns
-            size_t m;
-            /// Rows
-            size_t n;
+            /// @brief Default constructor sets the indices to invalid
+            NodeIndices() : m_m(sizetMissingValue), m_n(sizetMissingValue){};
+
+            /// @brief Constructor sets indices from values
+            /// @param[in] m The m index
+            /// @param[in] n The n index
+            NodeIndices(size_t m, size_t n) : m_m(m), m_n(n){};
+
+            /// @brief Determines if one of the indices  equals to \p missingValue
+            [[nodiscard]] bool IsValid(const double missingValue = sizetMissingValue) const
+            {
+                const bool isInvalid = m_m == missingValue || m_n == missingValue;
+                return !isInvalid;
+            }
+
+            /// @brief Overloads equality with another NodeIndices
+            bool operator==(const NodeIndices& rhs) const
+            {
+                return m_m == rhs.m_m && m_n == rhs.m_n;
+            }
+            /// @brief Overloads negation with another NodeIndices
+            bool operator!=(const NodeIndices& rhs) const
+            {
+                return !(*this == rhs);
+            }
+
+            /// @brief Inquires if another node is on the same grid line of the current node
+            /// @param[in] rhs The node to inquire
+            /// @return True if on the same grid line, false otherwise
+            bool IsOnTheSameGridLine(const NodeIndices& rhs) const
+            {
+                if (m_m == rhs.m_m || m_n == rhs.m_n)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            size_t m_m; ///< Columns
+            size_t m_n; ///< Rows
         };
 
         /// @brief Default constructor
@@ -83,6 +119,11 @@ namespace meshkernel
         /// @param[in] point       The input grid points
         NodeIndices GetNodeIndices(Point point);
 
+        /// @brief From a point gets the node indices of the closest edges, by finding the closest edge middle point
+        /// @param[in] point
+        /// @return
+        std::tuple<NodeIndices, NodeIndices> GetEdgeNodeIndices(Point const& point);
+
         /// @brief Computes the grid nodes types and the faces masks
         void ComputeGridNodeTypes();
 
@@ -93,19 +134,16 @@ namespace meshkernel
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
 
-        /// @brief Inserts a new face.
-        /// \p firstPoint and \p secondPoint are required to be neighbors
-        /// and to be located at the boundary of the curvilinear grid.
-        /// @param[in] firstPoint  The first point spanning up the new face
-        /// @param[in] secondPoint The second point spanning up the new face
-        void InsertFace(Point firstPoint, Point secondPoint);
+        /// @brief Inserts a new face. The new point will be inserted on the closest edge (a curvi grid is also an unstructured mesh)
+        /// @param[in] point  The point used for finding the closest edge.
+        void InsertFace(Point const& point);
 
         size_t m_numM = 0;                                  ///< The number of m coordinates (vertical lines)
         size_t m_numN = 0;                                  ///< The number of n coordinates (horizontal lines)
-        std::vector<std::vector<Point>> m_gridNodes;        ///< Member variable storing the grid
-        std::vector<std::vector<bool>> m_gridFacesMask;     ///< The mask of the grid faces (true/false)
-        std::vector<std::vector<NodeType>> m_gridNodesMask; ///< The grid node types
-        std::vector<NodeIndices> m_gridIndices;             ///< The original mapping of the flatten nodes in the curvilinear grid
+        std::vector<std::vector<Point>> m_gridNodes;         ///< Member variable storing the grid
+        std::vector<std::vector<bool>> m_gridFacesMask;      ///< The mask of the grid faces (true/false)
+        std::vector<std::vector<NodeType>> m_gridNodesTypes; ///< The grid node types
+        std::vector<NodeIndices> m_gridIndices;              ///< The original mapping of the flatten nodes in the curvilinear grid
 
     private:
         /// @brief Remove invalid nodes.
@@ -121,18 +159,17 @@ namespace meshkernel
         /// @returns The spline derivatives
         std::vector<Point> ComputeSplineDerivatesAlongGridLine(const std::vector<Point>& gridLine) const;
 
-        /// @brief Determines whether to nodes are next to each other
-        /// @param[in] firstNode  The first node
-        /// @param[in] secondNode The second node
-        /// @returns Whether \p firstNode and \p secondNode are neighbors
-        [[nodiscard]] bool AreNeighbors(NodeIndices firstNode, NodeIndices secondNode) const;
-
-        /// @brief Adds node at boundary
-        /// The position of the new node depends on the \ref NodeType of \p node.
-        /// For example, if \ref NodeType of \p node is `Left`, the new node will be inserted left of it.
+        /// @brief Adds an edge at the boundary forming a new face. Increase the grid if required (MODGR1)
+        /// The position of the new edge depends on the type of \p firstNode or \p secondNode.
+        /// For example, if one of the node types is 'Left' the new edge will be inserted on the left.
         /// The new node will be calculated by a first order approximation: x2 = x1 + (x1 - x0) = 2*x1 - x0
-        /// @param[in] node A node with \ref NodeType `Left`, `Right`, `Bottom` or `Up`
-        /// @returns Whether member variables need to be recalculated
-        [[nodiscard]] bool AddNodeAtBoundary(NodeIndices node);
+        /// @param[in] firstNode The indices of the first new node in the modified grid.
+        /// @param[in] secondNode The indices of the second new node in the modified grid.
+        /// @param[in] firstNewNodeCoordinates The coordinate of the first new node in the modified grid.
+        /// @param[in] secondNewNodeCoordinates The coordinate of the second new node in the modified grid.
+        void AddNodes(NodeIndices const& firstNode,
+                      NodeIndices const& secondNode,
+                      Point const& firstNewNodeCoordinates,
+                      Point const& secondNewNodeCoordinates);
     };
 } // namespace meshkernel

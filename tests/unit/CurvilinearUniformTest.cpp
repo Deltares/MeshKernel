@@ -3,6 +3,7 @@
 #include "MeshKernel/CurvilinearGrid.hpp"
 #include "MeshKernel/CurvilinearGridCreateUniform.hpp"
 #include "MeshKernelApi/MakeMeshParameters.hpp"
+#include "TestUtils/MakeCurvilinearGrids.hpp"
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -126,4 +127,19 @@ TEST(CurvilinearGrid, MakeCurvilinearInEmptyPolygonSpherical)
     ASSERT_EQ(3830222.2156113400, mesh.m_nodes[9].y);
     ASSERT_EQ(3830222.2156113400, mesh.m_nodes[10].y);
     ASSERT_EQ(3830222.2156113400, mesh.m_nodes[11].y);
+}
+
+TEST(CurvilinearGrid, InsertFace_OnLeftOfCurvilinearGrid_ShouldInsertFace)
+{
+    // Set-up
+    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
+
+    // Execution
+    curvilinearGrid->InsertFace({80009.0, 366937.0});
+
+    // Assert new bottom left coordinates
+    constexpr double tolerance = 1e-12;
+    ASSERT_NEAR(79913.595823791460, curvilinearGrid->m_gridNodes[0][0].x, tolerance);
+    ASSERT_NEAR(79985.899758176762, curvilinearGrid->m_gridNodes[0][1].x, tolerance);
+    ASSERT_NEAR(-999.00000000000000, curvilinearGrid->m_gridNodes[0][2].x, tolerance);
 }
