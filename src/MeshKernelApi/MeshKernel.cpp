@@ -2009,9 +2009,9 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel state does not exist.");
             }
-            const auto firstPoint = ConvertGeometryListToPointVector(point);
+            const auto points = ConvertGeometryListToPointVector(point);
 
-            if (firstPoint.empty())
+            if (points.empty())
             {
                 throw std::invalid_argument("MeshKernel: No point provided");
             }
@@ -2021,8 +2021,7 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: Empty curvilinear grid");
             }
 
-            // Execute
-            meshKernelState[meshKernelId].m_curvilinearGrid->InsertFace(firstPoint[0]);
+            meshKernelState[meshKernelId].m_curvilinearGrid->InsertFace(points[0]);
         }
         catch (...)
         {
