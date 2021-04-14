@@ -200,7 +200,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh2d_dimensions(int meshKernelId,
+    MKERNEL_API int mkernel_get_dimensions_mesh2d(int meshKernelId,
                                                   Mesh2D& mesh2d)
     {
         int exitCode = Success;
@@ -220,7 +220,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh2d_data(int meshKernelId,
+    MKERNEL_API int mkernel_get_data_mesh2d(int meshKernelId,
                                             Mesh2D& mesh2d)
     {
         int exitCode = Success;
@@ -240,7 +240,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh1d_dimensions(int meshKernelId,
+    MKERNEL_API int mkernel_get_dimensions_mesh1d(int meshKernelId,
                                                   Mesh1D& mesh1d)
     {
         int exitCode = Success;
@@ -261,7 +261,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh1d_data(int meshKernelId,
+    MKERNEL_API int mkernel_get_data_mesh1d(int meshKernelId,
                                             Mesh1D& mesh1d)
     {
         int exitCode = Success;
@@ -281,7 +281,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_curvilinear_dimensions(int meshKernelId,
+    MKERNEL_API int mkernel_get_dimensions_curvilinear(int meshKernelId,
                                                        CurvilinearGrid& curvilinearGrid)
     {
         int exitCode = Success;
@@ -301,7 +301,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_curvilinear_data(int meshKernelId,
+    MKERNEL_API int mkernel_get_data_curvilinear(int meshKernelId,
                                                  CurvilinearGrid& curvilinearGrid)
     {
         int exitCode = Success;
@@ -321,8 +321,8 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_contacts(int meshKernelId,
-                                           Contacts& contacts)
+    MKERNEL_API int mkernel_get_dimensions_contacts(int meshKernelId,
+                                                    Contacts& contacts)
     {
         int exitCode = Success;
         try
@@ -340,8 +340,8 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_contacts(int meshKernelId,
-                                         Contacts& contacts)
+    MKERNEL_API int mkernel_get_data_contacts(int meshKernelId,
+                                              Contacts& contacts)
     {
         int exitCode = Success;
         try

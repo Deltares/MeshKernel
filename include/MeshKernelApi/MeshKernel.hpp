@@ -69,7 +69,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_allocate_state(int isGeographic, int& meshKernelId);
 
-        /// @brief Deallocates mesh state
+        /// @brief De-allocate mesh state
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_deallocate_state(int meshKernelId);
@@ -77,7 +77,7 @@ namespace meshkernelapi
         /// @brief Deletes a mesh in a polygon using several options
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] polygon        The polygon where to perform the operation
-        /// @param[in] deletionOption The deletion option (to be detailed)
+        /// @param[in] deletionOption The deletion option \ref meshkernel::Mesh2D::DeleteMeshOptions
         /// @param[in] invertDeletion Inverts the deletion of selected features
         /// @returns Error code
         MKERNEL_API int mkernel_delete_mesh2d(int meshKernelId,
@@ -103,78 +103,75 @@ namespace meshkernelapi
         ///
         /// The integer parameters of the Mesh2D struct are set to the corresponding dimensions
         /// The pointers are set to null, and must be set to correctly sized memory
-        /// before passing the struct to `mkernel_get_mesh2d_data`.
+        /// before passing the struct to `mkernel_get_data_mesh2d`.
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] mesh2d       The Mesh2D dimensions
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh2d_dimensions(int meshKernelId,
+        MKERNEL_API int mkernel_get_dimensions_mesh2d(int meshKernelId,
                                                       Mesh2D& mesh2d);
 
         /// @brief Gets the Mesh2D dimensions data
         ///
-        /// This function ought to be called after `mkernel_get_mesh2d_dimensions` has been called
+        /// This function ought to be called after `mkernel_get_dimensions_mesh2d` has been called
         /// and the pointers have been set to correctly sized memory.
         /// @param[in]     meshKernelId The id of the mesh state
         /// @param[in,out] mesh2d       The Mesh2D data
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh2d_data(int meshKernelId,
+        MKERNEL_API int mkernel_get_data_mesh2d(int meshKernelId,
                                                 Mesh2D& mesh2d);
 
         /// @brief Gets the curvilinear grid dimensions as a CurvilinearGrid struct (converted as set of edges and nodes)
         ///
         /// The integer parameters of the CurvilinearGrid struct are set to the corresponding dimensions
         /// The pointers are set to null, and must be set to correctly sized memory
-        /// before passing the struct to `mkernel_get_curvilinear_data`.
-        /// @param[in]  meshKernelId    The id of the mesh state
-        /// @param[out] curvilinearGrid The CurvilinearGrid data
+        /// before passing the struct to `mkernel_get_data_curvilinear`.
+        /// @param[in]  meshKernelId    The id of the mesh state.
+        /// @param[out] curvilinearGrid The structure containing the dimensions of the curvilinear grid.
         /// @returns Error code
-        MKERNEL_API int mkernel_get_curvilinear_dimensions(int meshKernelId,
-                                                           CurvilinearGrid& curvilinearGrid);
+        MKERNEL_API int mkernel_get_dimensions_curvilinear(int meshKernelId, CurvilinearGrid& curvilinearGrid);
 
         /// @brief Gets the curvilinear grid data as a CurvilinearGrid struct (converted as set of edges and nodes)
         ///
         /// This function ought to be called after `mkernel_get_curvilinear_dimension` has been called
         /// and the pointers have been set to correctly sized memory.
         /// @param[in]  meshKernelId    The id of the mesh state
-        /// @param[out] curvilinearGrid The CurvilinearGrid data
+        /// @param[out] curvilinearGrid The structure containing the curvilinear grid arrays.
         /// @returns Error code
-        MKERNEL_API int mkernel_get_curvilinear_data(int meshKernelId,
-                                                     CurvilinearGrid& curvilinearGrid);
+        MKERNEL_API int mkernel_get_data_curvilinear(int meshKernelId, CurvilinearGrid& curvilinearGrid);
 
         /// @brief Gets the Mesh1D dimensions
         ///
         /// The integer parameters of the Mesh1D struct are set to the corresponding dimensions
         /// The pointers are set to null, and must be set to correctly sized memory
-        /// before passing the struct to `mkernel_get_mesh1d_data`
+        /// before passing the struct to `mkernel_get_data_mesh1d`
         /// @param[in]  meshKernelId The id of the mesh state
-        /// @param[out] mesh1d       The Mesh1D dimensions
+        /// @param[out] mesh1d       The structure containing the dimensions of the Mesh1D.
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh1d_dimensions(int meshKernelId,
-                                                      Mesh1D& mesh1d);
+        MKERNEL_API int mkernel_get_dimensions_mesh1d(int meshKernelId, Mesh1D& mesh1d);
 
         /// @brief Gets the Mesh1D dimensions data
         ///
-        /// This function ought to be called after `mkernel_get_mesh1d_dimensions` has been called
+        /// This function ought to be called after `mkernel_get_dimensions_mesh1d` has been called
         /// and the pointers have been set to correctly sized memory
         /// @param[in]     meshKernelId The id of the mesh state
-        /// @param[in,out] mesh1d       The Mesh1D data
+        /// @param[in,out] mesh1d       The structure containing the Mesh1D arrays.
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh1d_data(int meshKernelId,
+        MKERNEL_API int mkernel_get_data_mesh1d(int meshKernelId,
                                                 Mesh1D& mesh1d);
 
         /// @brief Gets the meshkernel::Contacts size as a meshkernelapi::Contacts struct
         /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] contacts               Contacts data
         /// @returns                           Error code
-        MKERNEL_API int mkernel_count_contacts(int meshKernelId,
-                                               Contacts& contacts);
+        MKERNEL_API int mkernel_get_dimensions_contacts(int meshKernelId,
+                                                        Contacts& contacts);
 
         /// @brief Gets the meshkernel::Contacts data as a meshkernelapi::Contacts struct
         /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] contacts               Contacts data
         /// @returns                           Error code
-        MKERNEL_API int mkernel_get_contacts(int meshKernelId,
-                                             Contacts& contacts);
+        MKERNEL_API int mkernel_get_data_contacts(int meshKernelId,
+                                                  Contacts& contacts);
 
         /// @brief Count the number of hanging edges
         /// @param[in] meshKernelId The id of the mesh state
