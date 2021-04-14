@@ -384,7 +384,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_hanging_edges_mesh2d(int meshKernelId, int** hangingEdgesIndices)
+    MKERNEL_API int mkernel_get_hanging_edges_mesh2d(int meshKernelId, int** edges)
     {
         int exitCode = Success;
         try
@@ -396,7 +396,7 @@ namespace meshkernelapi
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
             for (auto i = 0; i < hangingEdges.size(); ++i)
             {
-                *hangingEdgesIndices[i] = static_cast<int>(hangingEdges[i]);
+                *edges[i] = static_cast<int>(hangingEdges[i]);
             }
         }
         catch (...)

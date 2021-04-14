@@ -143,7 +143,7 @@ namespace meshkernelapi
         ///
         /// The integer parameters of the Mesh1D struct are set to the corresponding dimensions
         /// The pointers are set to null, and must be set to correctly sized memory
-        /// before passing the struct to `mkernel_get_data_mesh1d`
+        /// before passing the struct to `mkernel_get_dimensions_mesh1d`
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[out] mesh1d       The structure containing the dimensions of the Mesh1D.
         /// @returns Error code
@@ -156,44 +156,45 @@ namespace meshkernelapi
         /// @param[in]     meshKernelId The id of the mesh state
         /// @param[in,out] mesh1d       The structure containing the Mesh1D arrays.
         /// @returns Error code
-        MKERNEL_API int mkernel_get_data_mesh1d(int meshKernelId,
-                                                Mesh1D& mesh1d);
+        MKERNEL_API int mkernel_get_data_mesh1d(int meshKernelId, Mesh1D& mesh1d);
 
-        /// @brief Gets the meshkernel::Contacts size as a meshkernelapi::Contacts struct
+        /// @brief Gets the number of contacts
         /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] contacts               Contacts data
         /// @returns                           Error code
-        MKERNEL_API int mkernel_get_dimensions_contacts(int meshKernelId,
-                                                        Contacts& contacts);
+        MKERNEL_API int mkernel_get_dimensions_contacts(int meshKernelId, Contacts& contacts);
 
-        /// @brief Gets the meshkernel::Contacts data as a meshkernelapi::Contacts struct
+        /// @brief Gets the contacts indices (from index / to indices)
         /// @param[in]  meshKernelId           The id of the mesh state
         /// @param[out] contacts               Contacts data
         /// @returns                           Error code
-        MKERNEL_API int mkernel_get_data_contacts(int meshKernelId,
-                                                  Contacts& contacts);
+        MKERNEL_API int mkernel_get_data_contacts(int meshKernelId, Contacts& contacts);
 
-        /// @brief Count the number of hanging edges
+        /// @brief Count the number of hanging edges in a mesh2d.
+        /// An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[out] numHangingEdgesIndices
+        /// @param[out] numEdges The number of hanging edges
         /// @returns Error code
-        MKERNEL_API int mkernel_count_hanging_edges_mesh2d(int meshKernelId, int& numHangingEdgesIndices);
+        MKERNEL_API int mkernel_count_hanging_edges_mesh2d(int meshKernelId, int& numEdges);
 
-        /// @brief Gets the indices of hanging edges
+        /// @brief Gets the indices of hanging edges. An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in]     meshKernelId        The id of the mesh state
-        /// @param[in,out] hangingEdgesIndices Pointer to memory where the hanging edge indices will be stored
+        /// @param[in,out] edges Pointer to memory where the indices of the hanging edges will be stored
         /// @returns Error code
-        MKERNEL_API int mkernel_get_hanging_edges_mesh2d(int meshKernelId, int** hangingEdgesIndices);
+        MKERNEL_API int mkernel_get_hanging_edges_mesh2d(int meshKernelId, int** edges);
 
-        /// @brief Deletes the hanging edges
+        /// @brief Deletes all hanging edges. An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_delete_hanging_edges_mesh2d(int meshKernelId);
 
-        /// @brief Orthogonalization
+        /// @brief Mesh2d orthogonalization.
+        /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
+        /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).
+        /// The parameter to regulate the amount of orthogonalization is contained in  \ref meshkernelapi::OrthogonalizationParameters::OrthogonalizationToSmoothingFactor
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
-        /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters
+        /// @param[in] orthogonalizationParameters The structure containing the orthogonalization parameters \ref meshkernelapi::OrthogonalizationParameters
         /// @param[in] polygons                    The polygon where to perform the orthogonalization
         /// @param[in] landBoundaries              The land boundaries to account for in the orthogonalization process
         /// @returns Error code
@@ -203,7 +204,9 @@ namespace meshkernelapi
                                                                  const GeometryList& polygons,
                                                                  const GeometryList& landBoundaries);
 
-        /// @brief Orthogonalization initialization (first function to use in interactive mode)
+        /// @brief Initialization of the \ref meshkernel::OrthogonalizationAndSmoothing algorithm.
+        /// This is the first function to call when using orthogonalization in interactive mode (visualizing the grid while is orthogonalizing),
+        /// in order to set the internal state of the algorithm reused during the iterations.
         /// @param[in] meshKernelId                The id of the mesh state
         /// @param[in] projectToLandBoundaryOption The option to determine how to snap to land boundaries
         /// @param[in] orthogonalizationParameters The structure containing the user defined orthogonalization parameters
@@ -216,22 +219,24 @@ namespace meshkernelapi
                                                                     const GeometryList& geometryListPolygon,
                                                                     const GeometryList& geometryListLandBoundaries);
 
-        /// @brief Prepares outer orthogonalization iteration (interactive mode)
+        /// @brief Prepares an outer orthogonalization iteration, computing the new orthogonalization and smoothing weights from the modified geometry (in interactive mode)
+        /// `mkernel_initialize_orthogonalization_mesh2d` function must be called before.
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_prepare_outer_iteration_orthogonalization_mesh2d(int meshKernelId);
 
-        /// @brief Performs inner orthogonalization iteration (interactive mode)
+        /// @brief Performs inner orthogonalization iteration, by slowly moving the mesh nodes to new optimal positions (interactive mode).
+        /// `mkernel_prepare_outer_iteration_orthogonalization_mesh2d` function must be called before.
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_compute_inner_ortogonalization_iteration_mesh2d(int meshKernelId);
 
-        /// @brief Finalizes orthogonalization outer iteration (interactive mode)
-        /// @param[in] meshKernelId
+        /// @brief Finalizes the orthogonalization outer iteration, computing the new coefficients for grid adaption and the new face circumcenters (interactive mode).
+        /// @param[in] meshKernelId  The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_finalize_inner_ortogonalization_iteration_mesh2d(int meshKernelId);
 
-        /// @brief Cleans up back-end orthogonalization algorithm (interactive mode)
+        /// @brief Cleans the orthogonalization algorithm state, allocated in `mkernel_initialize_orthogonalization_mesh2d` (interactive mode)
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_delete_orthogonalization_mesh2d(int meshKernelId);

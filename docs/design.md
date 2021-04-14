@@ -34,7 +34,7 @@ The client now calls the \ref meshkernelapi::mkernel_refine_based_on_samples_mes
 the local scope of the \ref meshkernelapi::mkernel_refine_based_on_samples_mesh2d function 
 an instance of the \ref meshkernel::MeshRefinement class is created, the Refine method is executed and the 
 resulting mesh is saved in the `meshInstances` vector. 
-The client retrieves the dimensions of the last state of the mesh using the \ref meshkernelapi::mkernel_get_mesh2d_dimensions function.
+The client retrieves the dimensions of the last state of the mesh using the \ref meshkernelapi::mkernel_get_dimensions_mesh2d function.
 After allocating the necessary memory, the meshkernelapi::mkernel_get_mesh2d_data function should be called, where all information
 required for rendering the new mesh (the nodes, the edges, and the faces) is copied 
 from the library state to flat arrays. This extra copy is required for clients that
