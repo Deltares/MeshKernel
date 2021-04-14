@@ -46,7 +46,7 @@ var searchData=
   ['mkernel_5ffinalize_5forthogonalize_5fcurvilinear_729',['mkernel_finalize_orthogonalize_curvilinear',['../namespacemeshkernelapi.html#a94a7dd6abd2396682c68d7993f6c0bf1',1,'meshkernelapi']]],
   ['mkernel_5ffind_5fedge_5fmesh2d_730',['mkernel_find_edge_mesh2d',['../namespacemeshkernelapi.html#a1cc1ac1d67caca215c5b1934c2f290be',1,'meshkernelapi']]],
   ['mkernel_5fflip_5fedges_5fmesh2d_731',['mkernel_flip_edges_mesh2d',['../namespacemeshkernelapi.html#a8a88c8745472aeebb657219a050fb04c',1,'meshkernelapi']]],
-  ['mkernel_5fget_5fclosest_5fnode_5fmesh2d_732',['mkernel_get_closest_node_mesh2d',['../namespacemeshkernelapi.html#a7b3e250aa961a01671595b8a795a3d34',1,'meshkernelapi']]],
+  ['mkernel_5fget_5fclosest_5fnode_5fmesh2d_732',['mkernel_get_closest_node_mesh2d',['../namespacemeshkernelapi.html#ae616199ada08777b646c9c6131fcb668',1,'meshkernelapi']]],
   ['mkernel_5fget_5fdata_5fcontacts_733',['mkernel_get_data_contacts',['../namespacemeshkernelapi.html#a77639a92507d619d56b96e5964ff992f',1,'meshkernelapi']]],
   ['mkernel_5fget_5fdata_5fcurvilinear_734',['mkernel_get_data_curvilinear',['../namespacemeshkernelapi.html#af466d153595d03f337513cf3a5710eba',1,'meshkernelapi']]],
   ['mkernel_5fget_5fdata_5fmesh1d_735',['mkernel_get_data_mesh1d',['../namespacemeshkernelapi.html#af75c66c025de2d0af52e3f0a429ae851',1,'meshkernelapi']]],

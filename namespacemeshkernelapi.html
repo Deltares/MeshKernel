@@ -198,22 +198,22 @@ Functions</h2></td></tr>
 <tr class="memdesc:aa8a156d1dce89ff4ba435038ce909783"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleans the orthogonalization algorithm state, allocated in <code>mkernel_initialize_orthogonalization_mesh2d</code> (interactive mode)  <a href="namespacemeshkernelapi.html#aa8a156d1dce89ff4ba435038ce909783">More...</a><br /></td></tr>
 <tr class="separator:aa8a156d1dce89ff4ba435038ce909783"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1330d5672314ac364bd10964feabf87c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1330d5672314ac364bd10964feabf87c">mkernel_get_orthogonality_mesh2d</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
-<tr class="memdesc:a1330d5672314ac364bd10964feabf87c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the orthogonality.  <a href="namespacemeshkernelapi.html#a1330d5672314ac364bd10964feabf87c">More...</a><br /></td></tr>
+<tr class="memdesc:a1330d5672314ac364bd10964feabf87c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mesh orthogonality, expressed as the ratio between the edges and the segments connecting the face circumcenters.  <a href="namespacemeshkernelapi.html#a1330d5672314ac364bd10964feabf87c">More...</a><br /></td></tr>
 <tr class="separator:a1330d5672314ac364bd10964feabf87c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af795ef0aef37d30d210671012de70d13"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af795ef0aef37d30d210671012de70d13">mkernel_get_smoothness_mesh2d</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
-<tr class="memdesc:af795ef0aef37d30d210671012de70d13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the smoothness.  <a href="namespacemeshkernelapi.html#af795ef0aef37d30d210671012de70d13">More...</a><br /></td></tr>
+<tr class="memdesc:af795ef0aef37d30d210671012de70d13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the smoothness, expressed as the ratio between the values of two neighboring faces areas.  <a href="namespacemeshkernelapi.html#af795ef0aef37d30d210671012de70d13">More...</a><br /></td></tr>
 <tr class="separator:af795ef0aef37d30d210671012de70d13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11d47258f24cf6884bb39bf648356e08"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a11d47258f24cf6884bb39bf648356e08">mkernel_get_splines</a> (const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut, int numberOfPointsBetweenNodes)</td></tr>
-<tr class="memdesc:a11d47258f24cf6884bb39bf648356e08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get spline intermediate points.  <a href="namespacemeshkernelapi.html#a11d47258f24cf6884bb39bf648356e08">More...</a><br /></td></tr>
+<tr class="memdesc:a11d47258f24cf6884bb39bf648356e08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the computed spline points between two corner nodes.  <a href="namespacemeshkernelapi.html#a11d47258f24cf6884bb39bf648356e08">More...</a><br /></td></tr>
 <tr class="separator:a11d47258f24cf6884bb39bf648356e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b3e250aa961a01671595b8a795a3d34"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a7b3e250aa961a01671595b8a795a3d34">mkernel_get_closest_node_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListIn, double searchRadius, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListOut)</td></tr>
-<tr class="memdesc:a7b3e250aa961a01671595b8a795a3d34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the coordinates of the closest existing node.  <a href="namespacemeshkernelapi.html#a7b3e250aa961a01671595b8a795a3d34">More...</a><br /></td></tr>
-<tr class="separator:a7b3e250aa961a01671595b8a795a3d34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae616199ada08777b646c9c6131fcb668"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae616199ada08777b646c9c6131fcb668">mkernel_get_closest_node_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;point, double searchRadius, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;node)</td></tr>
+<tr class="memdesc:ae616199ada08777b646c9c6131fcb668"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the closest mesh2d node coordinates to a point, searching within a radius.  <a href="namespacemeshkernelapi.html#ae616199ada08777b646c9c6131fcb668">More...</a><br /></td></tr>
+<tr class="separator:ae616199ada08777b646c9c6131fcb668"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa0621058a0583f069a5c957286e9f5"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0fa0621058a0583f069a5c957286e9f5">mkernel_make_mesh_from_polygon_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
-<tr class="memdesc:a0fa0621058a0583f069a5c957286e9f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a triangular grid in a polygon.  <a href="namespacemeshkernelapi.html#a0fa0621058a0583f069a5c957286e9f5">More...</a><br /></td></tr>
+<tr class="memdesc:a0fa0621058a0583f069a5c957286e9f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.  <a href="namespacemeshkernelapi.html#a0fa0621058a0583f069a5c957286e9f5">More...</a><br /></td></tr>
 <tr class="separator:a0fa0621058a0583f069a5c957286e9f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab974f4002e750d308eca5240f8cf5c6e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab974f4002e750d308eca5240f8cf5c6e">mkernel_make_mesh_from_samples_mesh2d</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
-<tr class="memdesc:ab974f4002e750d308eca5240f8cf5c6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a triangular mesh from samples.  <a href="namespacemeshkernelapi.html#ab974f4002e750d308eca5240f8cf5c6e">More...</a><br /></td></tr>
+<tr class="memdesc:ab974f4002e750d308eca5240f8cf5c6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a triangular mesh from a set of samples, triangulating them.  <a href="namespacemeshkernelapi.html#ab974f4002e750d308eca5240f8cf5c6e">More...</a><br /></td></tr>
 <tr class="separator:ab974f4002e750d308eca5240f8cf5c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa22f265bed72aa7c4314d92dcb0c861f"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa22f265bed72aa7c4314d92dcb0c861f">mkernel_get_mesh_boundaries_to_polygon_mesh2d</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
 <tr class="memdesc:aa22f265bed72aa7c4314d92dcb0c861f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the mesh boundary polygon.  <a href="namespacemeshkernelapi.html#aa22f265bed72aa7c4314d92dcb0c861f">More...</a><br /></td></tr>
@@ -1892,8 +1892,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a7b3e250aa961a01671595b8a795a3d34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b3e250aa961a01671595b8a795a3d34">&#9670;&nbsp;</a></span>mkernel_get_closest_node_mesh2d()</h2>
+<a id="ae616199ada08777b646c9c6131fcb668"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae616199ada08777b646c9c6131fcb668">&#9670;&nbsp;</a></span>mkernel_get_closest_node_mesh2d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1908,7 +1908,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
-          <td class="paramname"><em>geometryListIn</em>, </td>
+          <td class="paramname"><em>point</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1920,7 +1920,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
-          <td class="paramname"><em>geometryListOut</em>&#160;</td>
+          <td class="paramname"><em>node</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1930,13 +1930,13 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the coordinates of the closest existing node. </p>
+<p>Gets the closest mesh2d node coordinates to a point, searching within a radius. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>Id of the grid state </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>Node coordinates </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The radius where to search for the node </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">geometryListOut</td><td><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> node coordinates </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The point coordinate </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">searchRadius</td><td>The radii where to search for mesh nodes </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">node</td><td>The fount <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> node coordinates. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2636,7 +2636,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the orthogonality. </p>
+<p>Gets the mesh orthogonality, expressed as the ratio between the edges and the segments connecting the face circumcenters. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -2791,11 +2791,11 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the smoothness. </p>
+<p>Gets the smoothness, expressed as the ratio between the values of two neighboring faces areas. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">geometryList</td><td>The smoothness values of each edge </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">geometryList</td><td>The smoothness values at each edge </td></tr>
   </table>
   </dd>
 </dl>
@@ -2835,12 +2835,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Get spline intermediate points. </p>
+<p>Get the computed spline points between two corner nodes. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">geometryListIn</td><td>The input corner nodes of the splines </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">geometryListOut</td><td>The output spline </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPointsBetweenNodes</td><td>The number of spline nodes between the corners points </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPointsBetweenNodes</td><td>The number of spline points to generate between two corner nodes. </td></tr>
   </table>
   </dd>
 </dl>
@@ -3165,7 +3165,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Makes a triangular grid in a polygon. </p>
+<p>Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -3203,7 +3203,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Makes a triangular mesh from samples. </p>
+<p>Makes a triangular mesh from a set of samples, triangulating them. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
