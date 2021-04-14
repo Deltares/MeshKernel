@@ -165,37 +165,37 @@ Functions</h2></td></tr>
 <tr class="memdesc:af75c66c025de2d0af52e3f0a429ae851"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> dimensions data.  <a href="namespacemeshkernelapi.html#af75c66c025de2d0af52e3f0a429ae851">More...</a><br /></td></tr>
 <tr class="separator:af75c66c025de2d0af52e3f0a429ae851"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97e855bbd0f383630b4ffd1a548a0def"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a97e855bbd0f383630b4ffd1a548a0def">mkernel_get_dimensions_contacts</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_contacts.html">Contacts</a> &amp;contacts)</td></tr>
-<tr class="memdesc:a97e855bbd0f383630b4ffd1a548a0def"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="classmeshkernel_1_1_contacts.html" title="A class describing an 1d-2d contacts.">meshkernel::Contacts</a> size as a <a class="el" href="structmeshkernelapi_1_1_contacts.html" title="A struct used to describe contacts between a 1d and a 2d mesh.">meshkernelapi::Contacts</a> struct.  <a href="namespacemeshkernelapi.html#a97e855bbd0f383630b4ffd1a548a0def">More...</a><br /></td></tr>
+<tr class="memdesc:a97e855bbd0f383630b4ffd1a548a0def"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of contacts.  <a href="namespacemeshkernelapi.html#a97e855bbd0f383630b4ffd1a548a0def">More...</a><br /></td></tr>
 <tr class="separator:a97e855bbd0f383630b4ffd1a548a0def"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77639a92507d619d56b96e5964ff992f"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a77639a92507d619d56b96e5964ff992f">mkernel_get_data_contacts</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_contacts.html">Contacts</a> &amp;contacts)</td></tr>
-<tr class="memdesc:a77639a92507d619d56b96e5964ff992f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="classmeshkernel_1_1_contacts.html" title="A class describing an 1d-2d contacts.">meshkernel::Contacts</a> data as a <a class="el" href="structmeshkernelapi_1_1_contacts.html" title="A struct used to describe contacts between a 1d and a 2d mesh.">meshkernelapi::Contacts</a> struct.  <a href="namespacemeshkernelapi.html#a77639a92507d619d56b96e5964ff992f">More...</a><br /></td></tr>
+<tr class="memdesc:a77639a92507d619d56b96e5964ff992f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the contacts indices (from index / to indices)  <a href="namespacemeshkernelapi.html#a77639a92507d619d56b96e5964ff992f">More...</a><br /></td></tr>
 <tr class="separator:a77639a92507d619d56b96e5964ff992f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5cb7b0c4c0ab96f4c2ae740b2bb74af2"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5cb7b0c4c0ab96f4c2ae740b2bb74af2">mkernel_count_hanging_edges_mesh2d</a> (int meshKernelId, int &amp;numHangingEdgesIndices)</td></tr>
-<tr class="memdesc:a5cb7b0c4c0ab96f4c2ae740b2bb74af2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of hanging edges.  <a href="namespacemeshkernelapi.html#a5cb7b0c4c0ab96f4c2ae740b2bb74af2">More...</a><br /></td></tr>
-<tr class="separator:a5cb7b0c4c0ab96f4c2ae740b2bb74af2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a589aa3533c812bbc3f2ecc3f913ff052"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a589aa3533c812bbc3f2ecc3f913ff052">mkernel_get_hanging_edges_mesh2d</a> (int meshKernelId, int **hangingEdgesIndices)</td></tr>
-<tr class="memdesc:a589aa3533c812bbc3f2ecc3f913ff052"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the indices of hanging edges.  <a href="namespacemeshkernelapi.html#a589aa3533c812bbc3f2ecc3f913ff052">More...</a><br /></td></tr>
-<tr class="separator:a589aa3533c812bbc3f2ecc3f913ff052"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02a2b0f3831d51c06e32e893e11ce56e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a02a2b0f3831d51c06e32e893e11ce56e">mkernel_count_hanging_edges_mesh2d</a> (int meshKernelId, int &amp;numEdges)</td></tr>
+<tr class="memdesc:a02a2b0f3831d51c06e32e893e11ce56e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of hanging edges in a mesh2d. An hanging edge is an edge where one of the two nodes is not connected.  <a href="namespacemeshkernelapi.html#a02a2b0f3831d51c06e32e893e11ce56e">More...</a><br /></td></tr>
+<tr class="separator:a02a2b0f3831d51c06e32e893e11ce56e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21aa8fc7522fbab81f7fd2deed07cb45"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a21aa8fc7522fbab81f7fd2deed07cb45">mkernel_get_hanging_edges_mesh2d</a> (int meshKernelId, int **edges)</td></tr>
+<tr class="memdesc:a21aa8fc7522fbab81f7fd2deed07cb45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the indices of hanging edges. An hanging edge is an edge where one of the two nodes is not connected.  <a href="namespacemeshkernelapi.html#a21aa8fc7522fbab81f7fd2deed07cb45">More...</a><br /></td></tr>
+<tr class="separator:a21aa8fc7522fbab81f7fd2deed07cb45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af75ffce4b12d93ff0c4f28182725399b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af75ffce4b12d93ff0c4f28182725399b">mkernel_delete_hanging_edges_mesh2d</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:af75ffce4b12d93ff0c4f28182725399b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the hanging edges.  <a href="namespacemeshkernelapi.html#af75ffce4b12d93ff0c4f28182725399b">More...</a><br /></td></tr>
+<tr class="memdesc:af75ffce4b12d93ff0c4f28182725399b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes all hanging edges. An hanging edge is an edge where one of the two nodes is not connected.  <a href="namespacemeshkernelapi.html#af75ffce4b12d93ff0c4f28182725399b">More...</a><br /></td></tr>
 <tr class="separator:af75ffce4b12d93ff0c4f28182725399b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae17462ce61816890c3782834ba591468"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae17462ce61816890c3782834ba591468">mkernel_compute_orthogonalization_mesh2d</a> (int meshKernelId, int projectToLandBoundaryOption, const <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">OrthogonalizationParameters</a> &amp;orthogonalizationParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygons, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;landBoundaries)</td></tr>
-<tr class="memdesc:ae17462ce61816890c3782834ba591468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orthogonalization.  <a href="namespacemeshkernelapi.html#ae17462ce61816890c3782834ba591468">More...</a><br /></td></tr>
+<tr class="memdesc:ae17462ce61816890c3782834ba591468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mesh2d orthogonalization. The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters. The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas). The parameter to regulate the amount of orthogonalization is contained in <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html#a5ffb52364fd8c379dda2bb37c24200c4">meshkernelapi::OrthogonalizationParameters::OrthogonalizationToSmoothingFactor</a>.  <a href="namespacemeshkernelapi.html#ae17462ce61816890c3782834ba591468">More...</a><br /></td></tr>
 <tr class="separator:ae17462ce61816890c3782834ba591468"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c5eb7f2190125044064fb6cd3495ecd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1c5eb7f2190125044064fb6cd3495ecd">mkernel_initialize_orthogonalization_mesh2d</a> (int meshKernelId, int projectToLandBoundaryOption, <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">OrthogonalizationParameters</a> &amp;orthogonalizationParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryListLandBoundaries)</td></tr>
-<tr class="memdesc:a1c5eb7f2190125044064fb6cd3495ecd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orthogonalization initialization (first function to use in interactive mode)  <a href="namespacemeshkernelapi.html#a1c5eb7f2190125044064fb6cd3495ecd">More...</a><br /></td></tr>
+<tr class="memdesc:a1c5eb7f2190125044064fb6cd3495ecd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialization of the <a class="el" href="classmeshkernel_1_1_orthogonalization_and_smoothing.html">meshkernel::OrthogonalizationAndSmoothing</a> algorithm. This is the first function to call when using orthogonalization in interactive mode (visualizing the grid while is orthogonalizing), in order to set the internal state of the algorithm reused during the iterations.  <a href="namespacemeshkernelapi.html#a1c5eb7f2190125044064fb6cd3495ecd">More...</a><br /></td></tr>
 <tr class="separator:a1c5eb7f2190125044064fb6cd3495ecd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad920018b836147d687c69e83a037ae69"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad920018b836147d687c69e83a037ae69">mkernel_prepare_outer_iteration_orthogonalization_mesh2d</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:ad920018b836147d687c69e83a037ae69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares outer orthogonalization iteration (interactive mode)  <a href="namespacemeshkernelapi.html#ad920018b836147d687c69e83a037ae69">More...</a><br /></td></tr>
+<tr class="memdesc:ad920018b836147d687c69e83a037ae69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares an outer orthogonalization iteration, computing the new orthogonalization and smoothing weights from the modified geometry (in interactive mode) <code>mkernel_initialize_orthogonalization_mesh2d</code> function must be called before.  <a href="namespacemeshkernelapi.html#ad920018b836147d687c69e83a037ae69">More...</a><br /></td></tr>
 <tr class="separator:ad920018b836147d687c69e83a037ae69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf8e39e81f15084af773c0bae2bf350b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aaf8e39e81f15084af773c0bae2bf350b">mkernel_compute_inner_ortogonalization_iteration_mesh2d</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:aaf8e39e81f15084af773c0bae2bf350b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs inner orthogonalization iteration (interactive mode)  <a href="namespacemeshkernelapi.html#aaf8e39e81f15084af773c0bae2bf350b">More...</a><br /></td></tr>
+<tr class="memdesc:aaf8e39e81f15084af773c0bae2bf350b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs inner orthogonalization iteration, by slowly moving the mesh nodes to new optimal positions (interactive mode). <code>mkernel_prepare_outer_iteration_orthogonalization_mesh2d</code> function must be called before.  <a href="namespacemeshkernelapi.html#aaf8e39e81f15084af773c0bae2bf350b">More...</a><br /></td></tr>
 <tr class="separator:aaf8e39e81f15084af773c0bae2bf350b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cec4a22944557a5a49657fbf081c18d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3cec4a22944557a5a49657fbf081c18d">mkernel_finalize_inner_ortogonalization_iteration_mesh2d</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:a3cec4a22944557a5a49657fbf081c18d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalizes orthogonalization outer iteration (interactive mode)  <a href="namespacemeshkernelapi.html#a3cec4a22944557a5a49657fbf081c18d">More...</a><br /></td></tr>
+<tr class="memdesc:a3cec4a22944557a5a49657fbf081c18d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalizes the orthogonalization outer iteration, computing the new coefficients for grid adaption and the new face circumcenters (interactive mode).  <a href="namespacemeshkernelapi.html#a3cec4a22944557a5a49657fbf081c18d">More...</a><br /></td></tr>
 <tr class="separator:a3cec4a22944557a5a49657fbf081c18d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8a156d1dce89ff4ba435038ce909783"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa8a156d1dce89ff4ba435038ce909783">mkernel_delete_orthogonalization_mesh2d</a> (int meshKernelId)</td></tr>
-<tr class="memdesc:aa8a156d1dce89ff4ba435038ce909783"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleans up back-end orthogonalization algorithm (interactive mode)  <a href="namespacemeshkernelapi.html#aa8a156d1dce89ff4ba435038ce909783">More...</a><br /></td></tr>
+<tr class="memdesc:aa8a156d1dce89ff4ba435038ce909783"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleans the orthogonalization algorithm state, allocated in <code>mkernel_initialize_orthogonalization_mesh2d</code> (interactive mode)  <a href="namespacemeshkernelapi.html#aa8a156d1dce89ff4ba435038ce909783">More...</a><br /></td></tr>
 <tr class="separator:aa8a156d1dce89ff4ba435038ce909783"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1330d5672314ac364bd10964feabf87c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1330d5672314ac364bd10964feabf87c">mkernel_get_orthogonality_mesh2d</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
 <tr class="memdesc:a1330d5672314ac364bd10964feabf87c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the orthogonality.  <a href="namespacemeshkernelapi.html#a1330d5672314ac364bd10964feabf87c">More...</a><br /></td></tr>
@@ -617,7 +617,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Performs inner orthogonalization iteration (interactive mode) </p>
+<p>Performs inner orthogonalization iteration, by slowly moving the mesh nodes to new optimal positions (interactive mode). <code>mkernel_prepare_outer_iteration_orthogonalization_mesh2d</code> function must be called before. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -763,12 +763,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Orthogonalization. </p>
+<p>Mesh2d orthogonalization. The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters. The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas). The parameter to regulate the amount of orthogonalization is contained in <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html#a5ffb52364fd8c379dda2bb37c24200c4">meshkernelapi::OrthogonalizationParameters::OrthogonalizationToSmoothingFactor</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projectToLandBoundaryOption</td><td>The option to determine how to snap to land boundaries </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">orthogonalizationParameters</td><td>The structure containing the orthogonalization parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">orthogonalizationParameters</td><td>The structure containing the orthogonalization parameters <a class="el" href="structmeshkernelapi_1_1_orthogonalization_parameters.html">meshkernelapi::OrthogonalizationParameters</a> </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygon where to perform the orthogonalization </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">landBoundaries</td><td>The land boundaries to account for in the orthogonalization process </td></tr>
   </table>
@@ -1086,8 +1086,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a5cb7b0c4c0ab96f4c2ae740b2bb74af2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5cb7b0c4c0ab96f4c2ae740b2bb74af2">&#9670;&nbsp;</a></span>mkernel_count_hanging_edges_mesh2d()</h2>
+<a id="a02a2b0f3831d51c06e32e893e11ce56e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02a2b0f3831d51c06e32e893e11ce56e">&#9670;&nbsp;</a></span>mkernel_count_hanging_edges_mesh2d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1102,7 +1102,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int &amp;&#160;</td>
-          <td class="paramname"><em>numHangingEdgesIndices</em>&#160;</td>
+          <td class="paramname"><em>numEdges</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1112,11 +1112,11 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Count the number of hanging edges. </p>
+<p>Count the number of hanging edges in a mesh2d. An hanging edge is an edge where one of the two nodes is not connected. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">numHangingEdgesIndices</td><td></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">numEdges</td><td>The number of hanging edges </td></tr>
   </table>
   </dd>
 </dl>
@@ -1503,7 +1503,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Deletes the hanging edges. </p>
+<p>Deletes all hanging edges. An hanging edge is an edge where one of the two nodes is not connected. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -1647,7 +1647,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Cleans up back-end orthogonalization algorithm (interactive mode) </p>
+<p>Cleans the orthogonalization algorithm state, allocated in <code>mkernel_initialize_orthogonalization_mesh2d</code> (interactive mode) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -1764,10 +1764,10 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Finalizes orthogonalization outer iteration (interactive mode) </p>
+<p>Finalizes the orthogonalization outer iteration, computing the new coefficients for grid adaption and the new face circumcenters (interactive mode). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
   </table>
   </dd>
 </dl>
@@ -1970,7 +1970,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the <a class="el" href="classmeshkernel_1_1_contacts.html" title="A class describing an 1d-2d contacts.">meshkernel::Contacts</a> data as a <a class="el" href="structmeshkernelapi_1_1_contacts.html" title="A struct used to describe contacts between a 1d and a 2d mesh.">meshkernelapi::Contacts</a> struct. </p>
+<p>Gets the contacts indices (from index / to indices) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -2122,7 +2122,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the <a class="el" href="classmeshkernel_1_1_contacts.html" title="A class describing an 1d-2d contacts.">meshkernel::Contacts</a> size as a <a class="el" href="structmeshkernelapi_1_1_contacts.html" title="A struct used to describe contacts between a 1d and a 2d mesh.">meshkernelapi::Contacts</a> struct. </p>
+<p>Gets the number of contacts. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -2199,7 +2199,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 </div><div class="memdoc">
 
 <p>Gets the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> dimensions. </p>
-<p>The integer parameters of the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> struct are set to the corresponding dimensions The pointers are set to null, and must be set to correctly sized memory before passing the struct to <code>mkernel_get_data_mesh1d</code> </p><dl class="params"><dt>Parameters</dt><dd>
+<p>The integer parameters of the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a> struct are set to the corresponding dimensions The pointers are set to null, and must be set to correctly sized memory before passing the struct to <code>mkernel_get_dimensions_mesh1d</code> </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">mesh1d</td><td>The structure containing the dimensions of the <a class="el" href="structmeshkernelapi_1_1_mesh1_d.html" title="A struct used to describe the values of a mesh 1d in a C-compatible manner.">Mesh1D</a>. </td></tr>
@@ -2313,8 +2313,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a589aa3533c812bbc3f2ecc3f913ff052"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a589aa3533c812bbc3f2ecc3f913ff052">&#9670;&nbsp;</a></span>mkernel_get_hanging_edges_mesh2d()</h2>
+<a id="a21aa8fc7522fbab81f7fd2deed07cb45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21aa8fc7522fbab81f7fd2deed07cb45">&#9670;&nbsp;</a></span>mkernel_get_hanging_edges_mesh2d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2329,7 +2329,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int **&#160;</td>
-          <td class="paramname"><em>hangingEdgesIndices</em>&#160;</td>
+          <td class="paramname"><em>edges</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2339,11 +2339,11 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Gets the indices of hanging edges. </p>
+<p>Gets the indices of hanging edges. An hanging edge is an edge where one of the two nodes is not connected. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">hangingEdgesIndices</td><td>Pointer to memory where the hanging edge indices will be stored </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">edges</td><td>Pointer to memory where the indices of the hanging edges will be stored </td></tr>
   </table>
   </dd>
 </dl>
@@ -2944,7 +2944,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Orthogonalization initialization (first function to use in interactive mode) </p>
+<p>Initialization of the <a class="el" href="classmeshkernel_1_1_orthogonalization_and_smoothing.html">meshkernel::OrthogonalizationAndSmoothing</a> algorithm. This is the first function to call when using orthogonalization in interactive mode (visualizing the grid while is orthogonalizing), in order to set the internal state of the algorithm reused during the iterations. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
@@ -3431,7 +3431,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Prepares outer orthogonalization iteration (interactive mode) </p>
+<p>Prepares an outer orthogonalization iteration, computing the new orthogonalization and smoothing weights from the modified geometry (in interactive mode) <code>mkernel_initialize_orthogonalization_mesh2d</code> function must be called before. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
