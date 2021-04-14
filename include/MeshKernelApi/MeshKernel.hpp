@@ -241,45 +241,45 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_delete_orthogonalization_mesh2d(int meshKernelId);
 
-        /// @brief Gets the orthogonality
+        /// @brief Gets the mesh orthogonality, expressed as the ratio between the edges and the segments connecting the face circumcenters.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[out] geometryList The orthogonality values of each edge
         /// @returns Error code
         MKERNEL_API int mkernel_get_orthogonality_mesh2d(int meshKernelId, GeometryList& geometryList);
 
-        /// @brief Gets the smoothness
+        /// @brief Gets the smoothness, expressed as the ratio between the values of two neighboring faces areas.
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[out] geometryList The smoothness values of each edge
+        /// @param[out] geometryList The smoothness values at each edge
         /// @returns Error code
         MKERNEL_API int mkernel_get_smoothness_mesh2d(int meshKernelId, GeometryList& geometryList);
 
-        /// @brief Get spline intermediate points
+        /// @brief Get the computed spline points between two corner nodes
         /// @param[in] geometryListIn The input corner nodes of the splines
         /// @param[out] geometryListOut The output spline
-        /// @param[out] numberOfPointsBetweenNodes The number of spline nodes between the corners points
+        /// @param[out] numberOfPointsBetweenNodes The number of spline points to generate between two corner nodes.
         /// @returns Error code
         MKERNEL_API int mkernel_get_splines(const GeometryList& geometryListIn,
                                             GeometryList& geometryListOut,
                                             int numberOfPointsBetweenNodes);
 
-        /// @brief Gets the coordinates of the closest existing node
+        /// @brief Gets the closest mesh2d node coordinates to a point, searching within a radius.
         /// @param[in]  meshKernelId    Id of the grid state
-        /// @param[in]  geometryListIn  Node coordinates
-        /// @param[in]  searchRadius    The radius where to search for the node
-        /// @param[out] geometryListOut Mesh2D node coordinates
+        /// @param[in]  point           The point coordinate
+        /// @param[in]  searchRadius    The radii where to search for mesh nodes
+        /// @param[out] node            The fount Mesh2D node coordinates.
         /// @returns Error code
         MKERNEL_API int mkernel_get_closest_node_mesh2d(int meshKernelId,
-                                                        const GeometryList& geometryListIn,
+                                                        const GeometryList& point,
                                                         double searchRadius,
-                                                        GeometryList& geometryListOut);
+                                                        GeometryList& node);
 
-        /// @brief Makes a triangular grid in a polygon
+        /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] geometryList The polygon where to triangulate
         /// @returns Error code
         MKERNEL_API int mkernel_make_mesh_from_polygon_mesh2d(int meshKernelId, const GeometryList& geometryList);
 
-        /// @brief Makes a triangular mesh from samples
+        /// @brief Makes a triangular mesh from  a set of samples, triangulating them.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] geometryList The samples where to triangulate
         /// @returns Error code
