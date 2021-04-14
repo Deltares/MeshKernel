@@ -470,6 +470,11 @@ void CurvilinearGrid::ComputeGridNodeTypes()
 
 void CurvilinearGrid::InsertFace(Point const& point)
 {
+    if (!point.IsValid())
+    {
+        throw std::invalid_argument("CurvilinearGrid::InsertFace: invalid point provided");
+    }
+
     // Gets the indices of the closest edge to the specified point (they are neighbors by construction)
     auto const [firstNode, secondNode] = GetEdgeNodeIndices(point);
 

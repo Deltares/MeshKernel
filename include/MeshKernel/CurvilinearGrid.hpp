@@ -134,7 +134,7 @@ namespace meshkernel
         /// @return True if the face is valid, false otherwise
         bool IsValidFace(size_t m, size_t n) const;
 
-        /// @brief Inserts a new face. The new point will be inserted on the closest edge (a curvi grid is also an unstructured mesh)
+        /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
         void InsertFace(Point const& point);
 

@@ -49,7 +49,7 @@ namespace meshkernel
                                     const Point& secondPoint);
 
         /// @brief Refine the curvilinear grid
-        CurvilinearGrid Compute();
+        CurvilinearGrid Compute() const;
 
     private:
         std::shared_ptr<CurvilinearGrid> m_grid; ///< A pointer to the curvilinear grid to modify

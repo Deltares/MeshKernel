@@ -41,7 +41,7 @@ meshkernel::CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(std::shared
 {
 }
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridDeRefinement::Compute()
+meshkernel::CurvilinearGrid meshkernel::CurvilinearGridDeRefinement::Compute() const
 {
     // Get the m and n indices from the point coordinates
     const auto [mFirstNode, nFirstNode] = m_grid->GetNodeIndices(m_firstPoint);
