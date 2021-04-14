@@ -29,7 +29,6 @@
 #include <vector>
 
 #include <MeshKernel/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGridLine.hpp>
 #include <MeshKernel/Operations.hpp>
 
 using meshkernel::CurvilinearGrid;
