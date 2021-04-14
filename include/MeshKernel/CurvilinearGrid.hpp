@@ -138,8 +138,8 @@ namespace meshkernel
         /// @param[in] point  The point used for finding the closest edge.
         void InsertFace(Point const& point);
 
-        size_t m_numM = 0;                                  ///< The number of m coordinates (vertical lines)
-        size_t m_numN = 0;                                  ///< The number of n coordinates (horizontal lines)
+        size_t m_numM = 0;                                   ///< The number of m coordinates (vertical lines)
+        size_t m_numN = 0;                                   ///< The number of n coordinates (horizontal lines)
         std::vector<std::vector<Point>> m_gridNodes;         ///< Member variable storing the grid
         std::vector<std::vector<bool>> m_gridFacesMask;      ///< The mask of the grid faces (true/false)
         std::vector<std::vector<NodeType>> m_gridNodesTypes; ///< The grid node types
@@ -165,11 +165,7 @@ namespace meshkernel
         /// The new node will be calculated by a first order approximation: x2 = x1 + (x1 - x0) = 2*x1 - x0
         /// @param[in] firstNode The indices of the first new node in the modified grid.
         /// @param[in] secondNode The indices of the second new node in the modified grid.
-        /// @param[in] firstNewNodeCoordinates The coordinate of the first new node in the modified grid.
-        /// @param[in] secondNewNodeCoordinates The coordinate of the second new node in the modified grid.
-        void AddNodes(NodeIndices const& firstNode,
-                      NodeIndices const& secondNode,
-                      Point const& firstNewNodeCoordinates,
-                      Point const& secondNewNodeCoordinates);
+        void AddEdge(NodeIndices const& firstNode,
+                     NodeIndices const& secondNode);
     };
 } // namespace meshkernel
