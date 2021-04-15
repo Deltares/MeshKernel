@@ -487,7 +487,7 @@ namespace meshkernelapi
                                                       const GeometryList& polygonToSelect,
                                                       GeometryList& selectionResults);
 
-        /// @brief Flips mesh2d edges, to optimize mesh smoothness. This operation is usually performed after `mkernel_refine_based_on_samples_mesh2d`
+        /// @brief Flips mesh2d edges, to optimize the mesh smoothness. This operation is usually performed after `mkernel_refine_based_on_samples_mesh2d`
         /// or `mkernel_refine_based_on_polygon_mesh2d`. Nodes that are connected to more than six other nodes are typically enclosed by faces of highly non-uniform shape and wildly varying areas.
         /// @param[in] meshKernelId                The id of the mesh state
         /// @param[in] isTriangulationRequired     The option to triangulate also non triangular cells (if activated squares becomes triangles)
@@ -497,52 +497,53 @@ namespace meshkernelapi
                                                   int isTriangulationRequired,
                                                   int projectToLandBoundaryOption);
 
-        /// @brief Gets the number of obtuse triangles (those having one edge longer than the sum of the other two)
+        /// @brief Gets the number of obtuse mesh2d triangles. Obtuse triangles are those having one edge longer than the sum of the other two.
         /// @param[in]  meshKernelId       The id of the mesh state
         /// @param[out] numObtuseTriangles The number of obtuse triangles
-        /// @return
+        /// @return Error code
         MKERNEL_API int mkernel_count_obtuse_triangles_mesh2d(int meshKernelId, int& numObtuseTriangles);
 
-        /// @brief Gets the obtuse triangle mass centers (those having one edge longer than the sum of the other two)
+        /// @brief Gets the mass centers of obtuse mesh2d triangles. Obtuse triangles are those having one edge longer than the sum of the other two.
         /// @param[in]  meshKernelId  The id of the mesh state
-        /// @param[out] result        The obtuse triangles mass centers
-        /// @return Error code (0 Successful)
+        /// @param[out] result        The coordinates of the obtuse triangles mass centers stored in xCoordinates and yCoordinates of a \ref GeometryList
+        /// @return Error code
         MKERNEL_API int mkernel_get_obtuse_triangles_mass_centers_mesh2d(int meshKernelId, GeometryList& result);
 
-        /// @brief Counts the small flow edges (flow edges are the edges connecting the face circumcenters)
-        /// @param[in] meshKernelId            The id of the mesh state
-        /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
-        /// @param[out] numSmallFlowEdges      The number of the small flow edges
-        /// @return
+        /// @brief Counts the number of small mesh2d flow edges. The flow edges are the edges connecting faces circumcenters.
+        /// @param[in] meshKernelId                  The id of the mesh state
+        /// @param[in] smallFlowEdgesLengthThreshold The configurable length for detecting a small flow edge
+        /// @param[out] numSmallFlowEdges            The number of the small flow edges
+        /// @return Error code
         MKERNEL_API int mkernel_count_small_flow_edge_centers_mesh2d(int meshKernelId,
-                                                                     double smallFlowEdgesThreshold,
+                                                                     double smallFlowEdgesLengthThreshold,
                                                                      int& numSmallFlowEdges);
 
-        /// @brief Gets the small flow edges (flow edges are the edges connecting the face circumcenters)
+        /// @brief Gets the small mesh2d flow edges. The flow edges are the edges connecting faces circumcenters.
         /// @param[in] meshKernelId            The id of the mesh state
-        /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
-        /// @param[out] result                 The center points of the small flow edges
-        /// @return Error code (0 Successful)
+        /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting a small flow edge
+        /// @param[out] result                 The middle points of the small flow edges, stored in xCoordinates and yCoordinates of a \ref GeometryList
+        /// @return Error code
         MKERNEL_API int mkernel_get_small_flow_edge_centers_mesh2d(int meshKernelId,
                                                                    double smallFlowEdgesThreshold,
                                                                    GeometryList& result);
 
-        /// @brief Deletes the small flow edges (flow edges are the edges connecting the face circumcenters)
+        /// @brief Deletes all small mesh2d flow edges and small triangles. The flow edges are the edges connecting faces circumcenters.
         /// @param[in] meshKernelId               The id of the mesh state
         /// @param[in] smallFlowEdgesThreshold    The configurable threshold for detecting the small flow edges
-        /// @param[in] minFractionalAreaTriangles The ratio of the face area to the average area of neighboring non triangular faces
-        /// @return Error code (0 Successful)
-        MKERNEL_API int mkernel_delete_small_flow_edges_mesh2d(int meshKernelId,
-                                                               double smallFlowEdgesThreshold,
-                                                               double minFractionalAreaTriangles);
+        /// @param[in] minFractionalAreaTriangles The ratio of the face area to the average area of neighboring non triangular faces.
+        /// This parameter is used for determining if a triangular face is small.
+        /// @return Error code
+        MKERNEL_API int mkernel_delete_small_flow_edges_and_small_triangles_mesh2d(int meshKernelId,
+                                                                                   double smallFlowEdgesThreshold,
+                                                                                   double minFractionalAreaTriangles);
 
-        /// @brief Computes 1d-2d contacts, where every single 1d node is connected to one 2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll)
+        /// @brief Computes 1d-2d contacts, where each single 1d node is connected to one mesh2d face circumcenter (ggeo_make1D2Dinternalnetlinks_dll)
         ///
         /// \see meshkernel::Contacts::ComputeSingleContacts
         /// @param[in]  meshKernelId  The id of the mesh state
-        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
+        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not connect)
         /// @param[in]  polygons      The polygons selecting the area where the 1d-2d contacts will be generated.
-        /// @return                   Error code (0 Successful)
+        /// @return                   Error code
         MKERNEL_API int mkernel_compute_single_contacts(int meshKernelId,
                                                         const int* oneDNodeMask,
                                                         const GeometryList& polygons);
@@ -551,8 +552,8 @@ namespace meshkernelapi
         ///
         /// \see meshkernel::Contacts::ComputeMultipleContacts
         /// @param[in]  meshKernelId  The id of the mesh state
-        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
-        /// @return                   Error code (0 Successful)
+        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = generate a connection, 0 = do not generate a connection)
+        /// @return                   Error code
         MKERNEL_API int mkernel_compute_multiple_contacts(int meshKernelId,
                                                           const int* oneDNodeMask);
 
@@ -560,9 +561,9 @@ namespace meshkernelapi
         ///
         /// \see meshkernel::Contacts::ComputeContactsWithPolygons
         /// @param[in]  meshKernelId  The id of the mesh state
-        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
+        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = generate a connection, 0 = do not generate a connection)
         /// @param[in]  polygons      The polygons to connect
-        /// @return                   Error code (0 Successful)
+        /// @return                   Error code
         MKERNEL_API int mkernel_compute_with_polygons_contacts(int meshKernelId,
                                                                const int* oneDNodeMask,
                                                                const GeometryList& polygons);
@@ -571,9 +572,9 @@ namespace meshkernelapi
         ///
         /// \see meshkernel::Contacts::ComputeContactsWithPoints
         /// @param[in]  meshKernelId  The id of the mesh state
-        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
+        /// @param[in]  oneDNodeMask  The mask to apply to 1d nodes (1 = generate a connection, 0 = do not generate a connection)
         /// @param[in]  points        The points selecting the faces to connect
-        /// @return                   Error code (0 Successful)
+        /// @return                   Error code
         MKERNEL_API int mkernel_compute_with_points_contacts(int meshKernelId,
                                                              const int* oneDNodeMask,
                                                              const GeometryList& points);
@@ -582,38 +583,38 @@ namespace meshkernelapi
         ///
         /// \see meshkernel::Contacts::ComputeBoundaryContacts
         /// @param[in]  meshKernelId The id of the mesh state.
-        /// @param[in]  oneDNodeMask The mask to apply to 1d nodes (1 = connect node, 0 = do not generate contacts)
+        /// @param[in]  oneDNodeMask The mask to apply to 1d nodes (1 = generate a connection, 0 = do not generate a connection)
         /// @param[in]  polygons     The points selecting the faces to connect.
         /// @param[in]  searchRadius The radius used for searching neighboring faces, if equal to doubleMissingValue, the search radius will be calculated internally.
-        /// @return                  Error code (0 Successful)
+        /// @return                  Error code
         MKERNEL_API int mkernel_compute_boundary_contacts(int meshKernelId,
                                                           const int* oneDNodeMask,
                                                           const GeometryList& polygons,
                                                           double searchRadius);
 
-        /// @brief Curvilinear grid refinement
+        /// @brief Directional curvilinear grid refinement. Additional gridlines are added perpendicularly to the segment defined defined by \p firstPoint and \p secondPoint.
+        /// Therefore, \p firstPoint and \p secondPoint must lie on the same grid line.
         ///
-        /// \p geometryListFirstPoint and \p geometryListSecondPoint must lie on the same gridline
         /// @param[in] meshKernelId            The id of the mesh state.
-        /// @param[in] geometryListFirstPoint  The geometry list containing the first node of the segment defining the refinement zone.
-        /// @param[in] geometryListSecondPoint The geometry list containing the second node of the segment defining the refinement zone.
-        /// @param[in] refinement              The number of refinement lines between \p geometryListFirstPoint and \p geometryListSecondPoint
-        /// @return Error code (0 Successful)
+        /// @param[in] firstPoint              The first point defining the refinement zone.
+        /// @param[in] secondPoint             The second point defining the refinement zone.
+        /// @param[in] refinement              The number of grid lines to add between \p firstPoint and \p secondPoint
+        /// @return                            Error code
         MKERNEL_API int mkernel_refine_curvilinear(int meshKernelId,
-                                                   const GeometryList& geometryListFirstPoint,
-                                                   const GeometryList& geometryListSecondPoint,
+                                                   const GeometryList& firstPoint,
+                                                   const GeometryList& secondPoint,
                                                    int refinement);
 
-        /// @brief Curvilinear grid derefinement
+        /// @brief Directional curvilinear grid de-refinement. Gridlines are removed perpendicularly to the segment defined defined by \p firstPoint and \p secondPoint.
+        /// Therefore, \p firstPoint and \p secondPoint must lie on the same grid line.
         ///
-        /// \p geometryListFirstPoint and \p geometryListSecondPoint must lie on the same gridline
         /// @param meshKernelId            The id of the mesh state.
-        /// @param geometryListFirstPoint  The geometry list containing the first node of the segment defining the derefinement zone.
-        /// @param geometryListSecondPoint The geometry list containing the second node of the segment defining the derefinement zone.
-        /// @return Error code (0 Successful)
+        /// @param firstPoint              The first point defining the de-refinement zone.
+        /// @param secondPoint             The second point defining the de-refinement zone.
+        /// @return Error code
         MKERNEL_API int mkernel_derefine_curvilinear(int meshKernelId,
-                                                     const GeometryList& geometryListFirstPoint,
-                                                     const GeometryList& geometryListSecondPoint);
+                                                     const GeometryList& firstPoint,
+                                                     const GeometryList& secondPoint);
 
         /// @brief Generates curvilinear grid from splines with transfinite interpolation
         /// @param[in] meshKernelId          The id of the mesh state
@@ -781,7 +782,7 @@ namespace meshkernelapi
         /// @param[in]  spherical          Current projection (0 cartesian, 1 spherical)
         /// @param[in]  sphericalAccurate  Accurate spherical projection (0 default spherical, 1 spherical accurate)
         /// @param[out] results            The interpolation results
-        /// @return Error code (0 Successful)
+        /// @return Error code
         MKERNEL_API int triangulation(const Mesh2D& mesh2d,
                                       const double** samplesXCoordinate,
                                       const double** samplesYCoordinate,
@@ -807,7 +808,7 @@ namespace meshkernelapi
         /// @param[in] relativeSearchSize The relative search size around the location (larger increases the number of samples considered)
         /// @param[in] spherical          Current projection (0 cartesian, 1 spherical)
         /// @param[in] sphericalAccurate  Accurate spherical computations (0 default spherical, 1 spherical accurate)
-        /// @return Error code (0 Successful)
+        /// @return Error code
         MKERNEL_API int averaging(const Mesh2D& mesh2d,
                                   const int& startIndex,
                                   const double** samplesXCoordinate,

@@ -1381,7 +1381,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_small_flow_edge_centers_mesh2d(int meshKernelId, double smallFlowEdgesThreshold, int& numSmallFlowEdges)
+    MKERNEL_API int mkernel_count_small_flow_edge_centers_mesh2d(int meshKernelId, double smallFlowEdgesLengthThreshold, int& numSmallFlowEdges)
     {
         int exitCode = Success;
         try
@@ -1390,7 +1390,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            const auto edgesCrossingSmallFlowEdges = meshKernelState[meshKernelId].m_mesh2d->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
+            const auto edgesCrossingSmallFlowEdges = meshKernelState[meshKernelId].m_mesh2d->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesLengthThreshold);
             const auto smallFlowEdgeCenters = meshKernelState[meshKernelId].m_mesh2d->GetFlowEdgesCenters(edgesCrossingSmallFlowEdges);
 
             numSmallFlowEdges = static_cast<int>(smallFlowEdgeCenters.size());
@@ -1479,7 +1479,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_small_flow_edges_mesh2d(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
+    MKERNEL_API int mkernel_delete_small_flow_edges_and_small_triangles_mesh2d(int meshKernelId, double smallFlowEdgesThreshold, double minFractionalAreaTriangles)
     {
         int exitCode = Success;
         try
@@ -1655,7 +1655,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_curvilinear(int meshKernelId, const GeometryList& geometryListFirstPoint, const GeometryList& geometryListSecondPoint, int refinement)
+    MKERNEL_API int mkernel_refine_curvilinear(int meshKernelId, const GeometryList& firstPoint, const GeometryList& secondPoint, int refinement)
     {
         int exitCode = Success;
         try
@@ -1664,21 +1664,21 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+            const auto firstPointVector = ConvertGeometryListToPointVector(firstPoint);
 
-            if (firstPoint.empty())
+            if (firstPointVector.empty())
             {
                 throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
             }
 
-            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
-            if (secondPoint.empty())
+            const auto secondPointVector = ConvertGeometryListToPointVector(secondPoint);
+            if (secondPointVector.empty())
             {
                 throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
             }
 
             // Execute
-            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, firstPoint[0], secondPoint[0], refinement);
+            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, firstPointVector[0], secondPointVector[0], refinement);
             curvilinearGridRefinement.Compute();
         }
         catch (...)
@@ -1689,8 +1689,8 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_derefine_curvilinear(int meshKernelId,
-                                                 const GeometryList& geometryListFirstPoint,
-                                                 const GeometryList& geometryListSecondPoint)
+                                                 const GeometryList& firstPoint,
+                                                 const GeometryList& secondPoint)
     {
         int exitCode = Success;
         try
@@ -1699,14 +1699,14 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            const auto firstPoint = ConvertGeometryListToPointVector(geometryListFirstPoint);
+            const auto firstPoint = ConvertGeometryListToPointVector(firstPoint);
 
             if (firstPoint.empty())
             {
                 throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
             }
 
-            const auto secondPoint = ConvertGeometryListToPointVector(geometryListSecondPoint);
+            const auto secondPoint = ConvertGeometryListToPointVector(secondPoint);
             if (secondPoint.empty())
             {
                 throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
