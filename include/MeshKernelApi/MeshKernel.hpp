@@ -315,8 +315,8 @@ namespace meshkernelapi
                                                double targetEdgeLength,
                                                GeometryList& refinedPolygon);
 
-        /// @brief Counts the number of polygon nodes resulting from polygon refinement with `mkernel_refine_polygon`
-        /// This function should be used by clients for allocating \ref GeometryList containing the refinement result
+        /// @brief Counts the number of polygon nodes resulting from polygon refinement with `mkernel_refine_polygon`.
+        /// This function should be used before `mkernel_refine_polygon` by clients for allocating \ref GeometryList containing the refinement result.
         /// @param[in] meshKernelId   The id of the mesh state
         /// @param[in] geometryListIn The input polygon to refine
         /// @param[in] firstIndex     The first index of the refinement interval
@@ -337,44 +337,45 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn);
 
-        /// @brief Merges two mesh2d nodes in one
+        /// @brief Merges two mesh2d nodes in one.
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] startNode    The index of the first node to merge
-        /// @param[in] endNode      The index of the second node to merge
+        /// @param[in] firstNode    The index of the first node to merge
+        /// @param[in] secondNode   The index of the second node to merge
         /// @returns Error code
-        MKERNEL_API int mkernel_merge_two_nodes_mesh2d(int meshKernelId, int startNode, int endNode);
+        MKERNEL_API int mkernel_merge_two_nodes_mesh2d(int meshKernelId, int firstNode, int secondNode);
 
-        /// @brief Gets the selected mesh node indices
+        /// @brief Gets the indices of the mesh2d nodes selected with a polygon.
         /// @param[in]  meshKernelId   The id of the mesh state
-        /// @param[in]  geometryListIn The input polygons
-        /// @param[in]  inside         Count nodes indices inside (1) or outside (0) the polygon
+        /// @param[in]  geometryListIn The input polygon
+        /// @param[in]  inside         Selection of the nodes inside the polygon (1) or outside (0)
         /// @param[out] selectedNodes  The selected nodes indices
         /// @returns Error code
-        MKERNEL_API int mkernel_get_nodes_in_polygons(int meshKernelId,
-                                                      const GeometryList& geometryListIn,
-                                                      int inside,
-                                                      int** selectedNodes);
+        MKERNEL_API int mkernel_nodes_in_polygons_mesh2d(int meshKernelId,
+                                                         const GeometryList& geometryListIn,
+                                                         int inside,
+                                                         int** selectedNodes);
 
-        /// @brief Counts the number of selected mesh node indices
+        /// @brief Counts the number of selected mesh node indices.
+        /// This function should be used before `mkernel_nodes_in_polygons_mesh2d` by clients for allocating an integer array storing the selection results.
         /// @param[in]  meshKernelId      The id of the mesh state
-        /// @param[in]  geometryListIn    The input polygons
-        /// @param[in]  inside            Count nodes inside (1) or outside (0) the polygon
+        /// @param[in]  geometryListIn    The input polygon
+        /// @param[in]  inside            Selection of the nodes inside the polygon (1) or outside (0)
         /// @param[out] numberOfMeshNodes The number of selected nodes
         /// @returns Error code
-        MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId,
-                                                        const GeometryList& geometryListIn,
-                                                        int inside,
-                                                        int& numberOfMeshNodes);
+        MKERNEL_API int mkernel_count_nodes_in_polygons_mesh2d(int meshKernelId,
+                                                               const GeometryList& geometryListIn,
+                                                               int inside,
+                                                               int& numberOfMeshNodes);
 
-        /// @brief Insert a new edge connecting \p startNode and \p endNode
+        /// @brief Insert a new mesh2d edge connecting two nodes
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[in]  startNode    The index of the first node to connect
         /// @param[in]  endNode      The index of the second node to connect
-        /// @param[out] newEdgeIndex The index of the new edge
+        /// @param[out] newEdgeIndex The index of the new generated edge
         /// @returns Error code
         MKERNEL_API int mkernel_insert_edge_mesh2d(int meshKernelId, int startNode, int endNode, int& newEdgeIndex);
 
-        /// @brief Inserts a new node
+        /// @brief Insert a new mesh2d node at a specific coordinate.
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[in]  xCoordinate  X-coordinate of the new node
         /// @param[in]  yCoordinate  Y-coordinate of the new node
@@ -385,42 +386,44 @@ namespace meshkernelapi
                                                    double yCoordinate,
                                                    int& nodeIndex);
 
-        /// @brief Deletes a node with specified \p nodeIndex
+        /// @brief Deletes a mesh2d node
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] nodeIndex    The nodeIndex to delete
+        /// @param[in] nodeIndex    The index of the node to delete
         /// @returns Error code
         MKERNEL_API int mkernel_delete_node_mesh2d(int meshKernelId, int nodeIndex);
 
-        /// @brief Moves a selected node to a new position
-        /// @param[in] meshKernelId   The id of the mesh state
-        /// @param[in] geometryListIn The new coordinate
-        /// @param[in] nodeIndex      The node index (to be detailed)
+        /// @brief Moves a mesh2d node to a new position
+        /// @param[in] meshKernelId    The id of the mesh state
+        /// @param[in] newNodePosition The new coordinate of the moved node
+        /// @param[in] nodeIndex       The index of the mesh2d node to be moved
         /// @returns Error code
-        MKERNEL_API int mkernel_move_node_mesh2d(int meshKernelId, const GeometryList& geometryListIn, int nodeIndex);
+        MKERNEL_API int mkernel_move_node_mesh2d(int meshKernelId, const GeometryList& newNodePosition, int nodeIndex);
 
-        /// @brief Deletes the closest mesh edge within the search radius from the input point
+        /// @brief Deletes the closest mesh2d edge to a point.
+        /// The coordinates of the edge middle points are used for calculating the distances to the point.
         /// @param[in] meshKernelId   The id of the mesh state
-        /// @param[in] geometryListIn The input point coordinates
+        /// @param[in] point          The coordinate of the point
         /// @returns Error code
-        MKERNEL_API int mkernel_delete_edge_mesh2d(int meshKernelId, const GeometryList& geometryListIn);
+        MKERNEL_API int mkernel_delete_edge_mesh2d(int meshKernelId, const GeometryList& point);
 
-        /// @brief Deletes the closest mesh edge within the search radius from the input point
+        /// @brief Finds the closest mesh2d edge to a point.
         /// @param[in] meshKernelId   The id of the mesh state
-        /// @param[in] geometryListIn The input point coordinates
-        /// @param[out] edgeIndex     The edge index
+        /// @param[in] point The coordinate of the point
+        /// @param[out] edgeIndex     The found edge index
         /// @returns Error code
-        MKERNEL_API int mkernel_find_edge_mesh2d(int meshKernelId, const GeometryList& geometryListIn, int& edgeIndex);
+        MKERNEL_API int mkernel_find_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex);
 
-        /// @brief Offsets a polygon
-        /// @param[in] meshKernelId   The id of the mesh state
-        /// @param[in] geometryListIn The polygon to be offsetted
-        /// @param[in] innerPolygon   Compute inner (true) or outer (false) polygon
-        /// @param[in] distance       The offset distance
-        /// @param[out] geometryListOut The offsetted polygon
+        /// @brief Generate a new polygon from an existing one by offsetting the perimeter by a given distance.
+        /// Offsetting can be done inward or outward the existing polygon.
+        /// @param[in] meshKernelId     The id of the mesh state
+        /// @param[in] geometryListIn   The polygon to offset
+        /// @param[in] inWard           Compute the inner offset (true) or outer offset (false)
+        /// @param[in] distance         The offset distance
+        /// @param[out] geometryListOut The resulting offset polygon
         /// @returns Error code
         MKERNEL_API int mkernel_get_offsetted_polygon(int meshKernelId,
                                                       const GeometryList& geometryListIn,
-                                                      bool innerPolygon,
+                                                      bool inWard,
                                                       double distance,
                                                       GeometryList& geometryListOut);
 

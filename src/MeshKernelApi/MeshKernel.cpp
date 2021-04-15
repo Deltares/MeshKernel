@@ -883,9 +883,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
+            auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
@@ -908,9 +908,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
+            auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon);
         }
@@ -921,7 +921,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_merge_two_nodes_mesh2d(int meshKernelId, int startNode, int endNode)
+    MKERNEL_API int mkernel_merge_two_nodes_mesh2d(int meshKernelId, int firstNode, int secondNode)
     {
         int exitCode = Success;
         try
@@ -930,7 +930,7 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            meshKernelState[meshKernelId].m_mesh2d->MergeTwoNodes(startNode, endNode);
+            meshKernelState[meshKernelId].m_mesh2d->MergeTwoNodes(firstNode, secondNode);
         }
         catch (...)
         {
@@ -939,10 +939,10 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_nodes_in_polygons(int meshKernelId,
-                                              const GeometryList& geometryListIn,
-                                              int inside,
-                                              int** selectedNodes)
+    MKERNEL_API int mkernel_nodes_in_polygons_mesh2d(int meshKernelId,
+                                                     const GeometryList& geometryListIn,
+                                                     int inside,
+                                                     int** selectedNodes)
     {
         int exitCode = Success;
         try
@@ -952,9 +952,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
+            auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             const bool selectInside = inside == 1 ? true : false;
             meshKernelState[meshKernelId].m_mesh2d->MaskNodesInPolygons(polygon, selectInside);
@@ -976,10 +976,10 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_count_nodes_in_polygons(int meshKernelId,
-                                                    const GeometryList& geometryListIn,
-                                                    int inside,
-                                                    int& numberOfMeshNodes)
+    MKERNEL_API int mkernel_count_nodes_in_polygons_mesh2d(int meshKernelId,
+                                                           const GeometryList& geometryListIn,
+                                                           int inside,
+                                                           int& numberOfMeshNodes)
     {
         int exitCode = Success;
         try
@@ -988,9 +988,9 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
+            auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             const bool selectInside = inside == 1 ? true : false;
             meshKernelState[meshKernelId].m_mesh2d->MaskNodesInPolygons(polygon, selectInside);
@@ -1071,7 +1071,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_move_node_mesh2d(int meshKernelId, const GeometryList& geometryListIn, int nodeIndex)
+    MKERNEL_API int mkernel_move_node_mesh2d(int meshKernelId, const GeometryList& newNodePosition, int nodeIndex)
     {
         int exitCode = Success;
         try
@@ -1081,9 +1081,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto newPoint = ConvertGeometryListToPointVector(geometryListIn);
+            auto newPosition = ConvertGeometryListToPointVector(newNodePosition);
 
-            meshKernelState[meshKernelId].m_mesh2d->MoveNode(newPoint[0], nodeIndex);
+            meshKernelState[meshKernelId].m_mesh2d->MoveNode(newPosition[0], nodeIndex);
         }
         catch (...)
         {
@@ -1092,7 +1092,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_delete_edge_mesh2d(int meshKernelId, const GeometryList& geometryListIn)
+    MKERNEL_API int mkernel_delete_edge_mesh2d(int meshKernelId, const GeometryList& point)
     {
         int exitCode = Success;
         try
@@ -1102,9 +1102,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto newPoint = ConvertGeometryListToPointVector(geometryListIn);
+            auto const pointCoordinate = ConvertGeometryListToPointVector(point);
 
-            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(newPoint[0]);
+            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(pointCoordinate[0]);
 
             meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex);
         }
@@ -1115,7 +1115,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_find_edge_mesh2d(int meshKernelId, const GeometryList& geometryListIn, int& edgeIndex)
+    MKERNEL_API int mkernel_find_edge_mesh2d(int meshKernelId, const GeometryList& point, int& edgeIndex)
     {
         int exitCode = Success;
         try
@@ -1125,9 +1125,9 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto newPoint = ConvertGeometryListToPointVector(geometryListIn);
+            auto const pointPosition = ConvertGeometryListToPointVector(point);
 
-            edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(newPoint[0]));
+            edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(pointPosition[0]));
         }
         catch (...)
         {
@@ -1136,7 +1136,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_offsetted_polygon(int meshKernelId, const GeometryList& geometryListIn, bool innerPolygon, double distance, GeometryList& geometryListOut)
+    MKERNEL_API int mkernel_get_offsetted_polygon(int meshKernelId, const GeometryList& geometryListIn, bool inWard, double distance, GeometryList& geometryListOut)
     {
         int exitCode = Success;
         try
@@ -1146,11 +1146,11 @@ namespace meshkernelapi
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
 
-            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
+            auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            const auto newPolygon = polygon.OffsetCopy(distance, innerPolygon);
+            const auto newPolygon = polygon.OffsetCopy(distance, inWard);
 
             ConvertPointVectorToGeometryList(newPolygon.m_nodes, geometryListOut);
         }
