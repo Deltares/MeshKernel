@@ -299,27 +299,29 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_count_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, int& numberOfPolygonNodes);
 
-        /// @brief Gets the refined polygon
-        /// @param[in]  meshKernelId   The id of the mesh state
-        /// @param[in]  geometryListIn The input polygons
-        /// @param[in]  firstIndex     The index of the first node
-        /// @param[in]  secondIndex    The index of the second node
-        /// @param[in]  distance       The refinement distance
-        /// @param[out] geometryListOut
+        /// @brief Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.
+        /// The function is often used before `mkernel_make_mesh_from_polygon_mesh2d`, for generating a triangular mesh where edges have a desired length.
+        /// @param[in]  meshKernelId       The id of the mesh state
+        /// @param[in]  polygonToRefine    The input polygon to refine
+        /// @param[in]  firstNodeIndex     The first index of the refinement interval
+        /// @param[in]  secondNodeIndex    The second index of the refinement interval
+        /// @param[in]  targetEdgeLength   The target interval edge length
+        /// @param[out] refinedPolygon     The refined polygon
         /// @returns Error code
         MKERNEL_API int mkernel_refine_polygon(int meshKernelId,
-                                               const GeometryList& geometryListIn,
-                                               int firstIndex,
-                                               int secondIndex,
-                                               double distance,
-                                               GeometryList& geometryListOut);
+                                               const GeometryList& polygonToRefine,
+                                               int firstNodeIndex,
+                                               int secondNodeIndex,
+                                               double targetEdgeLength,
+                                               GeometryList& refinedPolygon);
 
-        /// @brief Counts the number of nodes after polygon refinement
+        /// @brief Counts the number of polygon nodes resulting from polygon refinement with `mkernel_refine_polygon`
+        /// This function should be used by clients for allocating \ref GeometryList containing the refinement result
         /// @param[in] meshKernelId   The id of the mesh state
-        /// @param[in] geometryListIn The input polygon
-        /// @param[in] firstIndex     The index of the first node
-        /// @param[in] secondIndex    The index of the second node
-        /// @param[in] distance       The refinement distance
+        /// @param[in] geometryListIn The input polygon to refine
+        /// @param[in] firstIndex     The first index of the refinement interval
+        /// @param[in] secondIndex    The second index of the refinement interval
+        /// @param[in] distance       The target interval edge length
         /// @param[out] numberOfPolygonNodes The number of nodes after refinement
         /// @returns Error code
         MKERNEL_API int mkernel_count_refine_polygon(int meshKernelId,
@@ -329,13 +331,13 @@ namespace meshkernelapi
                                                      double distance,
                                                      int& numberOfPolygonNodes);
 
-        /// @brief Merges nodes within a distance of 0.001 m, effectively removing small edges
+        /// @brief Merges the mesh2d nodes within a distance of 0.001 m, effectively removing all small edges
         /// @param[in] meshKernelId   The id of the mesh state
-        /// @param[in] geometryListIn The polygon where to perform the operation
+        /// @param[in] geometryListIn The polygon defining the area where to perform will be performed
         /// @returns Error code
         MKERNEL_API int mkernel_merge_nodes_mesh2d(int meshKernelId, const GeometryList& geometryListIn);
 
-        /// @brief Merges node \p startNode to \p endNode
+        /// @brief Merges two mesh2d nodes in one
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] startNode    The index of the first node to merge
         /// @param[in] endNode      The index of the second node to merge

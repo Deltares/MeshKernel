@@ -845,7 +845,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_refine_polygon(int meshKernelId, const GeometryList& geometryListIn, int firstIndex, int secondIndex, double distance, GeometryList& geometryListOut)
+    MKERNEL_API int mkernel_refine_polygon(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, GeometryList& refinedPolygon)
     {
         int exitCode = Success;
         try
@@ -854,12 +854,12 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            auto polygonPoints = ConvertGeometryListToPointVector(geometryListIn);
+            auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const refinementResult = polygon.RefineFirstPolygon(firstNodeIndex, secondNodeIndex, targetEdgeLength);
 
-            ConvertPointVectorToGeometryList(refinedPolygon, geometryListOut);
+            ConvertPointVectorToGeometryList(refinementResult, refinedPolygon);
         }
         catch (...)
         {
