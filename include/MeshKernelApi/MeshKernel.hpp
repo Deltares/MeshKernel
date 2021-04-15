@@ -266,7 +266,7 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId    Id of the grid state
         /// @param[in]  point           The point coordinate
         /// @param[in]  searchRadius    The radii where to search for mesh nodes
-        /// @param[out] node            The fount Mesh2D node coordinates.
+        /// @param[out] node            The found Mesh2D node coordinates
         /// @returns Error code
         MKERNEL_API int mkernel_get_closest_node_mesh2d(int meshKernelId,
                                                         const GeometryList& point,
