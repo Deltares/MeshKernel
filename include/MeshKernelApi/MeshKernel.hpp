@@ -275,28 +275,29 @@ namespace meshkernelapi
 
         /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] geometryList The polygon where to triangulate
+        /// @param[in] polygonPoints The polygon where to triangulate
         /// @returns Error code
-        MKERNEL_API int mkernel_make_mesh_from_polygon_mesh2d(int meshKernelId, const GeometryList& geometryList);
+        MKERNEL_API int mkernel_make_mesh_from_polygon_mesh2d(int meshKernelId, const GeometryList& polygonPoints);
 
-        /// @brief Makes a triangular mesh from  a set of samples, triangulating them.
+        /// @brief Makes a triangular mesh from  a set of samples, triangulating the sample points.
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] geometryList The samples where to triangulate
+        /// @param[in] samples The samples where to triangulate
         /// @returns Error code
-        MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, const GeometryList& geometryList);
+        MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, const GeometryList& samples);
 
-        /// @brief Retrieves the mesh boundary polygon
+        /// @brief Retrieves the boundaries of a mesh as a series of separated polygons.
+        /// For example, if a mesh has an single inner hole, two polygons will be generated, one for the inner boundary and one for the outer boundary.
         /// @param[in]  meshKernelId The id of the mesh state
-        /// @param[out] geometryList The output network boundary polygon
+        /// @param[out] boundaryPolygons The output network boundary polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_get_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, GeometryList& geometryList);
+        MKERNEL_API int mkernel_get_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, GeometryList& boundaryPolygons);
 
-        /// @brief Counts the number of polygon nodes contained in the mesh boundary polygon
+        /// @brief Counts the number of polygon nodes contained in the mesh boundary polygons
+        /// computed in function `mkernel_get_mesh_boundaries_to_polygon_mesh2d`
         /// @param[in]  meshKernelId         The id of the mesh state
-        /// @param[out] numberOfPolygonNodes The number of polygon points
+        /// @param[out] numberOfPolygonNodes The number of polygon nodes
         /// @returns Error code
-        MKERNEL_API int mkernel_count_mesh_boundaries_to_polygon_mesh2d(int meshKernelId,
-                                                                        int& numberOfPolygonNodes);
+        MKERNEL_API int mkernel_count_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, int& numberOfPolygonNodes);
 
         /// @brief Gets the refined polygon
         /// @param[in]  meshKernelId   The id of the mesh state

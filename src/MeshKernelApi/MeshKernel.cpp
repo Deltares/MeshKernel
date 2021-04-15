@@ -753,7 +753,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_make_mesh_from_polygon_mesh2d(int meshKernelId, const GeometryList& disposableGeometryListIn)
+    MKERNEL_API int mkernel_make_mesh_from_polygon_mesh2d(int meshKernelId, const GeometryList& polygonPoints)
     {
         int exitCode = Success;
         try
@@ -762,12 +762,13 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            auto result = ConvertGeometryListToPointVector(disposableGeometryListIn);
 
-            const meshkernel::Polygons polygon(result, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const polygonPointsVector = ConvertGeometryListToPointVector(polygonPoints);
+
+            const meshkernel::Polygons polygon(polygonPointsVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             // generate samples in all polygons
-            const auto generatedPoints = polygon.ComputePointsInPolygons();
+            auto const generatedPoints = polygon.ComputePointsInPolygons();
 
             const meshkernel::Mesh2D mesh(generatedPoints[0], polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             *meshKernelState[meshKernelId].m_mesh2d += mesh;
@@ -779,7 +780,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, const GeometryList& geometryList)
+    MKERNEL_API int mkernel_make_mesh_from_samples_mesh2d(int meshKernelId, const GeometryList& samples)
     {
         int exitCode = Success;
         try
@@ -788,10 +789,10 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            auto samplePoints = ConvertGeometryListToPointVector(geometryList);
+            auto sampleVector = ConvertGeometryListToPointVector(samples);
 
             meshkernel::Polygons polygon;
-            const meshkernel::Mesh2D mesh(samplePoints, polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Mesh2D mesh(sampleVector, polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             *meshKernelState[meshKernelId].m_mesh2d += mesh;
         }
         catch (...)
@@ -801,7 +802,7 @@ namespace meshkernelapi
         return exitCode;
     }
 
-    MKERNEL_API int mkernel_get_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, GeometryList& geometryList)
+    MKERNEL_API int mkernel_get_mesh_boundaries_to_polygon_mesh2d(int meshKernelId, GeometryList& boundaryPolygons)
     {
         int exitCode = Success;
         try
@@ -814,7 +815,7 @@ namespace meshkernelapi
             const std::vector<meshkernel::Point> polygonNodes;
             const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->MeshBoundaryToPolygon(polygonNodes);
 
-            ConvertPointVectorToGeometryList(meshBoundaryPolygon, geometryList);
+            ConvertPointVectorToGeometryList(meshBoundaryPolygon, boundaryPolygons);
         }
         catch (...)
         {
