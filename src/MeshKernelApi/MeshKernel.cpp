@@ -1699,21 +1699,21 @@ namespace meshkernelapi
             {
                 throw std::invalid_argument("MeshKernel: The selected mesh kernel id does not exist.");
             }
-            const auto firstPoint = ConvertGeometryListToPointVector(firstPoint);
+            const auto firstPointVector = ConvertGeometryListToPointVector(firstPoint);
 
-            if (firstPoint.empty())
+            if (firstPointVector.empty())
             {
                 throw std::invalid_argument("MeshKernel: No first node of the segment defining the refinement zone has been provided.");
             }
 
-            const auto secondPoint = ConvertGeometryListToPointVector(secondPoint);
-            if (secondPoint.empty())
+            const auto secondPointVector = ConvertGeometryListToPointVector(secondPoint);
+            if (secondPointVector.empty())
             {
                 throw std::invalid_argument("MeshKernel: No second node of the segment defining the refinement zone has been provided.");
             }
 
             // Execute
-            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, firstPoint[0], secondPoint[0]);
+            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(meshKernelState[meshKernelId].m_curvilinearGrid, firstPointVector[0], secondPointVector[0]);
 
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(curvilinearGridDeRefinement.Compute());
         }
